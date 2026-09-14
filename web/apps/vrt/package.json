@@ -4,5 +4,8 @@
   "private": true,
   "type": "module",
   "description": "Playwright visual regression over storybook-static: stories tagged vrt × scheme × density × viewport",
-  "scripts": { "test": "playwright test", "update": "playwright test --update-snapshots" }
+  "scripts": {
+    "test": "echo 'prism-vrt: not implemented until P3-4 (Playwright toHaveScreenshot over storybook-static)'",
+    "update": "echo 'prism-vrt: not implemented until P3-4 (playwright test --update-snapshots)'"
+  }
 }

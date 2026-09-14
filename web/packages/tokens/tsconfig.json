@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  // Bundled by tsdown (ESM + .d.ts into dist/); `tsc` here only type-checks.
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["es2024", "dom"],
+    "jsx": "react-jsx",
+    "types": []
+  },
+  "include": ["src", "tsdown.config.ts"]
+}

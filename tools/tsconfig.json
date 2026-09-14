@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  // Tools run from source on Node 24 (native type stripping): only erasable syntax, explicit
+  // `import type`, `.ts` extensions in relative imports, no emit. `tsc` here only type-checks.
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "lint/fixtures"]
+}

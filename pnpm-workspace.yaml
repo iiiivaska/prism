@@ -2,10 +2,13 @@ packages:
   - web/packages/*
   - web/apps/*
   - tools
+
+# One version per dependency for the whole workspace; packages reference these with `catalog:`.
+# Versions follow docs/research/arch-web.md (verified 2026-09-08) and were re-checked on 2026-09-14.
 catalog:
+  # React stack (web/packages)
   react: ^19.2.0
   react-dom: ^19.2.0
-  typescript: ^7.0.2
   react-aria-components: ^1.21.1
   "@phosphor-icons/react": ^2.1.10
   "@visx/shape": ^4.0.0
@@ -15,15 +18,38 @@ catalog:
   d3-shape: ^3.2.0
   d3-scale: ^4.0.2
   motion: ^13.2.0
+
+  # Language, build and lint tooling
+  # TypeScript 6.0: typescript-eslint 8.x peers `typescript <6.1.0` and refuses TS 7.0, which ships
+  # no compiler API (docs/roadmap.md, "Verify before implementing", verified 2026-09-14).
+  typescript: ~6.0.3
+  "@types/node": ^24.13.4
+  tsdown: ^0.23.0
+  eslint: ^10.10.0
+  "@eslint/js": ^10.0.1
+  typescript-eslint: ^8.70.0
+  globals: ^17.12.0
+  # Vitest 4: @storybook/addon-vitest 10.6 peers `vitest ^3 || ^4` (docs/roadmap.md, verified 2026-09-14).
+  vitest: ^4.1.11
+
+  # Token pipeline and checks (tools)
   style-dictionary: ^5.5.3
   "@terrazzo/cli": ^2.7.1
+  # Same range Style Dictionary 5.5 depends on, so the workspace keeps one Color.js.
   colorjs.io: ^0.5.2
   ajv: ^8.17.1
   yaml: ^2.8.0
-  tsdown: ^0.23.0
-  vitest: ^4.0.0
+
+  # Gallery and visual regression (web/apps, roadmap P3-4)
   storybook: ^10.6.0
   "@storybook/react-vite": ^10.6.0
   "@storybook/addon-a11y": ^10.6.0
   "@storybook/addon-vitest": ^10.6.0
+  # Keep equal to the mcr.microsoft.com/playwright image tag in .github/workflows/ci.yml.
   "@playwright/test": ^1.63.0
+
+# pnpm >= 10 runs no dependency install scripts unless they are approved here, and strictDepBuilds
+# (default true) fails the install on an unreviewed one. Nothing in today's tree has one; esbuild's
+# postinstall (native binary check) arrives with Storybook 10 in roadmap P3-4.
+allowBuilds:
+  esbuild: true

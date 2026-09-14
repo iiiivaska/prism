@@ -3,14 +3,24 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "engines": { "node": ">=22.12", "pnpm": ">=12" },
-  "packageManager": "pnpm@12.3.4",
+  "engines": { "node": ">=24", "pnpm": ">=12" },
+  "packageManager": "pnpm@12.4.1",
   "scripts": {
-    "build": "pnpm -r --filter './web/packages/**' build",
+    "lint": "eslint .",
+    "typecheck": "pnpm -r typecheck",
+    "build": "pnpm -r build",
     "test": "pnpm -r test",
+    "lint:literals": "pnpm --filter @iiiivaska/prism-tools lint:literals",
     "tokens:build": "pnpm --filter @iiiivaska/prism-tools tokens:build",
     "spec:validate": "pnpm --filter @iiiivaska/prism-tools spec:validate",
     "parity": "pnpm --filter @iiiivaska/prism-tools parity:report",
     "release": "changeset version && pnpm install --lockfile-only && pnpm -r publish --access restricted"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "globals": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
   }
 }

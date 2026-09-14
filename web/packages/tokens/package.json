@@ -7,8 +7,17 @@
   "sideEffects": ["**/*.css"],
   "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
   "files": ["dist", "spec"],
-  "scripts": { "build": "tsdown", "test": "vitest run" },
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --passWithNoTests"
+  },
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
+  "devDependencies": {
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
   "repository": { "type": "git", "url": "https://github.com/iiiivaska/prism.git", "directory": "web/packages/tokens" },
   "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
   "engines": { "node": ">=22.12" },

@@ -4,5 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Living canon: Storybook 10 with a11y tests, Vitest browser mode and the Storybook MCP for agents",
-  "scripts": { "dev": "storybook dev -p 6006", "build": "storybook build", "test": "vitest --project=storybook run" }
+  "scripts": {
+    "dev": "echo 'prism-gallery: not implemented until P3-4 (Storybook 10 dev server)'",
+    "build": "echo 'prism-gallery: not implemented until P3-4 (storybook build into storybook-static/)'",
+    "test": "echo 'prism-gallery: not implemented until P3-4 (stories as Vitest browser-mode and a11y tests)'"
+  }
 }
