@@ -1,0 +1,11 @@
+/* Button: every value is a --ds-* variable. Formerly padding: 12px; color: #fff; font-family: Inter. */
+[data-slot="button"] {
+  padding-block: var(--ds-space-2);
+  padding-inline: var(--ds-space-3);
+  color: var(--ds-color-text-on-accent);
+  background: rgb(from var(--ds-color-bg-fill-accent) r g b / 0.9);
+  font-family: var(--ds-font-ui);
+  border: var(--ds-border-width-hairline) solid var(--ds-color-border-hairline);
+  background-image: url(//cdn.example.com/noise.png);
+  text-justify: inter-word;
+}

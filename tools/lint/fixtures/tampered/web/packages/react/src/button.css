@@ -1,0 +1,7 @@
+[data-slot="button"] {
+  padding: 4px 8px;
+  color: oklch(0.62 0.19 259);
+  background: #0a84ffcc;
+  font-family: Menlo, monospace;
+  border-width: 0.5pt;
+}

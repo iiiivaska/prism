@@ -7,8 +7,8 @@ Implementation plan for Prism after the blueprint. Each ticket is self-contained
 | # | Ticket | Depends on | Acceptance |
 |---|--------|------------|------------|
 | P0-1 | Create the GitHub repository `iiiivaska/prism` (ADR-0018), push `main`, enable Actions and GitHub Packages. | — | `git remote -v` shows origin; first CI run is green on the placeholder jobs. |
-| P0-2 | `pnpm install` bootstrap: root workspace, `tools/` package with TypeScript + `tsdown` config, ESLint config, `catalog:` versions pinned per `docs/research/arch-web.md`. | P0-1 | `pnpm -r build` passes with empty packages. |
-| P0-3 | CI matrix real: `contracts` (ubuntu), `web`, `web-vrt` (Playwright image), `apple` (macOS 26 runner, Xcode 26.4). Replace placeholder script names with real ones as tools land. | P0-2 | `.github/workflows/ci.yml` runs end to end. |
+| P0-2 | `pnpm install` bootstrap: root workspace, `tools/` package with TypeScript + `tsdown` config, ESLint config, `catalog:` versions pinned per `docs/research/arch-web.md`. Done 2026-09-15: pnpm 12.4.1, TypeScript 6.0 (see the TS 7 bullet below), ESLint 10; `tools/` runs from source on Node 24 type stripping, so it has no tsdown config (`tools/README.md`). | P0-1 | `pnpm -r build` passes with empty packages. |
+| P0-3 | CI matrix real: `contracts` (ubuntu), `web`, `web-vrt` (Playwright image), `apple` (macOS 26 runner, Xcode 26.4). Replace placeholder script names with real ones as tools land. Done 2026-09-15: a `plan` job gates each step on the file its ticket adds; Xcode pinned to 26.6 (the local version, for snapshot parity; floor 26.4); `pnpm/setup@v2`; DTCG schemas checksum-pinned; `lint:literals` guard. | P0-2 | `.github/workflows/ci.yml` runs end to end. |
 
 ## Phase 1 — Token pipeline (ADR-0004) (3–4 days)
 
@@ -75,8 +75,8 @@ Open questions the research left; each is a checkbox in the ticket that touches 
 - **Glass under Reduce Transparency**: community says `.glassEffect()` frosts automatically; Prism's `DSSurface` fallback makes it non-blocking, verify on device (P3-1).
 - **macOS `NSHostingView` snapshots of glass**: may not render materials off-screen; if so macOS glass gets iOS-only visual coverage (P3-5).
 - **React Aria Russian strings**: `ru-RU` is in the locale list; spot-check DatePicker and Table announcements (Phase 4 Table/DatePicker tickets).
-- **Vitest 5 vs `@storybook/addon-vitest`** (peer `^3 || ^4` at 10.6): stay on Vitest 4 until the addon lists 5 (P0-2).
-- **TypeScript 7 + tsdown `dts`**: verify declaration output before making TS 7 the workspace default (P0-2).
+- **Vitest 5 vs `@storybook/addon-vitest`** (peer `^3 || ^4` at 10.6): stay on Vitest 4 until the addon lists 5 (P0-2). Verified 2026-09-14: `@storybook/addon-vitest` 10.6.0 (`latest`) and 11.0.0-alpha.0 (`next`) still peer `vitest ^3.0.0 || ^4.0.0` and `@vitest/browser-playwright ^4.0.0`, while Vitest 5.0.0 is `latest` on npm; the catalog pins `vitest ^4.1.11`.
+- **TypeScript 7 + tsdown `dts`**: verify declaration output before making TS 7 the workspace default (P0-2). Verified 2026-09-14 with `typescript` 7.0.2: tsdown 0.23.0 emits correct `.d.ts` (interfaces, generics, enums, a default-exported class with `#private`), warning that TS 7 has no stable API yet, and `tsc --noEmit` passes; but `typescript-eslint` 8.70.0 peers `typescript >=4.8.4 <6.1.0` and throws "typescript-eslint does not support TS 7.0" as soon as it loads, even without type-aware rules, because TS 7.0 ships no compiler API (a new one is expected in 7.1). The catalog pins `typescript ~6.0.3`, the newest line that passes tsc, tsdown `dts` and typescript-eslint. Revisit when typescript-eslint supports TS 7 (typescript-eslint issue #10940), or run TS 7 for tsc/tsdown with the `@typescript/typescript6` alias for linting, the side-by-side setup the TS 7.0 announcement describes.
 - **GitHub Packages provenance**: not documented; if attestations matter later, mirror public packages to npmjs with trusted publishing (P3-6).
 - **`prefers-reduced-transparency`**: unsupported in Safari; gate web glass on `[data-ds-transparency=reduce]` set by `DSProvider` (P3-2).
 - **Screenshot determinism for glass** (`backdrop-filter` under software rasterization): set `maxDiffPixelRatio` per story family after the first baselines (P3-4).

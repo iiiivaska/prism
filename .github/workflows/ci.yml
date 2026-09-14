@@ -7,86 +7,206 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Superseded PR runs are cancelled; every commit on main keeps a conclusive result.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+env:
+  DTCG_SCHEMAS: https://www.designtokens.org/schemas/2025.10
+  # SHA-256 of the published schemas as of 2026-09-15; a silent republish fails the gate loudly.
+  DTCG_FORMAT_SHA256: 32e93b780e4e4bca778d0780cb797a560deedc470c608af16576223f7e42915f
+  DTCG_RESOLVER_SHA256: a5acd14318f3c347ea2d12b4ab0f873d1340e74e957c454d112672e58b1da977
+  # Exact Xcode for the apple job (ADR-0003 floor is 26.4). Kept equal to the owner's local Xcode so
+  # SwiftUI snapshot baselines recorded locally compare byte-for-byte on CI (P3-3).
+  XCODE_VERSION: "26.6"
+
+# Steps whose tool or ticket has not landed are skipped, not failed: the `plan` job tests for the
+# file each one needs and later steps read its outputs. A gate opens by itself in the commit that
+# adds the file; each gated step names the roadmap ticket (docs/roadmap.md) that activates it.
 
 jobs:
+  plan:
+    name: Plan gated steps
+    runs-on: ubuntu-latest
+    outputs:
+      tokens_build: ${{ steps.gates.outputs.tokens_build }}
+      tokens_lint: ${{ steps.gates.outputs.tokens_lint }}
+      contrast: ${{ steps.gates.outputs.contrast }}
+      tokens_diff: ${{ steps.gates.outputs.tokens_diff }}
+      spec: ${{ steps.gates.outputs.spec }}
+      icons: ${{ steps.gates.outputs.icons }}
+      icons_apple: ${{ steps.gates.outputs.icons_apple }}
+      parity: ${{ steps.gates.outputs.parity }}
+      licenses: ${{ steps.gates.outputs.licenses }}
+      gallery: ${{ steps.gates.outputs.gallery }}
+      vrt: ${{ steps.gates.outputs.vrt }}
+      snapshots: ${{ steps.gates.outputs.snapshots }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Detect landed tools
+        id: gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "### Gated CI steps"
+            echo
+            echo "| Gate | Ticket | Opens when | Live |"
+            echo "|------|--------|------------|------|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          emit() { # emit <output> <ticket> <condition> <true|false>
+            echo "$1=$4" >> "$GITHUB_OUTPUT"
+            echo "| \`$1\` | $2 | $3 | $4 |" >> "$GITHUB_STEP_SUMMARY"
+          }
+          gate() { # gate <output> <ticket> <path>
+            if [ -e "$3" ]; then emit "$1" "$2" "\`$3\` exists" true; else emit "$1" "$2" "\`$3\` exists" false; fi
+          }
+          gate tokens_build P1-5 tools/tokens/build.ts
+          gate tokens_lint  P1-2 tools/tokens/terrazzo.config.ts
+          gate contrast     P1-6 tools/contrast/check.ts
+          gate tokens_diff  P1-7 tools/tokens/diff.ts
+          gate spec         P2-1 tools/spec/validate.ts
+          gate icons        P2-2 tools/icons/validate.ts
+          gate icons_apple  P2-2 tools/icons-apple/Package.swift
+          gate parity       P2-3 tools/parity/report.ts
+          gate licenses     P2-4 tools/licenses/check.ts
+          gate gallery      P3-4 web/apps/gallery/.storybook/main.ts
+          gate vrt          P3-4 web/apps/vrt/playwright.config.ts
+          # SwiftUI snapshot tests run once the first baselines are recorded next to them.
+          if [ -n "$(find swift/Tests/DSSnapshotTests/__Snapshots__ -type f ! -name .gitkeep -print -quit 2>/dev/null)" ]; then
+            emit snapshots P3-3 "a baseline under \`swift/Tests/DSSnapshotTests/__Snapshots__\`" true
+          else
+            emit snapshots P3-3 "a baseline under \`swift/Tests/DSSnapshotTests/__Snapshots__\`" false
+          fi
+
   contracts:
     name: Tokens, specs, registries
     runs-on: ubuntu-latest
+    needs: plan
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+          fetch-depth: 0 # tokens:diff (P1-7) compares against the last tag
+      - uses: pnpm/setup@v2 # pnpm from packageManager, Node 24 (.node-version), pnpm install --frozen-lockfile
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
       - name: Validate token files against the DTCG 2025.10 schemas
         run: |
-          npx -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft7 -c ajv-formats \
-            -s https://www.designtokens.org/schemas/2025.10/format.json -d "tokens/**/*.tokens.json" -d "brands/*/brand.tokens.json"
-          npx -p ajv-cli@5 -p ajv-formats@3 ajv validate --spec=draft7 -c ajv-formats \
-            -s https://www.designtokens.org/schemas/2025.10/resolver.json -d tokens/prism.resolver.json
-      - name: Validate specs against JSON Schema
-        run: pnpm --filter @iiiivaska/prism-tools spec:validate
-      - name: Validate icon registry against Phosphor catalog
-        run: pnpm --filter @iiiivaska/prism-tools icons:validate
-      - name: Build tokens and fail on stale generated output
+          # ajv-cli cannot read a schema from a URL; the published schemas are self-contained
+          # bundles (every sub-schema is embedded with its own $id), so no -r is needed.
+          schemas="$RUNNER_TEMP/dtcg-2025.10"
+          mkdir -p "$schemas"
+          for schema in format resolver; do
+            curl -fsSL --retry 3 -o "$schemas/$schema.json" "$DTCG_SCHEMAS/$schema.json"
+          done
+          printf '%s  %s\n' "$DTCG_FORMAT_SHA256" "$schemas/format.json" "$DTCG_RESOLVER_SHA256" "$schemas/resolver.json" \
+            | sha256sum --check --strict
+          npx --yes -p ajv-cli@5.0.0 -p ajv-formats@3.0.1 ajv validate --spec=draft7 -c ajv-formats \
+            -s "$schemas/format.json" -d "tokens/**/*.tokens.json" -d "brands/*/brand.tokens.json"
+          npx --yes -p ajv-cli@5.0.0 -p ajv-formats@3.0.1 ajv validate --spec=draft7 -c ajv-formats \
+            -s "$schemas/resolver.json" -d tokens/prism.resolver.json
+      - name: No literal colors, dimensions or font names outside tokens
+        run: pnpm --filter @iiiivaska/prism-tools lint:literals
+      - name: Build tokens and fail on stale generated output # P1-5
+        if: needs.plan.outputs.tokens_build == 'true'
         run: |
           pnpm --filter @iiiivaska/prism-tools tokens:build
-          git diff --exit-code -- swift/Sources/DSTokens/Generated web/packages/tokens/dist-src
-      - name: Lint resolver orthogonality with Terrazzo
+          generated="swift/Sources/DSTokens/Generated swift/Sources/DSTokens/Resources web/packages/tokens/src/generated"
+          # git status also catches new files that git diff would miss.
+          if [ -n "$(git status --porcelain -- $generated)" ]; then
+            git status --short -- $generated
+            git diff -- $generated
+            echo "::error::Generated token output is stale: run pnpm tokens:build and commit the result."
+            exit 1
+          fi
+      - name: Lint resolver orthogonality with Terrazzo # P1-2
+        if: needs.plan.outputs.tokens_lint == 'true'
         run: pnpm --filter @iiiivaska/prism-tools tokens:lint
-      - name: Contrast test for every brand and scheme
+      - name: Contrast test for every brand and scheme # P1-6
+        if: needs.plan.outputs.contrast == 'true'
         run: pnpm --filter @iiiivaska/prism-tools contrast:check
-      - name: License inventory gate
+      - name: Classify token changes against the declared changeset # P1-7
+        if: needs.plan.outputs.tokens_diff == 'true' && github.event_name == 'pull_request'
+        run: pnpm --filter @iiiivaska/prism-tools tokens:diff
+      - name: Validate specs against JSON Schema # P2-1
+        if: needs.plan.outputs.spec == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools spec:validate
+      - name: Validate icon registry against Phosphor catalog # P2-2
+        if: needs.plan.outputs.icons == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools icons:validate
+      - name: License inventory gate # P2-4
+        if: needs.plan.outputs.licenses == 'true'
         run: pnpm --filter @iiiivaska/prism-tools licenses:check
-      - name: Parity report
+      - name: Parity report # P2-3
+        if: needs.plan.outputs.parity == 'true'
         run: pnpm --filter @iiiivaska/prism-tools parity:report --fail-on-lag
-      - uses: actions/upload-artifact@v4
+      - name: Upload parity report # P2-3
+        if: needs.plan.outputs.parity == 'true' && !cancelled()
+        uses: actions/upload-artifact@v7
         with:
           name: parity-report
           path: tools/parity/report.md
 
   web:
-    name: Web packages
+    name: Web and tools (lint, typecheck, build, test)
     runs-on: ubuntu-latest
-    needs: contracts
+    needs: [plan, contracts]
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2 # pnpm from packageManager, Node 24 (.node-version), pnpm install --frozen-lockfile
         with:
-          node-version: 24
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm -r --filter './web/packages/**' build
-      - name: Component and a11y tests (Storybook stories in Vitest browser mode)
-        run: pnpm --filter @iiiivaska/prism-gallery test
-      - name: Build static Storybook
-        run: pnpm --filter @iiiivaska/prism-gallery build
-      - uses: actions/upload-artifact@v4
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Build every workspace package
+        # web/apps/gallery prints a placeholder until P3-4, which makes this `storybook build`.
+        run: pnpm -r build
+      - name: Install Chromium for Storybook tests in Vitest browser mode # P3-4
+        if: needs.plan.outputs.gallery == 'true'
+        run: pnpm --filter @iiiivaska/prism-gallery exec playwright install --with-deps chromium
+      - name: Unit, component and a11y tests
+        # From P3-4 the gallery runs its stories as Vitest browser-mode and a11y tests here.
+        # Visual regression runs only in web-vrt, inside the pinned Playwright image.
+        run: pnpm -r --filter '!@iiiivaska/prism-vrt' test
+      - name: Upload static Storybook for visual regression # P3-4
+        if: needs.plan.outputs.gallery == 'true'
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-static
           path: web/apps/gallery/storybook-static
+          if-no-files-found: error
 
   web-vrt:
     name: Web visual regression
     runs-on: ubuntu-latest
-    needs: web
+    needs: [plan, web]
+    # P3-4: runs once the Playwright suite and the Storybook it screenshots have landed.
+    if: needs.plan.outputs.vrt == 'true' && needs.plan.outputs.gallery == 'true'
     container:
+      # Keep the tag equal to the @playwright/test version in pnpm-lock.yaml.
       image: mcr.microsoft.com/playwright:v1.63.0-noble
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: storybook-static
           path: web/apps/gallery/storybook-static
-      - uses: pnpm/action-setup@v4
-      - run: pnpm install --frozen-lockfile
+      - uses: pnpm/setup@v2 # pnpm from packageManager, Node 24 (.node-version), pnpm install --frozen-lockfile
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
       - name: Screenshot every story tagged vrt across scheme × density × viewport
         run: pnpm --filter @iiiivaska/prism-vrt test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: vrt-diffs
@@ -95,22 +215,38 @@ jobs:
   apple:
     name: Swift package
     runs-on: macos-26
-    needs: contracts
+    needs: [plan, contracts]
     steps:
-      - uses: actions/checkout@v4
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_26.app
-      - name: Validate SF Symbol names at minimum OS
-        run: swift run --package-path tools/icons-apple icons-validate ../../spec/icons/registry.json
-      - name: Build and test (macOS host)
-        run: swift build && swift test
-      - name: Build for iOS simulator, watchOS simulator
+      - uses: actions/checkout@v7
+      - name: Select Xcode ${{ env.XCODE_VERSION }}
         run: |
-          xcodebuild -scheme Prism -destination 'generic/platform=iOS Simulator' build
-          xcodebuild -scheme Prism -destination 'generic/platform=watchOS Simulator' build
-      - name: Gallery snapshots (SwiftUI)
-        run: xcodebuild -scheme DSSnapshots -destination 'platform=iOS Simulator,name=iPhone 17' test
-      - uses: actions/upload-artifact@v4
+          set -euo pipefail
+          app="/Applications/Xcode_${XCODE_VERSION}.app"
+          if [ ! -d "$app" ]; then
+            echo "::error::Xcode $XCODE_VERSION is not installed on this runner image. Installed:"
+            ls -d /Applications/Xcode_*.app
+            exit 1
+          fi
+          app="$(cd "$app" && pwd -P)" # resolve alias symlinks such as Xcode_26.6.0.app
+          echo "DEVELOPER_DIR=$app/Contents/Developer" >> "$GITHUB_ENV"
+      - run: xcodebuild -version && swift --version
+      - name: Validate SF Symbol names at minimum OS # P2-2
+        if: needs.plan.outputs.icons_apple == 'true'
+        run: swift run --package-path tools/icons-apple icons-validate spec/icons/registry.json
+      - name: Build and test (macOS host)
+        run: |
+          swift build
+          swift test
+      - name: Build for iOS Simulator and watchOS Simulator
+        run: |
+          xcodebuild build -scheme Prism-Package -destination 'generic/platform=iOS Simulator'
+          xcodebuild build -scheme Prism-Package -destination 'generic/platform=watchOS Simulator'
+      - name: Gallery snapshots (SwiftUI) # P3-3
+        if: needs.plan.outputs.snapshots == 'true'
+        run: xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+      - name: Upload SwiftUI snapshots # P3-5
+        if: needs.plan.outputs.snapshots == 'true' && !cancelled()
+        uses: actions/upload-artifact@v7
         with:
           name: snapshots-apple
           path: gallery/snapshots/**/*.apple.*.png
