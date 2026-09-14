@@ -12,7 +12,7 @@ Method note: the `apple-design` and `animate` skills were loaded first and their
 
 1. **Apple's two-parameter spring (`duration`, `bounce`) is the right canonical representation for Prism's spring tokens.** It is the native SwiftUI API (`Animation.spring(duration:bounce:)`, `Spring(duration:bounce:)`, iOS 17+), the same parameters exist in UIKit (`UIView.animate(springDuration:bounce:...)`), and the conversion to physics is closed-form and documented: `mass = 1`, `stiffness = (2π/duration)²`, `damping = 4π(1−bounce)/duration` for `bounce ≥ 0`. Apple's own doc example (`duration 0.5, bounce 0.3 → stiffness 157.9, damping 17.6`) reproduces exactly with that formula (verified numerically in this report). Equivalently `dampingRatio = 1 − bounce`, `response = duration`.
 2. **Web parity is achieved by emitting the physics triplet, not duration/bounce, to Motion.** Motion 13.2.0's duration-based spring uses `root = 2π/(visualDuration·1.2)`, i.e. its `visualDuration` ≈ Apple `duration / 1.2`, and its `bounce` semantics differ slightly (damping ratio clamped to 0.05–1). Emitting `stiffness/damping/mass` derived from the Apple formula makes the JS spring identical to the SwiftUI spring.
-3. **For CSS, generate `linear()` easing strings from the same physics at build time** (Style Dictionary custom transform), with the transition duration set to the spring's settling duration (Apple's definition: unit response within ε = 0.001). `linear()` is Baseline (Chrome 113, Firefox 112, Safari 17.2). CSS springs cannot be interrupted with velocity, so components that are gesture-driven must use Motion on web; state-driven transitions can use CSS.
+3. **For CSS, generate `linear()` easing strings from the same physics at build time** (Style Dictionary custom transform), with the transition duration set to the spring's settle time: the last moment the unit step response is 0.001 or more away from its target (displacement only). (Corrected 2026-09-14: this is *not* the value Apple's `Spring.settlingDuration` getter returns; that getter is a different, longer estimate. See §5.3.) `linear()` is Baseline (Chrome 113, Firefox 112, Safari 17.2). CSS springs cannot be interrupted with velocity, so components that are gesture-driven must use Motion on web; state-driven transitions can use CSS.
 4. **DTCG 2025.10 (Final CG Report, 28 Oct 2025) has `duration`, `cubicBezier`, `transition` — no spring type.** Model a spring token as a DTCG `transition` (cubic-bezier fallback for tools/browsers that cannot do springs) plus `$extensions["dev.prism.spring"] = { duration, bounce }`; generators read the extension. Style Dictionary is at **v5.5.3** (not v4); built-in transforms still do not handle DTCG `duration` object values (`{value, unit}`), so custom transforms are needed either way.
 5. **Reduce Motion is a token *mode*, not a component afterthought.** Provide a `reduced` token layer (bounce → 0, shorter durations, transform/blur/parallax disabled, crossfade instead) that generates `@media (prefers-reduced-motion: reduce)` overrides on web and an environment-selected token set in SwiftUI (`accessibilityReduceMotion`). Motion's `MotionConfig reducedMotion="user"` and Tailwind's `motion-reduce:` / `motion-safe:` variants cover the JS/utility layers.
 6. **Haptics are a semantic registry, not DTCG tokens.** SwiftUI's `SensoryFeedback` is the single API across iOS/watchOS/macOS/visionOS 26 (sensoryFeedback gained visionOS in 26.0), but each feedback only *plays* on specific platforms (e.g. `success/warning/error/selection/impact` → iOS + watchOS; `alignment` → iOS + macOS; `levelChange` → macOS only; `start/stop` → watchOS only; `increase/decrease` → watchOS + visionOS; `pathComplete` → iOS only). iOS 26 adds control-specific `press(...)`, `release(...)`, `selection(.on/.off/.minimum/.maximum)`. Web has only `navigator.vibrate` (Android Chrome/Samsung; not Safari; Firefox desktop removed in 129; requires sticky user activation; ≤10 entries, ≤10 s each) plus an iOS Safari trick via `<input type="checkbox" switch>` that must be treated as best-effort.
@@ -52,12 +52,12 @@ These two sources agree on the key parameterization decision (damping ratio ≈ 
 | `Animation.smooth` / `.smooth(duration:extraBounce:)` | `duration = 0.5`, `extraBounce = 0.0`; **base bounce 0** | iOS 13+ symbol | "A smooth spring animation with a predefined duration and no bounce." |
 | `Animation.snappy` / `.snappy(duration:extraBounce:)` | `duration = 0.5`, `extraBounce = 0.0`; **base bounce 0.15** | iOS 13+ symbol | "additional bounce should be added to the base bounce of 0.15" |
 | `Animation.bouncy` / `.bouncy(duration:extraBounce:)` | `duration = 0.5`, `extraBounce = 0.0`; **base bounce 0.3** | iOS 13+ symbol | "additional bounce should be added to the base bounce of 0.3" |
-| `Animation.interactiveSpring(duration:extraBounce:blendDuration:)` | `duration = 0.15`, `extraBounce = 0`, `blendDuration = 0.25` | iOS 13+ | "lower response value, intended for driving interactive animations" |
+| `Animation.interactiveSpring(duration:extraBounce:blendDuration:)` | `duration = 0.15`, `extraBounce = 0`, `blendDuration = 0.25`; **base bounce 0.15** (SDK body: `spring(duration: duration, bounce: 0.15 + extraBounce, blendDuration: blendDuration)`; corrected 2026-09-14) | iOS 13+ | "lower response value, intended for driving interactive animations" |
 | `Animation.interactiveSpring(response:dampingFraction:blendDuration:)` | `0.15 / 0.86 / 0.25` | iOS 13+ | legacy parameterization |
 | `Animation.spring(response:dampingFraction:blendDuration:)` | `0.5 / 0.825 / 0` | iOS 13+ | legacy parameterization; response 0 = "infinitely stiff" |
 | `Animation.default` | spring, `response 0.55`, `dampingFraction 1.0`, `blendDuration 0` | iOS 13+; **spring since iOS 17/macOS 14/watchOS 10** (was `easeInOut` before) | `withAnimation {}` without argument uses it |
 | `Animation.easeInOut` / `.easeIn` / `.easeOut` / `.linear` | default duration **0.35 s** (documented for `easeInOut`) | iOS 13+ | `Animation.timingCurve(_:_:_:_:duration:)` builds a cubic-bézier animation — this is how DTCG `cubicBezier` tokens map to SwiftUI |
-| `Spring` struct | `init(duration:bounce:)` (defaults 0.5 / 0.0, bounce ∈ [−1, 1]); `init(response:dampingRatio:)`; `init(mass:stiffness:damping:allowOverDamping:)`; `init(settlingDuration:dampingRatio:epsilon:)`; properties `duration, bounce, mass, stiffness, damping, response, dampingRatio, settlingDuration`; `value/velocity/force/update` for custom drivers | iOS 17 / macOS 14 / watchOS 10 / visionOS 1 | "The Spring type converts between different representations of spring parameters." Doc example: `Spring(duration: 0.5, bounce: 0.3)` → `(mass, stiffness, damping) = (1.0, 157.9, 17.6)`. `settlingDuration` uses target 1.0, initial velocity 0, **epsilon 0.001**. |
+| `Spring` struct | `init(duration:bounce:)` (defaults 0.5 / 0.0, bounce ∈ [−1, 1]); `init(response:dampingRatio:)`; `init(mass:stiffness:damping:allowOverDamping:)`; `init(settlingDuration:dampingRatio:epsilon:)`; properties `duration, bounce, mass, stiffness, damping, response, dampingRatio, settlingDuration`; `value/velocity/force/update` for custom drivers | iOS 17 / macOS 14 / watchOS 10 / visionOS 1 | "The Spring type converts between different representations of spring parameters." Doc example: `Spring(duration: 0.5, bounce: 0.3)` → `(mass, stiffness, damping) = (1.0, 157.9, 17.6)`. `settlingDuration` uses target 1.0, initial velocity 0, **epsilon 0.001**, but its values are not a sampled ε = 0.001 settle (corrected 2026-09-14, see §5.3). |
 | `Animation.spring(_:blendDuration:)` | takes a `Spring` | iOS 17+ | lets generated `Spring` constants be used directly as animations |
 | `UIView.animate(springDuration:bounce:initialSpringVelocity:delay:options:animations:completion:)` | `springDuration = 0.5`, `bounce = 0.0` | iOS 17+ | UIKit uses the same two parameters (parity across UIKit/SwiftUI) |
 
@@ -67,12 +67,14 @@ These two sources agree on the key parameterization decision (damping ratio ≈ 
 
 ```
 mass      = 1
-stiffness = (2π / duration)²
-damping   = 4π · (1 − bounce) / duration              (bounce ≥ 0)
-damping   = 4π / (duration + 4π · bounce)             (bounce < 0)
-⇒ dampingRatio = damping / (2·√(stiffness·mass)) = 1 − bounce   (bounce ≥ 0)
+stiffness = (2π / duration)²                          (every bounce)
+damping   = 4π · (1 − bounce) / duration              (0 ≤ bounce ≤ 1)
+damping   = 4π / (duration · (1 + bounce))            (−1 < bounce < 0)   corrected 2026-09-14
+⇒ dampingRatio = 1 − bounce (bounce ≥ 0),  1 / (1 + bounce) (bounce < 0)
 ⇒ response     = duration
 ```
+
+(Corrected 2026-09-14.) The negative branch used to read `4π / (duration + 4π · bounce)`, copied from the WWDC23 10158 slide. That formula gives negative damping, e.g. −6.24 for duration 0.5, bounce −0.2. The iOS 26.x SDK's inlinable `springDampingFraction(bounce:)` (in `SwiftUICore.swiftinterface`) returns `1 / (bounce + 1)` for negative bounce. `Spring(duration: 0.5, bounce: -0.2).value(target:time:)` matches the closed-form curve with stiffness 157.91 and damping 31.42 exactly, on macOS 26.6 and on the iOS 26.5 simulator. Two getters misbehave for bounce < 0. `stiffness` returns `(2π/duration)²·(2ζ² − 1)` (335.57 here) even for a spring built with `init(mass:stiffness:damping:allowOverDamping:)` from 157.91, and `velocity(target:time:)` returned 1.0156 at t = 1 s where the true velocity is 0.0156. Prism tokens use bounce ≥ 0 only, and parity tests should assert that range.
 
 Numerically checked in this report: `(0.5, 0.3)` → `157.9 / 17.6 / ζ 0.70`, matching Apple's documented example exactly. Consequently the `apple-design` skill's "drawer: damping 0.8, response 0.3" is exactly `Spring(duration: 0.3, bounce: 0.2)`.
 
@@ -119,6 +121,18 @@ Takeaway: do not derive Prism's scale from undocumented system numbers. Anchor o
   ```
   i.e. Motion's `visualDuration = appleDuration / 1.2`, damping ratio = `1 − bounce` clamped to [0.05, 1]. Plain `duration + bounce` (no `visualDuration`) uses a Newton root-finding `findSpring` (12 iterations) to fit a settle duration — a *different* mapping from Apple's. **Conclusion: pass the physics triplet to Motion for exact parity.**
 - `spring(visualDuration, bounce)` / `spring(options)` has `toString()` that returns a CSS value like `800ms linear(...)` (via `generateLinearEasing`), usable as `transition: transform ${spring(0.5, 0.2)}`; docs recommend a two-declaration fallback for browsers that ignore `linear()`.
+- (Corrected 2026-09-14, probed on motion 13.2.0 and 13.3.0.)
+  - **The object form needs `keyframes`:** call `spring({ keyframes: [0, 1], stiffness, damping, mass })`. Without `keyframes`, `spring()` throws `TypeError`.
+  - **`toString()` stops at Motion's own end point, not Prism's settle.** `calcGeneratorDuration` steps a 50 ms grid until `|v| ≤ restSpeed` and `|Δ| ≤ restDelta` (0.01 and 0.005 for unit keyframes). It then emits one stop per 30 ms.
+    - For Prism's springs that gives interactive 300, snappy 550, smooth 650, sheet 500 and bouncy 700 ms. The settle times are 220 / 488 / 588 / 405 / 819 ms.
+    - The bouncy string ends before its tail settles, so Motion's `linear()` stops must never be paired with Prism's settle duration.
+  - **To keep the token's settle, build the string yourself:**
+    - Create a physics generator with tiny `restDelta`/`restSpeed`, so late samples are not snapped to 1.
+    - Call `generateLinearEasing(p => gen.next(p * settleMs).value, settleMs, resolutionMs)`. It is exported from `motion` and emits uniform stops rounded to 4 decimals: `max(round(duration / resolution), 2)` of them, with no simplification.
+- (Added 2026-09-14.) **Time-defined springs ignore `velocity`.**
+  - In 13.x, `duration`/`visualDuration` + `bounce` springs have their velocity set to 0 by `getSpringOptions`; the source comment reads "Time-defined springs should ignore inherited velocity".
+  - Only physics springs honour `velocity`, so passing the physics triplet is required for release-velocity handoff, not only for parity.
+  - motion 13.3.0 (published 2026-09-14) leaves the spring math unchanged.
 - Reduced motion: `MotionConfig reducedMotion="user" | "always" | "never"`; with `"user"` all `motion` components "automatically disable transform and layout animations, while preserving the animation of other values like opacity and backgroundColor"; `useReducedMotion()` hook for manual branching.
 
 ### 4.3 Tailwind v4 theme variables
@@ -179,7 +193,7 @@ Use standard DTCG types wherever a standard type exists; put the spring definiti
       "interactive": {
         "$value": { "duration": { "value": 220, "unit": "ms" }, "delay": { "value": 0, "unit": "ms" }, "timingFunction": "{motion.easing.out}" },
         "$extensions": { "dev.prism.spring": { "duration": 0.15, "bounce": 0.0, "blendDuration": 0.25, "settle": 0.220 } },
-        "$description": "Tracks a live gesture (drag/scroll-linked). Apple interactiveSpring defaults."
+        "$description": "Tracks a live gesture (drag/scroll-linked). Apple interactiveSpring duration and blend; bounce 0 is Prism's choice (Apple's base bounce is 0.15)."
       },
       "snappy": {
         "$value": { "duration": { "value": 487, "unit": "ms" }, "delay": { "value": 0, "unit": "ms" }, "timingFunction": "{motion.easing.out}" },
@@ -208,7 +222,15 @@ Use standard DTCG types wherever a standard type exists; put the spring definiti
 
 Design notes:
 
-- `dev.prism.spring.duration` / `bounce` are the **source of truth**; `settle` and the `$value.duration` are derived (settle time to ε = 0.001, Apple's `settlingDuration` definition) and are **validated in CI** (regenerate and diff) so the fallback cannot drift. Computed values in the table above: interactive 0.220 s, sheet 0.404 s, snappy 0.487 s, smooth 0.587 s, bouncy 0.818 s (this report's sampler; Apple's `Spring.settlingDuration` should agree to ±10 ms and is the reference on Apple platforms).
+- `dev.prism.spring.duration` / `bounce` are the **source of truth**; `settle` and the `$value.duration` are derived and are **validated in CI** (regenerate and diff) so the fallback cannot drift.
+- **Settle (corrected 2026-09-14)** is the last time the unit step response from rest is 0.001 or more away from 1. Only displacement counts; velocity is ignored.
+  - Values in the table above: interactive 0.220 s, sheet 0.404 s, snappy 0.487 s, smooth 0.587 s, bouncy 0.818 s.
+  - Sampling Apple's own `Spring.value(target:time:)` every 0.1 ms confirms them: 220.4 / 404.5 / 487.6 / 587.8 / 818.7 ms, on both macOS 26.6 and the iOS 26.5 simulator.
+- **Apple's `Spring.settlingDuration` getter returns something else**, even though its docs cite the same ε: 0.300 / 0.584 / 0.635 / 0.600 / 1.045 s.
+  - The getter is a coarser estimate: critically damped springs land on 0.1 s steps.
+  - `init(settlingDuration:dampingRatio:epsilon:)` does not invert the getter.
+  - Both stacks must therefore compute settle by sampling the curve. The Swift side must never read `settlingDuration`.
+- **`interactive` bounce (corrected 2026-09-14).** Apple's `interactiveSpring` is `Spring(duration: 0.15, bounce: 0.15)` with blend 0.25. Prism's `interactive` keeps bounce 0 (critically damped tracking, settle 0.220 s) as its own choice. Exact Apple parity would be (0.15, 0.15), settle 0.209 s.
 - Every spring is DTCG-legal for third-party tools (they see a `transition`), and the bézier fallback is what Figma/Tokens Studio/no-`linear()` browsers get.
 - `blendDuration` is Apple-only; it's an optional extension field (default 0).
 - The scale is intentionally small (6 durations, 5 easings, 5 springs). Component specs reference these by name; components never introduce literal numbers.
@@ -296,7 +318,7 @@ export const motion = {
 animate(el, { transform: "translateY(0)" }, { type: "spring", ...motion.spring.snappy, velocity });
 ```
 
-**Parity report (CI):** for each spring token, compute `(stiffness, damping, settle)` in the Node build and compare to the Swift side (`Spring(...)` values printed by a small `swift test`), tolerance 1 % / 10 ms; compare the CSS `linear()` sample against the closed-form curve at 5 % / 25 % / 50 % / 75 % / 100 % of settle time (tolerance 0.01). This is the machine-readable "contract" for the motion module.
+**Parity report (CI):** for each spring token, compute `(stiffness, damping, settle)` in the Node build and compare to the Swift side (`stiffness`/`damping` read from `Spring(...)` in a small `swift test`; settle found by sampling `Spring.value(target: 1.0, time:)`, never `Spring.settlingDuration`; corrected 2026-09-14), tolerance 1 % / 10 ms; compare the CSS `linear()` sample against the closed-form curve at 5 % / 25 % / 50 % / 75 % / 100 % of settle time (tolerance 0.01). This is the machine-readable "contract" for the motion module.
 
 ### 5.5 Rules of use encoded in the component spec (from the skills, machine-checkable)
 
@@ -451,11 +473,11 @@ Confidence: **high** = official doc read on 2026-09-08; **medium** = official bu
 |---|---|---|---|
 | 1 | `Animation.spring(duration:bounce:blendDuration:)` defaults `0.5 / 0.0 / 0`; bounce ∈ [−1, 1]; velocity preserved across successive springs | https://developer.apple.com/documentation/swiftui/animation/spring(duration:bounce:blendduration:) | high |
 | 2 | `.smooth` base bounce 0; `.snappy` base bounce 0.15; `.bouncy` base bounce 0.3; all default duration 0.5 | https://developer.apple.com/documentation/swiftui/animation/snappy(duration:extrabounce:) (+ smooth/bouncy pages) | high |
-| 3 | `interactiveSpring` defaults duration 0.15, blendDuration 0.25 (legacy: response 0.15, dampingFraction 0.86) | https://developer.apple.com/documentation/swiftui/animation/interactivespring(duration:extrabounce:blendduration:) | high |
+| 3 | `interactiveSpring` defaults duration 0.15, blendDuration 0.25, base bounce 0.15 (corrected 2026-09-14, from the SDK's inlinable body) (legacy: response 0.15, dampingFraction 0.86) | https://developer.apple.com/documentation/swiftui/animation/interactivespring(duration:extrabounce:blendduration:) | high |
 | 4 | `Animation.default` is a spring (response 0.55, dampingFraction 1.0) since iOS 17/macOS 14/watchOS 10; previously easeInOut | https://developer.apple.com/documentation/swiftui/animation/default | high |
 | 5 | `Animation.easeInOut` default duration 0.35 s | https://developer.apple.com/documentation/swiftui/animation/easeinout | high |
-| 6 | `Spring` struct (iOS 17+) converts representations; doc example `(0.5, 0.3) → (1.0, 157.9, 17.6)`; `settlingDuration` uses ε = 0.001 | https://developer.apple.com/documentation/swiftui/spring ; https://developer.apple.com/documentation/swiftui/spring/settlingduration | high |
-| 7 | Conversion formulas `stiffness = (2π/duration)²`, `damping = 4π(1−bounce)/duration` (bounce ≥ 0), `4π/(duration + 4π·bounce)` (bounce < 0), mass 1 | WWDC23 10158 transcript https://developer.apple.com/videos/play/wwdc2023/10158/ ; reproduced numerically against fact 6 in this report | high |
+| 6 | `Spring` struct (iOS 17+) converts representations; doc example `(0.5, 0.3) → (1.0, 157.9, 17.6)`; `settlingDuration` is documented with ε = 0.001 but returns longer values than a sampled ε = 0.001 settle (corrected 2026-09-14, §5.3) | https://developer.apple.com/documentation/swiftui/spring ; https://developer.apple.com/documentation/swiftui/spring/settlingduration | high |
+| 7 | Conversion formulas `stiffness = (2π/duration)²`, `damping = 4π(1−bounce)/duration` (bounce ≥ 0), `4π/(duration·(1+bounce))` (bounce < 0; corrected 2026-09-14, the WWDC23 slide's `4π/(duration + 4π·bounce)` is wrong), mass 1 | Xcode 26.6 iOS SDK `SwiftUICore.swiftinterface` (`springStiffness`, `springDamping`, `springDampingFraction`); runtime probe on macOS 26.6 and the iOS 26.5 simulator; WWDC23 10158 https://developer.apple.com/videos/play/wwdc2023/10158/ | high |
 | 8 | Bounce feel: ~0.15 "not very bouncy", ~0.3 "noticeable", > 0.4 "too exaggerated for a UI element"; duration is perceptual, use it (not settle) for completion | https://developer.apple.com/videos/play/wwdc2023/10158/ ; https://wwdcnotes.com/documentation/wwdc23-10158-animate-with-springs/ | high |
 | 9 | Spring `shouldMerge` returns true → preserves velocity and retargets; SwiftUI tracks gesture velocity automatically | https://wwdcnotes.com/documentation/wwdc23-10156-explore-swiftui-animation/ ; WWDC23 10158 transcript | medium |
 | 10 | `UIView.animate(springDuration:bounce:initialSpringVelocity:...)` iOS 17+, defaults 0.5 / 0.0 | https://developer.apple.com/documentation/uikit/uiview/animate(springduration:bounce:initialspringvelocity:delay:options:animations:completion:) | high |
@@ -471,7 +493,7 @@ Confidence: **high** = official doc read on 2026-09-08; **medium** = official bu
 | 20 | Motion latest 13.2.0, MIT | https://registry.npmjs.org/motion/latest | high |
 | 21 | Motion spring options and "bounce and duration overridden if stiffness/damping/mass set"; `visualDuration` definition | https://motion.dev/docs/react-transitions ; https://motion.dev/docs/animate | high |
 | 22 | Motion source: `root = 2π/(visualDuration·1.2)`, `damping = 2·clamp(0.05,1,1−bounce)·√stiffness`; defaults stiffness 100 / damping 10 / mass 1 / bounce 0.3 / visualDuration 0.3; `toString()` → `linear()` | https://unpkg.com/motion-dom@13.2.0/dist/es/animation/generators/spring.mjs | high |
-| 23 | `spring(visualDuration, bounce)` returns e.g. `800ms linear(...)` for CSS `transition` | https://motion.dev/docs/css ; https://motion.dev/docs/spring | high |
+| 23 | `spring(visualDuration, bounce)` returns e.g. `800ms linear(...)` for CSS `transition`; the object form needs `keyframes`, and the string's duration is Motion's own 50 ms-grid rest time, not Prism's settle (corrected 2026-09-14, §4.2) | https://motion.dev/docs/css ; https://motion.dev/docs/spring | high |
 | 24 | Motion `MotionConfig reducedMotion="user"` disables transform/layout, keeps opacity/backgroundColor; `useReducedMotion()` | https://motion.dev/docs/react-accessibility | high |
 | 25 | Tailwind v4 default `--ease-in/out/in-out` values, `--animate-*`, `@theme` custom ease/animation | https://tailwindcss.com/docs/theme | high |
 | 26 | Tailwind `motion-reduce:` / `motion-safe:` / `contrast-more:` variants; no reduced-transparency variant | https://tailwindcss.com/docs/hover-focus-and-other-states | high |
@@ -524,7 +546,7 @@ Confidence: **high** = official doc read on 2026-09-08; **medium** = official bu
 ## 10. Open questions
 
 1. **Which `press/release/selection(...)` feedbacks actually play on each platform in iOS 26 / watchOS 26 / macOS 26?** The 26.0 symbol pages don't carry the "Only plays feedback on…" note; needs device testing (especially macOS Magic Trackpad and visionOS).
-2. **Apple `settlingDuration` vs our sampler**: confirm ±10 ms agreement on device (Apple's epsilon 0.001 definition is documented; the exact settle estimator isn't). Decide whether Swift or the Node build is the parity reference.
+2. **Apple `settlingDuration` vs our sampler** (answered 2026-09-14, corrected): they do not agree. Apple's getter is 12–226 ms longer; see §5.3. Settle is defined by sampling the curve on both stacks, and the closed-form curve is the parity reference.
 3. **Is a `transition`-with-extension token acceptable to the Tokens Studio importer**, or does the extension get stripped on round-trip? Test before committing to the encoding; the alternative is sibling primitive tokens (`spring.snappy.duration`, `spring.snappy.bounce`).
 4. **Reduced-motion spring values**: 0.25–0.30 s / bounce 0 is an informed guess (HIG says "tighten springs"); no numeric Apple guidance exists — validate with Reduce Motion users.
 5. **Web haptics on iOS**: the `switch` trick's behavior on iOS 26.5+ is a third-party claim; verify against WebKit changelogs or on device before enabling it even as opt-in. Also confirm whether iPadOS (no Taptic Engine) is a no-op.
