@@ -1,0 +1,29 @@
+packages:
+  - web/packages/*
+  - web/apps/*
+  - tools
+catalog:
+  react: ^19.2.0
+  react-dom: ^19.2.0
+  typescript: ^7.0.2
+  react-aria-components: ^1.21.1
+  "@phosphor-icons/react": ^2.1.10
+  "@visx/shape": ^4.0.0
+  "@visx/scale": ^4.0.0
+  "@visx/axis": ^4.0.0
+  "@visx/gradient": ^4.0.0
+  d3-shape: ^3.2.0
+  d3-scale: ^4.0.2
+  motion: ^13.2.0
+  style-dictionary: ^5.5.3
+  "@terrazzo/cli": ^2.7.1
+  colorjs.io: ^0.5.2
+  ajv: ^8.17.1
+  yaml: ^2.8.0
+  tsdown: ^0.23.0
+  vitest: ^4.0.0
+  storybook: ^10.6.0
+  "@storybook/react-vite": ^10.6.0
+  "@storybook/addon-a11y": ^10.6.0
+  "@storybook/addon-vitest": ^10.6.0
+  "@playwright/test": ^1.63.0

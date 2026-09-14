@@ -1,0 +1,52 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "chart": {
+      "$type": "color",
+      "series": {
+        "1": {
+          "$value": "{sys.color.chart.series.1}"
+        },
+        "2": {
+          "$value": "{sys.color.chart.series.2}"
+        },
+        "3": {
+          "$value": "{sys.color.chart.series.3}"
+        },
+        "4": {
+          "$value": "{sys.color.chart.series.4}"
+        },
+        "5": {
+          "$value": "{sys.color.chart.series.5}"
+        },
+        "6": {
+          "$value": "{sys.color.chart.series.6}"
+        }
+      },
+      "comparison": {
+        "$value": "{sys.color.chart.comparison}"
+      },
+      "target": {
+        "$value": "{sys.color.chart.target}"
+      },
+      "grid": {
+        "$value": "{sys.color.chart.grid}"
+      },
+      "band": {
+        "$value": "{sys.color.chart.band}"
+      },
+      "axis": {
+        "$value": "{sys.color.chart.axis}"
+      },
+      "now": {
+        "$value": "{sys.color.chart.now}"
+      },
+      "ghost": {
+        "$value": "{sys.color.chart.ghost}"
+      },
+      "plot": {
+        "$value": "{sys.color.chart.plot}"
+      }
+    }
+  }
+}

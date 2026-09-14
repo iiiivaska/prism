@@ -1,0 +1,108 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "button": {
+      "primary": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$description": "solid inverse pill is the only fill"
+          },
+          "pressed": {
+            "$value": "{sys.color.bg.fill.inverse}"
+          },
+          "disabled": {
+            "$value": "{sys.color.bg.fill.neutral.subtle}"
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-inverse}"
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.surface.raised}"
+          },
+          "pressed": {
+            "$value": "{sys.color.bg.surface.nested}"
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.primary}"
+        },
+        "border": {
+          "$value": "{sys.color.border.hairline}"
+        }
+      },
+      "ghost": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.fill.neutral.subtle}"
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.primary}"
+        },
+        "border": {
+          "$value": "{sys.color.border.strong}"
+        }
+      },
+      "danger": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.tint.critical}"
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.critical}"
+        },
+        "border": {
+          "$value": "{sys.color.text.critical}"
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{sys.radius.control}"
+      },
+      "height": {
+        "$type": "dimension",
+        "sm": {
+          "$value": "{sys.size.control.sm}"
+        },
+        "md": {
+          "$value": "{sys.size.control.md}"
+        },
+        "lg": {
+          "$value": "{sys.size.control.lg}"
+        }
+      },
+      "padding-x": {
+        "$type": "dimension",
+        "sm": {
+          "$value": "{sys.space.4}"
+        },
+        "md": {
+          "$value": "{sys.space.5}"
+        },
+        "lg": {
+          "$value": "{sys.space.6}"
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{sys.space.3}"
+      },
+      "motion": {
+        "$type": "transition",
+        "press": {
+          "$value": "{sys.motion.spring.snappy}"
+        }
+      }
+    }
+  }
+}

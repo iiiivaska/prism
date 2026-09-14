@@ -1,0 +1,16 @@
+{
+  "name": "@iiiivaska/prism-tokens",
+  "version": "0.1.0",
+  "description": "Prism design tokens: CSS variables, Tailwind v4 @theme bridge, typed TypeScript maps (generated)",
+  "type": "module",
+  "private": false,
+  "sideEffects": ["**/*.css"],
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
+  "files": ["dist", "spec"],
+  "scripts": { "build": "tsdown", "test": "vitest run" },
+  "peerDependencies": { "react": "^19", "react-dom": "^19" },
+  "repository": { "type": "git", "url": "https://github.com/iiiivaska/prism.git", "directory": "web/packages/tokens" },
+  "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
+  "engines": { "node": ">=22.12" },
+  "license": "MIT"
+}

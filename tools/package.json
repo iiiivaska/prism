@@ -1,0 +1,18 @@
+{
+  "name": "@iiiivaska/prism-tools",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build and check tooling: token build (Style Dictionary 5 + resolver driver), Terrazzo lint, contrast, spec validation, icon registry validation, parity report, license gate, notices",
+  "scripts": {
+    "tokens:build": "node --experimental-strip-types tokens/build.ts",
+    "tokens:lint": "tz lint --config tokens/terrazzo.config.ts",
+    "tokens:diff": "node --experimental-strip-types tokens/diff.ts",
+    "contrast:check": "node --experimental-strip-types contrast/check.ts",
+    "spec:validate": "node --experimental-strip-types spec/validate.ts",
+    "icons:validate": "node --experimental-strip-types icons/validate.ts",
+    "parity:report": "node --experimental-strip-types parity/report.ts",
+    "licenses:check": "node --experimental-strip-types licenses/check.ts",
+    "licenses:notices": "node --experimental-strip-types licenses/notices.ts"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/iiiivaska/prism/spec/icons/registry.schema.json",
+  "title": "Prism icon registry",
+  "description": "Semantic icon ids mapped to platform bindings. Agents use ids only; CI validates bindings against the Phosphor catalog and SF Symbols availability.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "weights", "styles", "icons"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Equals the system version" },
+    "weights": {
+      "type": "object",
+      "description": "ds icon weight token -> platform weight",
+      "additionalProperties": false,
+      "required": ["thin", "light", "regular", "medium", "bold", "heavy"],
+      "patternProperties": {
+        "^(thin|light|regular|medium|bold|heavy)$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["phosphor", "sf"],
+          "properties": {
+            "phosphor": { "enum": ["thin", "light", "regular", "bold"] },
+            "sf": { "enum": ["ultralight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"] }
+          }
+        }
+      }
+    },
+    "styles": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outline", "filled", "duotone"],
+      "properties": {
+        "outline": { "$ref": "#/$defs/style" },
+        "filled": { "$ref": "#/$defs/style" },
+        "duotone": { "$ref": "#/$defs/style" }
+      }
+    },
+    "icons": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "pattern": "^[a-z]+(\\.[a-z0-9-]+)+$" },
+      "additionalProperties": { "$ref": "#/$defs/icon" }
+    }
+  },
+  "$defs": {
+    "style": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phosphor", "sf"],
+      "properties": {
+        "phosphor": { "type": "string", "description": "'$weight' means use the weight cut; otherwise a Phosphor weight name such as fill or duotone" },
+        "sf": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "variant": { "enum": ["none", "fill", "circle", "circle.fill", "square", "square.fill", "slash"] },
+            "renderingMode": { "enum": ["monochrome", "hierarchical", "palette", "multicolor"] }
+          }
+        }
+      }
+    },
+    "icon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "web", "apple"],
+      "properties": {
+        "label": { "type": "string", "pattern": "^icon\\.[a-z]+(\\.[a-z0-9-]+)+$", "description": "i18n key for the accessibility label" },
+        "categories": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "rtlMirror": { "type": "boolean", "default": false },
+        "defaultStyle": { "enum": ["outline", "filled", "duotone"] },
+        "since": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "deprecated": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["since", "replacedBy"],
+          "properties": {
+            "since": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+            "replacedBy": { "type": "string" }
+          }
+        },
+        "web": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["phosphor"],
+          "properties": {
+            "phosphor": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Phosphor kebab-case name; must exist in @phosphor-icons/core icons[].name (alias resolution warns)" }
+          }
+        },
+        "apple": {
+          "type": "object",
+          "additionalProperties": false,
+          "oneOf": [
+            { "required": ["symbol"] },
+            { "required": ["custom"] }
+          ],
+          "properties": {
+            "symbol": { "type": "string", "pattern": "^[a-z0-9.]+$", "description": "SF Symbol name; must be available at iOS 26 / SF Symbols 7" },
+            "custom": { "type": "string", "pattern": "^ds\\.[a-z0-9.-]+$", "description": "Custom symbol set generated from Phosphor raw sources" },
+            "minOS": { "type": "string", "pattern": "^\\d+(\\.\\d+)?$" },
+            "fallback": { "type": "string", "description": "SF Symbol to use when the primary symbol needs a newer OS" }
+          }
+        },
+        "figma": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "component": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

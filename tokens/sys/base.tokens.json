@@ -1,0 +1,232 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "space": {
+      "$type": "dimension",
+      "0": {
+        "$value": "{ref.space.0}"
+      },
+      "1": {
+        "$value": "{ref.space.1}"
+      },
+      "2": {
+        "$value": "{ref.space.2}"
+      },
+      "3": {
+        "$value": "{ref.space.3}"
+      },
+      "4": {
+        "$value": "{ref.space.4}"
+      },
+      "5": {
+        "$value": "{ref.space.5}"
+      },
+      "6": {
+        "$value": "{ref.space.6}"
+      },
+      "7": {
+        "$value": "{ref.space.7}"
+      },
+      "8": {
+        "$value": "{ref.space.8}"
+      },
+      "9": {
+        "$value": "{ref.space.9}"
+      },
+      "10": {
+        "$value": "{ref.space.10}"
+      },
+      "11": {
+        "$value": "{ref.space.11}"
+      },
+      "12": {
+        "$value": "{ref.space.12}"
+      },
+      "13": {
+        "$value": "{ref.space.13}"
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "control": {
+        "$value": "{ref.radius.pill}",
+        "$description": "controls are pills or circles"
+      },
+      "chip": {
+        "$value": "{ref.radius.pill}"
+      },
+      "badge": {
+        "$value": "{ref.radius.1}"
+      },
+      "inner": {
+        "$value": "{ref.radius.2}"
+      },
+      "media": {
+        "$value": "{ref.radius.3}"
+      },
+      "tile": {
+        "$value": "{ref.radius.5}"
+      },
+      "card": {
+        "$value": "{ref.radius.7}",
+        "$description": "regular card 24; compact 20"
+      },
+      "card-compact": {
+        "$value": "{ref.radius.6}"
+      },
+      "sheet": {
+        "$value": "{ref.radius.8}"
+      },
+      "card-large": {
+        "$value": "{ref.radius.9}"
+      },
+      "hero": {
+        "$value": "{ref.radius.10}"
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "icon": {
+        "sm": {
+          "$value": "{ref.size.icon.sm}"
+        },
+        "md": {
+          "$value": "{ref.size.icon.md}"
+        },
+        "lg": {
+          "$value": "{ref.size.icon.lg}"
+        },
+        "ring": {
+          "$value": "{ref.size.icon.ring}"
+        }
+      },
+      "control": {
+        "sm": {
+          "$value": "{ref.size.control.sm}"
+        },
+        "md": {
+          "$value": "{ref.size.control.md}"
+        },
+        "lg": {
+          "$value": "{ref.size.control.lg}"
+        }
+      }
+    },
+    "opacity": {
+      "$type": "number",
+      "disabled": {
+        "$value": "{ref.opacity.disabled}"
+      },
+      "dimmed-row": {
+        "$value": "{ref.opacity.dimmed-row}"
+      }
+    },
+    "z": {
+      "$type": "number",
+      "base": {
+        "$value": 0
+      },
+      "raised": {
+        "$value": 10
+      },
+      "overlay": {
+        "$value": 100
+      },
+      "toast": {
+        "$value": 1000
+      }
+    },
+    "icon": {
+      "$type": "number",
+      "weight": {
+        "$value": 400,
+        "$description": "regular; maps to Phosphor regular / SF regular (spec/icons/registry.json)"
+      },
+      "weight-display": {
+        "$value": 200
+      }
+    },
+    "chart": {
+      "$type": "number",
+      "curve": {
+        "$value": 1,
+        "$description": "1 = monotone (default), 2 = catmullRom(0.5), 3 = step"
+      },
+      "line-width": {
+        "$value": 2
+      },
+      "sparkline-width": {
+        "$value": 1.5
+      },
+      "comparison-width": {
+        "$value": 1
+      },
+      "marker-size": {
+        "$value": 8
+      },
+      "endpoint-size": {
+        "$value": 10
+      },
+      "bar-max-thickness": {
+        "$value": 24
+      },
+      "bar-radius": {
+        "$value": 4
+      },
+      "gauge-stroke-ratio": {
+        "$value": 0.1
+      }
+    },
+    "stroke": {
+      "$type": "strokeStyle",
+      "target": {
+        "$value": {
+          "dashArray": [
+            {
+              "value": 8,
+              "unit": "px"
+            },
+            {
+              "value": 6,
+              "unit": "px"
+            }
+          ],
+          "lineCap": "round"
+        },
+        "$description": "dashed reference / target line"
+      },
+      "grid": {
+        "$value": {
+          "dashArray": [
+            {
+              "value": 4,
+              "unit": "px"
+            },
+            {
+              "value": 6,
+              "unit": "px"
+            }
+          ],
+          "lineCap": "butt"
+        },
+        "$description": "horizontal gridlines only; never solid, never vertical"
+      },
+      "leader": {
+        "$value": {
+          "dashArray": [
+            {
+              "value": 1.5,
+              "unit": "px"
+            },
+            {
+              "value": 4.5,
+              "unit": "px"
+            }
+          ],
+          "lineCap": "round"
+        },
+        "$description": "dotted leaders in spec rows"
+      }
+    }
+  }
+}

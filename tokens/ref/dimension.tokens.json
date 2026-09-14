@@ -1,0 +1,303 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "space": {
+      "$type": "dimension",
+      "$description": "4 px base. Tile gap 4-6 inside a slab, 12 between cards, 16-24 between groups, 32-40 between sections.",
+      "0": {
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "1": {
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "2": {
+        "$value": {
+          "value": 6,
+          "unit": "px"
+        }
+      },
+      "3": {
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "4": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "5": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "6": {
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "7": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "8": {
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        }
+      },
+      "9": {
+        "$value": {
+          "value": 36,
+          "unit": "px"
+        }
+      },
+      "10": {
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "11": {
+        "$value": {
+          "value": 48,
+          "unit": "px"
+        }
+      },
+      "12": {
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        }
+      },
+      "13": {
+        "$value": {
+          "value": 104,
+          "unit": "px"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "$description": "Two shapes: pill (999) for controls and one big radius for cards. Inner radius = outer - padding.",
+      "0": {
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        }
+      },
+      "1": {
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "2": {
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "3": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "4": {
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        }
+      },
+      "5": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "6": {
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "7": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "8": {
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        }
+      },
+      "9": {
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        }
+      },
+      "10": {
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "pill": {
+        "$value": {
+          "value": 999,
+          "unit": "px"
+        }
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "control": {
+        "sm": {
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
+        },
+        "md": {
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "pointer default"
+        },
+        "lg": {
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "touch default"
+        },
+        "xl": {
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          }
+        }
+      },
+      "hit": {
+        "pointer": {
+          "$value": {
+            "value": 28,
+            "unit": "px"
+          }
+        },
+        "touch": {
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          }
+        }
+      },
+      "icon": {
+        "xs": {
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          }
+        },
+        "sm": {
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          }
+        },
+        "md": {
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          }
+        },
+        "lg": {
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          }
+        },
+        "ring": {
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "icon ring in corner-pinned cards"
+        }
+      },
+      "card": {
+        "min": {
+          "$value": {
+            "value": 200,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    "border": {
+      "$type": "dimension",
+      "hairline": {
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        }
+      },
+      "strong": {
+        "$value": {
+          "value": 1.5,
+          "unit": "px"
+        }
+      },
+      "focus": {
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        }
+      }
+    },
+    "blur": {
+      "$type": "dimension",
+      "chip": {
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      },
+      "glass": {
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        }
+      },
+      "glass-light": {
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "bloom": {
+        "$value": {
+          "value": 150,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

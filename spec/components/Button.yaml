@@ -1,0 +1,171 @@
+name: Button
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A tappable action with one label and an optional leading or trailing icon. Controls in Prism are
+  pills or circles; the primary variant is the single solid inverse pill in a group, secondary is a
+  raised pill, ghost is outlined, danger is a tinted pill with critical text.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+  - part: leadingIcon
+    optional: true
+  - part: trailingIcon
+    optional: true
+  - part: spinner
+    optional: true
+    description: replaces the label while loading; width is preserved
+
+props:
+  - name: variant
+    type: enum
+    values: [primary, secondary, ghost, danger]
+    default: primary
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: label
+    type: string
+    required: true
+  - name: leadingIcon
+    type: icon
+  - name: trailingIcon
+    type: icon
+  - name: isLoading
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onPress
+    type: action
+    required: true
+  - name: fullWidth
+    type: boolean
+    default: false
+
+states: [default, hover, pressed, focus-visible, disabled, loading]
+
+tokens:
+  root:
+    background:
+      primary: comp.button.primary.bg.rest
+      secondary: comp.button.secondary.bg.rest
+      ghost: comp.button.ghost.bg.rest
+      danger: comp.button.danger.bg.rest
+    foreground:
+      primary: comp.button.primary.text
+      secondary: comp.button.secondary.text
+      ghost: comp.button.ghost.text
+      danger: comp.button.danger.text
+    border:
+      ghost: comp.button.ghost.border
+      danger: comp.button.danger.border
+    radius: comp.button.radius
+    height:
+      sm: comp.button.height.sm
+      md: comp.button.height.md
+      lg: comp.button.height.lg
+    paddingX:
+      sm: comp.button.padding-x.sm
+      md: comp.button.padding-x.md
+      lg: comp.button.padding-x.lg
+    gap: comp.button.gap
+    pressed:
+      background:
+        primary: comp.button.primary.bg.pressed
+        secondary: comp.button.secondary.bg.pressed
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+    focus:
+      ring: color.border.focus
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+  leadingIcon:
+    size: size.icon.md
+  trailingIcon:
+    size: size.icon.md
+  spinner:
+    color:
+      primary: comp.button.primary.text
+      secondary: comp.button.secondary.text
+
+behavior:
+  - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
+  - The hit area is at least size.hit.touch (44 pt) under touch and size.hit.pointer (28 pt) under pointer, extended invisibly beyond a smaller visual height.
+  - `isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input; the accessibility label becomes "<label>, loading".
+  - `isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; disabled buttons are avoided in favor of explaining why an action is unavailable.
+  - Labels never wrap; long labels truncate with an ellipsis; `fullWidth` stretches the pill and centers the content.
+  - Pressed state scales the pill to 0.97 with motion.spring.snappy and returns on release; hover (pointer only) adds the hover overlay.
+  - Only one `primary` button may appear in a group; a group of segments never gets a filled track.
+
+motion:
+  press: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.button
+
+accessibility:
+  role: button
+  label: the visible label; required as an explicit label when the button is icon-only (use IconButton instead)
+  traits: [button]
+  keyboard: Space and Enter activate; focus ring is color.border.focus at 2 px outside the pill
+  dynamicType: label scales with type.label.*; height grows with it up to the accessibility3 size, then clamps and the label wraps to two lines
+  contrast: every variant's foreground/background pair is in tokens/contrast-pairs.json (primary = on-inverse on inverse; danger = critical text on the critical tint)
+  reduceTransparency: not applicable (no glass)
+  reduceMotion: press scale is replaced by an opacity dip
+
+usage:
+  do:
+    - Verb-first labels ("Save", "Send invoice").
+    - One primary per view; secondary for the rest; ghost inside cards over vivid or glass.
+  dont:
+    - Don't use a Button for navigation; use ListRow or a link.
+    - Don't stack more than two buttons horizontally on touch.
+    - Don't color a button with the accent; the accent means attention, the inverse pill means action.
+
+examples:
+  - id: primary-md
+    props: { variant: primary, size: md, label: "Continue" }
+  - id: secondary-md
+    props: { variant: secondary, size: md, label: "Details", trailingIcon: nav.open }
+  - id: ghost-sm
+    props: { variant: ghost, size: sm, label: "Filter", leadingIcon: action.filter }
+  - id: danger-md
+    props: { variant: danger, size: md, label: "Delete route" }
+  - id: loading
+    props: { variant: primary, size: md, label: "Saving", isLoading: true }
+  - id: disabled
+    props: { variant: primary, size: md, label: "Continue", isDisabled: true }
+  - id: on-vivid
+    props: { variant: ghost, size: md, label: "Open" }
+    surface: vivid
+
+notes:
+  platform:
+    watchos: sizes collapse to lg; no trailing icon; ghost renders as secondary.
+    macos: default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on.
+    web-desktop: built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.
+  design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9.
+  references: [docs/adr/0006-spec-contract-and-parity.md]

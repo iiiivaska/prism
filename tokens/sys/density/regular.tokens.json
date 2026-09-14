@@ -1,0 +1,67 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "space": {
+      "$type": "dimension",
+      "tile-gap": {
+        "$value": {
+          "value": 6,
+          "unit": "px"
+        }
+      },
+      "card-gap": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "group-gap": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "section-gap": {
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        }
+      },
+      "card-padding": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "page-margin": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "row": {
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      },
+      "control": {
+        "$root": {
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          }
+        }
+      }
+    },
+    "type": {
+      "$type": "number",
+      "body-line-height": {
+        "$value": 1.5
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "@iiiivaska/prism-react",
+  "version": "0.1.0",
+  "description": "Prism React components on React Aria Components, CSS-first styling over --ds-* tokens",
+  "type": "module",
+  "private": false,
+  "sideEffects": ["**/*.css"],
+  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
+  "files": ["dist", "spec"],
+  "scripts": { "build": "tsdown", "test": "vitest run" },
+  "peerDependencies": { "react": "^19", "react-dom": "^19" },
+  "repository": { "type": "git", "url": "https://github.com/iiiivaska/prism.git", "directory": "web/packages/react" },
+  "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
+  "engines": { "node": ">=22.12" },
+  "license": "MIT"
+}

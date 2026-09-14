@@ -1,0 +1,9 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "brand": {
+      "$type": "number",
+      "type-scale": { "$value": 1.0, "$description": "Global multiplier on the type scale; brands may not change role sizes individually." }
+    }
+  }
+}

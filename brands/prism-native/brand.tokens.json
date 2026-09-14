@@ -1,0 +1,12 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "font": {
+      "$type": "fontFamily",
+      "$description": "Native preset (ADR-0008): system fonts on Apple, Inter on web. Apple resolves these names through Font.system(design:) in DSCore, never through bundled files; SF is never bundled.",
+      "ui": { "$value": ["SF Pro Text", "Inter", "system-ui", "sans-serif"] },
+      "display": { "$value": ["SF Pro Display", "Inter", "system-ui", "sans-serif"], "$extensions": { "app.prism": { "opsz": 32 } } },
+      "mono": { "$value": ["SF Mono", "JetBrains Mono", "ui-monospace", "monospace"] }
+    }
+  }
+}

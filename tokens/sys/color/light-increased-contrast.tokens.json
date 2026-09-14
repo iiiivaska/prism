@@ -1,0 +1,87 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "text": {
+        "secondary": {
+          "$value": "{ref.color.neutral.700}"
+        },
+        "tertiary": {
+          "$value": "{ref.color.neutral.700}"
+        },
+        "dimmed": {
+          "$value": "{ref.color.neutral.600}",
+          "$description": "dimmed digits become secondary under Increase Contrast"
+        },
+        "accent": {
+          "$value": "{ref.color.accent.900}"
+        }
+      },
+      "border": {
+        "hairline": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.3,
+            "hex": "#0e0f12"
+          }
+        },
+        "strong": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.6,
+            "hex": "#0e0f12"
+          }
+        }
+      },
+      "chart": {
+        "grid": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.2,
+            "hex": "#0e0f12"
+          }
+        },
+        "target": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.6,
+            "hex": "#0e0f12"
+          }
+        },
+        "comparison": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.6,
+            "hex": "#0e0f12"
+          }
+        }
+      }
+    }
+  }
+}

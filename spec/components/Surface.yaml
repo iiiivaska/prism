@@ -1,0 +1,149 @@
+name: Surface
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  The container primitive every other component sits on. Resolves one of three content materials
+  (solid, vivid, glass) plus the page ground, applies the glass rule (ADR-0009), and publishes its
+  material to descendants so text and charts can pick the right foreground tokens.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: content
+    slot: true
+  - part: edge
+    optional: true
+    description: 1 px inner light edge; mandatory on glass, permitted on tiles, never on solid cards
+  - part: grain
+    optional: true
+    description: monochrome noise overlay on vivid and glass surfaces
+  - part: bloom
+    optional: true
+    description: blurred copy of the vivid top stop rendered behind the surface on the page
+
+props:
+  - name: material
+    type: enum
+    values: [page, solid, raised, nested, inverse, vivid, glass, glassLight]
+    default: solid
+  - name: vivid
+    type: enum
+    values: [orchid, olive, rose, sky, ember-night, plum-dusk, forest-moss, navy-cyan]
+    description: which brand gradient a vivid surface uses; ignored for other materials
+  - name: radius
+    type: enum
+    values: [none, inner, tile, cardCompact, card, sheet, cardLarge, hero, pill]
+    default: card
+  - name: elevation
+    type: enum
+    values: [flat, raised, floating, overlay]
+    default: flat
+  - name: padding
+    type: enum
+    values: [none, card]
+    default: card
+  - name: backdrop
+    type: enum
+    values: [none, image, map, vivid]
+    default: none
+    description: what the surface sits on; glass is only legal over image, map or vivid
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      page: color.bg.page
+      solid: color.bg.surface
+      raised: color.bg.surface.raised
+      nested: color.bg.surface.nested
+      inverse: color.bg.fill.inverse
+      glass: material.glass.dark.fill
+      glassLight: material.glass.light.fill
+    gradient:
+      vivid: gradient.vivid.orchid
+    radius:
+      inner: radius.inner
+      tile: radius.tile
+      cardCompact: radius.card-compact
+      card: radius.card
+      sheet: radius.sheet
+      cardLarge: radius.card-large
+      hero: radius.hero
+      pill: radius.control
+    padding:
+      card: space.card-padding
+    shadow:
+      flat: elevation.0
+      raised: elevation.1
+      floating: elevation.2
+      overlay: elevation.3
+  edge:
+    color: color.border.hairline
+  grain:
+    opacity: opacity.grain
+
+behavior:
+  - A glass material is rendered only when `backdrop` is image, map or vivid; otherwise it silently resolves to `raised` and logs at debug level.
+  - Under Reduce Transparency or Increase Contrast every glass material resolves to `raised` (opaque).
+  - On watchOS glass and vivid resolve to `solid`; the platform layer disables blur.
+  - The resolved material is published to descendants (`dsSurfaceContext` on Apple, a data attribute on web) so Text picks `on-vivid` / `on-glass` foregrounds automatically.
+  - Nested surfaces compute their radius as parent radius minus parent padding (concentric rule), never larger than the parent.
+  - A vivid surface renders its bloom behind itself on the page layer at the token alpha and blur; blooms are skipped under Reduce Transparency.
+  - Solid surfaces never draw a border or a shadow at `flat`; the luminance ladder carries depth.
+
+motion:
+  materialChange: motion.spring.smooth
+  reduceMotion: crossfade
+
+accessibility:
+  role: group (none unless the surface is interactive)
+  label: none; the surface is a container
+  keyboard: not focusable
+  dynamicType: padding does not scale; content reflows
+  contrast: foreground tokens chosen by Text from the published material must pass ADR-0011 tiers; glass text over the lightest allowed backdrop is checked in tools/contrast
+  reduceTransparency: glass and glassLight resolve to raised; bloom is dropped
+  reduceMotion: material changes crossfade
+
+usage:
+  do:
+    - Use `solid` for content; reserve `vivid` for at most one 2×2 grid or one card in six per screen.
+    - Put glass only over media, a map or a vivid surface; the parent must declare the backdrop.
+    - Use `inverse` for the single solid control in a group (active pill, send button).
+  dont:
+    - Don't stack glass on glass or put glass on a flat page.
+    - Don't add borders or shadows to solid cards; use the raised material for the next step up.
+    - Don't tint glass with a color of its own; it takes the backdrop's hue.
+
+examples:
+  - id: solid-card
+    props: { material: solid, radius: card }
+  - id: vivid-orchid
+    props: { material: vivid, vivid: orchid, radius: card }
+  - id: glass-over-map
+    props: { material: glass, backdrop: map, radius: card, elevation: overlay }
+    surface: image
+  - id: glass-selected
+    props: { material: glassLight, backdrop: image, radius: card }
+    surface: image
+  - id: inverse-pill
+    props: { material: inverse, radius: pill, padding: none }
+
+notes:
+  platform:
+    watchos: Only page, solid, raised, nested and inverse exist; vivid and glass resolve to solid.
+    macos: Identical to iOS; hover does not change a surface.
+  design: The three-surface model and the glass rule come from the references (docs/research/visual-dna.md §1 principles 5-6).
+  references: [docs/adr/0009-materials-in-layers.md]

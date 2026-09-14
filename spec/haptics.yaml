@@ -1,0 +1,172 @@
+# Semantic haptics registry (ADR-0003 / ADR-0009 motion & feedback).
+# Components reference `haptic.<name>`; DSCore maps it per platform. Web has no haptics
+# (the Vibration API is unsuitable for UI feedback); the web binding is documented as none.
+# Apple facts verified 2026-09-08 against SensoryFeedback and WKHapticType docs
+# (docs/research/arch-apple.md §7): SensoryFeedback needs iOS 17 / macOS 14 / watchOS 10,
+# which the OS 26 floor satisfies. Platform playback per Apple: success/warning/error/selection/impact
+# play on iOS and watchOS; alignment on iOS and macOS; levelChange macOS only; start/stop watchOS only;
+# increase/decrease watchOS and visionOS; pathComplete iOS only.
+
+version: 0.1.0
+haptics:
+  haptic.selection:
+    intent: A discrete selection changed (segment, picker step, scrubber snap).
+    ios: SensoryFeedback.selection
+    macos: none
+    watchos: SensoryFeedback.selection
+    web: none
+    reduceMotion: keep          # haptics are not motion; Apple does not suppress them under Reduce Motion
+
+  haptic.impact.light:
+    intent: A light touch landed (chip toggled, card lifted).
+    ios: SensoryFeedback.impact(weight: .light)
+    macos: none
+    watchos: SensoryFeedback.impact(weight: .light)
+    web: none
+
+  haptic.impact.medium:
+    intent: A control settled (sheet detent reached, toggle flipped).
+    ios: SensoryFeedback.impact(weight: .medium)
+    macos: none
+    watchos: SensoryFeedback.impact(weight: .medium)
+    web: none
+
+  haptic.impact.soft:
+    intent: A soft landing (drag released onto a target).
+    ios: SensoryFeedback.impact(flexibility: .soft)
+    macos: none
+    watchos: SensoryFeedback.impact(flexibility: .soft)
+    web: none
+
+  haptic.success:
+    intent: An action completed successfully (form saved, goal reached).
+    ios: SensoryFeedback.success
+    macos: none
+    watchos: SensoryFeedback.success
+    web: none
+
+  haptic.warning:
+    intent: Attention needed but not an error (limit approaching).
+    ios: SensoryFeedback.warning
+    macos: none
+    watchos: SensoryFeedback.warning
+    web: none
+
+  haptic.error:
+    intent: An action failed (validation error, request failed).
+    ios: SensoryFeedback.error
+    macos: none
+    watchos: SensoryFeedback.error
+    web: none
+
+  haptic.alignment:
+    intent: A dragged element snapped to a guide or grid.
+    ios: SensoryFeedback.alignment
+    macos: SensoryFeedback.alignment
+    watchos: none
+    web: none
+
+  haptic.levelChange:
+    intent: A stepped value crossed a level (macOS slider ticks).
+    ios: none
+    macos: SensoryFeedback.levelChange
+    watchos: none
+    web: none
+
+  haptic.increase:
+    intent: A value went up by one step (crown / stepper).
+    ios: SensoryFeedback.selection     # closest available on iOS
+    macos: none
+    watchos: SensoryFeedback.increase
+    web: none
+
+  haptic.decrease:
+    intent: A value went down by one step.
+    ios: SensoryFeedback.selection
+    macos: none
+    watchos: SensoryFeedback.decrease
+    web: none
+
+  haptic.start:
+    intent: A session or timer started.
+    ios: SensoryFeedback.impact(weight: .medium)
+    macos: none
+    watchos: SensoryFeedback.start
+    web: none
+
+  haptic.stop:
+    intent: A session or timer stopped.
+    ios: SensoryFeedback.impact(weight: .medium)
+    macos: none
+    watchos: SensoryFeedback.stop
+    web: none
+
+  haptic.pathComplete:
+    intent: A drawn path or gesture completed.
+    ios: SensoryFeedback.pathComplete
+    macos: none
+    watchos: SensoryFeedback.success
+    web: none
+
+  # OS 26 control-specific feedback (SensoryFeedback.press / .release / .selection(.on|.off|.minimum|.maximum)).
+  # Per-platform playback for these is not documented by Apple; treated as iOS + watchOS until verified on device.
+  haptic.press.button:
+    intent: Touch-down on a button (system-consistent press feel).
+    ios: SensoryFeedback.press(.button)
+    macos: none
+    watchos: SensoryFeedback.press(.button)
+    web: none
+  haptic.press.toggle:
+    intent: Touch-down on a toggle.
+    ios: SensoryFeedback.press(.toggle)
+    macos: none
+    watchos: SensoryFeedback.press(.toggle)
+    web: none
+  haptic.press.slider:
+    intent: Slider thumb grabbed.
+    ios: SensoryFeedback.press(.slider)
+    macos: none
+    watchos: SensoryFeedback.press(.slider)
+    web: none
+  haptic.release.slider:
+    intent: Slider thumb released.
+    ios: SensoryFeedback.release(.slider)
+    macos: none
+    watchos: SensoryFeedback.release(.slider)
+    web: none
+  haptic.selection.on:
+    intent: A binary control turned on.
+    ios: SensoryFeedback.selection(.on)
+    macos: none
+    watchos: SensoryFeedback.selection(.on)
+    web: none
+  haptic.selection.off:
+    intent: A binary control turned off.
+    ios: SensoryFeedback.selection(.off)
+    macos: none
+    watchos: SensoryFeedback.selection(.off)
+    web: none
+  haptic.selection.limit:
+    intent: A value hit its minimum or maximum.
+    ios: SensoryFeedback.selection(.minimum|.maximum)
+    macos: SensoryFeedback.alignment
+    watchos: SensoryFeedback.selection(.minimum|.maximum)
+    web: none
+
+web:
+  # The Vibration API (navigator.vibrate) works only on Chrome/Samsung for Android after sticky user activation
+  # (max 10 entries, 10 s each); Safari and Firefox desktop do not support it. It is an optional, opt-in
+  # progressive enhancement behind a consumer flag; it is never part of a component's contract.
+  optionalPatternsMs:
+    haptic.selection: [8]
+    haptic.impact.light: [10]
+    haptic.impact.medium: [20]
+    haptic.success: [12, 60, 12]
+    haptic.warning: [25, 60, 25]
+    haptic.error: [30, 40, 30, 40, 30]
+
+rules:
+  - Components declare haptics by registry name only; DSCore owns the mapping and the WKInterfaceDevice fallback.
+  - At most one haptic per user action; never on programmatic state changes.
+  - watchOS enforces a 100 ms minimum between plays and no playback in the background; DSCore throttles.
+  - No haptics while HealthKit heart-rate sampling is active on watchOS (Apple constraint).

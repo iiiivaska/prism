@@ -1,0 +1,91 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "opacity": {
+      "$type": "number",
+      "text": {
+        "secondary": {
+          "$value": 0.64
+        },
+        "tertiary": {
+          "$value": 0.55
+        },
+        "dimmed": {
+          "$value": 0.42,
+          "$description": "trailing digits and units >= 24 pt only (4.0:1 on surface-1)"
+        }
+      },
+      "surface": {
+        "step-1": {
+          "$value": 0.06,
+          "$description": "white over neutral.950 = surface.1"
+        },
+        "step-2": {
+          "$value": 0.09
+        },
+        "step-3": {
+          "$value": 0.12
+        },
+        "raised": {
+          "$value": 0.03,
+          "$description": "+3% white over the parent"
+        }
+      },
+      "hairline": {
+        "$value": 0.08
+      },
+      "boundary": {
+        "$value": 0.3
+      },
+      "tint": {
+        "status": {
+          "$value": 0.1
+        },
+        "accent": {
+          "$value": 0.12
+        },
+        "accent-dark": {
+          "$value": 0.14
+        }
+      },
+      "glass": {
+        "dark": {
+          "$value": 0.6
+        },
+        "light": {
+          "$value": 0.3
+        },
+        "chip": {
+          "$value": 0.16
+        },
+        "toolbar": {
+          "$value": 0.25
+        },
+        "selected": {
+          "$value": 0.26
+        }
+      },
+      "chart": {
+        "band": {
+          "$value": 0.06
+        },
+        "grid": {
+          "$value": 0.12
+        },
+        "comparison": {
+          "$value": 0.4
+        },
+        "reference": {
+          "$value": 0.6
+        }
+      },
+      "disabled": {
+        "$value": 0.38
+      },
+      "dimmed-row": {
+        "$value": 0.3,
+        "$description": "done/next rows in a stepper"
+      }
+    }
+  }
+}

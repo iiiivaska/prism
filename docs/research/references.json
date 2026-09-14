@@ -1,0 +1,19 @@
+{
+  "allowed_use": "principles-only",
+  "policy": "docs/adr/0015-references-inspiration-only.md",
+  "studio": { "name": "RonDesignLab", "site": "https://rondesignlab.com", "location": "Kraków, Poland", "dribbble": "https://dribbble.com/RonDesignLab", "sells_kits": false },
+  "shots": [
+    { "id": "27706847", "family": "soma", "title": "Soma - Glucose Monitoring Mobile App", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27706847-Soma-Glucose-Monitoring-Mobile-App", "mood": "light-airy", "analysis": "docs/research/refs-soma.md" },
+    { "id": "27699907", "family": "hydroflask", "title": "Hydroflask - Smart Water Bottle Mobile App", "credit": "RonDesignLab", "url": "https://dribbble.com/shots/27699907-Hydroflask-Smart-Water-Bottle-Mobile-App", "mood": "light-airy", "analysis": "docs/research/refs-hydroflask.md" },
+    { "id": "27619760", "family": "hydroflask", "title": "Hydroflask - Smart Water Bottle Mobile App", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27619760-Hydroflask-Smart-Water-Bottle-Mobile-App", "mood": "light-airy", "analysis": "docs/research/refs-hydroflask.md" },
+    { "id": "27696584", "family": "creditkarma", "title": "Credit Karma - Credit Monitoring Mobile App", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27696584-Credit-Karma-Credit-Monitoring-Mobile-App", "mood": "mixed", "analysis": "docs/research/refs-creditkarma.md" },
+    { "id": "27597487", "family": "creditkarma", "title": "Credit Karma - Credit Monitoring Desktop", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27597487-Credit-Karma-Credit-Monitoring-Desktop", "mood": "mixed", "analysis": "docs/research/refs-creditkarma.md" },
+    { "id": "27678963", "family": "creditpros", "title": "CreditPros - Credit Repair & Financial Dashboard UI", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27678963-CreditPros-Credit-Repair-Financial-Dashboard-UI", "mood": "mixed", "analysis": "docs/research/refs-creditpros.md" },
+    { "id": "27658472", "family": "arvion", "title": "Arvion UI - Shipping Operations Dashboard", "credit": "RonDesignLab (rebound of Stan D.)", "url": "https://dribbble.com/shots/27658472-Arvion-UI-Shipping-Operations-Dashboard", "mood": "dark-ops", "analysis": "docs/research/refs-arvion.md" },
+    { "id": "27619812", "family": "vexto-incident", "title": "Vexto - Incident Response Desktop App", "credit": "RonDesignLab", "url": "https://dribbble.com/shots/27619812-Vexto-Incident-Response-Desktop-App", "mood": "dark-ops", "analysis": "docs/research/refs-vexto-incident.md" },
+    { "id": "27571204", "family": "vexto-incident", "title": "Vexto - Incident Response Mobile App", "credit": "RonDesignLab", "url": "https://dribbble.com/shots/27571204-Vexto-Incident-Response-Mobile-App", "mood": "dark-ops", "analysis": "docs/research/refs-vexto-incident.md" },
+    { "id": "27220417", "family": "vexto-traffic", "title": "Vexto Dashboard - Traffic Management Platform", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27220417-Vexto-Dashboard-Traffic-Management-Platform", "mood": "dark-ops", "analysis": "docs/research/refs-vexto-traffic.md", "note": "Source of the owner's hand-picked dark screenshots; highest weight." },
+    { "id": "27289370", "family": "vexto-traffic", "title": "Vexto Mobile App - Traffic Management Platform UI", "credit": "Jack R. for RonDesignLab", "url": "https://dribbble.com/shots/27289370-Vexto-Mobile-App-Traffic-Management-Platform-UI", "mood": "dark-ops", "analysis": "docs/research/refs-vexto-traffic.md" }
+  ],
+  "owner_pasted_screenshots": { "family_a": "light investor CRM on iPad (shot not located; described in refs synthesis)", "family_b": "Vexto Dashboard - Traffic Management Platform (27220417)" }
+}

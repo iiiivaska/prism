@@ -1,0 +1,8 @@
+{
+  "name": "prism-native",
+  "displayName": "Prism reference brand, Native font preset",
+  "version": "0.1.0",
+  "preset": "native",
+  "extends": "prism",
+  "notes": "Identical palette and scales to 'prism'; only the font slots differ (SF Pro / SF Mono on Apple via system APIs, Inter on web from Google Fonts). No bundled font files."
+}

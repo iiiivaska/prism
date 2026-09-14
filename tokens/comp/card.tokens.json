@@ -1,0 +1,69 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "card": {
+      "solid": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.surface}"
+        },
+        "text": {
+          "$value": "{sys.color.text.primary}"
+        },
+        "caption": {
+          "$value": "{sys.color.text.secondary}"
+        }
+      },
+      "vivid": {
+        "$type": "color",
+        "text": {
+          "$value": "{sys.color.text.on-vivid}"
+        },
+        "caption": {
+          "$value": "{sys.color.text.on-vivid}"
+        }
+      },
+      "glass": {
+        "$type": "color",
+        "fill": {
+          "$value": "{sys.material.glass.dark.fill}"
+        },
+        "text": {
+          "$value": "{sys.color.text.on-glass}"
+        },
+        "edge": {
+          "$value": "{sys.color.border.hairline}"
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "regular": {
+          "$value": "{sys.radius.card}"
+        },
+        "compact": {
+          "$value": "{sys.radius.card-compact}"
+        },
+        "large": {
+          "$value": "{sys.radius.card-large}"
+        }
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": "{sys.space.card-padding}"
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": "{sys.space.card-gap}"
+      },
+      "shadow": {
+        "$type": "shadow",
+        "solid": {
+          "$value": "{sys.shadow.flat}"
+        },
+        "floating": {
+          "$value": "{sys.shadow.overlay}"
+        }
+      }
+    }
+  }
+}

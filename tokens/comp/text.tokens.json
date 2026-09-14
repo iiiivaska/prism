@@ -1,0 +1,23 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "text": {
+      "$type": "color",
+      "primary": {
+        "$value": "{sys.color.text.primary}"
+      },
+      "secondary": {
+        "$value": "{sys.color.text.secondary}"
+      },
+      "tertiary": {
+        "$value": "{sys.color.text.tertiary}"
+      },
+      "dimmed": {
+        "$value": "{sys.color.text.dimmed}"
+      },
+      "accent": {
+        "$value": "{sys.color.text.accent}"
+      }
+    }
+  }
+}

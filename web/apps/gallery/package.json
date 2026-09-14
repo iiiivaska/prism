@@ -1,0 +1,8 @@
+{
+  "name": "@iiiivaska/prism-gallery",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Living canon: Storybook 10 with a11y tests, Vitest browser mode and the Storybook MCP for agents",
+  "scripts": { "dev": "storybook dev -p 6006", "build": "storybook build", "test": "vitest --project=storybook run" }
+}

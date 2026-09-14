@@ -1,0 +1,481 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.neutral.100}",
+          "$description": "never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%"
+        },
+        "surface": {
+          "$root": {
+            "$value": "{ref.color.neutral.0}",
+            "$description": "card: no border, no shadow (optional ambient 5%)"
+          },
+          "raised": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "alpha": 0.7,
+              "hex": "#ffffff"
+            },
+            "$description": "puffy chip / round button on the page, plus inset top highlight and shadow.raised"
+          },
+          "nested": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0549,
+                0.0588,
+                0.0706
+              ],
+              "alpha": 0.06,
+              "hex": "#0e0f12"
+            },
+            "$description": "filled control, dock tray (= #ECEDF1 on white)"
+          },
+          "overlay": {
+            "$value": "{ref.color.neutral.0}"
+          }
+        },
+        "fill": {
+          "inverse": {
+            "$value": "{ref.color.neutral.950}",
+            "$description": "primary pill, active tab, solid action circle"
+          },
+          "accent": {
+            "$value": "{ref.color.accent.300}",
+            "$description": "the one attention tile; content is ink"
+          },
+          "accent-strong": {
+            "$value": "{ref.color.accent.700}",
+            "$description": "accent surface with white text (4.8:1)"
+          },
+          "critical": {
+            "$value": "{ref.color.status.danger.badge}",
+            "$description": "badge under white 11 px Medium (4.5:1)"
+          },
+          "neutral": {
+            "subtle": {
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.0549,
+                  0.0588,
+                  0.0706
+                ],
+                "alpha": 0.06,
+                "hex": "#0e0f12"
+              }
+            }
+          }
+        },
+        "tint": {
+          "accent": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9529,
+                0.5804,
+                0.2667
+              ],
+              "alpha": 0.12,
+              "hex": "#f39444"
+            },
+            "$description": "tinted focus card (= #FEF2E9 on white)"
+          },
+          "success": {
+            "$value": "{ref.color.status.success.tint-light}"
+          },
+          "warning": {
+            "$value": "{ref.color.status.warning.tint-light}"
+          },
+          "critical": {
+            "$value": "{ref.color.status.danger.tint-light}"
+          },
+          "info": {
+            "$value": "{ref.color.status.info.tint-light}"
+          }
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "17.1:1 on page"
+        },
+        "secondary": {
+          "$value": "{ref.color.neutral.600}",
+          "$description": "5.6:1 page / 6.3:1 card (reference #8E8E8E failed at 2.4:1)"
+        },
+        "tertiary": {
+          "$value": "{ref.color.neutral.600}",
+          "$description": "resolves to the secondary step so 12 px captions pass AA; the DNA's #7E838F is kept as text.dimmed for >= 24 px"
+        },
+        "dimmed": {
+          "$value": "{ref.color.neutral.500}",
+          "$description": "3.4:1 on page: trailing digits and units at >= 24 px only"
+        },
+        "on-inverse": {
+          "$value": "{ref.color.neutral.0}"
+        },
+        "on-accent": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "ink on accent-300 = 11.9:1"
+        },
+        "on-accent-strong": {
+          "$value": "{ref.color.neutral.0}"
+        },
+        "on-vivid": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "only inside the vivid token's text-safe zone"
+        },
+        "on-glass": {
+          "$value": "{ref.color.neutral.0}"
+        },
+        "on-badge": {
+          "$value": "{ref.color.neutral.0}"
+        },
+        "accent": {
+          "$value": "{ref.color.accent.800}",
+          "$description": "5.7:1 on page; the light accent is text-safe only at step 800"
+        },
+        "success": {
+          "$value": "{ref.color.status.success.text-light}"
+        },
+        "warning": {
+          "$value": "{ref.color.status.warning.text-light}"
+        },
+        "critical": {
+          "$value": "{ref.color.status.danger.text-light}"
+        },
+        "info": {
+          "$value": "{ref.color.status.info.text-light}"
+        }
+      },
+      "icon": {
+        "primary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.8,
+            "hex": "#0e0f12"
+          }
+        },
+        "secondary": {
+          "$value": "{ref.color.neutral.600}"
+        },
+        "accent": {
+          "$value": "{ref.color.accent.500}",
+          "$description": "marks only, never text"
+        },
+        "status": {
+          "success": {
+            "$value": "{ref.color.status.success.dot-light}"
+          },
+          "warning": {
+            "$value": "{ref.color.status.warning.dot-light}"
+          },
+          "critical": {
+            "$value": "{ref.color.status.danger.dot-light}"
+          },
+          "info": {
+            "$value": "{ref.color.status.info.dot-light}"
+          }
+        }
+      },
+      "border": {
+        "hairline": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.1,
+            "hex": "#0e0f12"
+          },
+          "$description": "inputs, table rows, chip strokes"
+        },
+        "strong": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.3,
+            "hex": "#0e0f12"
+          }
+        },
+        "focus": {
+          "$value": "{ref.color.neutral.950}"
+        },
+        "boundary": {
+          "$value": "{ref.color.neutral.500}",
+          "$description": "control edges that must pass 3:1"
+        }
+      },
+      "accent": {
+        "$root": {
+          "$value": "{ref.color.accent.500}",
+          "$description": "marks: dots, chart 'now', peak ticks, delta glyph fill"
+        },
+        "pressed": {
+          "$value": "{ref.color.accent.600}"
+        },
+        "subtle": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9529,
+              0.5804,
+              0.2667
+            ],
+            "alpha": 0.12,
+            "hex": "#f39444"
+          }
+        },
+        "glow": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9765,
+              0.6471,
+              0.3529
+            ],
+            "alpha": 0.4,
+            "hex": "#f9a55a"
+          }
+        }
+      },
+      "chart": {
+        "series": {
+          "1": {
+            "$value": "{ref.color.series.light.1}"
+          },
+          "2": {
+            "$value": "{ref.color.series.light.2}"
+          },
+          "3": {
+            "$value": "{ref.color.series.light.3}"
+          },
+          "4": {
+            "$value": "{ref.color.series.light.4}"
+          },
+          "5": {
+            "$value": "{ref.color.series.light.5}"
+          },
+          "6": {
+            "$value": "{ref.color.series.light.6}"
+          }
+        },
+        "comparison": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.3,
+            "hex": "#0e0f12"
+          }
+        },
+        "comparison-2": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.15,
+            "hex": "#0e0f12"
+          }
+        },
+        "target": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.3,
+            "hex": "#0e0f12"
+          }
+        },
+        "grid": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.1,
+            "hex": "#0e0f12"
+          }
+        },
+        "band": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0549,
+              0.0588,
+              0.0706
+            ],
+            "alpha": 0.05,
+            "hex": "#0e0f12"
+          }
+        },
+        "axis": {
+          "$value": "{ref.color.neutral.600}",
+          "$description": "reference #B7B7B9 failed at 1.7:1"
+        },
+        "now": {
+          "$value": "{ref.color.accent.500}"
+        },
+        "ghost": {
+          "$value": "{ref.color.neutral.200}",
+          "$description": "sparkline ghost bars"
+        },
+        "plot": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "charts never sit on raw glass"
+        }
+      }
+    },
+    "material": {
+      "glass": {
+        "dark": {
+          "fill": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0392,
+                0.0471,
+                0.0314
+              ],
+              "alpha": 0.55,
+              "hex": "#0a0c08"
+            },
+            "$description": "card over a bright photo or vivid; drawer 0.35",
+            "$extensions": {
+              "app.prism": {
+                "blur": 40,
+                "saturate": 0.8,
+                "edge": {
+                  "alpha": 0.22,
+                  "to": 0.08
+                },
+                "grain": 0.04
+              }
+            }
+          },
+          "chip": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0392,
+                0.0471,
+                0.0314
+              ],
+              "alpha": 0.35,
+              "hex": "#0a0c08"
+            },
+            "$extensions": {
+              "app.prism": {
+                "blur": 24
+              }
+            }
+          }
+        },
+        "light": {
+          "fill": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "alpha": 0.3,
+              "hex": "#ffffff"
+            },
+            "$description": "chips, pills, rows over vivid; tab bar 0.45",
+            "$extensions": {
+              "app.prism": {
+                "blur": 24,
+                "saturate": 1.1,
+                "edge": {
+                  "alpha": 0.55,
+                  "to": 0.0
+                }
+              }
+            }
+          },
+          "chip": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "alpha": 0.25,
+              "hex": "#ffffff"
+            },
+            "$extensions": {
+              "app.prism": {
+                "blur": 20
+              }
+            }
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "alpha": 0.35,
+            "hex": "#000000"
+          },
+          "$description": "bottom-up under text on unpredictable backdrops"
+        }
+      }
+    },
+    "shadow": {
+      "$type": "shadow",
+      "raised": {
+        "$value": "{ref.shadow.light.raised}"
+      },
+      "floating": {
+        "$value": "{ref.shadow.light.floating}"
+      },
+      "overlay": {
+        "$value": "{ref.shadow.light.overlay}"
+      },
+      "drawer": {
+        "$value": "{ref.shadow.light.drawer}"
+      },
+      "flat": {
+        "$value": "{ref.shadow.none}"
+      }
+    }
+  }
+}

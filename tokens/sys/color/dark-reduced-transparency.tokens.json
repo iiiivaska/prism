@@ -1,0 +1,86 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "material": {
+      "glass": {
+        "dark": {
+          "fill": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.1098,
+                0.1098,
+                0.1216
+              ],
+              "alpha": 0.92,
+              "hex": "#1c1c1f"
+            },
+            "$description": "surface-1 at 92%"
+          },
+          "chip": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.1373,
+                0.1412,
+                0.149
+              ],
+              "alpha": 0.92,
+              "hex": "#232426"
+            }
+          }
+        },
+        "light": {
+          "fill": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.1647,
+                0.1686,
+                0.1804
+              ],
+              "alpha": 0.92,
+              "hex": "#2a2b2e"
+            }
+          },
+          "chip": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.1647,
+                0.1686,
+                0.1804
+              ],
+              "alpha": 0.92,
+              "hex": "#2a2b2e"
+            }
+          }
+        },
+        "cell": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1647,
+              0.1686,
+              0.1804
+            ],
+            "alpha": 0.92,
+            "hex": "#2a2b2e"
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "alpha": 0.4,
+            "hex": "#000000"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,150 @@
+name: Text
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  Typography primitive. A role (display, title, headline, body, label, caption, metric, data) selects
+  size, weight, line height, tracking and numeric features from the type tokens; a tone selects the
+  foreground from the surface it sits on. Hero numerals get the dimmed trailing group and hung unit.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: trailing
+    optional: true
+    description: the dimmed trailing group of a metric (decimal, thousands remainder)
+  - part: unit
+    optional: true
+    description: hung unit beside a metric, baseline-aligned
+
+props:
+  - name: role
+    type: enum
+    values: [display-xl, display-lg, display-md, title-lg, title-md, title-sm, headline, body-lg, body-md, body-sm, label-lg, label-md, label-sm, caption, micro, eyebrow, metric-xl, metric-lg, metric-md, data]
+    default: body-md
+  - name: tone
+    type: enum
+    values: [primary, secondary, tertiary, dimmed, accent, success, warning, critical, info, inherit]
+    default: primary
+  - name: trailing
+    type: string
+    description: text rendered in the dimmed tone at the same size (metric roles only)
+  - name: unit
+    type: string
+    description: unit rendered in type.metric.unit beside the numeral (metric roles only)
+  - name: numeric
+    type: enum
+    values: [auto, proportional, tabular]
+    default: auto
+  - name: truncation
+    type: enum
+    values: [none, ellipsis, fade]
+    default: none
+  - name: maxLines
+    type: number
+
+states: [default]
+
+tokens:
+  root:
+    typography:
+      display-xl: type.display.xl
+      display-lg: type.display.lg
+      display-md: type.display.md
+      title-lg: type.title.lg
+      title-md: type.title.md
+      title-sm: type.title.sm
+      headline: type.headline
+      body-lg: type.body.lg
+      body-md: type.body.md
+      body-sm: type.body.sm
+      label-lg: type.label.lg
+      label-md: type.label.md
+      label-sm: type.label.sm
+      caption: type.caption
+      micro: type.micro
+      eyebrow: type.eyebrow
+      metric-xl: type.metric.xl
+      metric-lg: type.metric.lg
+      metric-md: type.metric.md
+      data: type.data
+    color:
+      primary: color.text.primary
+      secondary: color.text.secondary
+      tertiary: color.text.tertiary
+      dimmed: color.text.dimmed
+      accent: color.text.accent
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+      info: color.text.info
+      on-vivid: color.text.on-vivid
+      on-glass: color.text.on-glass
+      on-inverse: color.text.on-inverse
+      on-accent: color.text.on-accent
+  trailing:
+    color: color.text.dimmed
+  unit:
+    typography: type.metric.unit
+    color: color.text.secondary
+    gap: space.2
+
+behavior:
+  - When the enclosing Surface publishes vivid, glass or inverse, `tone: primary` resolves to the matching on-material token; secondary and tertiary map to white at 78 % and 64 % on those materials.
+  - `dimmed` and the trailing group are permitted only for metric roles at ≥ 24 px; at smaller sizes they resolve to `secondary`.
+  - Weights below 300 exist only for metric-xl/lg; under Bold Text or Increase Contrast every weight below 400 resolves to 400.
+  - Metric and data roles use tabular figures; heroes use proportional figures unless `numeric: tabular` (live counters).
+  - Fade truncation dims the last line to 60 % then 25 % instead of an ellipsis; ids truncate with an ellipsis and keep the copy affordance.
+  - Text scales with Dynamic Type on Apple and rem on web; line height and letter spacing scale with the size.
+
+accessibility:
+  role: text (heading level when role is title-* or display-*)
+  label: the visible string; metric roles expose value + unit as one accessibility value ("78.3 percent")
+  keyboard: not focusable
+  dynamicType: all roles scale; metric-xl clamps at the accessibility3 size so cards do not overflow
+  contrast: every tone/surface pair is listed in tokens/contrast-pairs.json; dimmed is decorative-tier and limited to ≥ 24 px
+  reduceTransparency: no change (surfaces handle it)
+  reduceMotion: numeric transitions (count-up) are disabled
+
+usage:
+  do:
+    - One hero (metric-xl) per screen; secondary numbers use metric-lg or metric-md.
+    - Sentence case everywhere; eyebrow at most once per card.
+    - Use tone for hierarchy (size × alpha), not weight or color.
+  dont:
+    - Don't use colored text for emphasis; accent text is for accent meaning only.
+    - Don't set card titles heavier than 400 or body heavier than 400.
+    - Don't put functional text below 12 px or below the AA tier.
+
+examples:
+  - id: hero-metric
+    props: { role: metric-xl, tone: primary, trailing: ".3", unit: "%" }
+    description: "78.3 % with the decimal dimmed and the unit hung"
+  - id: title-two-tone
+    props: { role: title-lg, tone: primary }
+    description: second line rendered with tone secondary
+  - id: caption
+    props: { role: caption, tone: secondary }
+  - id: on-vivid
+    props: { role: headline, tone: primary }
+    surface: vivid
+  - id: data-tabular
+    props: { role: data, numeric: tabular }
+
+notes:
+  platform:
+    watchos: display and title roles collapse to title-sm and headline; metric-xl renders at 40 px.
+    macos: no Dynamic Type; density is the size lever.
+  design: Roles and weights follow docs/research/visual-dna.md §2 type scales; the thin-weight floors are ADR-0011 rules.
+  references: [docs/adr/0008-typography-slots-and-presets.md, docs/adr/0011-accessibility-tiers-ci.md]

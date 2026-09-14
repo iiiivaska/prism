@@ -1,0 +1,16 @@
+{
+  "name": "prism-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=22.12", "pnpm": ">=12" },
+  "packageManager": "pnpm@12.3.4",
+  "scripts": {
+    "build": "pnpm -r --filter './web/packages/**' build",
+    "test": "pnpm -r test",
+    "tokens:build": "pnpm --filter @iiiivaska/prism-tools tokens:build",
+    "spec:validate": "pnpm --filter @iiiivaska/prism-tools spec:validate",
+    "parity": "pnpm --filter @iiiivaska/prism-tools parity:report",
+    "release": "changeset version && pnpm install --lockfile-only && pnpm -r publish --access restricted"
+  }
+}

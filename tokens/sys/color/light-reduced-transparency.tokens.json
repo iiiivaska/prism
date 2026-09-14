@@ -1,0 +1,37 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "material": {
+      "glass": {
+        "dark": {
+          "fill": {
+            "$value": "{ref.color.neutral.900}"
+          },
+          "chip": {
+            "$value": "{ref.color.neutral.900}"
+          }
+        },
+        "light": {
+          "fill": {
+            "$value": "{ref.color.neutral.0}"
+          },
+          "chip": {
+            "$value": "{ref.color.neutral.0}"
+          }
+        },
+        "scrim": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "alpha": 0.0,
+            "hex": "#000000"
+          }
+        }
+      }
+    }
+  }
+}

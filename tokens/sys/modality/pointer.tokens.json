@@ -1,0 +1,21 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "size": {
+      "$type": "dimension",
+      "hit": {
+        "$value": "{ref.size.hit.pointer}"
+      }
+    },
+    "interaction": {
+      "$type": "number",
+      "hover": {
+        "$value": 1,
+        "$description": "hover states exist"
+      },
+      "tooltip": {
+        "$value": 1
+      }
+    }
+  }
+}

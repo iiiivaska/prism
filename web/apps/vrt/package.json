@@ -1,0 +1,8 @@
+{
+  "name": "@iiiivaska/prism-vrt",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Playwright visual regression over storybook-static: stories tagged vrt × scheme × density × viewport",
+  "scripts": { "test": "playwright test", "update": "playwright test --update-snapshots" }
+}

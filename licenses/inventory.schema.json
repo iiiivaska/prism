@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/iiiivaska/prism/licenses/inventory.schema.json",
+  "title": "Prism third-party inventory",
+  "description": "Every external font, icon set, kit, library or reference that Prism touches. CI fails if a packaged item's permitted_use is not 'own' or 'adapt-with-attribution'.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["updated", "permitted_use_values", "items"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "updated": { "type": "string", "format": "date" },
+    "permitted_use_values": { "type": "array", "items": { "type": "string" } },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "name", "spdx", "source", "license_url", "attribution", "permitted_use", "packaged"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "kind": { "enum": ["font", "icons", "figma-kit", "code", "reference", "image", "other"] },
+          "name": { "type": "string" },
+          "version": { "type": "string" },
+          "spdx": { "type": "string", "description": "SPDX identifier or LicenseRef-* for proprietary terms" },
+          "reserved_font_name": { "type": "boolean" },
+          "source": { "type": "string", "format": "uri" },
+          "license_url": { "type": "string", "format": "uri" },
+          "attribution": { "type": "string" },
+          "permitted_use": { "enum": ["own", "adapt-with-attribution", "inventory-only", "apple-mockups-only", "read-only", "principles-only"] },
+          "packaged": { "type": "boolean", "description": "true when bytes of this item ship inside a Prism package" },
+          "notes": { "type": "string" }
+        },
+        "if": { "properties": { "packaged": { "const": true } } },
+        "then": { "properties": { "permitted_use": { "enum": ["own", "adapt-with-attribution"] } } }
+      }
+    }
+  }
+}

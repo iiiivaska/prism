@@ -1,0 +1,53 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "motion": {
+      "duration": {
+        "$type": "duration",
+        "instant": {
+          "$value": "{ref.motion.duration.instant}"
+        },
+        "quick": {
+          "$value": "{ref.motion.duration.quick}"
+        },
+        "fast": {
+          "$value": "{ref.motion.duration.fast}"
+        },
+        "base": {
+          "$value": "{ref.motion.duration.base}"
+        },
+        "slow": {
+          "$value": "{ref.motion.duration.slow}"
+        },
+        "slower": {
+          "$value": "{ref.motion.duration.slower}"
+        }
+      },
+      "spring": {
+        "$type": "transition",
+        "interactive": {
+          "$value": "{ref.motion.spring.interactive}"
+        },
+        "snappy": {
+          "$value": "{ref.motion.spring.snappy}"
+        },
+        "smooth": {
+          "$value": "{ref.motion.spring.smooth}"
+        },
+        "sheet": {
+          "$value": "{ref.motion.spring.sheet}"
+        },
+        "bouncy": {
+          "$value": "{ref.motion.spring.bouncy}"
+        }
+      },
+      "presentation": {
+        "$type": "number",
+        "crossfade": {
+          "$value": 0,
+          "$description": "0 = transitions may translate/scale; 1 = crossfade only"
+        }
+      }
+    }
+  }
+}
