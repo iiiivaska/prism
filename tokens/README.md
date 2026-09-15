@@ -77,7 +77,7 @@ brands/<name>/ brand.json, brand.tokens.json (overrides of allowlisted ref.* tok
 | Name manifest | `…/generated/manifest.json` | — | token paths and their CSS, Tailwind, TS, Swift and asset names |
 | Runtime table | `…/generated/runtime.ts` | — | attribute names, values, fallback queries, `TokenContext`, per-platform defaults (ADR-0019) |
 | Swift + `.xcassets` | `swift/Sources/DSTokens/Generated/`, `swift/Sources/DSTokens/Resources/Colors.xcassets/` | every repo brand, chosen once per scene by `DSTokenContext.brand`, with colorsets in `Colors.xcassets/<namespace>/`; platform ∈ {apple, watch} (`#if os(watchOS)`, colorset `watch` idiom) | colorScheme and increased contrast via asset appearances (Any, Dark, High Contrast, Dark + High Contrast); reduced transparency has no token delta (ADR-0022); density, modality, motion and non-color scheme values via `DSTokenSet(DSTokenContext)` tables |
-| Fonts (P1-8) | `…/generated/<brand>/fonts/` (woff2, `OFL.txt`, `fonts.css`), `swift/Sources/DSTokens/Resources/Fonts/` | brand | — (ADR-0021 §11) |
+| Fonts (P1-8) | `…/generated/<brand>/fonts/` (`fonts.css`, and per family `<family-dir>/<family-kebab>-wght.woff2` with its `OFL.txt`), `swift/Sources/DSTokens/Resources/Fonts/<family-dir>/` | brand | — (ADR-0021 §11) |
 | Tokens Studio flavor | `tokens/export/tokens-studio/` | — | themes = brand × scheme × density |
 | Figma-native flavor | `tokens/export/figma/<brand>/<colorScheme>.json` | brand × scheme | — |
 
