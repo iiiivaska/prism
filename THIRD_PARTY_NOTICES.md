@@ -1,11 +1,11 @@
 # Third-party notices
 
-Generated from `licenses/inventory.json` (updated 2026-09-08). Regenerate with `pnpm licenses:notices`; do not edit by hand.
+Generated from `licenses/inventory.json` (updated 2026-09-15). Regenerate with `pnpm licenses:notices`; do not edit by hand.
 
 | Item | Kind | License | Permitted use in Prism | Packaged | Source |
 |---|---|---|---|---|---|
 | Onest 2.001 | font | [OFL-1.1](https://raw.githubusercontent.com/google/fonts/main/ofl/onest/OFL.txt) | adapt-with-attribution | yes | [github.com/google/fonts/tree/main/ofl/onest](https://github.com/google/fonts/tree/main/ofl/onest) |
-| JetBrains Mono 2.304 | font | [OFL-1.1](https://github.com/JetBrains/JetBrainsMono/blob/master/OFL.txt) | adapt-with-attribution | yes | [github.com/JetBrains/JetBrainsMono](https://github.com/JetBrains/JetBrainsMono) |
+| JetBrains Mono 2.211 | font | [OFL-1.1](https://raw.githubusercontent.com/google/fonts/main/ofl/jetbrainsmono/OFL.txt) | adapt-with-attribution | yes | [github.com/google/fonts/tree/main/ofl/jetbrainsmono](https://github.com/google/fonts/tree/main/ofl/jetbrainsmono) |
 | Inter 4.x | font | [OFL-1.1](https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt) | adapt-with-attribution | no | [github.com/rsms/inter](https://github.com/rsms/inter) |
 | Phosphor Icons core 2.1.1 / react 2.1.10 | icons | [MIT](https://raw.githubusercontent.com/phosphor-icons/core/main/LICENSE) | adapt-with-attribution | yes | [github.com/phosphor-icons/core](https://github.com/phosphor-icons/core) |
 | SF Symbols 7 | icons | [LicenseRef-Apple-SDK](https://www.apple.com/legal/sla/docs/xcode.pdf) | apple-mockups-only | no | [developer.apple.com/sf-symbols/](https://developer.apple.com/sf-symbols/) |
@@ -20,8 +20,8 @@ Generated from `licenses/inventory.json` (updated 2026-09-08). Regenerate with `
 
 ## Attributions for packaged assets
 
-- **Onest** — Copyright 2023 The Onest Project Authors. Signature preset ui/display. Bundle OFL.txt next to the font.
-- **JetBrains Mono** — Copyright 2020 The JetBrains Mono Project Authors. Signature preset mono.
+- **Onest** — Copyright 2021 The Onest Project Authors. Signature preset ui/display. Bundle OFL.txt next to the font.
+- **JetBrains Mono** — Copyright 2020 The JetBrains Mono Project Authors. Signature preset mono; google/fonts build, pinned by ADR-0021.
 - **Phosphor Icons** — Copyright (c) 2023 Phosphor Icons. Web icons and generated Apple asset catalog for custom symbols.
 
 ## Reference material
