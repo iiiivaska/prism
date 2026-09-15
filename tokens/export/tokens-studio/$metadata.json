@@ -1,0 +1,29 @@
+{
+  "tokenSetOrder": [
+    "ref/color.palette",
+    "ref/gradient",
+    "ref/dimension",
+    "ref/typography",
+    "ref/motion",
+    "ref/elevation",
+    "ref/opacity",
+    "brands/prism",
+    "brands/prism-native",
+    "sys/base",
+    "sys/platform/apple",
+    "sys/platform/web",
+    "sys/color/light",
+    "sys/color/dark",
+    "sys/color/light-increased-contrast",
+    "sys/color/dark-increased-contrast",
+    "sys/density/compact",
+    "sys/density/regular",
+    "sys/density/comfortable",
+    "sys/modality/pointer",
+    "sys/modality/touch",
+    "sys/motion/default",
+    "sys/motion/reduced",
+    "comp/button",
+    "comp/card"
+  ]
+}

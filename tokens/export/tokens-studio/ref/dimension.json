@@ -1,0 +1,195 @@
+{
+  "ref": {
+    "blur": {
+      "bloom": {
+        "$type": "dimension",
+        "$value": "150px"
+      },
+      "cell": {
+        "$type": "dimension",
+        "$value": "12px",
+        "$description": "glass status cells (ADR-0022)"
+      },
+      "chip": {
+        "$type": "dimension",
+        "$value": "20px"
+      },
+      "glass": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "glass-light": {
+        "$type": "dimension",
+        "$value": "40px"
+      },
+      "pill": {
+        "$type": "dimension",
+        "$value": "24px",
+        "$description": "light-scheme dark chips and light glass fill (ADR-0022)"
+      }
+    },
+    "border": {
+      "focus": {
+        "$type": "dimension",
+        "$value": "2px"
+      },
+      "hairline": {
+        "$type": "dimension",
+        "$value": "1px"
+      },
+      "strong": {
+        "$type": "dimension",
+        "$value": "1.5px"
+      }
+    },
+    "radius": {
+      "0": {
+        "$type": "borderRadius",
+        "$value": "0px"
+      },
+      "1": {
+        "$type": "borderRadius",
+        "$value": "4px"
+      },
+      "2": {
+        "$type": "borderRadius",
+        "$value": "8px"
+      },
+      "3": {
+        "$type": "borderRadius",
+        "$value": "12px"
+      },
+      "4": {
+        "$type": "borderRadius",
+        "$value": "14px"
+      },
+      "5": {
+        "$type": "borderRadius",
+        "$value": "16px"
+      },
+      "6": {
+        "$type": "borderRadius",
+        "$value": "20px"
+      },
+      "7": {
+        "$type": "borderRadius",
+        "$value": "24px"
+      },
+      "8": {
+        "$type": "borderRadius",
+        "$value": "28px"
+      },
+      "9": {
+        "$type": "borderRadius",
+        "$value": "32px"
+      },
+      "10": {
+        "$type": "borderRadius",
+        "$value": "40px"
+      },
+      "pill": {
+        "$type": "borderRadius",
+        "$value": "999px"
+      }
+    },
+    "size": {
+      "card": {
+        "min": {
+          "$type": "sizing",
+          "$value": "200px"
+        }
+      },
+      "hit": {
+        "pointer": {
+          "$type": "sizing",
+          "$value": "28px"
+        },
+        "touch": {
+          "$type": "sizing",
+          "$value": "44px"
+        }
+      },
+      "icon": {
+        "lg": {
+          "$type": "sizing",
+          "$value": "24px"
+        },
+        "md": {
+          "$type": "sizing",
+          "$value": "20px"
+        },
+        "ring": {
+          "$type": "sizing",
+          "$value": "44px",
+          "$description": "icon ring in corner-pinned cards"
+        },
+        "sm": {
+          "$type": "sizing",
+          "$value": "16px"
+        },
+        "xs": {
+          "$type": "sizing",
+          "$value": "12px"
+        }
+      }
+    },
+    "space": {
+      "0": {
+        "$type": "spacing",
+        "$value": "0px"
+      },
+      "1": {
+        "$type": "spacing",
+        "$value": "4px"
+      },
+      "2": {
+        "$type": "spacing",
+        "$value": "6px"
+      },
+      "3": {
+        "$type": "spacing",
+        "$value": "8px"
+      },
+      "4": {
+        "$type": "spacing",
+        "$value": "12px"
+      },
+      "5": {
+        "$type": "spacing",
+        "$value": "16px"
+      },
+      "6": {
+        "$type": "spacing",
+        "$value": "20px"
+      },
+      "7": {
+        "$type": "spacing",
+        "$value": "24px"
+      },
+      "8": {
+        "$type": "spacing",
+        "$value": "32px"
+      },
+      "9": {
+        "$type": "spacing",
+        "$value": "36px"
+      },
+      "10": {
+        "$type": "spacing",
+        "$value": "40px"
+      },
+      "11": {
+        "$type": "spacing",
+        "$value": "48px"
+      },
+      "12": {
+        "$type": "spacing",
+        "$value": "64px"
+      },
+      "13": {
+        "$type": "spacing",
+        "$value": "104px"
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "motion": {
+    "presentation": {
+      "crossfade": {
+        "$type": "boolean",
+        "$value": "true",
+        "$description": "Flag. 1 under Reduce Motion: outside an active gesture nothing scales, rotates, blurs or changes depth; presentations fade by opacity over motion.duration.base with motion.easing.out; in-place movement keeps its spring (ADR-0023 §8.4)."
+      }
+    }
+  }
+}

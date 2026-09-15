@@ -1,0 +1,1335 @@
+{
+  "$generated": "tools/tokens from tokens/prism.resolver.json; do not edit",
+  "modifiers": [
+    {
+      "name": "colorScheme",
+      "contexts": [
+        "light",
+        "dark"
+      ],
+      "default": "light"
+    },
+    {
+      "name": "density",
+      "contexts": [
+        "compact",
+        "regular",
+        "comfortable"
+      ],
+      "default": "compact"
+    },
+    {
+      "name": "motion",
+      "contexts": [
+        "default",
+        "reduced"
+      ],
+      "default": "default"
+    }
+  ],
+  "runtime": {
+    "colorScheme": {
+      "attribute": "data-ds-color-scheme",
+      "nestable": true,
+      "values": {
+        "light": {
+          "context": "light",
+          "swift": "DSColorScheme.light"
+        },
+        "dark": {
+          "context": "dark",
+          "swift": "DSColorScheme.dark"
+        }
+      },
+      "media": {
+        "value": "dark",
+        "query": "(prefers-color-scheme: dark)"
+      }
+    },
+    "contrast": {
+      "attribute": "data-ds-contrast",
+      "nestable": false,
+      "values": {
+        "standard": {
+          "variant": null,
+          "swift": "DSContrast.standard"
+        },
+        "more": {
+          "variant": "increased-contrast",
+          "swift": "DSContrast.increased"
+        }
+      },
+      "media": {
+        "value": "more",
+        "query": "(prefers-contrast: more)"
+      }
+    },
+    "transparency": {
+      "attribute": "data-ds-transparency",
+      "nestable": false,
+      "values": {
+        "standard": {
+          "variant": null,
+          "swift": "DSTransparency.standard"
+        },
+        "reduce": {
+          "variant": "reduced-transparency",
+          "swift": "DSTransparency.reduced"
+        }
+      },
+      "media": {
+        "value": "reduce",
+        "query": "(prefers-reduced-transparency: reduce)"
+      }
+    },
+    "density": {
+      "attribute": "data-ds-density",
+      "nestable": true,
+      "values": {
+        "compact": {
+          "context": "compact",
+          "swift": "DSDensity.compact"
+        },
+        "regular": {
+          "context": "regular",
+          "swift": "DSDensity.regular"
+        },
+        "comfortable": {
+          "context": "comfortable",
+          "swift": "DSDensity.comfortable"
+        }
+      },
+      "media": {
+        "value": "regular",
+        "query": "(any-pointer: coarse)"
+      }
+    },
+    "modality": {
+      "attribute": "data-ds-modality",
+      "nestable": false,
+      "values": {
+        "pointer": {
+          "context": "pointer",
+          "swift": "DSModality.pointer"
+        },
+        "touch": {
+          "context": "touch",
+          "swift": "DSModality.touch"
+        }
+      },
+      "media": {
+        "value": "touch",
+        "query": "not all and (hover: hover) and (pointer: fine)"
+      }
+    },
+    "motion": {
+      "attribute": "data-ds-motion",
+      "nestable": false,
+      "values": {
+        "standard": {
+          "context": "default",
+          "swift": "DSMotionMode.standard"
+        },
+        "reduce": {
+          "context": "reduced",
+          "swift": "DSMotionMode.reduced"
+        }
+      },
+      "media": {
+        "value": "reduce",
+        "query": "(prefers-reduced-motion: reduce)"
+      }
+    }
+  },
+  "platformDefaults": {
+    "web": {
+      "density": "compact",
+      "modality": "pointer"
+    },
+    "ios": {
+      "density": "regular",
+      "modality": "touch"
+    },
+    "ipados": {
+      "density": "regular",
+      "modality": "touch"
+    },
+    "macos": {
+      "density": "compact",
+      "modality": "pointer"
+    },
+    "watchos": {
+      "colorScheme": "dark",
+      "density": "comfortable",
+      "modality": "touch"
+    }
+  },
+  "tailwindVariants": [
+    "ds-touch",
+    "ds-pointer",
+    "ds-contrast-more",
+    "ds-reduce-transparency",
+    "ds-reduce-motion"
+  ],
+  "tokens": [
+    {
+      "path": "ref.color.accent.300",
+      "id": "ref.color.accent.300",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-accent-300",
+      "cssVars": [
+        "--ds-ref-color-accent-300"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "outside sRGB, inside Display P3",
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.accent.500",
+      "id": "ref.color.accent.500",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-accent-500",
+      "cssVars": [
+        "--ds-ref-color-accent-500"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.accent.800",
+      "id": "ref.color.accent.800",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-accent-800",
+      "cssVars": [
+        "--ds-ref-color-accent-800"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.neutral.0",
+      "id": "ref.color.neutral.0",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-neutral-0",
+      "cssVars": [
+        "--ds-ref-color-neutral-0"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.neutral.100",
+      "id": "ref.color.neutral.100",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-neutral-100",
+      "cssVars": [
+        "--ds-ref-color-neutral-100"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.neutral.900",
+      "id": "ref.color.neutral.900",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-neutral-900",
+      "cssVars": [
+        "--ds-ref-color-neutral-900"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.neutral.950",
+      "id": "ref.color.neutral.950",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-neutral-950",
+      "cssVars": [
+        "--ds-ref-color-neutral-950"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.dark.bg-fill-accent",
+      "id": "ref.color.slot.dark.bg-fill-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-dark-bg-fill-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-dark-bg-fill-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.dark.bg-page",
+      "id": "ref.color.slot.dark.bg-page",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-dark-bg-page",
+      "cssVars": [
+        "--ds-ref-color-slot-dark-bg-page"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.dark.text-accent",
+      "id": "ref.color.slot.dark.text-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-dark-text-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-dark-text-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.dark.text-on-accent",
+      "id": "ref.color.slot.dark.text-on-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-dark-text-on-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-dark-text-on-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.light.bg-fill-accent",
+      "id": "ref.color.slot.light.bg-fill-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-light-bg-fill-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-light-bg-fill-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.light.bg-page",
+      "id": "ref.color.slot.light.bg-page",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-light-bg-page",
+      "cssVars": [
+        "--ds-ref-color-slot-light-bg-page"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.light.text-accent",
+      "id": "ref.color.slot.light.text-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-light-text-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-light-text-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.slot.light.text-on-accent",
+      "id": "ref.color.slot.light.text-on-accent",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-slot-light-text-on-accent",
+      "cssVars": [
+        "--ds-ref-color-slot-light-text-on-accent"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.font.display",
+      "id": "ref.font.display",
+      "tier": "ref",
+      "type": "fontFamily",
+      "dependsOn": [],
+      "css": "--ds-ref-font-display",
+      "cssVars": [
+        "--ds-ref-font-display"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.font.ui",
+      "id": "ref.font.ui",
+      "tier": "ref",
+      "type": "fontFamily",
+      "dependsOn": [],
+      "css": "--ds-ref-font-ui",
+      "cssVars": [
+        "--ds-ref-font-ui"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.gradient.vivid.plum-dusk",
+      "id": "ref.gradient.vivid.plum-dusk",
+      "tier": "ref",
+      "type": "gradient",
+      "dependsOn": [],
+      "css": "--ds-ref-gradient-vivid-plum-dusk",
+      "cssVars": [
+        "--ds-ref-gradient-vivid-plum-dusk",
+        "--ds-ref-gradient-vivid-plum-dusk-bloom-alpha",
+        "--ds-ref-gradient-vivid-plum-dusk-bloom-blur",
+        "--ds-ref-gradient-vivid-plum-dusk-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.gradient.vivid.sky",
+      "id": "ref.gradient.vivid.sky",
+      "tier": "ref",
+      "type": "gradient",
+      "dependsOn": [],
+      "css": "--ds-ref-gradient-vivid-sky",
+      "cssVars": [
+        "--ds-ref-gradient-vivid-sky",
+        "--ds-ref-gradient-vivid-sky-bloom-alpha",
+        "--ds-ref-gradient-vivid-sky-bloom-blur",
+        "--ds-ref-gradient-vivid-sky-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.motion.duration.base",
+      "id": "ref.motion.duration.base",
+      "tier": "ref",
+      "type": "duration",
+      "dependsOn": [],
+      "css": "--ds-ref-motion-duration-base",
+      "cssVars": [
+        "--ds-ref-motion-duration-base"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.motion.duration.fast",
+      "id": "ref.motion.duration.fast",
+      "tier": "ref",
+      "type": "duration",
+      "dependsOn": [],
+      "css": "--ds-ref-motion-duration-fast",
+      "cssVars": [
+        "--ds-ref-motion-duration-fast"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.motion.easing.in-out",
+      "id": "ref.motion.easing.in-out",
+      "tier": "ref",
+      "type": "cubicBezier",
+      "dependsOn": [],
+      "css": "--ds-ref-motion-easing-in-out",
+      "cssVars": [
+        "--ds-ref-motion-easing-in-out"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.motion.easing.out",
+      "id": "ref.motion.easing.out",
+      "tier": "ref",
+      "type": "cubicBezier",
+      "dependsOn": [],
+      "css": "--ds-ref-motion-easing-out",
+      "cssVars": [
+        "--ds-ref-motion-easing-out"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.motion.spring.snappy",
+      "id": "ref.motion.spring.snappy",
+      "tier": "ref",
+      "type": "transition",
+      "dependsOn": [],
+      "css": "--ds-ref-motion-spring-snappy",
+      "cssVars": [
+        "--ds-ref-motion-spring-snappy",
+        "--ds-ref-motion-spring-snappy-delay",
+        "--ds-ref-motion-spring-snappy-duration",
+        "--ds-ref-motion-spring-snappy-easing"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "default for state changes",
+      "deprecated": null
+    },
+    {
+      "path": "ref.space.2",
+      "id": "ref.space.2",
+      "tier": "ref",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-ref-space-2",
+      "cssVars": [
+        "--ds-ref-space-2"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.space.4",
+      "id": "ref.space.4",
+      "tier": "ref",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-ref-space-4",
+      "cssVars": [
+        "--ds-ref-space-4"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.type.body.md",
+      "id": "ref.type.body.md",
+      "tier": "ref",
+      "type": "typography",
+      "dependsOn": [],
+      "css": null,
+      "cssVars": [
+        "--ds-ref-type-body-md-font-family",
+        "--ds-ref-type-body-md-font-size",
+        "--ds-ref-type-body-md-font-variant-numeric",
+        "--ds-ref-type-body-md-font-weight",
+        "--ds-ref-type-body-md-letter-spacing",
+        "--ds-ref-type-body-md-line-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.type.metric.xl",
+      "id": "ref.type.metric.xl",
+      "tier": "ref",
+      "type": "typography",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": null,
+      "cssVars": [
+        "--ds-ref-type-metric-xl-font-family",
+        "--ds-ref-type-metric-xl-font-size",
+        "--ds-ref-type-metric-xl-font-variant-numeric",
+        "--ds-ref-type-metric-xl-font-weight",
+        "--ds-ref-type-metric-xl-letter-spacing",
+        "--ds-ref-type-metric-xl-line-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "the one hero numeral; 300 in light, 200 in dark",
+      "deprecated": null
+    },
+    {
+      "path": "ref.type.scale",
+      "id": "ref.type.scale",
+      "tier": "ref",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-ref-type-scale",
+      "cssVars": [
+        "--ds-ref-type-scale"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.fill.accent",
+      "id": "sys.color.bg.fill.accent",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-fill-accent",
+      "cssVars": [
+        "--ds-color-bg-fill-accent"
+      ],
+      "tailwind": [
+        "bg-ds-fill-accent"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-fill-accent"
+      ],
+      "ts": "color.bg.fill.accent",
+      "swift": "DSColor.bgFillAccent",
+      "asset": "color-bg-fill-accent",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.page",
+      "id": "sys.color.bg.page",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-page",
+      "cssVars": [
+        "--ds-color-bg-page"
+      ],
+      "tailwind": [
+        "bg-ds-page"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-page"
+      ],
+      "ts": "color.bg.page",
+      "swift": "DSColor.bgPage",
+      "asset": "color-bg-page",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.surface",
+      "id": "sys.color.bg.surface.$root",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-surface",
+      "cssVars": [
+        "--ds-color-bg-surface"
+      ],
+      "tailwind": [
+        "bg-ds-surface"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-surface"
+      ],
+      "ts": "color.bg.surface",
+      "swift": "DSColor.bgSurface",
+      "asset": "color-bg-surface",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.surface.raised",
+      "id": "sys.color.bg.surface.raised",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-surface-raised",
+      "cssVars": [
+        "--ds-color-bg-surface-raised"
+      ],
+      "tailwind": [
+        "bg-ds-surface-raised"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-surface-raised"
+      ],
+      "ts": "color.bg.surface.raised",
+      "swift": "DSColor.bgSurfaceRaised",
+      "asset": "color-bg-surface-raised",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.tint.accent",
+      "id": "sys.color.bg.tint.accent",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-tint-accent",
+      "cssVars": [
+        "--ds-color-bg-tint-accent"
+      ],
+      "tailwind": [
+        "bg-ds-tint-accent"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-tint-accent"
+      ],
+      "ts": "color.bg.tint.accent",
+      "swift": "DSColor.bgTintAccent",
+      "asset": "color-bg-tint-accent",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.text.accent",
+      "id": "sys.color.text.accent",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-accent",
+      "cssVars": [
+        "--ds-color-text-accent"
+      ],
+      "tailwind": [
+        "text-ds-accent"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-accent"
+      ],
+      "ts": "color.text.accent",
+      "swift": "DSColor.textAccent",
+      "asset": "color-text-accent",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-accent",
+      "id": "sys.color.text.on-accent",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-text-on-accent",
+      "cssVars": [
+        "--ds-color-text-on-accent"
+      ],
+      "tailwind": [
+        "text-ds-on-accent"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-accent"
+      ],
+      "ts": "color.text.on-accent",
+      "swift": "DSColor.textOnAccent",
+      "asset": "color-text-on-accent",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.text.primary",
+      "id": "sys.color.text.primary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-primary",
+      "cssVars": [
+        "--ds-color-text-primary"
+      ],
+      "tailwind": [
+        "text-ds-primary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-primary"
+      ],
+      "ts": "color.text.primary",
+      "swift": "DSColor.textPrimary",
+      "asset": "color-text-primary",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "color.text.secondary",
+      "id": "sys.color.text.secondary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-secondary",
+      "cssVars": [
+        "--ds-color-text-secondary"
+      ],
+      "tailwind": [
+        "text-ds-secondary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-secondary"
+      ],
+      "ts": "color.text.secondary",
+      "swift": "DSColor.textSecondary",
+      "asset": "color-text-secondary",
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "gradient.vivid.default",
+      "id": "sys.gradient.vivid.default",
+      "tier": "sys",
+      "type": "gradient",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-gradient-vivid-default",
+      "cssVars": [
+        "--ds-gradient-vivid-default",
+        "--ds-gradient-vivid-default-bloom-alpha",
+        "--ds-gradient-vivid-default-bloom-blur",
+        "--ds-gradient-vivid-default-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "gradient.vivid.default",
+      "swift": "DSTokenSet.gradient.vividDefault",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "motion.duration.base",
+      "id": "sys.motion.duration.base",
+      "tier": "sys",
+      "type": "duration",
+      "dependsOn": [
+        "motion"
+      ],
+      "css": "--ds-motion-duration-base",
+      "cssVars": [
+        "--ds-motion-duration-base"
+      ],
+      "tailwind": [
+        "duration-ds-base"
+      ],
+      "tailwindTheme": [
+        "--transition-duration-ds-base"
+      ],
+      "ts": "motion.duration.base",
+      "swift": "DSTokenSet.motion.durationBase",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "motion.duration.fast",
+      "id": "sys.motion.duration.fast",
+      "tier": "sys",
+      "type": "duration",
+      "dependsOn": [
+        "motion"
+      ],
+      "css": "--ds-motion-duration-fast",
+      "cssVars": [
+        "--ds-motion-duration-fast"
+      ],
+      "tailwind": [
+        "duration-ds-fast"
+      ],
+      "tailwindTheme": [
+        "--transition-duration-ds-fast"
+      ],
+      "ts": "motion.duration.fast",
+      "swift": "DSTokenSet.motion.durationFast",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "motion.easing.out",
+      "id": "sys.motion.easing.out",
+      "tier": "sys",
+      "type": "cubicBezier",
+      "dependsOn": [],
+      "css": "--ds-motion-easing-out",
+      "cssVars": [
+        "--ds-motion-easing-out"
+      ],
+      "tailwind": [
+        "ease-ds-out"
+      ],
+      "tailwindTheme": [
+        "--ease-ds-out"
+      ],
+      "ts": "motion.easing.out",
+      "swift": "DSTokenSet.motion.easingOut",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "motion.presentation.crossfade",
+      "id": "sys.motion.presentation.crossfade",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "motion"
+      ],
+      "css": "--ds-motion-presentation-crossfade",
+      "cssVars": [
+        "--ds-motion-presentation-crossfade"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "motion.presentation.crossfade",
+      "swift": "DSTokenSet.motion.presentationCrossfade",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "motion.spring.snappy",
+      "id": "sys.motion.spring.snappy",
+      "tier": "sys",
+      "type": "transition",
+      "dependsOn": [
+        "motion"
+      ],
+      "css": "--ds-motion-spring-snappy",
+      "cssVars": [
+        "--ds-motion-spring-snappy",
+        "--ds-motion-spring-snappy-delay",
+        "--ds-motion-spring-snappy-duration",
+        "--ds-motion-spring-snappy-easing"
+      ],
+      "tailwind": [
+        "ease-ds-spring-snappy",
+        "duration-ds-spring-snappy"
+      ],
+      "tailwindTheme": [
+        "--ease-ds-spring-snappy",
+        "--transition-duration-ds-spring-snappy"
+      ],
+      "ts": "motion.spring.snappy",
+      "swift": "DSTokenSet.motion.springSnappy",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "size.control.md",
+      "id": "sys.size.control.md",
+      "tier": "sys",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-size-control-md",
+      "cssVars": [
+        "--ds-size-control-md"
+      ],
+      "tailwind": [
+        "p-ds-control-md",
+        "px-ds-control-md",
+        "py-ds-control-md",
+        "pt-ds-control-md",
+        "pr-ds-control-md",
+        "pb-ds-control-md",
+        "pl-ds-control-md",
+        "m-ds-control-md",
+        "mx-ds-control-md",
+        "my-ds-control-md",
+        "mt-ds-control-md",
+        "mr-ds-control-md",
+        "mb-ds-control-md",
+        "ml-ds-control-md",
+        "gap-ds-control-md",
+        "gap-x-ds-control-md",
+        "gap-y-ds-control-md",
+        "space-x-ds-control-md",
+        "space-y-ds-control-md",
+        "w-ds-control-md",
+        "min-w-ds-control-md",
+        "max-w-ds-control-md",
+        "h-ds-control-md",
+        "min-h-ds-control-md",
+        "max-h-ds-control-md",
+        "size-ds-control-md",
+        "inset-ds-control-md",
+        "top-ds-control-md",
+        "right-ds-control-md",
+        "bottom-ds-control-md",
+        "left-ds-control-md"
+      ],
+      "tailwindTheme": [
+        "--spacing-ds-control-md"
+      ],
+      "ts": "size.control.md",
+      "swift": "DSTokenSet.size.controlMd",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "space.card-padding",
+      "id": "sys.space.card-padding",
+      "tier": "sys",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-space-card-padding",
+      "cssVars": [
+        "--ds-space-card-padding"
+      ],
+      "tailwind": [
+        "p-ds-card-padding",
+        "px-ds-card-padding",
+        "py-ds-card-padding",
+        "pt-ds-card-padding",
+        "pr-ds-card-padding",
+        "pb-ds-card-padding",
+        "pl-ds-card-padding",
+        "m-ds-card-padding",
+        "mx-ds-card-padding",
+        "my-ds-card-padding",
+        "mt-ds-card-padding",
+        "mr-ds-card-padding",
+        "mb-ds-card-padding",
+        "ml-ds-card-padding",
+        "gap-ds-card-padding",
+        "gap-x-ds-card-padding",
+        "gap-y-ds-card-padding",
+        "space-x-ds-card-padding",
+        "space-y-ds-card-padding",
+        "w-ds-card-padding",
+        "min-w-ds-card-padding",
+        "max-w-ds-card-padding",
+        "h-ds-card-padding",
+        "min-h-ds-card-padding",
+        "max-h-ds-card-padding",
+        "size-ds-card-padding",
+        "inset-ds-card-padding",
+        "top-ds-card-padding",
+        "right-ds-card-padding",
+        "bottom-ds-card-padding",
+        "left-ds-card-padding"
+      ],
+      "tailwindTheme": [
+        "--spacing-ds-card-padding"
+      ],
+      "ts": "space.card-padding",
+      "swift": "DSTokenSet.space.cardPadding",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "type.body.md",
+      "id": "sys.type.body.md",
+      "tier": "sys",
+      "type": "typography",
+      "dependsOn": [],
+      "css": null,
+      "cssVars": [
+        "--ds-type-body-md-font-family",
+        "--ds-type-body-md-font-size",
+        "--ds-type-body-md-font-variant-numeric",
+        "--ds-type-body-md-font-weight",
+        "--ds-type-body-md-letter-spacing",
+        "--ds-type-body-md-line-height"
+      ],
+      "tailwind": [
+        "text-ds-body-md",
+        "type-ds-body-md"
+      ],
+      "tailwindTheme": [
+        "--text-ds-body-md",
+        "--text-ds-body-md--font-weight",
+        "--text-ds-body-md--letter-spacing",
+        "--text-ds-body-md--line-height"
+      ],
+      "ts": "type.body.md",
+      "swift": "DSTokenSet.typography.bodyMd",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "type.metric.xl",
+      "id": "sys.type.metric.xl",
+      "tier": "sys",
+      "type": "typography",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": null,
+      "cssVars": [
+        "--ds-type-metric-xl-font-family",
+        "--ds-type-metric-xl-font-size",
+        "--ds-type-metric-xl-font-variant-numeric",
+        "--ds-type-metric-xl-font-weight",
+        "--ds-type-metric-xl-letter-spacing",
+        "--ds-type-metric-xl-line-height"
+      ],
+      "tailwind": [
+        "text-ds-metric-xl",
+        "type-ds-metric-xl"
+      ],
+      "tailwindTheme": [
+        "--text-ds-metric-xl",
+        "--text-ds-metric-xl--font-weight",
+        "--text-ds-metric-xl--letter-spacing",
+        "--text-ds-metric-xl--line-height"
+      ],
+      "ts": "type.metric.xl",
+      "swift": "DSTokenSet.typography.metricXl",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.button.bg",
+      "id": "comp.button.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-button-bg",
+      "cssVars": [
+        "--ds-button-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.button.bg",
+      "swift": "DSTokenSet.components.button.bg",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.button.motion.press",
+      "id": "comp.button.motion.press",
+      "tier": "comp",
+      "type": "transition",
+      "dependsOn": [
+        "motion"
+      ],
+      "css": "--ds-button-motion-press",
+      "cssVars": [
+        "--ds-button-motion-press",
+        "--ds-button-motion-press-delay",
+        "--ds-button-motion-press-duration",
+        "--ds-button-motion-press-easing"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.button.motion.press",
+      "swift": "DSTokenSet.components.button.motionPress",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.card.bg",
+      "id": "comp.card.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-card-bg",
+      "cssVars": [
+        "--ds-card-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.card.bg",
+      "swift": "DSTokenSet.components.card.bg",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.card.title",
+      "id": "comp.card.title",
+      "tier": "comp",
+      "type": "typography",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": null,
+      "cssVars": [
+        "--ds-card-title-font-family",
+        "--ds-card-title-font-size",
+        "--ds-card-title-font-variant-numeric",
+        "--ds-card-title-font-weight",
+        "--ds-card-title-letter-spacing",
+        "--ds-card-title-line-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.card.title",
+      "swift": "DSTokenSet.components.card.title",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    }
+  ]
+}

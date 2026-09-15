@@ -1,0 +1,16 @@
+{
+  "font": {
+    "display": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.display}"
+    },
+    "mono": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.mono}"
+    },
+    "ui": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.ui}"
+    }
+  }
+}

@@ -1,0 +1,323 @@
+{
+  "border": {
+    "focus": {
+      "$type": "dimension",
+      "$value": "{ref.border.focus}"
+    },
+    "hairline": {
+      "$type": "dimension",
+      "$value": "{ref.border.hairline}"
+    },
+    "strong": {
+      "$type": "dimension",
+      "$value": "{ref.border.strong}"
+    }
+  },
+  "chart": {
+    "bar-max-thickness": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "bar-radius": {
+      "$type": "dimension",
+      "$value": "4px"
+    },
+    "comparison-width": {
+      "$type": "dimension",
+      "$value": "1px"
+    },
+    "curve": {
+      "$type": "number",
+      "$value": "1",
+      "$description": "1 = monotone (default), 2 = catmullRom(0.5), 3 = step"
+    },
+    "endpoint-size": {
+      "$type": "dimension",
+      "$value": "10px"
+    },
+    "gauge-stroke-ratio": {
+      "$type": "number",
+      "$value": "0.1"
+    },
+    "line-width": {
+      "$type": "dimension",
+      "$value": "2px"
+    },
+    "marker-size": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "sparkline-width": {
+      "$type": "dimension",
+      "$value": "1.5px"
+    }
+  },
+  "icon": {
+    "weight": {
+      "$type": "number",
+      "$value": "400",
+      "$description": "regular; maps to Phosphor regular / SF regular (spec/icons/registry.json)"
+    },
+    "weight-display": {
+      "$type": "number",
+      "$value": "200"
+    }
+  },
+  "opacity": {
+    "dimmed-row": {
+      "$type": "opacity",
+      "$value": "{ref.opacity.dimmed-row}"
+    },
+    "disabled": {
+      "$type": "opacity",
+      "$value": "{ref.opacity.disabled}"
+    }
+  },
+  "radius": {
+    "badge": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.1}"
+    },
+    "card": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.7}",
+      "$description": "regular card 24; compact 20"
+    },
+    "card-compact": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.6}"
+    },
+    "card-large": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.9}"
+    },
+    "chip": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.pill}"
+    },
+    "control": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.pill}",
+      "$description": "controls are pills or circles"
+    },
+    "hero": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.10}"
+    },
+    "inner": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.2}"
+    },
+    "media": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.3}"
+    },
+    "sheet": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.8}"
+    },
+    "tile": {
+      "$type": "borderRadius",
+      "$value": "{ref.radius.5}"
+    }
+  },
+  "size": {
+    "card": {
+      "min": {
+        "$type": "sizing",
+        "$value": "{ref.size.card.min}",
+        "$description": "minimum card width in pattern grids (spec/patterns/README.md)"
+      }
+    },
+    "icon": {
+      "lg": {
+        "$type": "sizing",
+        "$value": "{ref.size.icon.lg}"
+      },
+      "md": {
+        "$type": "sizing",
+        "$value": "{ref.size.icon.md}"
+      },
+      "ring": {
+        "$type": "sizing",
+        "$value": "{ref.size.icon.ring}"
+      },
+      "sm": {
+        "$type": "sizing",
+        "$value": "{ref.size.icon.sm}"
+      }
+    }
+  },
+  "space": {
+    "0": {
+      "$type": "spacing",
+      "$value": "{ref.space.0}"
+    },
+    "1": {
+      "$type": "spacing",
+      "$value": "{ref.space.1}"
+    },
+    "2": {
+      "$type": "spacing",
+      "$value": "{ref.space.2}"
+    },
+    "3": {
+      "$type": "spacing",
+      "$value": "{ref.space.3}"
+    },
+    "4": {
+      "$type": "spacing",
+      "$value": "{ref.space.4}"
+    },
+    "5": {
+      "$type": "spacing",
+      "$value": "{ref.space.5}"
+    },
+    "6": {
+      "$type": "spacing",
+      "$value": "{ref.space.6}"
+    },
+    "7": {
+      "$type": "spacing",
+      "$value": "{ref.space.7}"
+    },
+    "8": {
+      "$type": "spacing",
+      "$value": "{ref.space.8}"
+    },
+    "9": {
+      "$type": "spacing",
+      "$value": "{ref.space.9}"
+    },
+    "10": {
+      "$type": "spacing",
+      "$value": "{ref.space.10}"
+    },
+    "11": {
+      "$type": "spacing",
+      "$value": "{ref.space.11}"
+    },
+    "12": {
+      "$type": "spacing",
+      "$value": "{ref.space.12}"
+    },
+    "13": {
+      "$type": "spacing",
+      "$value": "{ref.space.13}"
+    }
+  },
+  "type": {
+    "body": {
+      "lg": {
+        "$type": "typography",
+        "$value": "{ref.type.body.lg}"
+      },
+      "md": {
+        "$type": "typography",
+        "$value": "{ref.type.body.md}"
+      },
+      "sm": {
+        "$type": "typography",
+        "$value": "{ref.type.body.sm}"
+      }
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": "{ref.type.caption}"
+    },
+    "data": {
+      "$type": "typography",
+      "$value": "{ref.type.data}"
+    },
+    "display": {
+      "lg": {
+        "$type": "typography",
+        "$value": "{ref.type.display.lg}"
+      },
+      "md": {
+        "$type": "typography",
+        "$value": "{ref.type.display.md}"
+      },
+      "xl": {
+        "$type": "typography",
+        "$value": "{ref.type.display.xl}"
+      }
+    },
+    "eyebrow": {
+      "$type": "typography",
+      "$value": "{ref.type.eyebrow}"
+    },
+    "headline": {
+      "$type": "typography",
+      "$value": "{ref.type.headline}"
+    },
+    "label": {
+      "lg": {
+        "$type": "typography",
+        "$value": "{ref.type.label.lg}"
+      },
+      "md": {
+        "$type": "typography",
+        "$value": "{ref.type.label.md}"
+      },
+      "sm": {
+        "$type": "typography",
+        "$value": "{ref.type.label.sm}"
+      }
+    },
+    "metric": {
+      "lg": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.lg}"
+      },
+      "md": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.md}"
+      },
+      "unit": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.unit}"
+      },
+      "xl": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.xl}"
+      }
+    },
+    "micro": {
+      "$type": "typography",
+      "$value": "{ref.type.micro}"
+    },
+    "title": {
+      "lg": {
+        "$type": "typography",
+        "$value": "{ref.type.title.lg}"
+      },
+      "md": {
+        "$type": "typography",
+        "$value": "{ref.type.title.md}"
+      },
+      "sm": {
+        "$type": "typography",
+        "$value": "{ref.type.title.sm}"
+      }
+    }
+  },
+  "z": {
+    "base": {
+      "$type": "number",
+      "$value": "0"
+    },
+    "overlay": {
+      "$type": "number",
+      "$value": "100"
+    },
+    "raised": {
+      "$type": "number",
+      "$value": "10"
+    },
+    "toast": {
+      "$type": "number",
+      "$value": "1000"
+    }
+  }
+}

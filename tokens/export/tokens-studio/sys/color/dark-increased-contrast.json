@@ -1,0 +1,42 @@
+{
+  "color": {
+    "border": {
+      "hairline": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.25)"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.6)"
+      }
+    },
+    "chart": {
+      "comparison": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.6)"
+      },
+      "grid": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.25)"
+      },
+      "target": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.85)"
+      }
+    },
+    "text": {
+      "dimmed": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.64)"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.8)"
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.7)"
+      }
+    }
+  }
+}

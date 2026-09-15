@@ -1,0 +1,320 @@
+{
+  "ref": {
+    "color": {
+      "accent": {
+        "50": {
+          "$type": "color",
+          "$value": "#fff7ec"
+        },
+        "100": {
+          "$type": "color",
+          "$value": "#ffebd1"
+        },
+        "200": {
+          "$type": "color",
+          "$value": "#ffd8a8"
+        },
+        "300": {
+          "$type": "color",
+          "$value": "#ffc07a"
+        },
+        "400": {
+          "$type": "color",
+          "$value": "#f9a55a"
+        },
+        "500": {
+          "$type": "color",
+          "$value": "#f39444"
+        },
+        "600": {
+          "$type": "color",
+          "$value": "#dd7a24"
+        },
+        "700": {
+          "$type": "color",
+          "$value": "#b8561a"
+        },
+        "800": {
+          "$type": "color",
+          "$value": "#9c4512"
+        },
+        "900": {
+          "$type": "color",
+          "$value": "#6b2f0c"
+        },
+        "950": {
+          "$type": "color",
+          "$value": "#3d1a06"
+        }
+      },
+      "neutral": {
+        "0": {
+          "$type": "color",
+          "$value": "#ffffff"
+        },
+        "50": {
+          "$type": "color",
+          "$value": "#f7f8fa"
+        },
+        "100": {
+          "$type": "color",
+          "$value": "#f1f2f5"
+        },
+        "150": {
+          "$type": "color",
+          "$value": "#e9ebef"
+        },
+        "200": {
+          "$type": "color",
+          "$value": "#e1e3e8"
+        },
+        "300": {
+          "$type": "color",
+          "$value": "#c9ccd3"
+        },
+        "400": {
+          "$type": "color",
+          "$value": "#a6aab4"
+        },
+        "500": {
+          "$type": "color",
+          "$value": "#7e838f"
+        },
+        "600": {
+          "$type": "color",
+          "$value": "#5c6068"
+        },
+        "700": {
+          "$type": "color",
+          "$value": "#40444c"
+        },
+        "800": {
+          "$type": "color",
+          "$value": "#282a30"
+        },
+        "850": {
+          "$type": "color",
+          "$value": "#1f2126"
+        },
+        "900": {
+          "$type": "color",
+          "$value": "#17191d"
+        },
+        "950": {
+          "$type": "color",
+          "$value": "#0d0e11"
+        },
+        "1000": {
+          "$type": "color",
+          "$value": "#050608"
+        }
+      },
+      "series": {
+        "dark": {
+          "1": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.0}",
+            "$description": "Series slot 1: the white step of the neutral ramp; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
+          },
+          "2": {
+            "$type": "color",
+            "$value": "{ref.color.accent.500}",
+            "$description": "Series slot 2: accent step 500; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
+          },
+          "3": {
+            "$type": "color",
+            "$value": "#6b84e0"
+          },
+          "4": {
+            "$type": "color",
+            "$value": "#5bc8b5"
+          },
+          "5": {
+            "$type": "color",
+            "$value": "#d48bd0"
+          },
+          "6": {
+            "$type": "color",
+            "$value": "#d9c27a"
+          }
+        },
+        "light": {
+          "1": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Series slot 1: the ink step of the neutral ramp; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
+          },
+          "2": {
+            "$type": "color",
+            "$value": "{ref.color.accent.700}",
+            "$description": "Series slot 2: accent step 700, 4.8:1 on white; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
+          },
+          "3": {
+            "$type": "color",
+            "$value": "#4e6ccd"
+          },
+          "4": {
+            "$type": "color",
+            "$value": "#1f8f80"
+          },
+          "5": {
+            "$type": "color",
+            "$value": "#a64fa3"
+          },
+          "6": {
+            "$type": "color",
+            "$value": "#6e7a22"
+          }
+        }
+      },
+      "slot": {
+        "dark": {
+          "bg-fill-accent": {
+            "$type": "color",
+            "$value": "{ref.color.accent.500}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.fill.accent in the dark scheme file."
+          },
+          "bg-page": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.page in the dark scheme file."
+          },
+          "text-accent": {
+            "$type": "color",
+            "$value": "{ref.color.accent.500}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.accent in the dark scheme file."
+          },
+          "text-on-accent": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.on-accent in the dark scheme file."
+          }
+        },
+        "light": {
+          "bg-fill-accent": {
+            "$type": "color",
+            "$value": "{ref.color.accent.300}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.fill.accent in the light scheme file."
+          },
+          "bg-page": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.100}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.page in the light scheme file."
+          },
+          "text-accent": {
+            "$type": "color",
+            "$value": "{ref.color.accent.800}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.accent in the light scheme file."
+          },
+          "text-on-accent": {
+            "$type": "color",
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.on-accent in the light scheme file."
+          }
+        }
+      },
+      "smoke": {
+        "dark": {
+          "$type": "color",
+          "$value": "#101410",
+          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+        },
+        "light": {
+          "$type": "color",
+          "$value": "#0a0c08",
+          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+        }
+      },
+      "status": {
+        "danger": {
+          "badge": {
+            "$type": "color",
+            "$value": "#e5252a"
+          },
+          "dark": {
+            "$type": "color",
+            "$value": "#ff5a55"
+          },
+          "dot-light": {
+            "$type": "color",
+            "$value": "#f04b45"
+          },
+          "mark-dark": {
+            "$type": "color",
+            "$value": "#ff4642"
+          },
+          "text-light": {
+            "$type": "color",
+            "$value": "#bf2222"
+          },
+          "tint-light": {
+            "$type": "color",
+            "$value": "#fde9e9"
+          }
+        },
+        "info": {
+          "badge-dark": {
+            "$type": "color",
+            "$value": "#527af1"
+          },
+          "dark": {
+            "$type": "color",
+            "$value": "#7a93f0"
+          },
+          "dot-light": {
+            "$type": "color",
+            "$value": "#4e6ccd"
+          },
+          "mark-dark": {
+            "$type": "color",
+            "$value": "#6b84e0"
+          },
+          "text-light": {
+            "$type": "color",
+            "$value": "#3d5bc4"
+          },
+          "tint-light": {
+            "$type": "color",
+            "$value": "#eaedf9"
+          }
+        },
+        "success": {
+          "dark": {
+            "$type": "color",
+            "$value": "#5ccb6a"
+          },
+          "dot-light": {
+            "$type": "color",
+            "$value": "#2db24a"
+          },
+          "text-light": {
+            "$type": "color",
+            "$value": "#187530"
+          },
+          "tint-light": {
+            "$type": "color",
+            "$value": "#e6f6e9"
+          }
+        },
+        "warning": {
+          "dark": {
+            "$type": "color",
+            "$value": "#f5b83d"
+          },
+          "dot-light": {
+            "$type": "color",
+            "$value": "#f5b83d"
+          },
+          "text-light": {
+            "$type": "color",
+            "$value": "#8f5b00"
+          },
+          "tint-light": {
+            "$type": "color",
+            "$value": "#fef6e8"
+          }
+        }
+      }
+    }
+  }
+}

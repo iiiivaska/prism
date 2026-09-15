@@ -1,9 +1,9 @@
 // Living-document check (ADR-0024 §13; ARCHITECTURE §3.1): every token path and glob in the living
 // documents resolves, the tokens README's sys.color segment list equals the ids, and its ownership
-// table equals config.OWNERSHIP, whose brand row brands/README.md reproduces. P1-5 adds the emitted
-// names (§13.3). The checks at the bottom read the real documents; the grammar tests run on inline
-// samples and the fixtures.
-import { readFileSync } from 'node:fs';
+// table equals config.OWNERSHIP, whose brand row brands/README.md reproduces. The emitted names of
+// §13.3 (P1-5) must appear in the generated manifest.json. The checks at the bottom read the real
+// documents; the grammar tests run on inline samples and the fixtures.
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import { parse as parseYaml } from 'yaml';
 import { BRAND_OVERRIDABLE, OWNERSHIP, REF_SET } from './config.ts';
@@ -300,5 +300,127 @@ describe('living documents', () => {
     const fromDocs = new Set(documented.flatMap((p) => expandDocPath(p)).flatMap((p) => expand(p, refIds)));
     const fromConfig = new Set(BRAND_OVERRIDABLE.flatMap((p) => expand(p, refIds)));
     expect([...fromDocs].sort()).toEqual([...fromConfig].sort());
+  });
+});
+
+// ---- emitted names (ADR-0024 §13.3, P1-5) ----
+
+/**
+ * The parts of the manifest the emitted-name check reads (formats/manifest.ts). `cssVars` lists every
+ * custom property a token declares, its derived declarations of ARCHITECTURE §8 included; a typography
+ * role has no base property, so `css` is null there and `var(--ds-type-body-md)` fails the check.
+ */
+export interface ManifestNames {
+  readonly runtime: Readonly<Record<string, { readonly attribute: string; readonly values: Readonly<Record<string, unknown>> }>>;
+  readonly tokens: readonly { readonly cssVars: readonly string[]; readonly tailwind: readonly string[]; readonly tailwindTheme: readonly string[]; readonly swift: string | null }[];
+}
+
+/** A documented name with `<placeholder>` segments or `*` → a matcher over emitted names. */
+function nameGlob(name: string): RegExp {
+  const pattern = name
+    .split(/(<[^<>]+>|\*)/)
+    .map((part) => (part === '*' ? '[a-z0-9-]*' : /^<[^<>]+>$/.test(part) ? '[a-z0-9-]+' : part.replace(/[.+?^${}()|[\]\\]/g, '\\$&')))
+    .join('');
+  return new RegExp(`^${pattern}$`);
+}
+
+export interface EmittedName { readonly kind: 'css' | 'tailwind-theme' | 'utility' | 'swift' | 'attribute'; readonly name: string; readonly value?: string }
+
+/** The emitted names one code span quotes (ADR-0024 §13.3). */
+export function emittedNames(text: string): EmittedName[] {
+  const out: EmittedName[] = [];
+  let rest = text;
+  for (const m of text.matchAll(/data-ds-[a-z-]+(?:="?([a-z0-9-]*)"?)?/g)) {
+    const name = /^data-ds-[a-z-]+/.exec(m[0])?.[0] ?? '';
+    out.push(m[1] === undefined ? { kind: 'attribute', name } : { kind: 'attribute', name, value: m[1] });
+    rest = rest.replace(m[0], ' ');
+  }
+  for (const m of rest.matchAll(/--(?:[a-z0-9-]+?-)?ds-[a-z0-9<>|*-]*/g)) {
+    out.push({ kind: m[0].startsWith('--ds-') ? 'css' : 'tailwind-theme', name: m[0] });
+    rest = rest.replace(m[0], ' ');
+  }
+  for (const m of rest.matchAll(/\bDS[A-Z][A-Za-z0-9]*(?:\.[A-Za-z_`][A-Za-z0-9_`[\].]*)+/g)) out.push({ kind: 'swift', name: m[0].replace(/\.$/, '') });
+  for (const word of rest.split(/[\s,()'"`]+/)) {
+    if (!word.includes('-ds-') || word.startsWith('@') || word.includes('/') && !/\/[0-9]+$/.test(word)) continue;
+    const utility = word.slice(word.lastIndexOf(':') + 1).replace(/\/[0-9]+$/, '');
+    if (/^[a-z0-9-]*-ds-[a-z0-9<>|*-]+$/.test(utility)) out.push({ kind: 'utility', name: utility });
+  }
+  return out;
+}
+
+/** Why an emitted name is not in the manifest, or null when it is. */
+export function checkEmittedName(n: EmittedName, manifest: ManifestNames): string | null {
+  const re = nameGlob(n.name);
+  const any = (names: readonly string[]): boolean => names.some((x) => re.test(x));
+  switch (n.kind) {
+    case 'css':
+      return any(manifest.tokens.flatMap((t) => t.cssVars)) ? null : 'no custom property of the manifest (cssVars) matches';
+    case 'tailwind-theme':
+      return any(manifest.tokens.flatMap((t) => t.tailwindTheme)) ? null : 'no manifest tailwindTheme variable matches';
+    case 'utility':
+      return any(manifest.tokens.flatMap((t) => t.tailwind)) ? null : 'no manifest tailwind utility matches';
+    case 'swift': {
+      const type = n.name.split('.')[0] ?? '';
+      const swift = manifest.tokens.flatMap((t) => (t.swift === null ? [] : [t.swift]));
+      if (!swift.some((s) => s.startsWith(`${type}.`))) return null;   // a type the manifest does not name (DSTokenContext)
+      return swift.includes(n.name) ? null : 'no manifest swift name matches';
+    }
+    case 'attribute': {
+      const axis = Object.values(manifest.runtime).find((r) => r.attribute === n.name);
+      if (axis === undefined) return 'not an attribute of the manifest runtime section';
+      return n.value === undefined || n.value in axis.values ? null : `"${n.value}" is not a value of ${n.name}`;
+    }
+  }
+}
+
+export function unresolvedNames(markdown: string, file: string, manifest: ManifestNames): string[] {
+  const out: string[] = [];
+  for (const c of extractCandidates(markdown, file)) {
+    for (const n of emittedNames(c.text)) {
+      const problem = checkEmittedName(n, manifest);
+      if (problem !== null) out.push(`${c.file}:${c.line} \`${n.name}\` (${n.kind}): ${problem}`);
+    }
+  }
+  return out;
+}
+
+describe('emitted names (ADR-0024 §13.3)', () => {
+  const sample: ManifestNames = {
+    runtime: { density: { attribute: 'data-ds-density', values: { compact: {}, regular: {} } } },
+    tokens: [
+      { cssVars: ['--ds-color-bg-page'], tailwind: ['bg-ds-page'], tailwindTheme: ['--background-color-ds-page'], swift: 'DSColor.bgPage' },
+      {
+        cssVars: ['-font-family', '-font-size', '-font-weight', '-line-height', '-letter-spacing', '-font-variant-numeric'].map((s) => `--ds-type-body-md${s}`),
+        tailwind: ['text-ds-body-md', 'type-ds-body-md'], tailwindTheme: ['--text-ds-body-md'], swift: 'DSTokenSet.typography.bodyMd',
+      },
+    ],
+  };
+  const problems = (text: string): string[] => unresolvedNames(`Use \`${text}\`.`, 'x.md', sample);
+
+  test('reads custom properties, theme variables, utilities with variants, Swift accessors and attributes', () => {
+    expect(emittedNames('var(--ds-color-bg-page)')).toEqual([{ kind: 'css', name: '--ds-color-bg-page' }]);
+    expect(emittedNames('ds-touch:bg-ds-page/50')).toEqual([{ kind: 'utility', name: 'bg-ds-page' }]);
+    expect(emittedNames('data-ds-density="regular"')).toEqual([{ kind: 'attribute', name: 'data-ds-density', value: 'regular' }]);
+    expect(emittedNames('--background-color-ds-*')).toEqual([{ kind: 'tailwind-theme', name: '--background-color-ds-*' }]);
+    expect(emittedNames('DSColor.bgPage')).toEqual([{ kind: 'swift', name: 'DSColor.bgPage' }]);
+    expect(emittedNames('@iiiivaska/prism-tokens/brands/<brand>/tokens.css')).toEqual([]);
+  });
+
+  test('names must exist in the manifest; placeholders and * match emitted names', () => {
+    for (const ok of ['--ds-color-bg-page', 'var(--ds-type-body-md-line-height)', '--ds-*', 'type-ds-<role>', 'md:type-ds-body-md', '--background-color-ds-*', 'DSColor.bgPage', 'DSTokenContext.brand', 'data-ds-density', 'data-ds-density="compact"']) {
+      expect(problems(ok), ok).toEqual([]);
+    }
+    // A typography role declares no base property, and a color declares no derived one (ADR-0019 rule 13).
+    for (const bad of ['--ds-color-bg-nope', 'var(--ds-type-body-md-color)', 'var(--ds-type-body-md)', 'var(--ds-color-bg-page-font-size)', 'bg-ds-primary', '--text-color-ds-*', 'DSColor.bgNope', 'data-ds-brand', 'data-ds-density="huge"']) {
+      expect(problems(bad), bad).toHaveLength(1);
+    }
+  });
+
+  test('every emitted name the living documents quote exists in manifest.json', () => {
+    const path = `${REPO_ROOT}web/packages/tokens/src/generated/manifest.json`;
+    expect(existsSync(path), 'run `pnpm tokens:build` first').toBe(true);
+    const manifest = JSON.parse(readFileSync(path, 'utf8')) as ManifestNames;
+    const problemsInDocs = LIVING_DOCUMENTS.flatMap((doc) => unresolvedNames(readFileSync(`${REPO_ROOT}${doc}`, 'utf8'), doc, manifest));
+    expect(problemsInDocs).toEqual([]);
   });
 });

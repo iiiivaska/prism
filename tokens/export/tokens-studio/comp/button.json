@@ -1,0 +1,111 @@
+{
+  "comp": {
+    "button": {
+      "danger": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.tint.critical}"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.text.critical}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.critical}"
+        }
+      },
+      "gap": {
+        "$type": "spacing",
+        "$value": "{space.3}"
+      },
+      "ghost": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.fill.neutral.subtle}"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.border.strong}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.primary}"
+        }
+      },
+      "height": {
+        "lg": {
+          "$type": "sizing",
+          "$value": "{size.control.lg}"
+        },
+        "md": {
+          "$type": "sizing",
+          "$value": "{size.control.md}"
+        },
+        "sm": {
+          "$type": "sizing",
+          "$value": "{size.control.sm}"
+        }
+      },
+      "padding-x": {
+        "lg": {
+          "$type": "spacing",
+          "$value": "{space.6}"
+        },
+        "md": {
+          "$type": "spacing",
+          "$value": "{space.5}"
+        },
+        "sm": {
+          "$type": "spacing",
+          "$value": "{space.4}"
+        }
+      },
+      "primary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": "{color.bg.fill.inverse}"
+          },
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.fill.inverse}",
+            "$description": "solid inverse pill is the only fill"
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}"
+        }
+      },
+      "radius": {
+        "$type": "borderRadius",
+        "$value": "{radius.control}"
+      },
+      "secondary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": "{color.bg.surface.nested}"
+          },
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.surface.raised}"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.border.hairline}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.primary}"
+        }
+      }
+    }
+  }
+}
