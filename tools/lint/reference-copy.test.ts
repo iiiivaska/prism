@@ -40,13 +40,14 @@ describe("scanTree", () => {
   it("passes a clean tree: near misses, binary files, build output and the analyses are ignored", () => {
     const result = scanTree(join(fixtures, "clean"), entries);
     expect(result.findings).toEqual([]);
-    expect(result.filesScanned).toBe(10);
+    expect(result.filesScanned).toBe(11);
   });
 
-  it("reports every hit in a tampered tree, including the optional web/apps and gallery targets", () => {
+  it("reports every hit in a tampered tree, including the optional web/apps and gallery targets and the direction board", () => {
     expect(scanTree(join(fixtures, "tampered"), entries).findings.map(formatFinding)).toEqual([
       'agent/SKILL.md:4: reference UI copy "Keeper\'s Log"',
       'agent/SKILL.md:5: reference UI copy "Zephyr Freight Hub"',
+      'docs/direction-board/index.html:2: reference UI copy "Orbitak"',
       'docs/research/fonts/fonts-analysis.json:1: reference UI copy "Поиск заказчиков"',
       'docs/research/fonts/harness-g1-dark.html:2: reference UI copy "± 9.9 kg"',
       'docs/research/fonts/harness-g1-dark.html:3: reference UI copy "Поиск заказчиков"',
@@ -222,23 +223,23 @@ describe("CLI", () => {
   it("exits 0 on a clean tree", () => {
     const run = runCli("--root", join(fixtures, "clean"), "--denylist", fixtureDenylist);
     expect(run.status).toBe(0);
-    expect(run.stdout).toContain("no reference UI copy in 10 files (7 denylist entries)");
+    expect(run.stdout).toContain("no reference UI copy in 11 files (7 denylist entries)");
   });
 
   it("uses the shipped denylist by default", () => {
     const run = runCli("--root", join(fixtures, "clean"));
     expect(run.status).toBe(0);
-    expect(run.stdout).toContain(`no reference UI copy in 10 files (${shipped.length} denylist entries)`);
+    expect(run.stdout).toContain(`no reference UI copy in 11 files (${shipped.length} denylist entries)`);
   });
 
   it("exits 1 on a tampered tree and prints path:line for each hit", () => {
     const run = runCli("--root", join(fixtures, "tampered"), "--denylist", fixtureDenylist);
     expect(run.status).toBe(1);
     const lines = run.stdout.trim().split("\n");
-    expect(lines).toHaveLength(14);
+    expect(lines).toHaveLength(15);
     expect(lines[0]).toBe('agent/SKILL.md:4: reference UI copy "Keeper\'s Log"');
     expect(lines.every((line) => /^[\w/.-]+:\d+: reference UI copy ".+"$/.test(line))).toBe(true);
-    expect(run.stderr).toContain("14 hits in 11 files");
+    expect(run.stderr).toContain("15 hits in 12 files");
   });
 
   it.each<[string[], string]>([

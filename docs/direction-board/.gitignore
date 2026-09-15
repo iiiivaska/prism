@@ -1,0 +1,2 @@
+# Full-board renders are ~7 MB each; render.mjs regenerates them (see README.md).
+renders/board-*.png

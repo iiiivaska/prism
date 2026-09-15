@@ -67,6 +67,8 @@ export const SCAN_TARGETS: readonly ScanTarget[] = [
   { dir: "gallery", required: false },
   // The font harnesses, their renders (binary, skipped) and the font metadata beside them.
   { dir: "docs/research/fonts", required: true },
+  // The P3-0 direction board: its page, README and render script (renders and fonts are binary, skipped).
+  { dir: "docs/direction-board", required: true },
 ];
 
 /** Files that quote reference copy on purpose; never scanned, even if a target comes to cover them. */

@@ -39,4 +39,9 @@ export default defineConfig(
     files: ["web/packages/*/src/**/*.{ts,tsx}"],
     languageOptions: { globals: globals.browser },
   },
+  {
+    // Node script whose page.evaluate callbacks run in the browser.
+    files: ["docs/direction-board/render.mjs"],
+    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+  },
 );
