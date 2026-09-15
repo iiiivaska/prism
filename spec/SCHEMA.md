@@ -87,7 +87,11 @@ tokens:
     typography: { sm: type.label.sm, md: type.label.md, lg: type.label.lg }
 ```
 
-Paths are `sys.*` tokens written without the `sys.` prefix, or `comp.<component>.*` tokens (see `tokens/README.md`). Component tokens are declared in `tokens/comp/<component>.tokens.json` and alias semantic tokens; a spec may not bind to `ref.*`.
+A binding is either a public `sys` path in a spec-bindable category, written without `sys.` and without `$root`, or a token of the spec's own component, `comp.<kebab-name>.*`, where the name is the spec's `name` in kebab-case (a StatTile spec binds comp.stat-tile tokens). A spec never binds `ref.*` or another component's `comp.*` (ADR-0024 §5).
+
+- **Bindable categories:** `color`, `type`, `space`, `size`, `radius`, `border`, `elevation`, `opacity`, `motion`, `material`, `gradient`, `chart`, `stroke`, `icon`, `z`. Not bindable: `shadow` (the elevation levels are the role), `font` (families reach components through `type.*` roles) and `interaction` (modality flags that component code reads). The `motion` block is narrower still (below).
+- **Component tokens** are declared in `tokens/comp/<component>.tokens.json`, each a whole-value alias of one `sys` token. One exists only for a choice the component makes, where the role's name does not already say what the cell is (`comp.button.primary.bg.rest` → `color.bg.fill.inverse`); when the role's name is the cell's meaning, the spec binds the role (Text `tone: secondary` → `color.text.secondary`). Every component token is bound by its spec.
+- **Prose resolves.** Token paths in `behavior`, `accessibility`, `usage` and `notes` must exist, like the bindings. `spec:validate` (P2-1) checks all of this; `tokens/README.md` lists the names.
 
 ## Behavior
 
@@ -96,7 +100,7 @@ Interaction rules that both stacks must honor. Written as numbered sentences; ea
 ```yaml
 behavior:
   - Tapping fires `onPress` once on release inside the hit area.
-  - Minimum hit target: size.hit.touch (44pt) under touch; size.hit.pointer (28pt) under pointer.
+  - Minimum hit target: `size.hit` (44 pt under touch, 28 pt under pointer); the hit region extends invisibly around the visual box.
   - `isLoading` replaces the label with a Spinner of the same height and disables input; width does not change.
   - Long labels truncate with an ellipsis; they never wrap.
 ```
@@ -105,11 +109,13 @@ behavior:
 
 ```yaml
 motion:
-  press: motion.press          # token: duration + spring
-  reduceMotion: crossfade      # what happens under Reduce Motion
+  press: comp.button.motion.press   # motion.spring|duration|easing.* or comp.<component>.motion.*
+  reduceMotion: crossfade           # required: none | crossfade | instant (ADR-0023 §8.4)
 haptics:
   press: haptic.selection      # from spec/haptics.yaml registry; web = none
 ```
+
+`reduceMotion` says what the component does in Prism's reduced motion context; the values nest. `none`: nothing to substitute; the bound tokens reduce by themselves. `crossfade`: outside an active gesture nothing scales, rotates, blurs or changes depth; presentations fade by opacity over `motion.duration.base` with `motion.easing.out`; an in-place scale, blur or depth change becomes an opacity or color change to a token the spec names; in-place movement keeps its bound spring, which has no bounce under Reduce Motion. `instant`: as `crossfade`, and decorative animations (count-up, numeric roll, pulses, ambient loops, shimmer) do not run. `accessibility.reduceMotion` states the result in words and must agree (ADR-0023 §8.4). The block binds only `motion.spring.*`, `motion.duration.*`, `motion.easing.*` or the component's own `comp.<component>.motion.*` tokens (ADR-0023 rule 9).
 
 ## Accessibility (mandatory)
 
@@ -118,11 +124,14 @@ accessibility:
   role: button
   label: from label text; required when only an icon is shown
   traits: [button]
-  keyboard: Space/Enter activates; focus ring uses color.focus.ring at 2pt outside
+  keyboard: Space/Enter activates; focus ring uses `color.border.focus` at `border.focus` width outside
   dynamicType: label scales with type.label.*; height grows with it up to AX3, then clamps
   contrast: fg/bg pairs must pass AA at every variant and state (checked by tools/contrast)
   reduceTransparency: not applicable (no glass)
+  reduceMotion: press scale is replaced by an opacity dip
 ```
+
+`reduceTransparency` and `reduceMotion` are required in every spec (ADR-0011, ADR-0022 rule 9; the schema enforces them from P2-1). A spec cell keyed by a material name (`solid`, `raised`, `vivid`, `glass`, `glassLight`, `inverse`) applies when the enclosing Surface publishes that material, not because the component requested it (ADR-0022 §3.1).
 
 ## Content and usage rules for agents
 
@@ -161,7 +170,7 @@ Every example is rendered by both stacks into `gallery/snapshots/<Name>/<id>.<pl
 notes:
   platform:
     watchos: No trailing icon; sizes collapse to md; ghost variant becomes secondary.
-    macos: Height follows compact density (28pt); hover state required.
+    macos: Height follows compact density (`size.control.md`, 32 pt); hover state required.
   design: Primary uses elevation.1 so it lifts from solid surfaces; on vivid surfaces use variant=secondary.
 ```
 

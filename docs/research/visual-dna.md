@@ -69,8 +69,8 @@ Each principle states the rule, its numbers as tokens, and the analyses it comes
    - Sources: ADR-0009; Hydroflask §12.5 (four materials); Soma §3 (materials by role); Credit Karma, Principles #5 (1 in 6); CreditPros §11 #6–7; Vexto traffic §11.6; Arvion §3, §11.2. Specs: `Surface.yaml`, `Card.yaml`.
 
 6. **The glass rule.** Glass sits only over imagery, maps or vivid surfaces. It is never stacked on glass and never blurred on watchOS. It has no hue of its own, always has a 1 px light edge, and its text is checked over the darkest and lightest backdrop it may meet.
-   - Glass over a solid surface resolves to `surface.raised` and logs at debug level. On watchOS blur is off (`material.blur.enabled` 0), vivid resolves to solid, and glass resolves to `surface.raised` per the watch token (`Surface.yaml` and ADR-0009 say solid; B22).
-   - Under Reduce Transparency, glass turns opaque (`*-reduced-transparency`): surface-1 #1C1C1F at 92 % in dark, `neutral.900` or `neutral.0` in light. Increase Contrast does not change glass in the current resolver (see B21).
+   - Glass over a solid surface resolves to `surface.raised` and logs at debug level. On watchOS blur is off (`material.blur.enabled` 0), vivid resolves to solid, and glass resolves to `surface.raised` per the watch token (`Surface.yaml` and ADR-0009 say solid; B22). *(Superseded by ADR-0022, 2026-09-15: on watchOS glass renders the opaque raised fallback, and the blur flag is deleted.)*
+   - Under Reduce Transparency, glass turns opaque (`*-reduced-transparency`): surface-1 #1C1C1F at 92 % in dark, `neutral.900` or `neutral.0` in light. Increase Contrast does not change glass in the current resolver (see B21). *(Superseded by ADR-0022, 2026-09-15: one fallback, the opaque `raised` surface painted over the page, under Reduce Transparency and Increase Contrast, or `inverse` when selected; no token file carries it.)*
    - The edge is white 15–22 % fading to 0–8 % on glass fills; dark chips 20 % → 12 %; light glass over vivid 55 % → 0 (§7.3).
    - Test backdrops are #283126 (OKLCH L 0.30) and #5B6366 (L 0.49). White on dark glass holds at least 12.75:1 over both.
    - **Light glass** (the selected object) sits only over backdrops at OKLCH L ≤ 0.35, where white holds 5.14:1. Captions on light glass never go below 78 % white. Charts never sit on raw glass: the plot area gets `color.chart.plot`.
@@ -84,7 +84,7 @@ Each principle states the rule, its numbers as tokens, and the analyses it comes
    - Sources: Vexto traffic §9.1, §3; Vexto incident, What makes it beautiful #1; Hydroflask §10.2, §10.7; Arvion §9.1, §9.7, §11.1; Credit Karma, Colour logic.
 
 8. **Hierarchy comes from size and alpha, not weight or color.** One family, sentence case, quiet titles.
-   - Weights: 300 for heroes, 400 for everything including card titles, 500 for labels, chips, the active tab and `type.title.*`. 600 is a ceiling reserved for a page H1 and is not used by any reference-brand role (Appendix B).
+   - Weights: 300 for heroes, 400 for everything including card titles, 500 for labels, chips, the active tab and `type.title.*`. 600 is a ceiling reserved for a page H1 and is not used by any reference-brand role (Appendix B). *(Superseded by ADR-0021, 2026-09-15: nothing is heavier than 500 outside Bold Text.)*
    - Sizes step 11 · 12 · 13 · 14 · 15 · 17 · 18 · 20 · 24 · 32 · 40 · 48 · 64.
    - Dark text alpha steps are 100/64/55/42. A label and its value may share one size and differ only in alpha.
    - An uppercase eyebrow appears at most once per card (+3 % tracking), with no letterspaced caps anywhere else. Colored text is used only for its meaning (accent, status).
@@ -110,7 +110,7 @@ Each principle states the rule, its numbers as tokens, and the analyses it comes
     - Sources: Vexto incident, Principles #11; Vexto traffic §9.10; Credit Karma, Principles #10; CreditPros §11 #10; Arvion §5, §9.11.
 
 13. **One control family, one height.** Round icon buttons, pills, search fields and chips share the control height.
-    - Controls are 40 (pointer) or 44 (touch); the density tokens resolve `size.control` to 32 / 40 / 48 instead (B24). Icons are 20 inside controls at a 1.5 px stroke and 16 for inline and corner glyphs. Every glyph that acts has a hit area of at least 44 (touch) or 28 (pointer).
+    - Controls are 40 (pointer) or 44 (touch); the density tokens resolve `size.control` to 32 / 40 / 48 instead (B24). *(Superseded by ADR-0024 §7, 2026-09-15: controls follow `size.control.*` by density (md 32 / 40 / 48 for compact / regular / comfortable); the hit area follows `size.hit` by modality (28 pointer, 44 touch) and extends invisibly beyond a smaller control.)* Icons are 20 inside controls at a 1.5 px stroke and 16 for inline and corner glyphs. Every glyph that acts has a hit area of at least 44 (touch) or 28 (pointer).
     - Sources: Vexto traffic §11.9; Vexto incident, Principles #10; Soma §12.6; Credit Karma, Principles #6; CreditPros §11 #11; Arvion §5.
 
 14. **Status is a material, never a block, never color alone.** Status appears as dots, badges, 1–1.5 px strokes and 10 % tints. Red is translucent, and every status pairs an icon with a label.
@@ -120,7 +120,7 @@ Each principle states the rule, its numbers as tokens, and the analyses it comes
     - Sources: Vexto incident, What makes it beautiful #7; Vexto traffic §11.10, §11.15; Arvion §11.5, §11.13; ADR-0011.
 
 15. **Accessibility floors live in the tokens.** Functional text holds 4.5:1. Dimmed digits hold 3:1 and appear only at 24 px or more. Functional text is never below 12 px.
-    - Weights below 300 exist only in `type.metric.*` at 34 pt or more and resolve to 400 under Bold Text or Increase Contrast.
+    - Weights below 300 exist only in `type.metric.*` at 34 pt or more and resolve to 400 under Bold Text or Increase Contrast. *(ADR-0021, 2026-09-15: thin exists only as `metric.xl`'s dark weight; Increase Contrast renders every weight below 400 at 400, and Bold Text also steps every other weight on Apple.)*
     - Increase Contrast lifts every text tier one step (§3.6).
     - Every text-on-surface pair is listed in `tokens/contrast-pairs.json` and re-checked by `tools/contrast` (Appendix A).
     - Sources: ADR-0011; Vexto traffic §10, §11.15; Credit Karma, Principles #18; CreditPros §11 #20; Arvion §11.14.
@@ -179,7 +179,7 @@ Regular density. Tracking is given in px and as a percentage of the size. "Numer
 | `label.lg` | 15 / 1.2 | 500 | 0 | — | ui | pill tabs, large chips, active nav | Vexto nav tabs 15; Hydroflask chips 15 |
 | `label.md` | 13 / 1.2 | 500 | 0 | — | ui | chips, button labels (md), segmented labels | Arvion chips 13/500; Credit Karma nav 13/500 |
 | `label.sm` | 12 / 1.2 | 500 | 0 | — | ui | small buttons, status pill text | Arvion status labels 11–12 Medium (§11.5) |
-| `caption` | 12 / 1.35 | 400 | 0 | — | ui | timestamps, card captions, qualifiers; secondary tone (on light `tertiary` resolves to the same step; the token description says tertiary, B20) | all families: 11–13 px captions |
+| `caption` | 12 / 1.35 | 400 | 0 | — | ui | timestamps, card captions, qualifiers; secondary tone (on light `tertiary` resolves to the same step; the token description said tertiary until B20 was applied) | all families: 11–13 px captions |
 | `micro` | 11 / 1.2 | 500 | 0 | — | ui | badge digits only; never functional body text | Vexto badge digits 11 Medium |
 | `eyebrow` | 13 / 1.2 | 500 | +0.39 px (+3 %) | — | ui | uppercase, at most one per card | Soma uppercase card title 14 +3 % |
 | `metric.xl` | 48 / 1.0 | 300 (200 in dark, ≥ 34 pt only) | −0.48 px (−1 %) | proportional | display | the one hero numeral per screen; trailing group in `text.dimmed` at the same size | Vexto heroes 44–48; Soma 40; CreditPros 72–80 |
@@ -190,6 +190,8 @@ Regular density. Tracking is given in px and as a percentage of the size. "Numer
 
 Body line height is also a density token, `type.body-line-height`: compact 1.4, regular 1.5, comfortable 1.55.
 
+> **ADR-0021 (2026-09-15).** `display.xl` is never thin (300 in every scheme); `metric.xl` is 300 in light and 200 in dark (its `darkWeight`). Density does not change typography (ADR-0021 §6): the density line-height token is deleted, and body text keeps 1.5 in every density.
+
 ### 2.3 Weight rules
 
 - The ladder is 200–300 for heroes, 400 for everything, 500 for chips, labels, the active tab and titles, and a 600 ceiling for a page H1 only. No reference-brand role uses 600; `title.lg` is 500. Nothing is heavier.
@@ -197,6 +199,8 @@ Body line height is also a density token, `type.body-line-height`: compact 1.4, 
 - **Thin weights** (100–200) exist only in `type.metric.xl` and `type.metric.lg` at 34 pt or more (ADR-0008 rule 6, ADR-0011). With the regular scale this means only `metric.xl` (48) goes thin, and only in the dark mood. Onest renders cleanly at 100–200 for metrics of 34 pt or more (`fonts.md`).
 - Under Bold Text or Increase Contrast every weight below 400 resolves to 400 (`Text.yaml`; ADR-0011 states it for weights below 300). ADR-0008 rule 6 adds "below 24 pt" and resolves to 300 (B8).
 - Weight 300 is never used below 20 px. UltraLight breaks into hairlines on 1× screens below about 32 px. Sources: Vexto traffic §10.5; Credit Karma, Accessibility risks #9.
+
+> **ADR-0021 (2026-09-15)** settles these rules: nothing is heavier than 500 outside Bold Text; thin weights exist only as `metric.xl`'s dark weight at 34 px or more; Increase Contrast renders every weight below 400 at 400; Bold Text on Apple maps s ≤ 300 → 400, else s + 200 (capped at 900).
 
 ### 2.4 Numerals
 
@@ -374,7 +378,7 @@ Composites are over the default ground: surfaces over the page, tints over `bg.s
 - Light: secondary and tertiary → `neutral.700`, dimmed → `neutral.600`, accent text → `accent.900`, hairline → ink 30 %, strong → ink 60 %; chart grid ink 20 %, target ink 60 %, comparison ink 60 %.
 - Dark: secondary → white 80 %, tertiary → 70 %, dimmed → 64 %, hairline → 25 %, strong → 60 %; chart grid 25 %, target 85 %, comparison 60 %.
 
-**Reduce Transparency** makes glass opaque (§7.3).
+**Reduce Transparency** makes glass opaque (§7.3). *(Superseded by ADR-0022, 2026-09-15: glass renders the opaque `raised` surface under Reduce Transparency and Increase Contrast, chosen by Surface; the reduced-transparency contexts carry no token delta.)*
 
 ### 3.7 Values lifted from the references
 
@@ -483,9 +487,9 @@ A glass card floats over a map or photograph next to the object it describes: a 
 - **Material, light mood.** Over a bright photograph: `material.glass.dark.fill` #0A0C08 at 55 %, blur 40, saturate 0.8, edge 22 % → 8 %, grain 4 %.
 - **Selected.** `material.glass.light.fill` white 26 %, blur 40, bloom 35 %; only over backdrops at OKLCH L ≤ 0.35. White text reaches 5.86 over the darkest test backdrop and 5.14 at the limit.
 - **Geometry.** `radius.card` 24 (20 compact). Phone readout about 200 × 150; desktop entity card about 230–240 × 300.
-- **Fallbacks.** Reduce Transparency: surface-1 at 92 %. watchOS: no blur; `surface.raised` per the watch token, solid per `Surface.yaml` (B22).
+- **Fallbacks.** Reduce Transparency: surface-1 at 92 %. watchOS: no blur; `surface.raised` per the watch token, solid per `Surface.yaml` (B22). *(Superseded by ADR-0022, 2026-09-15: the opaque raised fallback under Reduce Transparency, Increase Contrast and on watchOS; `inverse` for the selected card.)*
 - **Example.** Title "Unit 4417", caption "14:05:22", status pill "In service".
-- Tokens and specs: `Card variant: glass`, `backdrop: image | map` (`Card.yaml` example `glass-vehicle`, `glass-selected`, for structure only: their strings come from a reference, B26); `Surface material: glass | glassLight`.
+- Tokens and specs: `Card variant: glass`, `backdrop: image | map` (`Card.yaml` examples `glass-vehicle` and `glass-selected`, whose strings are invented, B26); `Surface material: glass | glassLight`.
 - Sources: Vexto traffic §2.5, §3, §6; Vexto incident, Surfaces & Depth and What makes it beautiful #2–3; Soma §2.5, §10.13 (smoky glass widget over a photo); Arvion §3 (dark glass card over a light photo), §11.10.
 
 ### 4.4 The vivid 2×2
@@ -500,7 +504,7 @@ Four vivid tiles in a 2×2 grid are the one thing a screen sells, usually its ke
   - Size: on a 393-pt phone at regular density a tile is (393 − 2 × 24 − 12) / 2 ≈ 166 wide; `size.card.min` 200 applies to grid cards, not to 2×2 tiles **(reconstructed)**.
 - **Limits.** One 2×2 per screen; vivid cards come in even counts and never touch glass; text only inside each gradient's text-safe zone (§5). With the seeded gradients, of the light set only `sky` covers the top-left header (§5.3, Appendix B, B5).
 - **Example.** Four tiles titled "Throughput", "Uptake", "Retention" and "Yield" with metrics such as "4.2k".
-- Tokens and specs: `Card variant: vivid`, `vivid: <name>` (`Card.yaml` example `vivid-orchid-kpi`, for structure only: its provenance is not recorded, B26); `ref.gradient.vivid.*`; `DashboardGrid` hero row.
+- Tokens and specs: `Card variant: vivid`, `vivid: <name>` (`Card.yaml` example `vivid-orchid-kpi`, whose strings are invented, B26); `ref.gradient.vivid.*`; `DashboardGrid` hero row.
 - Sources: Hydroflask §3, §4, §7 (capsule stat tiles with grain, dotted seam and color-bleed glow), §10; CreditPros §2 Vivid surfaces, §9 #3; Credit Karma, Principles #5 (vivid is at most one card in six); Family A (a 2×2 vivid grid in the owner's light CRM screenshot) **(reconstructed)**.
 
 ### 4.5 The lit tile in a slab
@@ -718,6 +722,8 @@ In the light mood the H1 is a two-line headline whose second line has the same s
 
 ## 5. Vivid surfaces and the text-safe zone
 
+> **ADR-0022 (2026-09-15).** Since ADR-0022 the zones below are informative only: every gradient must pass V1 (every stop at least 3.0:1 against white) and V2 (the Card header block at least 4.5:1), and no gradient declares a zone.
+
 Every `ref.gradient.vivid.*` description points here ("see visual-dna.md for the text-safe zone"). The zone says where text may sit on each gradient and which text color is safe. `tokens/contrast-pairs.json` checks `color.text.on-vivid` against every stop inside the declared zone. The zone boundaries below were recomputed from the seeded stops during reconstruction, so the whole section is **(reconstructed)** in its numbers but not in its rules.
 
 ### 5.1 Rules
@@ -824,6 +830,8 @@ Pattern specs (`spec/patterns/*.yaml`) take their column counts, gaps and hero s
 
 Defaults (ADR-0010): compact on desktop, regular on touch, comfortable on watchOS and as an accessibility choice. Modality sets `size.hit` to 28 (pointer) or 44 (touch).
 
+> **2026-09-15.** ADR-0024 §7 replaces the single `size.control` row with `size.control.sm|md|lg` = 28/32/40 (compact), 32/40/44 (regular), 44/48/52 (comfortable); ADR-0021 §6 deletes the body line-height row (density does not change typography). ADR-0019 §2 fixes the per-platform defaults, with the web choosing regular while a touchscreen is present.
+
 The references measure phones at 16–20 pt margins and 16–20 card padding. Compact density reproduces that; regular, the touch default, is one step airier. Desktop dashboards in the references (24–36 margins, 16–24 card padding, 12 gaps) measure like regular density.
 
 ### 6.3 Grid by platform
@@ -906,7 +914,7 @@ Soma's split holds across the families: solid tint for readable content, translu
 
 ### 7.2 Elevation
 
-Four levels (ADR-0009). `Surface.yaml` maps `flat | raised | floating | overlay` to `elevation.0–3`, which no token defines; the tokens are the `sys.shadow.*` below (B25). Depth comes from luminance, and shadows only appear under things that float over imagery. "Black" below is #000000.
+Four levels (ADR-0009). `Surface.yaml` maps `flat | raised | floating | overlay` to `elevation.0–3`, which no token defines; the tokens are the `sys.shadow.*` below (B25). *(ADR-0024, 2026-09-15: specs bind `elevation.0–3`, which are `sys.shadow.flat|raised|floating|overlay` renamed; `shadow.drawer` stays.)* Depth comes from luminance, and shadows only appear under things that float over imagery. "Black" below is #000000.
 
 | Level | `sys.shadow` | Light | Dark | Use |
 |---|---|---|---|---|
@@ -940,13 +948,15 @@ The families disagree about shadow. Hydroflask and Vexto incident use none at al
 
 **Consequence.** Functional text on light glass is 100 % white. 78 % is the floor for captions, which reach 4.5:1 only over backdrops of OKLCH L ≤ 0.28 (Appendix B, B6).
 
+> **ADR-0022 (2026-09-15).** The recipes become typed tokens (`$root`, `blur`, `saturate`, `edge.start`, `edge.end`, `grain`, `bloom`), light gains a `glass.cell`, and the dark-scheme `glass.dark.chip` and `glass.cell` become smoked fills (#101410 at 35 %). Light glass takes `text.on-glass-light` (ink in light, white in dark) with no alpha tones. Dark glass is limited to backdrops where white holds 3:1 (OKLCH L ≤ 0.67 for a neutral).
+
 **Fallbacks.**
 
-- Under Reduce Transparency, glass turns opaque (`*-reduced-transparency`). Increase Contrast does not change glass in the current resolver (see B21). The reduced-transparency values:
+- Under Reduce Transparency, glass turns opaque (`*-reduced-transparency`). Increase Contrast does not change glass in the current resolver (see B21). The reduced-transparency values (superseded by ADR-0022, 2026-09-15: one opaque raised fallback chosen by Surface, and these values are deleted):
   - Dark: `glass.dark.fill` becomes #1C1C1F at 92 %; `glass.dark.chip` #232426 at 92 %; `glass.light.*` and `glass.cell` #2A2B2E at 92 %; scrim stays 40 %.
   - Light: `glass.dark.*` becomes `neutral.900`, `glass.light.*` becomes `neutral.0`, scrim 0.
   - Blooms are dropped.
-- On watchOS, blur is disabled (`material.blur.enabled` 0) and glass resolves to `surface.raised` per `tokens/sys/platform/watch.tokens.json`; `Surface.yaml` and ADR-0009 say solid (B22).
+- On watchOS, blur is disabled (`material.blur.enabled` 0) and glass resolves to `surface.raised` per `tokens/sys/platform/watch.tokens.json`; `Surface.yaml` and ADR-0009 say solid (B22). *(Superseded by ADR-0022, 2026-09-15: the opaque raised fallback, chosen in DSCore; the watch token is deleted.)*
 - Glass on a solid parent resolves to `surface.raised`.
 - Never glass on glass.
 
@@ -979,10 +989,10 @@ It gets no border and no colored drop shadow. Under Reduce Transparency the bloo
 | `ref.opacity.text` | secondary 0.64 · tertiary 0.55 · dimmed 0.42 (trailing digits and units ≥ 24 pt only; 4.0:1 on surface-1) |
 | `ref.opacity.surface` | step-1 0.06 · step-2 0.09 · step-3 0.12 · raised 0.03 (+3 % over the parent) |
 | `ref.opacity` (lines and tints) | hairline 0.08 · boundary 0.30 · tint status 0.10, accent 0.12, accent-dark 0.14 |
-| `ref.opacity.glass` | dark 0.60 · light 0.30 · chip 0.16 · toolbar 0.25 · selected 0.26 |
+| `ref.opacity.glass` | dark 0.60 · light 0.30 · chip 0.16 · toolbar 0.25 · selected 0.26 (deleted by ADR-0022, 2026-09-15) |
 | `ref.opacity.chart` | band 0.06 · grid 0.12 · comparison 0.40 · reference 0.60 |
 | `ref.opacity` (states) | disabled 0.38 · dimmed-row 0.30 (done and next rows in a stepper, §4.13) |
-| `ref.blur` | chip 20 · glass 32 · glass-light 40 · bloom 150 |
+| `ref.blur` | chip 20 · glass 32 · glass-light 40 · bloom 150; ADR-0022 (2026-09-15) adds cell 12 · pill 24 |
 | `ref.border` | hairline 1 · strong 1.5 (status borders, emphasized strokes) · focus 2 |
 | `ref.size.icon` | xs 12 · sm 16 · md 20 · lg 24 · ring 44 |
 | `sys.z` | base 0 · raised 10 · overlay 100 · toast 1000 |
@@ -1058,12 +1068,12 @@ The token schema, platform mapping and Reduce Motion design live in `docs/resear
 - **Durations:** instant 0 (keyboard-initiated and 100+/day actions), quick 100 (press, hover color), fast 150 (tooltips, small popovers), base 250 (dropdowns, toasts, crossfades), slow 350 (modals and sheets on the non-spring path), slower 500 (first-run only). UI stays under 300 ms.
 - **Easings:** `out` (0.23, 1, 0.32, 1), `inOut` (0.77, 0, 0.175, 1), `drawer` (0.32, 0.72, 0, 1), `hover` (0.25, 0.1, 0.25, 1), `linear`.
 - **Springs** (duration s, bounce → settle):
-  - `interactive` 0.15, 0 → 220 ms: tracks a live gesture, blend 0.25.
+  - `interactive` 0.15, 0 → 220 ms: tracks a live gesture, blend 0.25; bounce 0 is Prism's choice (Apple's `interactiveSpring` uses 0.15; ADR-0023).
   - `snappy` 0.35, 0.15 → 487 ms: the default for state changes.
   - `smooth` 0.40, 0 → 587 ms: layout and morph with no overshoot.
   - `sheet` 0.30, 0.20 → 404 ms: sheets and drawers after a release.
   - `bouncy` 0.50, 0.30 → 818 ms: delight tier only.
-- **Reduce Motion** (`sys/motion/reduced`): fast 100; base, slow and slower 150; snappy and sheet 250 ms with no bounce; bouncy 300 ms with no bounce; presentation transitions crossfade (`motion.presentation.crossfade` 1).
+- **Reduce Motion** (`sys/motion/reduced`): fast 100; base, slow and slower 150; snappy and sheet 250 ms with no bounce; bouncy 300 ms with no bounce; presentation transitions crossfade (`motion.presentation.crossfade` 1). *(Superseded by ADR-0023, 2026-09-15: the reduced context layers over `default`; snappy and sheet (0.25, 0) → 367 ms; smooth and bouncy (0.30, 0) → 440 ms; interactive unchanged. `motion.presentation.crossfade` is 1: presentations fade by opacity over `motion.duration.base` (150 ms) with `motion.easing.out`, press scale and blur become opacity changes, in-place movement keeps the tightened spring (ADR-0023 §8.4).)*
 
 ### 9.2 Reference cues mapped to tokens
 
@@ -1308,7 +1318,7 @@ These are useful when reviewing marks, dots and edges:
 
 ## Appendix B: Reconstruction notes and open discrepancies
 
-B1–B19 were found while rebuilding this file on 2026-09-14, and B20–B26 in the review that followed. None of these has been applied to a token or spec. Each belongs to the ticket named, mostly P1-1 (review of the seeded `ref` tokens) and P1-2 (review of `sys`).
+B1–B19 were found while rebuilding this file on 2026-09-14, and B20–B26 in the review that followed. B20 and B26 were resolved on 2026-09-15, as their rows record; B5–B9, B15, B21, B22, B24 and B25 were decided the same day by ADR-0021, ADR-0022 and ADR-0024, and their tokens and specs change in the tickets named. None of the others has been applied to a token or spec. Each belongs to the ticket named, mostly P1-1 (review of the seeded `ref` tokens) and P1-2 (review of `sys`).
 
 | # | Finding | Where | Proposed resolution |
 |---|---|---|---|
@@ -1316,26 +1326,26 @@ B1–B19 were found while rebuilding this file on 2026-09-14, and B20–B26 in t
 | B2 | Dark `color.border.boundary` (white 30 %) is 2.71:1 on surface-1, 2.64:1 on page, though its name promises 3:1. `border.strong` (35 %) reaches 3.22. | `sys/color/dark` | Raise to white ≥ 34 % or alias to `strong`. P1-2. |
 | B3 | Light accent marks (`accent`, `icon.accent`, `chart.now` = `accent.500`) are 2.30:1 on white, below 3:1 for meaningful non-text. | `sys/color/light` | Keep as redundant marks (always paired with value, sign or label); any mark that alone carries meaning uses `accent.700` (4.79), as `chart.series.2` does. Consider `chart.now` → `accent.700` in light. P1-2. |
 | B4 | Light status dots success #2DB24A (2.77) and warning #F5B83D (1.78) are below 3:1 on white. | `ref.color.status.*.dot-light` | Soma's 1 px ink ring plus icon and label (§3.3). P4 StatusDot spec. |
-| B5 | **Vivid zones versus the Card anatomy.** With CSS angle semantics, `orchid`'s light stop sits at the top, so a white header on it gets 2.55:1. `olive` and `rose` fail the functional header, `olive` and `navy-cyan` fail the bottom-left hero, and `sky` and `ember-night` cannot carry aside text. Only `plum-dusk` and `forest-moss` cover the full anatomy (§5.3). `orchid` is also the default vivid gradient in `Card.yaml` and `Surface.yaml`. | `ref/gradient.tokens.json`; `Card.yaml`; the vivid 2×2 (§4.4) | Options: darken `orchid` stop 0 (to about L 0.55 or below, white ≥ 4.5) or reverse its stops. Darken `olive`/`rose` mids so white holds 4.5 to t ≈ 0.5 and 3.0 to t ≈ 0.8. Deepen `navy-cyan`'s 75 % stop, or declare a per-gradient anatomy variant. Re-run §5 afterwards. P1-1 (blocking for the light-airy vivid 2×2). |
-| B6 | On light glass the "captions never below 78 % white" floor reaches only 4.32:1 over the darkest test backdrop and 3.85:1 at the backdrop limit. "Backdrop L ≤ 35 %" is read here as OKLCH L ≤ 0.35; under CIELAB L\* even 100 % white fails at the limit. | `sys/color/dark` `material.glass.light.fill`, `text.on-glass` descriptions; `Text.yaml` (secondary → 78 % on glass) | Functional text on light glass stays at 100 % white; 78 % only at ≥ 24 px or over backdrops at OKLCH L ≤ 0.28. Add a light-glass pair to `contrast-pairs.json`. P1-2. |
-| B7 | Thin-weight thresholds differ. `type.metric.xl` says "200 on dark ≥ 32 px" and `type.display.xl` says "dark scheme may drop to 200". ADR-0008 rule 6 and ADR-0011 allow weights below 300 only in `type.metric.*` at ≥ 34 pt. | `ref/typography.tokens.json` descriptions | This document follows the ADRs: ≥ 34 pt, metric roles only. Either restrict `display.xl` to 300 or amend ADR-0011. P1-1. |
-| B8 | The fallback weight for thin roles under Bold Text or Increase Contrast is 300 in ADR-0008 rule 6 but 400 in ADR-0011 and `Text.yaml`. ADR-0008 also applies it below 24 pt; ADR-0011 covers weights below 300, and `Text.yaml` widens it to every weight below 400. | ADRs; `spec/components/Text.yaml` | This document follows ADR-0011 (400). Align ADR-0008, and state one scope in both ADRs and the spec. |
-| B9 | The typography group description says "600 page H1 only", but `type.title.lg` (the H1) is 500 and no reference-brand role uses 600. | `ref/typography.tokens.json` | Read 600 as a ceiling (§2.3), or drop it from the description. P1-1. |
+| B5 | **Vivid zones versus the Card anatomy.** With CSS angle semantics, `orchid`'s light stop sits at the top, so a white header on it gets 2.55:1. `olive` and `rose` fail the functional header, `olive` and `navy-cyan` fail the bottom-left hero, and `sky` and `ember-night` cannot carry aside text. Only `plum-dusk` and `forest-moss` cover the full anatomy (§5.3). `orchid` is also the default vivid gradient in `Card.yaml` and `Surface.yaml`. | `ref/gradient.tokens.json`; `Card.yaml`; the vivid 2×2 (§4.4) | Options: darken `orchid` stop 0 (to about L 0.55 or below, white ≥ 4.5) or reverse its stops. Darken `olive`/`rose` mids so white holds 4.5 to t ≈ 0.5 and 3.0 to t ≈ 0.8. Deepen `navy-cyan`'s 75 % stop, or declare a per-gradient anatomy variant. Re-run §5 afterwards. P1-1 (blocking for the light-airy vivid 2×2). **Resolved by ADR-0022 (2026-09-15):** every gradient carries the full anatomy (V1: every stop ≥ 3.0:1 against white; V2: header block ≥ 4.5:1); P1-1 retunes; the default vivid is sky / plum-dusk. |
+| B6 | On light glass the "captions never below 78 % white" floor reaches only 4.32:1 over the darkest test backdrop and 3.85:1 at the backdrop limit. "Backdrop L ≤ 35 %" is read here as OKLCH L ≤ 0.35; under CIELAB L\* even 100 % white fails at the limit. | `sys/color/dark` `material.glass.light.fill`, `text.on-glass` descriptions; `Text.yaml` (secondary → 78 % on glass) | Functional text on light glass stays at 100 % white; 78 % only at ≥ 24 px or over backdrops at OKLCH L ≤ 0.28. Add a light-glass pair to `contrast-pairs.json`. P1-2. **Resolved by ADR-0022 (2026-09-15):** functional text on light glass is 100 % `text.on-glass-light` (white in dark, ink in light); no alpha tones on light glass. |
+| B7 | Thin-weight thresholds differ. `type.metric.xl` says "200 on dark ≥ 32 px" and `type.display.xl` says "dark scheme may drop to 200". ADR-0008 rule 6 and ADR-0011 allow weights below 300 only in `type.metric.*` at ≥ 34 pt. | `ref/typography.tokens.json` descriptions | This document follows the ADRs: ≥ 34 pt, metric roles only. Either restrict `display.xl` to 300 or amend ADR-0011. P1-1. **Resolved by ADR-0021 (2026-09-15).** |
+| B8 | The fallback weight for thin roles under Bold Text or Increase Contrast is 300 in ADR-0008 rule 6 but 400 in ADR-0011 and `Text.yaml`. ADR-0008 also applies it below 24 pt; ADR-0011 covers weights below 300, and `Text.yaml` widens it to every weight below 400. | ADRs; `spec/components/Text.yaml` | This document follows ADR-0011 (400). Align ADR-0008, and state one scope in both ADRs and the spec. **Resolved by ADR-0021 (2026-09-15).** |
+| B9 | The typography group description says "600 page H1 only", but `type.title.lg` (the H1) is 500 and no reference-brand role uses 600. | `ref/typography.tokens.json` | Read 600 as a ceiling (§2.3), or drop it from the description. P1-1. **Resolved by ADR-0021 (2026-09-15).** |
 | B10 | Descriptions give HSL hues as OKLCH hues. The neutral ramp's "OKLCH hue ~225, chroma ~0.004" is actually HSL hue 220–225, OKLCH hue 261.6–271.4, chroma 0.003–0.019. The accent's "hue ~30" is HSL 27, OKLCH 57.6. | `ref/color.palette.tokens.json` descriptions | Correct the descriptions. P1-1. |
 | B11 | The dark text descriptions quote "on surface-3" ratios of 6.3 / 5.0 / 3.35. On surface-3 #2A2B2E they compute to 6.73 / 5.39 / 3.79, and no single background yields all three quoted values. They are conservative. | `sys/color/dark` descriptions | `tools/contrast` output wins. Update the descriptions. P1-2. |
 | B12 | The light `bg.surface.nested` description says "(= #ECEDF1 on white)", but ink 6 % over white composites to #F1F1F1. | `sys/color/light` | Correct the description, or raise the alpha if #ECEDF1 was intended. P1-2. |
 | B13 | Small rounding in descriptions. Light `text.primary` "17.1:1" computes to 17.24, and `text.on-accent` "11.9:1" to 12.02. Dark `tint.critical` "= #332022 on surface-1" composites to #322123 in floating-point math; the description composites over the rounded #1C1C1F. | `sys/color/light`, `sys/color/dark` | Cosmetic. |
 | B14 | Dark `bg.fill.accent-strong` says "white text >= 18 px only (3.05:1)". ADR-0011's large tier is ≥ 24 px regular or ≥ 19 px bold. | `sys/color/dark` | Reword to the ADR-0011 tier. |
-| B15 | `Surface.yaml` binds grain to `opacity.grain`, which no token defines. Grain lives in `ref.gradient.vivid.*.$extensions.app.prism.grain` (0.05–0.10) and `material.glass.*` extensions (0.04 / 0). | `spec/components/Surface.yaml` | Add `ref.opacity.grain`, or bind the spec to the extension. P2-1 will catch it. |
+| B15 | `Surface.yaml` binds grain to `opacity.grain`, which no token defines. Grain lives in `ref.gradient.vivid.*.$extensions.app.prism.grain` (0.05–0.10) and `material.glass.*` extensions (0.04 / 0). | `spec/components/Surface.yaml` | Add `ref.opacity.grain`, or bind the spec to the extension. P2-1 will catch it. **Resolved by ADR-0024 §6 with ADR-0022 §2.6 (2026-09-15):** grain binds the material's `grain` token or the gradient's folded grain. |
 | B16 | The DNA deviates on purpose from `dataviz-design.md`: dashed grid 4/6 (rule B8 says never dashed), target 8/6 (vs 4/4), six ink- or white-first series (vs eight orange-first), no area fills, `metric.lg` at 300 on 32 px (rule 31 allows Light/300 only at ≥ 48), and a 12 px `metric.unit` at 25 % of `metric.xl` (rule 1 says 40–50 %). | §8.3 | Keep. Run the CVD validator on the six-slot order in P4. |
 | B17 | Family A, the owner-pasted light CRM screenshots, is not in the repository and no refs file analyzes it. §4.4 (vivid 2×2) and §4.13 (stepper) rest partly on it, through the analyses' comparisons, `agent/SKILL.md`, `spec/patterns/README.md` and `ref.opacity.dimmed-row`. | §4.4, §4.13 | Treat those details as reconstructed. |
 | B18 | Regular density (the touch default) sets the page margin and card padding to 24, while the references measure phones at 16–20 pt. | `sys/density/regular` | Keep. Compact reproduces the references if an app wants them (§6.2). |
 | B19 | `a11y-reconciliation.md` (listed in `docs/research/README.md`) is missing from the repository; `component-inventory.md` and `critic.md` were reconstructed on 2026-09-14. | `docs/research/` | Out of scope here. The component mapping is `component-inventory.md`, rebuilt from the analyses' component tables. |
-| B20 | The `ref.type.caption` description says "tertiary color", but §2.2, `Text.yaml` (example `caption`) and `comp.card.solid.caption` use secondary. In dark the two differ (white 64 % vs 55 %); in light both resolve to `neutral.600`. The same description also carries reference copy (B26). | `tokens/ref/typography.tokens.json` (caption description); `spec/components/Text.yaml`; `tokens/comp/card.tokens.json` | Keep secondary and correct the description, replacing its sample strings with invented ones in the same edit (critic R-01). P1-1. |
-| B21 | Glass under Reduce Transparency and Increase Contrast. ADR-0009 rule 5 and `Surface.yaml:100` make glass opaque under either setting, but the resolver's `*-increased-contrast` contexts load no material overrides, so the tokens leave glass translucent under Increase Contrast. The Reduce Transparency fallback also has three answers: the token files (dark #1C1C1F / #232426 / #2A2B2E at 92 %; light `neutral.900` / `neutral.0`), `raised` (`Surface.yaml:100`, `:117`; ADR-0009 rule 5), and `surface.solid` (ADR-0011). This document follows the token values. | `tokens/prism.resolver.json` colorScheme contexts; `tokens/sys/color/*-reduced-transparency.tokens.json`; `spec/components/Surface.yaml`; ADR-0009; ADR-0011 | Pick one fallback by amendment (critic C-26 argues for `raised`) and decide whether alpha 0.92 counts as opaque (G-04). Then add the glass overrides to the Increase Contrast contexts, or drop Increase Contrast from ADR-0009 and `Surface.yaml`. P1-2, schema part in P2-1. |
-| B22 | On watchOS glass resolves to `surface.raised` in the watch token but to solid in `Surface.yaml:101` and ADR-0009 rule 3. §1 principle 6, §4.3 and §7.3 give both. | `tokens/sys/platform/watch.tokens.json`; `spec/components/Surface.yaml`; ADR-0009 | Settle it in the same amendment as B21 (critic C-26) and align the watch token description, the spec and the ADR. P2-1. |
+| B20 | The `ref.type.caption` description says "tertiary color", but §2.2, `Text.yaml` (example `caption`) and `comp.card.solid.caption` use secondary. In dark the two differ (white 64 % vs 55 %); in light both resolve to `neutral.600`. The same description also carries reference copy (B26). | `tokens/ref/typography.tokens.json` (caption description); `spec/components/Text.yaml`; `tokens/comp/card.tokens.json` | Keep secondary and correct the description, replacing its sample strings with invented ones in the same edit (critic R-01). P1-1. **Resolved 2026-09-15:** the description reads "'7m ago', 'Rolling average'; secondary color" in `tokens/ref/typography.tokens.json` and in its seed, `tools/tokens/seed-ref-tokens.py`. |
+| B21 | Glass under Reduce Transparency and Increase Contrast. ADR-0009 rule 5 and `Surface.yaml:100` make glass opaque under either setting, but the resolver's `*-increased-contrast` contexts load no material overrides, so the tokens leave glass translucent under Increase Contrast. The Reduce Transparency fallback also has three answers: the token files (dark #1C1C1F / #232426 / #2A2B2E at 92 %; light `neutral.900` / `neutral.0`), `raised` (`Surface.yaml:100`, `:117`; ADR-0009 rule 5), and `surface.solid` (ADR-0011). This document follows the token values. | `tokens/prism.resolver.json` colorScheme contexts; `tokens/sys/color/*-reduced-transparency.tokens.json`; `spec/components/Surface.yaml`; ADR-0009; ADR-0011 | Pick one fallback by amendment (critic C-26 argues for `raised`) and decide whether alpha 0.92 counts as opaque (G-04). Then add the glass overrides to the Increase Contrast contexts, or drop Increase Contrast from ADR-0009 and `Surface.yaml`. P1-2, schema part in P2-1. **Resolved by ADR-0022 (2026-09-15):** one fallback, opaque `raised` over the page (`inverse` when selected), chosen by Surface under Reduce Transparency, Increase Contrast, on watchOS and over an invalid backdrop; no variant delta or platform file writes `sys.material.*`; 0.92 is not opaque. |
+| B22 | On watchOS glass resolves to `surface.raised` in the watch token but to solid in `Surface.yaml:101` and ADR-0009 rule 3. §1 principle 6, §4.3 and §7.3 give both. | `tokens/sys/platform/watch.tokens.json`; `spec/components/Surface.yaml`; ADR-0009 | Settle it in the same amendment as B21 (critic C-26) and align the watch token description, the spec and the ADR. P2-1. **Resolved by ADR-0022 (2026-09-15):** the same opaque raised fallback on watchOS; the watch blur flag is deleted. |
 | B23 | `agent/SKILL.md:35–36` sets trailing digits in `color.text.tertiary`, the unit in `type.caption` and stepper rows at `opacity.dimmed`. §4.2, §4.13, `Text.yaml` (trailing and unit bindings) and the tokens use `color.text.dimmed`, `type.metric.unit` and `opacity.dimmed-row`; `opacity.dimmed` does not exist. ADR-0007 rule 3 also says tertiary. | `agent/SKILL.md`; ADR-0007 | Update the skill and ADR-0007 to `text.dimmed`, `metric.unit` and `opacity.dimmed-row` (critic G-03, C-12). |
-| B24 | Density sets `sys.size.control` to 32 / 40 / 48 (compact / regular / comfortable), so regular density, the touch default, gives 40. Principle 13 and §4.7 say 40 pointer / 44 touch, and `ref.size.control.lg` (44) is described as "touch default"; modality sets `size.hit`, not the control height. | `tokens/sys/density/*.tokens.json`; `tokens/ref/dimension.tokens.json` (`size.control.lg`); §1 principles 2 and 13 | Decide whether control height follows density or modality (critic C-18). If density, drop "touch default" from `ref.size.control.lg` and restate principle 13 as `size.control` with a 44 hit area on touch; if modality, add a modality-owned control height. P1-2. |
-| B25 | `Surface.yaml:89–92` binds `shadow` to `elevation.0`–`elevation.3`, which no token defines. The tokens are `sys.shadow.flat`, `.raised`, `.floating`, `.overlay` (and `.drawer`), and the spec regex rejects the `shadow` root. | `spec/components/Surface.yaml`; `spec/component.schema.json` | Add `sys.elevation.0–3` aliases, or bind the spec to `shadow.*` and allow that root (critic G-03). P1-2 before P2-1. |
-| B26 | Reference UI copy sits in contracts: the `Card.yaml` examples `glass-vehicle`, `glass-selected`, `solid-metric` (and its accessibility label) and `compact`, `Text.yaml:113` and `:133`, and the `ref.type.caption` description. §4.3 and §4.4 point readers to those examples, and `vivid-orchid-kpi` has no recorded provenance. | `spec/components/Card.yaml`; `spec/components/Text.yaml`; `tokens/ref/typography.tokens.json` | Replace the strings with invented ones such as the samples in §4.3, §4.4 and §4.9, record the provenance of `vivid-orchid-kpi`, re-render the harness images, and add the CI denylist of `refs-*.md` literals (critic R-01). Until then, cite those examples for structure only. New ticket. |
+| B24 | Density sets `sys.size.control` to 32 / 40 / 48 (compact / regular / comfortable), so regular density, the touch default, gives 40. Principle 13 and §4.7 say 40 pointer / 44 touch, and `ref.size.control.lg` (44) is described as "touch default"; modality sets `size.hit`, not the control height. | `tokens/sys/density/*.tokens.json`; `tokens/ref/dimension.tokens.json` (`size.control.lg`); §1 principles 2 and 13 | Decide whether control height follows density or modality (critic C-18). If density, drop "touch default" from `ref.size.control.lg` and restate principle 13 as `size.control` with a 44 hit area on touch; if modality, add a modality-owned control height. P1-2. **Resolved by ADR-0024 §7 (2026-09-15):** control height follows density (`size.control.sm\|md\|lg`), the hit area follows modality. |
+| B25 | `Surface.yaml:89–92` binds `shadow` to `elevation.0`–`elevation.3`, which no token defines. The tokens are `sys.shadow.flat`, `.raised`, `.floating`, `.overlay` (and `.drawer`), and the spec regex rejects the `shadow` root. | `spec/components/Surface.yaml`; `spec/component.schema.json` | Add `sys.elevation.0–3` aliases, or bind the spec to `shadow.*` and allow that root (critic G-03). P1-2 before P2-1. **Resolved by ADR-0024 §6 (2026-09-15):** `sys.shadow.flat\|raised\|floating\|overlay` are renamed `sys.elevation.0–3`. |
+| B26 | Reference UI copy sits in contracts: the `Card.yaml` examples `glass-vehicle`, `glass-selected`, `solid-metric` (and its accessibility label) and `compact`, `Text.yaml:113` and `:133`, and the `ref.type.caption` description. §4.3 and §4.4 point readers to those examples, and `vivid-orchid-kpi` has no recorded provenance. | `spec/components/Card.yaml`; `spec/components/Text.yaml`; `tokens/ref/typography.tokens.json` | Replace the strings with invented ones such as the samples in §4.3, §4.4 and §4.9, record the provenance of `vivid-orchid-kpi`, re-render the harness images, and add the CI denylist of `refs-*.md` literals (critic R-01). **Resolved 2026-09-15:** every string listed here, the `vivid-orchid-kpi` strings and the `ref.type.metric.md` description sample are invented copy now, and `Card.yaml` notes say so; that also settles the vivid example's provenance. The font harnesses were cleaned and the six images re-rendered (`docs/research/fonts.md`). `lint:reference-copy` (`tools/lint/reference-copy.ts`, in the CI `contracts` job) fails when an entry of `tools/lint/reference-copy.denylist.txt`, derived from the `refs-*.md` analyses, appears in contracts, samples or renders (`tools/README.md`). |
 

@@ -19,7 +19,7 @@ Weight is a token, not a vendor prop: `icon.weight` ∈ thin / light / regular /
 
 - Node: JSON Schema (Ajv) + cross-check of every `web.phosphor` against the `icons` export of `@phosphor-icons/core` (alias hits warn), duplicate ids, deprecations without `replacedBy`.
 - macOS runner: every `apple.symbol` checked against `CoreGlyphs.bundle/…/name_availability.plist` and a `NSImage(systemSymbolName:)` nil smoke test; custom symbol sets validated by an Xcode build.
-- Codegen: `DSIcon` enum (Swift), `dsIcons` const map (TypeScript), icon id list for Tokens Studio.
+- Codegen: `DSIconName` enum (Swift) behind the SwiftUI `DSIcon` view, `iconRegistry` const map (TypeScript) behind the React `Icon` component (ADR-0019 §6), icon id list for Tokens Studio.
 
 ## Weight mapping table
 

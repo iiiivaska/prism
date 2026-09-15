@@ -4,4 +4,4 @@ Prism is a brand-agnostic, multi-platform design system: one W3C DTCG token sour
 
 Status: Phase 0 bootstrap done: pnpm workspace, lint, typecheck, build and test, and a CI matrix whose steps switch on as tools land. The token pipeline (Phase 1) is next. See `docs/` for the decision record, research and the roadmap.
 
-Code prefix: `ds` (`DSButton`, `--ds-color-surface`). npm scope: `@iiiivaska/prism-*`.
+Code prefix: `ds` (`DSButton`, `--ds-color-bg-surface`). npm scope: `@iiiivaska/prism-*`.

@@ -159,9 +159,9 @@ Units: pt on Apple, px on web (1 pt = 1 px at 1×). "skill" = number from the bu
 ### F. Numbers and delta badges
 
 28. **Compact notation with ≤3 significant digits: 1,284 / 12.9K / 4.2M; locale-aware** (`Intl.NumberFormat({notation:"compact", maximumSignificantDigits:3})` F35; Swift `.number.notation(.compactName).precision(.significantDigits(1...3))` F30). Reserve width for Cyrillic compact names ("12,9 тыс.", "4,2 млн") which are 2–3 glyphs longer than "K"/"M" (Prism note; verify per locale).
-29. **Delta badge = arrow icon + explicit sign + value; sign for all non-zero values** (`signDisplay: "exceptZero"` F35 / `.sign(strategy: .always(includingZero: false))` F30); percent with 0–1 decimals; color = direction × polarity (`upIsGood`), neutral (no arrow, em dash) for 0 or null; never color alone (Polaris TrendIndicator F57; skill; HIG F5). Badge text 12–13 pt semibold (weight 600–650, Polaris uses 650), tabular figures, 20–24 px tall, 6–8 px horizontal padding, 6 px radius, 4 px gap icon→text (Prism proposal).
+29. **Delta badge = arrow icon + explicit sign + value; sign for all non-zero values** (`signDisplay: "exceptZero"` F35 / `.sign(strategy: .always(includingZero: false))` F30); percent with 0–1 decimals; color = direction × polarity (`upIsGood`), neutral (no arrow, em dash) for 0 or null; never color alone (Polaris TrendIndicator F57; skill; HIG F5). Badge text 12–13 pt semibold (weight 600–650, Polaris uses 650), tabular figures, 20–24 px tall, 6–8 px horizontal padding, 6 px radius, 4 px gap icon→text (Prism proposal). *(ADR-0021, 2026-09-15: Prism caps standard weights at 500; badges use label roles (ADR-0021 §1).)*
 30. **Figures: proportional for the static hero and stat-tile values; tabular (`tabular-nums` / `.monospacedDigit()`) for axis ticks, table columns, delta badges, and any value that updates live (counters, scrubber readouts)** so glyph widths don't jitter (skill; F28, F36). SwiftUI: `.contentTransition(.numericText(value:))` for animated updates, off under Reduce Motion (F29, F12).
-31. **Large numerals contrast:** ≥3:1 allowed only at ≥18 pt regular / ≥14 pt bold per WCAG (F33, HIG F12); Prism's own threshold of ≥24 pt is stricter and compatible. Thin weights (Light/300) are permitted only at ≥48 pt and must respond to the Bold Text setting by stepping to Regular/Medium (HIG "avoid light weights" F11).
+31. **Large numerals contrast:** ≥3:1 allowed only at ≥18 pt regular / ≥14 pt bold per WCAG (F33, HIG F12); Prism's own threshold of ≥24 pt is stricter and compatible. Thin weights (Light/300) are permitted only at ≥48 pt and must respond to the Bold Text setting by stepping to Regular/Medium (HIG "avoid light weights" F11). *(Superseded by ADR-0021 §2–§3, 2026-09-15: Light 300 at ≥ 20 px; thin only for dark metric roles ≥ 34 px; Bold Text table.)*
 
 ### G. Color
 
@@ -216,6 +216,8 @@ Sequential blue ramp (skill steps 100–700) passes the ordinal checks on light 
 
 ## 5. Proposed chart component inventory for Prism (`ds` prefix)
 
+> **ADR-0019 (2026-09-15).** React names drop the `DS` prefix (ADR-0019 §6): `HeroNumber`, `StatTile`, `Sparkline`, …; Swift keeps `DSHeroNumber`, `DSStatTile`, …. The wave-1 list and the component names stay open (critic C-12).
+
 Every component is a versioned contract: same prop names on SwiftUI and React; states enumerated for the parity report. Common enums: `Density = compact | regular | comfortable`, `Polarity = upIsGood | downIsGood | neutral`, `RefLineStyle = target | threshold | projection`.
 
 ### Tier 0 — shared parts
@@ -234,7 +236,7 @@ Every component is a versioned contract: same prop names on SwiftUI and React; s
 
 | Component | Props | States |
 |---|---|---|
-| `DSHeroNumber` | `value: number`, `unit?`, `label`, `format: {style: decimal\|percent\|currency\|unit, compact: bool, sigDigits: 3, locale}`, `delta?: DSDeltaBadge props`, `trend?: DSSparkline props`, `size: hero(48/56)\|title(34)\|tile(28)`, `weight: light\|regular` (light only at ≥48), `live: bool` (tabular + numericText), `emphasis: primary\|secondary` | idle, updating (numeric transition), stale (reduced opacity), empty (—), boldText (weight bump) |
+| `DSHeroNumber` | *(ADR-0021, 2026-09-15: weight and size limits follow ADR-0021; live → `numeric: tabular`.)* `value: number`, `unit?`, `label`, `format: {style: decimal\|percent\|currency\|unit, compact: bool, sigDigits: 3, locale}`, `delta?: DSDeltaBadge props`, `trend?: DSSparkline props`, `size: hero(48/56)\|title(34)\|tile(28)`, `weight: light\|regular` (light only at ≥48), `live: bool` (tabular + numericText), `emphasis: primary\|secondary` | idle, updating (numeric transition), stale (reduced opacity), empty (—), boldText (weight bump) |
 | `DSStatTile` | `label`, `value`, `unit`, `delta`, `sparkline`, `target?` (drawn as dashed line in the sparkline), `status?`, `density`, `layout: stacked\|inline` | idle, loading, empty, error |
 | `DSDeltaBadge` | `value`, `basis: percent\|absolute\|points`, `polarity: Polarity`, `period?: string` ("vs last 7d"), `size: sm(20)\|md(24)`, `showIcon: true`, `decimals: 0–1`, `neutralBelow?: number` | positive, negative, neutral (0/null → dash, no arrow), reduced-color (icon+sign carry meaning) |
 | `DSSparkline` | `points: number[]` (≥2), `kind: line\|area\|bar`, `target?: {value, style}`, `normalRange?: {lo, hi}`, `endpoint: dot\|none`, `extremes: bool`, `baseline: auto\|zero`, `color: accent\|series(n)\|muted`, `width/height` (defaults 96×24 table, 120×40 tile) | idle, insufficientData (<2 → em dash), reducedMotion |
@@ -343,7 +345,7 @@ Notes: the two contrast-sensitive tokens (`chart.axis.text.color`, series relief
 ## 8. Open questions
 
 1. **Prism surface hex values.** Every validator result depends on the actual light/dark chart surfaces; the proposal was checked on #fafaf9/#fcfcfb and #101215/#1a1a19. Re-run once `surface.*` tokens exist, including vivid (brand gradient) surfaces — which color do we validate against for gradients (darkest stop, lightest stop, both)?
-2. **Brand-agnostic slot 1.** Should `chart.series.1` be bound to the brand accent by rule (then every brand must re-validate the full order) or stay a fixed hue independent of the accent? The orange-first proposal assumes the former for the default brand only.
+2. **Brand-agnostic slot 1.** Should `chart.series.1` be bound to the brand accent by rule (then every brand must re-validate the full order) or stay a fixed hue independent of the accent? The orange-first proposal assumes the former for the default brand only. *(Answered by ADR-0020 §4, 2026-09-15: series slots are brand-overridable ref tokens; default slots equal to a ramp step alias it; every brand is validated; status stays fixed.)*
 3. **Glass plot areas.** The materials rule allows glass only over imagery/maps/vivid; the dark ops references show charts over glass. Do we permit a translucent plot scrim (and at what alpha) or force solid?
 4. **Cyrillic compact notation.** "12,9 тыс." / "4,2 млн" widths and the ICU rules for `ru` compact names need real-device checks on both platforms, plus a decision on whether to fall back to "K/M" in the mono slot.
 5. **Bold Text × Light hero numerals.** Verify how `Font.weight(.light)` responds to the Bold Text setting for custom (Signature) fonts on OS 26; the HIG guidance to avoid Light applies to text generally.

@@ -172,6 +172,7 @@ write(sysd / 'modality' / 'pointer.tokens.json', {"$schema": SCHEMA, "sys": {"si
 write(sysd / 'modality' / 'touch.tokens.json', {"$schema": SCHEMA, "sys": {"size": {"$type": "dimension", "hit": {"$value": "{ref.size.hit.touch}"}},
   "interaction": {"$type": "number", "hover": {"$value": 0}, "tooltip": {"$value": 0}}}})
 
+# Superseded by ADR-0023 and the reviewed JSON (layered reduced context, sys.motion.easing, reduced smooth, crossfade flags, derived fallbacks). Do not re-run this block.
 # ---------------------------------------------------------------- motion
 write(sysd / 'motion' / 'default.tokens.json', {"$schema": SCHEMA, "sys": {"motion": {
   "duration": {"$type": "duration", "instant": alias("ref.motion.duration.instant"), "quick": alias("ref.motion.duration.quick"), "fast": alias("ref.motion.duration.fast"),

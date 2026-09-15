@@ -6,6 +6,8 @@ Scope: the six questions from the brief (headless primitives, Tailwind v4, chart
 
 ---
 
+> **Superseded in part (2026-09-15).** Motion (the §0 Motion row, §2.7, §6 with its recommendation and reduced-motion bullet, the §7 `motion.css` comment, §9 item 9) by ADR-0023: tokens are Apple `(duration, bounce)` springs, not Motion `(visualDuration, bounce)`; CSS `linear()` is sampled from Motion's physics generator over Prism's settle time, not produced by `spring().toString()`; Motion is configured only with the physics triplet, and `MotionConfig reducedMotion="user"` is not used; Reduce Motion never collapses durations to 0: it applies zero-bounce springs, durations of at most 150 ms and ADR-0023 §8.4's substitutions. Runtime attribute names and the provider follow ADR-0019, brand delivery ADR-0020, and the generated-output layout ADR-0024 §11; the notes below mark each place.
+
 ## 0. Executive summary (decisions proposed)
 
 | Area | Recommendation | One-line reason |
@@ -119,17 +121,19 @@ Two viable architectures; the second is recommended for Prism.
 - Non-Tailwind consumers need a **prebuilt CSS** produced with `@tailwindcss/cli` from the library sources (theme variables + only the utilities the components use). Caveats: v4-only consumers; a prebuilt unprefixed utility set can collide with a consumer's Tailwind of a different theme (e.g., a different `--spacing`); `prefix(ds)` avoids collisions but then Tailwind consumers must also enable the same prefix; utility class strings are brittle for visual-regression selectors.
 
 **Option B (recommended) — token-CSS-authored components, Tailwind-optional.**
-- `@iiiivaska/prism-tokens-css` ships `tokens.css` (all `--ds-*` variables, scoped by `[data-ds-brand]`, `[data-ds-scheme]`, `[data-ds-density]`, `[data-ds-input]`, with `color-scheme` set) and `tailwind.css` (`@theme inline { --color-surface: var(--ds-color-surface); --radius-card: var(--ds-radius-card); --ease-spring-snappy: var(--ds-ease-spring-snappy); … }`) so Tailwind users get `bg-surface`, `rounded-card`, `ease-spring-snappy`.
+- `@iiiivaska/prism-tokens-css` ships `tokens.css` (all `--ds-*` variables, scoped by `[data-ds-brand]`, `[data-ds-scheme]`, `[data-ds-density]`, `[data-ds-input]`, with `color-scheme` set) and `tailwind.css` (`@theme inline { --color-surface: var(--ds-color-surface); --radius-card: var(--ds-radius-card); --ease-spring-snappy: var(--ds-ease-spring-snappy); … }`) so Tailwind users get `bg-surface`, `rounded-card`, `ease-spring-snappy`. *(Superseded 2026-09-15: the package is `@iiiivaska/prism-tokens`; the attributes and selectors follow ADR-0019; on the web, brand is build-time, with one `tokens.css` per brand, no `data-ds-brand` and one brand per document (ADR-0020); names follow `tools/tokens/ARCHITECTURE.md` §8 and §9.4.)*
 - `@iiiivaska/prism-react` components render `data-slot="button"` + state data attributes (from RAC) and ship **one `styles.css`** written against `--ds-*` variables (`[data-slot=button][data-pressed] { … }`). It contains no Tailwind utilities, so it works identically with and without Tailwind, on any Tailwind major, and it is stable for screenshot tests. Base UI's and RAC's own docs use exactly this vanilla-CSS pattern.
 - Consumers with Tailwind: `@import "tailwindcss"; @import "@iiiivaska/prism-tokens-css/tailwind.css"; @import "@iiiivaska/prism-react/styles.css" layer(components);` — placing Prism in the `components` layer means consumer utilities (layer `utilities`, declared later) win, so `className` overrides work with no `!important`.
 - Consumers without Tailwind: `@import "@iiiivaska/prism-tokens-css/tokens.css"; @import "@iiiivaska/prism-react/styles.css";` — the file declares its own `@layer ds.tokens, ds.base, ds.components;` so any unlayered consumer CSS overrides it.
-- Theming = set data attributes on `<html>` (`data-ds-brand="acme" data-ds-scheme="dark" data-ds-density="compact"`) or override `--ds-*` in a consumer stylesheet. Runtime brand switching needs no rebuild.
+- Theming = set data attributes on `<html>` (`data-ds-brand="acme" data-ds-scheme="dark" data-ds-density="compact"`) or override `--ds-*` in a consumer stylesheet. Runtime brand switching needs no rebuild. *(Superseded 2026-09-15 by ADR-0019 and ADR-0020: the attributes are `data-ds-color-scheme`, `-contrast`, `-transparency`, `-density`, `-modality` and `-motion`; brand is build-time on the web, with one `tokens.css` per brand, no `data-ds-brand` and one brand per document; apps do not override `--ds-*` to re-brand.)*
 - Agent legibility: each component has `Button.tsx` + `button.css` with selectors that mirror the component contract's state names; parity with SwiftUI style modifiers is direct.
 - Tailwind still earns its place: consumers, gallery/docs, layout, and one-off overrides; `@reference` allows `@apply` inside `button.css` during development if wanted (not required).
 
 ### 2.7 Accessibility toggles via tokens (web side)
 
 `prefers-color-scheme` → scheme scope; `prefers-reduced-motion` → `motion-reduce:` and `--ds-motion-*` durations collapse to 0 under `@media (prefers-reduced-motion: reduce)`; `prefers-contrast: more` → `contrast-more:` / a `[data-ds-contrast=more]` scope; `forced-colors` → `forced-colors:`; Dynamic Type/Bold Text have no web equivalents beyond `rem`-based type scale and `font-weight` tokens; `prefers-reduced-transparency` exists in Chromium but Safari/Firefox support is unverified (open question) — gate glass on `[data-ds-transparency=reduce]` set from JS `matchMedia` plus the media query.
+
+> **Superseded 2026-09-15** by ADR-0019, ADR-0022 and ADR-0023: the attributes are `data-ds-color-scheme`, `-contrast`, `-transparency`, `-density`, `-modality` and `-motion`; brand per ADR-0020; Safari cannot report Reduce Transparency and Prism does not guess it (glass falls back under Increase Contrast per ADR-0022); Reduce Motion never collapses durations to 0 (ADR-0023 §8).
 
 ---
 
@@ -243,6 +247,8 @@ Two viable architectures; the second is recommended for Prism.
       └─ eslint-config/   (private)
 ```
 
+> **Superseded 2026-09-15.** Generated web output is committed under `web/packages/tokens/src/generated` in `@iiiivaska/prism-tokens` (ADR-0024 §11, `tools/tokens/ARCHITECTURE.md` §9.0), with one `tokens.css` per brand and no brand scope (ADR-0020), the ADR-0019 attributes, and `motion.css` springs sampled from Motion's physics generator rather than `spring()` (ADR-0023). The React wrapper is `Icon` and the map `iconRegistry` (ADR-0019 §6); components render `data-ds-slot`.
+
 Package.json essentials for a published package:
 
 ```json
@@ -281,6 +287,8 @@ Consumer setup:
 ```html
 <html data-ds-brand="default" data-ds-scheme="dark" data-ds-density="regular" data-ds-input="pointer">
 ```
+
+> **Superseded 2026-09-15** by ADR-0019 and ADR-0020: `<html>` carries only the user's explicit choices, as `data-ds-color-scheme`, `data-ds-contrast`, `data-ds-transparency`, `data-ds-density`, `data-ds-modality` and `data-ds-motion` (`<Theme>` or `rootAttributes()` writes them); there is no brand attribute, and a document imports one brand's `tokens.css` from `@iiiivaska/prism-tokens`.
 
 CI (GitHub Actions) outline: `pnpm install --frozen-lockfile` → `tokens build` → `tsdown` all packages → `tsc -b` (TS 7) → `vitest --project storybook` (component + a11y tests in Chromium) → `storybook build` → VRT job in `mcr.microsoft.com/playwright:v1.63.0-noble` → parity report (`prism-spec` vs Swift + React stories) → `changesets/action` opens the version PR; on merge `pnpm publish -r` with `NODE_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}` and `permissions: packages: write`.
 
@@ -394,9 +402,9 @@ Confidence: **high** = read on the official page/registry/API today; **medium** 
 ## 9. Recommendations for Prism (consolidated)
 
 1. **Primitives:** adopt `react-aria-components` as the only primitive dependency of `@iiiivaska/prism-react`; pin `catalog:` to `^1.21`; enable `@react-aria/mcp` and the React Aria skill in the agent's environment; record the AT matrix from `/quality` in the a11y section of every component contract. Keep Base UI as the documented fallback, not a co-dependency.
-2. **Tokens → CSS:** Style Dictionary emits `tokens.css` (`--ds-*` under `:root` and `[data-ds-brand|scheme|density|input]` scopes, `color-scheme` per scheme scope) and `tailwind.css` (`@theme inline` bridge + `@custom-variant dark`/density/input). Do **not** put raw tokens in `@theme` directly — semantic variables first, `@theme inline` second (shadcn/Tailwind-discussion pattern), so brand/scheme switching is attribute-driven and rebuild-free.
+2. **Tokens → CSS:** Style Dictionary emits `tokens.css` (`--ds-*` under `:root` and `[data-ds-brand|scheme|density|input]` scopes, `color-scheme` per scheme scope) and `tailwind.css` (`@theme inline` bridge + `@custom-variant dark`/density/input). Do **not** put raw tokens in `@theme` directly — semantic variables first, `@theme inline` second (shadcn/Tailwind-discussion pattern), so brand/scheme switching is attribute-driven and rebuild-free. *(Superseded 2026-09-15 by ADR-0019 and ADR-0020: the attributes are `data-ds-color-scheme`, `-contrast`, `-transparency`, `-density`, `-modality` and `-motion`; there is no `dark` or density variant, only `ds-touch`, `ds-pointer`, `ds-contrast-more`, `ds-reduce-transparency` and `ds-reduce-motion`; brand is one `tokens.css` per brand, no `data-ds-brand`, one brand per document.)*
 3. **Component styling:** vanilla CSS per component (`[data-slot=…]` + RAC state attributes + `--ds-*`), bundled to a single `styles.css` with internal `@layer ds.*`; consumers with Tailwind import it as `layer(components)`. Utilities are for consumers, the gallery and `className` overrides; if the team later prefers utility-authored internals, follow Adam Wathan's `@source`-in-package-CSS pattern and ship an additional prebuilt CSS via `@tailwindcss/cli`.
-4. **Density and input modality:** encode density in the variables (`--ds-space-*`, `--ds-control-height`, `--ds-text-*` change under `[data-ds-density]`), not in utility variants; use `pointer-coarse:`/`[data-ds-input=touch]` only for hit-target and hover-affordance rules; use container queries (`@container`, `@container-size`) inside cards/widgets instead of viewport breakpoints.
+4. **Density and input modality:** encode density in the variables (`--ds-space-*`, `--ds-control-height`, `--ds-text-*` change under `[data-ds-density]`), not in utility variants; use `pointer-coarse:`/`[data-ds-input=touch]` only for hit-target and hover-affordance rules; use container queries (`@container`, `@container-size`) inside cards/widgets instead of viewport breakpoints. *(Superseded 2026-09-15 by ADR-0019: density is `data-ds-density`, modality `data-ds-modality` with the `ds-touch` and `ds-pointer` variants, and Tailwind's `pointer-*:` variants ignore Prism's settings; density changes no type (ADR-0021 §6).)*
 5. **Charts:** `@iiiivaska/prism-charts` on visx 4 + d3-shape/scale behind a Prism chart spec mirroring Swift Charts marks; explicit sizes for SSR; gradients/dashes/glass as token-driven props; Recharts 3 named as the exit path.
 6. **Gallery:** Storybook 10.6 + addon-vitest + addon-a11y (`error`) + Storybook MCP; stories generated/validated from `@iiiivaska/prism-spec`; stay on Vitest 4 until the addon supports 5.
 7. **Visual regression:** Playwright `toHaveScreenshot` over `storybook-static` in the pinned Playwright Docker image; matrix scheme × density × viewport; baselines in git; Chromatic optional later.
@@ -415,7 +423,7 @@ Confidence: **high** = read on the official page/registry/API today; **medium** 
 5. **Storybook 11 timing and CSF Factories default:** the 10.0 post promised "next Spring"; only `11.0.0-alpha.0` exists on 2026-09-02. Decide whether to author stories as CSF Factories now (React-only Preview) or classic CSF3.
 6. **React `<ViewTransition>` / `<Activity>` usage:** `<Activity>` is stable in 19.2; `<ViewTransition>` status was not verified — decide whether Prism wraps Motion's `animateView` or React's API.
 7. **GitHub Packages provenance:** not documented; if supply-chain attestations matter, mirror public packages to npmjs.com with trusted publishing instead.
-8. **`prefers-reduced-transparency`** browser support (Safari/Firefox) is unverified; the glass material may need a JS-detected `[data-ds-transparency=reduce]` scope.
+8. **`prefers-reduced-transparency`** browser support (Safari/Firefox) is unverified; the glass material may need a JS-detected `[data-ds-transparency=reduce]` scope. *(Superseded 2026-09-15 by ADR-0019: Safari cannot report Reduce Transparency and Prism does not guess it; glass falls back under Increase Contrast per ADR-0022, and an app with its own setting passes `transparency` to `<Theme>`.)*
 9. **Screenshot determinism for glass:** `backdrop-filter` and gradients can render differently under headless software rasterization; validate that the pinned Playwright image yields stable diffs before committing many baselines, and set `maxDiffPixelRatio` per story family.
 10. **Consumer tokens in Shadow DOM:** Tailwind emits theme variables to `:root` only; if any consumer app uses web components, `tokens.css` should declare `:root, :host` itself (our file, our choice).
 11. **Option A vs B enforcement:** if the agent authors with utilities anyway, decide whether a lint rule blocks Tailwind classes inside `packages/react` to keep the CSS-first contract.

@@ -110,6 +110,8 @@ These match Prism's already-decided policy (glass only over imagery/maps/vivid; 
 - HIG typography for watchOS: system font is SF Compact (complications use SF Compact Rounded); default 16 pt / minimum 12 pt. (H: https://developer.apple.com/design/human-interface-guidelines/typography)
 - Prism decision "no blur on watchOS" is consistent with Apple's "minimal" stance: on watchOS resolve every `ds` glass surface to `.identity` + solid/vivid fill and rely on `.buttonStyle(.glass)` only for system-looking chrome.
 
+> Superseded by ADR-0022 (2026-09-15): on watchOS and under Reduce Transparency or Increase Contrast, glass renders the opaque raised fallback (`bg.surface.raised` over `bg.page`), or `inverse` when selected, not `.identity` + solid and not `solidElevated`. `DSSurface` reads `DSTokenContext.contrast` and `.transparency`, not the environment directly.
+
 ### 1.6 Reduce Transparency / Increase Contrast and glass
 
 - Environment: `var accessibilityReduceTransparency: Bool { get }` (iOS 13+, macOS 10.15+, watchOS 6+): "If this property's value is true, UI (mainly window) backgrounds should not be semi-transparent; they should be opaque." Read-only (cannot be injected for tests). (H: https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducetransparency)
@@ -138,6 +140,8 @@ struct DSGlassSurface<S: Shape>: ViewModifier {
   }
 }
 ```
+
+> Superseded by ADR-0022 (2026-09-15): on watchOS and under Reduce Transparency or Increase Contrast, glass renders the opaque raised fallback (`bg.surface.raised` over `bg.page`), or `inverse` when selected, not `.identity` + solid and not `solidElevated`. `DSSurface` reads `DSTokenContext.contrast` and `.transparency`, not the environment directly.
 
 ---
 
@@ -431,6 +435,8 @@ swift/
     __Snapshots__/         # committed PNGs, named <Component>/<variant>@<scale>.png
 ```
 
+> ADR-0020 (2026-09-15): `DSColor` is a struct built from brand and transparency, reached as `DSTokenSet.color`, over a namespaced asset catalog; the OS resolves scheme and contrast. The generated files are those of `tools/tokens/ARCHITECTURE.md` §9.7.
+
 Package.swift sketch (all APIs verified in §4.2):
 
 ```swift
@@ -465,21 +471,24 @@ let package = Package(
 Platform conditionals: prefer `#if os(watchOS)` inside DSCore/DSComponents for behavior (surface resolution, haptics, toolbar spacers) and `#if canImport(Charts)`/`#if !os(watchOS)` for `Chart3D`. SwiftPM cannot vary `sources:` per platform; keep watch-only files in `Sources/DSComponents/watchOS/` wrapped in `#if os(watchOS)` so the target still compiles on all platforms.
 
 ### 8.3 Token → Swift code generation
-- Custom Style Dictionary v5.5 transforms: `color/prismSwift` (colorjs.io OKLCH→Display P3 with gamut mapping, emitting `Color(.displayP3, …)`; fall back to `hex` when the object has it and the color is out of sRGB), `size/prismCGFloat`, `motion/prismSpring` (emit `Spring(duration:bounce:)`), `typography/prismFont` (emit `Font.custom(ps, size:, relativeTo:)` for Signature and `Font.system(style, design:, weight:)` for Native). Also a custom format that writes `.xcassets/*.colorset/Contents.json` with `display-p3` values and both contrast slots (verify the JSON key for high contrast in the Asset Catalog format reference — open question §9).
+- Custom Style Dictionary v5.5 transforms: `color/prismSwift` (colorjs.io OKLCH→Display P3 with gamut mapping, emitting `Color(.displayP3, …)`; fall back to `hex` when the object has it and the color is out of sRGB), `size/prismCGFloat`, `motion/prismSpring` (emit `Spring(duration:bounce:)`), `typography/prismFont` (emit `Font.custom(ps, size:, relativeTo:)` for Signature and `Font.system(style, design:, weight:)` for Native). *(Superseded 2026-09-15 by ADR-0020 and ADR-0021 §9: one DSCore route for both presets (`@ScaledMetric` size, `Font.custom(ps, fixedSize:)` or `Font.system(size:weight:design:)` at the role's token size, `.monospacedDigit()`, `.lineHeight(.multiple)`, `boldWeight` under Bold Text, `legibilityWeight` neutralized); the generator emits data, not fonts.)* Also a custom format that writes `.xcassets/*.colorset/Contents.json` with `display-p3` values and both contrast slots (verify the JSON key for high contrast in the Asset Catalog format reference — open question §9).
 - Generate a `DSTokenContext` (brand, scheme, contrast, density, modality, platform) resolver rather than baking one brand in: Swift enums keyed by the same ids as the web bundle for the CI parity report.
 - Contrast test in CI on the Swift side: resolve every functional text/background pair with `Color.Resolved` (linear sRGB) → compute WCAG ratio in `DSTokensTests` under `swift test` (no simulator needed).
 
 ### 8.4 Materials policy encoded in DSCore
 - `DSSurface.glass` resolves to `.glassEffect(.regular.tint(...), in: shape)` only when `dsSurfaceContext ∈ {vivid, imagery, map}`; over `.solid` it silently degrades to `.solidElevated` and logs a debug warning (HIG: "Don't use Liquid Glass in the content layer").
+
+> Superseded by ADR-0022 (2026-09-15): on watchOS and under Reduce Transparency or Increase Contrast, glass renders the opaque raised fallback (`bg.surface.raised` over `bg.page`), or `inverse` when selected, not `.identity` + solid and not `solidElevated`. `DSSurface` reads `DSTokenContext.contrast` and `.transparency`, not the environment directly.
+
 - Never use `.clear` without the 30–35 % dimming layer; expose it as `DSGlassStyle.clearOverMedia` that includes the dim.
 - Group glass elements inside one `GlassEffectContainer(spacing:)` per screen region; reuse `glassEffectID` for morphs; pass explicit `.spring` animations to avoid the extra `matchedGeometry` scale/offset when the spec says "no bounce".
 - Do not paint custom backgrounds behind system bars; rely on `scrollEdgeEffectStyle(.hard/.soft)` and `.sharedBackgroundVisibility(.hidden)` for toolbar exceptions; expose `ds.edgeEffect` as a token with a "one per view" lint.
 - Elevation levels 0–3 map to solid surfaces + shadow tokens; level 3 may be glass only in the allowed contexts.
 
 ### 8.5 Accessibility handling via tokens
-- `DSAccessibilityPolicy` reads the five env values and exposes derived flags: `prefersOpaqueSurfaces` (Reduce Transparency ∨ Increase Contrast), `prefersReducedMotion`, `needsNonColorCue`, `boldText`. Tokens ship alternates: `motion.*.reduced` (crossfade/opacity), `color.*.increasedContrast`, `typography.*.bold` faces.
-- Bold Text: with the Signature font map `legibilityWeight == .bold` to the next heavier static face (SwiftUI does not synthesize bold).
-- Dynamic Type: every Signature text style uses `Font.custom(_:size:relativeTo:)`; spacing tokens that must scale use `@ScaledMetric(relativeTo:)`. On macOS Dynamic Type does not apply — the density dimension is the macOS lever.
+- `DSAccessibilityPolicy` reads the five env values and exposes derived flags: `prefersOpaqueSurfaces` (Reduce Transparency ∨ Increase Contrast), `prefersReducedMotion`, `needsNonColorCue`, `boldText`. Tokens ship alternates: `motion.*.reduced` (crossfade/opacity), `color.*.increasedContrast`, `typography.*.bold` faces. *(Superseded for motion by ADR-0023, 2026-09-15: there are no `motion.*.reduced` alternates; DSCore selects the motion modifier's `reduced` context through `DSTokenContext.motion` from `DSAccessibilityPolicy.reduceMotion` (the name ADR-0023 uses instead of `prefersReducedMotion`), and components read `DSTokenSet.motion.presentationCrossfade`. For typography, `DSTypeRole.boldWeight` replaces bold faces (ADR-0021).)*
+- Bold Text: with the Signature font map `legibilityWeight == .bold` to the next heavier static face (SwiftUI does not synthesize bold). *(Superseded by ADR-0021 §3–§4, 2026-09-15: DSCore renders `DSTypeRole.boldWeight` (s ≤ 300 → 400, else s + 200) for both presets and sets `legibilityWeight` to `.regular` on DS text.)*
+- Dynamic Type: every Signature text style uses `Font.custom(_:size:relativeTo:)`; spacing tokens that must scale use `@ScaledMetric(relativeTo:)`. On macOS Dynamic Type does not apply — the density dimension is the macOS lever. *(Superseded by ADR-0021 §6 and §9, 2026-09-15: one route for both presets with a fixed-size font at the `@ScaledMetric` size along the role's `textStyle`; non-type dimensions do not scale; density changes no typography, and macOS renders text at the role sizes.)*
 
 ### 8.6 Charts
 - Default to Swift Charts marks; theme via `chartForegroundStyleScale`, `chartXAxis/YAxis` styles, gradient `AreaMark` fills from `ds.dataviz` tokens; interpolation `.monotone` for time series (no overshoot).
@@ -508,7 +517,7 @@ Platform conditionals: prefer `#if os(watchOS)` inside DSCore/DSComponents for b
 7. Xcode support for SwiftPM package traits (SwiftPM 6.1) in Xcode 26.x app targets — confirm before relying on a `Charts3D` trait; fallback is a separate `DSCharts3D` product.
 8. Whether SF Symbols 8 (iOS 27) adds rendering-mode APIs that Prism's icon token schema should reserve fields for.
 9. Style Dictionary's DTCG 2025.10 coverage is still "work in progress" — decide whether to pin 5.5.x and own the Swift color transform, or wait for a first-party `color/ColorSwiftUI` with P3.
-10. Should the macOS density default be "comfortable" given no Dynamic Type on macOS — a product decision, not a technical one.
+10. Should the macOS density default be "comfortable" given no Dynamic Type on macOS — a product decision, not a technical one. *(Decided by ADR-0019, 2026-09-15: macOS defaults to compact; comfortable remains an app or accessibility choice.)*
 
 ---
 
