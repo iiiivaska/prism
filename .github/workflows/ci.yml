@@ -14,8 +14,10 @@ permissions:
   contents: read
 
 env:
-  # Exact Xcode for the apple job (ADR-0003 floor is 26.4). Kept equal to the owner's local Xcode so
-  # SwiftUI snapshot baselines recorded locally compare byte-for-byte on CI (P3-3).
+  # Exact Xcode for the apple job (ADR-0003 floor is 26.4): the Xcode the Phase 1 Apple checks were
+  # verified with (tools/tokens/ARCHITECTURE.md §15, V1). SwiftUI snapshot baselines (P3-3) compare
+  # byte-for-byte only when recorded with this same Xcode, so record them with it and move the pin and
+  # the baselines together; a newer local Xcode is the roadmap's Xcode 27 lane, not a reason to re-pin.
   XCODE_VERSION: "26.6"
 
 # Steps whose tool or ticket has not landed are skipped, not failed: the `plan` job tests for the
@@ -264,8 +266,8 @@ jobs:
       - name: DSTokens catalog tests on the watchOS Simulator # P1-5
         # ARCHITECTURE V1, checked 2026-09-15 with Xcode 26.6: Prism-Package cannot test on watchOS, because
         # its test action also builds DSSnapshotTests and SnapshotTesting 1.19.4 does not compile for watchOS
-        # ("cannot find 'Image' in scope"). A shared scheme that tests only DSTokensTests passes; until P1-5
-        # adds it, verify-xcassets.sh is the watchOS check.
+        # ("cannot find 'Image' in scope"). This step therefore runs the shared scheme DSTokensTests
+        # (.swiftpm/xcode/xcshareddata/xcschemes/DSTokensTests.xcscheme), which builds DSTokens and tests only DSTokensTests.
         if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.catalog_tests == 'true' && needs.plan.outputs.dstokens_scheme == 'true'
         run: xcodebuild test -scheme DSTokensTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
       - name: Gallery snapshots (SwiftUI) # P3-3
