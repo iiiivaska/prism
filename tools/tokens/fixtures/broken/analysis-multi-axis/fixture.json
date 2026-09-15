@@ -1,0 +1,9 @@
+{
+  "description": "The compact card padding aliases a blur the color scheme changes, so it depends on density and colorScheme.",
+  "expect": [
+    {
+      "code": "analysis/multi-axis",
+      "tokenId": "sys.space.card-padding"
+    }
+  ]
+}

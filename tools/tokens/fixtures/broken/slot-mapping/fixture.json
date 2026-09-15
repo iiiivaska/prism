@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.bg.page in the light file aliases a ramp step instead of its slot.",
+  "expect": [
+    {
+      "code": "slot/mapping",
+      "tokenId": "sys.color.bg.page"
+    }
+  ]
+}

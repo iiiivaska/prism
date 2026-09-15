@@ -1,0 +1,8 @@
+{
+  "description": "The touch context of modality references the density modifier.",
+  "expect": [
+    {
+      "code": "resolver/modifier-reference"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "description": "Both density contexts also write sys.interaction.hover, which modality owns: two modifiers write one id, density writes outside its globs, and modality always overwrites the density write.",
+  "expect": [
+    {
+      "code": "orthogonality/overlap",
+      "tokenId": "sys.interaction.hover"
+    },
+    {
+      "code": "orthogonality/ownership",
+      "tokenId": "sys.interaction.hover"
+    },
+    {
+      "code": "source/dead-write",
+      "tokenId": "sys.interaction.hover"
+    }
+  ]
+}

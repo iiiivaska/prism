@@ -1,0 +1,13 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "bg": {
+        "platform": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.950}"
+        }
+      }
+    }
+  }
+}

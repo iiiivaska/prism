@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.bg.tint.accent applies alpha over a target the dark file makes translucent.",
+  "expect": [
+    {
+      "code": "color/alpha-target",
+      "tokenId": "sys.color.bg.tint.accent"
+    }
+  ]
+}

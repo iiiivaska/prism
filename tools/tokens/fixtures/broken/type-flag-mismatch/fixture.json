@@ -1,0 +1,9 @@
+{
+  "description": "The reduced declaration of sys.motion.presentation.crossfade drops the flag.",
+  "expect": [
+    {
+      "code": "type/flag-mismatch",
+      "tokenId": "sys.motion.presentation.crossfade"
+    }
+  ]
+}

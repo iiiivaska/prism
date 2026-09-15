@@ -1,0 +1,9 @@
+{
+  "description": "sys/base declares sys.space.card-padding, which every density context overwrites.",
+  "expect": [
+    {
+      "code": "source/dead-write",
+      "tokenId": "sys.space.card-padding"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "ref.type.metric.xl is 30 px with darkWeight 200, below the 34 px threshold.",
+  "expect": [
+    {
+      "code": "type/thin-weight",
+      "tokenId": "ref.type.metric.xl"
+    }
+  ]
+}

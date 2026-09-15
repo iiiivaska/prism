@@ -1,0 +1,8 @@
+{
+  "description": "A group in ref/dimension uses $extends.",
+  "expect": [
+    {
+      "code": "resolver/extends-unsupported"
+    }
+  ]
+}

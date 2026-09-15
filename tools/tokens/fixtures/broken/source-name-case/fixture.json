@@ -1,0 +1,8 @@
+{
+  "description": "ref.motion.easing.inOut is camelCase (S7).",
+  "expect": [
+    {
+      "code": "source/name-case"
+    }
+  ]
+}

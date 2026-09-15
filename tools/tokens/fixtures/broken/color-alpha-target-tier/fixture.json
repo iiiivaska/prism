@@ -1,0 +1,9 @@
+{
+  "description": "comp.card.veil, declared in tokens/sys/base.tokens.json, carries app.prism.alpha; alpha sits only on sys tokens, never on ref or comp tokens (ADR-0020 §3).",
+  "expect": [
+    {
+      "code": "color/alpha-target",
+      "tokenId": "comp.card.veil"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "A token carries an unknown app.prism key and a spring duration in milliseconds.",
+  "expect": [
+    {
+      "code": "extension/schema",
+      "tokenId": "ref.motion.spring.interactive"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ A brand re-colors and re-types Prism without changing its structure. It is data 
 | Type scale | `ref.type.scale` | 1 | positive number, within [1, 1.25] (ADR-0021 §6) |
 | Radius steps | `ref.radius.1…10` | 10 | non-decreasing with the step number |
 
-- **Everything else is system-owned:** status colors, the smoked-glass tints `ref.color.smoke.light|dark`, space, size, border, blur, opacity, shadow, motion, the `ref.type` role composites, `ref.radius.0` and `ref.radius.pill`.
+- **Everything else is system-owned:** status colors, the smoked-glass tints `ref.color.smoke.light|dark`, space, size, border, blur, opacity, shadow, motion, the typography role composites (`ref.type.<role>`), `ref.radius.0` and `ref.radius.pill`.
 - **No other writes.** A brand never writes `sys.*` or `comp.*` and never adds a path.
 - **Whole tokens.** The DTCG merge replaces tokens wholesale, so a brand overrides a whole token and restates its functional extensions (a gradient's `angle`, `grain`, `scheme` and `bloom`; a font's `opsz`).
 - **Gradient names.** The eight gradient ids keep the reference brand's names whatever a brand puts in them. Specs and components bind the `gradient.vivid.default` and `gradient.vivid.1…4` slots, which the scheme files map to them (ADR-0024 §6, ADR-0022 §4.4), never the names.

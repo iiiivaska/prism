@@ -1,0 +1,21 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "button": {
+      "bg": {
+        "$value": "{sys.color.bg.fill.accent}"
+      },
+      "label": {
+        "$value": "{sys.type.label.sm}"
+      },
+      "radius": {
+        "$value": "{sys.radius.card}"
+      },
+      "motion": {
+        "press": {
+          "$value": "{sys.motion.spring.snappy}"
+        }
+      }
+    }
+  }
+}

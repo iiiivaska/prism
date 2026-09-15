@@ -1,0 +1,75 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "type": {
+      "body": {
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.body.md}"
+        }
+      },
+      "label": {
+        "sm": {
+          "$type": "typography",
+          "$value": "{ref.type.label.sm}"
+        }
+      },
+      "metric": {
+        "xl": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.xl}"
+        }
+      },
+      "code": {
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.code.md}"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "card": {
+        "$value": "{ref.radius.2}"
+      }
+    },
+    "border": {
+      "$type": "dimension",
+      "hairline": {
+        "$value": "{ref.border.hairline}"
+      }
+    },
+    "color": {
+      "bg": {
+        "scrim": {
+          "$type": "color",
+          "$value": "{sys.material.glass.scrim}"
+        }
+      }
+    },
+    "shadow": {
+      "glow": {
+        "$type": "shadow",
+        "$value": {
+          "color": "{sys.material.glass.scrim}",
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 4,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 12,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      }
+    }
+  }
+}

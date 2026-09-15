@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.hacked is a hued color literal declared in a comp file; the sys rules cover every sys id, wherever it is declared (ADR-0020 §3: a hue comes only from ref).",
+  "expect": [
+    {
+      "code": "sys/literal",
+      "tokenId": "sys.color.hacked"
+    }
+  ]
+}

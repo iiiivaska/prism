@@ -1,0 +1,9 @@
+{
+  "description": "The light dark.fill recipe has a negative saturate.",
+  "expect": [
+    {
+      "code": "material/recipe-shape",
+      "tokenId": "sys.material.glass.dark.fill.saturate"
+    }
+  ]
+}

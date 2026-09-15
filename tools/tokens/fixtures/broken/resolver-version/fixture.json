@@ -1,0 +1,8 @@
+{
+  "description": "The resolver version is not 2025.10.",
+  "expect": [
+    {
+      "code": "resolver/version"
+    }
+  ]
+}

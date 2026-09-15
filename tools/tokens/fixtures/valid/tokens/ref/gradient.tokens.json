@@ -1,0 +1,88 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "gradient": {
+      "vivid": {
+        "$type": "gradient",
+        "sky": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.6,
+                  0.12,
+                  240
+                ],
+                "alpha": 1,
+                "hex": "#2b88c0"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.42,
+                  0.1,
+                  250
+                ],
+                "alpha": 1,
+                "hex": "#194f81"
+              },
+              "position": 1
+            }
+          ],
+          "$extensions": {
+            "app.prism": {
+              "angle": 165,
+              "grain": 0.06,
+              "scheme": "light",
+              "bloom": {
+                "alpha": 0.3,
+                "blur": 150
+              }
+            }
+          }
+        },
+        "plum-dusk": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.45,
+                  0.09,
+                  330
+                ],
+                "alpha": 1,
+                "hex": "#71426d"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.3,
+                  0.06,
+                  300
+                ],
+                "alpha": 1,
+                "hex": "#332647"
+              },
+              "position": 1
+            }
+          ],
+          "$extensions": {
+            "app.prism": {
+              "angle": 200,
+              "grain": 0.05,
+              "scheme": "dark"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "description": "ref.constructor (a group) and ref.border.constructor (a token) use the one kebab-case name that is an Object.prototype member; Style Dictionary would drop both.",
+  "expect": [
+    {
+      "code": "source/name-case"
+    }
+  ]
+}

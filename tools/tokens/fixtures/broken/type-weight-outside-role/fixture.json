@@ -1,0 +1,9 @@
+{
+  "description": "ref.weight.light is a fontWeight token below 400 outside ref.type.",
+  "expect": [
+    {
+      "code": "type/weight-outside-role",
+      "tokenId": "ref.weight.light"
+    }
+  ]
+}

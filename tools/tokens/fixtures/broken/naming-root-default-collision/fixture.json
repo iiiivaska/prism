@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.bg.surface has a sibling named default next to its $root.",
+  "expect": [
+    {
+      "code": "naming/root-default-collision",
+      "tokenId": "sys.color.bg.surface.default"
+    }
+  ]
+}

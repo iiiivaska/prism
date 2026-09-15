@@ -1,0 +1,70 @@
+{
+  "name": "prism",
+  "displayName": "Fixture reference brand",
+  "version": "0.1.0",
+  "preset": "signature",
+  "fonts": {
+    "ui": {
+      "family": "Onest",
+      "file": "fonts/onest/Onest[wght].ttf",
+      "version": "2.001",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "platforms": [
+        "apple",
+        "web"
+      ],
+      "postscript": {
+        "100": "Onest-Thin",
+        "200": "Onest-ExtraLight",
+        "300": "Onest-Light",
+        "400": "Onest-Regular",
+        "500": "Onest-Medium",
+        "600": "Onest-SemiBold",
+        "700": "Onest-Bold",
+        "800": "Onest-ExtraBold",
+        "900": "Onest-Black"
+      }
+    },
+    "display": {
+      "family": "Onest",
+      "file": "fonts/onest/Onest[wght].ttf",
+      "version": "2.001",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "platforms": [
+        "apple",
+        "web"
+      ],
+      "postscript": {
+        "100": "Onest-Thin",
+        "200": "Onest-ExtraLight",
+        "300": "Onest-Light",
+        "400": "Onest-Regular",
+        "500": "Onest-Medium",
+        "600": "Onest-SemiBold",
+        "700": "Onest-Bold",
+        "800": "Onest-ExtraBold",
+        "900": "Onest-Black"
+      }
+    },
+    "mono": {
+      "family": "JetBrains Mono",
+      "file": "fonts/jetbrains-mono/JetBrainsMono[wght].ttf",
+      "version": "2.211",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "platforms": [
+        "apple",
+        "web"
+      ],
+      "postscript": {
+        "100": "JetBrainsMonoRoman-Thin",
+        "200": "JetBrainsMonoRoman-ExtraLight",
+        "300": "JetBrainsMonoRoman-Light",
+        "400": "JetBrainsMono-Regular",
+        "500": "JetBrainsMonoRoman-Medium",
+        "700": "JetBrainsMonoRoman-Bold",
+        "800": "JetBrainsMonoRoman-ExtraBold"
+      }
+    }
+  },
+  "notes": "Fixture: declares no tokens; its values are the ref set."
+}

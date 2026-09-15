@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand makes ref.radius.2 larger than ref.radius.3.",
+  "expect": [
+    {
+      "code": "brand/radius-order",
+      "tokenId": "ref.radius.3"
+    }
+  ]
+}

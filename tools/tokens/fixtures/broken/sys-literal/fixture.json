@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.text.primary is a hued color literal in the light file (S13).",
+  "expect": [
+    {
+      "code": "sys/literal",
+      "tokenId": "sys.color.text.primary"
+    }
+  ]
+}

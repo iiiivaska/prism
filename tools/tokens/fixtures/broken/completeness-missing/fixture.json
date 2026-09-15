@@ -1,0 +1,9 @@
+{
+  "description": "The dark scheme file lacks sys.color.text.on-glass, so three colorScheme contexts lack it.",
+  "expect": [
+    {
+      "code": "completeness/missing",
+      "tokenId": "sys.color.text.on-glass"
+    }
+  ]
+}

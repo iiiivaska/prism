@@ -1,0 +1,66 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "space": {
+      "2": {
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "4": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "$type": "dimension"
+    },
+    "radius": {
+      "1": {
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        }
+      },
+      "2": {
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "3": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        }
+      },
+      "$type": "dimension",
+      "$extends": "{ref.space}"
+    },
+    "blur": {
+      "$type": "dimension",
+      "glass": {
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        }
+      },
+      "chip": {
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        }
+      }
+    },
+    "border": {
+      "$type": "dimension",
+      "hairline": {
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

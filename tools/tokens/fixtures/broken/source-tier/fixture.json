@@ -1,0 +1,9 @@
+{
+  "description": "A top-level group outside ref, sys and comp.",
+  "expect": [
+    {
+      "code": "source/tier",
+      "tokenId": "misc.gap"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "type": {
+      "$type": "typography",
+      "body": {
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.body.md}"
+        }
+      },
+      "label": {
+        "sm": {
+          "$type": "typography",
+          "$value": "{ref.type.label.sm}"
+        }
+      },
+      "metric": {
+        "xl": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.xl}"
+        }
+      },
+      "code": {
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.code.md}"
+        }
+      }
+    },
+    "radius": {
+      "$type": "dimension",
+      "card": {
+        "$value": "{ref.radius.2}"
+      }
+    },
+    "border": {
+      "$type": "dimension",
+      "hairline": {
+        "$value": "{ref.border.hairline}"
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "description": "ref.color.slot.light.bg-page aliases an accent step; bg-page aliases the neutral ramp.",
+  "expect": [
+    {
+      "code": "slot/target",
+      "tokenId": "ref.color.slot.light.bg-page"
+    }
+  ]
+}

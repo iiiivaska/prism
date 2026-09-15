@@ -1,0 +1,9 @@
+{
+  "description": "comp.button.radius aliases a ref token directly.",
+  "expect": [
+    {
+      "code": "tier/alias-direction",
+      "tokenId": "comp.button.radius"
+    }
+  ]
+}

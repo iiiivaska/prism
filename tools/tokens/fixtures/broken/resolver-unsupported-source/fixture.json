@@ -1,0 +1,8 @@
+{
+  "description": "A resolver source is a URL.",
+  "expect": [
+    {
+      "code": "resolver/unsupported-source"
+    }
+  ]
+}

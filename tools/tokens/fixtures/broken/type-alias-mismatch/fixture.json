@@ -1,0 +1,13 @@
+{
+  "description": "comp.card.bg declares \"$type\": \"dimension\" but aliases a color token; the normalizer then rejects the color as a dimension (value/invalid), in the same run.",
+  "expect": [
+    {
+      "code": "type/alias-mismatch",
+      "tokenId": "comp.card.bg"
+    },
+    {
+      "code": "value/invalid",
+      "tokenId": "comp.card.bg"
+    }
+  ]
+}

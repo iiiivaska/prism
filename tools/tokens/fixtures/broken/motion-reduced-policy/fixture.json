@@ -1,0 +1,13 @@
+{
+  "description": "The reduced snappy spring keeps a bounce of 0.1.",
+  "expect": [
+    {
+      "code": "motion/reduced-policy",
+      "tokenId": "sys.motion.spring.snappy"
+    },
+    {
+      "code": "motion/reduced-policy",
+      "tokenId": "comp.button.motion.press"
+    }
+  ]
+}

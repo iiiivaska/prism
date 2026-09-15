@@ -1,0 +1,9 @@
+{
+  "description": "ref.type.weight.light is a fontWeight token of 300 inside ref.type, so increased contrast renders it below 400.",
+  "expect": [
+    {
+      "code": "type/contrast-floor",
+      "tokenId": "ref.type.weight.light"
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.slot.light.bg-page}"
+        },
+        "surface": {
+          "$root": {
+            "$value": "{ref.color.neutral.0}"
+          },
+          "raised": {
+            "$value": "{ref.color.neutral.0}"
+          }
+        },
+        "fill": {
+          "accent": {
+            "$value": "{ref.color.slot.light.bg-fill-accent}"
+          }
+        },
+        "tint": {
+          "accent": {
+            "$value": "{ref.color.accent.500}",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.12
+              }
+            }
+          }
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "{ref.color.neutral.900}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.pag"
+                ]
+              }
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.64,
+            "hex": "#000000"
+          }
+        },
+        "on-accent": {
+          "$value": "{ref.color.slot.light.text-on-accent}"
+        },
+        "accent": {
+          "$value": "{ref.color.slot.light.text-accent}"
+        },
+        "on-glass": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          }
+        }
+      },
+      "border": {
+        "hairline": {
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.1
+            }
+          }
+        }
+      }
+    },
+    "material": {
+      "glass": {
+        "dark": {
+          "fill": {
+            "$root": {
+              "$type": "color",
+              "$value": "{ref.color.smoke.light}",
+              "$extensions": {
+                "app.prism": {
+                  "alpha": 0.55
+                }
+              }
+            },
+            "blur": {
+              "$type": "dimension",
+              "$value": "{ref.blur.glass}"
+            },
+            "saturate": {
+              "$type": "number",
+              "$value": 0.8
+            },
+            "edge": {
+              "start": {
+                "$type": "number",
+                "$value": 0.22
+              },
+              "end": {
+                "$type": "number",
+                "$value": 0.08
+              }
+            },
+            "grain": {
+              "$type": "number",
+              "$value": 0.04
+            },
+            "bloom": {
+              "$type": "number",
+              "$value": 0
+            }
+          }
+        },
+        "scrim": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.35,
+            "hex": "#000000"
+          }
+        }
+      }
+    },
+    "elevation": {
+      "1": {
+        "$value": {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.07,
+            "hex": "#000000"
+          },
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 6,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 16,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      },
+      "$type": "shadow"
+    },
+    "gradient": {
+      "$type": "gradient",
+      "vivid": {
+        "default": {
+          "$value": "{ref.gradient.vivid.sky}"
+        }
+      }
+    }
+  }
+}

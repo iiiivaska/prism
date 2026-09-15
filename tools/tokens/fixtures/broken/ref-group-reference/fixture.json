@@ -1,0 +1,9 @@
+{
+  "description": "comp.card.bg references the group {sys.color.bg.surface} instead of its $root token.",
+  "expect": [
+    {
+      "code": "ref/group-reference",
+      "tokenId": "comp.card.bg"
+    }
+  ]
+}

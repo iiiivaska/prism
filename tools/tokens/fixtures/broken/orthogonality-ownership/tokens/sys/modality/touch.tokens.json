@@ -1,0 +1,40 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "size": {
+      "hit": {
+        "$type": "dimension",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      }
+    },
+    "interaction": {
+      "hover": {
+        "$type": "number",
+        "$value": 0,
+        "$extensions": {
+          "app.prism": {
+            "flag": true
+          }
+        }
+      }
+    },
+    "color": {
+      "hover": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.08,
+          "hex": "#ffffff"
+        }
+      }
+    }
+  }
+}

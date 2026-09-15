@@ -1,0 +1,9 @@
+{
+  "description": "ref.space.2 has a dimension in em, which DTCG does not admit.",
+  "expect": [
+    {
+      "code": "value/invalid",
+      "tokenId": "ref.space.2"
+    }
+  ]
+}

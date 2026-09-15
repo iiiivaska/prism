@@ -1,0 +1,98 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "accent": {
+        "500": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.62,
+              0.17,
+              150
+            ],
+            "alpha": 1,
+            "hex": "#03a14a"
+          }
+        }
+      },
+      "series": {
+        "light": {
+          "3": {
+            "$value": {
+              "colorSpace": "oklch",
+              "components": [
+                0.6,
+                0.1,
+                200
+              ],
+              "alpha": 1,
+              "hex": "#0d9298"
+            }
+          }
+        }
+      }
+    },
+    "radius": {
+      "2": {
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        }
+      },
+      "$type": "dimension"
+    },
+    "font": {
+      "$type": "fontFamily",
+      "ui": {
+        "$value": [
+          "Inter",
+          "system-ui",
+          "sans-serif"
+        ]
+      },
+      "display": {
+        "$value": [
+          "Inter",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$extensions": {
+          "app.prism": {
+            "opsz": 32
+          }
+        }
+      },
+      "mono": {
+        "$value": [
+          "ui-monospace",
+          "monospace"
+        ]
+      },
+      "apple": {
+        "ui": {
+          "$value": [
+            "system-ui"
+          ]
+        },
+        "display": {
+          "$value": [
+            "system-ui"
+          ]
+        },
+        "mono": {
+          "$value": [
+            "ui-monospace"
+          ]
+        }
+      }
+    },
+    "type": {
+      "scale": {
+        "$type": "number",
+        "$value": 1.1
+      }
+    }
+  }
+}

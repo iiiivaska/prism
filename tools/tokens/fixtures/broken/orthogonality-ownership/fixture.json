@@ -1,0 +1,9 @@
+{
+  "description": "Both modality contexts write a sys.color id, which colorScheme owns.",
+  "expect": [
+    {
+      "code": "orthogonality/ownership",
+      "tokenId": "sys.color.hover"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Merge semantics",
+  "version": "2025.10",
+  "description": "DTCG Resolver 2025.10 §4.1.4: a later declaration replaces the whole token. second.tokens.json redeclares ref.color.brand without $description, hex or $extensions, and ref.elevation.card, a two-layer shadow in first.tokens.json, as a one-layer shadow; neither may inherit anything from first.tokens.json. Group properties are last-wins per key. Terrazzo deep-merges object values, so it keeps the hex, $description and $extensions of ref.color.brand: the one known divergence (oracle.test.ts).",
+  "sets": {
+    "first": { "sources": [ { "$ref": "first.tokens.json" } ] },
+    "second": { "sources": [ { "$ref": "second.tokens.json" } ] }
+  },
+  "modifiers": {},
+  "resolutionOrder": [ { "$ref": "#/sets/first" }, { "$ref": "#/sets/second" } ]
+}

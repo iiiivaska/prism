@@ -1,0 +1,9 @@
+{
+  "description": "The light reduced-transparency delta changes sys.color.text.secondary, which the increased-contrast delta also changes.",
+  "expect": [
+    {
+      "code": "analysis/variant-overlap",
+      "tokenId": "sys.color.text.secondary"
+    }
+  ]
+}

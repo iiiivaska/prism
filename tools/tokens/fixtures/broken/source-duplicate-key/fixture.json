@@ -1,0 +1,8 @@
+{
+  "description": "ref.space declares the key \"2\" twice.",
+  "expect": [
+    {
+      "code": "source/duplicate-key"
+    }
+  ]
+}

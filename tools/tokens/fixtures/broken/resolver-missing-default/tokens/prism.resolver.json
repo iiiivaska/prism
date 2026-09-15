@@ -1,0 +1,196 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Valid",
+  "version": "2025.10",
+  "description": "P1-3 valid fixture: the repository structure in miniature (six modifiers, two brands); fixtures/broken/<code>/ overlays it.",
+  "sets": {
+    "ref": {
+      "sources": [
+        {
+          "$ref": "ref/color.tokens.json"
+        },
+        {
+          "$ref": "ref/gradient.tokens.json"
+        },
+        {
+          "$ref": "ref/dimension.tokens.json"
+        },
+        {
+          "$ref": "ref/typography.tokens.json"
+        },
+        {
+          "$ref": "ref/motion.tokens.json"
+        }
+      ]
+    },
+    "sys": {
+      "sources": [
+        {
+          "$ref": "sys/base.tokens.json"
+        }
+      ]
+    },
+    "comp": {
+      "sources": [
+        {
+          "$ref": "comp/button.tokens.json"
+        },
+        {
+          "$ref": "comp/card.tokens.json"
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "brand": {
+      "contexts": {
+        "prism": [
+          {
+            "$ref": "../brands/prism/brand.tokens.json"
+          }
+        ],
+        "alt": [
+          {
+            "$ref": "../brands/prism/brand.tokens.json"
+          },
+          {
+            "$ref": "../brands/alt/brand.tokens.json"
+          }
+        ]
+      },
+      "default": "prism"
+    },
+    "platform": {
+      "contexts": {
+        "apple": [
+          {
+            "$ref": "sys/platform/apple.tokens.json"
+          }
+        ],
+        "web": [
+          {
+            "$ref": "sys/platform/web.tokens.json"
+          }
+        ]
+      },
+      "default": "web"
+    },
+    "colorScheme": {
+      "contexts": {
+        "light": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ],
+        "light-increased-contrast": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          },
+          {
+            "$ref": "sys/color/light-increased-contrast.tokens.json"
+          }
+        ],
+        "dark-increased-contrast": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          },
+          {
+            "$ref": "sys/color/dark-increased-contrast.tokens.json"
+          }
+        ],
+        "light-reduced-transparency": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark-reduced-transparency": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    },
+    "density": {
+      "contexts": {
+        "compact": [
+          {
+            "$ref": "sys/density/compact.tokens.json"
+          }
+        ],
+        "regular": [
+          {
+            "$ref": "sys/density/regular.tokens.json"
+          }
+        ]
+      },
+      "default": "compact"
+    },
+    "modality": {
+      "contexts": {
+        "pointer": [
+          {
+            "$ref": "sys/modality/pointer.tokens.json"
+          }
+        ],
+        "touch": [
+          {
+            "$ref": "sys/modality/touch.tokens.json"
+          }
+        ]
+      }
+    },
+    "motion": {
+      "contexts": {
+        "default": [
+          {
+            "$ref": "sys/motion/default.tokens.json"
+          }
+        ],
+        "reduced": [
+          {
+            "$ref": "sys/motion/default.tokens.json"
+          },
+          {
+            "$ref": "sys/motion/reduced.tokens.json"
+          }
+        ]
+      },
+      "default": "default"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/ref"
+    },
+    {
+      "$ref": "#/modifiers/brand"
+    },
+    {
+      "$ref": "#/sets/sys"
+    },
+    {
+      "$ref": "#/modifiers/platform"
+    },
+    {
+      "$ref": "#/modifiers/colorScheme"
+    },
+    {
+      "$ref": "#/modifiers/density"
+    },
+    {
+      "$ref": "#/modifiers/modality"
+    },
+    {
+      "$ref": "#/modifiers/motion"
+    },
+    {
+      "$ref": "#/sets/comp"
+    }
+  ]
+}

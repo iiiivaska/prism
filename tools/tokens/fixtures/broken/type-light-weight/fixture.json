@@ -1,0 +1,9 @@
+{
+  "description": "ref.type.label.sm renders weight 300 at 12 px.",
+  "expect": [
+    {
+      "code": "type/light-weight",
+      "tokenId": "ref.type.label.sm"
+    }
+  ]
+}

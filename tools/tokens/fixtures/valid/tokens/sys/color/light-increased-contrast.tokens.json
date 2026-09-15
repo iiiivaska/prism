@@ -1,0 +1,35 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "text": {
+        "secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.8,
+            "hex": "#000000"
+          }
+        },
+        "accent": {
+          "$value": "{ref.color.accent.900}"
+        }
+      },
+      "border": {
+        "hairline": {
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.3
+            }
+          }
+        }
+      }
+    }
+  }
+}

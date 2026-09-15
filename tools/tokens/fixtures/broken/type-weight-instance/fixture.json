@@ -1,0 +1,9 @@
+{
+  "description": "brand.json of prism lists no Onest instance for 600, the Bold Text weight of every 400 role.",
+  "expect": [
+    {
+      "code": "type/weight-instance",
+      "tokenId": "ref.type.body.md"
+    }
+  ]
+}

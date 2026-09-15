@@ -1,0 +1,8 @@
+{
+  "description": "The group sys.type is typed typography in sys/base and number in the compact density file.",
+  "expect": [
+    {
+      "code": "source/group-type-conflict"
+    }
+  ]
+}

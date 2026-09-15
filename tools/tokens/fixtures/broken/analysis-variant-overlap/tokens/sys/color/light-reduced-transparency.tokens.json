@@ -1,0 +1,22 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "text": {
+        "secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.9,
+            "hex": "#000000"
+          }
+        }
+      }
+    }
+  }
+}

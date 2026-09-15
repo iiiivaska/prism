@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand adds ref.color.series.light.3, which the ref set does not declare.",
+  "expect": [
+    {
+      "code": "brand/unknown-path",
+      "tokenId": "ref.color.series.light.3"
+    }
+  ]
+}

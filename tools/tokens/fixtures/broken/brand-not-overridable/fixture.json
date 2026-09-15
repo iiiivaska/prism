@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand overrides ref.space.2, a system-owned id.",
+  "expect": [
+    {
+      "code": "brand/not-overridable",
+      "tokenId": "ref.space.2"
+    }
+  ]
+}

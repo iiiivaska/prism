@@ -1,0 +1,9 @@
+{
+  "description": "tokens/ref/dimension.tokens.json deprecates the group ref.radius; the alt brand redeclares ref.radius.2 without $deprecated, so Prism reads it as not deprecated while engines that read the merged tree deprecate it.",
+  "expect": [
+    {
+      "code": "source/group-deprecated-mismatch",
+      "tokenId": "ref.radius.2"
+    }
+  ]
+}

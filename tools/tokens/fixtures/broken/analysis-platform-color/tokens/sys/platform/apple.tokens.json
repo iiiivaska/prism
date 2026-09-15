@@ -1,0 +1,26 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "font": {
+      "$type": "fontFamily",
+      "ui": {
+        "$value": "{ref.font.apple.ui}",
+        "$description": "Apple face of the slot (ADR-0020)"
+      },
+      "display": {
+        "$value": "{ref.font.apple.display}"
+      },
+      "mono": {
+        "$value": "{ref.font.apple.mono}"
+      }
+    },
+    "color": {
+      "bg": {
+        "platform": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.0}"
+        }
+      }
+    }
+  }
+}

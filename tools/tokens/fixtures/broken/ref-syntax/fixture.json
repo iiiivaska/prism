@@ -1,0 +1,9 @@
+{
+  "description": "ref.font.legacy is \"{ref.font.ui} Pro\": a reference inside other text; a value is a whole-token reference or a literal.",
+  "expect": [
+    {
+      "code": "ref/syntax",
+      "tokenId": "ref.font.legacy"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "The alias sys.motion.spring.snappy declares its own spring.",
+  "expect": [
+    {
+      "code": "extension/alias-override",
+      "tokenId": "sys.motion.spring.snappy"
+    }
+  ]
+}

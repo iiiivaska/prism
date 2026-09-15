@@ -1,0 +1,21 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "card": {
+      "bg": {
+        "$value": "{sys.color.bg.surface}"
+      },
+      "glass": {
+        "fill": {
+          "$value": "{sys.material.glass.dark.fill.$root}"
+        }
+      },
+      "shadow": {
+        "$value": "{sys.elevation.1}"
+      },
+      "title": {
+        "$value": "{sys.type.metric.xl}"
+      }
+    }
+  }
+}

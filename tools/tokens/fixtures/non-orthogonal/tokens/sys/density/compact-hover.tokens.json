@@ -1,0 +1,17 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "interaction": {
+      "$type": "number",
+      "hover": {
+        "$value": 0,
+        "$description": "Deliberate overlap: density/compact writes an id that modality owns (ADR-0024 §9.1), so the resolver is not orthogonal.",
+        "$extensions": {
+          "app.prism": {
+            "flag": true
+          }
+        }
+      }
+    }
+  }
+}

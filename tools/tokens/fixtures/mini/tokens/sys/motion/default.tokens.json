@@ -1,0 +1,39 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "motion": {
+      "duration": {
+        "$type": "duration",
+        "fast": {
+          "$value": "{ref.motion.duration.fast}"
+        },
+        "base": {
+          "$value": "{ref.motion.duration.base}"
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "out": {
+          "$value": "{ref.motion.easing.out}"
+        }
+      },
+      "spring": {
+        "$type": "transition",
+        "snappy": {
+          "$value": "{ref.motion.spring.snappy}"
+        }
+      },
+      "presentation": {
+        "crossfade": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "app.prism": {
+              "flag": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

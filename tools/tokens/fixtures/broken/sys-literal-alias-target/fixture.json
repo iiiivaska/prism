@@ -1,0 +1,13 @@
+{
+  "description": "sys.color.bg.scrim and the color of sys.shadow.glow alias sys.material.glass.scrim; a sys color, whole or sub-value, aliases a ref.color.* or sys.color.* token (ADR-0020 §3).",
+  "expect": [
+    {
+      "code": "sys/literal",
+      "tokenId": "sys.color.bg.scrim"
+    },
+    {
+      "code": "sys/literal",
+      "tokenId": "sys.shadow.glow"
+    }
+  ]
+}

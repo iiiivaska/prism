@@ -11,14 +11,31 @@ Both scripts are **bootstraps**: they encode the DNA numbers once so the token f
 
 Schema validation today: the CI `contracts` job downloads the DTCG 2025.10 schemas, checks their SHA-256 and runs `ajv-cli` through `npx` (`tools/README.md`, "DTCG schema validation"). From P1-1 (ADR-0024 §10), `pnpm --filter @iiiivaska/prism-tools tokens:validate` validates `tokens/**/*.tokens.json`, `brands/*/brand.tokens.json` and the resolver offline against the vendored DTCG 2025.10 schemas in `tools/tokens/schema/dtcg-2025.10/`, checked against `SHA256SUMS`, with one Ajv instance per schema; CI runs the same script.
 
+### The resolver driver (P1-3)
+
+The source model, the resolver, one Style Dictionary run per permutation and the IR analysis exist; the formats and `build.ts` arrive with P1-5. Module by module, as `ARCHITECTURE.md` §3.1 lists them:
+
+| Path | Role |
+|------|------|
+| `config.ts` | Pure data: paths, `OWNERSHIP` (its `brand` row is `BRAND_OVERRIDABLE`), the semantic-slot table, `WEB_RUNTIME` (the resolver defaults), the colorScheme structure, the ADR-0021 constants, font keywords, extension keys. |
+| `source/` | `reader.ts` (`fsReader`, `memoryReader`, `overlayReader`), `json.ts` (positions and duplicate keys), `model.ts` (the resolver and every document it loads), `brands.ts` (`brand.json` and registration), `schemas.ts` (the Ajv schemas in `schema/`), `analyze.ts` (the source checks of §5.6). |
+| `resolver.ts` | Deletable: enumeration, the DTCG merge (a later token replaces the earlier one wholesale) and provenance. |
+| `engine/` | `sd.ts` (one Style Dictionary 5.5.3 instance per distinct layer stack, strictly sequential), `hooks.ts` (`prism/validate`, `prism/dtcg-types`, `prism/normalize`), `to-ir.ts` (the IR, the brand type scale, the ADR-0021 weight rule). |
+| `ir/` | `types.ts`, `normalize.ts`, `color.ts`, `color-math.ts`, `spring.ts` (physics and settle for the motion policy), `order.ts`, `glob.ts` (the id pattern grammar), `lookup.ts`, `naming.ts` (public paths), `references.ts`, `typography.ts`, `bundle.ts` (`buildBundle`, the IR invariants), `analyze.ts` (§5.7), `diagnostics.ts`. |
+| `api.ts` | `buildBundle`, `collectBundle`, `lookup`, `publicPath`, `brandMeta`, `contrastContexts`, `unionShapes`, the color math, the readers. |
+| `diagnose.ts` | Development CLI: `node tokens/diagnose.ts [--json] [--root <dir>] [--resolver <path>]` prints every diagnostic with file, line and fix, writes nothing and exits 1 on any. Not a CI gate file; `build.ts` takes over its flags in P1-5. |
+| `fixtures/` | `mini/` (12 permutations), `valid/` (the repository in miniature, 192 permutations), `merge-semantics/`, and `broken/<case>/`: one overlay of `valid/` per diagnostic, with `fixture.json` naming the expected codes and tokens. |
+
+Every diagnostic has a code, a file and line where one exists, and a fix where it is mechanical. The tests that build the real repository (`repo.test.ts`, the living-document part of `docs.test.ts`) run in the suite: the repository builds its 432 permutations with zero diagnostics.
+
 ## What the P1 tickets add (ADR-0004)
 
 The complete design, including module map, IR types, every transform and format with output samples, and the order of work per ticket, is [`ARCHITECTURE.md`](ARCHITECTURE.md). It follows ADR-0019 to ADR-0025. In short:
 
 - `validate.ts` — `pnpm tokens:validate`: offline DTCG schema validation against the vendored copies (P1-1).
-- `source/` — parses the resolver and every token file once (with line numbers) and runs the source checks: write-set disjointness and ownership per modifier (`OWNERSHIP`, whose `brand` row is the brand allowlist `BRAND_OVERRIDABLE`), context completeness, brand paths, registration and values, semantic-slot mapping, `sys` literal and `app.prism.alpha` checks, font-stack rules (ADR-0020), the typography role rules (ADR-0021), material writes and recipe shape (ADR-0022), spring declarations (ADR-0023), names, references, group types, flags and folded keys on aliases (ADR-0024), dead writes. Survives the resolver's deletion.
+- `source/` — parses the resolver and every token file once (with line numbers) and runs the source checks: write-set disjointness and ownership per modifier (`OWNERSHIP`, whose `brand` row is the brand allowlist `BRAND_OVERRIDABLE`), context completeness, brand paths, registration and values, semantic-slot mapping, `sys` literal and `app.prism.alpha` checks, font-stack rules (ADR-0020), the typography role rules (ADR-0021), material writes and recipe shape (ADR-0022), spring declarations (ADR-0023), names, references, group types, flags and folded keys on aliases (ADR-0024), group deprecation, dead writes. Survives the resolver's deletion.
 - `resolver.ts` — only enumerates the permutations (brand × platform × colorScheme × density × modality × motion, 432 today) and merges each one with DTCG semantics (a later token replaces the earlier one wholesale). Designed to be deleted when Style Dictionary ships native resolver support.
-- `engine/` — one Style Dictionary 5.5 instance per permutation, in memory and strictly sequential: Prism preprocessors for reference checks and DTCG type precedence, one transitive transform `prism/normalize` that turns every value into a plain-data IR, `getPlatformTokens('ir')`. No Style Dictionary formats or built-in transforms.
+- `engine/` — one Style Dictionary 5.5 instance per distinct document stack (permutations that apply the same files in the same order share one run; the IR is still built per permutation), in memory and strictly sequential: Prism preprocessors for reference checks and DTCG type precedence, one transitive transform `prism/normalize` that turns every value into a plain-data IR, `getPlatformTokens('ir')`. No Style Dictionary formats or built-in transforms.
 - `ir/` — the IR bundle over all permutations, the ADR-0021 typography weight rule, dependency analysis and an exhaustive composition proof, the motion policy and gradient scheme invariants, naming, color math.
 - `transforms/` — pure renderers named after the roadmap: `color/css-gamut` (sRGB-mapped `oklch()` + P3 re-declaration), `color/p3` (Display P3 for Swift and `.colorset` components via Color.js gamut mapping), `dimension/css`, `dimension/cgfloat`, `duration`, `spring` (ADR-0023: physics triplet, ε = 0.001 floor settle, CSS `linear()` from 1 ms samples of Motion's physics generator simplified by Ramer–Douglas–Peucker; never `spring().toString()` or `generateLinearEasing`).
 - `normalize.ts` — `pnpm tokens:normalize`: rule `hex` (the roadmap's `normalize-hex`) and rule `spring-fallback`, `--check` or `--write` with in-place edits that keep formatting.

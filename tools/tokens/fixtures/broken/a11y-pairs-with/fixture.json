@@ -1,0 +1,9 @@
+{
+  "description": "sys.color.text.primary pairs with a name that resolves to no token.",
+  "expect": [
+    {
+      "code": "a11y/pairs-with",
+      "tokenId": "sys.color.text.primary"
+    }
+  ]
+}

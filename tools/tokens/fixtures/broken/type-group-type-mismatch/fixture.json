@@ -1,0 +1,9 @@
+{
+  "description": "sys.type.body.md has no own $type, and the density file types the group sys.type as number (ADR-0024 T4).",
+  "expect": [
+    {
+      "code": "type/group-type-mismatch",
+      "tokenId": "sys.type.body.md"
+    }
+  ]
+}

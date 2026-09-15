@@ -1,0 +1,8 @@
+{
+  "description": "A resolver source points into tokens/export/.",
+  "expect": [
+    {
+      "code": "source/export-path"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Prism",
+  "version": "2025.10",
+  "description": "Fixture of lint-orthogonality.test.ts (ADR-0024 §9.4): the repository resolver, its sources pointing at the repository files, with density/compact also writing sys.interaction.hover (sys/density/compact-hover.tokens.json), which modality owns. pnpm tokens:lint --root tokens/fixtures/non-orthogonal exits 1 and names that id.",
+  "sets": {
+    "ref": {
+      "sources": [
+        { "$ref": "../../../../../tokens/ref/color.palette.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/gradient.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/dimension.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/typography.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/motion.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/elevation.tokens.json" },
+        { "$ref": "../../../../../tokens/ref/opacity.tokens.json" }
+      ]
+    },
+    "sys": {
+      "sources": [
+        { "$ref": "../../../../../tokens/sys/base.tokens.json" }
+      ]
+    },
+    "comp": {
+      "sources": [
+        { "$ref": "../../../../../tokens/comp/button.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/card.tokens.json" }
+      ]
+    }
+  },
+  "modifiers": {
+    "brand": {
+      "contexts": {
+        "prism": [ { "$ref": "../../../../../brands/prism/brand.tokens.json" } ],
+        "prism-native": [ { "$ref": "../../../../../brands/prism/brand.tokens.json" }, { "$ref": "../../../../../brands/prism-native/brand.tokens.json" } ]
+      },
+      "default": "prism"
+    },
+    "platform": {
+      "contexts": {
+        "apple": [ { "$ref": "../../../../../tokens/sys/platform/apple.tokens.json" } ],
+        "web": [ { "$ref": "../../../../../tokens/sys/platform/web.tokens.json" } ],
+        "watch": [ { "$ref": "../../../../../tokens/sys/platform/apple.tokens.json" } ]
+      },
+      "default": "web"
+    },
+    "colorScheme": {
+      "contexts": {
+        "light": [ { "$ref": "../../../../../tokens/sys/color/light.tokens.json" } ],
+        "dark": [ { "$ref": "../../../../../tokens/sys/color/dark.tokens.json" } ],
+        "light-increased-contrast": [ { "$ref": "../../../../../tokens/sys/color/light.tokens.json" }, { "$ref": "../../../../../tokens/sys/color/light-increased-contrast.tokens.json" } ],
+        "dark-increased-contrast": [ { "$ref": "../../../../../tokens/sys/color/dark.tokens.json" }, { "$ref": "../../../../../tokens/sys/color/dark-increased-contrast.tokens.json" } ],
+        "light-reduced-transparency": [ { "$ref": "../../../../../tokens/sys/color/light.tokens.json" } ],
+        "dark-reduced-transparency": [ { "$ref": "../../../../../tokens/sys/color/dark.tokens.json" } ]
+      },
+      "default": "light"
+    },
+    "density": {
+      "contexts": {
+        "compact": [ { "$ref": "../../../../../tokens/sys/density/compact.tokens.json" }, { "$ref": "sys/density/compact-hover.tokens.json" } ],
+        "regular": [ { "$ref": "../../../../../tokens/sys/density/regular.tokens.json" } ],
+        "comfortable": [ { "$ref": "../../../../../tokens/sys/density/comfortable.tokens.json" } ]
+      },
+      "default": "compact"
+    },
+    "modality": {
+      "contexts": {
+        "pointer": [ { "$ref": "../../../../../tokens/sys/modality/pointer.tokens.json" } ],
+        "touch": [ { "$ref": "../../../../../tokens/sys/modality/touch.tokens.json" } ]
+      },
+      "default": "pointer"
+    },
+    "motion": {
+      "contexts": {
+        "default": [ { "$ref": "../../../../../tokens/sys/motion/default.tokens.json" } ],
+        "reduced": [ { "$ref": "../../../../../tokens/sys/motion/default.tokens.json" }, { "$ref": "../../../../../tokens/sys/motion/reduced.tokens.json" } ]
+      },
+      "default": "default"
+    }
+  },
+  "resolutionOrder": [
+    { "$ref": "#/sets/ref" },
+    { "$ref": "#/modifiers/brand" },
+    { "$ref": "#/sets/sys" },
+    { "$ref": "#/modifiers/platform" },
+    { "$ref": "#/modifiers/colorScheme" },
+    { "$ref": "#/modifiers/density" },
+    { "$ref": "#/modifiers/modality" },
+    { "$ref": "#/modifiers/motion" },
+    { "$ref": "#/sets/comp" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand's series slot aliases a smoke tint instead of a ramp step.",
+  "expect": [
+    {
+      "code": "brand/value",
+      "tokenId": "ref.color.series.light.1"
+    }
+  ]
+}

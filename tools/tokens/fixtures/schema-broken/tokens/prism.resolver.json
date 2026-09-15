@@ -1,0 +1,16 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "schema-broken fixture",
+  "version": "2025.10",
+  "description": "tools/tokens/validate.test.ts: a valid resolver over one token file whose only error is a color with two components.",
+  "sets": {
+    "ref": {
+      "sources": [
+        { "$ref": "ref/color.tokens.json" }
+      ]
+    }
+  },
+  "resolutionOrder": [
+    { "$ref": "#/sets/ref" }
+  ]
+}

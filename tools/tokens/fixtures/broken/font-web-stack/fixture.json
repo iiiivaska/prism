@@ -1,0 +1,9 @@
+{
+  "description": "ref.font.ui lists Helvetica, which the prism brand does not serve.",
+  "expect": [
+    {
+      "code": "font/web-stack",
+      "tokenId": "ref.font.ui"
+    }
+  ]
+}

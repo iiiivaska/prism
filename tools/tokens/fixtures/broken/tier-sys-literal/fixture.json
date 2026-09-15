@@ -1,0 +1,9 @@
+{
+  "description": "sys.type.body.md is a typography literal instead of an alias of a ref.type role.",
+  "expect": [
+    {
+      "code": "tier/sys-literal",
+      "tokenId": "sys.type.body.md"
+    }
+  ]
+}

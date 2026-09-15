@@ -1,0 +1,28 @@
+{
+  "name": "alt",
+  "displayName": "Fixture native brand",
+  "version": "0.1.0",
+  "preset": "native",
+  "extends": "prism",
+  "fonts": {
+    "ui": {
+      "family": "Inter",
+      "file": "fonts/inter/InterVariable.ttf",
+      "version": "4.1",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "platforms": [
+        "web"
+      ]
+    },
+    "display": {
+      "family": "Inter",
+      "file": "fonts/inter/InterVariable.ttf",
+      "version": "4.1",
+      "sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "platforms": [
+        "web"
+      ]
+    }
+  },
+  "notes": "Fixture: system fonts on Apple, Inter on the web, its own accent and a larger type scale."
+}

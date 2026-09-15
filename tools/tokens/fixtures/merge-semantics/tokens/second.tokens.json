@@ -1,0 +1,20 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "color": {
+      "$description": "second colors",
+      "brand": {
+        "$type": "color",
+        "$value": { "colorSpace": "srgb", "components": [0, 0, 0], "alpha": 1 }
+      }
+    },
+    "elevation": {
+      "card": {
+        "$type": "shadow",
+        "$value": [
+          { "color": "{ref.color.paper}", "offsetX": { "value": 0, "unit": "px" }, "offsetY": { "value": 1, "unit": "px" }, "blur": { "value": 2, "unit": "px" }, "spread": { "value": 0, "unit": "px" } }
+        ]
+      }
+    }
+  }
+}

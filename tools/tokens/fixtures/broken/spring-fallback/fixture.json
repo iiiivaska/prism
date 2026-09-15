@@ -1,0 +1,9 @@
+{
+  "description": "A spring is declared on a duration token.",
+  "expect": [
+    {
+      "code": "spring/fallback",
+      "tokenId": "ref.motion.duration.base"
+    }
+  ]
+}

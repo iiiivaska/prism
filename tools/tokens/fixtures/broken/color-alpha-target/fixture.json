@@ -1,0 +1,9 @@
+{
+  "description": "ref.color.series.dark.2 declares app.prism.alpha outside tokens/sys/.",
+  "expect": [
+    {
+      "code": "color/alpha-target",
+      "tokenId": "ref.color.series.dark.2"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "description": "A watch context layers a delta over apple that changes sys.color.bg.platform; colors never differ between apple and watch (ARCHITECTURE §5.7 item 5). The platform modifier owns no color id, so the write also breaks ownership.",
+  "expect": [
+    {
+      "code": "analysis/platform-color",
+      "tokenId": "sys.color.bg.platform"
+    },
+    {
+      "code": "orthogonality/ownership",
+      "tokenId": "sys.color.bg.platform"
+    }
+  ]
+}

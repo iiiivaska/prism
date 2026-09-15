@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand sets ref.type.scale to 1.3, above 1.25.",
+  "expect": [
+    {
+      "code": "type/scale-range",
+      "tokenId": "ref.type.scale"
+    }
+  ]
+}

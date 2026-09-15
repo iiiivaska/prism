@@ -1,0 +1,9 @@
+{
+  "description": "The light increased-contrast delta writes sys.material.glass.scrim.",
+  "expect": [
+    {
+      "code": "material/variant-write",
+      "tokenId": "sys.material.glass.scrim"
+    }
+  ]
+}

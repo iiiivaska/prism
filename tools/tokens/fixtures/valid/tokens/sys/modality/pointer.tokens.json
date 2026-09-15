@@ -1,0 +1,25 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "size": {
+      "hit": {
+        "$type": "dimension",
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        }
+      }
+    },
+    "interaction": {
+      "hover": {
+        "$type": "number",
+        "$value": 1,
+        "$extensions": {
+          "app.prism": {
+            "flag": true
+          }
+        }
+      }
+    }
+  }
+}

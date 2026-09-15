@@ -1,0 +1,8 @@
+{
+  "description": "density.default is regular; the web runtime default is compact (ADR-0019 rule 3).",
+  "expect": [
+    {
+      "code": "resolver/web-default-mismatch"
+    }
+  ]
+}

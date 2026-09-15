@@ -1,0 +1,13 @@
+{
+  "description": "sys.ref.space.2 puts a sys category named ref; public paths drop sys., so it also collides with ref.space.2 (IR invariant 3).",
+  "expect": [
+    {
+      "code": "naming/path-collision",
+      "tokenId": "sys.ref.space.2"
+    },
+    {
+      "code": "naming/reserved-category",
+      "tokenId": "sys.ref.space.2"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "font": {
+      "$type": "fontFamily",
+      "ui": {
+        "$value": "{ref.font.ui}"
+      },
+      "display": {
+        "$value": "{ref.font.display}"
+      },
+      "mono": {
+        "$value": "{ref.font.mono}"
+      }
+    }
+  }
+}

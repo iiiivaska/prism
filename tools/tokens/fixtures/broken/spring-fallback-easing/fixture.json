@@ -1,0 +1,9 @@
+{
+  "description": "A spring's fallback timingFunction is a literal curve, not an alias of ref.motion.easing.*.",
+  "expect": [
+    {
+      "code": "spring/fallback",
+      "tokenId": "ref.motion.spring.snappy"
+    }
+  ]
+}

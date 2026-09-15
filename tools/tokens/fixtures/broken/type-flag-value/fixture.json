@@ -1,0 +1,9 @@
+{
+  "description": "sys.interaction.hover is a flag with the value 2.",
+  "expect": [
+    {
+      "code": "type/flag-value",
+      "tokenId": "sys.interaction.hover"
+    }
+  ]
+}

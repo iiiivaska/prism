@@ -1,0 +1,37 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "card": {
+      "bg": {
+        "$value": "{sys.color.bg.surface.$root}"
+      },
+      "glass": {
+        "fill": {
+          "$value": "{sys.material.glass.dark.fill.$root}"
+        }
+      },
+      "shadow": {
+        "$value": "{sys.elevation.1}"
+      },
+      "title": {
+        "$value": "{sys.type.metric.xl}"
+      }
+    }
+  },
+  "sys": {
+    "color": {
+      "hacked": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.6,
+            0.2,
+            30
+          ],
+          "alpha": 1
+        }
+      }
+    }
+  }
+}

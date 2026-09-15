@@ -1,0 +1,119 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Mini",
+  "version": "2025.10",
+  "description": "P1-3 mini fixture: two sets (base references ref), three modifiers with 2 / 3 / 2 contexts, one inline source.",
+  "sets": {
+    "ref": {
+      "sources": [
+        {
+          "$ref": "ref/core.tokens.json"
+        },
+        {
+          "$ref": "ref/type.tokens.json"
+        }
+      ]
+    },
+    "base": {
+      "sources": [
+        {
+          "$ref": "#/sets/ref"
+        },
+        {
+          "$ref": "sys/base.tokens.json"
+        },
+        {
+          "comp": {
+            "card": {
+              "bg": {
+                "$value": "{sys.color.bg.surface.$root}"
+              },
+              "title": {
+                "$value": "{sys.type.metric.xl}"
+              }
+            },
+            "button": {
+              "bg": {
+                "$value": "{sys.color.bg.tint.accent}"
+              },
+              "motion": {
+                "press": {
+                  "$value": "{sys.motion.spring.snappy}"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "colorScheme": {
+      "contexts": {
+        "light": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    },
+    "density": {
+      "contexts": {
+        "compact": [
+          {
+            "$ref": "sys/density/compact.tokens.json"
+          }
+        ],
+        "regular": [
+          {
+            "$ref": "sys/density/regular.tokens.json"
+          }
+        ],
+        "comfortable": [
+          {
+            "$ref": "sys/density/comfortable.tokens.json"
+          }
+        ]
+      },
+      "default": "compact"
+    },
+    "motion": {
+      "contexts": {
+        "default": [
+          {
+            "$ref": "sys/motion/default.tokens.json"
+          }
+        ],
+        "reduced": [
+          {
+            "$ref": "sys/motion/default.tokens.json"
+          },
+          {
+            "$ref": "sys/motion/reduced.tokens.json"
+          }
+        ]
+      },
+      "default": "default"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/base"
+    },
+    {
+      "$ref": "#/modifiers/colorScheme"
+    },
+    {
+      "$ref": "#/modifiers/density"
+    },
+    {
+      "$ref": "#/modifiers/motion"
+    }
+  ]
+}

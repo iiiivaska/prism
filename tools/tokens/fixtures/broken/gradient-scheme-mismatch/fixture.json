@@ -1,0 +1,9 @@
+{
+  "description": "The light scheme maps sys.gradient.vivid.default to a dark gradient.",
+  "expect": [
+    {
+      "code": "gradient/scheme-mismatch",
+      "tokenId": "sys.gradient.vivid.default"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "description": "comp.card.bg references a token that does not exist.",
+  "expect": [
+    {
+      "code": "ref/broken",
+      "tokenId": "comp.card.bg"
+    }
+  ]
+}

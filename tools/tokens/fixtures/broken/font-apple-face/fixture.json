@@ -1,0 +1,9 @@
+{
+  "description": "The alt brand gives the ui slot two Apple faces.",
+  "expect": [
+    {
+      "code": "font/apple-face",
+      "tokenId": "ref.font.apple.ui"
+    }
+  ]
+}

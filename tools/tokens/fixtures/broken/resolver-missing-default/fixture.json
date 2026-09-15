@@ -1,0 +1,8 @@
+{
+  "description": "The modality modifier declares no default context.",
+  "expect": [
+    {
+      "code": "resolver/missing-default"
+    }
+  ]
+}

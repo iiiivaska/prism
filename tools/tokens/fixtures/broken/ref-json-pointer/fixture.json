@@ -1,0 +1,9 @@
+{
+  "description": "ref.space.4 uses a JSON Pointer $ref inside its value.",
+  "expect": [
+    {
+      "code": "ref/json-pointer",
+      "tokenId": "ref.space.4"
+    }
+  ]
+}

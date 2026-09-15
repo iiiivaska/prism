@@ -1,0 +1,8 @@
+{
+  "description": "brand.json of alt lacks displayName and has an unknown key.",
+  "expect": [
+    {
+      "code": "brand/schema"
+    }
+  ]
+}

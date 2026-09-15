@@ -1,0 +1,9 @@
+{
+  "description": "The regular card padding aliases a blur the color scheme changes: no single-axis variation shows it, the combination does.",
+  "expect": [
+    {
+      "code": "analysis/composition",
+      "tokenId": "sys.space.card-padding"
+    }
+  ]
+}

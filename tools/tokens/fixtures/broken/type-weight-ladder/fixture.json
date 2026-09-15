@@ -1,0 +1,9 @@
+{
+  "description": "ref.type.body.md has standard weight 600.",
+  "expect": [
+    {
+      "code": "type/weight-ladder",
+      "tokenId": "ref.type.body.md"
+    }
+  ]
+}

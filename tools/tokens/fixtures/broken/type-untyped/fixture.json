@@ -1,0 +1,9 @@
+{
+  "description": "sys.opacity.disabled is a literal with no $type on the token or any group of its document.",
+  "expect": [
+    {
+      "code": "type/untyped",
+      "tokenId": "sys.opacity.disabled"
+    }
+  ]
+}

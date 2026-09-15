@@ -1,0 +1,8 @@
+{
+  "description": "brands/stray/ is not a context of the brand modifier.",
+  "expect": [
+    {
+      "code": "brand/registration"
+    }
+  ]
+}

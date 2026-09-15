@@ -1,0 +1,9 @@
+{
+  "description": "sys.radius.card and sys.radius.alt alias each other.",
+  "expect": [
+    {
+      "code": "ref/cycle",
+      "tokenId": "sys.radius.alt"
+    }
+  ]
+}

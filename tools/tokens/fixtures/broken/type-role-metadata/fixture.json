@@ -1,0 +1,9 @@
+{
+  "description": "ref.type.label.sm lacks app.prism.textStyle.",
+  "expect": [
+    {
+      "code": "type/role-metadata",
+      "tokenId": "ref.type.label.sm"
+    }
+  ]
+}
