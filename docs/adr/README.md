@@ -7,8 +7,8 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0001](0001-consumers-and-agent-first.md) | Consumers are the owner's apps; the developer is an agent | accepted |
 | [0002](0002-meta-system-with-brand-layer.md) | Meta-system with a brand layer | accepted (amended by 0020, 0024) |
 | [0003](0003-two-implementations-swiftui-react.md) | Two implementations: SwiftUI and React; minimum OS 26 | accepted (amended by 0019, 0020, 0023) |
-| [0004](0004-dtcg-tokens-style-dictionary.md) | Single DTCG token source built by Style Dictionary | accepted (amended by 0019, 0020, 0021, 0022, 0024) |
-| [0005](0005-figma-deferred.md) | Figma deferred, Figma-ready from day one | accepted (amended by 0024) |
+| [0004](0004-dtcg-tokens-style-dictionary.md) | Single DTCG token source built by Style Dictionary | accepted (amended by 0019, 0020, 0021, 0022, 0024, 0026) |
+| [0005](0005-figma-deferred.md) | Figma deferred, Figma-ready from day one | accepted (amended by 0024, 0026) |
 | [0006](0006-spec-contract-and-parity.md) | Component spec as versioned contract; parity report; one system version | accepted (amended by 0024) |
 | [0007](0007-dataviz-first-class.md) | Data-viz is a first-class module | accepted (amended by 0020, 0021) |
 | [0008](0008-typography-slots-and-presets.md) | Three font slots, Native and Signature presets, Cyrillic mandatory | accepted (amended by 0020, 0021) |
@@ -29,6 +29,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0023](0023-motion-tokens.md) | Motion tokens: springs, settle, reduced motion and CSS easing (amends 0003, 0011) | accepted |
 | [0024](0024-token-source-conventions.md) | Token source conventions: references, semantic roles, gates and flavors (amends 0002, 0004, 0005, 0006, 0010, 0014) | accepted (§4.1 amended by 0020) |
 | [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted |
+| [0026](0026-figma-metadata-scope.md) | Figma metadata where Figma reads it; code syntax derived by the build (amends 0004, 0005) | accepted |
 
 ## Template
 
