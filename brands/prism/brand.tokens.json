@@ -1,9 +1,4 @@
 {
   "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
-  "ref": {
-    "brand": {
-      "$type": "number",
-      "type-scale": { "$value": 1.0, "$description": "Global multiplier on the type scale; brands may not change role sizes individually." }
-    }
-  }
+  "$description": "The reference brand declares no tokens: its values are tokens/ref/*, and any write here would be a dead write, because prism-native layers this file first (ADR-0020 §1)."
 }

@@ -34,7 +34,8 @@ Examples (every path exists; `tools/tokens/docs.test.ts` checks them):
 - `motion.duration.instant|quick|fast|base|slow|slower`, `motion.easing.out|in-out|drawer|hover|linear`, `motion.spring.interactive|snappy|smooth|sheet|bouncy` (`{duration, bounce}`), `motion.presentation.crossfade` (flag)
 - `material.glass.dark.fill|chip`, `material.glass.light.fill|chip`, `material.glass.cell` — recipe groups of `$root` (fill), `blur`, `saturate`, `edge.start`, `edge.end`, `grain`, `bloom` (ADR-0022); `material.glass.scrim`
 - `gradient.vivid.default`, `gradient.vivid.1…4` — scheme-safe slots over the brand's vivid gradients, for `surface.vivid`
-- `chart.curve`, `stroke.target|grid|leader`, `icon.weight`, `z.base|raised|overlay|toast`
+- `chart.line-width|sparkline-width|comparison-width|marker-size|endpoint-size|bar-max-thickness|bar-radius` — dimensions in px (critic G-04); `chart.curve|gauge-stroke-ratio` — numbers
+- `stroke.target|grid|leader`, `icon.weight`, `z.base|raised|overlay|toast`
 
 ## Dimensions = resolver modifiers
 
@@ -113,11 +114,18 @@ Authored once in OKLCH (`{ colorSpace: "oklch", components: [L, C, H], alpha, he
 
 Glass recipes are typed tokens under `sys.material.glass.<recipe>` (`dark.fill`, `dark.chip`, `light.fill`, `light.chip`, `cell`). Each is a group of `$root` (the fill; alpha as ADR-0020 allows), `blur` (an alias of `ref.blur.*`), `saturate`, `edge.start`, `edge.end`, `grain` and `bloom`; `sys.material.glass.scrim` is a plain color. Only the light and dark scheme files declare them. Under Reduce Transparency, Increase Contrast, on watchOS and over a backdrop that is not an image, a map or vivid, Surface renders glass as the opaque `raised` surface, or `inverse` when selected (ADR-0022). Dark glass goes only on backdrops where white holds 3:1; light glass in dark only over imagery at OKLCH L ≤ 0.35, in light only over vivid or imagery at L ≥ 0.45. Every vivid gradient reaches 3:1 against white at every stop and 4.5:1 in the Card header block; the unset vivid is `gradient.vivid.default` (sky in light, plum-dusk in dark).
 
+## Metadata
+
+`$extensions["app.prism"]` also carries metadata, which stays on the declaring token and is not inherited through aliases (ADR-0024 §4.1). A later declaration replaces the whole token, so every declaration of an id repeats it, the variant delta files included.
+
+- `a11y.pairsWith` on every `sys.color.text.*` declaration: the public names of the backgrounds the tone is used on (`color.bg.page`, `material.glass.dark.fill`, `gradient.vivid.*`). `tools/contrast` checks that each one is a pair in `contrast-pairs.json` (rule 4).
+- `figma` (ADR-0026) on every `sys` and `comp` declaration that Figma imports as a scoped variable, and on nothing else; code syntax is never authored, the Figma-native flavor derives it from the emitted names: colors, dimensions, font families and numbers other than flags. `collection` names the layer that owns the id, one of `base` (the `sys` set), `colorScheme`, `density`, `modality`, `platform` and `component`, so a Figma collection's modes are that modifier's contexts; `scopes` lists the Figma variable scopes (for example `TEXT_FILL`, `STROKE_COLOR`, `GAP`, `CORNER_RADIUS`; an empty list hides a number that no Figma property takes). Typography roles, motion aliases, flags, shadows, gradients and stroke styles carry none. Code syntax is not authored: the build derives every emitted name from `tools/tokens/ARCHITECTURE.md` §8. This is narrower than ADR-0004 decision 8 and ADR-0005 decision 2, which put `figma` with collection, scopes and code syntax on every token; the ADRs win until an amendment settles it (`tools/tokens/ARCHITECTURE.md` §16.3).
+
 ## Rules
 
 1. No literal values outside `tokens/`; CI greps `swift/` and `web/` for hex, `px`/`pt` and font names.
 2. A modifier writes only the token ids it owns (table above); the build rejects any other write.
-3. Brands override existing ids in `BRAND_OVERRIDABLE` only (`brands/README.md`): the neutral and accent ramps, the eight `ref.color.slot.*` semantic slots that the base scheme files alias, chart series, vivid gradients, font slots (`ref.font.*`, `ref.font.apple.*`), `ref.type.scale` and `ref.radius.1…10`. Brands cannot add paths or write `sys.*` or `comp.*` (ADR-0020).
+3. Brands override existing ids in `BRAND_OVERRIDABLE` only (`brands/README.md`): the neutral and accent ramps, the eight `ref.color.slot.**` semantic slots that the base scheme files alias, chart series, vivid gradients, font slots (`ref.font.*`, `ref.font.apple.*`), `ref.type.scale` and `ref.radius.1…10`. Brands cannot add paths or write `sys.*` or `comp.*` (ADR-0020).
 4. Every `sys.color.text.*` token declares `$extensions["app.prism"].a11y.pairsWith`; `tools/contrast` checks every pair for every brand × scheme context.
 5. References are curly-brace references to whole tokens; a reference to a group with a root token is written `{group.$root}`; `{group}` is invalid DTCG and fails the build, and so does a JSON Pointer `$ref` inside a value (ADR-0024 §1).
 6. Generated outputs are committed; CI rebuilds and fails on any diff; `tokens:diff` classifies changes (value = minor, removal, type change or a change of the runtime axes a token depends on = major), one level lower while the last release tag is 0.x (ADR-0024 §14).

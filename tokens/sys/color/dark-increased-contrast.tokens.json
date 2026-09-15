@@ -14,6 +14,23 @@
             ],
             "alpha": 0.8,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
           }
         },
         "tertiary": {
@@ -26,6 +43,23 @@
             ],
             "alpha": 0.7,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
           }
         },
         "dimmed": {
@@ -38,6 +72,22 @@
             ],
             "alpha": 0.64,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
           }
         }
       },
@@ -52,6 +102,16 @@
             ],
             "alpha": 0.25,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "strong": {
@@ -64,6 +124,16 @@
             ],
             "alpha": 0.6,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         }
       },
@@ -78,6 +148,17 @@
             ],
             "alpha": 0.25,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "target": {
@@ -90,6 +171,17 @@
             ],
             "alpha": 0.85,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "comparison": {
@@ -102,6 +194,17 @@
             ],
             "alpha": 0.6,
             "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         }
       }

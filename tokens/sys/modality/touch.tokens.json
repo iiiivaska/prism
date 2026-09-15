@@ -4,16 +4,36 @@
     "size": {
       "$type": "dimension",
       "hit": {
-        "$value": "{ref.size.hit.touch}"
+        "$value": "{ref.size.hit.touch}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "modality",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
       }
     },
     "interaction": {
       "$type": "number",
       "hover": {
-        "$value": 0
+        "$value": 0,
+        "$extensions": {
+          "app.prism": {
+            "flag": true
+          }
+        }
       },
       "tooltip": {
-        "$value": 0
+        "$value": 0,
+        "$extensions": {
+          "app.prism": {
+            "flag": true
+          }
+        }
       }
     }
   }

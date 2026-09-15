@@ -7,95 +7,308 @@
         "bg": {
           "rest": {
             "$value": "{sys.color.bg.fill.inverse}",
-            "$description": "solid inverse pill is the only fill"
+            "$description": "solid inverse pill is the only fill",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "pressed": {
-            "$value": "{sys.color.bg.fill.inverse}"
-          },
-          "disabled": {
-            "$value": "{sys.color.bg.fill.neutral.subtle}"
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         },
         "text": {
-          "$value": "{sys.color.text.on-inverse}"
+          "$value": "{sys.color.text.on-inverse}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         }
       },
       "secondary": {
         "$type": "color",
         "bg": {
           "rest": {
-            "$value": "{sys.color.bg.surface.raised}"
+            "$value": "{sys.color.bg.surface.raised}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "pressed": {
-            "$value": "{sys.color.bg.surface.nested}"
+            "$value": "{sys.color.bg.surface.nested}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         },
         "text": {
-          "$value": "{sys.color.text.primary}"
+          "$value": "{sys.color.text.primary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "border": {
-          "$value": "{sys.color.border.hairline}"
+          "$value": "{sys.color.border.hairline}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       },
       "ghost": {
         "$type": "color",
         "bg": {
           "rest": {
-            "$value": "{sys.color.bg.fill.neutral.subtle}"
+            "$value": "{sys.color.bg.fill.neutral.subtle}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         },
         "text": {
-          "$value": "{sys.color.text.primary}"
+          "$value": "{sys.color.text.primary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "border": {
-          "$value": "{sys.color.border.strong}"
+          "$value": "{sys.color.border.strong}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       },
       "danger": {
         "$type": "color",
         "bg": {
           "rest": {
-            "$value": "{sys.color.bg.tint.critical}"
+            "$value": "{sys.color.bg.tint.critical}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         },
         "text": {
-          "$value": "{sys.color.text.critical}"
+          "$value": "{sys.color.text.critical}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "border": {
-          "$value": "{sys.color.text.critical}"
+          "$value": "{sys.color.text.critical}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       },
       "radius": {
         "$type": "dimension",
-        "$value": "{sys.radius.control}"
+        "$value": "{sys.radius.control}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "height": {
         "$type": "dimension",
         "sm": {
-          "$value": "{sys.size.control.sm}"
+          "$value": "{sys.size.control.sm}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         },
         "md": {
-          "$value": "{sys.size.control.md}"
+          "$value": "{sys.size.control.md}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         },
         "lg": {
-          "$value": "{sys.size.control.lg}"
+          "$value": "{sys.size.control.lg}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         }
       },
       "padding-x": {
         "$type": "dimension",
         "sm": {
-          "$value": "{sys.space.4}"
+          "$value": "{sys.space.4}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "GAP"
+                ]
+              }
+            }
+          }
         },
         "md": {
-          "$value": "{sys.space.5}"
+          "$value": "{sys.space.5}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "GAP"
+                ]
+              }
+            }
+          }
         },
         "lg": {
-          "$value": "{sys.space.6}"
+          "$value": "{sys.space.6}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "GAP"
+                ]
+              }
+            }
+          }
         }
       },
       "gap": {
         "$type": "dimension",
-        "$value": "{sys.space.3}"
+        "$value": "{sys.space.3}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "motion": {
         "$type": "transition",

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://prism.local/schema/brand.schema.json",
+  "title": "brands/<name>/brand.json",
+  "description": "Brand metadata (ADR-0020 §8, ADR-0021 §11). Fonts are per brand: extends layers token files, not brand.json entries. tools/tokens/source/brands.ts validates it; tools/fonts checks the files.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "displayName", "version", "preset"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "displayName": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "preset": { "enum": ["signature", "native"] },
+    "extends": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+    "notes": { "type": "string" },
+    "moods": { "type": "array", "items": { "type": "string" } },
+    "fonts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ui": { "$ref": "#/definitions/font" },
+        "display": { "$ref": "#/definitions/font" },
+        "mono": { "$ref": "#/definitions/font" }
+      }
+    }
+  },
+  "definitions": {
+    "font": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["family", "file", "version", "sha256", "platforms"],
+      "properties": {
+        "family": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "pattern": "^fonts/[^/]+/[^/]+$" },
+        "version": { "type": "string", "minLength": 1 },
+        "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "platforms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "enum": ["apple", "web"] }
+        },
+        "postscript": {
+          "type": "object",
+          "propertyNames": { "pattern": "^[1-9]00$" },
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        }
+      },
+      "if": { "properties": { "platforms": { "type": "array", "contains": { "const": "apple" } } } },
+      "then": { "properties": { "postscript": { "type": "object" } }, "required": ["postscript"] }
+    }
+  }
+}

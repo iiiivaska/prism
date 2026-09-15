@@ -4,21 +4,45 @@
     "font": {
       "$type": "fontFamily",
       "ui": {
-        "$value": "{ref.font.ui}",
-        "$description": "Signature preset; the Native preset's brand file overrides ref.font.* with SF Pro names"
+        "$value": "{ref.font.apple.ui}",
+        "$description": "Apple face of the slot (ADR-0020)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
+        }
       },
       "display": {
-        "$value": "{ref.font.display}"
+        "$value": "{ref.font.apple.display}",
+        "$description": "Apple face of the slot (ADR-0020)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
+        }
       },
       "mono": {
-        "$value": "{ref.font.mono}"
-      }
-    },
-    "material": {
-      "blur": {
-        "$type": "number",
-        "enabled": {
-          "$value": 1
+        "$value": "{ref.font.apple.mono}",
+        "$description": "Apple face of the slot (ADR-0020)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
         }
       }
     }

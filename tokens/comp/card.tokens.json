@@ -5,63 +5,168 @@
       "solid": {
         "$type": "color",
         "bg": {
-          "$value": "{sys.color.bg.surface}"
+          "$value": "{sys.color.bg.surface.$root}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
         },
         "text": {
-          "$value": "{sys.color.text.primary}"
+          "$value": "{sys.color.text.primary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "caption": {
-          "$value": "{sys.color.text.secondary}"
+          "$value": "{sys.color.text.secondary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         }
       },
       "vivid": {
         "$type": "color",
         "text": {
-          "$value": "{sys.color.text.on-vivid}"
+          "$value": "{sys.color.text.on-vivid}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "caption": {
-          "$value": "{sys.color.text.on-vivid}"
+          "$value": "{sys.color.text.on-vivid}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         }
       },
       "glass": {
         "$type": "color",
         "fill": {
-          "$value": "{sys.material.glass.dark.fill}"
+          "$value": "{sys.material.glass.dark.fill.$root}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
         },
         "text": {
-          "$value": "{sys.color.text.on-glass}"
-        },
-        "edge": {
-          "$value": "{sys.color.border.hairline}"
+          "$value": "{sys.color.text.on-glass}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         }
       },
       "radius": {
         "$type": "dimension",
         "regular": {
-          "$value": "{sys.radius.card}"
+          "$value": "{sys.radius.card}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "CORNER_RADIUS"
+                ]
+              }
+            }
+          }
         },
         "compact": {
-          "$value": "{sys.radius.card-compact}"
+          "$value": "{sys.radius.card-compact}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "CORNER_RADIUS"
+                ]
+              }
+            }
+          }
         },
         "large": {
-          "$value": "{sys.radius.card-large}"
+          "$value": "{sys.radius.card-large}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "CORNER_RADIUS"
+                ]
+              }
+            }
+          }
         }
       },
       "padding": {
         "$type": "dimension",
-        "$value": "{sys.space.card-padding}"
-      },
-      "gap": {
-        "$type": "dimension",
-        "$value": "{sys.space.card-gap}"
+        "$value": "{sys.space.card-padding}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "shadow": {
         "$type": "shadow",
         "solid": {
-          "$value": "{sys.shadow.flat}"
+          "$value": "{sys.elevation.0}"
         },
         "floating": {
-          "$value": "{sys.shadow.overlay}"
+          "$value": "{sys.elevation.3}"
         }
       }
     }

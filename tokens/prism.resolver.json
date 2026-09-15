@@ -2,7 +2,7 @@
   "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
   "name": "Prism",
   "version": "2025.10",
-  "description": "Prism token resolution: ref (primitives) -> brand -> sys (semantic) -> platform -> colorScheme -> density -> modality -> motion -> comp. Each modifier owns disjoint token types (ADR-0004); tz lint checks orthogonality.",
+  "description": "Prism token resolution: ref -> brand -> sys -> platform -> colorScheme -> density -> modality -> motion -> comp. Modifiers own disjoint token ids (ADR-0024 §9); pnpm tokens:lint and tokens:build check orthogonality.",
   "sets": {
     "ref": {
       "sources": [
@@ -23,10 +23,7 @@
     "comp": {
       "sources": [
         { "$ref": "comp/button.tokens.json" },
-        { "$ref": "comp/card.tokens.json" },
-        { "$ref": "comp/text.tokens.json" },
-        { "$ref": "comp/surface.tokens.json" },
-        { "$ref": "comp/chart.tokens.json" }
+        { "$ref": "comp/card.tokens.json" }
       ]
     }
   },
@@ -42,7 +39,7 @@
       "contexts": {
         "apple": [ { "$ref": "sys/platform/apple.tokens.json" } ],
         "web": [ { "$ref": "sys/platform/web.tokens.json" } ],
-        "watch": [ { "$ref": "sys/platform/apple.tokens.json" }, { "$ref": "sys/platform/watch.tokens.json" } ]
+        "watch": [ { "$ref": "sys/platform/apple.tokens.json" } ]
       },
       "default": "web"
     },
@@ -52,8 +49,8 @@
         "dark": [ { "$ref": "sys/color/dark.tokens.json" } ],
         "light-increased-contrast": [ { "$ref": "sys/color/light.tokens.json" }, { "$ref": "sys/color/light-increased-contrast.tokens.json" } ],
         "dark-increased-contrast": [ { "$ref": "sys/color/dark.tokens.json" }, { "$ref": "sys/color/dark-increased-contrast.tokens.json" } ],
-        "light-reduced-transparency": [ { "$ref": "sys/color/light.tokens.json" }, { "$ref": "sys/color/light-reduced-transparency.tokens.json" } ],
-        "dark-reduced-transparency": [ { "$ref": "sys/color/dark.tokens.json" }, { "$ref": "sys/color/dark-reduced-transparency.tokens.json" } ]
+        "light-reduced-transparency": [ { "$ref": "sys/color/light.tokens.json" } ],
+        "dark-reduced-transparency": [ { "$ref": "sys/color/dark.tokens.json" } ]
       },
       "default": "light"
     },
@@ -63,7 +60,7 @@
         "regular": [ { "$ref": "sys/density/regular.tokens.json" } ],
         "comfortable": [ { "$ref": "sys/density/comfortable.tokens.json" } ]
       },
-      "default": "regular"
+      "default": "compact"
     },
     "modality": {
       "contexts": {
@@ -75,7 +72,7 @@
     "motion": {
       "contexts": {
         "default": [ { "$ref": "sys/motion/default.tokens.json" } ],
-        "reduced": [ { "$ref": "sys/motion/reduced.tokens.json" } ]
+        "reduced": [ { "$ref": "sys/motion/default.tokens.json" }, { "$ref": "sys/motion/reduced.tokens.json" } ]
       },
       "default": "default"
     }

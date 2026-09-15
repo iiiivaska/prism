@@ -4,7 +4,7 @@
     "color": {
       "$type": "color",
       "neutral": {
-        "$description": "Near-neutral scale with a faint cool cast (OKLCH hue ~225, chroma ~0.004). Light reads from the top, dark from the bottom; dark surfaces are white-alpha steps over 950.",
+        "$description": "Near-neutral scale with a faint cool cast (OKLCH hue 261.6-271.4, chroma 0.003-0.019; HSL hue 220-225). Light reads from the top, dark from the bottom; dark surfaces are white-alpha steps over 950.",
         "0": {
           "$value": {
             "colorSpace": "oklch",
@@ -187,7 +187,7 @@
         }
       },
       "accent": {
-        "$description": "Default brand accent 'solar' (hue ~30). Step 500 is the dark-scheme accent (7.4:1 on surface-1); step 800 is the light-scheme accent text (5.7:1 on page).",
+        "$description": "Default brand accent 'solar' (OKLCH hue 57.6 at step 500; HSL hue 27). Step 500 is the dark-scheme accent (7.4:1 on surface-1); step 800 is the light-scheme accent text (5.7:1 on page).",
         "50": {
           "$value": {
             "colorSpace": "oklch",
@@ -574,28 +574,12 @@
       "series": {
         "light": {
           "1": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.1687,
-                0.0065,
-                271.0
-              ],
-              "alpha": 1,
-              "hex": "#0e0f12"
-            }
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Series slot 1: the ink step of the neutral ramp; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
           },
           "2": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.5667,
-                0.144,
-                47.1
-              ],
-              "alpha": 1,
-              "hex": "#b8561a"
-            }
+            "$value": "{ref.color.accent.700}",
+            "$description": "Series slot 2: accent step 700, 4.8:1 on white; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
           },
           "3": {
             "$value": {
@@ -648,28 +632,12 @@
         },
         "dark": {
           "1": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                1.0,
-                0.0,
-                0.0
-              ],
-              "alpha": 1,
-              "hex": "#ffffff"
-            }
+            "$value": "{ref.color.neutral.0}",
+            "$description": "Series slot 1: the white step of the neutral ramp; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
           },
           "2": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.7517,
-                0.1475,
-                57.6
-              ],
-              "alpha": 1,
-              "hex": "#f39444"
-            }
+            "$value": "{ref.color.accent.500}",
+            "$description": "Series slot 2: accent step 500; an alias, so a brand's ramps reach its charts (ADR-0020 §4)."
           },
           "3": {
             "$value": {
@@ -719,6 +687,74 @@
               "hex": "#d9c27a"
             }
           }
+        }
+      },
+      "slot": {
+        "$type": "color",
+        "$description": "Brand-tunable semantic slots (ADR-0020 §2): each is a whole-value alias of a ramp step, without alpha; only the sys id its name encodes aliases it.",
+        "light": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.100}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.page in the light scheme file."
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.300}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.fill.accent in the light scheme file."
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.on-accent in the light scheme file."
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.800}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.accent in the light scheme file."
+          }
+        },
+        "dark": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.page in the dark scheme file."
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.500}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.bg.fill.accent in the dark scheme file."
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.on-accent in the dark scheme file."
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.500}",
+            "$description": "Brand slot (ADR-0020): aliased by sys.color.text.accent in the dark scheme file."
+          }
+        }
+      },
+      "smoke": {
+        "light": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.1504,
+              0.0092,
+              128.7
+            ],
+            "alpha": 1,
+            "hex": "#0a0c08"
+          },
+          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+        },
+        "dark": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.1853,
+              0.0102,
+              145.1
+            ],
+            "alpha": 1,
+            "hex": "#101410"
+          },
+          "$description": "smoked-glass tint; system-owned (ADR-0020)"
         }
       }
     }

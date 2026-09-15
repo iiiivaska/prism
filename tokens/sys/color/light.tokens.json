@@ -5,13 +5,35 @@
       "$type": "color",
       "bg": {
         "page": {
-          "$value": "{ref.color.neutral.100}",
-          "$description": "never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%"
+          "$value": "{ref.color.slot.light.bg-page}",
+          "$description": "never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
         },
         "surface": {
           "$root": {
             "$value": "{ref.color.neutral.0}",
-            "$description": "card: no border, no shadow (optional ambient 5%)"
+            "$description": "card: no border, no shadow (optional ambient 5%)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "raised": {
             "$value": {
@@ -24,336 +46,1028 @@
               "alpha": 0.7,
               "hex": "#ffffff"
             },
-            "$description": "puffy chip / round button on the page, plus inset top highlight and shadow.raised"
+            "$description": "puffy chip / round button on the page, plus inset top highlight and elevation.1",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "nested": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                0.0549,
-                0.0588,
-                0.0706
-              ],
-              "alpha": 0.06,
-              "hex": "#0e0f12"
-            },
-            "$description": "filled control, dock tray (= #ECEDF1 on white)"
+            "$value": "{ref.color.neutral.950}",
+            "$description": "filled control, dock tray (= #F0F1F1 on white)",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.06,
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "overlay": {
-            "$value": "{ref.color.neutral.0}"
+            "$value": "{ref.color.neutral.0}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         },
         "fill": {
           "inverse": {
             "$value": "{ref.color.neutral.950}",
-            "$description": "primary pill, active tab, solid action circle"
+            "$description": "primary pill, active tab, solid action circle",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "accent": {
-            "$value": "{ref.color.accent.300}",
-            "$description": "the one attention tile; content is ink"
+            "$value": "{ref.color.slot.light.bg-fill-accent}",
+            "$description": "the one attention tile; content is ink",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "accent-strong": {
             "$value": "{ref.color.accent.700}",
-            "$description": "accent surface with white text (4.8:1)"
+            "$description": "accent surface with white text (4.8:1)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "critical": {
             "$value": "{ref.color.status.danger.badge}",
-            "$description": "badge under white 11 px Medium (4.5:1)"
+            "$description": "badge under white 11 px Medium (4.5:1)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "neutral": {
             "subtle": {
-              "$value": {
-                "colorSpace": "srgb",
-                "components": [
-                  0.0549,
-                  0.0588,
-                  0.0706
-                ],
-                "alpha": 0.06,
-                "hex": "#0e0f12"
+              "$value": "{ref.color.neutral.950}",
+              "$extensions": {
+                "app.prism": {
+                  "alpha": 0.06,
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "FRAME_FILL",
+                      "SHAPE_FILL"
+                    ]
+                  }
+                }
               }
             }
           }
         },
         "tint": {
           "accent": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                0.9529,
-                0.5804,
-                0.2667
-              ],
-              "alpha": 0.12,
-              "hex": "#f39444"
-            },
-            "$description": "tinted focus card (= #FEF2E9 on white)"
+            "$value": "{ref.color.accent.500}",
+            "$description": "tinted focus card (= #FEF2E9 on white)",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.12,
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "success": {
-            "$value": "{ref.color.status.success.tint-light}"
+            "$value": "{ref.color.status.success.tint-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "warning": {
-            "$value": "{ref.color.status.warning.tint-light}"
+            "$value": "{ref.color.status.warning.tint-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "critical": {
-            "$value": "{ref.color.status.danger.tint-light}"
+            "$value": "{ref.color.status.danger.tint-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           },
           "info": {
-            "$value": "{ref.color.status.info.tint-light}"
+            "$value": "{ref.color.status.info.tint-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
           }
         }
       },
       "text": {
         "primary": {
           "$value": "{ref.color.neutral.950}",
-          "$description": "17.1:1 on page"
+          "$description": "17.2:1 on page",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised",
+                  "color.bg.tint.accent"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "secondary": {
           "$value": "{ref.color.neutral.600}",
-          "$description": "5.6:1 page / 6.3:1 card (reference #8E8E8E failed at 2.4:1)"
+          "$description": "5.6:1 page / 6.3:1 card (reference #8E8E8E failed at 2.4:1)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "tertiary": {
           "$value": "{ref.color.neutral.600}",
-          "$description": "resolves to the secondary step so 12 px captions pass AA; the DNA's #7E838F is kept as text.dimmed for >= 24 px"
+          "$description": "resolves to the secondary step so 12 px captions pass AA; the DNA's #7E838F is kept as text.dimmed for >= 24 px",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "dimmed": {
           "$value": "{ref.color.neutral.500}",
-          "$description": "3.4:1 on page: trailing digits and units at >= 24 px only"
+          "$description": "3.4:1 on page: trailing digits and units at >= 24 px only",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-inverse": {
-          "$value": "{ref.color.neutral.0}"
+          "$value": "{ref.color.neutral.0}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.inverse"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-accent": {
-          "$value": "{ref.color.neutral.950}",
-          "$description": "ink on accent-300 = 11.9:1"
+          "$value": "{ref.color.slot.light.text-on-accent}",
+          "$description": "ink on accent-300 = 12.0:1",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.accent"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-accent-strong": {
-          "$value": "{ref.color.neutral.0}"
+          "$value": "{ref.color.neutral.0}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.accent-strong"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-vivid": {
           "$value": "{ref.color.neutral.0}",
-          "$description": "only inside the vivid token's text-safe zone"
+          "$description": "every vivid gradient passes ADR-0022 V1/V2",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "gradient.vivid.*"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-glass": {
-          "$value": "{ref.color.neutral.0}"
+          "$value": "{ref.color.neutral.0}",
+          "$description": "white on dark glass; light glass uses on-glass-light (ADR-0022)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.dark.fill",
+                  "material.glass.dark.chip",
+                  "material.glass.cell"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-light": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "ink on light glass in the light scheme; hierarchy by size, never by alpha (ADR-0022 §3)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.light.fill",
+                  "material.glass.light.chip"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "alpha": 0.78,
+            "hex": "#ffffff"
+          },
+          "$description": "secondary tone on dark glass (the glass material) only; chips and cells use on-glass (ADR-0022 §3)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.dark.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-tertiary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "alpha": 0.64,
+            "hex": "#ffffff"
+          },
+          "$description": "tertiary and dimmed tones on dark glass (the glass material) only (ADR-0022 §3)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.dark.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "on-badge": {
-          "$value": "{ref.color.neutral.0}"
+          "$value": "{ref.color.neutral.0}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.critical"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "accent": {
-          "$value": "{ref.color.accent.800}",
-          "$description": "5.7:1 on page; the light accent is text-safe only at step 800"
+          "$value": "{ref.color.slot.light.text-accent}",
+          "$description": "5.7:1 on page; the light accent is text-safe only at step 800",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "success": {
-          "$value": "{ref.color.status.success.text-light}"
+          "$value": "{ref.color.status.success.text-light}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised",
+                  "color.bg.tint.success"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "warning": {
-          "$value": "{ref.color.status.warning.text-light}"
+          "$value": "{ref.color.status.warning.text-light}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised",
+                  "color.bg.tint.warning"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "critical": {
-          "$value": "{ref.color.status.danger.text-light}"
+          "$value": "{ref.color.status.danger.text-light}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised",
+                  "color.bg.tint.critical"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         },
         "info": {
-          "$value": "{ref.color.status.info.text-light}"
+          "$value": "{ref.color.status.info.text-light}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface",
+                  "color.bg.surface.raised",
+                  "color.bg.tint.info"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
         }
       },
       "icon": {
         "primary": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.8,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.8,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "secondary": {
-          "$value": "{ref.color.neutral.600}"
+          "$value": "{ref.color.neutral.600}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "accent": {
           "$value": "{ref.color.accent.500}",
-          "$description": "marks only, never text"
+          "$description": "marks only, never text; 2.3:1 on white, so always paired with a value, sign or label (visual-dna B3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "status": {
           "success": {
-            "$value": "{ref.color.status.success.dot-light}"
+            "$value": "{ref.color.status.success.dot-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "warning": {
-            "$value": "{ref.color.status.warning.dot-light}"
+            "$value": "{ref.color.status.warning.dot-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "critical": {
-            "$value": "{ref.color.status.danger.dot-light}"
+            "$value": "{ref.color.status.danger.dot-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "info": {
-            "$value": "{ref.color.status.info.dot-light}"
+            "$value": "{ref.color.status.info.dot-light}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           }
         }
       },
       "border": {
         "hairline": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.1,
-            "hex": "#0e0f12"
-          },
-          "$description": "inputs, table rows, chip strokes"
+          "$value": "{ref.color.neutral.950}",
+          "$description": "inputs, table rows, chip strokes",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.1,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "strong": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.3,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$description": "outline controls such as the ghost button; ink 45% keeps 3:1 on surface and page (visual-dna B1)",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.45,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "focus": {
-          "$value": "{ref.color.neutral.950}"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "boundary": {
           "$value": "{ref.color.neutral.500}",
-          "$description": "control edges that must pass 3:1"
+          "$description": "control edges that must pass 3:1",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       },
       "accent": {
         "$root": {
           "$value": "{ref.color.accent.500}",
-          "$description": "marks: dots, chart 'now', peak ticks, delta glyph fill"
+          "$description": "marks: dots, chart 'now', peak ticks, delta glyph fill; 2.3:1 on white, so a mark always sits with its value, sign or label, and a mark that alone carries meaning uses accent.700 (4.8:1; visual-dna B3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "pressed": {
-          "$value": "{ref.color.accent.600}"
+          "$value": "{ref.color.accent.600}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "subtle": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9529,
-              0.5804,
-              0.2667
-            ],
-            "alpha": 0.12,
-            "hex": "#f39444"
+          "$value": "{ref.color.accent.500}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.12,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
           }
         },
         "glow": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.9765,
-              0.6471,
-              0.3529
-            ],
-            "alpha": 0.4,
-            "hex": "#f9a55a"
+          "$value": "{ref.color.accent.400}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.4,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "EFFECT_COLOR"
+                ]
+              }
+            }
           }
         }
       },
       "chart": {
         "series": {
           "1": {
-            "$value": "{ref.color.series.light.1}"
+            "$value": "{ref.color.series.light.1}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "2": {
-            "$value": "{ref.color.series.light.2}"
+            "$value": "{ref.color.series.light.2}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "3": {
-            "$value": "{ref.color.series.light.3}"
+            "$value": "{ref.color.series.light.3}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "4": {
-            "$value": "{ref.color.series.light.4}"
+            "$value": "{ref.color.series.light.4}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "5": {
-            "$value": "{ref.color.series.light.5}"
+            "$value": "{ref.color.series.light.5}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           },
           "6": {
-            "$value": "{ref.color.series.light.6}"
+            "$value": "{ref.color.series.light.6}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
           }
         },
         "comparison": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.3,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.3,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "comparison-2": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.15,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.15,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "target": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.3,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.3,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "grid": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.1,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.1,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "band": {
-          "$value": {
-            "colorSpace": "srgb",
-            "components": [
-              0.0549,
-              0.0588,
-              0.0706
-            ],
-            "alpha": 0.05,
-            "hex": "#0e0f12"
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.05,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
           }
         },
         "axis": {
           "$value": "{ref.color.neutral.600}",
-          "$description": "reference #B7B7B9 failed at 1.7:1"
+          "$description": "reference #B7B7B9 failed at 1.7:1",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "now": {
-          "$value": "{ref.color.accent.500}"
+          "$value": "{ref.color.accent.500}",
+          "$description": "the now marker; 2.3:1 on white, so it always carries its label or value (visual-dna B3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "ghost": {
           "$value": "{ref.color.neutral.200}",
-          "$description": "sparkline ghost bars"
+          "$description": "sparkline ghost bars",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         },
         "plot": {
           "$value": "{ref.color.neutral.0}",
-          "$description": "charts never sit on raw glass"
+          "$description": "charts never sit on raw glass",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
         }
       }
     },
@@ -361,90 +1075,501 @@
       "glass": {
         "dark": {
           "fill": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                0.0392,
-                0.0471,
-                0.0314
-              ],
-              "alpha": 0.55,
-              "hex": "#0a0c08"
+            "$root": {
+              "$type": "color",
+              "$value": "{ref.color.smoke.light}",
+              "$description": "card or drawer over a photo or vivid, on backdrops where white holds 3:1 (ADR-0022 §3.3); drawer 0.35",
+              "$extensions": {
+                "app.prism": {
+                  "alpha": 0.55,
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "FRAME_FILL",
+                      "SHAPE_FILL"
+                    ]
+                  }
+                }
+              }
             },
-            "$description": "card over a bright photo or vivid; drawer 0.35",
-            "$extensions": {
-              "app.prism": {
-                "blur": 40,
-                "saturate": 0.8,
-                "edge": {
-                  "alpha": 0.22,
-                  "to": 0.08
-                },
-                "grain": 0.04
+            "blur": {
+              "$type": "dimension",
+              "$value": "{ref.blur.glass-light}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "EFFECT_FLOAT"
+                    ]
+                  }
+                }
+              }
+            },
+            "saturate": {
+              "$type": "number",
+              "$value": 0.8,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "edge": {
+              "start": {
+                "$type": "number",
+                "$value": 0.22,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              },
+              "end": {
+                "$type": "number",
+                "$value": 0.08,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              }
+            },
+            "grain": {
+              "$type": "number",
+              "$value": 0.04,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "bloom": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
               }
             }
           },
           "chip": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                0.0392,
-                0.0471,
-                0.0314
-              ],
-              "alpha": 0.35,
-              "hex": "#0a0c08"
+            "$root": {
+              "$type": "color",
+              "$value": "{ref.color.smoke.light}",
+              "$description": "controls over a photo, map or vivid; primary foreground text.on-glass only (ADR-0022 §3)",
+              "$extensions": {
+                "app.prism": {
+                  "alpha": 0.35,
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "FRAME_FILL",
+                      "SHAPE_FILL"
+                    ]
+                  }
+                }
+              }
             },
-            "$extensions": {
-              "app.prism": {
-                "blur": 24
+            "blur": {
+              "$type": "dimension",
+              "$value": "{ref.blur.pill}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "EFFECT_FLOAT"
+                    ]
+                  }
+                }
+              }
+            },
+            "saturate": {
+              "$type": "number",
+              "$value": 1.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "edge": {
+              "start": {
+                "$type": "number",
+                "$value": 0.22,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              },
+              "end": {
+                "$type": "number",
+                "$value": 0.08,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              }
+            },
+            "grain": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "bloom": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
               }
             }
           }
         },
         "light": {
           "fill": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "alpha": 0.3,
-              "hex": "#ffffff"
+            "$root": {
+              "$type": "color",
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "alpha": 0.3,
+                "hex": "#ffffff"
+              },
+              "$description": "chips, pills, rows over vivid; tab bar 0.45; ink text (text.on-glass-light); only over vivid or imagery at OKLCH L >= 0.45 (ADR-0022)",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "FRAME_FILL",
+                      "SHAPE_FILL"
+                    ]
+                  }
+                }
+              }
             },
-            "$description": "chips, pills, rows over vivid; tab bar 0.45",
-            "$extensions": {
-              "app.prism": {
-                "blur": 24,
-                "saturate": 1.1,
-                "edge": {
-                  "alpha": 0.55,
-                  "to": 0.0
+            "blur": {
+              "$type": "dimension",
+              "$value": "{ref.blur.pill}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "EFFECT_FLOAT"
+                    ]
+                  }
+                }
+              }
+            },
+            "saturate": {
+              "$type": "number",
+              "$value": 1.1,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "edge": {
+              "start": {
+                "$type": "number",
+                "$value": 0.55,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              },
+              "end": {
+                "$type": "number",
+                "$value": 0.0,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              }
+            },
+            "grain": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "bloom": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
                 }
               }
             }
           },
           "chip": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "alpha": 0.25,
-              "hex": "#ffffff"
+            "$root": {
+              "$type": "color",
+              "$value": {
+                "colorSpace": "srgb",
+                "components": [
+                  1.0,
+                  1.0,
+                  1.0
+                ],
+                "alpha": 0.25,
+                "hex": "#ffffff"
+              },
+              "$description": "primary foreground text.on-glass-light only (ADR-0022 §3)",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "FRAME_FILL",
+                      "SHAPE_FILL"
+                    ]
+                  }
+                }
+              }
             },
+            "blur": {
+              "$type": "dimension",
+              "$value": "{ref.blur.chip}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": [
+                      "EFFECT_FLOAT"
+                    ]
+                  }
+                }
+              }
+            },
+            "saturate": {
+              "$type": "number",
+              "$value": 1.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "edge": {
+              "start": {
+                "$type": "number",
+                "$value": 0.55,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              },
+              "end": {
+                "$type": "number",
+                "$value": 0.0,
+                "$extensions": {
+                  "app.prism": {
+                    "figma": {
+                      "collection": "colorScheme",
+                      "scopes": []
+                    }
+                  }
+                }
+              }
+            },
+            "grain": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "bloom": {
+              "$type": "number",
+              "$value": 0.0,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cell": {
+          "$root": {
+            "$type": "color",
+            "$value": "{ref.color.smoke.light}",
+            "$description": "status cells over a render or vivid; smoked fill, primary foreground text.on-glass only; a 1.5 px status border carries the status (ADR-0022)",
             "$extensions": {
               "app.prism": {
-                "blur": 20
+                "alpha": 0.35,
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{ref.blur.cell}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "EFFECT_FLOAT"
+                  ]
+                }
+              }
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": 1.0,
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "edge": {
+            "start": {
+              "$type": "number",
+              "$value": 0.22,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "end": {
+              "$type": "number",
+              "$value": 0.08,
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": 0.0,
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": 0.0,
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
               }
             }
           }
         },
         "scrim": {
+          "$type": "color",
           "$value": {
             "colorSpace": "srgb",
             "components": [
@@ -455,26 +1580,62 @@
             "alpha": 0.35,
             "hex": "#000000"
           },
-          "$description": "bottom-up under text on unpredictable backdrops"
+          "$description": "bottom-up under text on unpredictable backdrops",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
         }
+      }
+    },
+    "elevation": {
+      "$type": "shadow",
+      "0": {
+        "$value": "{ref.shadow.none}"
+      },
+      "1": {
+        "$value": "{ref.shadow.light.raised}"
+      },
+      "2": {
+        "$value": "{ref.shadow.light.floating}"
+      },
+      "3": {
+        "$value": "{ref.shadow.light.overlay}"
       }
     },
     "shadow": {
       "$type": "shadow",
-      "raised": {
-        "$value": "{ref.shadow.light.raised}"
-      },
-      "floating": {
-        "$value": "{ref.shadow.light.floating}"
-      },
-      "overlay": {
-        "$value": "{ref.shadow.light.overlay}"
-      },
       "drawer": {
         "$value": "{ref.shadow.light.drawer}"
-      },
-      "flat": {
-        "$value": "{ref.shadow.none}"
+      }
+    },
+    "gradient": {
+      "$type": "gradient",
+      "$description": "Scheme-safe slots over the brand's vivid gradients; each resolves to a gradient of this scheme (ADR-0024 §6).",
+      "vivid": {
+        "default": {
+          "$value": "{ref.gradient.vivid.sky}",
+          "$description": "the unset vivid of Card and Surface: sky in the light scheme (ADR-0022 §4.4)"
+        },
+        "1": {
+          "$value": "{ref.gradient.vivid.sky}"
+        },
+        "2": {
+          "$value": "{ref.gradient.vivid.olive}"
+        },
+        "3": {
+          "$value": "{ref.gradient.vivid.rose}"
+        },
+        "4": {
+          "$value": "{ref.gradient.vivid.orchid}"
+        }
       }
     }
   }

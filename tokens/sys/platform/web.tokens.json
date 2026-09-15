@@ -4,20 +4,42 @@
     "font": {
       "$type": "fontFamily",
       "ui": {
-        "$value": "{ref.font.ui}"
+        "$value": "{ref.font.ui}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
+        }
       },
       "display": {
-        "$value": "{ref.font.display}"
+        "$value": "{ref.font.display}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
+        }
       },
       "mono": {
-        "$value": "{ref.font.mono}"
-      }
-    },
-    "material": {
-      "blur": {
-        "$type": "number",
-        "enabled": {
-          "$value": 1
+        "$value": "{ref.font.mono}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "platform",
+              "scopes": [
+                "FONT_FAMILY"
+              ]
+            }
+          }
         }
       }
     }

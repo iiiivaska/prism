@@ -23,6 +23,29 @@
           "$value": "{ref.motion.duration.slower}"
         }
       },
+      "easing": {
+        "$type": "cubicBezier",
+        "out": {
+          "$value": "{ref.motion.easing.out}",
+          "$description": "enter and exit (exit mirrors enter), press and release feedback, the Reduce Motion substitutes, state changes on the non-spring path (ADR-0023 §9)"
+        },
+        "in-out": {
+          "$value": "{ref.motion.easing.in-out}",
+          "$description": "on-screen movement and morphs on the non-spring path (ADR-0023 §9)"
+        },
+        "drawer": {
+          "$value": "{ref.motion.easing.drawer}",
+          "$description": "sheets and drawers on the non-spring path (ADR-0023 §9)"
+        },
+        "hover": {
+          "$value": "{ref.motion.easing.hover}",
+          "$description": "hover color and opacity only (ADR-0023 §9)"
+        },
+        "linear": {
+          "$value": "{ref.motion.easing.linear}",
+          "$description": "constant motion: progress, marquee, ambient rotation (ADR-0023 §9)"
+        }
+      },
       "spring": {
         "$type": "transition",
         "interactive": {
@@ -45,7 +68,12 @@
         "$type": "number",
         "crossfade": {
           "$value": 0,
-          "$description": "0 = transitions may translate/scale; 1 = crossfade only"
+          "$description": "Flag. 1 under Reduce Motion: outside an active gesture nothing scales, rotates, blurs or changes depth; presentations fade by opacity over motion.duration.base with motion.easing.out; in-place movement keeps its spring (ADR-0023 §8.4).",
+          "$extensions": {
+            "app.prism": {
+              "flag": true
+            }
+          }
         }
       }
     }

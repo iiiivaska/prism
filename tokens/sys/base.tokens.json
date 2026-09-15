@@ -4,177 +4,692 @@
     "space": {
       "$type": "dimension",
       "0": {
-        "$value": "{ref.space.0}"
+        "$value": "{ref.space.0}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "1": {
-        "$value": "{ref.space.1}"
+        "$value": "{ref.space.1}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "2": {
-        "$value": "{ref.space.2}"
+        "$value": "{ref.space.2}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "3": {
-        "$value": "{ref.space.3}"
+        "$value": "{ref.space.3}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "4": {
-        "$value": "{ref.space.4}"
+        "$value": "{ref.space.4}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "5": {
-        "$value": "{ref.space.5}"
+        "$value": "{ref.space.5}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "6": {
-        "$value": "{ref.space.6}"
+        "$value": "{ref.space.6}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "7": {
-        "$value": "{ref.space.7}"
+        "$value": "{ref.space.7}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "8": {
-        "$value": "{ref.space.8}"
+        "$value": "{ref.space.8}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "9": {
-        "$value": "{ref.space.9}"
+        "$value": "{ref.space.9}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "10": {
-        "$value": "{ref.space.10}"
+        "$value": "{ref.space.10}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "11": {
-        "$value": "{ref.space.11}"
+        "$value": "{ref.space.11}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "12": {
-        "$value": "{ref.space.12}"
+        "$value": "{ref.space.12}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       },
       "13": {
-        "$value": "{ref.space.13}"
+        "$value": "{ref.space.13}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
       }
     },
     "radius": {
       "$type": "dimension",
       "control": {
         "$value": "{ref.radius.pill}",
-        "$description": "controls are pills or circles"
+        "$description": "controls are pills or circles",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "chip": {
-        "$value": "{ref.radius.pill}"
+        "$value": "{ref.radius.pill}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "badge": {
-        "$value": "{ref.radius.1}"
+        "$value": "{ref.radius.1}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "inner": {
-        "$value": "{ref.radius.2}"
+        "$value": "{ref.radius.2}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "media": {
-        "$value": "{ref.radius.3}"
+        "$value": "{ref.radius.3}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "tile": {
-        "$value": "{ref.radius.5}"
+        "$value": "{ref.radius.5}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "card": {
         "$value": "{ref.radius.7}",
-        "$description": "regular card 24; compact 20"
+        "$description": "regular card 24; compact 20",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "card-compact": {
-        "$value": "{ref.radius.6}"
+        "$value": "{ref.radius.6}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "sheet": {
-        "$value": "{ref.radius.8}"
+        "$value": "{ref.radius.8}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "card-large": {
-        "$value": "{ref.radius.9}"
+        "$value": "{ref.radius.9}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "hero": {
-        "$value": "{ref.radius.10}"
+        "$value": "{ref.radius.10}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "border": {
+      "$type": "dimension",
+      "$description": "Widths of hairlines, strong strokes and focus rings (ADR-0024 §6); their colors are color.border.*.",
+      "hairline": {
+        "$value": "{ref.border.hairline}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
+      },
+      "strong": {
+        "$value": "{ref.border.strong}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
+      },
+      "focus": {
+        "$value": "{ref.border.focus}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
       }
     },
     "size": {
       "$type": "dimension",
       "icon": {
         "sm": {
-          "$value": "{ref.size.icon.sm}"
+          "$value": "{ref.size.icon.sm}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "base",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         },
         "md": {
-          "$value": "{ref.size.icon.md}"
+          "$value": "{ref.size.icon.md}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "base",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         },
         "lg": {
-          "$value": "{ref.size.icon.lg}"
+          "$value": "{ref.size.icon.lg}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "base",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         },
         "ring": {
-          "$value": "{ref.size.icon.ring}"
+          "$value": "{ref.size.icon.ring}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "base",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         }
       },
-      "control": {
-        "sm": {
-          "$value": "{ref.size.control.sm}"
-        },
-        "md": {
-          "$value": "{ref.size.control.md}"
-        },
-        "lg": {
-          "$value": "{ref.size.control.lg}"
+      "card": {
+        "min": {
+          "$value": "{ref.size.card.min}",
+          "$description": "minimum card width in pattern grids (spec/patterns/README.md)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "base",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
         }
       }
     },
     "opacity": {
       "$type": "number",
       "disabled": {
-        "$value": "{ref.opacity.disabled}"
+        "$value": "{ref.opacity.disabled}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "OPACITY"
+              ]
+            }
+          }
+        }
       },
       "dimmed-row": {
-        "$value": "{ref.opacity.dimmed-row}"
+        "$value": "{ref.opacity.dimmed-row}",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "OPACITY"
+              ]
+            }
+          }
+        }
       }
     },
     "z": {
       "$type": "number",
       "base": {
-        "$value": 0
+        "$value": 0,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       },
       "raised": {
-        "$value": 10
+        "$value": 10,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       },
       "overlay": {
-        "$value": 100
+        "$value": 100,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       },
       "toast": {
-        "$value": 1000
+        "$value": 1000,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       }
     },
     "icon": {
       "$type": "number",
       "weight": {
         "$value": 400,
-        "$description": "regular; maps to Phosphor regular / SF regular (spec/icons/registry.json)"
+        "$description": "regular; maps to Phosphor regular / SF regular (spec/icons/registry.json)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       },
       "weight-display": {
-        "$value": 200
+        "$value": 200,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       }
     },
     "chart": {
-      "$type": "number",
+      "$type": "dimension",
       "curve": {
+        "$type": "number",
         "$value": 1,
-        "$description": "1 = monotone (default), 2 = catmullRom(0.5), 3 = step"
+        "$description": "1 = monotone (default), 2 = catmullRom(0.5), 3 = step",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       },
       "line-width": {
-        "$value": 2
+        "$value": {
+          "value": 2,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
       },
       "sparkline-width": {
-        "$value": 1.5
+        "$value": {
+          "value": 1.5,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
       },
       "comparison-width": {
-        "$value": 1
+        "$value": {
+          "value": 1,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
       },
       "marker-size": {
-        "$value": 8
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
       },
       "endpoint-size": {
-        "$value": 10
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
       },
       "bar-max-thickness": {
-        "$value": 24
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
       },
       "bar-radius": {
-        "$value": 4
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
       },
       "gauge-stroke-ratio": {
-        "$value": 0.1
+        "$type": "number",
+        "$value": 0.1,
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "base",
+              "scopes": []
+            }
+          }
+        }
       }
     },
     "stroke": {
@@ -226,6 +741,102 @@
           "lineCap": "round"
         },
         "$description": "dotted leaders in spec rows"
+      }
+    },
+    "type": {
+      "display": {
+        "xl": {
+          "$type": "typography",
+          "$value": "{ref.type.display.xl}"
+        },
+        "lg": {
+          "$type": "typography",
+          "$value": "{ref.type.display.lg}"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.display.md}"
+        }
+      },
+      "title": {
+        "lg": {
+          "$type": "typography",
+          "$value": "{ref.type.title.lg}"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.title.md}"
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": "{ref.type.title.sm}"
+        }
+      },
+      "headline": {
+        "$type": "typography",
+        "$value": "{ref.type.headline}"
+      },
+      "body": {
+        "lg": {
+          "$type": "typography",
+          "$value": "{ref.type.body.lg}"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.body.md}"
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": "{ref.type.body.sm}"
+        }
+      },
+      "label": {
+        "lg": {
+          "$type": "typography",
+          "$value": "{ref.type.label.lg}"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.label.md}"
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": "{ref.type.label.sm}"
+        }
+      },
+      "caption": {
+        "$type": "typography",
+        "$value": "{ref.type.caption}"
+      },
+      "micro": {
+        "$type": "typography",
+        "$value": "{ref.type.micro}"
+      },
+      "eyebrow": {
+        "$type": "typography",
+        "$value": "{ref.type.eyebrow}"
+      },
+      "metric": {
+        "xl": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.xl}"
+        },
+        "lg": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.lg}"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.md}"
+        },
+        "unit": {
+          "$type": "typography",
+          "$value": "{ref.type.metric.unit}"
+        }
+      },
+      "data": {
+        "$type": "typography",
+        "$value": "{ref.type.data}"
       }
     }
   }

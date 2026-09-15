@@ -167,34 +167,6 @@
     },
     "size": {
       "$type": "dimension",
-      "control": {
-        "sm": {
-          "$value": {
-            "value": 32,
-            "unit": "px"
-          }
-        },
-        "md": {
-          "$value": {
-            "value": 40,
-            "unit": "px"
-          },
-          "$description": "pointer default"
-        },
-        "lg": {
-          "$value": {
-            "value": 44,
-            "unit": "px"
-          },
-          "$description": "touch default"
-        },
-        "xl": {
-          "$value": {
-            "value": 52,
-            "unit": "px"
-          }
-        }
-      },
       "hit": {
         "pointer": {
           "$value": {
@@ -274,11 +246,25 @@
     },
     "blur": {
       "$type": "dimension",
+      "cell": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "glass status cells (ADR-0022)"
+      },
       "chip": {
         "$value": {
           "value": 20,
           "unit": "px"
         }
+      },
+      "pill": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "light-scheme dark chips and light glass fill (ADR-0022)"
       },
       "glass": {
         "$value": {

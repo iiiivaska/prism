@@ -3,10 +3,52 @@
   "ref": {
     "font": {
       "$type": "fontFamily",
-      "$description": "Native preset (ADR-0008): system fonts on Apple, Inter on web. Apple resolves these names through Font.system(design:) in DSCore, never through bundled files; SF is never bundled.",
-      "ui": { "$value": ["SF Pro Text", "Inter", "system-ui", "sans-serif"] },
-      "display": { "$value": ["SF Pro Display", "Inter", "system-ui", "sans-serif"], "$extensions": { "app.prism": { "opsz": 32 } } },
-      "mono": { "$value": ["SF Mono", "JetBrains Mono", "ui-monospace", "monospace"] }
+      "$description": "Native preset (ADR-0020 §5): self-hosted Inter on the web, system faces on Apple through Font.system(design:) in DSCore; no Apple font file is bundled.",
+      "ui": {
+        "$value": [
+          "Inter",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Web stack of the ui slot: served families and CSS generics only (ADR-0020)"
+      },
+      "display": {
+        "$value": [
+          "Inter",
+          "system-ui",
+          "sans-serif"
+        ],
+        "$description": "Web stack of the display slot: served families and CSS generics only (ADR-0020)",
+        "$extensions": {
+          "app.prism": {
+            "opsz": 32
+          }
+        }
+      },
+      "mono": {
+        "$value": [
+          "ui-monospace",
+          "monospace"
+        ],
+        "$description": "Web stack of the mono slot: served families and CSS generics only (ADR-0020)"
+      },
+      "apple": {
+        "ui": {
+          "$value": [
+            "system-ui"
+          ]
+        },
+        "display": {
+          "$value": [
+            "system-ui"
+          ]
+        },
+        "mono": {
+          "$value": [
+            "ui-monospace"
+          ]
+        }
+      }
     }
   }
 }

@@ -34,7 +34,7 @@
         "snappy": {
           "$value": {
             "duration": {
-              "value": 250,
+              "value": 367,
               "unit": "ms"
             },
             "delay": {
@@ -43,11 +43,36 @@
             },
             "timingFunction": "{ref.motion.easing.out}"
           },
+          "$description": "Reduce Motion: state changes without overshoot, shortened (ADR-0023)",
           "$extensions": {
             "app.prism": {
               "spring": {
                 "duration": 0.25,
-                "bounce": 0.0
+                "bounce": 0.0,
+                "settle": 0.367
+              }
+            }
+          }
+        },
+        "smooth": {
+          "$value": {
+            "duration": {
+              "value": 440,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.in-out}"
+          },
+          "$description": "Reduce Motion: layout and morph without overshoot, shortened (ADR-0023)",
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.3,
+                "bounce": 0.0,
+                "settle": 0.44
               }
             }
           }
@@ -55,7 +80,7 @@
         "sheet": {
           "$value": {
             "duration": {
-              "value": 250,
+              "value": 367,
               "unit": "ms"
             },
             "delay": {
@@ -64,11 +89,13 @@
             },
             "timingFunction": "{ref.motion.easing.out}"
           },
+          "$description": "Reduce Motion: sheets and drawers without overshoot, shortened (ADR-0023)",
           "$extensions": {
             "app.prism": {
               "spring": {
                 "duration": 0.25,
-                "bounce": 0.0
+                "bounce": 0.0,
+                "settle": 0.367
               }
             }
           }
@@ -76,7 +103,7 @@
         "bouncy": {
           "$value": {
             "duration": {
-              "value": 300,
+              "value": 440,
               "unit": "ms"
             },
             "delay": {
@@ -85,11 +112,13 @@
             },
             "timingFunction": "{ref.motion.easing.out}"
           },
+          "$description": "Reduce Motion: the delight tier without bounce, shortened (ADR-0023)",
           "$extensions": {
             "app.prism": {
               "spring": {
                 "duration": 0.3,
-                "bounce": 0.0
+                "bounce": 0.0,
+                "settle": 0.44
               }
             }
           }
@@ -98,7 +127,13 @@
       "presentation": {
         "$type": "number",
         "crossfade": {
-          "$value": 1
+          "$value": 1,
+          "$description": "Flag. 1 under Reduce Motion: outside an active gesture nothing scales, rotates, blurs or changes depth; presentations fade by opacity over motion.duration.base with motion.easing.out; in-place movement keeps its spring (ADR-0023 §8.4).",
+          "$extensions": {
+            "app.prism": {
+              "flag": true
+            }
+          }
         }
       }
     }

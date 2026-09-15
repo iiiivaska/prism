@@ -6,33 +6,49 @@
       "ui": {
         "$value": [
           "Onest",
-          "Inter",
           "system-ui",
           "sans-serif"
         ],
-        "$description": "Signature preset. Native preset overrides to SF Pro / Inter via the platform modifier."
+        "$description": "Web stack of the ui slot: served families and CSS generics only (ADR-0020)"
       },
       "display": {
         "$value": [
           "Onest",
-          "Inter",
           "system-ui",
           "sans-serif"
-        ]
+        ],
+        "$description": "Web stack of the display slot: served families and CSS generics only (ADR-0020)"
       },
       "mono": {
         "$value": [
           "JetBrains Mono",
           "ui-monospace",
-          "SF Mono",
-          "Menlo",
           "monospace"
-        ]
+        ],
+        "$description": "Web stack of the mono slot: served families and CSS generics only (ADR-0020)"
+      },
+      "apple": {
+        "$description": "Apple face of each slot: exactly one family the brand bundles on Apple, or one system keyword (system-ui, ui-rounded, ui-monospace, ui-serif); the platform modifier selects it for apple and watch (ADR-0020 §5).",
+        "ui": {
+          "$value": [
+            "Onest"
+          ]
+        },
+        "display": {
+          "$value": [
+            "Onest"
+          ]
+        },
+        "mono": {
+          "$value": [
+            "JetBrains Mono"
+          ]
+        }
       }
     },
     "type": {
       "$type": "typography",
-      "$description": "Roles; sizes are regular density. Weights: 200-300 heroes, 400 everything, 500 chips/active tab, 600 page H1 only.",
+      "$description": "Typography roles at the role scale (sizes in px = pt). Standard weights: 300 (only at ≥ 20 px), 400, 500; nothing heavier outside Bold Text. Thin weights (100–200) exist only as a metric role's darkWeight at ≥ 34 px. The build derives the dark, Increase Contrast (floor 400) and Bold Text weights (ADR-0021).",
       "display": {
         "xl": {
           "$value": {
@@ -50,10 +66,12 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "display"
+              "slot": "display",
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           },
-          "$description": "page hero titles; dark scheme may drop to 200"
+          "$description": "page hero title set into the backdrop; never thin (ADR-0021)"
         },
         "lg": {
           "$value": {
@@ -71,7 +89,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "display"
+              "slot": "display",
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           }
         },
@@ -91,7 +111,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "display"
+              "slot": "display",
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           }
         }
@@ -113,7 +135,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           },
           "$description": "H1; two-tone variant: second line in text.secondary"
@@ -134,7 +158,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "title2"
             }
           }
         },
@@ -154,7 +180,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "title3"
             }
           }
         }
@@ -175,7 +203,9 @@
         },
         "$extensions": {
           "app.prism": {
-            "slot": "ui"
+            "slot": "ui",
+            "numeric": "proportional",
+            "textStyle": "headline"
           }
         },
         "$description": "card titles, never bold"
@@ -197,7 +227,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "body"
             }
           }
         },
@@ -217,7 +249,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "subheadline"
             }
           }
         },
@@ -237,7 +271,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "subheadline"
             }
           },
           "$description": "dense web tables"
@@ -260,7 +296,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "subheadline"
             }
           }
         },
@@ -280,7 +318,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "footnote"
             }
           }
         },
@@ -300,7 +340,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "caption"
             }
           }
         }
@@ -321,7 +363,9 @@
         },
         "$extensions": {
           "app.prism": {
-            "slot": "ui"
+            "slot": "ui",
+            "numeric": "proportional",
+            "textStyle": "caption"
           }
         },
         "$description": "'7m ago', 'Rolling average'; secondary color"
@@ -342,7 +386,9 @@
         },
         "$extensions": {
           "app.prism": {
-            "slot": "ui"
+            "slot": "ui",
+            "numeric": "proportional",
+            "textStyle": "caption2"
           }
         },
         "$description": "badges only; never functional body text"
@@ -363,7 +409,9 @@
         },
         "$extensions": {
           "app.prism": {
-            "slot": "ui"
+            "slot": "ui",
+            "numeric": "proportional",
+            "textStyle": "footnote"
           }
         },
         "$description": "uppercase, at most one per card"
@@ -386,10 +434,12 @@
           "$extensions": {
             "app.prism": {
               "slot": "display",
-              "numeric": "proportional"
+              "numeric": "proportional",
+              "textStyle": "largeTitle",
+              "darkWeight": 200
             }
           },
-          "$description": "hero numeral; 200 on dark >= 32 px; trailing group in text.dimmed at the same size"
+          "$description": "the one hero numeral per screen; 300 in light, 200 in dark (darkWeight); proportional figures unless the value is live; trailing group in text.dimmed at the same size"
         },
         "lg": {
           "$value": {
@@ -408,10 +458,11 @@
           "$extensions": {
             "app.prism": {
               "slot": "display",
-              "numeric": "proportional"
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           },
-          "$description": "card metric"
+          "$description": "card metric; never thin (32 px is below the 34 px threshold)"
         },
         "md": {
           "$value": {
@@ -430,7 +481,8 @@
           "$extensions": {
             "app.prism": {
               "slot": "display",
-              "numeric": "tabular"
+              "numeric": "tabular",
+              "textStyle": "title3"
             }
           },
           "$description": "inline metric '41 %'"
@@ -451,7 +503,9 @@
           },
           "$extensions": {
             "app.prism": {
-              "slot": "ui"
+              "slot": "ui",
+              "numeric": "proportional",
+              "textStyle": "largeTitle"
             }
           },
           "$description": "baseline-aligned unit, 6 px gap, secondary color"
@@ -474,10 +528,16 @@
         "$extensions": {
           "app.prism": {
             "slot": "ui",
-            "numeric": "tabular"
+            "numeric": "tabular",
+            "textStyle": "footnote"
           }
         },
         "$description": "tables, axes, timers, live counters"
+      },
+      "scale": {
+        "$type": "number",
+        "$value": 1,
+        "$description": "Brand type-scale multiplier (ADR-0008 decision 1); the build multiplies every typography fontSize and letterSpacing by it."
       }
     }
   }

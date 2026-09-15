@@ -7,36 +7,96 @@
         "$value": {
           "value": 8,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       },
       "card-gap": {
         "$value": {
           "value": 12,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       },
       "group-gap": {
         "$value": {
           "value": 24,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       },
       "section-gap": {
         "$value": {
           "value": 40,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       },
       "card-padding": {
         "$value": {
           "value": 24,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       },
       "page-margin": {
         "$value": {
           "value": 24,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
         }
       }
     },
@@ -46,21 +106,67 @@
         "$value": {
           "value": 52,
           "unit": "px"
+        },
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
         }
       },
       "control": {
-        "$root": {
+        "sm": {
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "density",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "md": {
           "$value": {
             "value": 48,
             "unit": "px"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "density",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "lg": {
+          "$value": {
+            "value": 52,
+            "unit": "px"
+          },
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "density",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
           }
         }
-      }
-    },
-    "type": {
-      "$type": "number",
-      "body-line-height": {
-        "$value": 1.55
       }
     }
   }
