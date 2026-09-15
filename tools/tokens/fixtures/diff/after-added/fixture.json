@@ -1,0 +1,9 @@
+{
+  "description": "a new ref token",
+  "expect": [
+    {
+      "kind": "added",
+      "path": "ref.space.12"
+    }
+  ]
+}

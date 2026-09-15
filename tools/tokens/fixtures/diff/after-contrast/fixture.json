@@ -1,0 +1,31 @@
+{
+  "description": "increased-contrast contexts: text.secondary gains a light increased-contrast delta, and the metric role's weight floor (ADR-0021) gives it one in both schemes",
+  "expect": [
+    {
+      "kind": "context-added",
+      "modifier": "colorScheme",
+      "context": "light-increased-contrast"
+    },
+    {
+      "kind": "context-added",
+      "modifier": "colorScheme",
+      "context": "dark-increased-contrast"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "ref.type.metric.xl"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "color.text.secondary"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "type.metric.xl"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "comp.card.title"
+    }
+  ]
+}

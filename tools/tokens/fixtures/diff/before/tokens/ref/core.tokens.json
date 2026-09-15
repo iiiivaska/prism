@@ -1,0 +1,287 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "neutral": {
+        "0": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              1,
+              0,
+              0
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          }
+        },
+        "100": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.9612,
+              0.0041,
+              271.4
+            ],
+            "alpha": 1,
+            "hex": "#f1f2f5"
+          }
+        },
+        "900": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.2213,
+              0.0072,
+              271.4
+            ],
+            "alpha": 1,
+            "hex": "#1a1b1e"
+          }
+        },
+        "950": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.1693,
+              0.0061,
+              271.4
+            ],
+            "alpha": 1,
+            "hex": "#0e0f12"
+          }
+        }
+      },
+      "accent": {
+        "300": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.8506,
+              0.1133,
+              68.2
+            ],
+            "alpha": 1,
+            "hex": "#ffc07a"
+          },
+          "$description": "outside sRGB, inside Display P3"
+        },
+        "500": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.7517,
+              0.1475,
+              57.6
+            ],
+            "alpha": 1,
+            "hex": "#f39444"
+          }
+        },
+        "800": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.4981,
+              0.1107,
+              47.3
+            ],
+            "alpha": 1,
+            "hex": "#944c24"
+          }
+        }
+      },
+      "slot": {
+        "light": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.100}"
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.300}"
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.800}"
+          }
+        },
+        "dark": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.500}"
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.500}"
+          }
+        }
+      }
+    },
+    "space": {
+      "2": {
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        }
+      },
+      "4": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "$type": "dimension"
+    },
+    "gradient": {
+      "vivid": {
+        "$type": "gradient",
+        "sky": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.6,
+                  0.12,
+                  240
+                ],
+                "alpha": 1,
+                "hex": "#2b88c0"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.42,
+                  0.1,
+                  250
+                ],
+                "alpha": 1,
+                "hex": "#194f81"
+              },
+              "position": 1
+            }
+          ],
+          "$extensions": {
+            "app.prism": {
+              "angle": 165,
+              "grain": 0.06,
+              "scheme": "light",
+              "bloom": {
+                "alpha": 0.3,
+                "blur": 150
+              }
+            }
+          }
+        },
+        "plum-dusk": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.45,
+                  0.09,
+                  330
+                ],
+                "alpha": 1,
+                "hex": "#71426d"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.3,
+                  0.06,
+                  300
+                ],
+                "alpha": 1,
+                "hex": "#332647"
+              },
+              "position": 1
+            }
+          ],
+          "$extensions": {
+            "app.prism": {
+              "angle": 200,
+              "grain": 0.05,
+              "scheme": "dark"
+            }
+          }
+        }
+      }
+    },
+    "motion": {
+      "easing": {
+        "$type": "cubicBezier",
+        "out": {
+          "$value": [
+            0.23,
+            1,
+            0.32,
+            1
+          ]
+        },
+        "in-out": {
+          "$value": [
+            0.77,
+            0,
+            0.175,
+            1
+          ]
+        }
+      },
+      "duration": {
+        "$type": "duration",
+        "fast": {
+          "$value": {
+            "value": 150,
+            "unit": "ms"
+          }
+        },
+        "base": {
+          "$value": {
+            "value": 250,
+            "unit": "ms"
+          }
+        }
+      },
+      "spring": {
+        "$type": "transition",
+        "snappy": {
+          "$value": {
+            "duration": {
+              "value": 487,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.35,
+                "bounce": 0.15,
+                "settle": 0.487
+              }
+            }
+          },
+          "$description": "default for state changes"
+        }
+      }
+    }
+  }
+}

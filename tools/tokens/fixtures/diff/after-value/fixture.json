@@ -1,0 +1,13 @@
+{
+  "description": "ref.space.8 changes everywhere, size.control.md only in the regular density",
+  "expect": [
+    {
+      "kind": "value-changed",
+      "path": "ref.space.8"
+    },
+    {
+      "kind": "value-changed",
+      "path": "size.control.md"
+    }
+  ]
+}

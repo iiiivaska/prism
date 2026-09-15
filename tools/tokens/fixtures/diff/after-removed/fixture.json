@@ -1,0 +1,9 @@
+{
+  "description": "a ref token deleted",
+  "expect": [
+    {
+      "kind": "removed",
+      "path": "ref.space.8"
+    }
+  ]
+}

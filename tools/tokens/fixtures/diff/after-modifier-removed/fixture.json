@@ -1,0 +1,38 @@
+{
+  "description": "the motion modifier removed; its default file joins the base set, so the default-motion permutations still pair with the base revision",
+  "remove": [
+    "tokens/sys/motion/reduced.tokens.json"
+  ],
+  "expect": [
+    {
+      "kind": "context-removed",
+      "modifier": "motion",
+      "context": "default"
+    },
+    {
+      "kind": "context-removed",
+      "modifier": "motion",
+      "context": "reduced"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "motion.duration.base"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "motion.duration.fast"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "motion.presentation.crossfade"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "motion.spring.snappy"
+    },
+    {
+      "kind": "axes-changed",
+      "path": "comp.button.motion.press"
+    }
+  ]
+}

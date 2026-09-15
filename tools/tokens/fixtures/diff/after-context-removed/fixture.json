@@ -1,0 +1,13 @@
+{
+  "description": "the comfortable density context and its file removed",
+  "remove": [
+    "tokens/sys/density/comfortable.tokens.json"
+  ],
+  "expect": [
+    {
+      "kind": "context-removed",
+      "modifier": "density",
+      "context": "comfortable"
+    }
+  ]
+}
