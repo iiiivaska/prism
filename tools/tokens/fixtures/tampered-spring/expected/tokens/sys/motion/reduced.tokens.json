@@ -1,0 +1,56 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "motion": {
+      "spring": {
+        "$type": "transition",
+        "snappy": {
+          "$value": {
+            "duration": {
+              "value": 367,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$description": "the seeded fallback: the Apple duration instead of the settle (ARCHITECTURE S5)",
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.25,
+                "bounce": 0.0,
+                "settle": 0.367
+              }
+            }
+          }
+        },
+        "bouncy": {
+          "$value": {
+            "duration": {
+              "value": 440,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$description": "correct: 440.86 ms floors to 440",
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.3,
+                "bounce": 0.0,
+                "settle": 0.44
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

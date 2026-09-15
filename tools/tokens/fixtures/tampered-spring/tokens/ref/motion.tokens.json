@@ -1,0 +1,151 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "motion": {
+      "duration": {
+        "$type": "duration",
+        "base": {
+          "$value": {
+            "value": 250,
+            "unit": "ms"
+          }
+        }
+      },
+      "easing": {
+        "$type": "cubicBezier",
+        "out": {
+          "$value": [
+            0.23,
+            1,
+            0.32,
+            1
+          ]
+        },
+        "in-out": {
+          "$value": [
+            0.77,
+            0,
+            0.175,
+            1
+          ]
+        }
+      },
+      "spring": {
+        "$type": "transition",
+        "$description": "normalize.test.ts: tampered spring fallbacks (ADR-0023 rule 3)",
+        "interactive": {
+          "$value": {
+            "duration": "{ref.motion.duration.base}",
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.15,
+                "bounce": 0.0,
+                "settle": 0.22,
+                "blendDuration": 0.25
+              }
+            }
+          },
+          "$description": "an aliased fallback duration"
+        },
+        "snappy": {
+          "$value": {
+            "duration": {
+              "value": 488,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.35,
+                "bounce": 0.15,
+                "settle": 0.488
+              }
+            }
+          },
+          "$description": "rounded instead of floored: 487.68 ms"
+        },
+        "smooth": {
+          "$value": {
+            "duration": {
+              "value": 587,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.in-out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.4,
+                "bounce": 0.0
+              }
+            }
+          },
+          "$description": "no settle"
+        },
+        "sheet": {
+          "$value": {
+            "duration": {
+              "value": 0.404,
+              "unit": "s"
+            },
+            "delay": {
+              "value": 10,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.3,
+                "bounce": 0.2,
+                "settle": 0.404
+              }
+            }
+          },
+          "$description": "the fallback in seconds and a delay"
+        },
+        "bouncy": {
+          "$value": {
+            "duration": {
+              "value": 818,
+              "unit": "ms"
+            },
+            "delay": {
+              "value": 0,
+              "unit": "ms"
+            },
+            "timingFunction": "{ref.motion.easing.out}"
+          },
+          "$extensions": {
+            "app.prism": {
+              "spring": {
+                "duration": 0.5,
+                "bounce": 0.3,
+                "settle": 0.818
+              }
+            }
+          },
+          "$description": "correct"
+        }
+      }
+    }
+  }
+}

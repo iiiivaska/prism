@@ -1,0 +1,76 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "$description": "normalize.test.ts: tampered hex values (tools/tokens/ARCHITECTURE.md §7.13)",
+      "stale": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.4883,
+            0.0137,
+            264.4
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "hex off by one in blue"
+      },
+      "missing": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1.0,
+            1.0,
+            1.0
+          ],
+          "alpha": 0.64,
+          "hex": "#ffffff"
+        },
+        "$description": "no hex at all"
+      },
+      "upper": {
+        "$root": {
+          "$value": {
+            "colorSpace": "oklch",
+            "components": [
+              0.7517,
+              0.1475,
+              57.6
+            ],
+            "alpha": 1,
+            "hex": "#f39444"
+          },
+          "$description": "a $root token; uppercase hex is not the canonical form"
+        }
+      },
+      "fresh": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.9794,
+            0.0169,
+            76.1
+          ],
+          "alpha": 1,
+          "hex": "#fff7ec"
+        },
+        "$description": "correct: out of sRGB, hex of the gamut-mapped color"
+      },
+      "none": {
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.6,
+            "none",
+            40
+          ],
+          "alpha": 1,
+          "hex": "#808080"
+        },
+        "$description": "correct: a none component"
+      }
+    }
+  }
+}

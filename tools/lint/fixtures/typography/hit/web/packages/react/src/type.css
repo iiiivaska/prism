@@ -1,0 +1,15 @@
+/* One line per typography pattern (ADR-0021 §12); `expect:` names the rule the line must trip. */
+html {
+  font-size: 112.5%; /* expect: typography/css-root-font-size */
+}
+@media (min-width: 60em) {
+  :root {
+    font: 1.1em / 1.5 sans-serif; /* expect: typography/css-root-font-size */
+  }
+}
+[data-slot="title"] {
+  font-weight: 600; /* expect: typography/css-weight-style */
+  font-style: italic; /* expect: typography/css-weight-style */
+  font-synthesis: weight; /* expect: typography/css-synthesis */
+  font-synthesis-style: auto; /* expect: typography/css-synthesis */
+}

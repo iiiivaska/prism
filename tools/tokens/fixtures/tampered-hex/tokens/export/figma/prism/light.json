@@ -1,0 +1,9 @@
+{
+  "color": {
+    "outside-the-glob": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1, "hex": "#000000" },
+      "$description": "a generated flavor file (*.json, not *.tokens.json): tokens:normalize never reads it"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+/* The token-driven counterpart of each typography pattern (ADR-0021 §12); `miss:` names the rule it must not trip. */
+html {
+  font-family: var(--ds-font-ui); /* miss: typography/css-root-font-size */
+}
+body {
+  font-size: var(--ds-type-body-md-font-size); /* miss: typography/css-root-font-size */
+}
+[data-slot="title"] {
+  font-weight: var(--ds-type-title-md-font-weight); /* miss: typography/css-weight-style */
+  font-style: inherit; /* miss: typography/css-weight-style */
+  font-synthesis: none; /* miss: typography/css-synthesis */
+}
