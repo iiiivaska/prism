@@ -1,6 +1,6 @@
 # ADR-0021: Typography rules: thin weights, numerals, units and Dynamic Type
 
-- Status: accepted
+- Status: accepted (§11 emission layout amended by [ADR-0027](0027-font-emission-layout-and-manifest-names.md))
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #21
 - Amends: ADR-0004 (decision 3: `density` no longer writes type sizes, and typography weights follow the colorScheme context through a build rule that no context file writes), ADR-0007 (rule 3: the figures of hero numbers), ADR-0008 (Context: the pinned JetBrains Mono version; decision 1: the type-scale multiplier is bounded; decision 3: how font versions and hashes are enforced; decision 4: weights without a named instance; decision 5: which roles are tabular and what the equal-width test covers; decision 6: thin weights; rule 3: what counts as tabular figures), ADR-0010 (the density bullet: density no longer changes type roles' line heights), ADR-0011 (the thin-weight bullet under "Weight and material rules")
