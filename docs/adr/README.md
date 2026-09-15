@@ -24,12 +24,13 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0018](0018-repository-name-and-visibility.md) | Repository `iiiivaska/prism`, public (amends 0014, 0016) | accepted |
 | [0019](0019-web-runtime-contract.md) | Web runtime contract: `data-ds-*` attributes, nesting and defaults (amends 0003, 0004, 0010, 0013, 0016) | accepted (amended by 0025) |
 | [0020](0020-brand-model.md) | Brand model: what a brand overrides and how brands reach each stack (amends 0002, 0003, 0004, 0007, 0008, 0024) | accepted |
-| [0021](0021-typography-rules.md) | Typography rules: thin weights, numerals, units and Dynamic Type (amends 0004, 0007, 0008, 0010, 0011) | accepted |
+| [0021](0021-typography-rules.md) | Typography rules: thin weights, numerals, units and Dynamic Type (amends 0004, 0007, 0008, 0010, 0011) | accepted (amended by 0027) |
 | [0022](0022-materials-and-fallbacks.md) | Materials: glass and vivid under accessibility settings and on watch (amends 0004, 0009, 0010, 0011) | accepted (amended by 0025) |
 | [0023](0023-motion-tokens.md) | Motion tokens: springs, settle, reduced motion and CSS easing (amends 0003, 0011) | accepted |
-| [0024](0024-token-source-conventions.md) | Token source conventions: references, semantic roles, gates and flavors (amends 0002, 0004, 0005, 0006, 0010, 0014) | accepted (§4.1 amended by 0020) |
+| [0024](0024-token-source-conventions.md) | Token source conventions: references, semantic roles, gates and flavors (amends 0002, 0004, 0005, 0006, 0010, 0014) | accepted (§4.1 amended by 0020; §13.3 by 0027) |
 | [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted |
 | [0026](0026-figma-metadata-scope.md) | Figma metadata where Figma reads it; code syntax derived by the build (amends 0004, 0005) | accepted |
+| [0027](0027-font-emission-layout-and-manifest-names.md) | Font emission layout and manifest CSS names follow the build (amends 0021, 0024) | accepted |
 
 ## Template
 
