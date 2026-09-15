@@ -14,10 +14,6 @@ permissions:
   contents: read
 
 env:
-  DTCG_SCHEMAS: https://www.designtokens.org/schemas/2025.10
-  # SHA-256 of the published schemas as of 2026-09-15; a silent republish fails the gate loudly.
-  DTCG_FORMAT_SHA256: 32e93b780e4e4bca778d0780cb797a560deedc470c608af16576223f7e42915f
-  DTCG_RESOLVER_SHA256: a5acd14318f3c347ea2d12b4ab0f873d1340e74e957c454d112672e58b1da977
   # Exact Xcode for the apple job (ADR-0003 floor is 26.4). Kept equal to the owner's local Xcode so
   # SwiftUI snapshot baselines recorded locally compare byte-for-byte on CI (P3-3).
   XCODE_VERSION: "26.6"
@@ -25,16 +21,24 @@ env:
 # Steps whose tool or ticket has not landed are skipped, not failed: the `plan` job tests for the
 # file each one needs and later steps read its outputs. A gate opens by itself in the commit that
 # adds the file; each gated step names the roadmap ticket (docs/roadmap.md) that activates it.
+# The Phase 1 gate files are those of tools/tokens/ARCHITECTURE.md §3 and §14: never create one
+# before its ticket is complete.
 
 jobs:
   plan:
     name: Plan gated steps
     runs-on: ubuntu-latest
     outputs:
-      tokens_build: ${{ steps.gates.outputs.tokens_build }}
       tokens_lint: ${{ steps.gates.outputs.tokens_lint }}
+      tokens_normalize: ${{ steps.gates.outputs.tokens_normalize }}
+      tokens_build: ${{ steps.gates.outputs.tokens_build }}
+      xcassets: ${{ steps.gates.outputs.xcassets }}
+      catalog_tests: ${{ steps.gates.outputs.catalog_tests }}
+      dstokens_scheme: ${{ steps.gates.outputs.dstokens_scheme }}
       contrast: ${{ steps.gates.outputs.contrast }}
       tokens_diff: ${{ steps.gates.outputs.tokens_diff }}
+      font_root: ${{ steps.gates.outputs.font_root }}
+      fonts_check: ${{ steps.gates.outputs.fonts_check }}
       spec: ${{ steps.gates.outputs.spec }}
       icons: ${{ steps.gates.outputs.icons }}
       icons_apple: ${{ steps.gates.outputs.icons_apple }}
@@ -63,17 +67,23 @@ jobs:
           gate() { # gate <output> <ticket> <path>
             if [ -e "$3" ]; then emit "$1" "$2" "\`$3\` exists" true; else emit "$1" "$2" "\`$3\` exists" false; fi
           }
-          gate tokens_build P1-5 tools/tokens/build.ts
-          gate tokens_lint  P1-2 tools/tokens/terrazzo.config.ts
-          gate contrast     P1-6 tools/contrast/check.ts
-          gate tokens_diff  P1-7 tools/tokens/diff.ts
-          gate spec         P2-1 tools/spec/validate.ts
-          gate icons        P2-2 tools/icons/validate.ts
-          gate icons_apple  P2-2 tools/icons-apple/Package.swift
-          gate parity       P2-3 tools/parity/report.ts
-          gate licenses     P2-4 tools/licenses/check.ts
-          gate gallery      P3-4 web/apps/gallery/.storybook/main.ts
-          gate vrt          P3-4 web/apps/vrt/playwright.config.ts
+          gate tokens_lint      P1-2 tools/tokens/terrazzo.config.ts
+          gate tokens_normalize P1-4 tools/tokens/normalize.ts
+          gate tokens_build     P1-5 tools/tokens/build.ts
+          gate xcassets         P1-5 tools/tokens/scripts/verify-xcassets.sh
+          gate catalog_tests    P1-5 swift/Tests/DSTokensTests/ColorCatalogTests.swift
+          gate dstokens_scheme  P1-5 .swiftpm/xcode/xcshareddata/xcschemes/DSTokensTests.xcscheme
+          gate contrast         P1-6 tools/contrast/check.ts
+          gate tokens_diff      P1-7 tools/tokens/diff.ts
+          gate font_root        P1-8 tools/tokens/formats/fonts.ts
+          gate fonts_check      P1-8 tools/fonts/check.ts
+          gate spec             P2-1 tools/spec/validate.ts
+          gate icons            P2-2 tools/icons/validate.ts
+          gate icons_apple      P2-2 tools/icons-apple/Package.swift
+          gate parity           P2-3 tools/parity/report.ts
+          gate licenses         P2-4 tools/licenses/check.ts
+          gate gallery          P3-4 web/apps/gallery/.storybook/main.ts
+          gate vrt              P3-4 web/apps/vrt/playwright.config.ts
           # SwiftUI snapshot tests run once the first baselines are recorded next to them.
           if [ -n "$(find swift/Tests/DSSnapshotTests/__Snapshots__ -type f ! -name .gitkeep -print -quit 2>/dev/null)" ]; then
             emit snapshots P3-3 "a baseline under \`swift/Tests/DSSnapshotTests/__Snapshots__\`" true
@@ -94,30 +104,32 @@ jobs:
           runtime: node@24
           cache: true
           require-lockfile: true
-      - name: Validate token files against the DTCG 2025.10 schemas
-        run: |
-          # ajv-cli cannot read a schema from a URL; the published schemas are self-contained
-          # bundles (every sub-schema is embedded with its own $id), so no -r is needed.
-          schemas="$RUNNER_TEMP/dtcg-2025.10"
-          mkdir -p "$schemas"
-          for schema in format resolver; do
-            curl -fsSL --retry 3 -o "$schemas/$schema.json" "$DTCG_SCHEMAS/$schema.json"
-          done
-          printf '%s  %s\n' "$DTCG_FORMAT_SHA256" "$schemas/format.json" "$DTCG_RESOLVER_SHA256" "$schemas/resolver.json" \
-            | sha256sum --check --strict
-          npx --yes -p ajv-cli@5.0.0 -p ajv-formats@3.0.1 ajv validate --spec=draft7 -c ajv-formats \
-            -s "$schemas/format.json" -d "tokens/**/*.tokens.json" -d "brands/*/brand.tokens.json"
-          npx --yes -p ajv-cli@5.0.0 -p ajv-formats@3.0.1 ajv validate --spec=draft7 -c ajv-formats \
-            -s "$schemas/resolver.json" -d tokens/prism.resolver.json
+      - name: Validate token files against the vendored DTCG 2025.10 schemas
+        # Offline and ungated (ADR-0024 §10): tools/tokens/validate.ts checks the vendored bytes in
+        # tools/tokens/schema/dtcg-2025.10 against their SHA256SUMS before it validates.
+        run: pnpm --filter @iiiivaska/prism-tools tokens:validate
       - name: No literal colors, dimensions or font names outside tokens
         run: pnpm --filter @iiiivaska/prism-tools lint:literals
       - name: No reference UI copy in contracts, samples or renders
         run: pnpm --filter @iiiivaska/prism-tools lint:reference-copy
-      - name: Build tokens and fail on stale generated output # P1-5
+      - name: Lint tokens (Terrazzo, naming, orthogonality) # P1-2
+        if: needs.plan.outputs.tokens_lint == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools tokens:lint
+      - name: Authored hex and spring fallbacks equal the normalizer's # P1-4
+        # tokens:build runs the same check first from P1-5 on (ARCHITECTURE §7.13).
+        if: needs.plan.outputs.tokens_normalize == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools tokens:normalize:check
+      - name: Build tokens and fail on stale generated output # P1-5; P1-8 adds the Swift font root
         if: needs.plan.outputs.tokens_build == 'true'
+        env:
+          FONT_ROOT: ${{ needs.plan.outputs.font_root }}
         run: |
           pnpm --filter @iiiivaska/prism-tools tokens:build
-          generated="swift/Sources/DSTokens/Generated swift/Sources/DSTokens/Resources web/packages/tokens/src/generated"
+          # The owned roots, equal to OWNED_ROOTS in tools/tokens/config.ts (ARCHITECTURE §9.0,
+          # ADR-0024 §11); tools/tokens/output/roots.test.ts asserts the equality.
+          generated="swift/Sources/DSTokens/Generated swift/Sources/DSTokens/Resources/Colors.xcassets swift/Tests/DSTokensTests/Generated web/packages/tokens/src/generated tokens/export"
+          # P1-8 (ADR-0021 §11): the sixth root, once tokens:build emits fonts (tools/tokens/formats/fonts.ts).
+          if [ "$FONT_ROOT" = true ]; then generated="$generated swift/Sources/DSTokens/Resources/Fonts"; fi
           # git status also catches new files that git diff would miss.
           if [ -n "$(git status --porcelain -- $generated)" ]; then
             git status --short -- $generated
@@ -125,15 +137,15 @@ jobs:
             echo "::error::Generated token output is stale: run pnpm tokens:build and commit the result."
             exit 1
           fi
-      - name: Lint resolver orthogonality with Terrazzo # P1-2
-        if: needs.plan.outputs.tokens_lint == 'true'
-        run: pnpm --filter @iiiivaska/prism-tools tokens:lint
       - name: Contrast test for every brand and scheme # P1-6
         if: needs.plan.outputs.contrast == 'true'
         run: pnpm --filter @iiiivaska/prism-tools contrast:check
       - name: Classify token changes against the declared changeset # P1-7
         if: needs.plan.outputs.tokens_diff == 'true' && github.event_name == 'pull_request'
         run: pnpm --filter @iiiivaska/prism-tools tokens:diff
+      - name: Check brand font files, versions, Cyrillic, tabular digits and the DSTokens budget # P1-8
+        if: needs.plan.outputs.fonts_check == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools fonts:check
       - name: Validate specs against JSON Schema # P2-1
         if: needs.plan.outputs.spec == 'true'
         run: pnpm --filter @iiiivaska/prism-tools spec:validate
@@ -243,6 +255,19 @@ jobs:
         run: |
           xcodebuild build -scheme Prism-Package -destination 'generic/platform=iOS Simulator'
           xcodebuild build -scheme Prism-Package -destination 'generic/platform=watchOS Simulator'
+      - name: Compile the color catalog for iOS, macOS and watchOS and check its entries # P1-5
+        if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.xcassets == 'true'
+        run: bash tools/tokens/scripts/verify-xcassets.sh
+      - name: DSTokens catalog tests on the iOS Simulator # P1-5
+        if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.catalog_tests == 'true'
+        run: xcodebuild test -scheme Prism-Package -only-testing:DSTokensTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+      - name: DSTokens catalog tests on the watchOS Simulator # P1-5
+        # ARCHITECTURE V1, checked 2026-09-15 with Xcode 26.6: Prism-Package cannot test on watchOS, because
+        # its test action also builds DSSnapshotTests and SnapshotTesting 1.19.4 does not compile for watchOS
+        # ("cannot find 'Image' in scope"). A shared scheme that tests only DSTokensTests passes; until P1-5
+        # adds it, verify-xcassets.sh is the watchOS check.
+        if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.catalog_tests == 'true' && needs.plan.outputs.dstokens_scheme == 'true'
+        run: xcodebuild test -scheme DSTokensTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
       - name: Gallery snapshots (SwiftUI) # P3-3
         if: needs.plan.outputs.snapshots == 'true'
         run: xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'

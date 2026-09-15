@@ -4,7 +4,8 @@ packages:
   - tools
 
 # One version per dependency for the whole workspace; packages reference these with `catalog:`.
-# Versions follow docs/research/arch-web.md (verified 2026-09-08) and were re-checked on 2026-09-14.
+# Versions follow docs/research/arch-web.md (verified 2026-09-08) and were re-checked on 2026-09-14;
+# the Phase 1 tool entries were checked on 2026-09-15 (published, older than one day, MIT).
 catalog:
   # React stack (web/packages)
   react: ^19.2.0
@@ -32,13 +33,36 @@ catalog:
   # Vitest 4: @storybook/addon-vitest 10.6 peers `vitest ^3 || ^4` (docs/roadmap.md, verified 2026-09-14).
   vitest: ^4.1.11
 
-  # Token pipeline and checks (tools)
+  # Token pipeline and checks (tools; roadmap Phase 1, tools/tokens/ARCHITECTURE.md §3 and §16.3).
+  # The lockfile resolves style-dictionary 5.5.3, colorjs.io 0.5.2 and motion 13.2.0, the versions
+  # ARCHITECTURE §15 verified; a bump shows up as a reviewable generated diff (§12 rule 7).
   style-dictionary: ^5.5.3
   "@terrazzo/cli": ^2.7.1
+  # Parser API for lint-orthogonality.ts (P1-2) and the oracle test (P1-3); pnpm's strict layout
+  # needs the direct dependency even though the CLI brings the same version.
+  "@terrazzo/parser": ^2.7.1
   # Same range Style Dictionary 5.5 depends on, so the workspace keeps one Color.js.
   colorjs.io: ^0.5.2
   ajv: ^8.17.1
+  # Formats `uri-reference` and `json-pointer-uri-fragment` of the vendored DTCG schemas (P1-1, ADR-0024 §10).
+  ajv-formats: ^3.0.1
+  # Source model with line and column per node and duplicate keys (P1-3); surgical edits for
+  # tokens:normalize (P1-4). Import it by package name: its lib/esm build fails under Node ESM.
+  jsonc-parser: ^3.3.1
   yaml: ^2.8.0
+  # Compile test of the generated tailwind.css (P1-5, test only; P3-4 compiles styles.css with it).
+  tailwindcss: ^4.3.3
+  "@tailwindcss/node": ^4.3.3
+  # ThemeObject and the alpha modifier type of the Tokens Studio flavor (P1-5, types only).
+  "@tokens-studio/types": ^0.5.2
+  # Font parser for tools/fonts (P1-8, ARCHITECTURE V6). 2.0 ships no type declarations, and
+  # @types/opentype.js describes the 1.3 API (for example `names.version`, which 2.0 moved under
+  # `names.windows`), so tools/fonts declares the part it uses.
+  opentype.js: ^2.0.0
+  # woff2 encoder for the web font files (P1-8, ARCHITECTURE V12): Google's woff2 and Brotli as
+  # WebAssembly, no install script. Byte-identical output across runs and processes, and identical
+  # to wawoff2 2.0.1 (checked 2026-09-15 on Onest 2.001 and JetBrains Mono 2.211).
+  woff2-encoder: ^2.0.0
 
   # Gallery and visual regression (web/apps, roadmap P3-4)
   storybook: ^10.6.0
