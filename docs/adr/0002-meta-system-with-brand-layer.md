@@ -1,6 +1,6 @@
 # ADR-0002: Meta-system with a brand layer
 
-- Status: accepted
+- Status: accepted (brand mechanics amended by [ADR-0020](0020-brand-model.md): brands write allowlisted `ref.*` ids only, the semantic bindings of rule 2 are `ref.color.slot.*` tokens that the scheme files alias, and brand folders live in Prism's `brands/` until a published CLI exists; the component-token bullet and rule 1 amended by [ADR-0024](0024-token-source-conventions.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #2
 

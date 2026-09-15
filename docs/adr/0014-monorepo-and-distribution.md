@@ -1,6 +1,6 @@
 # ADR-0014: Monorepo with Package.swift at the root; SPM by tag; npm via GitHub Packages
 
-- Status: accepted (repository URL amended by ADR-0018)
+- Status: accepted (repository URL amended by [ADR-0018](0018-repository-name-and-visibility.md); the `tokens/` layout line and rule 1 amended by [ADR-0024](0024-token-source-conventions.md): `tokens/export/` is generated, not source)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #14
 

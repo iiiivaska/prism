@@ -1,6 +1,6 @@
 # ADR-0013: Icons through a semantic registry
 
-- Status: accepted
+- Status: accepted (decisions 2 and 5 amended by [ADR-0019](0019-web-runtime-contract.md): the React wrapper is `Icon` and the TypeScript map is `iconRegistry`)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #13
 

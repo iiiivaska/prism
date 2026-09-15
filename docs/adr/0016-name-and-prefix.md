@@ -1,6 +1,6 @@
 # ADR-0016: Name Prism, code prefix `ds`
 
-- Status: accepted (repository URL amended by ADR-0018)
+- Status: accepted (repository URL amended by [ADR-0018](0018-repository-name-and-visibility.md); rule 1 and the example variable name amended by [ADR-0019](0019-web-runtime-contract.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #16
 

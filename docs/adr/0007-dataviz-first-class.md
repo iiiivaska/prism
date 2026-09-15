@@ -1,6 +1,6 @@
 # ADR-0007: Data-viz is a first-class module
 
-- Status: accepted
+- Status: accepted (decision 4 amended by [ADR-0020](0020-brand-model.md): series slots are brand-overridable `ref` tokens validated per brand, and status colors are fixed on every brand; the figures clause of rule 3 amended by [ADR-0021](0021-typography-rules.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #7
 

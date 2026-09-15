@@ -1,6 +1,6 @@
 # ADR-0010: Platform tiers; density and input modality as token dimensions
 
-- Status: accepted
+- Status: accepted (color scheme and density nesting, the per-platform default contexts and the web density default amended by [ADR-0019](0019-web-runtime-contract.md); the density bullet amended by [ADR-0021](0021-typography-rules.md): density no longer changes type line heights; the Tier 3 "Surface (solid only)" row and the "no blur on watch" example amended by [ADR-0022](0022-materials-and-fallbacks.md): glass renders the opaque raised fallback, a DSCore Surface rule rather than a platform token delta; `size.hit` moved from the density bullet to modality by [ADR-0024](0024-token-source-conventions.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #10
 

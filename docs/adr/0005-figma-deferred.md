@@ -1,6 +1,6 @@
 # ADR-0005: Figma deferred, Figma-ready from day one
 
-- Status: accepted
+- Status: accepted (decision 2, the flavor color encoding, amended by [ADR-0024](0024-token-source-conventions.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #5
 

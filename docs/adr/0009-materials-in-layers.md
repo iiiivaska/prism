@@ -1,6 +1,6 @@
 # ADR-0009: Materials in layers — native chrome, solid / vivid / glass content
 
-- Status: accepted
+- Status: accepted (decisions 2, 3 and 5 and rule 1's web glass owner amended by [ADR-0022](0022-materials-and-fallbacks.md): glass recipes are typed tokens and an unset vivid uses `gradient.vivid.default`; on watchOS glass renders the opaque raised fallback, not solid; the fallback is `raised` painted over `bg.page`, opaque, chosen by Surface from Prism's context, and a selected glass surface renders `inverse`; on the web the "theme package" of rule 1 is the Surface module, the React `Surface` and its stylesheet)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #9
 

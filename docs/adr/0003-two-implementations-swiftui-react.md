@@ -1,6 +1,6 @@
 # ADR-0003: Two implementations, SwiftUI and React; minimum OS 26
 
-- Status: accepted
+- Status: accepted (the `tokens.css` scoping attributes, `data-slot` and the `styles.css` build amended by [ADR-0019](0019-web-runtime-contract.md); the brand scope of `tokens.css` amended by [ADR-0020](0020-brand-model.md): one `tokens.css` per brand, no `data-ds-brand` attribute; the Motion bullet amended by [ADR-0023](0023-motion-tokens.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #3
 

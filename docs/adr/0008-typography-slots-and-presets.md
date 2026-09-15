@@ -1,6 +1,6 @@
 # ADR-0008: Three font slots, Native and Signature presets, Cyrillic mandatory
 
-- Status: accepted
+- Status: accepted (decision 2 amended by [ADR-0020](0020-brand-model.md): Native Apple faces are system keywords in `ref.font.apple.*`, Inter 4.1 is self-hosted on web, and web stacks list only served families and CSS generic keywords, never SF names; the JetBrains Mono pin, decisions 1 and 3–6 and rule 3 amended by [ADR-0021](0021-typography-rules.md))
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #8
 
