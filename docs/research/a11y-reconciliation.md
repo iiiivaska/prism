@@ -1,17 +1,18 @@
 # Accessibility reconciliation of the Prism palettes
 
-Contrast audit of the proposed palettes with compliant substitutes, dated **2026-09-15**. **Generated from `pnpm contrast:check` output at commit `2fbad03`.**
+Contrast audit of the proposed palettes with compliant substitutes, dated **2026-09-15**. **Generated from `pnpm contrast:check` output at commit `2fbad03`. Updated 2026-09-15 after 97842f6**, from a re-run at commit `cd725c0`.
 
 - **What ran.** `tools/contrast` (ticket P1-6) and `tokens/contrast-pairs.json`, both as they stood in the working tree of that commit: P1-6 had not been committed yet, and its CI gate (`tools/contrast/check.ts`) had not opened.
+- **What the update re-ran.** `pnpm contrast:check` at `cd725c0`, after `97842f6` committed P1-6, opened its CI gate and raised the light chart target and comparison lines to ink at 45 % (§8.1). The re-run differs from the first run in those two lines only: 2.01 (fail) became 3.08 (pass) in light and light RT, for both brands. Every other ratio is unchanged, and every ratio in this file is the re-run's.
 - **The seeded palette** is the token tree of commit `f8aa0b1^`, before P1-1 and P1-2. It was evaluated with the same `evaluatePair` code from `tools/contrast/pairs.ts`, the same backdrops and the same Card geometries.
 - **Every Prism ratio and every seeded ratio was computed by that code.** The reference values are quoted from visual-dna, and the facts F7 to F16 from ADR-0022.
 - **A newer run wins.** If a later `contrast:check` run disagrees with this file, the run is right and this file is out of date.
 
-ADR-0011, `docs/research/README.md` and visual-dna B19 cite this file, but it was never committed. It brings together four sources:
+ADR-0011, `docs/research/README.md` and visual-dna B19 cite this file; the blueprint's original was lost and this version was first committed in cd725c0. It brings together four sources:
 
 - the seeded reference-brand palette and the ratios expected of it (visual-dna §3.7, the lift ledger, and visual-dna Appendix A);
 - the findings against it (visual-dna B1 to B6 and B21; critic G-13 and G-14; ADR-0022 F7 to F16);
-- what P1-1 and P1-2 changed in `tokens/` so that it complies (commit `f8aa0b1`);
+- what P1-1 and P1-2 changed in `tokens/` so that it complies (commit `f8aa0b1`), and the chart-line fix of P1-6 (commit `97842f6`, §8.1);
 - the substitutes that ADR-0021 and ADR-0022 chose, plus ADR-0020's per-brand guard.
 
 ## How to read and regenerate this file
@@ -56,14 +57,15 @@ ADR-0011, `docs/research/README.md` and visual-dna B19 cite this file, but it wa
 
 ## 1. Result
 
-- **67 pairs in 12 contexts give 762 evaluations: 754 pass and 8 fail.**
+- **67 pairs in 12 contexts give 762 evaluations: all 762 pass and 0 fail.**
   - 0 other problems: every `a11y.pairsWith` of a `text.*` token has its pair, and a V1 pair and a V2 pair reach every vivid gradient of both brands.
   - The token build reports 0 diagnostics, including ADR-0021's weight checks.
-- **The 8 failures are one finding, critic G-14.**
-  - In light, `color.chart.target` and `color.chart.comparison` are ink at 30 %. On the white plot that composites to #B6B7B8, which gives 2.01:1 against the 3:1 boundary tier.
-  - They fail in `light` and `light-reduced-transparency`, for both brands.
-  - The light IC context passes (ink 60 %: 5.06), and so do all dark contexts.
-  - The pairs are new in P1-6. The values are the seeded ones: P1-2 only re-expressed them as aliases of `neutral.950`. See §8.1.
+- **The first run's 8 failures were one finding, critic G-14, fixed in `97842f6`.**
+  - In light, `color.chart.target` and `color.chart.comparison` were ink at 30 %. On the white plot that composited to #B6B7B8, which gave 2.01:1 against the 3:1 boundary tier.
+  - They failed in `light` and `light-reduced-transparency`, for both brands.
+  - `97842f6` raised both to ink at 45 %. On the white plot that composites to #929394: 3.08:1.
+  - The light IC context (ink 60 %: 5.06) and all dark contexts passed before and are unchanged.
+  - The pairs are new in P1-6. Until `97842f6` the values were the seeded ones: P1-2 only re-expressed them as aliases of `neutral.950`. See §8.1.
 - **The two brands give identical results.** `prism-native`'s 381 evaluations match `prism`'s in every ratio and every worst case, because neither brand file writes a color (ADR-0020 §1).
 - **Reduced transparency equals the base scheme in every evaluation.** ADR-0022 §1.4 deleted the reduced-transparency deltas, and Surface now draws the glass fallback (§6).
 - **The seeded palette fails 12 of today's pairs (§3).** 6 more cannot be evaluated against it, because their tokens did not exist yet. The failures are:
@@ -73,7 +75,7 @@ ADR-0011, `docs/research/README.md` and visual-dna B19 cite this file, but it wa
   - V1 in both schemes and V2 in light (B5);
   - the two chart lines.
 
-  P1-1 and P1-2 fixed all of them except the chart lines.
+  P1-1 and P1-2 fixed all of them except the chart lines, which `97842f6` fixed.
 - **The closest passes** are those with less than 0.1 above their threshold:
   - `border.strong on bg.page` 3.02 against 3.0 (light; #8a8b8e on #f1f2f5)
   - `text.on-badge on bg.fill.critical` 4.53 against 4.5 (light; #ffffff on #e5252a)
@@ -83,6 +85,8 @@ ADR-0011, `docs/research/README.md` and visual-dna B19 cite this file, but it wa
   - `border.strong on bg.surface.raised` 3.07 against 3.0 (light; #909092 on #fbfbfc)
   - `text.on-glass-light on material.glass.light.chip · over [#555555, gradient.vivid.*] · schemes: light` 4.57 against 4.5 (light; over sys.gradient.vivid.1 stop 0: #0d0e11 on #77799a)
   - `border.strong on bg.surface` 3.08 against 3.0 (light; #929394 on #ffffff)
+  - `chart.target on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` 3.08 against 3.0 (light; on color.bg.page: #929394 on #ffffff)
+  - `chart.comparison on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` 3.08 against 3.0 (light; on color.bg.page: #929394 on #ffffff)
 
 ## 2. Reconciliation table
 
@@ -121,8 +125,8 @@ There is one row per group of pairs with the same foreground. Where a row has se
 | `border.focus` on the same three | Seeded ink and white (A.2 #30–31) | `neutral.950`; `neutral.0` | 17.24 · 19.30 · 18.66 | 19.30 · 16.95 · 15.58 | 17.24 · 19.30 · 18.66; 19.30 · 16.95 · 15.58 | boundary 3.0 | pass; unchanged; the raised pair is new in P1-6 |
 | `chart.axis` on `chart.plot`, over the page, a card or a raised surface | Light #B7B7B9–#C8C8C8 (CreditPros): 2.0–1.7:1; dark white 40–45 %: 3.6–4.4:1 (§3.7). A.2 checked it on `bg.surface`: 6.31 / 5.96 | `neutral.600` on the white plot; white 55 % on the white 6 % plot | 6.31 | 5.12 | 6.31; 5.12 | functional 4.5 | pass; lifted in the seed. The dark minimum, 5.12, is the plot over a raised surface, checked since P1-6 (critic G-14) |
 | `chart.series.1` … `.6` on `chart.plot`, same underlays | Seeded §3.4 set on `bg.surface` (A.2: 19.17 · 4.79 · 4.83 · 3.96 · 4.92 · 4.70 light, 16.95 · 7.37 · 4.85 · 8.38 · 6.78 · 9.65 dark) | light ink, `accent.700`, #4E6CCD, #1F8F80, #A64FA3, #6E7A22; dark white, `accent.500`, #6B84E0, #5BC8B5, #D48BD0, #D9C27A | 19.30 · 4.78 · 4.82 · 3.96 · 4.91 · 4.69 | 13.03 · 5.66 · 3.72 · 6.44 · 5.21 · 7.41 | 19.30 · 4.78 · 4.82 · 3.96 · 4.91 · 4.69; 13.03 · 5.66 · 3.72 · 6.44 · 5.21 · 7.41 | boundary 3.0 | pass. Checked on the plot since P1-6 (critic G-14); the dark minima are over a raised surface. Slots 1 and 2 alias ramp steps (ADR-0020 §4), so light slot 1 is #0D0E11 (19.30) |
-| `chart.target` on `chart.plot`, same underlays | Seeded ink 30 % (#B7B7B8 on white, 2.0:1; critic G-14); dark white 60 % | ink at 30 %; white 60 %. IC: ink 60 %; white 85 % | **2.01 FAIL** | 5.77 | 5.06; 9.88 | boundary 3.0 | **FAIL in light** and light RT, both brands; new pair in P1-6, open (§8.1) |
-| `chart.comparison` on `chart.plot`, same underlays | Seeded ink 30 %; dark white 40 % | ink at 30 %; white 40 %. IC: ink 60 %; white 60 % | **2.01 FAIL** | 3.45 | 5.06; 5.77 | boundary 3.0 | **FAIL in light** and light RT, both brands; new pair in P1-6, open (§8.1) |
+| `chart.target` on `chart.plot`, same underlays | Seeded ink 30 % (#B7B7B8 on white, 2.0:1; critic G-14); dark white 60 % | ink at 45 %; white 60 %. IC: ink 60 %; white 85 % | 3.08 | 5.77 | 5.06; 9.88 | boundary 3.0 | pass; new pair in P1-6. Light raised from ink 30 % (2.01, failing in light and light RT) to 45 % in `97842f6` (critic G-14, §8.1) |
+| `chart.comparison` on `chart.plot`, same underlays | Seeded ink 30 %; dark white 40 % | ink at 45 %; white 40 %. IC: ink 60 %; white 60 % | 3.08 | 3.45 | 5.06; 5.77 | boundary 3.0 | pass; new pair in P1-6. Light raised from ink 30 % (2.01) to 45 % in `97842f6`, with the target line (§8.1) |
 | `chart.now` on `chart.plot`, dark only | `accent.500`: 7.37 on surface-1 in dark; 2.30 on white in light (B3) | `accent.500` #F39444 | — | 5.66 | —; 5.66 | boundary 3.0 | pass in dark. Light is not a pair: the light marker is a redundant mark that always carries its value (B3); a light mark that alone carries meaning uses `accent.700` (4.79) |
 
 ## 3. The seeded palette under today's check
@@ -133,7 +137,7 @@ Each cell shows the seeded value, an arrow, then today's value.
 - **n/a** means the token did not exist in the seeded tree.
 - **—** means the pair is not evaluated in that scheme.
 
-The table lists every pair whose verdict or ratio changed, plus the pairs that fail in both trees. Every other pair gives the same ratio in both trees.
+The table lists every pair whose verdict or ratio changed. No pair fails in both trees, and every other pair gives the same ratio in both trees.
 
 | Pair | Light | Dark | Light IC | Dark IC | Light RT | Dark RT | Change |
 |---|---|---|---|---|---|---|---|
@@ -155,8 +159,8 @@ The table lists every pair whose verdict or ratio changed, plus the pairs that f
 | `border.boundary on bg.surface` | 3.79 → 3.79 | 2.71 ✗ → 3.32 | 3.79 → 3.79 | 2.71 ✗ → 3.32 | 3.79 → 3.79 | 2.71 ✗ → 3.32 | as above |
 | `border.boundary on bg.surface.raised` | 3.67 → 3.67 | 2.69 ✗ → 3.26 | 3.67 → 3.67 | 2.69 ✗ → 3.26 | 3.67 → 3.67 | 2.69 ✗ → 3.26 | as above |
 | `chart.series.1 on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` | 19.16 → 19.30 | 13.03 → 13.03 | 19.16 → 19.30 | 13.03 → 13.03 | 19.16 → 19.30 | 13.03 → 13.03 | light slot 1 #0E0F12 → alias of `neutral.950` #0D0E11 (ADR-0020 §4, P1-1) |
-| `chart.target on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` | 2.00 ✗ → 2.01 ✗ | 5.77 → 5.77 | 5.02 → 5.06 | 9.88 → 9.88 | 2.00 ✗ → 2.01 ✗ | 5.77 → 5.77 | unchanged apart from the ink alias (#0E0F12 → #0D0E11); fails in both trees (critic G-14) |
-| `chart.comparison on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` | 2.00 ✗ → 2.01 ✗ | 3.45 → 3.45 | 5.02 → 5.06 | 5.77 → 5.77 | 2.00 ✗ → 2.01 ✗ | 3.45 → 3.45 | as above |
+| `chart.target on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` | 2.00 ✗ → 3.08 | 5.77 → 5.77 | 5.02 → 5.06 | 9.88 → 9.88 | 2.00 ✗ → 3.08 | 5.77 → 5.77 | light ink 30 % → 45 % (critic G-14, `97842f6`); light IC moves only through P1-2's ink alias (#0E0F12 → #0D0E11) |
+| `chart.comparison on chart.plot · underlays [bg.page, bg.surface, bg.surface.raised]` | 2.00 ✗ → 3.08 | 3.45 → 3.45 | 5.02 → 5.06 | 5.77 → 5.77 | 2.00 ✗ → 3.08 | 3.45 → 3.45 | as above |
 
 visual-dna Appendix A expected every seeded pair to pass except `border.strong` in light (its #29, B1). Today's check finds more, for four reasons:
 
@@ -185,6 +189,8 @@ The table below comes from the P1-1 and P1-2 commit, `git show f8aa0b1 -- tokens
 | Brand slots | `bg.page`, `bg.fill.accent`, `text.on-accent`, `text.accent` | direct aliases of ramp steps | aliases of `ref.color.slot.*`, with the same values | none. Every slot sits in a pair, so each brand's slot values are checked | ADR-0020 §2 |
 | Typography weights | `ref.type.*` | thin weights only in descriptions ("display.xl may drop to 200", "metric.xl 200 on dark ≥ 32 px") | `metric.xl` `darkWeight` 200. The build derives the Increase Contrast floor (400) and the Bold Text weights | not a color pair. `type/thin-weight`, `type/light-weight` and `type/contrast-floor` pass in the same build | ADR-0021 §2 to §4; B7 to B9 |
 | Descriptions | light `accent`, `icon.accent`, `chart.now`; dark text tiers; `bg.fill.accent-strong`; `bg.surface.nested` | "≥ 18 px", and ratios that were rounded or wrong | ADR-0011's large tier and the computed ratios | none | B3, B11 to B14 |
+
+One later change is not P1-1's or P1-2's: `97842f6` (P1-6) raised light `color.chart.target` and `color.chart.comparison` from `neutral.950` at 30 % to 45 % (light, light RT), which moves both from 2.01 to 3.08 on the plot (critic G-14, §8.1). It is the only color or material value that changed after `f8aa0b1`.
 
 ## 5. Vivid gradients before and after
 
@@ -302,25 +308,25 @@ ADR-0011's Context names the references' ultra-thin grey numerals as a legibilit
 
 ## 8. Open items
 
-### 8.1 Light chart target and comparison lines fail (critic G-14)
+### 8.1 Light chart target and comparison lines (critic G-14), fixed in `97842f6`
 
-This finding blocks the P1-6 gate.
+This finding blocked the P1-6 gate until `97842f6` applied option 1 below.
 
-- **The failure.** In light, `chart.target` and `chart.comparison` are ink at 30 % on the white plot: 2.01:1.
+- **The failure.** In light, `chart.target` and `chart.comparison` were ink at 30 % on the white plot: 2.01:1.
 - **Why the tier applies.** ADR-0011 puts chart lines that carry meaning at the 3:1 boundary tier. ADR-0007 rule 2 makes the target line mandatory.
-- **What already passes.** The light IC values (ink 60 %: 5.06) and all dark values pass.
+- **What already passed.** The light IC values (ink 60 %: 5.06) and all dark values passed, and `97842f6` left them unchanged.
 
-Two ways out:
+The first run offered the owner two ways out:
 
-1. **Raise both lines in light to ink at alpha 0.445 or more.** 0.44 gives 2.99:1, and 0.45 gives 3.08:1 on the white plot, the same value B1 chose for `border.strong`.
-   - The change goes in `tokens/sys/color/light.tokens.json` (P1-2's file).
+1. **Raise both lines in light to ink at alpha 0.445 or more.** 0.44 gives 2.99:1, and 0.45 gives 3.08:1 on the white plot, the same value B1 chose for `border.strong`. **Applied in `97842f6`, with 0.45:** both lines now give 3.08 in light and light RT, for both brands.
+   - The change is in `tokens/sys/color/light.tokens.json` (P1-2's file), and each token's description records why.
    - The lines stay grey (#929394) and keep their distinct dash patterns: grid 4/6 at 10 %, target 8/6.
    - `chart.comparison-2` (15 %) stays decorative.
-2. **Model "relief" in the pairs file**, as critic G-14 and `dataviz-design.md` rule 13 propose. A line that always carries an inline label or ships a table view may sit below 3:1. The tool has no `relief` field today. P1-6 records it as a `test.todo` that needs an ADR, because ADR-0011 has no relief tier.
+2. **Model "relief" in the pairs file**, as critic G-14 and `dataviz-design.md` rule 13 propose. A line that always carries an inline label or ships a table view may sit below 3:1. The tool has no `relief` field today. **Not taken; it remains a possible future ADR**, because ADR-0011 has no relief tier. P1-6's `tools/contrast/check.test.ts` records it as a `test.todo` that needs that ADR and an owning ticket, for sub-3:1 series and for redundant marks such as the light `color.chart.now`.
 
-Option 1 is the smaller change, and it is the one this audit recommends. It is also what P1-6's `tools/contrast/check.test.ts` expects, as it stands in the working tree: the test holds both lines to the boundary tier in every scheme, and it says a failing pair is fixed in the tokens, never excused. The owner chooses.
+Option 1 was the smaller change, and the one this audit recommended. It is also what P1-6's `tools/contrast/check.test.ts` expects: the test holds both lines to the boundary tier in every scheme, and it says a failing pair is fixed in the tokens, never excused.
 
-Critic G-14's other open question, whether `chart.plot` should become opaque in dark, is untouched. The pairs now check the dark plot (white 6 %) over the page, a card and a raised surface, and every dark chart pair passes there. The lowest are the comparison line at 3.45 and `chart.series.3` at 3.72.
+Critic G-14's other open question, whether `chart.plot` should become opaque in dark, is untouched; the relief `test.todo` carries it too. The pairs now check the dark plot (white 6 %) over the page, a card and a raised surface, and every dark chart pair passes there. The lowest are the comparison line at 3.45 and `chart.series.3` at 3.72.
 
 ### 8.2 Boundaries on nested fills
 
@@ -366,7 +372,7 @@ These documents belong to other owners, who can now mark the item resolved:
 The report's header, verbatim:
 
 ```text
-Pairs: `tokens/contrast-pairs.json`. 67 pairs in 12 contexts (brands prism, prism-native × every colorScheme context): 762 evaluations, 8 failing, 0 other problems.
+Pairs: `tokens/contrast-pairs.json`. 67 pairs in 12 contexts (brands prism, prism-native × every colorScheme context): 762 evaluations, 0 failing, 0 other problems.
 
 Thresholds (ADR-0011): functional 4.50, functional text ≥ 24 px 3.00, decorative (≥ 24 px only) 3.00, boundary 3.00. Translucent colors are composited source-over in gamma-encoded sRGB over `color.bg.page` or each backdrop; ratios are WCAG 2.x, rounded down.
 ```
@@ -441,8 +447,8 @@ Thresholds (ADR-0011): functional 4.50, functional text ≥ 24 px 3.00, decorati
 | 61 | `color.chart.series.4` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.96 | 6.44 | 3.96 | 6.44 | 3.96 | 6.44 |
 | 62 | `color.chart.series.5` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 4.91 | 5.21 | 4.91 | 5.21 | 4.91 | 5.21 |
 | 63 | `color.chart.series.6` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 4.69 | 7.41 | 4.69 | 7.41 | 4.69 | 7.41 |
-| 64 | `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | **2.01 FAIL** | 5.77 | 5.06 | 9.88 | **2.01 FAIL** | 5.77 |
-| 65 | `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | **2.01 FAIL** | 3.45 | 5.06 | 5.77 | **2.01 FAIL** | 3.45 |
+| 64 | `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.08 | 5.77 | 5.06 | 9.88 | 3.08 | 5.77 |
+| 65 | `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.08 | 3.45 | 5.06 | 5.77 | 3.08 | 3.45 |
 | 66 | `color.chart.now` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` (schemes: dark) | 3.00 boundary | — | 5.66 | — | 5.66 | — | 5.66 |
 
 ### A1.2 Brand `prism-native`
@@ -513,22 +519,13 @@ Thresholds (ADR-0011): functional 4.50, functional text ≥ 24 px 3.00, decorati
 | 61 | `color.chart.series.4` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.96 | 6.44 | 3.96 | 6.44 | 3.96 | 6.44 |
 | 62 | `color.chart.series.5` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 4.91 | 5.21 | 4.91 | 5.21 | 4.91 | 5.21 |
 | 63 | `color.chart.series.6` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 4.69 | 7.41 | 4.69 | 7.41 | 4.69 | 7.41 |
-| 64 | `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | **2.01 FAIL** | 5.77 | 5.06 | 9.88 | **2.01 FAIL** | 5.77 |
-| 65 | `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | **2.01 FAIL** | 3.45 | 5.06 | 5.77 | **2.01 FAIL** | 3.45 |
+| 64 | `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.08 | 5.77 | 5.06 | 9.88 | 3.08 | 5.77 |
+| 65 | `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | 3.00 boundary | 3.08 | 3.45 | 5.06 | 5.77 | 3.08 | 3.45 |
 | 66 | `color.chart.now` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` (schemes: dark) | 3.00 boundary | — | 5.66 | — | 5.66 | — | 5.66 |
 
 ### A1.3 Failures, verbatim
 
-| fg | bg | context | ratio | threshold | pass | worst case |
-|---|---|---|--:|---|---|---|
-| `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism/light | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism/light-reduced-transparency | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism-native/light | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.target` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism-native/light-reduced-transparency | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism/light | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism/light-reduced-transparency | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism-native/light | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
-| `color.chart.comparison` | `color.chart.plot` on `color.bg.page`, `color.bg.surface`, `color.bg.surface.raised` | prism-native/light-reduced-transparency | 2.01 | 3.00 boundary | **FAIL** | on color.bg.page: #b6b7b8 on #ffffff |
+The report has no Failures section, because no evaluation fails. The first run's section had eight rows: `color.chart.target` and `color.chart.comparison` in `light` and `light-reduced-transparency` for both brands, each at 2.01 against 3.00 boundary, with the worst case "on color.bg.page: #b6b7b8 on #ffffff" (§8.1). The same eight evaluations now read 3.08, with the worst case "on color.bg.page: #929394 on #ffffff".
 
 ## Appendix 2: visual-dna Appendix A against `contrast:check`
 
