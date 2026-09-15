@@ -1,0 +1,31 @@
+{
+  "$comment": "tools/contrast fixture: color.text.secondary (ref.color.neutral.400) fails on color.bg.page in light; every other pair passes (ARCHITECTURE §3.2).",
+  "thresholds": {
+    "functional": 4.5,
+    "functionalLarge": 3,
+    "decorative": 3,
+    "boundary": 3
+  },
+  "pairs": [
+    {
+      "fg": "color.text.primary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.secondary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.on-accent",
+      "bg": "color.bg.fill.accent",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.accent",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    }
+  ]
+}

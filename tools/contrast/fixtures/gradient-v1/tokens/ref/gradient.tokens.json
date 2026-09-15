@@ -1,0 +1,147 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "gradient": {
+      "vivid": {
+        "$type": "gradient",
+        "sky": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1686,
+                  0.1843,
+                  0.2902
+                ],
+                "alpha": 1,
+                "hex": "#2b2f4a"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2706,
+                  0.3137,
+                  0.4784
+                ],
+                "alpha": 1,
+                "hex": "#45507a"
+              },
+              "position": 1
+            }
+          ],
+          "$description": "passes V1 and V2 (at least 7.8:1 against white everywhere)",
+          "$extensions": {
+            "app.prism": {
+              "angle": 165,
+              "scheme": "light"
+            }
+          }
+        },
+        "plum": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1176,
+                  0.0706,
+                  0.149
+                ],
+                "alpha": 1,
+                "hex": "#1e1226"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.2275,
+                  0.1216,
+                  0.2471
+                ],
+                "alpha": 1,
+                "hex": "#3a1f3f"
+              },
+              "position": 0.5
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.3569,
+                  0.2902,
+                  0.4784
+                ],
+                "alpha": 1,
+                "hex": "#5b4a7a"
+              },
+              "position": 1
+            }
+          ],
+          "$description": "passes V1 and V2 (at least 7.7:1 against white everywhere)",
+          "$extensions": {
+            "app.prism": {
+              "angle": 150,
+              "scheme": "dark"
+            }
+          }
+        },
+        "probe": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1216,
+                  0.1647,
+                  0.302
+                ],
+                "alpha": 1,
+                "hex": "#1f2a4d"
+              },
+              "position": 0
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.1843,
+                  0.2471,
+                  0.4314
+                ],
+                "alpha": 1,
+                "hex": "#2f3f6e"
+              },
+              "position": 0.6
+            },
+            {
+              "color": {
+                "colorSpace": "srgb",
+                "components": [
+                  0.7059,
+                  0.7765,
+                  0.8941
+                ],
+                "alpha": 1,
+                "hex": "#b4c6e4"
+              },
+              "position": 1
+            }
+          ],
+          "$description": "fixture: breaks ADR-0022 V1 at its light end (1.7:1 against white); the header block stays above 4.5:1",
+          "$extensions": {
+            "app.prism": {
+              "angle": 180,
+              "scheme": "light"
+            }
+          }
+        }
+      }
+    }
+  }
+}

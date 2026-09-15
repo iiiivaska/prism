@@ -1,0 +1,138 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "neutral": {
+        "0": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          }
+        },
+        "100": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9451,
+              0.949,
+              0.9608
+            ],
+            "alpha": 1,
+            "hex": "#f1f2f5"
+          }
+        },
+        "400": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6039,
+              0.6196,
+              0.6588
+            ],
+            "alpha": 1,
+            "hex": "#9a9ea8"
+          }
+        },
+        "600": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3608,
+              0.3765,
+              0.4078
+            ],
+            "alpha": 1,
+            "hex": "#5c6068"
+          }
+        },
+        "950": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          }
+        }
+      },
+      "accent": {
+        "300": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              0.7529,
+              0.4784
+            ],
+            "alpha": 1,
+            "hex": "#ffc07a"
+          }
+        },
+        "500": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9529,
+              0.5804,
+              0.2667
+            ],
+            "alpha": 1,
+            "hex": "#f39444"
+          }
+        },
+        "800": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6118,
+              0.2706,
+              0.0706
+            ],
+            "alpha": 1,
+            "hex": "#9c4512"
+          }
+        }
+      },
+      "slot": {
+        "light": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.100}"
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.300}"
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.800}"
+          }
+        },
+        "dark": {
+          "bg-page": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "bg-fill-accent": {
+            "$value": "{ref.color.accent.500}"
+          },
+          "text-on-accent": {
+            "$value": "{ref.color.neutral.950}"
+          },
+          "text-accent": {
+            "$value": "{ref.color.accent.500}"
+          }
+        }
+      }
+    }
+  }
+}

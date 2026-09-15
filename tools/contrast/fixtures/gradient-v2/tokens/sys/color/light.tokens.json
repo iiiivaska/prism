@@ -1,0 +1,91 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.slot.light.bg-page}"
+        },
+        "fill": {
+          "accent": {
+            "$value": "{ref.color.slot.light.bg-fill-accent}"
+          }
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "{ref.color.neutral.950}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "secondary": {
+          "$value": "{ref.color.neutral.600}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "on-accent": {
+          "$value": "{ref.color.slot.light.text-on-accent}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.accent"
+                ]
+              }
+            }
+          }
+        },
+        "accent": {
+          "$value": "{ref.color.slot.light.text-accent}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "on-vivid": {
+          "$value": "{ref.color.neutral.0}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "gradient.vivid.*"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "gradient": {
+      "$type": "gradient",
+      "vivid": {
+        "1": {
+          "$value": "{ref.gradient.vivid.probe}"
+        },
+        "default": {
+          "$value": "{ref.gradient.vivid.sky}"
+        }
+      }
+    }
+  }
+}

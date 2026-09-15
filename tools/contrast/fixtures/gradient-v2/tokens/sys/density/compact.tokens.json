@@ -1,0 +1,25 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "space": {
+      "$type": "dimension",
+      "card-padding": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "control": {
+        "md": {
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          }
+        }
+      }
+    }
+  }
+}
