@@ -1,0 +1,9 @@
+{
+  "description": "a token gains $deprecated",
+  "expect": [
+    {
+      "kind": "deprecated",
+      "path": "ref.space.8"
+    }
+  ]
+}

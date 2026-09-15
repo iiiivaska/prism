@@ -1,0 +1,9 @@
+{
+  "description": "ref.space.8 becomes ref.space.8.$root with a sibling: same public path, one token added",
+  "expect": [
+    {
+      "kind": "added",
+      "path": "ref.space.8.half"
+    }
+  ]
+}

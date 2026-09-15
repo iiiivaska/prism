@@ -1,0 +1,9 @@
+{
+  "description": "description and llm metadata change; the value stays",
+  "expect": [
+    {
+      "kind": "meta-changed",
+      "path": "ref.space.8"
+    }
+  ]
+}

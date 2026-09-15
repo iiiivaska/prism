@@ -1,0 +1,4 @@
+{
+  "description": "a base revision that fails current validation (a broken reference)",
+  "expect": []
+}

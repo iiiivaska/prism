@@ -1,0 +1,30 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "ref": {
+    "space": {
+      "$type": "dimension",
+      "6": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        }
+      },
+      "8": {
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        },
+        "$description": "section gap",
+        "$extensions": {
+          "app.prism": {
+            "llm": {
+              "usage": [
+                "sections"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

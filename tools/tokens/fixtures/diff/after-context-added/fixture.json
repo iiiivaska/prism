@@ -1,0 +1,10 @@
+{
+  "description": "a new density context",
+  "expect": [
+    {
+      "kind": "context-added",
+      "modifier": "density",
+      "context": "spacious"
+    }
+  ]
+}

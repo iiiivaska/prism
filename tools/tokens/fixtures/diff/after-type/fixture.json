@@ -1,0 +1,9 @@
+{
+  "description": "a dimension token becomes a number",
+  "expect": [
+    {
+      "kind": "type-changed",
+      "path": "ref.space.8"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.slot.light.bg-page}"
+        },
+        "surface": {
+          "$root": {
+            "$value": "{ref.color.neutral.0}"
+          },
+          "raised": {
+            "$value": "{sys.color.bg.surface.$root}"
+          }
+        },
+        "fill": {
+          "accent": {
+            "$value": "{ref.color.slot.light.bg-fill-accent}"
+          }
+        },
+        "tint": {
+          "accent": {
+            "$value": "{ref.color.accent.500}",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.12
+              }
+            }
+          }
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "{ref.color.neutral.900}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page",
+                  "color.bg.surface"
+                ]
+              }
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0,
+              0,
+              0
+            ],
+            "alpha": 0.64,
+            "hex": "#000000"
+          }
+        },
+        "on-accent": {
+          "$value": "{ref.color.slot.light.text-on-accent}"
+        },
+        "accent": {
+          "$value": "{ref.color.slot.light.text-accent}"
+        }
+      }
+    },
+    "gradient": {
+      "$type": "gradient",
+      "vivid": {
+        "default": {
+          "$value": "{ref.gradient.vivid.sky}"
+        }
+      }
+    }
+  }
+}

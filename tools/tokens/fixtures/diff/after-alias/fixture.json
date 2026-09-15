@@ -1,0 +1,9 @@
+{
+  "description": "an alias retarget that keeps every resolved value",
+  "expect": [
+    {
+      "kind": "meta-changed",
+      "path": "color.bg.surface.raised"
+    }
+  ]
+}

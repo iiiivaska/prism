@@ -1,0 +1,13 @@
+{
+  "description": "color.bg.surface.raised stops depending on colorScheme",
+  "expect": [
+    {
+      "kind": "axes-changed",
+      "path": "color.bg.surface.raised"
+    },
+    {
+      "kind": "value-changed",
+      "path": "color.bg.surface.raised"
+    }
+  ]
+}
