@@ -111,6 +111,8 @@ jobs:
             -s "$schemas/resolver.json" -d tokens/prism.resolver.json
       - name: No literal colors, dimensions or font names outside tokens
         run: pnpm --filter @iiiivaska/prism-tools lint:literals
+      - name: No reference UI copy in contracts, samples or renders
+        run: pnpm --filter @iiiivaska/prism-tools lint:reference-copy
       - name: Build tokens and fail on stale generated output # P1-5
         if: needs.plan.outputs.tokens_build == 'true'
         run: |

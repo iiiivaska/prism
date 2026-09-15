@@ -101,16 +101,16 @@ tokens:
     gap: space.2
 
 behavior:
-  - When the enclosing Surface publishes vivid, glass or inverse, `tone: primary` resolves to the matching on-material token; secondary and tertiary map to white at 78 % and 64 % on those materials.
-  - `dimmed` and the trailing group are permitted only for metric roles at ≥ 24 px; at smaller sizes they resolve to `secondary`.
+  - "When the enclosing Surface publishes vivid, glass or inverse, `tone: primary` resolves to the matching on-material token; secondary and tertiary map to white at 78 % and 64 % on those materials."
+  - "`dimmed` and the trailing group are permitted only for metric roles at ≥ 24 px; at smaller sizes they resolve to `secondary`."
   - Weights below 300 exist only for metric-xl/lg; under Bold Text or Increase Contrast every weight below 400 resolves to 400.
-  - Metric and data roles use tabular figures; heroes use proportional figures unless `numeric: tabular` (live counters).
+  - "Metric and data roles use tabular figures; heroes use proportional figures unless `numeric: tabular` (live counters)."
   - Fade truncation dims the last line to 60 % then 25 % instead of an ellipsis; ids truncate with an ellipsis and keep the copy affordance.
   - Text scales with Dynamic Type on Apple and rem on web; line height and letter spacing scale with the size.
 
 accessibility:
   role: text (heading level when role is title-* or display-*)
-  label: the visible string; metric roles expose value + unit as one accessibility value ("78.3 percent")
+  label: the visible string; metric roles expose value + unit as one accessibility value ("86.4 percent")
   keyboard: not focusable
   dynamicType: all roles scale; metric-xl clamps at the accessibility3 size so cards do not overflow
   contrast: every tone/surface pair is listed in tokens/contrast-pairs.json; dimmed is decorative-tier and limited to ≥ 24 px
@@ -129,8 +129,8 @@ usage:
 
 examples:
   - id: hero-metric
-    props: { role: metric-xl, tone: primary, trailing: ".3", unit: "%" }
-    description: "78.3 % with the decimal dimmed and the unit hung"
+    props: { role: metric-xl, tone: primary, trailing: ".4", unit: "%" }
+    description: "86.4 % with the decimal dimmed and the unit hung"
   - id: title-two-tone
     props: { role: title-lg, tone: primary }
     description: second line rendered with tone secondary

@@ -1,0 +1,7 @@
+name: Card
+summary: >-
+  A card for the Zephyr Freight
+  Hub index.
+examples:
+  - id: metric
+    props: { title: "Line output", hero: { value: "86", trailing: ".4" } }

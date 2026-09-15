@@ -130,8 +130,8 @@ tokens:
 behavior:
   - The card is a Surface of the chosen material; `glass` requires `backdrop` image, map or vivid or it resolves to solid.raised.
   - Header pins to the top-left with the action at the padding corner top-right; hero pins bottom-left; aside pins bottom-right and shares the hero's baseline; the middle may be empty and the card keeps its declared aspect.
-  - `action: open` renders the nav.open glyph at 16 px in the secondary icon color and makes the whole card pressable; `custom` renders one solid circular IconButton and only that button is pressable.
-  - `isSelected` on glass switches to the light glass material with the bloom clipped away from the header text block.
+  - "`action: open` renders the nav.open glyph at 16 px in the secondary icon color and makes the whole card pressable; `custom` renders one solid circular IconButton and only that button is pressable."
+  - "`isSelected` on glass switches to the light glass material with the bloom clipped away from the header text block."
   - Vivid cards render their bloom behind themselves; at most one 2×2 vivid grid or one vivid card in six per screen (enforced by the pattern spec, warned by the gallery lint).
   - Hover (pointer) adds the neutral overlay on solid; vivid and glass do not change on hover.
   - Compact density uses radius.compact and 16 px padding; large size uses radius.large for cards with a side of 200 px or more.
@@ -146,7 +146,7 @@ haptics:
 
 accessibility:
   role: button when pressable, otherwise group
-  label: title plus caption plus hero value ("Operational efficiency, target above 80 percent, 78.3 percent")
+  label: title plus caption plus hero value ("Line output, last 24 hours, 86.4 percent")
   traits: [button]
   keyboard: focusable when pressable; Enter activates; focus ring follows the card radius at 2 px
   dynamicType: title and caption scale; hero clamps at accessibility3; the aside wraps below the hero when both cannot fit
@@ -156,7 +156,7 @@ accessibility:
 
 usage:
   do:
-    - Keep the anatomy: title top-left, action top-right, hero bottom-left; let the middle breathe.
+    - "Keep the anatomy: title top-left, action top-right, hero bottom-left; let the middle breathe."
     - Use vivid for the one thing the screen sells (a 2×2 grid of KPIs, one hero card).
     - Put a Sparkline in the aside when the hero has a trend.
   dont:
@@ -166,23 +166,23 @@ usage:
 
 examples:
   - id: solid-metric
-    props: { variant: solid, title: "Operational efficiency", caption: "Target above 80 %", hero: { value: "78", trailing: ".3", unit: "%" } }
+    props: { variant: solid, title: "Line output", caption: "Last 24 hours", hero: { value: "86", trailing: ".4", unit: "%" } }
   - id: vivid-orchid-kpi
-    props: { variant: vivid, vivid: orchid, title: "Average investment", hero: { value: "$1,195", unit: "/person" } }
+    props: { variant: vivid, vivid: orchid, title: "Average yield", hero: { value: "$2,450", unit: "/batch" } }
   - id: glass-vehicle
-    props: { variant: glass, backdrop: image, title: "Bus 6023", caption: "08.03.2026, 02:37:53" }
+    props: { variant: glass, backdrop: image, title: "Unit 4417", caption: "21.11.2026, 14:05:22" }
     surface: image
   - id: glass-selected
-    props: { variant: glass, backdrop: image, title: "Bus 6023", isSelected: true }
+    props: { variant: glass, backdrop: image, title: "Unit 4417", isSelected: true }
     surface: image
   - id: tinted-focus
     props: { variant: tinted, title: "Sensor", caption: "Active", icon: object.gps }
   - id: compact
-    props: { variant: solid, size: compact, title: "Online", hero: { value: "12" } }
+    props: { variant: solid, size: compact, title: "Queued", hero: { value: "37" } }
 
 notes:
   platform:
     watchos: solid only, compact size, no aside; the card is a full-width row.
-    macos: hover overlay on solid cards; the action glyph appears on hover only when `action: open` (always visible on touch).
-  design: Corner-pinned anatomy from docs/research/visual-dna.md §4.9; vivid 2×2 from §4.4; glass vehicle card from §4.3.
+    macos: "hover overlay on solid cards; the action glyph appears on hover only when `action: open` (always visible on touch)."
+  design: Corner-pinned anatomy from docs/research/visual-dna.md §4.9; vivid 2×2 from §4.4; glass vehicle card from §4.3. Example strings are invented (ADR-0015 rule 3).
   references: [docs/adr/0009-materials-in-layers.md, docs/adr/0015-references-inspiration-only.md]

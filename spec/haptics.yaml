@@ -19,23 +19,23 @@ haptics:
 
   haptic.impact.light:
     intent: A light touch landed (chip toggled, card lifted).
-    ios: SensoryFeedback.impact(weight: .light)
+    ios: "SensoryFeedback.impact(weight: .light)"
     macos: none
-    watchos: SensoryFeedback.impact(weight: .light)
+    watchos: "SensoryFeedback.impact(weight: .light)"
     web: none
 
   haptic.impact.medium:
     intent: A control settled (sheet detent reached, toggle flipped).
-    ios: SensoryFeedback.impact(weight: .medium)
+    ios: "SensoryFeedback.impact(weight: .medium)"
     macos: none
-    watchos: SensoryFeedback.impact(weight: .medium)
+    watchos: "SensoryFeedback.impact(weight: .medium)"
     web: none
 
   haptic.impact.soft:
     intent: A soft landing (drag released onto a target).
-    ios: SensoryFeedback.impact(flexibility: .soft)
+    ios: "SensoryFeedback.impact(flexibility: .soft)"
     macos: none
-    watchos: SensoryFeedback.impact(flexibility: .soft)
+    watchos: "SensoryFeedback.impact(flexibility: .soft)"
     web: none
 
   haptic.success:
@@ -89,14 +89,14 @@ haptics:
 
   haptic.start:
     intent: A session or timer started.
-    ios: SensoryFeedback.impact(weight: .medium)
+    ios: "SensoryFeedback.impact(weight: .medium)"
     macos: none
     watchos: SensoryFeedback.start
     web: none
 
   haptic.stop:
     intent: A session or timer stopped.
-    ios: SensoryFeedback.impact(weight: .medium)
+    ios: "SensoryFeedback.impact(weight: .medium)"
     macos: none
     watchos: SensoryFeedback.stop
     web: none

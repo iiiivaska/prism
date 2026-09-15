@@ -324,7 +324,7 @@
             "slot": "ui"
           }
         },
-        "$description": "'4m ago', 'Average Variance'; tertiary color"
+        "$description": "'7m ago', 'Rolling average'; secondary color"
       },
       "micro": {
         "$value": {
@@ -433,7 +433,7 @@
               "numeric": "tabular"
             }
           },
-          "$description": "inline metric '63 %'"
+          "$description": "inline metric '41 %'"
         },
         "unit": {
           "$value": {

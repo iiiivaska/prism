@@ -1,0 +1,7 @@
+name: Card
+# Near misses only: none of these is a whole denylist entry.
+summary: >-
+  A card for the Zephyr Freight Hubs index and the Orbitakia fleet; Keepers Log is another product.
+examples:
+  - id: metric
+    props: { title: "Line output", caption: "Q-77810", hero: { value: "$14,321", trailing: ".4" } }

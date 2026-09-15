@@ -1,0 +1,10 @@
+# Fixture denylist for reference-copy.test.ts. Every entry is invented: the guard's tests never carry
+# real reference copy (ADR-0015 rule 3), so they exercise the matcher with stand-ins of the same kinds
+# (a phrase, a name, an id, a number with a unit, an amount, an apostrophe, a Cyrillic phrase).
+Zephyr Freight Hub
+Orbitak
+Q-7781
+± 9.9 kg
+$4,321
+Keeper's Log
+Поиск заказчиков

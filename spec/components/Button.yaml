@@ -113,8 +113,8 @@ tokens:
 behavior:
   - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
   - The hit area is at least size.hit.touch (44 pt) under touch and size.hit.pointer (28 pt) under pointer, extended invisibly beyond a smaller visual height.
-  - `isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input; the accessibility label becomes "<label>, loading".
-  - `isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; disabled buttons are avoided in favor of explaining why an action is unavailable.
+  - "`isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input; the accessibility label becomes \"<label>, loading\"."
+  - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; disabled buttons are avoided in favor of explaining why an action is unavailable."
   - Labels never wrap; long labels truncate with an ellipsis; `fullWidth` stretches the pill and centers the content.
   - Pressed state scales the pill to 0.97 with motion.spring.snappy and returns on release; hover (pointer only) adds the hover overlay.
   - Only one `primary` button may appear in a group; a group of segments never gets a filled track.

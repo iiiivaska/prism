@@ -1,0 +1,189 @@
+# Reference UI copy denylist for tools/lint/reference-copy.ts (ADR-0015 rules 1-3, critic R-01,
+# visual-dna B26).
+#
+# Derived from docs/research/refs-*.md. Each entry is a string that those analyses quote from a
+# reference shot's screen (a title, label, metric name, sample value, id or place name), or a studio,
+# client or third-party brand name that ADR-0015 rule 2 keeps out of samples. The repository is
+# public, and ADR-0015 admits the references only as URLs plus analysis in Prism's own words, so this
+# copy must never reach contracts, samples or renders. The guard fails CI when an entry appears in
+# spec/, tokens/, brands/, agent/, web/packages/*/src, web/apps/* (build output excluded),
+# swift/Sources, swift/Tests, gallery/ or docs/research/fonts/. Generic words ("Today", "Settings",
+# "Search", "Online"), bare numbers and bare units are left out on purpose: they are not recognizable
+# copy and would only produce false positives.
+#
+# Format: one string per line; blank lines and lines that start with "#" are ignored. Matching is
+# case-insensitive. Any run of spaces in an entry also matches no space or a line break, so
+# "± 2.5 min" catches "±2.5min" and HTML text split by tags ("Credit Karma" also catches
+# "creditkarma"). ' and ’ match each other. Backslash escapes are decoded ("\u00b1" is "±"), and
+# Markdown emphasis does not split an entry ("**Credit** Karma"). An entry that starts or ends with a
+# letter or digit only matches at a word edge ("Soma" does not match "somatic"), so a quote that the
+# screen truncates is listed as quoted and, when the rest of the word is evident, completed too.
+# Entries need at least four characters. Add an entry only after finding its source line in a refs
+# analysis, and never copy an entry into a sample, test or fixture: the guard's tests use an invented
+# list.
+
+# Studio, client and third-party brand names on the shots (ADR-0015 rule 2)
+RonDesignLab
+Ronas IT
+Vexto
+Arvion
+Soma
+Navexa
+Magura
+SugarCRM
+Hydro Flask
+Credit Karma
+Credit Pros
+TransUnion
+Equifax
+Experian
+Goldman Sachs
+Bank of America
+JPMorgan
+TD Bank
+Save this design
+
+# Vexto traffic and incident (refs-vexto-traffic.md, refs-vexto-incident.md)
+Traffic Management
+Operational Efficiency
+Schedule Offset
+Live Passenger Volume
+Passenger Load
+Central Station
+Average Variance
+Capacity Issues
+Schedule Deviations
+passengers left behind
+passengers waiting
+Affected stations
+Live Webcam
+Bus 6023
+Bus 4120
+L 45623
+142,580
+78.3 %
+78.3 percent
+± 2.5 min
+08.03.2026
+02:37:53
+A564tf52dae53
+Marsfield
+# Quoted truncated as "University Campu" (refs-vexto-incident.md); the second line is its completion.
+University Campu
+University Campus
+Search Ctrl+Shift+F
+24 Bus
+100 Taxi
+12 Trains
+13 Trams
+
+# Arvion (refs-arvion.md)
+Dock Operations
+Loading Flow
+Load Balance
+Cargo Optimizer
+CNT-D07
+CNT-C05
+N°870
+Last update 1 min ago
+21.3 t
+
+# Credit Karma (refs-creditkarma.md)
+Health Karma
+Net Worth
+Total Dept
+Credit Card Use
+Payment History
+Derogatory Marks
+Credit Age
+Total Accounts
+Hard Inquiries
+Score History
+Credit Offers
+offers for you
+Checked Daily
+moderate credit score
+$ 137,036
+Rate / Period
+Menzies
+
+# CreditPros (refs-creditpros.md)
+Stewart
+Let's analyze your stats
+Your Credits
+Public Records
+Payments on Time
+Credit History
+Paid Amount
+Next Payment
+You've Paid
+Left To Pay
+First Payment
+Make a Payment
+Create Dispute
+Updated 5 Days Ago
+Disputing
+On time 63
+$12,340
+$12.340
+$56.000
+$2,660
+03.05.2024
+03.02.2023
+
+# Soma, with the Navexa still (refs-soma.md)
+CGM Device
+11 / 14 d
+Accuracy 98
+43 times
+Jun 8, 09:14
+Diam 35 mm
+Mass 4.2 g
+Prot IP68
+Lev 3.2
+NFC Sync
+13.56 MHz
+81% + battery
+6 from 1h ago
+Battery life 72
+Warehouse 84
+Processed 62
+Daily picked
+
+# Hydroflask (refs-hydroflask.md)
+Flasks Per Day
+Flasks/Day
+Mol. Hydrogen
+# Quoted truncated as "Molecular H…" (refs-hydroflask.md); the second line is its completion.
+Molecular H
+Molecular Hydrogen
+Hydrogen & Water Stats
+How much did you drink today
+Or Choose An Amount
+Log Additional Water
+Flask-Tap
+16 Ounces
+12 oz — Mug
+8 oz Glass
+16 oz Bottle
+Jun 6 – Jun 12
+16.2 mg
+72 Robods
+5.86 /uploads
+Cases Overview
+
+# Family A, the owner-pasted light investor CRM known only through the analyses (refs-creditpros.md
+# §1, docs/research/references.json). These strings sat beside the copy above in the font harnesses
+# and in the vivid Card example; their provenance was never recorded (visual-dna B26), so they are
+# treated as reference copy.
+Average investment
+$1,195
+Search investors
+based on the current search progress
+
+# Russian renderings of the copy above that the font harnesses carried as Cyrillic test lines
+Операционная эффективность
+Отклонение расписания
+Пассажиропоток
+Поиск инвесторов
+по текущему прогрессу поиска

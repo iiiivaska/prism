@@ -1,0 +1,10 @@
+{
+  "ref": {
+    "type": {
+      "caption": {
+        "$type": "typography",
+        "$description": "'7m ago', 'NeoOrbitak weekly'; tertiary color"
+      }
+    }
+  }
+}
