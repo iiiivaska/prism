@@ -1,0 +1,48 @@
+{
+  "size": {
+    "control": {
+      "lg": {
+        "$type": "sizing",
+        "$value": "40px"
+      },
+      "md": {
+        "$type": "sizing",
+        "$value": "32px"
+      },
+      "sm": {
+        "$type": "sizing",
+        "$value": "28px"
+      }
+    },
+    "row": {
+      "$type": "sizing",
+      "$value": "32px"
+    }
+  },
+  "space": {
+    "card-gap": {
+      "$type": "spacing",
+      "$value": "8px"
+    },
+    "card-padding": {
+      "$type": "spacing",
+      "$value": "16px"
+    },
+    "group-gap": {
+      "$type": "spacing",
+      "$value": "12px"
+    },
+    "page-margin": {
+      "$type": "spacing",
+      "$value": "16px"
+    },
+    "section-gap": {
+      "$type": "spacing",
+      "$value": "24px"
+    },
+    "tile-gap": {
+      "$type": "spacing",
+      "$value": "4px"
+    }
+  }
+}

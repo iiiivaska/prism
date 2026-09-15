@@ -1,0 +1,19 @@
+{
+  "font": {
+    "display": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.apple.display}",
+      "$description": "Apple face of the slot (ADR-0020)"
+    },
+    "mono": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.apple.mono}",
+      "$description": "Apple face of the slot (ADR-0020)"
+    },
+    "ui": {
+      "$type": "fontFamilies",
+      "$value": "{ref.font.apple.ui}",
+      "$description": "Apple face of the slot (ADR-0020)"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "ref": {
+    "font": {
+      "apple": {
+        "display": {
+          "$type": "fontFamilies",
+          "$value": "system-ui"
+        },
+        "mono": {
+          "$type": "fontFamilies",
+          "$value": "ui-monospace"
+        },
+        "ui": {
+          "$type": "fontFamilies",
+          "$value": "system-ui"
+        }
+      },
+      "display": {
+        "$type": "fontFamilies",
+        "$value": "Inter, system-ui, sans-serif",
+        "$description": "Web stack of the display slot: served families and CSS generics only (ADR-0020)"
+      },
+      "mono": {
+        "$type": "fontFamilies",
+        "$value": "ui-monospace, monospace",
+        "$description": "Web stack of the mono slot: served families and CSS generics only (ADR-0020)"
+      },
+      "ui": {
+        "$type": "fontFamilies",
+        "$value": "Inter, system-ui, sans-serif",
+        "$description": "Web stack of the ui slot: served families and CSS generics only (ADR-0020)"
+      }
+    }
+  }
+}

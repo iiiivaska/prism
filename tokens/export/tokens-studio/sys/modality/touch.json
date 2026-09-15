@@ -1,0 +1,18 @@
+{
+  "interaction": {
+    "hover": {
+      "$type": "boolean",
+      "$value": "false"
+    },
+    "tooltip": {
+      "$type": "boolean",
+      "$value": "false"
+    }
+  },
+  "size": {
+    "hit": {
+      "$type": "sizing",
+      "$value": "{ref.size.hit.touch}"
+    }
+  }
+}

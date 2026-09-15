@@ -1,0 +1,114 @@
+{
+  "ref": {
+    "shadow": {
+      "dark": {
+        "floating": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "8px",
+              "blur": "24px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.3)",
+              "type": "dropShadow"
+            }
+          ]
+        },
+        "modal": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "30px",
+              "blur": "80px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.5)",
+              "type": "dropShadow"
+            }
+          ]
+        },
+        "overlay": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "24px",
+              "blur": "48px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.35)",
+              "type": "dropShadow"
+            }
+          ]
+        }
+      },
+      "light": {
+        "drawer": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "30px",
+              "blur": "80px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.25)",
+              "type": "dropShadow"
+            }
+          ]
+        },
+        "floating": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "6px",
+              "blur": "16px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.07)",
+              "type": "dropShadow"
+            }
+          ]
+        },
+        "overlay": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "24px",
+              "blur": "60px",
+              "spread": "0px",
+              "color": "rgba(20, 20, 20, 0.1)",
+              "type": "dropShadow"
+            }
+          ]
+        },
+        "raised": {
+          "$type": "boxShadow",
+          "$value": [
+            {
+              "x": "0px",
+              "y": "2px",
+              "blur": "6px",
+              "spread": "0px",
+              "color": "rgba(0, 0, 0, 0.05)",
+              "type": "dropShadow"
+            }
+          ]
+        }
+      },
+      "none": {
+        "$type": "boxShadow",
+        "$value": [
+          {
+            "x": "0px",
+            "y": "0px",
+            "blur": "0px",
+            "spread": "0px",
+            "color": "rgba(0, 0, 0, 0)",
+            "type": "dropShadow"
+          }
+        ]
+      }
+    }
+  }
+}

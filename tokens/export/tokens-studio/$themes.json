@@ -1,0 +1,119 @@
+[
+  {
+    "id": "brand-prism",
+    "name": "prism",
+    "group": "brand",
+    "selectedTokenSets": {
+      "ref/color.palette": "enabled",
+      "ref/gradient": "enabled",
+      "ref/dimension": "enabled",
+      "ref/typography": "enabled",
+      "ref/motion": "enabled",
+      "ref/elevation": "enabled",
+      "ref/opacity": "enabled",
+      "brands/prism": "enabled",
+      "sys/base": "enabled",
+      "sys/platform/web": "enabled",
+      "sys/modality/pointer": "enabled",
+      "sys/motion/default": "enabled",
+      "comp/button": "enabled",
+      "comp/card": "enabled"
+    }
+  },
+  {
+    "id": "brand-prism-native",
+    "name": "prism-native",
+    "group": "brand",
+    "selectedTokenSets": {
+      "ref/color.palette": "enabled",
+      "ref/gradient": "enabled",
+      "ref/dimension": "enabled",
+      "ref/typography": "enabled",
+      "ref/motion": "enabled",
+      "ref/elevation": "enabled",
+      "ref/opacity": "enabled",
+      "brands/prism": "enabled",
+      "brands/prism-native": "enabled",
+      "sys/base": "enabled",
+      "sys/platform/web": "enabled",
+      "sys/modality/pointer": "enabled",
+      "sys/motion/default": "enabled",
+      "comp/button": "enabled",
+      "comp/card": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-light",
+    "name": "light",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/light": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-dark",
+    "name": "dark",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/dark": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-light-increased-contrast",
+    "name": "light-increased-contrast",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/light": "enabled",
+      "sys/color/light-increased-contrast": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-dark-increased-contrast",
+    "name": "dark-increased-contrast",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/dark": "enabled",
+      "sys/color/dark-increased-contrast": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-light-reduced-transparency",
+    "name": "light-reduced-transparency",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/light": "enabled"
+    }
+  },
+  {
+    "id": "colorScheme-dark-reduced-transparency",
+    "name": "dark-reduced-transparency",
+    "group": "colorScheme",
+    "selectedTokenSets": {
+      "sys/color/dark": "enabled"
+    }
+  },
+  {
+    "id": "density-compact",
+    "name": "compact",
+    "group": "density",
+    "selectedTokenSets": {
+      "sys/density/compact": "enabled"
+    }
+  },
+  {
+    "id": "density-regular",
+    "name": "regular",
+    "group": "density",
+    "selectedTokenSets": {
+      "sys/density/regular": "enabled"
+    }
+  },
+  {
+    "id": "density-comfortable",
+    "name": "comfortable",
+    "group": "density",
+    "selectedTokenSets": {
+      "sys/density/comfortable": "enabled"
+    }
+  }
+]

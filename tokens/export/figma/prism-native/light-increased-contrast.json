@@ -1,0 +1,5183 @@
+{
+  "border": {
+    "focus": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-border-focus)",
+          "iOS": "tokens.border.focus"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "hairline": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-border-hairline)",
+          "iOS": "tokens.border.hairline"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "strong": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-border-strong)",
+          "iOS": "tokens.border.strong"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    }
+  },
+  "chart": {
+    "bar-max-thickness": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-bar-max-thickness)",
+          "iOS": "tokens.chart.barMaxThickness"
+        },
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
+    },
+    "bar-radius": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-bar-radius)",
+          "iOS": "tokens.chart.barRadius"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "comparison-width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-comparison-width)",
+          "iOS": "tokens.chart.comparisonWidth"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "curve": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "1 = monotone (default), 2 = catmullRom(0.5), 3 = step",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-curve)",
+          "iOS": "tokens.chart.curve"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "endpoint-size": {
+      "$type": "dimension",
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-endpoint-size)",
+          "iOS": "tokens.chart.endpointSize"
+        },
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
+    },
+    "gauge-stroke-ratio": {
+      "$type": "number",
+      "$value": 0.1,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-gauge-stroke-ratio)",
+          "iOS": "tokens.chart.gaugeStrokeRatio"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "line-width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-line-width)",
+          "iOS": "tokens.chart.lineWidth"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    },
+    "marker-size": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-marker-size)",
+          "iOS": "tokens.chart.markerSize"
+        },
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
+    },
+    "sparkline-width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1.5,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-chart-sparkline-width)",
+          "iOS": "tokens.chart.sparklineWidth"
+        },
+        "com.figma.scopes": [
+          "STROKE_FLOAT"
+        ]
+      }
+    }
+  },
+  "color": {
+    "accent": {
+      "default": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529,
+            0.5804,
+            0.2665
+          ],
+          "alpha": 1,
+          "hex": "#f39444"
+        },
+        "$description": "marks: dots, chart 'now', peak ticks, delta glyph fill; 2.3:1 on white, so a mark always sits with its value, sign or label, and a mark that alone carries meaning uses accent.700 (4.8:1; visual-dna B3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-accent)",
+            "iOS": "tokens.color.accent"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "glow": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9766,
+            0.6471,
+            0.3528
+          ],
+          "alpha": 0.4,
+          "hex": "#f9a55a"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-accent-glow)",
+            "iOS": "tokens.color.accentGlow"
+          },
+          "com.figma.scopes": [
+            "EFFECT_COLOR"
+          ]
+        }
+      },
+      "pressed": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8667,
+            0.4784,
+            0.1411
+          ],
+          "alpha": 1,
+          "hex": "#dd7a24"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-accent-pressed)",
+            "iOS": "tokens.color.accentPressed"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529,
+            0.5804,
+            0.2665
+          ],
+          "alpha": 0.12,
+          "hex": "#f39444"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-accent-subtle)",
+            "iOS": "tokens.color.accentSubtle"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
+    "bg": {
+      "fill": {
+        "accent": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              0.7528,
+              0.4785
+            ],
+            "alpha": 1,
+            "hex": "#ffc07a"
+          },
+          "$description": "the one attention tile; content is ink",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-accent)",
+              "iOS": "tokens.color.bgFillAccent"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "accent-strong": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7216,
+              0.3373,
+              0.1013
+            ],
+            "alpha": 1,
+            "hex": "#b8561a"
+          },
+          "$description": "accent surface with white text (4.8:1)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-accent-strong)",
+              "iOS": "tokens.color.bgFillAccentStrong"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "critical": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.898,
+              0.1451,
+              0.1641
+            ],
+            "alpha": 1,
+            "hex": "#e5252a"
+          },
+          "$description": "badge under white 11 px Medium (4.5:1)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-critical)",
+              "iOS": "tokens.color.bgFillCritical"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "inverse": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "primary pill, active tab, solid action circle",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-inverse)",
+              "iOS": "tokens.color.bgFillInverse"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "neutral": {
+          "subtle": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 0.06,
+              "hex": "#0d0e11"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-color-bg-fill-neutral-subtle)",
+                "iOS": "tokens.color.bgFillNeutralSubtle"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "page": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9451,
+            0.949,
+            0.9606
+          ],
+          "alpha": 1,
+          "hex": "#f1f2f5"
+        },
+        "$description": "never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-bg-page)",
+            "iOS": "tokens.color.bgPage"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "surface": {
+        "default": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "card: no border, no shadow (optional ambient 5%)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-surface)",
+              "iOS": "tokens.color.bgSurface"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "nested": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.06,
+            "hex": "#0d0e11"
+          },
+          "$description": "filled control, dock tray (= #F0F1F1 on white)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-surface-nested)",
+              "iOS": "tokens.color.bgSurfaceNested"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-surface-overlay)",
+              "iOS": "tokens.color.bgSurfaceOverlay"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "raised": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.7,
+            "hex": "#ffffff"
+          },
+          "$description": "puffy chip / round button on the page, plus inset top highlight and elevation.1",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-surface-raised)",
+              "iOS": "tokens.color.bgSurfaceRaised"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "tint": {
+        "accent": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9529,
+              0.5804,
+              0.2665
+            ],
+            "alpha": 0.12,
+            "hex": "#f39444"
+          },
+          "$description": "tinted focus card (= #FEF2E9 on white)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-tint-accent)",
+              "iOS": "tokens.color.bgTintAccent"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "critical": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.992,
+              0.9138,
+              0.9138
+            ],
+            "alpha": 1,
+            "hex": "#fde9e9"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-tint-critical)",
+              "iOS": "tokens.color.bgTintCritical"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "info": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9176,
+              0.9294,
+              0.9763
+            ],
+            "alpha": 1,
+            "hex": "#eaedf9"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-tint-info)",
+              "iOS": "tokens.color.bgTintInfo"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "success": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9019,
+              0.9647,
+              0.9137
+            ],
+            "alpha": 1,
+            "hex": "#e6f6e9"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-tint-success)",
+              "iOS": "tokens.color.bgTintSuccess"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "warning": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9961,
+              0.9647,
+              0.9097
+            ],
+            "alpha": 1,
+            "hex": "#fef6e8"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-tint-warning)",
+              "iOS": "tokens.color.bgTintWarning"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "border": {
+      "boundary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4941,
+            0.5137,
+            0.5609
+          ],
+          "alpha": 1,
+          "hex": "#7e838f"
+        },
+        "$description": "control edges that must pass 3:1",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-boundary)",
+            "iOS": "tokens.color.borderBoundary"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "focus": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-focus)",
+            "iOS": "tokens.color.borderFocus"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "hairline": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.3,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-hairline)",
+            "iOS": "tokens.color.borderHairline"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "strong": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.6,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-strong)",
+            "iOS": "tokens.color.borderStrong"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      }
+    },
+    "chart": {
+      "axis": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "reference #B7B7B9 failed at 1.7:1",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-axis)",
+            "iOS": "tokens.color.chartAxis"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "band": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.05,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-band)",
+            "iOS": "tokens.color.chartBand"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "comparison": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.6,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-comparison)",
+            "iOS": "tokens.color.chartComparison"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "comparison-2": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.15,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-comparison-2)",
+            "iOS": "tokens.color.chartComparison2"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "ghost": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.8823,
+            0.8902,
+            0.9097
+          ],
+          "alpha": 1,
+          "hex": "#e1e3e8"
+        },
+        "$description": "sparkline ghost bars",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-ghost)",
+            "iOS": "tokens.color.chartGhost"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "grid": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.2,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-grid)",
+            "iOS": "tokens.color.chartGrid"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "now": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529,
+            0.5804,
+            0.2665
+          ],
+          "alpha": 1,
+          "hex": "#f39444"
+        },
+        "$description": "the now marker; 2.3:1 on white, so it always carries its label or value (visual-dna B3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-now)",
+            "iOS": "tokens.color.chartNow"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "plot": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "charts never sit on raw glass",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-plot)",
+            "iOS": "tokens.color.chartPlot"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "series": {
+        "1": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-1)",
+              "iOS": "tokens.color.chartSeries1"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "2": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7216,
+              0.3373,
+              0.1013
+            ],
+            "alpha": 1,
+            "hex": "#b8561a"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-2)",
+              "iOS": "tokens.color.chartSeries2"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "3": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3058,
+              0.4235,
+              0.8038
+            ],
+            "alpha": 1,
+            "hex": "#4e6ccd"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-3)",
+              "iOS": "tokens.color.chartSeries3"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "4": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.122,
+              0.5608,
+              0.5019
+            ],
+            "alpha": 1,
+            "hex": "#1f8f80"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-4)",
+              "iOS": "tokens.color.chartSeries4"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "5": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.6509,
+              0.3099,
+              0.6392
+            ],
+            "alpha": 1,
+            "hex": "#a64fa3"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-5)",
+              "iOS": "tokens.color.chartSeries5"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "6": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.4315,
+              0.4784,
+              0.1334
+            ],
+            "alpha": 1,
+            "hex": "#6e7a22"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-series-6)",
+              "iOS": "tokens.color.chartSeries6"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      },
+      "target": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.6,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-chart-target)",
+            "iOS": "tokens.color.chartTarget"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      }
+    },
+    "icon": {
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9529,
+            0.5804,
+            0.2665
+          ],
+          "alpha": 1,
+          "hex": "#f39444"
+        },
+        "$description": "marks only, never text; 2.3:1 on white, so always paired with a value, sign or label (visual-dna B3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-icon-accent)",
+            "iOS": "tokens.color.iconAccent"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.8,
+          "hex": "#0d0e11"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-icon-primary)",
+            "iOS": "tokens.color.iconPrimary"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-icon-secondary)",
+            "iOS": "tokens.color.iconSecondary"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "status": {
+        "critical": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9412,
+              0.294,
+              0.2706
+            ],
+            "alpha": 1,
+            "hex": "#f04b45"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-icon-status-critical)",
+              "iOS": "tokens.color.iconStatusCritical"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "info": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.3058,
+              0.4235,
+              0.8038
+            ],
+            "alpha": 1,
+            "hex": "#4e6ccd"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-icon-status-info)",
+              "iOS": "tokens.color.iconStatusInfo"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "success": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.1765,
+              0.698,
+              0.2902
+            ],
+            "alpha": 1,
+            "hex": "#2db24a"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-icon-status-success)",
+              "iOS": "tokens.color.iconStatusSuccess"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "warning": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9606,
+              0.7217,
+              0.2395
+            ],
+            "alpha": 1,
+            "hex": "#f5b83d"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-icon-status-warning)",
+              "iOS": "tokens.color.iconStatusWarning"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      }
+    },
+    "text": {
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4196,
+            0.1843,
+            0.0473
+          ],
+          "alpha": 1,
+          "hex": "#6b2f0c"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-accent)",
+            "iOS": "tokens.color.textAccent"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "critical": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.7489,
+            0.1333,
+            0.1335
+          ],
+          "alpha": 1,
+          "hex": "#bf2222"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-critical)",
+            "iOS": "tokens.color.textCritical"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "dimmed": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "dimmed digits become secondary under Increase Contrast",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-dimmed)",
+            "iOS": "tokens.color.textDimmed"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "info": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.2388,
+            0.357,
+            0.7686
+          ],
+          "alpha": 1,
+          "hex": "#3d5bc4"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-info)",
+            "iOS": "tokens.color.textInfo"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "ink on accent-300 = 12.0:1",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-accent)",
+            "iOS": "tokens.color.textOnAccent"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-accent-strong": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-accent-strong)",
+            "iOS": "tokens.color.textOnAccentStrong"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-badge": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-badge)",
+            "iOS": "tokens.color.textOnBadge"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "white on dark glass; light glass uses on-glass-light (ADR-0022)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass)",
+            "iOS": "tokens.color.textOnGlass"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-light": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "ink on light glass in the light scheme; hierarchy by size, never by alpha (ADR-0022 §3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-light)",
+            "iOS": "tokens.color.textOnGlassLight"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.78,
+          "hex": "#ffffff"
+        },
+        "$description": "secondary tone on dark glass (the glass material) only; chips and cells use on-glass (ADR-0022 §3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-secondary)",
+            "iOS": "tokens.color.textOnGlassSecondary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-tertiary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.64,
+          "hex": "#ffffff"
+        },
+        "$description": "tertiary and dimmed tones on dark glass (the glass material) only (ADR-0022 §3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-tertiary)",
+            "iOS": "tokens.color.textOnGlassTertiary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-inverse": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-inverse)",
+            "iOS": "tokens.color.textOnInverse"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-vivid": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "every vivid gradient passes ADR-0022 V1/V2",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-vivid)",
+            "iOS": "tokens.color.textOnVivid"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "17.2:1 on page",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-primary)",
+            "iOS": "tokens.color.textPrimary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.251,
+            0.2667,
+            0.2981
+          ],
+          "alpha": 1,
+          "hex": "#40444c"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-secondary)",
+            "iOS": "tokens.color.textSecondary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "success": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.0933,
+            0.4589,
+            0.1884
+          ],
+          "alpha": 1,
+          "hex": "#187530"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-success)",
+            "iOS": "tokens.color.textSuccess"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.251,
+            0.2667,
+            0.2981
+          ],
+          "alpha": 1,
+          "hex": "#40444c"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-tertiary)",
+            "iOS": "tokens.color.textTertiary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "warning": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.5609,
+            0.3568,
+            0.0002
+          ],
+          "alpha": 1,
+          "hex": "#8f5b00"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-warning)",
+            "iOS": "tokens.color.textWarning"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      }
+    }
+  },
+  "font": {
+    "display": {
+      "$type": "fontFamily",
+      "$value": "Inter",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-font-display)",
+          "iOS": "tokens.context.brand.faces[.display]"
+        },
+        "com.figma.scopes": [
+          "FONT_FAMILY"
+        ]
+      }
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "ui-monospace",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-font-mono)",
+          "iOS": "tokens.context.brand.faces[.mono]"
+        },
+        "com.figma.scopes": [
+          "FONT_FAMILY"
+        ]
+      }
+    },
+    "ui": {
+      "$type": "fontFamily",
+      "$value": "Inter",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-font-ui)",
+          "iOS": "tokens.context.brand.faces[.ui]"
+        },
+        "com.figma.scopes": [
+          "FONT_FAMILY"
+        ]
+      }
+    }
+  },
+  "icon": {
+    "weight": {
+      "$type": "number",
+      "$value": 400,
+      "$description": "regular; maps to Phosphor regular / SF regular (spec/icons/registry.json)",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-icon-weight)",
+          "iOS": "tokens.icon.weight"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "weight-display": {
+      "$type": "number",
+      "$value": 200,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-icon-weight-display)",
+          "iOS": "tokens.icon.weightDisplay"
+        },
+        "com.figma.scopes": []
+      }
+    }
+  },
+  "interaction": {
+    "hover": {
+      "$type": "number",
+      "$value": 1,
+      "$description": "hover states exist",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-interaction-hover)",
+          "iOS": "tokens.interaction.hover"
+        },
+        "com.figma.type": "boolean"
+      }
+    },
+    "tooltip": {
+      "$type": "number",
+      "$value": 1,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-interaction-tooltip)",
+          "iOS": "tokens.interaction.tooltip"
+        },
+        "com.figma.type": "boolean"
+      }
+    }
+  },
+  "material": {
+    "glass": {
+      "cell": {
+        "default": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0393,
+              0.0471,
+              0.0315
+            ],
+            "alpha": 0.35,
+            "hex": "#0a0c08"
+          },
+          "$description": "status cells over a render or vivid; smoked fill, primary foreground text.on-glass only; a 1.5 px status border carries the status (ADR-0022)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-cell)",
+              "iOS": "tokens.material.glassCell"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-cell-bloom)",
+              "iOS": "tokens.material.glassCellBloom"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-cell-blur)",
+              "iOS": "tokens.material.glassCellBlur"
+            },
+            "com.figma.scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": 0.08,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-cell-edge-end)",
+                "iOS": "tokens.material.glassCellEdgeEnd"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "start": {
+            "$type": "number",
+            "$value": 0.22,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-cell-edge-start)",
+                "iOS": "tokens.material.glassCellEdgeStart"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-cell-grain)",
+              "iOS": "tokens.material.glassCellGrain"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-cell-saturate)",
+              "iOS": "tokens.material.glassCellSaturate"
+            },
+            "com.figma.scopes": []
+          }
+        }
+      },
+      "dark": {
+        "chip": {
+          "default": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0393,
+                0.0471,
+                0.0315
+              ],
+              "alpha": 0.35,
+              "hex": "#0a0c08"
+            },
+            "$description": "controls over a photo, map or vivid; primary foreground text.on-glass only (ADR-0022 §3)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-chip)",
+                "iOS": "tokens.material.glassDarkChip"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-chip-bloom)",
+                "iOS": "tokens.material.glassDarkChipBloom"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-chip-blur)",
+                "iOS": "tokens.material.glassDarkChipBlur"
+              },
+              "com.figma.scopes": [
+                "EFFECT_FLOAT"
+              ]
+            }
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": 0.08,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-dark-chip-edge-end)",
+                  "iOS": "tokens.material.glassDarkChipEdgeEnd"
+                },
+                "com.figma.scopes": []
+              }
+            },
+            "start": {
+              "$type": "number",
+              "$value": 0.22,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-dark-chip-edge-start)",
+                  "iOS": "tokens.material.glassDarkChipEdgeStart"
+                },
+                "com.figma.scopes": []
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-chip-grain)",
+                "iOS": "tokens.material.glassDarkChipGrain"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": 1,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-chip-saturate)",
+                "iOS": "tokens.material.glassDarkChipSaturate"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        },
+        "fill": {
+          "default": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0393,
+                0.0471,
+                0.0315
+              ],
+              "alpha": 0.55,
+              "hex": "#0a0c08"
+            },
+            "$description": "card or drawer over a photo or vivid, on backdrops where white holds 3:1 (ADR-0022 §3.3); drawer 0.35",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-fill)",
+                "iOS": "tokens.material.glassDarkFill"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-fill-bloom)",
+                "iOS": "tokens.material.glassDarkFillBloom"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": {
+              "value": 40,
+              "unit": "px"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-fill-blur)",
+                "iOS": "tokens.material.glassDarkFillBlur"
+              },
+              "com.figma.scopes": [
+                "EFFECT_FLOAT"
+              ]
+            }
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": 0.08,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-dark-fill-edge-end)",
+                  "iOS": "tokens.material.glassDarkFillEdgeEnd"
+                },
+                "com.figma.scopes": []
+              }
+            },
+            "start": {
+              "$type": "number",
+              "$value": 0.22,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-dark-fill-edge-start)",
+                  "iOS": "tokens.material.glassDarkFillEdgeStart"
+                },
+                "com.figma.scopes": []
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": 0.04,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-fill-grain)",
+                "iOS": "tokens.material.glassDarkFillGrain"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": 0.8,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-dark-fill-saturate)",
+                "iOS": "tokens.material.glassDarkFillSaturate"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        }
+      },
+      "light": {
+        "chip": {
+          "default": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.25,
+              "hex": "#ffffff"
+            },
+            "$description": "primary foreground text.on-glass-light only (ADR-0022 §3)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-chip)",
+                "iOS": "tokens.material.glassLightChip"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-chip-bloom)",
+                "iOS": "tokens.material.glassLightChipBloom"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": {
+              "value": 20,
+              "unit": "px"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-chip-blur)",
+                "iOS": "tokens.material.glassLightChipBlur"
+              },
+              "com.figma.scopes": [
+                "EFFECT_FLOAT"
+              ]
+            }
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": 0,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-light-chip-edge-end)",
+                  "iOS": "tokens.material.glassLightChipEdgeEnd"
+                },
+                "com.figma.scopes": []
+              }
+            },
+            "start": {
+              "$type": "number",
+              "$value": 0.55,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-light-chip-edge-start)",
+                  "iOS": "tokens.material.glassLightChipEdgeStart"
+                },
+                "com.figma.scopes": []
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-chip-grain)",
+                "iOS": "tokens.material.glassLightChipGrain"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": 1,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-chip-saturate)",
+                "iOS": "tokens.material.glassLightChipSaturate"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        },
+        "fill": {
+          "default": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.3,
+              "hex": "#ffffff"
+            },
+            "$description": "chips, pills, rows over vivid; tab bar 0.45; ink text (text.on-glass-light); only over vivid or imagery at OKLCH L >= 0.45 (ADR-0022)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-fill)",
+                "iOS": "tokens.material.glassLightFill"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-fill-bloom)",
+                "iOS": "tokens.material.glassLightFillBloom"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": {
+              "value": 24,
+              "unit": "px"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-fill-blur)",
+                "iOS": "tokens.material.glassLightFillBlur"
+              },
+              "com.figma.scopes": [
+                "EFFECT_FLOAT"
+              ]
+            }
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": 0,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-light-fill-edge-end)",
+                  "iOS": "tokens.material.glassLightFillEdgeEnd"
+                },
+                "com.figma.scopes": []
+              }
+            },
+            "start": {
+              "$type": "number",
+              "$value": 0.55,
+              "$extensions": {
+                "com.figma.codeSyntax": {
+                  "WEB": "var(--ds-material-glass-light-fill-edge-start)",
+                  "iOS": "tokens.material.glassLightFillEdgeStart"
+                },
+                "com.figma.scopes": []
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-fill-grain)",
+                "iOS": "tokens.material.glassLightFillGrain"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": 1.1,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-light-fill-saturate)",
+                "iOS": "tokens.material.glassLightFillSaturate"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        }
+      },
+      "scrim": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 0.35,
+          "hex": "#000000"
+        },
+        "$description": "bottom-up under text on unpredictable backdrops",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-material-glass-scrim)",
+            "iOS": "tokens.material.glassScrim"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    }
+  },
+  "motion": {
+    "duration": {
+      "base": {
+        "$type": "duration",
+        "$value": {
+          "value": 0.25,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-base)",
+            "iOS": "tokens.motion.durationBase"
+          }
+        }
+      },
+      "fast": {
+        "$type": "duration",
+        "$value": {
+          "value": 0.15,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-fast)",
+            "iOS": "tokens.motion.durationFast"
+          }
+        }
+      },
+      "instant": {
+        "$type": "duration",
+        "$value": {
+          "value": 0,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-instant)",
+            "iOS": "tokens.motion.durationInstant"
+          }
+        }
+      },
+      "quick": {
+        "$type": "duration",
+        "$value": {
+          "value": 0.1,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-quick)",
+            "iOS": "tokens.motion.durationQuick"
+          }
+        }
+      },
+      "slow": {
+        "$type": "duration",
+        "$value": {
+          "value": 0.35,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-slow)",
+            "iOS": "tokens.motion.durationSlow"
+          }
+        }
+      },
+      "slower": {
+        "$type": "duration",
+        "$value": {
+          "value": 0.5,
+          "unit": "s"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-duration-slower)",
+            "iOS": "tokens.motion.durationSlower"
+          }
+        }
+      }
+    },
+    "presentation": {
+      "crossfade": {
+        "$type": "number",
+        "$value": 0,
+        "$description": "Flag. 1 under Reduce Motion: outside an active gesture nothing scales, rotates, blurs or changes depth; presentations fade by opacity over motion.duration.base with motion.easing.out; in-place movement keeps its spring (ADR-0023 §8.4).",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-motion-presentation-crossfade)",
+            "iOS": "tokens.motion.presentationCrossfade"
+          },
+          "com.figma.type": "boolean"
+        }
+      }
+    },
+    "spring": {
+      "bouncy": {
+        "duration": {
+          "$type": "duration",
+          "$value": {
+            "value": 0.5,
+            "unit": "s"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-bouncy)",
+              "iOS": "tokens.motion.springBouncy.duration"
+            }
+          }
+        },
+        "bounce": {
+          "$type": "number",
+          "$value": 0.3,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-bouncy)",
+              "iOS": "tokens.motion.springBouncy.bounce"
+            }
+          }
+        }
+      },
+      "interactive": {
+        "duration": {
+          "$type": "duration",
+          "$value": {
+            "value": 0.15,
+            "unit": "s"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-interactive)",
+              "iOS": "tokens.motion.springInteractive.duration"
+            }
+          }
+        },
+        "bounce": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-interactive)",
+              "iOS": "tokens.motion.springInteractive.bounce"
+            }
+          }
+        }
+      },
+      "sheet": {
+        "duration": {
+          "$type": "duration",
+          "$value": {
+            "value": 0.3,
+            "unit": "s"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-sheet)",
+              "iOS": "tokens.motion.springSheet.duration"
+            }
+          }
+        },
+        "bounce": {
+          "$type": "number",
+          "$value": 0.2,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-sheet)",
+              "iOS": "tokens.motion.springSheet.bounce"
+            }
+          }
+        }
+      },
+      "smooth": {
+        "duration": {
+          "$type": "duration",
+          "$value": {
+            "value": 0.4,
+            "unit": "s"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-smooth)",
+              "iOS": "tokens.motion.springSmooth.duration"
+            }
+          }
+        },
+        "bounce": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-smooth)",
+              "iOS": "tokens.motion.springSmooth.bounce"
+            }
+          }
+        }
+      },
+      "snappy": {
+        "duration": {
+          "$type": "duration",
+          "$value": {
+            "value": 0.35,
+            "unit": "s"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-snappy)",
+              "iOS": "tokens.motion.springSnappy.duration"
+            }
+          }
+        },
+        "bounce": {
+          "$type": "number",
+          "$value": 0.15,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-motion-spring-snappy)",
+              "iOS": "tokens.motion.springSnappy.bounce"
+            }
+          }
+        }
+      }
+    }
+  },
+  "opacity": {
+    "dimmed-row": {
+      "$type": "number",
+      "$value": 0.3,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-opacity-dimmed-row)",
+          "iOS": "tokens.opacity.dimmedRow"
+        },
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    },
+    "disabled": {
+      "$type": "number",
+      "$value": 0.38,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-opacity-disabled)",
+          "iOS": "tokens.opacity.disabled"
+        },
+        "com.figma.scopes": [
+          "OPACITY"
+        ]
+      }
+    }
+  },
+  "radius": {
+    "badge": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-badge)",
+          "iOS": "tokens.radius.badge"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "card": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$description": "regular card 24; compact 20",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-card)",
+          "iOS": "tokens.radius.card"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "card-compact": {
+      "$type": "dimension",
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-card-compact)",
+          "iOS": "tokens.radius.cardCompact"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "card-large": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-card-large)",
+          "iOS": "tokens.radius.cardLarge"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "chip": {
+      "$type": "dimension",
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-chip)",
+          "iOS": "tokens.radius.chip"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "control": {
+      "$type": "dimension",
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      },
+      "$description": "controls are pills or circles",
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-control)",
+          "iOS": "tokens.radius.control"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "hero": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-hero)",
+          "iOS": "tokens.radius.hero"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "inner": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-inner)",
+          "iOS": "tokens.radius.inner"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "media": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-media)",
+          "iOS": "tokens.radius.media"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "sheet": {
+      "$type": "dimension",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-sheet)",
+          "iOS": "tokens.radius.sheet"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    },
+    "tile": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-radius-tile)",
+          "iOS": "tokens.radius.tile"
+        },
+        "com.figma.scopes": [
+          "CORNER_RADIUS"
+        ]
+      }
+    }
+  },
+  "size": {
+    "card": {
+      "min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 200,
+          "unit": "px"
+        },
+        "$description": "minimum card width in pattern grids (spec/patterns/README.md)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-card-min)",
+            "iOS": "tokens.size.cardMin"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      }
+    },
+    "control": {
+      "lg": {
+        "$type": "dimension",
+        "$value": {
+          "value": 40,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-control-lg)",
+            "iOS": "tokens.size.controlLg"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 32,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-control-md)",
+            "iOS": "tokens.size.controlMd"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "sm": {
+        "$type": "dimension",
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-control-sm)",
+            "iOS": "tokens.size.controlSm"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      }
+    },
+    "hit": {
+      "$type": "dimension",
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-size-hit)",
+          "iOS": "tokens.size.hit"
+        },
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
+    },
+    "icon": {
+      "lg": {
+        "$type": "dimension",
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-icon-lg)",
+            "iOS": "tokens.size.iconLg"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-icon-md)",
+            "iOS": "tokens.size.iconMd"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "ring": {
+        "$type": "dimension",
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-icon-ring)",
+            "iOS": "tokens.size.iconRing"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "sm": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-size-icon-sm)",
+            "iOS": "tokens.size.iconSm"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      }
+    },
+    "row": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-size-row)",
+          "iOS": "tokens.size.row"
+        },
+        "com.figma.scopes": [
+          "WIDTH_HEIGHT"
+        ]
+      }
+    }
+  },
+  "space": {
+    "0": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-0)",
+          "iOS": "tokens.space.step0"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "1": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-1)",
+          "iOS": "tokens.space.step1"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-2)",
+          "iOS": "tokens.space.step2"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-3)",
+          "iOS": "tokens.space.step3"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-4)",
+          "iOS": "tokens.space.step4"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "5": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-5)",
+          "iOS": "tokens.space.step5"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-6)",
+          "iOS": "tokens.space.step6"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "7": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-7)",
+          "iOS": "tokens.space.step7"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-8)",
+          "iOS": "tokens.space.step8"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "9": {
+      "$type": "dimension",
+      "$value": {
+        "value": 36,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-9)",
+          "iOS": "tokens.space.step9"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "10": {
+      "$type": "dimension",
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-10)",
+          "iOS": "tokens.space.step10"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "11": {
+      "$type": "dimension",
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-11)",
+          "iOS": "tokens.space.step11"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "12": {
+      "$type": "dimension",
+      "$value": {
+        "value": 64,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-12)",
+          "iOS": "tokens.space.step12"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "13": {
+      "$type": "dimension",
+      "$value": {
+        "value": 104,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-13)",
+          "iOS": "tokens.space.step13"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "card-gap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-card-gap)",
+          "iOS": "tokens.space.cardGap"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "card-padding": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-card-padding)",
+          "iOS": "tokens.space.cardPadding"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "group-gap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-group-gap)",
+          "iOS": "tokens.space.groupGap"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "page-margin": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-page-margin)",
+          "iOS": "tokens.space.pageMargin"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "section-gap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-section-gap)",
+          "iOS": "tokens.space.sectionGap"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    },
+    "tile-gap": {
+      "$type": "dimension",
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-space-tile-gap)",
+          "iOS": "tokens.space.tileGap"
+        },
+        "com.figma.scopes": [
+          "GAP"
+        ]
+      }
+    }
+  },
+  "type": {
+    "body": {
+      "lg": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-lg-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 17,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-lg-font-size)",
+              "iOS": "tokens.typography.bodyLg.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-lg-font-weight)",
+              "iOS": "tokens.typography.bodyLg.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.5,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-lg-line-height)",
+              "iOS": "tokens.typography.bodyLg.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-lg-letter-spacing)",
+              "iOS": "tokens.typography.bodyLg.trackingEm"
+            }
+          }
+        }
+      },
+      "md": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-md-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-md-font-size)",
+              "iOS": "tokens.typography.bodyMd.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-md-font-weight)",
+              "iOS": "tokens.typography.bodyMd.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.5,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-md-line-height)",
+              "iOS": "tokens.typography.bodyMd.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-md-letter-spacing)",
+              "iOS": "tokens.typography.bodyMd.trackingEm"
+            }
+          }
+        }
+      },
+      "sm": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-sm-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 14,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-sm-font-size)",
+              "iOS": "tokens.typography.bodySm.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-sm-font-weight)",
+              "iOS": "tokens.typography.bodySm.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.45,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-sm-line-height)",
+              "iOS": "tokens.typography.bodySm.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-body-sm-letter-spacing)",
+              "iOS": "tokens.typography.bodySm.trackingEm"
+            }
+          }
+        }
+      }
+    },
+    "caption": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Inter",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-caption-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-caption-font-size)",
+            "iOS": "tokens.typography.caption.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 400,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-caption-font-weight)",
+            "iOS": "tokens.typography.caption.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.35,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-caption-line-height)",
+            "iOS": "tokens.typography.caption.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-caption-letter-spacing)",
+            "iOS": "tokens.typography.caption.trackingEm"
+          }
+        }
+      }
+    },
+    "data": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Inter",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-data-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-data-font-size)",
+            "iOS": "tokens.typography.data.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 400,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-data-font-weight)",
+            "iOS": "tokens.typography.data.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.3,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-data-line-height)",
+            "iOS": "tokens.typography.data.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-data-letter-spacing)",
+            "iOS": "tokens.typography.data.trackingEm"
+          }
+        }
+      }
+    },
+    "display": {
+      "lg": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-lg-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-lg-font-size)",
+              "iOS": "tokens.typography.displayLg.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-lg-font-weight)",
+              "iOS": "tokens.typography.displayLg.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-lg-line-height)",
+              "iOS": "tokens.typography.displayLg.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.48,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-lg-letter-spacing)",
+              "iOS": "tokens.typography.displayLg.trackingEm"
+            }
+          }
+        }
+      },
+      "md": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-md-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-md-font-size)",
+              "iOS": "tokens.typography.displayMd.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-md-font-weight)",
+              "iOS": "tokens.typography.displayMd.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.05,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-md-line-height)",
+              "iOS": "tokens.typography.displayMd.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-md-letter-spacing)",
+              "iOS": "tokens.typography.displayMd.trackingEm"
+            }
+          }
+        }
+      },
+      "xl": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-xl-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 64,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-xl-font-size)",
+              "iOS": "tokens.typography.displayXl.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-xl-font-weight)",
+              "iOS": "tokens.typography.displayXl.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-xl-line-height)",
+              "iOS": "tokens.typography.displayXl.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": -1.28,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-display-xl-letter-spacing)",
+              "iOS": "tokens.typography.displayXl.trackingEm"
+            }
+          }
+        }
+      }
+    },
+    "eyebrow": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Inter",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-eyebrow-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-eyebrow-font-size)",
+            "iOS": "tokens.typography.eyebrow.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 500,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-eyebrow-font-weight)",
+            "iOS": "tokens.typography.eyebrow.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.2,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-eyebrow-line-height)",
+            "iOS": "tokens.typography.eyebrow.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0.39,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-eyebrow-letter-spacing)",
+            "iOS": "tokens.typography.eyebrow.trackingEm"
+          }
+        }
+      }
+    },
+    "headline": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Inter",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-headline-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 18,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-headline-font-size)",
+            "iOS": "tokens.typography.headline.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 400,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-headline-font-weight)",
+            "iOS": "tokens.typography.headline.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.3,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-headline-line-height)",
+            "iOS": "tokens.typography.headline.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-headline-letter-spacing)",
+            "iOS": "tokens.typography.headline.trackingEm"
+          }
+        }
+      }
+    },
+    "label": {
+      "lg": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-lg-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 15,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-lg-font-size)",
+              "iOS": "tokens.typography.labelLg.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-lg-font-weight)",
+              "iOS": "tokens.typography.labelLg.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.2,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-lg-line-height)",
+              "iOS": "tokens.typography.labelLg.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-lg-letter-spacing)",
+              "iOS": "tokens.typography.labelLg.trackingEm"
+            }
+          }
+        }
+      },
+      "md": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-md-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 13,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-md-font-size)",
+              "iOS": "tokens.typography.labelMd.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-md-font-weight)",
+              "iOS": "tokens.typography.labelMd.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.2,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-md-line-height)",
+              "iOS": "tokens.typography.labelMd.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-md-letter-spacing)",
+              "iOS": "tokens.typography.labelMd.trackingEm"
+            }
+          }
+        }
+      },
+      "sm": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-sm-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-sm-font-size)",
+              "iOS": "tokens.typography.labelSm.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-sm-font-weight)",
+              "iOS": "tokens.typography.labelSm.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.2,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-sm-line-height)",
+              "iOS": "tokens.typography.labelSm.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-label-sm-letter-spacing)",
+              "iOS": "tokens.typography.labelSm.trackingEm"
+            }
+          }
+        }
+      }
+    },
+    "metric": {
+      "lg": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-lg-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-lg-font-size)",
+              "iOS": "tokens.typography.metricLg.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-lg-font-weight)",
+              "iOS": "tokens.typography.metricLg.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-lg-line-height)",
+              "iOS": "tokens.typography.metricLg.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-lg-letter-spacing)",
+              "iOS": "tokens.typography.metricLg.trackingEm"
+            }
+          }
+        }
+      },
+      "md": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-md-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-md-font-size)",
+              "iOS": "tokens.typography.metricMd.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-md-font-weight)",
+              "iOS": "tokens.typography.metricMd.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-md-line-height)",
+              "iOS": "tokens.typography.metricMd.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-md-letter-spacing)",
+              "iOS": "tokens.typography.metricMd.trackingEm"
+            }
+          }
+        }
+      },
+      "unit": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-unit-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-unit-font-size)",
+              "iOS": "tokens.typography.metricUnit.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-unit-font-weight)",
+              "iOS": "tokens.typography.metricUnit.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-unit-line-height)",
+              "iOS": "tokens.typography.metricUnit.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-unit-letter-spacing)",
+              "iOS": "tokens.typography.metricUnit.trackingEm"
+            }
+          }
+        }
+      },
+      "xl": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-xl-font-family)",
+              "iOS": "tokens.context.brand.faces[.display]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 48,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-xl-font-size)",
+              "iOS": "tokens.typography.metricXl.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 400,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-xl-font-weight)",
+              "iOS": "tokens.typography.metricXl.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-xl-line-height)",
+              "iOS": "tokens.typography.metricXl.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": -0.48,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-metric-xl-letter-spacing)",
+              "iOS": "tokens.typography.metricXl.trackingEm"
+            }
+          }
+        }
+      }
+    },
+    "micro": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Inter",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-micro-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-micro-font-size)",
+            "iOS": "tokens.typography.micro.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 500,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-micro-font-weight)",
+            "iOS": "tokens.typography.micro.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.2,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-micro-line-height)",
+            "iOS": "tokens.typography.micro.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-micro-letter-spacing)",
+            "iOS": "tokens.typography.micro.trackingEm"
+          }
+        }
+      }
+    },
+    "title": {
+      "lg": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-lg-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-lg-font-size)",
+              "iOS": "tokens.typography.titleLg.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-lg-font-weight)",
+              "iOS": "tokens.typography.titleLg.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-lg-line-height)",
+              "iOS": "tokens.typography.titleLg.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-lg-letter-spacing)",
+              "iOS": "tokens.typography.titleLg.trackingEm"
+            }
+          }
+        }
+      },
+      "md": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-md-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-md-font-size)",
+              "iOS": "tokens.typography.titleMd.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-md-font-weight)",
+              "iOS": "tokens.typography.titleMd.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.15,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-md-line-height)",
+              "iOS": "tokens.typography.titleMd.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-md-letter-spacing)",
+              "iOS": "tokens.typography.titleMd.trackingEm"
+            }
+          }
+        }
+      },
+      "sm": {
+        "font-family": {
+          "$type": "fontFamily",
+          "$value": "Inter",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-sm-font-family)",
+              "iOS": "tokens.context.brand.faces[.ui]"
+            }
+          }
+        },
+        "font-size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-sm-font-size)",
+              "iOS": "tokens.typography.titleSm.size"
+            }
+          }
+        },
+        "font-weight": {
+          "$type": "number",
+          "$value": 500,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-sm-font-weight)",
+              "iOS": "tokens.typography.titleSm.weight"
+            }
+          }
+        },
+        "line-height": {
+          "$type": "number",
+          "$value": 1.2,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-sm-line-height)",
+              "iOS": "tokens.typography.titleSm.lineHeight"
+            }
+          }
+        },
+        "letter-spacing": {
+          "$type": "dimension",
+          "$value": {
+            "value": 0,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-type-title-sm-letter-spacing)",
+              "iOS": "tokens.typography.titleSm.trackingEm"
+            }
+          }
+        }
+      }
+    }
+  },
+  "z": {
+    "base": {
+      "$type": "number",
+      "$value": 0,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-z-base)",
+          "iOS": "tokens.zIndex.base"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "overlay": {
+      "$type": "number",
+      "$value": 100,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-z-overlay)",
+          "iOS": "tokens.zIndex.overlay"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "raised": {
+      "$type": "number",
+      "$value": 10,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-z-raised)",
+          "iOS": "tokens.zIndex.raised"
+        },
+        "com.figma.scopes": []
+      }
+    },
+    "toast": {
+      "$type": "number",
+      "$value": 1000,
+      "$extensions": {
+        "com.figma.codeSyntax": {
+          "WEB": "var(--ds-z-toast)",
+          "iOS": "tokens.zIndex.toast"
+        },
+        "com.figma.scopes": []
+      }
+    }
+  },
+  "comp": {
+    "button": {
+      "danger": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.992,
+                0.9138,
+                0.9138
+              ],
+              "alpha": 1,
+              "hex": "#fde9e9"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-danger-bg-rest)",
+                "iOS": "tokens.components.button.dangerBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7489,
+              0.1333,
+              0.1335
+            ],
+            "alpha": 1,
+            "hex": "#bf2222"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-danger-border)",
+              "iOS": "tokens.components.button.dangerBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.7489,
+              0.1333,
+              0.1335
+            ],
+            "alpha": 1,
+            "hex": "#bf2222"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-danger-text)",
+              "iOS": "tokens.components.button.dangerText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "gap": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-button-gap)",
+            "iOS": "tokens.components.button.gap"
+          },
+          "com.figma.scopes": [
+            "GAP"
+          ]
+        }
+      },
+      "ghost": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 0.06,
+              "hex": "#0d0e11"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-ghost-bg-rest)",
+                "iOS": "tokens.components.button.ghostBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.6,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-ghost-border)",
+              "iOS": "tokens.components.button.ghostBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-ghost-text)",
+              "iOS": "tokens.components.button.ghostText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "height": {
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-height-lg)",
+              "iOS": "tokens.components.button.heightLg"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-height-md)",
+              "iOS": "tokens.components.button.heightMd"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 28,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-height-sm)",
+              "iOS": "tokens.components.button.heightSm"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "motion": {
+        "press": {
+          "duration": {
+            "$type": "duration",
+            "$value": {
+              "value": 0.35,
+              "unit": "s"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-motion-press)",
+                "iOS": "tokens.components.button.motionPress.duration"
+              }
+            }
+          },
+          "bounce": {
+            "$type": "number",
+            "$value": 0.15,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-motion-press)",
+                "iOS": "tokens.components.button.motionPress.bounce"
+              }
+            }
+          }
+        }
+      },
+      "padding-x": {
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-padding-x-lg)",
+              "iOS": "tokens.components.button.paddingXLg"
+            },
+            "com.figma.scopes": [
+              "GAP"
+            ]
+          }
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 16,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-padding-x-md)",
+              "iOS": "tokens.components.button.paddingXMd"
+            },
+            "com.figma.scopes": [
+              "GAP"
+            ]
+          }
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 12,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-padding-x-sm)",
+              "iOS": "tokens.components.button.paddingXSm"
+            },
+            "com.figma.scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "primary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 1,
+              "hex": "#0d0e11"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-primary-bg-pressed)",
+                "iOS": "tokens.components.button.primaryBgPressed"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 1,
+              "hex": "#0d0e11"
+            },
+            "$description": "solid inverse pill is the only fill",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-primary-bg-rest)",
+                "iOS": "tokens.components.button.primaryBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-primary-text)",
+              "iOS": "tokens.components.button.primaryText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 999,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-button-radius)",
+            "iOS": "tokens.components.button.radius"
+          },
+          "com.figma.scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      },
+      "secondary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 0.06,
+              "hex": "#0d0e11"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-secondary-bg-pressed)",
+                "iOS": "tokens.components.button.secondaryBgPressed"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.7,
+              "hex": "#ffffff"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-button-secondary-bg-rest)",
+                "iOS": "tokens.components.button.secondaryBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.3,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-secondary-border)",
+              "iOS": "tokens.components.button.secondaryBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-button-secondary-text)",
+              "iOS": "tokens.components.button.secondaryText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "card": {
+      "glass": {
+        "fill": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.0393,
+              0.0471,
+              0.0315
+            ],
+            "alpha": 0.55,
+            "hex": "#0a0c08"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-glass-fill)",
+              "iOS": "tokens.components.card.glassFill"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-glass-text)",
+              "iOS": "tokens.components.card.glassText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "padding": {
+        "$type": "dimension",
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-card-padding)",
+            "iOS": "tokens.components.card.padding"
+          },
+          "com.figma.scopes": [
+            "GAP"
+          ]
+        }
+      },
+      "radius": {
+        "compact": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-radius-compact)",
+              "iOS": "tokens.components.card.radiusCompact"
+            },
+            "com.figma.scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        },
+        "large": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-radius-large)",
+              "iOS": "tokens.components.card.radiusLarge"
+            },
+            "com.figma.scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        },
+        "regular": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-radius-regular)",
+              "iOS": "tokens.components.card.radiusRegular"
+            },
+            "com.figma.scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-solid-bg)",
+              "iOS": "tokens.components.card.solidBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "caption": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.251,
+              0.2667,
+              0.2981
+            ],
+            "alpha": 1,
+            "hex": "#40444c"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-solid-caption)",
+              "iOS": "tokens.components.card.solidCaption"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-solid-text)",
+              "iOS": "tokens.components.card.solidText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "vivid": {
+        "caption": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-vivid-caption)",
+              "iOS": "tokens.components.card.vividCaption"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-card-vivid-text)",
+              "iOS": "tokens.components.card.vividText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

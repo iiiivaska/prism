@@ -5,8 +5,19 @@
   "type": "module",
   "private": false,
   "sideEffects": ["**/*.css"],
-  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
-  "files": ["dist", "spec"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./tokens": { "types": "./dist/brands/prism/tokens.d.ts", "default": "./dist/brands/prism/tokens.js" },
+    "./tokens.css": "./src/generated/prism/tokens.css",
+    "./brands/*/tokens": { "types": "./dist/brands/*/tokens.d.ts", "default": "./dist/brands/*/tokens.js" },
+    "./brands/*/tokens.css": "./src/generated/*/tokens.css",
+    "./brands/*/fonts.css": "./src/generated/*/fonts/fonts.css",
+    "./motion.css": "./src/generated/motion.css",
+    "./tailwind.css": "./src/generated/tailwind.css",
+    "./manifest.json": "./src/generated/manifest.json",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "src/generated", "spec"],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json",

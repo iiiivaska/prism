@@ -1,0 +1,274 @@
+{
+  "ref": {
+    "font": {
+      "apple": {
+        "display": {
+          "$type": "fontFamilies",
+          "$value": "Onest"
+        },
+        "mono": {
+          "$type": "fontFamilies",
+          "$value": "JetBrains Mono"
+        },
+        "ui": {
+          "$type": "fontFamilies",
+          "$value": "Onest"
+        }
+      },
+      "display": {
+        "$type": "fontFamilies",
+        "$value": "Onest, system-ui, sans-serif",
+        "$description": "Web stack of the display slot: served families and CSS generics only (ADR-0020)"
+      },
+      "mono": {
+        "$type": "fontFamilies",
+        "$value": "JetBrains Mono, ui-monospace, monospace",
+        "$description": "Web stack of the mono slot: served families and CSS generics only (ADR-0020)"
+      },
+      "ui": {
+        "$type": "fontFamilies",
+        "$value": "Onest, system-ui, sans-serif",
+        "$description": "Web stack of the ui slot: served families and CSS generics only (ADR-0020)"
+      }
+    },
+    "type": {
+      "body": {
+        "lg": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "17px",
+            "fontWeight": "400",
+            "lineHeight": "150%",
+            "letterSpacing": "0px"
+          }
+        },
+        "md": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "15px",
+            "fontWeight": "400",
+            "lineHeight": "150%",
+            "letterSpacing": "0px"
+          }
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "14px",
+            "fontWeight": "400",
+            "lineHeight": "145%",
+            "letterSpacing": "0px"
+          },
+          "$description": "dense web tables"
+        }
+      },
+      "caption": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "lineHeight": "135%",
+          "letterSpacing": "0px"
+        },
+        "$description": "'7m ago', 'Rolling average'; secondary color"
+      },
+      "data": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "13px",
+          "fontWeight": "400",
+          "lineHeight": "130%",
+          "letterSpacing": "0px"
+        },
+        "$description": "tables, axes, timers, live counters"
+      },
+      "display": {
+        "lg": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "48px",
+            "fontWeight": "300",
+            "lineHeight": "100%",
+            "letterSpacing": "-0.48px"
+          }
+        },
+        "md": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "40px",
+            "fontWeight": "400",
+            "lineHeight": "105%",
+            "letterSpacing": "0px"
+          }
+        },
+        "xl": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "64px",
+            "fontWeight": "300",
+            "lineHeight": "100%",
+            "letterSpacing": "-1.28px"
+          },
+          "$description": "page hero title set into the backdrop; never thin (ADR-0021)"
+        }
+      },
+      "eyebrow": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "13px",
+          "fontWeight": "500",
+          "lineHeight": "120%",
+          "letterSpacing": "0.39px"
+        },
+        "$description": "uppercase, at most one per card"
+      },
+      "headline": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "18px",
+          "fontWeight": "400",
+          "lineHeight": "130%",
+          "letterSpacing": "0px"
+        },
+        "$description": "card titles, never bold"
+      },
+      "label": {
+        "lg": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "15px",
+            "fontWeight": "500",
+            "lineHeight": "120%",
+            "letterSpacing": "0px"
+          }
+        },
+        "md": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "13px",
+            "fontWeight": "500",
+            "lineHeight": "120%",
+            "letterSpacing": "0px"
+          }
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "12px",
+            "fontWeight": "500",
+            "lineHeight": "120%",
+            "letterSpacing": "0px"
+          }
+        }
+      },
+      "metric": {
+        "lg": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "32px",
+            "fontWeight": "300",
+            "lineHeight": "100%",
+            "letterSpacing": "0px"
+          },
+          "$description": "card metric; never thin (32 px is below the 34 px threshold)"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "20px",
+            "fontWeight": "400",
+            "lineHeight": "110%",
+            "letterSpacing": "0px"
+          },
+          "$description": "inline metric '41 %'"
+        },
+        "unit": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "12px",
+            "fontWeight": "400",
+            "lineHeight": "100%",
+            "letterSpacing": "0px"
+          },
+          "$description": "baseline-aligned unit, 6 px gap, secondary color"
+        },
+        "xl": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "48px",
+            "fontWeight": "300",
+            "lineHeight": "100%",
+            "letterSpacing": "-0.48px"
+          },
+          "$description": "the one hero numeral per screen; 300 in light, 200 in dark (darkWeight); proportional figures unless the value is live; trailing group in text.dimmed at the same size"
+        }
+      },
+      "micro": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "11px",
+          "fontWeight": "500",
+          "lineHeight": "120%",
+          "letterSpacing": "0px"
+        },
+        "$description": "badges only; never functional body text"
+      },
+      "scale": {
+        "$type": "number",
+        "$value": "1",
+        "$description": "Brand type-scale multiplier (ADR-0008 decision 1); the build multiplies every typography fontSize and letterSpacing by it."
+      },
+      "title": {
+        "lg": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "32px",
+            "fontWeight": "500",
+            "lineHeight": "110%",
+            "letterSpacing": "0px"
+          },
+          "$description": "H1; two-tone variant: second line in text.secondary"
+        },
+        "md": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "24px",
+            "fontWeight": "500",
+            "lineHeight": "115%",
+            "letterSpacing": "0px"
+          }
+        },
+        "sm": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.ui}",
+            "fontSize": "20px",
+            "fontWeight": "500",
+            "lineHeight": "120%",
+            "letterSpacing": "0px"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+/* One line per runtime pattern (ADR-0019 rule 1, ADR-0023 §12); `expect:` names the rule the line must trip. */
+:root[data-ds-motion="reduce"] .ds-toggle { opacity: 1; } /* expect: runtime/attribute */
+[data-ds-color-scheme="dark"] .ds-toggle { opacity: 1; } /* expect: runtime/attribute */
+@media (prefers-reduced-motion: reduce) { .ds-toggle { opacity: 1; } } /* expect: runtime/media-preference */
+@media (prefers-contrast: more) { .ds-toggle { opacity: 1; } } /* expect: runtime/media-preference */
+@media (any-pointer: coarse) { .ds-toggle { opacity: 1; } } /* expect: runtime/media-pointer */
+@media not all and (hover: hover) { .ds-toggle { opacity: 1; } } /* expect: runtime/media-pointer */
+.ds-toggle { @variant dark { opacity: 1; } } /* expect: runtime/variant-rule */
+.ds-toggle { @variant contrast-more { opacity: 1; } } /* expect: runtime/variant-rule */
+.ds-toggle { @variant motion-reduce { opacity: 1; } } /* expect: runtime/variant-rule */
+.ds-toggle { @variant pointer-coarse { opacity: 1; } } /* expect: runtime/variant-rule */

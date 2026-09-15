@@ -118,8 +118,10 @@ export interface WebRuntimeAxis {
   readonly resolver:
     | { readonly modifier: string; readonly contexts: Readonly<Record<string, string>> }
     | { readonly variant: Exclude<SchemeVariant, 'none'>; readonly suffix: string; readonly value: string };
-  /** Swift type name (ADR-0019 §1); P1-5 adds the case names. */
+  /** Swift type name (ADR-0019 §1). */
   readonly swiftType: string;
+  /** Swift case per web value: Swift keeps its enum case names, the manifest maps one to the other (ADR-0019 §1 rule 1). */
+  readonly swiftCases: Readonly<Record<string, string>>;
 }
 
 /** ADR-0019 §1 and §3: the one hand-written definition of the web runtime contract. */
@@ -131,6 +133,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'dark', query: '(prefers-color-scheme: dark)' },
     resolver: { modifier: 'colorScheme', contexts: { light: 'light', dark: 'dark' } },
     swiftType: 'DSColorScheme',
+    swiftCases: { light: 'light', dark: 'dark' },
   },
   contrast: {
     attribute: 'data-ds-contrast',
@@ -139,6 +142,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'more', query: '(prefers-contrast: more)' },
     resolver: { variant: 'increasedContrast', suffix: '-increased-contrast', value: 'more' },
     swiftType: 'DSContrast',
+    swiftCases: { standard: 'standard', more: 'increased' },
   },
   transparency: {
     attribute: 'data-ds-transparency',
@@ -147,6 +151,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'reduce', query: '(prefers-reduced-transparency: reduce)' },
     resolver: { variant: 'reducedTransparency', suffix: '-reduced-transparency', value: 'reduce' },
     swiftType: 'DSTransparency',
+    swiftCases: { standard: 'standard', reduce: 'reduced' },
   },
   density: {
     attribute: 'data-ds-density',
@@ -155,6 +160,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'regular', query: '(any-pointer: coarse)' },
     resolver: { modifier: 'density', contexts: { compact: 'compact', regular: 'regular', comfortable: 'comfortable' } },
     swiftType: 'DSDensity',
+    swiftCases: { compact: 'compact', regular: 'regular', comfortable: 'comfortable' },
   },
   modality: {
     attribute: 'data-ds-modality',
@@ -163,6 +169,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'touch', query: 'not all and (hover: hover) and (pointer: fine)' },
     resolver: { modifier: 'modality', contexts: { pointer: 'pointer', touch: 'touch' } },
     swiftType: 'DSModality',
+    swiftCases: { pointer: 'pointer', touch: 'touch' },
   },
   motion: {
     attribute: 'data-ds-motion',
@@ -171,6 +178,7 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
     media: { value: 'reduce', query: '(prefers-reduced-motion: reduce)' },
     resolver: { modifier: 'motion', contexts: { standard: 'default', reduce: 'reduced' } },
     swiftType: 'DSMotionMode',
+    swiftCases: { standard: 'standard', reduce: 'reduced' },
   },
 };
 
@@ -270,3 +278,199 @@ export const EXTENSION_KEY_TYPES: Readonly<Record<string, string>> = {
   bloom: 'gradient',
   alpha: 'color',
 };
+
+// ---- P1-5: outputs, the web runtime defaults, Tailwind and Swift tables (ARCHITECTURE §8, §9) ----
+
+/**
+ * The directories the token writer owns (ARCHITECTURE §9.0, ADR-0024 §11): it writes changed files,
+ * deletes files it no longer produces and never writes anywhere else. CI's stale check lists the
+ * same roots (`.github/workflows/ci.yml`, `generated=`; the font root joins once
+ * `tools/tokens/formats/fonts.ts` exists); `output/roots.test.ts` asserts the equality.
+ */
+export const OWNED_ROOTS: readonly string[] = [
+  'swift/Sources/DSTokens/Generated',
+  'swift/Sources/DSTokens/Resources/Colors.xcassets',
+  'swift/Tests/DSTokensTests/Generated',
+  'web/packages/tokens/src/generated',
+  'tokens/export',
+  // P1-8 (ADR-0021 §11): every font file a repo brand bundles on Apple, with its OFL.txt.
+  'swift/Sources/DSTokens/Resources/Fonts',
+];
+
+/** Where the web outputs go (ARCHITECTURE §9.0): `<brand>/tokens.css`, `<brand>/tokens.ts`, the shared files. */
+export const WEB_OUTPUT_ROOT = 'web/packages/tokens/src/generated';
+
+/** One per-platform default context (ADR-0019 §2), in web vocabulary (TokenContext values). */
+export interface PlatformDefault {
+  readonly colorScheme?: string;
+  readonly density: string;
+  readonly modality: string;
+}
+
+/**
+ * ADR-0019 §2: where each platform starts. Web: compact + pointer while no input is coarse and the
+ * primary input hovers finely (the fallbacks of WEB_RUNTIME do the rest); iOS and iPadOS regular +
+ * touch (iPadOS pointer while a mouse or trackpad is connected); macOS compact + pointer; watchOS
+ * comfortable + touch + dark. The one hand-written copy (ADR-0019 rule 1).
+ */
+export const PLATFORM_DEFAULTS: Readonly<Record<string, PlatformDefault>> = {
+  web: { density: 'compact', modality: 'pointer' },
+  ios: { density: 'regular', modality: 'touch' },
+  ipados: { density: 'regular', modality: 'touch' },
+  macos: { density: 'compact', modality: 'pointer' },
+  watchos: { colorScheme: 'dark', density: 'comfortable', modality: 'touch' },
+};
+
+/** Tokens that go to motion.css instead of tokens.css (ARCHITECTURE §9.2, §9.3). */
+export const MOTION_CSS_TYPES: readonly string[] = ['duration', 'cubicBezier', 'transition'];
+export const MOTION_CSS_PREFIXES: readonly string[] = ['ref.motion.**', 'sys.motion.**'];
+
+/** Ids no web output emits (ADR-0020 §5): the Apple faces. The manifest lists them without web names. */
+export const WEB_EXCLUDED: readonly string[] = ['ref.font.apple.**'];
+
+/** Text no generated web file contains (ADR-0020 rule 7). */
+export const WEB_BANNED_STRINGS: readonly string[] = [
+  'SF Pro', 'SF Mono', 'SF Compact', 'New York', 'Menlo', '-apple-system', 'BlinkMacSystemFont',
+  'data-ds-brand', 'fonts.googleapis.com', 'fonts.gstatic.com',
+];
+
+/** One Tailwind theme variable a token feeds: its namespace, the CSS part it references, an optional sub-key. */
+export interface TailwindThemeVar {
+  readonly namespace: string;
+  /** The declaration suffix of the token the variable references ('' for the base declaration). */
+  readonly part: string;
+  /** Tailwind's `--<namespace>-<name>--<subKey>` companion variable (typography line height and so on). */
+  readonly subKey?: string;
+}
+
+/**
+ * Which `sys` tokens become Tailwind theme variables (ARCHITECTURE §9.4): the name is `prefix` plus
+ * the id segments after `strip`, `$root` dropped, joined with '-'. `sys.border.*` widths get no
+ * namespace: they would collide with `--border-color-ds-*` (ADR-0024 §6).
+ */
+export interface TailwindThemeRule {
+  readonly match: string;
+  readonly strip: string;
+  readonly prefix: string;
+  readonly type: string;
+  readonly vars: readonly TailwindThemeVar[];
+}
+export const TAILWIND_THEME: readonly TailwindThemeRule[] = [
+  { match: 'sys.color.bg.**', strip: 'sys.color.bg', prefix: '', type: 'color', vars: [{ namespace: '--background-color', part: '' }] },
+  { match: 'sys.color.text.**', strip: 'sys.color.text', prefix: '', type: 'color', vars: [{ namespace: '--text-color', part: '' }] },
+  { match: 'sys.color.icon.**', strip: 'sys.color.icon', prefix: 'icon', type: 'color', vars: [{ namespace: '--text-color', part: '' }, { namespace: '--fill', part: '' }] },
+  { match: 'sys.color.border.**', strip: 'sys.color.border', prefix: '', type: 'color', vars: [{ namespace: '--border-color', part: '' }, { namespace: '--outline-color', part: '' }] },
+  { match: 'sys.color.accent.**', strip: 'sys.color.accent', prefix: 'accent', type: 'color', vars: [{ namespace: '--background-color', part: '' }, { namespace: '--fill', part: '' }, { namespace: '--stroke', part: '' }] },
+  { match: 'sys.color.chart.**', strip: 'sys.color.chart', prefix: 'chart', type: 'color', vars: [{ namespace: '--color', part: '' }] },
+  { match: 'sys.space.**', strip: 'sys.space', prefix: '', type: 'dimension', vars: [{ namespace: '--spacing', part: '' }] },
+  { match: 'sys.size.**', strip: 'sys.size', prefix: '', type: 'dimension', vars: [{ namespace: '--spacing', part: '' }] },
+  { match: 'sys.radius.**', strip: 'sys.radius', prefix: '', type: 'dimension', vars: [{ namespace: '--radius', part: '' }] },
+  { match: 'sys.elevation.**', strip: 'sys.elevation', prefix: 'elevation', type: 'shadow', vars: [{ namespace: '--shadow', part: '' }] },
+  { match: 'sys.shadow.**', strip: 'sys.shadow', prefix: '', type: 'shadow', vars: [{ namespace: '--shadow', part: '' }] },
+  { match: 'sys.font.**', strip: 'sys.font', prefix: '', type: 'fontFamily', vars: [{ namespace: '--font', part: '' }] },
+  {
+    match: 'sys.type.**', strip: 'sys.type', prefix: '', type: 'typography',
+    vars: [
+      { namespace: '--text', part: '-font-size' },
+      { namespace: '--text', part: '-font-weight', subKey: 'font-weight' },
+      { namespace: '--text', part: '-letter-spacing', subKey: 'letter-spacing' },
+      { namespace: '--text', part: '-line-height', subKey: 'line-height' },
+    ],
+  },
+  { match: 'sys.motion.easing.**', strip: 'sys.motion.easing', prefix: '', type: 'cubicBezier', vars: [{ namespace: '--ease', part: '' }] },
+  { match: 'sys.motion.spring.**', strip: 'sys.motion.spring', prefix: 'spring', type: 'transition', vars: [{ namespace: '--ease', part: '-easing' }, { namespace: '--transition-duration', part: '-duration' }] },
+  { match: 'sys.motion.duration.**', strip: 'sys.motion.duration', prefix: '', type: 'duration', vars: [{ namespace: '--transition-duration', part: '' }] },
+  { match: 'sys.opacity.**', strip: 'sys.opacity', prefix: '', type: 'number', vars: [{ namespace: '--opacity', part: '' }] },
+  { match: 'sys.z.**', strip: 'sys.z', prefix: '', type: 'number', vars: [{ namespace: '--z-index', part: '' }] },
+];
+
+/**
+ * The composite typography utility (ADR-0019 §3, rule 14): one `@utility type-ds-<role>` per
+ * `sys.type.<role>`, setting these properties in this order from the role's derived declarations.
+ */
+export const TAILWIND_TYPE_UTILITY = {
+  match: 'sys.type.**',
+  strip: 'sys.type',
+  prefix: 'type-ds-',
+  properties: [
+    ['font-family', '-font-family'],
+    ['font-size', '-font-size'],
+    ['font-weight', '-font-weight'],
+    ['line-height', '-line-height'],
+    ['letter-spacing', '-letter-spacing'],
+    ['font-variant-numeric', '-font-variant-numeric'],
+  ],
+} as const;
+
+/**
+ * The utility families Tailwind 4.3.3 derives from each theme namespace Prism feeds, copied from its
+ * class list (`__unstable__loadDesignSystem(...).getClassList()`); the Tailwind compile test re-derives
+ * them and fails when a Tailwind update changes one. The collision check (ARCHITECTURE §9.4) maps every
+ * theme variable through this table: two variables that yield the same utility name fail the build,
+ * even where Tailwind's lookup order (`text`: `--text-color`, `--color`, then `--text`) would pick one silently.
+ */
+export const TAILWIND_FAMILIES: Readonly<Record<string, readonly string[]>> = {
+  '--background-color': ['bg', 'from', 'mask-b-from', 'mask-b-to', 'mask-conic-from', 'mask-conic-to', 'mask-l-from', 'mask-l-to', 'mask-linear-from', 'mask-linear-to', 'mask-r-from', 'mask-r-to', 'mask-radial-from', 'mask-radial-to', 'mask-t-from', 'mask-t-to', 'mask-x-from', 'mask-x-to', 'mask-y-from', 'mask-y-to', 'to', 'via'],
+  '--text-color': ['text'],
+  '--border-color': ['border', 'border-b', 'border-be', 'border-bs', 'border-e', 'border-l', 'border-r', 'border-s', 'border-t', 'border-x', 'border-y', 'divide'],
+  '--outline-color': ['outline'],
+  '--fill': ['fill'],
+  '--stroke': ['stroke'],
+  '--color': ['accent', 'bg', 'border', 'border-b', 'border-be', 'border-bs', 'border-e', 'border-l', 'border-r', 'border-s', 'border-t', 'border-x', 'border-y', 'caret', 'decoration', 'divide', 'drop-shadow', 'fill', 'from', 'inset-ring', 'inset-shadow', 'mask-b-from', 'mask-b-to', 'mask-conic-from', 'mask-conic-to', 'mask-l-from', 'mask-l-to', 'mask-linear-from', 'mask-linear-to', 'mask-r-from', 'mask-r-to', 'mask-radial-from', 'mask-radial-to', 'mask-t-from', 'mask-t-to', 'mask-x-from', 'mask-x-to', 'mask-y-from', 'mask-y-to', 'outline', 'placeholder', 'ring', 'ring-offset', 'scrollbar-thumb', 'scrollbar-track', 'shadow', 'stroke', 'text', 'text-shadow', 'to', 'via'],
+  '--spacing': ['-bottom', '-indent', '-inset', '-inset-be', '-inset-bs', '-inset-e', '-inset-s', '-inset-x', '-inset-y', '-left', '-m', '-mb', '-mbe', '-mbs', '-me', '-ml', '-mr', '-ms', '-mt', '-mx', '-my', '-right', '-scroll-m', '-scroll-mb', '-scroll-mbe', '-scroll-mbs', '-scroll-me', '-scroll-ml', '-scroll-mr', '-scroll-ms', '-scroll-mt', '-scroll-mx', '-scroll-my', '-space-x', '-space-y', '-top', '-translate', '-translate-x', '-translate-y', '-translate-z', 'basis', 'block', 'border-spacing', 'border-spacing-x', 'border-spacing-y', 'bottom', 'gap', 'gap-x', 'gap-y', 'h', 'indent', 'inline', 'inset', 'inset-be', 'inset-bs', 'inset-e', 'inset-s', 'inset-x', 'inset-y', 'leading', 'left', 'm', 'max-block', 'max-h', 'max-inline', 'max-w', 'mb', 'mbe', 'mbs', 'me', 'min-block', 'min-h', 'min-inline', 'min-w', 'ml', 'mr', 'ms', 'mt', 'mx', 'my', 'p', 'pb', 'pbe', 'pbs', 'pe', 'pl', 'pr', 'ps', 'pt', 'px', 'py', 'right', 'scroll-m', 'scroll-mb', 'scroll-mbe', 'scroll-mbs', 'scroll-me', 'scroll-ml', 'scroll-mr', 'scroll-ms', 'scroll-mt', 'scroll-mx', 'scroll-my', 'scroll-p', 'scroll-pb', 'scroll-pbe', 'scroll-pbs', 'scroll-pe', 'scroll-pl', 'scroll-pr', 'scroll-ps', 'scroll-pt', 'scroll-px', 'scroll-py', 'size', 'space-x', 'space-y', 'top', 'translate', 'translate-x', 'translate-y', 'translate-z', 'w'],
+  '--radius': ['rounded', 'rounded-b', 'rounded-bl', 'rounded-br', 'rounded-e', 'rounded-ee', 'rounded-es', 'rounded-l', 'rounded-r', 'rounded-s', 'rounded-se', 'rounded-ss', 'rounded-t', 'rounded-tl', 'rounded-tr'],
+  '--shadow': ['shadow'],
+  '--font': ['font'],
+  '--text': ['text'],
+  '--ease': ['ease'],
+  '--transition-duration': ['duration'],
+  '--opacity': ['backdrop-opacity', 'opacity'],
+  '--z-index': ['-z', 'z'],
+};
+
+/** The families `manifest.json` lists per token (every family stays usable; these are the documented ones). */
+export const TAILWIND_MANIFEST_FAMILIES: Readonly<Record<string, readonly string[]>> = {
+  '--background-color': ['bg'],
+  '--text-color': ['text'],
+  '--border-color': ['border', 'divide'],
+  '--outline-color': ['outline'],
+  '--fill': ['fill'],
+  '--stroke': ['stroke'],
+  '--color': ['bg', 'text', 'border', 'fill', 'stroke'],
+  '--spacing': ['p', 'px', 'py', 'pt', 'pr', 'pb', 'pl', 'm', 'mx', 'my', 'mt', 'mr', 'mb', 'ml', 'gap', 'gap-x', 'gap-y', 'space-x', 'space-y', 'w', 'min-w', 'max-w', 'h', 'min-h', 'max-h', 'size', 'inset', 'top', 'right', 'bottom', 'left'],
+  '--radius': ['rounded'],
+  '--shadow': ['shadow'],
+  '--font': ['font'],
+  '--text': ['text'],
+  '--ease': ['ease'],
+  '--transition-duration': ['duration'],
+  '--opacity': ['opacity'],
+  '--z-index': ['z'],
+};
+
+/**
+ * The root-level `ds-*` variants of tailwind.css (ADR-0019 §3, ARCHITECTURE §9.4): an attribute form
+ * and a media form each, from WEB_RUNTIME. There is no scheme or density variant.
+ */
+export const TAILWIND_VARIANTS: readonly { readonly name: string; readonly axis: string; readonly value: string }[] = [
+  { name: 'ds-touch', axis: 'modality', value: 'touch' },
+  { name: 'ds-pointer', axis: 'modality', value: 'pointer' },
+  { name: 'ds-contrast-more', axis: 'contrast', value: 'more' },
+  { name: 'ds-reduce-transparency', axis: 'transparency', value: 'reduce' },
+  { name: 'ds-reduce-motion', axis: 'motion', value: 'reduce' },
+];
+
+/**
+ * Swift categories (ARCHITECTURE §8): the first public-path segment of a `sys` token names its
+ * `DSTokenSet` member struct; `color` members live on the brand-scoped `DSColor` (ADR-0020 §7) and
+ * `font` in `DSBrand.faces`. `comp.<c>` tokens live in `components.<c>`. An unknown category fails the build.
+ */
+export const SWIFT_CATEGORIES: Readonly<Record<string, string>> = {
+  color: 'DSColor', material: 'material', border: 'border', shadow: 'shadow', elevation: 'elevation',
+  space: 'space', size: 'size', radius: 'radius', type: 'typography', font: 'DSBrand', motion: 'motion',
+  gradient: 'gradient', opacity: 'opacity', z: 'zIndex', icon: 'icon', chart: 'chart', stroke: 'stroke',
+  interaction: 'interaction',
+};
+/** A Swift member that would start with a digit takes its category's prefix (`space.4` → `step4`). */
+export const NUMERIC_PREFIX: Readonly<Record<string, string>> = { space: 'step', elevation: 'level' };
+export const NUMERIC_PREFIX_DEFAULT = 'n';

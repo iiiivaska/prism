@@ -1,0 +1,631 @@
+{
+  "color": {
+    "accent": {
+      "default": {
+        "$type": "color",
+        "$value": "{ref.color.accent.500}"
+      },
+      "glow": {
+        "$type": "color",
+        "$value": "{ref.color.accent.500}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.4",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
+      "pressed": {
+        "$type": "color",
+        "$value": "{ref.color.accent.400}"
+      },
+      "subtle": {
+        "$type": "color",
+        "$value": "{ref.color.accent.500}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.14",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      }
+    },
+    "bg": {
+      "fill": {
+        "accent": {
+          "$type": "color",
+          "$value": "{ref.color.slot.dark.bg-fill-accent}",
+          "$description": "the one attention KPI tile; content is ink (8.4:1)"
+        },
+        "accent-strong": {
+          "$type": "color",
+          "$value": "{ref.color.accent.600}",
+          "$description": "white text at the large tier only: >= 24 px regular or >= 19 px bold (3.05:1, ADR-0011)"
+        },
+        "critical": {
+          "$type": "color",
+          "$value": "{ref.color.status.danger.badge}"
+        },
+        "inverse": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.0}",
+          "$description": "active segmented button, send button; black glyph"
+        },
+        "neutral": {
+          "subtle": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.06)"
+          }
+        }
+      },
+      "page": {
+        "$type": "color",
+        "$value": "{ref.color.slot.dark.bg-page}",
+        "$description": "never pure #000; optional radial vignette +3-10% toward the hero"
+      },
+      "surface": {
+        "default": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.06)",
+          "$description": "surface-1 = #1C1C1F over page; no border, no shadow"
+        },
+        "nested": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.12)",
+          "$description": "surface-3 = #2A2B2E: translucent card over map, control on card"
+        },
+        "overlay": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.12)"
+        },
+        "raised": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.09)",
+          "$description": "surface-2 = #232426: tiles, pills, nested; optional 1 px white 8% top edge on tiles and nav pills only"
+        }
+      },
+      "tint": {
+        "accent": {
+          "$type": "color",
+          "$value": "{ref.color.accent.500}",
+          "$description": "orange band under a flagged chart window (= #2D2118 on page)",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.14",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        },
+        "critical": {
+          "$type": "color",
+          "$value": "{ref.color.status.danger.mark-dark}",
+          "$description": "alert sub-card = #322123 on surface-1",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.1",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        },
+        "info": {
+          "$type": "color",
+          "$value": "{ref.color.status.info.mark-dark}",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.1",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{ref.color.status.success.dark}",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.1",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{ref.color.status.warning.dark}",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.1",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        }
+      }
+    },
+    "border": {
+      "boundary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.36)",
+        "$description": "control edges that must pass 3:1: white 36% gives 3.30:1 on page and 3.18:1 on surface-3 (visual-dna B2)"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}"
+      },
+      "hairline": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.08)",
+        "$description": "table rows, tile top edge"
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.35)",
+        "$description": "outline pills"
+      }
+    },
+    "chart": {
+      "axis": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.55)"
+      },
+      "band": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.06)"
+      },
+      "comparison": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.4)"
+      },
+      "comparison-2": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.25)"
+      },
+      "ghost": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.12)"
+      },
+      "grid": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.12)"
+      },
+      "now": {
+        "$type": "color",
+        "$value": "{ref.color.accent.500}"
+      },
+      "plot": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.06)",
+        "$description": "charts never sit on raw glass"
+      },
+      "series": {
+        "1": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.1}"
+        },
+        "2": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.2}"
+        },
+        "3": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.3}"
+        },
+        "4": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.4}"
+        },
+        "5": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.5}"
+        },
+        "6": {
+          "$type": "color",
+          "$value": "{ref.color.series.dark.6}"
+        }
+      },
+      "target": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.6)"
+      }
+    },
+    "icon": {
+      "accent": {
+        "$type": "color",
+        "$value": "{ref.color.accent.500}"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.64)"
+      },
+      "status": {
+        "critical": {
+          "$type": "color",
+          "$value": "{ref.color.status.danger.mark-dark}"
+        },
+        "info": {
+          "$type": "color",
+          "$value": "{ref.color.status.info.mark-dark}"
+        },
+        "success": {
+          "$type": "color",
+          "$value": "{ref.color.status.success.dark}"
+        },
+        "warning": {
+          "$type": "color",
+          "$value": "{ref.color.status.warning.dark}"
+        }
+      }
+    },
+    "text": {
+      "accent": {
+        "$type": "color",
+        "$value": "{ref.color.slot.dark.text-accent}",
+        "$description": "7.4:1 on surface-1; text allowed at >= 12 px"
+      },
+      "critical": {
+        "$type": "color",
+        "$value": "{ref.color.status.danger.dark}"
+      },
+      "dimmed": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.42)",
+        "$description": "4.04:1 / 3.79:1: trailing digits and units >= 24 pt only (reference 35-40% was 2.3-2.9:1)"
+      },
+      "info": {
+        "$type": "color",
+        "$value": "{ref.color.status.info.dark}"
+      },
+      "on-accent": {
+        "$type": "color",
+        "$value": "{ref.color.slot.dark.text-on-accent}"
+      },
+      "on-accent-strong": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}"
+      },
+      "on-badge": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}"
+      },
+      "on-glass": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "white on dark glass; light glass uses on-glass-light (ADR-0022)"
+      },
+      "on-glass-light": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "white on light glass in the dark scheme; hierarchy by size, never by alpha (ADR-0022 §3)"
+      },
+      "on-glass-secondary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.78)",
+        "$description": "secondary tone on dark glass (the glass material) only; chips and cells use on-glass (ADR-0022 §3)"
+      },
+      "on-glass-tertiary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.64)",
+        "$description": "tertiary and dimmed tones on dark glass (the glass material) only (ADR-0022 §3)"
+      },
+      "on-inverse": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}"
+      },
+      "on-vivid": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "every vivid gradient passes ADR-0022 V1/V2"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "numerals pure white; body may use #F5F6F8"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.64)",
+        "$description": "7.59:1 on surface-1 / 6.73:1 on surface-3"
+      },
+      "success": {
+        "$type": "color",
+        "$value": "{ref.color.status.success.dark}"
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.55)",
+        "$description": "5.96:1 / 5.39:1: axis labels, timestamps (reference 45-50% failed on surface-3)"
+      },
+      "warning": {
+        "$type": "color",
+        "$value": "{ref.color.status.warning.dark}"
+      }
+    }
+  },
+  "elevation": {
+    "0": {
+      "$type": "boxShadow",
+      "$value": "{ref.shadow.none}"
+    },
+    "1": {
+      "$type": "boxShadow",
+      "$value": "{ref.shadow.none}",
+      "$description": "dark E1 is a +3% luminance step, not a shadow"
+    },
+    "2": {
+      "$type": "boxShadow",
+      "$value": "{ref.shadow.dark.floating}"
+    },
+    "3": {
+      "$type": "boxShadow",
+      "$value": "{ref.shadow.dark.overlay}"
+    }
+  },
+  "gradient": {
+    "vivid": {
+      "1": {
+        "$type": "color",
+        "$value": "{ref.gradient.vivid.plum-dusk}"
+      },
+      "2": {
+        "$type": "color",
+        "$value": "{ref.gradient.vivid.forest-moss}"
+      },
+      "3": {
+        "$type": "color",
+        "$value": "{ref.gradient.vivid.ember-night}"
+      },
+      "4": {
+        "$type": "color",
+        "$value": "{ref.gradient.vivid.navy-cyan}"
+      },
+      "default": {
+        "$type": "color",
+        "$value": "{ref.gradient.vivid.plum-dusk}",
+        "$description": "the unset vivid of Card and Surface: plum-dusk in the dark scheme (ADR-0022 §4.4)"
+      }
+    }
+  },
+  "material": {
+    "glass": {
+      "cell": {
+        "default": {
+          "$type": "color",
+          "$value": "{ref.color.smoke.dark}",
+          "$description": "status cells over a render; smoked fill (ADR-0022 F10), primary foreground text.on-glass only; a 1.5 px status border carries the status",
+          "$extensions": {
+            "studio.tokens": {
+              "modify": {
+                "type": "alpha",
+                "value": "0.35",
+                "space": "srgb",
+                "format": "hex"
+              }
+            }
+          }
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": "0"
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": "{ref.blur.cell}"
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "start": {
+            "$type": "number",
+            "$value": "0.15"
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": "0"
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": "1"
+        }
+      },
+      "dark": {
+        "chip": {
+          "default": {
+            "$type": "color",
+            "$value": "{ref.color.smoke.dark}",
+            "$description": "controls over map, render or vivid; smoked, since white tints fail over light backdrops (ADR-0022 F10); primary foreground text.on-glass only",
+            "$extensions": {
+              "studio.tokens": {
+                "modify": {
+                  "type": "alpha",
+                  "value": "0.35",
+                  "space": "srgb",
+                  "format": "hex"
+                }
+              }
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{ref.blur.chip}"
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": "0.12"
+            },
+            "start": {
+              "$type": "number",
+              "$value": "0.2"
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "1"
+          }
+        },
+        "fill": {
+          "default": {
+            "$type": "color",
+            "$value": "{ref.color.smoke.dark}",
+            "$description": "panel / sheet / card over map; takes the backdrop hue",
+            "$extensions": {
+              "studio.tokens": {
+                "modify": {
+                  "type": "alpha",
+                  "value": "0.6",
+                  "space": "srgb",
+                  "format": "hex"
+                }
+              }
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{ref.blur.glass}"
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": "0"
+            },
+            "start": {
+              "$type": "number",
+              "$value": "0.15"
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "1.2"
+          }
+        }
+      },
+      "light": {
+        "chip": {
+          "default": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.16)",
+            "$description": "primary foreground text.on-glass-light only (ADR-0022 §3)"
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{ref.blur.chip}"
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": "0"
+            },
+            "start": {
+              "$type": "number",
+              "$value": "0.15"
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "1"
+          }
+        },
+        "fill": {
+          "default": {
+            "$type": "color",
+            "$value": "rgba(255, 255, 255, 0.26)",
+            "$description": "the selected / foreground object; only over imagery or maps at OKLCH L <= 0.35, never over vivid; text uses text.on-glass-light; bloom clipped away from text (ADR-0022)"
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "0.35"
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{ref.blur.glass-light}"
+          },
+          "edge": {
+            "end": {
+              "$type": "number",
+              "$value": "0"
+            },
+            "start": {
+              "$type": "number",
+              "$value": "0.15"
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "0"
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "1"
+          }
+        }
+      },
+      "scrim": {
+        "$type": "color",
+        "$value": "rgba(0, 0, 0, 0.4)",
+        "$description": "modal backdrop dim; text scrim over bright photos"
+      }
+    }
+  },
+  "shadow": {
+    "drawer": {
+      "$type": "boxShadow",
+      "$value": "{ref.shadow.dark.modal}"
+    }
+  }
+}

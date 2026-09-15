@@ -1,0 +1,19 @@
+{
+  "interaction": {
+    "hover": {
+      "$type": "boolean",
+      "$value": "true",
+      "$description": "hover states exist"
+    },
+    "tooltip": {
+      "$type": "boolean",
+      "$value": "true"
+    }
+  },
+  "size": {
+    "hit": {
+      "$type": "sizing",
+      "$value": "{ref.size.hit.pointer}"
+    }
+  }
+}

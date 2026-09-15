@@ -1,0 +1,7 @@
+/* The generated counterpart of each runtime pattern (ADR-0019 rule 1); `miss:` names the rule it must not trip. */
+[data-ds-slot="toggle"]:hover { opacity: 1; } /* miss: runtime/attribute, runtime/media-pointer */
+@supports (pointer-events: none) { .ds-toggle { pointer-events: none; } } /* miss: runtime/media-pointer */
+.ds-toggle { @variant ds-reduce-motion { opacity: 1; } } /* miss: runtime/variant-rule, runtime/media-preference */
+.ds-toggle { @variant ds-contrast-more { opacity: 1; } } /* miss: runtime/variant-rule */
+.ds-toggle { @variant ds-pointer { opacity: 1; } } /* miss: runtime/variant-rule, runtime/media-pointer */
+.ds-toggle { color-scheme: light dark; } /* miss: runtime/media-preference */

@@ -1,0 +1,97 @@
+{
+  "color": {
+    "border": {
+      "hairline": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.3",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
+      "strong": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.6",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      }
+    },
+    "chart": {
+      "comparison": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.6",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
+      "grid": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.2",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
+      "target": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.6",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      }
+    },
+    "text": {
+      "accent": {
+        "$type": "color",
+        "$value": "{ref.color.accent.900}"
+      },
+      "dimmed": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.600}",
+        "$description": "dimmed digits become secondary under Increase Contrast"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.700}"
+      },
+      "tertiary": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.700}"
+      }
+    }
+  }
+}

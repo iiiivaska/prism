@@ -1,0 +1,68 @@
+{
+  "comp": {
+    "card": {
+      "glass": {
+        "fill": {
+          "$type": "color",
+          "$value": "{material.glass.dark.fill.default}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-glass}"
+        }
+      },
+      "padding": {
+        "$type": "spacing",
+        "$value": "{space.card-padding}"
+      },
+      "radius": {
+        "compact": {
+          "$type": "borderRadius",
+          "$value": "{radius.card-compact}"
+        },
+        "large": {
+          "$type": "borderRadius",
+          "$value": "{radius.card-large}"
+        },
+        "regular": {
+          "$type": "borderRadius",
+          "$value": "{radius.card}"
+        }
+      },
+      "shadow": {
+        "floating": {
+          "$type": "boxShadow",
+          "$value": "{elevation.3}"
+        },
+        "solid": {
+          "$type": "boxShadow",
+          "$value": "{elevation.0}"
+        }
+      },
+      "solid": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.surface.default}"
+        },
+        "caption": {
+          "$type": "color",
+          "$value": "{color.text.secondary}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.primary}"
+        }
+      },
+      "vivid": {
+        "caption": {
+          "$type": "color",
+          "$value": "{color.text.on-vivid}"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-vivid}"
+        }
+      }
+    }
+  }
+}

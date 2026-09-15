@@ -12,6 +12,8 @@ import type { BrandMeta, ContextName } from './source/types.ts';
 
 export { buildBundle, collectBundle, REPO_ROOT, type BuildOptions, type CollectResult } from './ir/bundle.ts';
 export { over, flatten, relativeLuminance, contrastRatio, hexToRgba, type Rgba } from './ir/color-math.ts';
+/** Color.js wrapper (§7.2): any DTCG color space → IRColor with CSS-gamut-mapped sRGB and OKLCH (P1-6 gradient sampling). */
+export { irColor } from './ir/color.ts';
 export { formatDiagnostics, formatDiagnosticsJson, TokenBuildError } from './ir/diagnostics.ts';
 export { LookupError } from './ir/lookup.ts';
 export { publicPath } from './ir/naming.ts';
@@ -60,6 +62,9 @@ export interface ResolvedColor {
 export interface ResolvedGradient {
   readonly id: string;
   readonly stops: readonly { readonly color: ResolvedColor; readonly position: number }[];
+  readonly angle: number | null;                 // folded app.prism.angle, CSS degrees (ADR-0022 §4.1)
+  readonly scheme: 'light' | 'dark' | null;      // folded app.prism.scheme
+  readonly aliasChain: readonly string[];        // ['sys.gradient.vivid.1', 'ref.gradient.vivid.sky']
 }
 
 export interface ContrastContext {
@@ -158,7 +163,13 @@ export function contrastContexts(bundle: IRBundle): readonly ContrastContext[] {
             .filter((t) => t.value.kind === 'gradient')
             .map((t) => {
               if (t.value.kind !== 'gradient') throw new Error('unreachable');
-              return { id: t.id, stops: t.value.stops.map((s) => ({ color: resolved(perm, t, s.color), position: s.position })) };
+              return {
+                id: t.id,
+                stops: t.value.stops.map((s) => ({ color: resolved(perm, t, s.color), position: s.position })),
+                angle: t.value.angle,
+                scheme: t.value.scheme,
+                aliasChain: aliasChain(perm, t),
+              };
             });
         },
       });

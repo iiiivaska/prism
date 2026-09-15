@@ -1,0 +1,48 @@
+{
+  "ref": {
+    "gradient": {
+      "vivid": {
+        "ember-night": {
+          "$type": "color",
+          "$value": "linear-gradient(160deg, #3d1a06 0%, #7a3a1e 45%, #c9642f 85%, #d28035 100%)",
+          "$description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2"
+        },
+        "forest-moss": {
+          "$type": "color",
+          "$value": "linear-gradient(170deg, #0f1a14 0%, #1b2922 35%, #4e6040 80%, #6e7b3a 100%)",
+          "$description": "dark vivid surface; linear 170 deg; grain 0.08; passes ADR-0022 V1/V2"
+        },
+        "navy-cyan": {
+          "$type": "color",
+          "$value": "linear-gradient(180deg, #252e3f 0%, #223545 45%, #4d8e9c 75%, #6b9ba6 100%)",
+          "$description": "dark vivid surface; linear 180 deg; grain 0.10; passes ADR-0022 V1/V2"
+        },
+        "olive": {
+          "$type": "color",
+          "$value": "linear-gradient(135deg, #4f5a38 0%, #6e7d33 65%, #899b49 100%)",
+          "$description": "light vivid surface; linear 135 deg; grain 0.05; passes ADR-0022 V1/V2"
+        },
+        "orchid": {
+          "$type": "color",
+          "$value": "linear-gradient(165deg, #6c5a66 0%, #a35e9e 55%, #ca78b5 100%)",
+          "$description": "light vivid surface; linear 165 deg; grain 0.06; passes ADR-0022 V1/V2"
+        },
+        "plum-dusk": {
+          "$type": "color",
+          "$value": "linear-gradient(150deg, #1e1226 0%, #3a1f3f 40%, #5b4a7a 75%, #6f7fc8 100%)",
+          "$description": "dark vivid surface; linear 150 deg; grain 0.08; passes ADR-0022 V1/V2"
+        },
+        "rose": {
+          "$type": "color",
+          "$value": "linear-gradient(135deg, #8e5a55 0%, #a36660 65%, #bb8871 100%)",
+          "$description": "light vivid surface; linear 135 deg; grain 0.05; passes ADR-0022 V1/V2"
+        },
+        "sky": {
+          "$type": "color",
+          "$value": "linear-gradient(165deg, #4a4c78 0%, #556ba6 50%, #7c97ac 100%)",
+          "$description": "light vivid surface; linear 165 deg; grain 0.06; passes ADR-0022 V1/V2"
+        }
+      }
+    }
+  }
+}
