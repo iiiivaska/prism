@@ -17,7 +17,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023) |
 | [0012](0012-layers-and-v1-scope.md) | Five layers and the v1 scope | accepted |
 | [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019) |
-| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024) |
+| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028) |
 | [0015](0015-references-inspiration-only.md) | References are inspiration only | accepted |
 | [0016](0016-name-and-prefix.md) | Name Prism, prefix `ds` | accepted (amended by 0018, 0019) |
 | [0017](0017-blueprint-first.md) | First deliverable is a blueprint, in English | accepted |
@@ -31,6 +31,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted |
 | [0026](0026-figma-metadata-scope.md) | Figma metadata where Figma reads it; code syntax derived by the build (amends 0004, 0005) | accepted |
 | [0027](0027-font-emission-layout-and-manifest-names.md) | Font emission layout and manifest CSS names follow the build (amends 0021, 0024) | accepted |
+| [0028](0028-license-mit.md) | Prism is MIT-licensed (amends 0014) | accepted |
 
 ## Template
 
