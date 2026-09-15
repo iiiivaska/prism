@@ -4,10 +4,31 @@
   "version": "0.1.0",
   "preset": "signature",
   "fonts": {
-    "ui": { "family": "Onest", "file": "fonts/Onest[wght].ttf", "version": "2.001", "postscript": { "100": "Onest-Thin", "200": "Onest-ExtraLight", "300": "Onest-Light", "400": "Onest-Regular", "500": "Onest-Medium", "600": "Onest-SemiBold", "700": "Onest-Bold", "800": "Onest-ExtraBold", "900": "Onest-Black" } },
-    "display": { "family": "Onest", "file": "fonts/Onest[wght].ttf" },
-    "mono": { "family": "JetBrains Mono", "file": "fonts/JetBrainsMono[wght].ttf", "version": "2.304" }
+    "ui": {
+      "family": "Onest",
+      "file": "fonts/onest/Onest[wght].ttf",
+      "version": "2.001",
+      "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31",
+      "platforms": ["apple", "web"],
+      "postscript": { "100": "Onest-Thin", "200": "Onest-ExtraLight", "300": "Onest-Light", "400": "Onest-Regular", "500": "Onest-Medium", "600": "Onest-SemiBold", "700": "Onest-Bold", "800": "Onest-ExtraBold", "900": "Onest-Black" }
+    },
+    "display": {
+      "family": "Onest",
+      "file": "fonts/onest/Onest[wght].ttf",
+      "version": "2.001",
+      "sha256": "966c5c29b4755da84b6854d5c21dd4eaa2420225d0e9874de602de176d4a9f31",
+      "platforms": ["apple", "web"],
+      "postscript": { "100": "Onest-Thin", "200": "Onest-ExtraLight", "300": "Onest-Light", "400": "Onest-Regular", "500": "Onest-Medium", "600": "Onest-SemiBold", "700": "Onest-Bold", "800": "Onest-ExtraBold", "900": "Onest-Black" }
+    },
+    "mono": {
+      "family": "JetBrains Mono",
+      "file": "fonts/jetbrains-mono/JetBrainsMono[wght].ttf",
+      "version": "2.211",
+      "sha256": "48715a42ec242c21e9f02692891e147d022299a52e48d5e413e1a942193ffeda",
+      "platforms": ["apple", "web"],
+      "postscript": { "100": "JetBrainsMonoRoman-Thin", "200": "JetBrainsMonoRoman-ExtraLight", "300": "JetBrainsMonoRoman-Light", "400": "JetBrainsMono-Regular", "500": "JetBrainsMonoRoman-Medium", "700": "JetBrainsMonoRoman-Bold", "800": "JetBrainsMonoRoman-ExtraBold" }
+    }
   },
   "moods": ["light-airy", "dark-ops"],
-  "notes": "The reference brand's values ARE tokens/ref/*; this brand file overrides nothing and exists so the resolver's brand modifier has a default context. Font files are not committed until the P1-8 ticket adds them with OFL.txt; the Native preset is selected by setting preset to 'native', which makes the platform layer map ref.font.* to SF Pro / Inter."
+  "notes": "The reference brand: its values are tokens/ref/*, and its brand.tokens.json declares no tokens, because prism-native layers that file first and any write would be a dead write (ADR-0020 §1). Signature preset: Onest (ui, display) and JetBrains Mono (mono) are bundled on Apple and served on the web from the same files, each with its OFL.txt beside it; the web stacks are ref.font.*, the Apple faces ref.font.apple.* (ADR-0020 §5). postscript maps each weight to the name Core Text exposes: the fvar instance name or, for the default instance, name ID 6 (JetBrainsMono-Regular); JetBrains Mono has no 600 instance. pnpm fonts:check verifies every field (ADR-0021 §11)."
 }

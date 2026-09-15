@@ -1,0 +1,13 @@
+{
+  "name": "fonts:check fixture: one brand whose font file is missing",
+  "version": "2025.10",
+  "resolutionOrder": [{ "$ref": "#/modifiers/brand" }],
+  "modifiers": {
+    "brand": {
+      "contexts": {
+        "acme": []
+      },
+      "default": "acme"
+    }
+  }
+}

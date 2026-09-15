@@ -4,5 +4,21 @@
   "version": "0.1.0",
   "preset": "native",
   "extends": "prism",
-  "notes": "Identical palette and scales to 'prism'; only the font slots differ (SF Pro / SF Mono on Apple via system APIs, Inter on web from Google Fonts). No bundled font files."
+  "fonts": {
+    "ui": {
+      "family": "Inter",
+      "file": "fonts/inter/InterVariable.ttf",
+      "version": "4.001;git-9221beed3",
+      "sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf",
+      "platforms": ["web"]
+    },
+    "display": {
+      "family": "Inter",
+      "file": "fonts/inter/InterVariable.ttf",
+      "version": "4.001;git-9221beed3",
+      "sha256": "4989b125924991b90d05b2d16e0e388c48f7d5bb8b30539bbf9c755278d0ccaf",
+      "platforms": ["web"]
+    }
+  },
+  "notes": "Native: system fonts on Apple, self-hosted Inter 4.1 on web (ADR-0020)"
 }

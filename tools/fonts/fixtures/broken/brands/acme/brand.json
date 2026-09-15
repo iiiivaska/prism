@@ -1,0 +1,17 @@
+{
+  "name": "acme",
+  "displayName": "fonts:check fixture",
+  "version": "0.0.0",
+  "preset": "signature",
+  "fonts": {
+    "ui": {
+      "family": "Acme Sans",
+      "file": "fonts/acme-sans/AcmeSans[wght].ttf",
+      "version": "1.000",
+      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "platforms": ["apple", "web"],
+      "postscript": { "400": "AcmeSans-Regular" }
+    }
+  },
+  "notes": "The font file and its OFL.txt are deliberately absent: the CLI must exit 1 and name the path and reason."
+}
