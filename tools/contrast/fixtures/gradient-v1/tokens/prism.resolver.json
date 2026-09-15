@@ -1,0 +1,66 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Contrast gradient-v1",
+  "version": "2025.10",
+  "description": "sys.gradient.vivid.1 in light is ref.gradient.vivid.probe, whose light end breaks ADR-0022 V1 (below 3:1 against white) while its dark top keeps the Card header (V2) above 4.5:1.",
+  "sets": {
+    "ref": {
+      "sources": [
+        {
+          "$ref": "ref/color.tokens.json"
+        },
+        {
+          "$ref": "ref/gradient.tokens.json"
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "colorScheme": {
+      "contexts": {
+        "light": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    },
+    "density": {
+      "contexts": {
+        "compact": [
+          {
+            "$ref": "sys/density/compact.tokens.json"
+          }
+        ],
+        "regular": [
+          {
+            "$ref": "sys/density/regular.tokens.json"
+          }
+        ],
+        "comfortable": [
+          {
+            "$ref": "sys/density/comfortable.tokens.json"
+          }
+        ]
+      },
+      "default": "compact"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/ref"
+    },
+    {
+      "$ref": "#/modifiers/colorScheme"
+    },
+    {
+      "$ref": "#/modifiers/density"
+    }
+  ]
+}

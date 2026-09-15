@@ -1,0 +1,40 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Contrast broken-pair",
+  "version": "2025.10",
+  "description": "color.text.secondary (ref.color.neutral.400) fails on color.bg.page in light; every other pair passes (ARCHITECTURE §3.2).",
+  "sets": {
+    "ref": {
+      "sources": [
+        {
+          "$ref": "ref/color.tokens.json"
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "colorScheme": {
+      "contexts": {
+        "light": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/ref"
+    },
+    {
+      "$ref": "#/modifiers/colorScheme"
+    }
+  ]
+}

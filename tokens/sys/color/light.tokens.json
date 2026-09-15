@@ -936,9 +936,10 @@
         },
         "comparison": {
           "$value": "{ref.color.neutral.950}",
+          "$description": "comparison line; ink 45% keeps 3:1 on the plot, the boundary tier of chart lines that carry meaning (ADR-0011; ink 30% was 2.0:1, critic G-14)",
           "$extensions": {
             "app.prism": {
-              "alpha": 0.3,
+              "alpha": 0.45,
               "figma": {
                 "collection": "colorScheme",
                 "scopes": [
@@ -966,9 +967,10 @@
         },
         "target": {
           "$value": "{ref.color.neutral.950}",
+          "$description": "the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14)",
           "$extensions": {
             "app.prism": {
-              "alpha": 0.3,
+              "alpha": 0.45,
               "figma": {
                 "collection": "colorScheme",
                 "scopes": [

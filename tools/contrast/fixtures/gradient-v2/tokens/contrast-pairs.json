@@ -1,0 +1,44 @@
+{
+  "$comment": "tools/contrast fixture: sys.gradient.vivid.1 in light is ref.gradient.vivid.probe, which holds 3:1 everywhere (V1) but whose light top puts the Card header block below 4.5:1, breaking ADR-0022 V2.",
+  "thresholds": {
+    "functional": 4.5,
+    "functionalLarge": 3,
+    "decorative": 3,
+    "boundary": 3
+  },
+  "pairs": [
+    {
+      "fg": "color.text.primary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.secondary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.on-accent",
+      "bg": "color.bg.fill.accent",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.accent",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.on-vivid",
+      "bg": "gradient.vivid.*",
+      "tier": "functional",
+      "minSizePx": 24,
+      "stops": "all"
+    },
+    {
+      "fg": "color.text.on-vivid",
+      "bg": "gradient.vivid.*",
+      "tier": "functional",
+      "region": "card-header"
+    }
+  ]
+}
