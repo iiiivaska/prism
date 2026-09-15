@@ -1,0 +1,7 @@
+/* The token-driven counterpart of each motion pattern (ADR-0023 §12); `miss:` names the rule it must not trip. */
+[data-slot="toggle"] {
+  transition: opacity var(--ds-motion-duration-base) var(--ds-motion-easing-out); /* miss: motion/css-time, motion/css-easing-keyword */
+  transition-timing-function: var(--ds-motion-spring-snappy-easing); /* miss: motion/css-easing, motion/css-easing-keyword */
+  mask-image: linear-gradient(to bottom, black, transparent); /* miss: motion/css-easing */
+  scale: calc(1 - 0.04 * (1 - var(--ds-motion-presentation-crossfade))); /* miss: motion/css-time */
+}

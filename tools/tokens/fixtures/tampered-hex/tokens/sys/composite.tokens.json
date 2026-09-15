@@ -1,0 +1,102 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "shadow": {
+      "$type": "shadow",
+      "raised": {
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "alpha": 0.07,
+              "hex": "#000000"
+            },
+            "offsetX": { "value": 0, "unit": "px" },
+            "offsetY": { "value": 6, "unit": "px" },
+            "blur": { "value": 16, "unit": "px" },
+            "spread": { "value": 0, "unit": "px" }
+          },
+          {
+            "color": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "alpha": 0.04,
+              "hex": "#010101"
+            },
+            "offsetX": { "value": 0, "unit": "px" },
+            "offsetY": { "value": 1, "unit": "px" },
+            "blur": { "value": 2, "unit": "px" },
+            "spread": { "value": 0, "unit": "px" }
+          }
+        ]
+      }
+    },
+    "gradient": {
+      "$type": "gradient",
+      "orchid": {
+        "$value": [
+          {
+            "color": {
+              "colorSpace": "oklch",
+              "components": [
+                0.5832,
+                0.1229,
+                329.4
+              ],
+              "alpha": 1,
+              "hex": "#a35e9e"
+            },
+            "position": 0.0
+          },
+          {
+            "color": {
+              "colorSpace": "display-p3",
+              "components": [
+                0.9,
+                0.6,
+                0.33
+              ],
+              "alpha": 1,
+              "hex": "#f39444"
+            },
+            "position": 1.0
+          }
+        ]
+      }
+    },
+    "border": {
+      "$type": "border",
+      "focus": {
+        "$value": {
+          "color": "{ref.color.stale}",
+          "width": { "value": 2, "unit": "px" },
+          "style": "solid"
+        }
+      },
+      "ink": {
+        "$value": {
+          "color": {
+            "colorSpace": "oklch",
+            "components": [
+              0.1504,
+              0.0092,
+              128.7
+            ],
+            "alpha": 1
+          },
+          "width": { "value": 1, "unit": "px" },
+          "style": "solid"
+        }
+      }
+    }
+  }
+}
