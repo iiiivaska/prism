@@ -1,12 +1,14 @@
 {
   "name": "@iiiivaska/prism-tokens",
   "version": "0.1.0",
-  "description": "Prism design tokens: CSS variables, Tailwind v4 @theme bridge, typed TypeScript maps (generated)",
+  "description": "Prism design tokens: CSS variables, Tailwind v4 @theme bridge, typed TypeScript maps (generated), and the ADR-0019 web runtime",
   "type": "module",
   "private": false,
   "sideEffects": ["**/*.css"],
+  "style": "./src/generated/prism/tokens.css",
   "exports": {
     ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./react": { "types": "./dist/react.d.ts", "default": "./dist/react.js" },
     "./tokens": { "types": "./dist/brands/prism/tokens.d.ts", "default": "./dist/brands/prism/tokens.js" },
     "./tokens.css": "./src/generated/prism/tokens.css",
     "./brands/*/tokens": { "types": "./dist/brands/*/tokens.d.ts", "default": "./dist/brands/*/tokens.js" },
@@ -17,14 +19,23 @@
     "./manifest.json": "./src/generated/manifest.json",
     "./package.json": "./package.json"
   },
-  "files": ["dist", "src/generated", "spec"],
+  "files": ["dist", "src/generated"],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "react-dom": { "optional": true }
+  },
   "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
