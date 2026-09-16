@@ -1,12 +1,16 @@
 import { defineConfig } from "tsdown";
 
-// The root export is brand-invariant (ADR-0019 §4); every brand's generated table is its own entry,
-// `brands/<brand>/tokens` (ADR-0020 §6). The CSS and the manifest are exported from src/generated as is.
+// The root export is brand-invariant and imports no React (ADR-0019 §4); `./react` is the optional
+// peer's entry; every brand's generated table is its own entry, `brands/<brand>/tokens`
+// (ADR-0020 §6). The CSS and the manifest are exported from src/generated as is.
 export default defineConfig({
   entry: {
     index: "./src/index.ts",
+    react: "./src/react/index.ts",
     "brands/*": "./src/generated/*/tokens.ts",
   },
+  // React is an optional peer: never bundled, even though the tests install it as a devDependency.
+  deps: { neverBundle: [/^react($|\/)/, /^react-dom($|\/)/] },
   format: "esm",
   platform: "neutral",
   outDir: "dist",

@@ -9,7 +9,8 @@
     // The generated modules import each other with explicit `.ts` extensions, which the tools'
     // tests load under Node's type stripping as well.
     "allowImportingTsExtensions": true,
+    // No ambient types by default: `test/exports.test.ts` pulls Node's in with a reference directive.
     "types": []
   },
-  "include": ["src", "tsdown.config.ts"]
+  "include": ["src", "test", "tsdown.config.ts", "vitest.config.ts"]
 }
