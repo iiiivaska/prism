@@ -88,6 +88,10 @@ props:
     description: the selected x, read and written by the caller; unset means no selection, and the crosshair and the now-dot are not drawn
   - name: onSelectionChange
     type: action
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while new data is on its way; it stays false inside a ChartContainer that is loading, because the container holds the whole block once
 
 states: [default, hover, focus-visible, selected, loading]
 
@@ -190,8 +194,9 @@ behavior:
   - "The area renders only on the solid family (page, solid, raised, nested), where the plot is color.chart.plot. The `area` part has no cell for any other material, so on vivid and on the scheme's glass the wash is simply not drawn and the chart renders as a line: neither media family has a band or wash role (ADR-0030 §2), and a translucent fill over a gradient or over the glass lift has no contrast pair."
   - "Every other part takes its family from the published material, exactly as LineChart does: the plot is color.chart.plot on the solid family and color.chart.on-glass-fill.plot on the scheme's glass and has no fill on vivid; the series, the bound, the endpoint, the grid and the crosshair take the on-media or on-glass-fill roles; and on vivid no axis text and no direct labels are drawn, because color.text.on-vivid has no sub-24 px pair outside the header block (ADR-0030 rule 3 and rule 7). The chart is not placed on light glass, inverse or accent, which hold no chart family."
   - Interpolation, gridlines, the trailing y axis, the absence of axis lines and the inline endpoint labels follow LineChart, and the same ReferenceLine and RangeBand parts compose into it. Like LineChart, this spec carries the axis bindings a separate ChartAxis part would own.
-  - "Selection snaps to the nearest x over the whole plot area, draws the crosshair and a chart.endpoint-size now-dot in color.chart.now, and reads its values in the ChartContainer header; on touch it fires haptic.selection once per snapped index."
-  - "`loading` holds the previous render at opacity.dimmed-row; an empty or failed series is the ChartContainer's message."
+  - "The chart places a time-axis RangeBand's bookends on its `series` line — the bounding line of a total, the main series of a range, never a `bound` and never the edge of the wash: each dot's centre sits where that line's drawn curve crosses x = `from` and x = `to`, after interpolation. An edge where the series has no value, or that lies outside the visible domain, carries no dot. The dot's size and tone are RangeBand's."
+  - "`selection` enters the `selected` state. Selection snaps to the nearest x over the whole plot area, draws the crosshair and a chart.endpoint-size now-dot in color.chart.now, and reads its values in the ChartContainer header; on touch it fires haptic.selection once per snapped index."
+  - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row. Inside a ChartContainer the container's own `isLoading` holds the whole block and the chart's stays false, so the hold is applied once (spec/SCHEMA.md). An empty or failed series is the ChartContainer's message."
 
 motion:
   enter: motion.duration.base

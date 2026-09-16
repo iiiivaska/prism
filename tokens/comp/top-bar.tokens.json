@@ -1,0 +1,22 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "top-bar": {
+      "height": {
+        "$type": "dimension",
+        "$value": "{sys.space.11}",
+        "$description": "the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

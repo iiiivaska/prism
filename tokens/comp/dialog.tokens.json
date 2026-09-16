@@ -1,0 +1,12 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "dialog": {
+      "shadow": {
+        "$type": "shadow",
+        "$value": "{sys.shadow.drawer}",
+        "$description": "the modal panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Dialog.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 (\"drawers and modal sheets\") through this alias"
+      }
+    }
+  }
+}

@@ -1,0 +1,239 @@
+name: CommandPalette
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The keyboard's way into a desktop app: a shortcut opens one overlay panel holding a search field and
+  a grouped list of destinations and commands, filtered as the reader types and run with Enter. It is
+  a shortcut to things that already exist elsewhere on the screen, never the only way to reach them,
+  and it is a Tier 2 component (ADR-0010).
+since: 0.1.0
+
+platforms:
+  ios: none
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: none
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer]
+schemes: [light, dark]
+
+anatomy:
+  - part: scrim
+    description: the dim behind the panel
+  - part: root
+    description: the overlay panel
+  - part: input
+    slot: true
+    description: one SearchField, focused the moment the palette opens
+  - part: list
+  - part: groupHeader
+    optional: true
+  - part: item
+  - part: itemIcon
+    optional: true
+  - part: itemLabel
+  - part: itemPath
+    optional: true
+    description: where the command lives, after the label, in the quieter tone
+  - part: itemShortcut
+    optional: true
+    description: the keys that run the command without the palette
+  - part: message
+    optional: true
+    slot: true
+    description: one EmptyState when the query matches nothing
+  - part: footer
+    optional: true
+    description: one row of key hints
+
+props:
+  - name: isOpen
+    type: boolean
+    required: true
+  - name: query
+    type: string
+  - name: onQueryChange
+    type: action
+    required: true
+  - name: items
+    type: data
+    required: true
+    description: "[{ id, label, icon?, path?, shortcut?, group?, isDisabled? }]; already filtered and ordered by the caller, because relevance is the app's knowledge"
+  - name: activeId
+    type: string
+    description: the item the keyboard is on; unset, the palette keeps the first enabled item active
+  - name: placeholder
+    type: string
+  - name: emptyMessage
+    type: string
+  - name: shortcut
+    type: string
+    description: the keys that open the palette, shown in the footer and in the trigger's own label
+  - name: isLoading
+    type: boolean
+    default: false
+  - name: onSelect
+    type: action
+    required: true
+  - name: onClose
+    type: action
+    required: true
+
+states: [default, hover, selected, focus-visible, disabled, loading]
+
+tokens:
+  scrim:
+    background: material.glass.scrim
+    z: z.overlay
+  root:
+    background: color.bg.surface.raised
+    radius: radius.sheet
+    padding: space.5
+    gap: space.4
+    minWidth: size.card.min
+    shadow: elevation.3
+    z: z.overlay
+  input:
+    height: size.control.lg
+  list:
+    gap: space.1
+    paddingTop: space.3
+    loading:
+      opacity: opacity.dimmed-row
+  groupHeader:
+    typography: type.label.sm
+    paddingX: space.3
+    paddingY: space.3
+    color: color.text.tertiary
+  item:
+    height: size.row
+    radius: radius.inner
+    paddingX: space.3
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      overlay: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  itemIcon:
+    size: size.icon.md
+    color: color.icon.secondary
+  itemLabel:
+    typography: type.body.md
+    color: color.text.primary
+  itemPath:
+    typography: type.body.sm
+    gap: space.2
+    color: color.text.tertiary
+  itemShortcut:
+    typography: type.micro
+    radius: radius.badge
+    paddingX: space.2
+    border: color.border.hairline
+    borderWidth: border.hairline
+    color: color.text.tertiary
+  footer:
+    typography: type.micro
+    paddingTop: space.3
+    gap: space.4
+    color: color.text.tertiary
+    border: color.border.hairline
+    borderWidth: border.hairline
+
+behavior:
+  - "The palette is one panel over one scrim: the opaque raised surface in every context - color.bg.surface.raised over color.bg.page (ADR-0030 §5.1) - at radius.sheet, elevation.3 and z.overlay, over material.glass.scrim. It renders no glass, vivid or tint of its own, because it floats above the layer that publishes materials, the same rule Tooltip, Popover and Dialog follow."
+  - "The panel publishes `raised`, the material it paints, to the SearchField and the EmptyState it holds, so both take their default cells - the solid family's tones, which tools/contrast checks on color.bg.surface.raised; nothing inside the palette resolves a material of its own."
+  - "It opens on the app's own shortcut, focuses the search field at once and selects whatever text was left in it, so a second press starts a new query rather than appending to the old one."
+  - "The list is the caller's: `items` arrives filtered, ordered and grouped, because which command is relevant to \"ov\" is the app's knowledge and not the component's. The palette owns the presentation, the active item, the keyboard and the announcements."
+  - "Exactly one item is active, and the `selected` cells are that row: the keyboard moves it with Up and Down, and a pointer moving over an item makes that item active - the palette never shows two highlights, one for hover and one for the keyboard, so the row the reader sees is always the row Enter will run. Where a platform moves real focus to the active row rather than pointing at it from the field, that row also draws the `focus-visible` ring; on the web focus stays in the field and the `selected` overlay alone says which row is active."
+  - "Enter runs the active item, fires `onSelect` and closes the palette; Escape closes it without running anything. Closing returns focus to the element that had it before the palette opened, in both cases."
+  - "An item is a label, an optional glyph, an optional path that says where the command lives, and an optional shortcut. The shortcut is shown so the reader can learn to stop opening the palette - a command that only the palette can reach is the anti-pattern this component invites, and every item must exist somewhere on a screen as well."
+  - "Truncation: a label is one line and truncates with an ellipsis, and the path truncates before the label does, from its leading end, so the last segment - the one that identifies the command - survives. Neither wraps, so the rows keep size.row and one alignment."
+  - "Overflow: the list scrolls inside the panel with the search field pinned above it; the active item is scrolled into view whenever it moves. The palette does not paginate and does not lazily hide groups."
+  - "`isLoading` holds the previous rows at opacity.dimmed-row while a query is being answered; the list does not empty itself between keystrokes and never flashes skeleton rows."
+  - "An empty result renders one EmptyState of variant `section` inside the list and keeps the query visible, so the reader can see what matched nothing."
+  - "The panel is size.card.min wide at its narrowest and grows with the viewport up to its own ceiling; it is centred horizontally and sits in the upper third of the viewport, so the list has room to grow downward without moving the field."
+  - "A disabled item stays in the list at opacity.disabled, is skipped by the arrow keys and cannot be run; a command that does not apply to the current screen is left out instead."
+  - "Focus never leaves the search field while the palette is open. The field is the panel's one focus stop; the list is driven by `activeId`, which the arrow keys move and which the field points at, so typing never has to be aimed and the active row moves without focus moving. The footer is key hints, not controls, and holds nothing focusable; the EmptyState shown for an empty result carries no action here for the same reason. Tab therefore has nothing else to reach inside the panel and does not leave it, and nothing behind the scrim is reachable by pointer or by keyboard."
+  - "The palette carries no state of its own that survives closing: no history, no pinned commands, no last query. What the reader typed belongs to the app through `onQueryChange`."
+
+motion:
+  appear: motion.duration.fast
+  appearEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: dialog holding a combobox (the search field) and a listbox (the results), as a modal
+  label: "the palette's own name from the caller (\"Commands\"); each item announces its label, then its path, then its shortcut"
+  traits: [dialog, search]
+  keyboard: "the shortcut opens it and Escape closes it, returning focus to the element that had it before; Up and Down move the active item and wrap, Home and End reach the first and last enabled item, and Enter runs the active item. The field keeps the caret and the focus at all times, so typing never has to be aimed; the active row moves through `aria-activedescendant` rather than through focus, and Tab reaches nothing else inside the panel and never leaves it"
+  dynamicType: field, items, path and footer all scale with their roles; the rows grow in height from size.row, the panel grows with them and the list scrolls, and a label truncates rather than wrapping so the rows keep one alignment
+  contrast: "item labels are color.text.primary, paths, shortcuts and group headings color.text.tertiary, and every one of them is functional text on color.bg.surface.raised, an opaque ground composited over color.bg.page - the pair tokens/contrast-pairs.json checks and where ADR-0022 F6 measures every tone - so no backdrop enters the calculation; the selected item's color.bg.fill.neutral.subtle overlay is paired under the same tones. color.bg.surface.overlay exists in the token set and looks like the role for this panel, but no pair checks text on it, so this spec binds the checked raised step instead, as Popover, Dialog and Toast do; the overlay role stays unpaired until a spec binds it (docs/roadmap.md, P2-5). The scrim's own pair is color.text.on-glass on material.glass.scrim at the large tier. The shortcut chip's hairline and the footer's rule are decorative, because the text inside them carries the meaning"
+  reduceTransparency: not applicable to the panel, which is opaque in every context; the scrim keeps its own alpha, because a legibility scrim is not a translucency effect (ADR-0022 §1.4)
+  reduceMotion: the panel does not scale, blur or drop in; it and its scrim crossfade by opacity over motion.duration.base with motion.easing.out and take their final position at once, and the active row's fill is replaced rather than slid between items
+  voiceOver: opening announces the palette and the number of results; each keystroke announces the new count politely, and moving the active item announces that item alone
+
+usage:
+  do:
+    - Put every command in the palette somewhere on a screen as well; the palette is a shortcut, not a home.
+    - Show each command's own shortcut, so the reader can graduate from the palette.
+    - Say where a command lives in its path, so two commands with the same verb are told apart.
+  dont:
+    - Don't make the palette the only way to reach something.
+    - Don't rank the results inside the component; the app knows what is relevant.
+    - Don't keep a history, a pinned list or the last query inside the palette.
+    - Don't ship a palette to a touch layout; a screen with no keyboard has no way to open it.
+
+examples:
+  - id: open-empty-query
+    props: { isOpen: true, placeholder: "Search commands and places", shortcut: "Ctrl K", items: [{ id: "map", label: "Live map", icon: object.map, group: "Go to" }, { id: "fleet", label: "Fleet", icon: object.bus, group: "Go to" }, { id: "new-route", label: "Create a route", icon: action.add, group: "Actions", shortcut: "Ctrl N" }] }
+  - id: filtered
+    props: { isOpen: true, query: "rep", activeId: "reports", items: [{ id: "reports", label: "Reports", icon: object.chart, group: "Go to", path: "Analysis" }, { id: "report-new", label: "Build a report", icon: action.add, group: "Actions", path: "Analysis", shortcut: "Ctrl R" }] }
+  - id: with-paths
+    props: { isOpen: true, query: "settings", items: [{ id: "s1", label: "Notifications", icon: action.settings, path: "Settings", group: "Go to" }, { id: "s2", label: "Notifications", icon: action.settings, path: "Depot North", group: "Go to" }] }
+    description: two commands with one name, told apart by where they live
+  - id: no-results
+    props: { isOpen: true, query: "xyzzy", items: [], emptyMessage: "No command matches this search" }
+  - id: loading
+    props: { isOpen: true, query: "rou", isLoading: true, items: [{ id: "routes", label: "Routes", icon: object.map, group: "Go to" }] }
+  - id: with-disabled
+    props: { isOpen: true, query: "exp", items: [{ id: "export", label: "Export the current report", icon: action.share, group: "Actions" }, { id: "export-all", label: "Export every depot", icon: action.share, group: "Actions", isDisabled: true }] }
+  - id: query-ru
+    props: { isOpen: true, query: "отч", placeholder: "Поиск команд и разделов", shortcut: "Ctrl K", items: [{ id: "reports", label: "Отчёты", icon: object.chart, path: "Аналитика", group: "Перейти" }, { id: "report-new", label: "Построить отчёт за период", icon: action.add, path: "Аналитика", group: "Действия", shortcut: "Ctrl R" }] }
+    description: the longest Russian label truncates with an ellipsis while its path truncates first, from its leading end
+
+notes:
+  platform:
+    ios: "none. ADR-0010 makes CommandPalette a Tier 2 component, and a phone has no keyboard to open it with; the same destinations are the TabBar's, and the same actions live on their screens."
+    ipados: "adapted. Drawn only while a hardware keyboard is attached, which ADR-0010 makes a runtime property rather than a platform one; with no keyboard iPadOS behaves exactly like iOS."
+    macos: "full. The shortcut is registered by the app, not by this component; the panel follows the window's key state, and Escape closes it as it closes any panel."
+    watchos: "none. ADR-0010's Tier 3 list has no CommandPalette, and the wrist has no keyboard."
+    web-touch: "none. Same reason as iOS; the modality dimension decides, not the user agent."
+    web-desktop: "full. Built on React Aria's modal Dialog with a ComboBox and a ListBox inside it; the shortcut is the app's own key handler, and `aria-activedescendant` keeps focus in the field while the active row moves."
+  design: >-
+    docs/research/component-inventory.md records no product-frame sighting and lists CommandPalette under
+    "Required by v1 but not observed", with one near neighbour: the search field carrying a
+    keyboard-shortcut hint (TD, ID), which is where the shortcut chip and the footer hints come from. The
+    panel is the popover and floating-readout level of docs/research/visual-dna.md §7.2 (level 3), which
+    elevation.3 carries, on the raised surface step; the opaque panel and the refusal of a material of
+    its own follow Tooltip.yaml, for the same reason - a layer above the one that publishes materials.
+    The one-highlight rule (pointer movement moves the keyboard's active row) comes from §11 anti-pattern
+    31's sibling problem: two highlights make the reader guess which row Enter will run. Showing each
+    command's own shortcut answers the inventory's own warning that a palette must not become the only
+    path to a command. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md

@@ -37,7 +37,7 @@ props:
   - name: value
     type: string
     required: true
-    description: the `value` of the one selected segment; a SegmentedControl is never empty
+    description: the `value` of the one segment in the `selected` state; a SegmentedControl is never empty
   - name: size
     type: enum
     values: [sm, md, lg]

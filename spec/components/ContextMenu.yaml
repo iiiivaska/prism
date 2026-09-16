@@ -1,0 +1,219 @@
+name: ContextMenu
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The secondary actions of one object, summoned by a secondary click or the menu key and anchored to
+  what the reader clicked: an opaque panel of rows with optional glyphs, shortcuts, checks and one
+  level of submenu. Everything in it exists somewhere visible as well, because a menu no pointer can
+  open does not exist. It is a Tier 2 component (ADR-0010).
+since: 0.1.0
+
+platforms:
+  ios: none
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: none
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the panel; opaque in every context, so it never renders a material of its own
+  - part: group
+    optional: true
+  - part: groupHeader
+    optional: true
+  - part: separator
+    optional: true
+  - part: item
+  - part: itemIcon
+    optional: true
+  - part: itemLabel
+  - part: itemShortcut
+    optional: true
+  - part: checkmark
+    optional: true
+    description: status.check before a toggled item's label
+  - part: submenuIndicator
+    optional: true
+    description: nav.forward at the trailing edge of an item that opens a submenu
+
+props:
+  - name: items
+    type: data
+    required: true
+    description: "[{ id, label, icon?, shortcut?, kind?, isChecked?, isDisabled?, isDestructive?, group?, items? }]; `kind` is action, toggle or submenu and defaults to action"
+  - name: isOpen
+    type: boolean
+    required: true
+  - name: anchor
+    type: data
+    description: the point or the element the menu is anchored to; the caller gives the point a secondary click reported
+  - name: placement
+    type: enum
+    values: [auto, bottom-start, bottom-end, top-start, top-end]
+    default: auto
+    description: auto opens down and toward the reading direction and flips on either axis when the panel would leave the viewport
+  - name: label
+    type: string
+    required: true
+    description: what the menu acts on ("Route L24"), so a reader who cannot see the anchor still knows
+  - name: onAction
+    type: action
+    required: true
+  - name: onClose
+    type: action
+    required: true
+
+states: [default, hover, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    background: color.bg.surface.raised
+    radius: radius.media
+    padding: space.1
+    minWidth: size.card.min
+    shadow: elevation.3
+    z: z.overlay
+  group:
+    gap: space.0
+  groupHeader:
+    typography: type.label.sm
+    paddingX: space.3
+    paddingY: space.3
+    color: color.text.tertiary
+  separator:
+    color: color.border.hairline
+    width: border.hairline
+    margin: space.1
+  item:
+    height: size.row
+    radius: radius.inner
+    paddingX: space.3
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+      destructiveOverlay: color.bg.tint.critical
+    selected:
+      overlay: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  itemIcon:
+    size: size.icon.md
+    color: color.icon.secondary
+    destructiveColor: color.icon.status.critical
+  itemLabel:
+    typography: type.body.md
+    color: color.text.primary
+    destructiveColor: color.text.critical
+  itemShortcut:
+    typography: type.micro
+    gap: space.5
+    color: color.text.tertiary
+  checkmark:
+    size: size.icon.sm
+    color: color.icon.primary
+  submenuIndicator:
+    size: size.icon.sm
+    color: color.icon.secondary
+
+behavior:
+  - "The panel is the opaque raised surface in every context - color.bg.surface.raised over color.bg.page (ADR-0030 §5.1) - at radius.media with elevation.3 at z.overlay. It renders no glass, vivid or tint of its own, and it publishes and reads no material, because it floats above the layer that publishes them; that is the rule Tooltip, Popover, Dialog and CommandPalette all follow. There is no scrim: a context menu dims nothing behind it."
+  - "Choosing an item fires `onAction` with that item's id, once, on release inside the row, and then fires `onClose`: an `action` item closes the menu, and so does a `toggle`, because a context menu acts on one object and then gets out of the way. A `submenu` item never fires `onAction`; it opens its submenu, and the child item that is chosen fires it. Keyboard and pointer take the same path: Enter or Space on the focused item is the same event as a click on it."
+  - "It opens where the reader asked: anchored to the point a secondary click reported, or to the leading edge of the focused element when the menu key or Shift with F10 opened it. `placement: auto` opens down and toward the reading direction and flips on either axis rather than leaving the viewport; it never covers the object it acts on when a flip can avoid it."
+  - "Only one context menu is open at a time; opening another closes the first, and a click anywhere outside, Escape, a scroll of the anchor out of view or the window losing focus all close it. Closing returns focus to the element that had it before."
+  - "An item is a label, an optional glyph, an optional shortcut and at most one trailing affordance. `kind: toggle` puts status.check before the label when `isChecked` and reserves that space when it is not, so a group of toggles keeps one text edge. `kind: submenu` puts nav.forward at the trailing edge."
+  - "The `selected` state is a checked `toggle` and nothing else: the check glyph is what says it, and the state's quiet color.bg.fill.neutral.subtle overlay is a second, redundant cue, never the only one (ADR-0011 rule 4). The row the keyboard is on is `focus-visible`, not `selected`, because focus moves to the item itself; a checked row that also has focus draws both."
+  - "One level of submenu, and no more. A submenu opens on hover after a rest of motion.duration.base, at once on Right or on Enter, and closes on Left or on Escape, which returns focus to its parent item. A menu that needs two levels needs a Sheet or a screen."
+  - "A destructive item takes color.text.critical for its label and color.icon.status.critical for its glyph, and it names what it destroys (\"Delete route L24\"), because red alone is not a warning (ADR-0011 rule 4). Hovered, its overlay is color.bg.tint.critical instead of color.bg.fill.neutral.subtle, because the critical label holds 4.5:1 on the raised panel under that wash in both schemes and under the neutral overlay it does not in dark. It sits in its own group at the bottom, behind a separator."
+  - "A disabled item stays in place at opacity.disabled, is skipped by the arrow keys and cannot be run - a menu whose items appear and disappear cannot be learned. An action that never applies to this kind of object is left out instead."
+  - "Truncation: a label is one line and truncates with an ellipsis at the panel's own maximum width; the shortcut is never truncated and never wraps, because half a shortcut is wrong rather than short. The panel is at least size.card.min wide and grows with its longest label up to that maximum."
+  - "Overflow: a menu longer than the viewport scrolls inside its panel with no header and no footer pinned; it never paginates and never splits into columns. A menu that needs scrolling is a menu with too many items."
+  - "Every item in a context menu exists somewhere the reader can see and reach without a pointer - a Toolbar, a row action, a detail panel. An affordance only a secondary click can discover is anti-pattern 31, and that is why this component is `none` wherever there is no pointer."
+  - "The menu holds no input, no slider and no value that changes while it is open; a choice that needs a field is a Dialog."
+  - "Focus moves into the panel when it opens and is trapped there until it closes, so Tab does not walk out into the page behind it."
+
+motion:
+  appear: motion.duration.fast
+  appearEasing: motion.easing.out
+  submenuDelay: motion.duration.base
+  reduceMotion: crossfade
+
+accessibility:
+  role: menu, with each row a menuitem, menuitemcheckbox for a toggle, and a submenu on the items that own one
+  label: the `label` prop, always explicit - the object the menu acts on - so the menu is not announced as a bare list of verbs
+  traits: [menu]
+  keyboard: "the menu key or Shift with F10 opens it on the focused element; Up and Down move between enabled items and wrap, Home and End reach the first and last, Enter or Space runs the focused item and closes the menu, Right on a submenu item opens it (as does Enter or Space, which on that kind of item opens rather than runs), Left and Escape close a submenu and return focus to its parent item, Escape closes the menu and returns focus to the anchor, Tab closes it and moves focus on, and typing a letter jumps to the next item starting with it. Focus moves to the item itself rather than staying on the anchor, so exactly one item is in the tab order at a time and disabled items are skipped by every key and by the typeahead. Focus rings are color.border.focus at border.focus width following radius.inner"
+  dynamicType: labels and shortcuts scale with type.body.md and type.micro; the rows grow in height from size.row and the panel widens with them, and a label truncates rather than wrapping so the rows keep one alignment
+  contrast: "labels are color.text.primary and shortcuts and group headings color.text.tertiary, with the glyphs and the submenu indicator in color.icon.secondary, all of them on color.bg.surface.raised, an opaque ground composited over color.bg.page, which is exactly what tokens/contrast-pairs.json checks and where ADR-0022 F6 measures every tone; the panel is opaque in every context, so no backdrop enters the calculation. The hover and selected cue is color.bg.fill.neutral.subtle over that ground, and every tone is paired on it as well. A destructive label is color.text.critical, a checked pair on the raised ground and, while hovered, on its color.bg.tint.critical wash in both schemes; its glyph repeats the state so colour is never alone, and on that wash the glyph is paired in dark only, because in light the label carries the tone (docs/research/a11y-reconciliation.md §8.3). color.bg.surface.overlay exists in the token set and looks like the role for this panel, but no pair checks text on it, so this spec binds the checked raised step instead, as Popover, Dialog and Toast do; the overlay role stays unpaired until a spec binds it (docs/roadmap.md, P2-5). The separators are decorative"
+  reduceTransparency: not applicable - the panel is opaque in every context and renders no glass, so the ADR-0022 fallback does not change it
+  reduceMotion: the panel does not scale, blur or slide out of its anchor; it crossfades by opacity over motion.duration.base with motion.easing.out and takes its position at once, and a submenu appears the same way. The hover rest before a submenu is the bound motion.duration.base, which the reduced context shortens with every other duration (ADR-0023 §8.2)
+  voiceOver: opening announces the menu's label and its item count; each item announces its label, its checked state and its shortcut, and a submenu announces that it has one
+
+usage:
+  do:
+    - Name the object the menu acts on, in the label and in every destructive item.
+    - Put the same actions somewhere visible as well; the menu is a shortcut for people with a pointer.
+    - Keep the destructive group last, behind a separator.
+  dont:
+    - Don't put an action only in the context menu.
+    - Don't nest more than one level of submenu.
+    - Don't put a field, a slider or a live value in a menu; that is a Dialog.
+    - Don't remove an item that does not apply right now; disable it so the menu can be learned.
+
+examples:
+  - id: row-actions
+    props: { isOpen: true, label: "Route L24", items: [{ id: "open", label: "Open the route", icon: nav.open }, { id: "copy", label: "Copy the route number", icon: action.copy, shortcut: "Ctrl C" }, { id: "edit", label: "Edit the route", icon: action.edit }] }
+  - id: with-groups
+    props: { isOpen: true, label: "Unit 4417", items: [{ id: "open", label: "Open the vehicle", icon: nav.open, group: "View" }, { id: "locate", label: "Centre on the map", icon: action.locate, group: "View" }, { id: "share", label: "Share the live link", icon: action.share, group: "Share" }, { id: "copy", label: "Copy the identifier", icon: action.copy, group: "Share", shortcut: "Ctrl C" }] }
+  - id: with-toggles
+    props: { isOpen: true, label: "Map layers", items: [{ id: "traffic", label: "Traffic", kind: toggle, isChecked: true }, { id: "depots", label: "Depots", kind: toggle, isChecked: true }, { id: "geofences", label: "Geofences", kind: toggle, isChecked: false }] }
+  - id: with-submenu
+    props: { isOpen: true, label: "Report", items: [{ id: "open", label: "Open the report", icon: nav.open }, { id: "export", label: "Export as", kind: submenu, icon: action.share, items: [{ id: "csv", label: "Comma-separated values" }, { id: "pdf", label: "Portable document" }] }] }
+  - id: with-destructive
+    props: { isOpen: true, label: "Route L24", items: [{ id: "edit", label: "Edit the route", icon: action.edit }, { id: "duplicate", label: "Duplicate the route", icon: action.copy }, { id: "delete", label: "Delete route L24", icon: action.delete, isDestructive: true, group: "Danger" }] }
+  - id: with-disabled
+    props: { isOpen: true, label: "Unit 4417", items: [{ id: "open", label: "Open the vehicle", icon: nav.open }, { id: "withdraw", label: "Withdraw from service", icon: action.remove, isDisabled: true }] }
+  - id: placement-top-end
+    props: { isOpen: true, label: "Route L24", placement: top-end, items: [{ id: "open", label: "Open the route", icon: nav.open }, { id: "copy", label: "Copy the route number", icon: action.copy }] }
+    description: the panel flips above the anchor when it would leave the bottom of the viewport
+  - id: labels-ru
+    props: { isOpen: true, label: "Маршрут Л24", items: [{ id: "open", label: "Открыть маршрут", icon: nav.open }, { id: "copy", label: "Скопировать номер маршрута", icon: action.copy, shortcut: "Ctrl C" }, { id: "delete", label: "Удалить маршрут Л24", icon: action.delete, isDestructive: true, group: "Опасное" }] }
+    description: the Russian labels are about half again as long, so the panel widens to its maximum before the longest of them truncates - the shortcut never does
+
+notes:
+  platform:
+    ios: "none. ADR-0010 makes ContextMenu a Tier 2 component. A phone has no secondary click, and a long press that reveals actions nothing else shows is anti-pattern 31; the same actions live on the object's own screen or in a Sheet."
+    ipados: "adapted. Drawn only under pointer modality - a secondary click from a connected trackpad or mouse - which ADR-0010 makes a runtime property rather than a platform one; with no pointer iPadOS behaves exactly like iOS."
+    macos: "full. The menu follows the platform's own menu behaviour: it opens on a secondary click or a Control-click, the window stays key, and the system draws the highlight and the shortcut column in its own metrics."
+    watchos: "none. ADR-0010's Tier 3 list has no ContextMenu, and the wrist has no pointer."
+    web-touch: "none. Same reason as iOS; the modality dimension decides, not the user agent, and the browser's own menu is left alone."
+    web-desktop: "full. Built on React Aria Menu with `onContextMenu` on the anchor; `aria-activedescendant` is not used - focus moves to the item, as a menu's does."
+  design: >-
+    docs/research/component-inventory.md records no sighting at all for ContextMenu and lists it under
+    "Required by v1 but not observed", as an ADR-0012 desktop-only composite. Its panel therefore follows
+    the two floating components Prism already specifies rather than a reference: the popover level of
+    docs/research/visual-dna.md §7.2 (level 3), which elevation.3 carries, and Tooltip.yaml's rule that a
+    layer above the material layer is opaque and publishes nothing. The row height is §6.7's size.row, the
+    12 px media radius §1 principle 2's container scale, and the hairline separators §7.5's "hairlines are
+    structure for sighted readers only", which is why the grouping also reaches assistive technology
+    through the group headings. The destructive row pairs the critical tone with the object's name, which
+    is §1 principle 14 and ADR-0011 rule 4; the ban on menu-only actions is §11 anti-pattern 31, and it is
+    the reason this component is `none` wherever there is no pointer. Example strings are invented
+    (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md

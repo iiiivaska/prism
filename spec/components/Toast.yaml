@@ -1,0 +1,195 @@
+name: Toast
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The transient confirmation that something already happened: one sentence, an optional status glyph
+  and at most one action, in an opaque raised chip that floats above every other layer at the top of
+  the z scale. The app raises it; it takes no focus, asks no question, blocks nothing, and it is never
+  the only place a piece of information exists, because it leaves on a timer.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: region
+    description: the one container per window that stacks and positions toasts; it is a landmark, not a visual
+  - part: root
+    description: one toast chip; an opaque Surface of material raised, so it stays legible over a map, an image or a vivid card
+  - part: icon
+    optional: true
+    description: the tone's registry glyph, or the id `icon` names
+  - part: message
+  - part: action
+    optional: true
+    slot: true
+    description: "one Button (`variant: ghost`, `size: sm`), forwarding `label`, `onPress` and `isDisabled`; Button owns its own look and states"
+  - part: close
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: plain`, `size: sm`, `glyph: nav.close`, `label` \"Dismiss\", `onPress` = `onDismiss`); IconButton owns its own look and states"
+
+props:
+  - name: message
+    type: string
+    required: true
+    description: one sentence in the past tense, at most two lines at the default text size
+  - name: tone
+    type: enum
+    values: [neutral, success, warning, critical]
+    default: neutral
+    description: picks the glyph and the glyph's color; it never carries the meaning alone
+  - name: icon
+    type: icon
+    description: a registry id that replaces the tone's glyph; a neutral toast has no glyph unless this is set
+  - name: action
+    type: slot
+    description: one Button that undoes or opens what the toast is about; never two
+  - name: dwell
+    type: enum
+    values: [short, long, persistent]
+    default: short
+    description: how long the toast stays; `persistent` never leaves on its own and always shows the close control
+  - name: isDismissible
+    type: boolean
+    default: true
+    description: draws the close control; a `persistent` toast ignores `false`
+  - name: onDismiss
+    type: action
+    required: true
+    description: fires exactly once as the toast leaves, whatever removed it - the dwell, the close control, Escape, a swipe, a newer toast with the same message, or the app
+
+states: [default, dragging]
+
+tokens:
+  region:
+    gap: space.3
+    offset: space.page-margin
+    z: z.toast
+  root:
+    background: color.bg.surface.raised
+    radius: radius.tile
+    paddingX: space.5
+    paddingY: space.4
+    gap: space.3
+    minWidth: size.card.min
+    shadow: elevation.3
+  icon:
+    size: size.icon.md
+    color:
+      neutral: color.icon.primary
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+  message:
+    typography: type.body.sm
+    color: color.text.primary
+  action:
+    gap: space.4
+  close:
+    gap: space.3
+
+behavior:
+  - "A Toast is raised by the app after an action the user took; nothing about the toast is pressable except its own action and its close control, and pressing the chip itself does nothing."
+  - "Raising and removing. The region is mounted once per window, at the root of the view tree beside the screen's content. The app raises a toast by handing these props to that region, which returns the toast's identity; from then on the region owns the toast's lifetime, unlike Sheet, Popover and Dialog, whose presence the caller controls. The region removes a toast when its dwell runs out, when its close control is pressed, when Escape reaches it while it holds focus, when a swipe dismisses it, when a newer toast with the same `message` takes its place, and when the app removes it by its identity; whichever comes first, `onDismiss` fires exactly once as the toast leaves. Toasts do not queue across screens: a toast whose screen is gone is removed the same way, never re-shown on the next one."
+  - "Its material is the opaque raised surface in every context: `color.bg.surface.raised` over `color.bg.page`, with the `color.edge.raised` top edge that `raised` always draws and `elevation.3` in place of that material's default `elevation.1`, which ADR-0030 §5.2 leaves to the requesting Surface. Surface paints the page under `raised` (ADR-0030 §5.1), so a toast over a map, an image or a vivid card renders exactly the fill whose text pairs are checked, and it never becomes glass. It publishes and reads no material, because it floats above the layer that publishes them."
+  - "The region sits at the bottom edge of the window, inset `space.page-margin` from every edge it touches, centered in a window below 600 wide (visual-dna §6.3's compact width) and aligned to the trailing edge from 600 up. It clears the bottom safe area and any floating tab bar or toolbar, and it never covers a control (visual-dna §11 anti-pattern 31)."
+  - "At most three toasts are on screen at once, newest nearest the edge, separated by `space.3`; a fourth waits, unseen and with its dwell not yet started, until one leaves. A new toast whose `message` equals a visible one takes that toast's place instead of stacking: the older one leaves without an exit animation and fires `onDismiss`, and the newer one's dwell starts from the full value."
+  - "`dwell` is measured in seconds and is a spec value, not a token: the longest `motion.duration.*` role is 500 ms (ADR-0023 §8.2) because it times an animation, and a reading time is not motion. `short` is 4 s, the budget for the two-line message at `type.body.sm`; `long` is 8 s, because a toast that carries an action has to be read and then reached, so a toast with an action and `dwell: short` is held for `long`; `persistent` has no timer at all and always shows the close control. The two numbers are floors, not ceilings - the stop below extends them - and a message that must survive a distraction is `persistent`, not a longer timer."
+  - "The dwell stops while a pointer rests on the region and while focus - keyboard or assistive-technology focus - is inside the region; when both have ended, the timer starts again from the full `dwell` rather than from what was left. Neither stack reads any other screen-reader state to extend it, because the web has no such signal; a reader who needs more time moves into the region, and a message that must wait for the reader is `persistent`. A `persistent` toast has no dwell to stop."
+  - "Presenting, a toast fades in from opacity 0 while it moves in from the region's bottom edge, starting its own height plus `space.page-margin` below its resting place, over `motion.duration.base` with `motion.easing.out` (visual-dna §9.1: base for toasts); leaving reverses both (ADR-0023 §9: exit mirrors enter). The toasts that stay move to their new places with `motion.spring.smooth`. Nothing scales or blurs."
+  - "Focus after a toast leaves: when the toast that holds focus leaves, focus moves to the next toast in the region, and when none is left, back to the element that had focus before the region was entered."
+  - "The `message` wraps and never truncates (ADR-0011). Two lines at the default text size is the budget; a message that needs more is not a toast but a Banner, an Alert or a screen."
+  - "Width: the chip is at least `size.card.min` (200) and at most twice `size.card.min`, and never wider than the window minus twice `space.page-margin`. The narrower of those two ceilings is the cap, and on a window too narrow for `size.card.min` plus its margins the window ceiling wins over the minimum. Past the cap the message wraps rather than the chip growing."
+  - "`tone` chooses the glyph (`status.success`, `status.warning`, `status.danger`) and its color; the words carry the same meaning, so the tone never states anything the sentence does not (ADR-0011 rule 4). A `neutral` toast draws no glyph unless `icon` names one."
+  - "The action is one Button, and it is the same action the user could still reach another way; a toast that holds the only undo is a defect, because the toast leaves on a timer."
+  - "A Toast declares no haptics. It is a programmatic state change, and `spec/haptics.yaml` rule 2 forbids a haptic there; the action that raised the toast owns its own feedback."
+  - "Swiping a toast toward the edge it entered from dismisses it under touch; the chip is in the `dragging` state while the finger is down, the gesture tracks the finger directly with `motion.spring.interactive`, and a release past half the chip's height carries the chip on past the edge and removes the toast, while a shorter one returns it to rest; both continue from the release velocity with `motion.spring.smooth`. Nothing but the chip's position changes while dragging: it does not scale, tilt or fade."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  swipe: motion.spring.interactive
+  reflow: motion.spring.smooth
+  reduceMotion: crossfade
+
+accessibility:
+  role: "the region is a labelled landmark; each toast is a live region - `status` for `neutral`, `success` and `warning`, `alert` for `critical`"
+  label: "the region carries its own name (\"Notifications\"); a toast's name is its `message`, and the tone's glyph is announced as a word, not as a color. The close control is an IconButton labelled \"Dismiss\", which this component supplies, because an IconButton never infers its name from its glyph"
+  traits: [staticText]
+  keyboard: "a toast never takes focus on its own and never moves focus away from what the user is doing. The region is the last landmark in the document and is reached with the platform's landmark key (F6 on the web, the rotor on Apple); inside it, Tab reaches the action and the close control, and Escape dismisses the focused toast"
+  dynamicType: "`message` scales with `type.body.sm`, the chip grows and wraps with it, and nothing truncates to keep a height (ADR-0011); at the accessibility sizes the action moves onto its own line below the message"
+  contrast: "`color.text.primary` on `color.bg.surface.raised` is a checked functional pair in tokens/contrast-pairs.json, and `raised` composites over `color.bg.page`, which is what the pair checks. The tone glyphs sit on that same checked ground: `color.icon.status.critical` on `color.bg.surface.raised` clears the 3:1 boundary tier in both schemes, and `color.icon.status.success` and `.warning` are checked in dark only, so in light those two never carry the tone alone and the sentence says it (ADR-0011 rule 4, the pairs file's note on `color.icon.status.success`). A `neutral` toast's optional glyph is `color.icon.primary`, checked at the same tier on the same ground"
+  reduceTransparency: "not applicable - the chip is opaque in every context and never renders glass, so the ADR-0022 fallback does not change it"
+  reduceMotion: "the toast does not move in or out from the edge: it appears and leaves by opacity alone over `motion.duration.base` with `motion.easing.out` and takes its position at once. Restacking after one leaves, and the release of a swipe, keep their bound `motion.spring.smooth`, which is in-place movement and has no bounce in the reduced context; a swipe still tracks the finger with `motion.spring.interactive`, which the reduced context leaves unchanged (ADR-0023 §8.4)"
+  voiceOver: "announced once, politely, at the moment it appears; a `critical` toast interrupts. Re-announcing the same string is suppressed, and the action is reached through the region rather than by moving focus"
+
+usage:
+  do:
+    - Confirm what happened in the past tense, in one sentence ("Route copied").
+    - Put the same action somewhere permanent as well; the toast only shortens the path to it.
+    - Use `persistent` when the message must survive a distraction, and give it a close control.
+    - Keep one toast per action.
+  dont:
+    - Don't ask a question in a Toast; a question that blocks is a Dialog, and one that waits is a Banner.
+    - Don't put the only copy of an identifier, an error detail or an undo in a Toast.
+    - Don't stack more than three, and don't raise one for every item of a batch; summarize the batch.
+    - Don't use a Toast for a condition that persists - a dropped connection is a Banner.
+    - Don't move focus to a Toast; it interrupts the task the user is in the middle of.
+
+examples:
+  - id: neutral-short
+    props: { message: "Route copied", dwell: short }
+  - id: with-action
+    props: { message: "Depot removed from the plan", dwell: long, action: { label: "Undo", variant: ghost, size: sm } }
+  - id: success
+    props: { message: "Shift saved", tone: success }
+  - id: critical-persistent
+    props: { message: "Couldn't save the shift", tone: critical, dwell: persistent, action: { label: "Try again", variant: ghost, size: sm } }
+  - id: stack-of-three
+    props: { message: "Unit 4417 added to the route" }
+    description: three toasts in the region, newest nearest the edge, separated by `space.3`
+  - id: over-map
+    props: { message: "Centred on Unit 4417" }
+    surface: map
+    description: the chip stays the opaque raised surface over the map; it never becomes glass
+  - id: ru-two-lines
+    props: { message: "Изменения сохранены и отправлены на все устройства", dwell: long }
+    description: a Russian sentence about half again as long as its English twin; the chip wraps to two lines instead of truncating
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Toast, and a wrist has no room for a layer that floats over the screen and leaves on a timer. Confirmation on the watch is the system's own notification plus the haptic the action already plays (`spec/haptics.yaml`); a state that must stay visible is part of the screen."
+    macos: "the region sits at the bottom trailing corner of the window. The chip's paddings do not change with density, and the Button and IconButton inside it take compact density's heights and the pointer hit area (`size.hit` 28). The dwell stops on hover, which is the pointer's only effect on a toast."
+    ios: "the region clears the home indicator and any floating tab bar; a swipe toward the bottom edge dismisses."
+    web-desktop: "the region is a named landmark at the end of the document, reachable with the browser's own landmark key (F6), so a keyboard user can leave the task, act on the toast and come back without the toast ever stealing focus."
+  design: >-
+    docs/research/component-inventory.md records 0 of 11 sightings and names the case Prism needs it for -
+    "transient confirmation, for example after copying an identifier (AR and IM show a copy glyph with no
+    visible feedback)". So the look is derived, not observed. It takes the elevation ladder of
+    docs/research/visual-dna.md §7.2 level 3 ("popovers and floating readouts") and the opaque raised
+    material rather than the inverse solid: the inverse solid is §1 principle 9's one active element in a
+    group, a rule about controls, and a chip that may land over a map, an image or a vivid card needs the
+    surface whose pairs are checked over the page (ADR-0030 §5.1). `radius.tile` 16 and the `space.5` /
+    `space.4` paddings are §6.1's rhythm; the `space.page-margin` inset from the window edge is §6.5's
+    floating-controls rule (24 above the bottom, content scrolling under). `motion.duration.base` for a
+    toast is §9.1 ("base 250: dropdowns, toasts, crossfades"). `color.bg.surface.overlay` exists in the
+    token set and looks like the role for this chip, but no pair in tokens/contrast-pairs.json checks text
+    on it, so this spec binds `color.bg.surface.raised`, which is checked; the overlay role stays unpaired until a spec binds it (docs/roadmap.md, P2-5). Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

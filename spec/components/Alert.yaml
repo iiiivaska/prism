@@ -1,0 +1,232 @@
+name: Alert
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The inline block that holds what a status is about: a glyph, a title with an optional count, a line
+  of explanation and a slot for the rows that belong to it. It is the danger-tinted container of the
+  ops consoles - a wash with no border, holding badge rows - and it is neither a dialog nor a strip
+  that leaves. It stays as long as the status does, takes no focus of its own and blocks nothing.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the tinted block; it paints `color.bg.page` under its tint whenever it sits over media
+  - part: header
+  - part: icon
+    description: the tone's registry glyph, or the id `icon` names
+  - part: title
+  - part: count
+    optional: true
+    description: how many things the block holds, inline after the title in the same tone
+  - part: disclosure
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: plain`, `size: sm`, `glyph: nav.down` collapsed and `nav.up` expanded, `label` \"Show the items\" collapsed and \"Hide the items\" expanded, `onPress` toggles `isExpanded`)"
+  - part: message
+    optional: true
+  - part: content
+    optional: true
+    slot: true
+    description: the rows, list or paragraph the status is about; nested Surfaces inside it follow the concentric rule
+  - part: action
+    optional: true
+    slot: true
+    description: "one Button (`variant: secondary`, `size: sm`), forwarding `label`, `onPress` and `isDisabled`"
+
+props:
+  - name: tone
+    type: enum
+    values: [info, success, warning, critical]
+    default: critical
+    description: critical is the default because the block exists for the incident group; an informational note is a Banner or plain content
+  - name: title
+    type: string
+    required: true
+    description: what the group is, in sentence case ("Units not reporting")
+  - name: count
+    type: number
+    description: the full number of items the status is about, including rows the caller leaves behind the action; it is spoken with the title, never shown alone
+  - name: message
+    type: string
+    description: one line that says what the status means for the reader
+  - name: icon
+    type: icon
+    description: a registry id that replaces the tone's glyph
+  - name: content
+    type: slot
+  - name: action
+    type: slot
+  - name: isCollapsible
+    type: boolean
+    default: false
+  - name: isExpanded
+    type: boolean
+    default: true
+  - name: onExpandedChange
+    type: action
+
+states: [default, expanded]
+
+tokens:
+  root:
+    background:
+      info: color.bg.tint.info
+      success: color.bg.tint.success
+      warning: color.bg.tint.warning
+      critical: color.bg.tint.critical
+    underlay:
+      page:
+        map: color.bg.page
+        image: color.bg.page
+        vivid: color.bg.page
+      raised: color.bg.page
+      nested: color.bg.page
+      vivid: color.bg.page
+      glass: color.bg.page
+      glassLight: color.bg.page
+      inverse: color.bg.page
+      accent: color.bg.page
+    radius: radius.card
+    padding: space.5
+    gap: space.4
+  header:
+    gap: space.3
+  icon:
+    size: size.icon.md
+    color:
+      info: color.icon.status.info
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+  title:
+    typography: type.label.lg
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+  count:
+    typography: type.data
+    gap: space.2
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+  message:
+    typography: type.body.sm
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+  content:
+    gap: space.2
+    radius: radius.inner
+    rowHeight: size.row
+  action:
+    paddingTop: space.3
+
+behavior:
+  - "An Alert sits in the content flow and takes the width it is given; it never floats, never dims what is behind it and never leaves on a timer. What it holds stays reachable while it is on screen."
+  - "Appearing, the block fades in from opacity 0 over `motion.duration.base` with `motion.easing.out` while its height grows from 0 with `motion.spring.smooth`, and the content below moves down with that height; leaving reverses both. Collapsing and expanding change the height with the same `motion.spring.smooth`. Nothing slides in from an edge, scales or blurs."
+  - "The block is a translucent wash with no border and no shadow - about 10 % in dark and 12 % in light (ADR-0030 §6.1, visual-dna §4.11) - so the surface under it still reads through and the block belongs to the page rather than sitting on it. The two grounds its pairs check are `color.bg.page` and `color.bg.surface`, so on the page and on a card it paints nothing under itself. On every other ground it paints `color.bg.page` under its tint first (ADR-0030 §6.2): over a map, an image or a vivid backdrop when nothing between them published a material, over a Surface that published `vivid`, `glass`, `glassLight`, `inverse` or `accent`, and over `raised` or `nested`, which are not underlays the tint pairs check."
+  - "Its radius and padding are the concentric pair of visual-dna §1 principle 2: `radius.card` 24 outside, `space.5` 16 of padding, so anything nested inside it takes `radius.inner` 8. The padding does not follow density, because the pair has to hold in every one of them."
+  - "The glyph, the title and the tint say the same thing; the tint is never the only one that does (ADR-0011 rule 4). `critical` takes `status.danger`, `warning` `status.warning`, `success` `status.success` and `info` `status.info`."
+  - "Every tone in the block - title, count, message - is that tone's text token, at three sizes. A status tint has exactly one checked foreground, so hierarchy comes from size (visual-dna §1 principle 8) rather than from a second tone."
+  - "`count` is rendered inline after the title in `type.data`, which is tabular, and it is spoken as part of the title (\"Units not reporting, 3\"). `count` is the full number of items, and a count with no content is a defect: every item it counts is either a row in the content or behind the action that opens the whole set."
+  - "`content` is a slot the Alert styles in three ways only - the `space.2` gap between its children, the `radius.inner` its nested containers take, and `size.row` as the height a row starts from - and rows, a list or a paragraph render themselves. An Alert never puts a chart on its tint: the chart pairs in tokens/contrast-pairs.json check marks on `color.chart.plot` over the page, a card or a raised surface, so a chart on a status tint has no checked ground, which is the call visual-dna §11 anti-pattern 23 already makes for raw glass."
+  - "The Alert never scrolls, clips or counts its content: it renders every child the slot holds at full height. How many rows to show is the caller's choice: past what the screen should hold, the caller passes only the first rows, states the remainder in `message` (\"3 of 11 shown\") and passes the one action that opens the whole set, while `count` stays the full number. A block that scrolls inside a scrolling page traps the pointer and the finger."
+  - "`isCollapsible` adds one IconButton whose glyph is `nav.down` while collapsed and `nav.up` while expanded, pinned to the header's trailing edge. Collapsed, the block keeps its header - glyph, title, count - so the status and its size stay readable; only `message`, `content` and `action` are hidden."
+  - "`isExpanded` is controlled: pressing the disclosure fires `onExpandedChange` with the value being asked for, and the block changes only when the caller writes it back, so the block and the caller's model cannot drift."
+  - "The Alert holds at most one action, and that action leads to where the status is resolved. A block that needs two actions is a screen, and a block that needs a decision now is a Dialog."
+  - "An Alert is never dismissible. It disappears when the status it reports is gone, and nothing else."
+  - "An Alert declares no haptics: it is part of the page, not a response to a press, and `spec/haptics.yaml` rule 2 forbids a haptic on a programmatic state change."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  expand: motion.spring.smooth
+  reduceMotion: crossfade
+
+accessibility:
+  role: "a `group` (`region` on the web when the page needs it as a landmark) named by its title; it is not an `alert` role, because it does not interrupt - it appears with the content it is part of"
+  label: "the title, then the count, then the message; the tone reaches the reader through the glyph's registry label, never through the color alone. The disclosure control is an IconButton labelled \"Show the items\" while collapsed and \"Hide the items\" while expanded; this component supplies both strings, because an IconButton never infers its name from its glyph"
+  traits: [staticText]
+  keyboard: "the block itself is not focusable and not in the tab order. The disclosure control, the content's own focusable rows and the action are, in that order, at the Alert's position in the flow; a collapsed Alert removes its hidden content from the focus order and from the accessibility tree"
+  dynamicType: "title, count and message scale with their roles and the block grows with them; rows inside grow from `size.row` and wrap rather than truncating (ADR-0011). The header keeps the glyph on the title's first line at every size"
+  contrast: "`color.text.<tone>` on `color.bg.tint.<tone>` is a checked functional pair in tokens/contrast-pairs.json, with `color.bg.page` and `color.bg.surface` as the underlays - the two grounds an Alert renders on, and the one it paints under itself everywhere else (ADR-0030 §6.2). Title, count and message all carry that one checked tone, which is why hierarchy is size rather than a second tone no pair checks. The glyph is `color.icon.status.<tone>` on its own tint, a boundary pair in tokens/contrast-pairs.json over the same grounds: info clears 3:1 there in both schemes, and critical, success and warning in dark only, so in light no glyph carries the tone alone and the title does (ADR-0011 rule 4; docs/research/a11y-reconciliation.md §8.3). Rows inside the content slot keep their own component's tones, usually `color.text.primary` and `color.text.secondary`, and both are functional pairs on each of the four status tints with the same two underlays, modelled on `color.text.primary` on `color.bg.tint.accent`"
+  reduceTransparency: "no change. A status tint is a color token and not a material, so ADR-0022's glass fallback does not touch it; over media the block is already opaque, because it paints `color.bg.page` under its tint"
+  reduceMotion: "appearing and leaving are a presentation, so the block does not grow into place: it crossfades by opacity over `motion.duration.base` with `motion.easing.out`, takes its height at once, and the content below it takes its new position at once (ADR-0023 §8.4 item 1). Collapsing and expanding keep the bound `motion.spring.smooth`, in-place movement that has no bounce in the reduced context (ADR-0023 §8.4 item 3)"
+  voiceOver: "the block is one group; entering it announces the title, the count and the message, and the rows follow. Collapsing announces the state and leaves the header readable"
+
+usage:
+  do:
+    - Use an Alert for a status that has things under it - incidents, failed rows, blocked units.
+    - Put the count in the header and the items in the content slot, so the number and the list agree.
+    - Keep the header readable when the block is collapsed.
+    - Give it the one action that resolves the status.
+  dont:
+    - Don't use an Alert for a one-line condition with nothing under it; that is a Banner.
+    - Don't use an Alert to ask for a decision; a decision that blocks is a Dialog.
+    - Don't make it dismissible, and don't let it leave on a timer.
+    - Don't scroll inside an Alert; show the first rows and link to the rest.
+    - Don't put a chart, a hero numeral or a media slot on the tint.
+
+examples:
+  - id: critical-with-rows
+    props: { tone: critical, title: "Units not reporting", count: 3, message: "Last position older than 10 minutes", content: { fixture: list, count: 3 } }
+  - id: warning-collapsed
+    props: { tone: warning, title: "Shifts without a driver", count: 7, isCollapsible: true, isExpanded: false, content: { fixture: list, count: 7 } }
+  - id: info-with-action
+    props: { tone: info, title: "Two depots moved to the new plan", message: "The old plan stays readable until 30.11.2026", action: { label: "Compare plans", variant: secondary, size: sm } }
+  - id: success
+    props: { tone: success, title: "Every route is back on plan", message: "Nothing needs attention in this depot" }
+  - id: truncated-set
+    props: { tone: critical, title: "Failed uploads", count: 11, message: "3 of 11 shown", content: { fixture: list, count: 3 }, action: { label: "Open all", variant: secondary, size: sm } }
+    description: the block never scrolls inside itself; it states the remainder and offers the set
+  - id: in-glass-card-over-map
+    props: { tone: critical, title: "Units not reporting", count: 3, content: { fixture: list, count: 3 } }
+    surface: glass
+    backdrop: map
+    description: inside a glass Card the block paints `color.bg.page` under its tint, so the critical pair holds
+  - id: ru-long-title
+    props: { tone: critical, title: "Машины без связи более десяти минут", count: 3, message: "Последняя позиция получена в 14:05", content: { fixture: list, count: 3 } }
+    description: a Russian title about half again as long as its English twin; the header wraps to two lines and the count stays on the last of them
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Alert, and a block that groups rows under a status does not fit a glanceable screen of at most three tiles (`spec/patterns/README.md`). On the watch the status is the tile itself - a StatTile in the status tone - and the list lives on the phone."
+    macos: "compact density; rows inside take `size.row` 32 and the disclosure control takes the pointer hit area (`size.hit` 28). The block is the desktop rail's alert group of the references."
+    ios: "on a phone the same block is what the bottom Sheet holds, which is how the references present it at phone size (docs/research/component-inventory.md, Alert row)."
+  design: >-
+    The sighting is docs/research/component-inventory.md's Alert row (3 of 11, TD ID TM): "danger-tinted
+    nested container (about a 10 % wash, no border) holding numbered-badge rows; sits in a glass rail on
+    desktop and in the bottom sheet on phone", explicitly "an inline alert, not a dialog". The collapsible
+    header with an inline count is the Accordion candidate row of the same file (3 of 11, "collapsible
+    alert groups with chevrons; group header with an icon and an inline count"); Prism folds it into Alert
+    rather than shipping an Accordion, because both sightings are the same block, and a general disclosure
+    component stays a candidate. Red as layers of translucent material with white - here the tone's own
+    text - and never a flat block is visual-dna §4.11 and §1 principle 14. The `radius.card` with `space.5`
+    padding is principle 2's own worked example ("a 24 card with 16 padding nests an 8 radius"). The page
+    underlay over media is ADR-0030 §6.2. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

@@ -1,0 +1,236 @@
+name: Pagination
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  Moving through an ordered set one step at a time: a previous control, a readout, a next control.
+  In its `range` form the readout is a period ("6–12 June") and the component is the date pager under a
+  chart; in its `pages` form it is a position ("3 of 12") that a pointer layout may expand into numbered
+  buttons. The two controls are IconButtons and the numbers are tabular. The row has no track.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row; it draws no track, no fill, no border and no shadow of its own
+  - part: previous
+    slot: true
+    description: one IconButton carrying nav.back
+  - part: readout
+    description: the period label in the `range` form, or "<page> of <pageCount>" in the `pages` form
+  - part: pageButton
+    optional: true
+    description: one numbered button of the expanded pointer layout; the current one is the inverse solid
+  - part: ellipsis
+    optional: true
+    description: the gap mark between two runs of page numbers; decoration, never a control
+  - part: next
+    slot: true
+    description: one IconButton carrying nav.forward
+
+props:
+  - name: kind
+    type: enum
+    values: [range, pages]
+    default: pages
+  - name: label
+    type: string
+    description: "the readout in the `range` form, written by the caller (\"6–12 June\", \"November\")"
+  - name: page
+    type: number
+    description: the current position in the `pages` form, counted from 1
+  - name: pageCount
+    type: number
+    description: how many positions there are in the `pages` form; unset, the end is unknown and the next control stays available
+  - name: showPageNumbers
+    type: boolean
+    default: false
+    description: expands the readout into numbered buttons; a pointer layout, ignored under touch
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+  - name: hasPrevious
+    type: boolean
+    default: true
+  - name: hasNext
+    type: boolean
+    default: true
+  - name: onPrevious
+    type: action
+    required: true
+  - name: onNext
+    type: action
+    required: true
+  - name: onSelectPage
+    type: action
+    description: fired by a numbered button; required when `showPageNumbers` is set
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    gap: space.3
+  readout:
+    typography:
+      sm: type.data
+      md: type.label.md
+    minWidth:
+      range: size.card.min
+      pages: size.control.lg
+    color:
+      default: color.text.primary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  pageButton:
+    typography: type.data
+    minWidth:
+      sm: size.control.sm
+      md: size.control.md
+    height:
+      sm: size.control.sm
+      md: size.control.md
+    radius: radius.control
+    paddingX: space.3
+    color:
+      default: color.text.secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      background:
+        default: comp.pagination.current.bg
+        glass: color.bg.fill.inverse-media
+      color:
+        default: comp.pagination.current.text
+        glass: color.text.on-inverse-media
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  ellipsis:
+    typography: type.label.md
+    color:
+      default: color.text.tertiary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+
+behavior:
+  - "The two controls are IconButtons: `previous` carries nav.back and `next` carries nav.forward. Their ring, press, hit region and disabled look are IconButton's and are not restated here. On the page they use the secondary variant; over a map, an image or a vivid surface they use the ghost variant, whose ring takes color.border.on-media or color.border.on-glass-fill."
+  - "IconButton requires an explicit `size` and an explicit `label`, so Pagination supplies both: each control takes Pagination's own size (`sm` to IconButton's `sm`, `md` to its `md`), and its name is the caller's string for what it moves to — \"Previous week\", \"Next week\" — never the glyph's id and never a bare direction (ADR-0011 rule 4)."
+  - "One press plays one haptic: haptic.selection on a move and haptic.selection.limit at an end replace IconButton's own haptic.press.button on these two controls, because spec/haptics.yaml allows at most one haptic per user action."
+  - "Pagination has no disabled state of its own and no prop that sets one. Only the two controls become unavailable, through `hasPrevious` and `hasNext`, in IconButton's disabled look; a numbered button is never disabled, because the current page is `selected` rather than switched off."
+  - "The row draws no track: no fill, no border, no shadow, and space.3 between its parts. The references set the pager inside a stadium; Prism's pill grammar puts the pill on the control, not on the group, and a filled track behind a group is docs/research/visual-dna.md §11 anti-pattern 24."
+  - "`kind: range` shows one period written by the caller, which is the date pager under a chart. The component never formats or advances a date: it fires `onPrevious` and `onNext`, and the caller decides what a step means — a week, a month, a shift."
+  - "`kind: pages` shows the position as \"<page> of <pageCount>\" in tabular figures. With `pageCount` unset the end is unknown, the readout is the page alone and `next` stays available until the caller says otherwise with `hasNext`."
+  - "The readout reserves a width, so the two controls do not walk inwards and outwards as the label changes: size.card.min (200 px) in the `range` form, where the label is a period written in words, and size.control.lg in the `pages` form, where it is two numbers. A longer label widens the row from that minimum and stays centred between the controls."
+  - "Every number in this component is tabular, on both roles: the page and the count change while they are visible, and ADR-0021 §5 makes every such value tabular. type.data is tabular by its role, and the `md` readout sets it on type.label.md."
+  - "`hasPrevious` and `hasNext` decide availability, not the numbers: a control that cannot move takes IconButton's disabled look and leaves the focus order. The row never wraps around from the last position to the first, because a pager that loops hides the end of the set."
+  - "`showPageNumbers` expands the readout into numbered buttons and is a pointer layout: under touch modality it is ignored and the row stays two controls and a readout, because a row of 32 pt numbers inside 44 pt hit regions does not fit a phone's width. It belongs to `kind: pages`; on a `range` pager it is ignored in every modality, because a period has no numbered siblings."
+  - "In the expanded layout the current page is the one inverse solid of its group and every other number is a plain button with no fill (docs/research/visual-dna.md §1 principle 9). At most seven buttons are drawn: the first, the last, the current and its two neighbours, with an ellipsis mark standing for each run that is left out."
+  - "The ellipsis is decoration. It is not a control, it is not focusable and it is hidden from assistive technology, which reads the position from the readout instead."
+  - "Selection moves on release inside a button and fires `onSelectPage` once; nothing slides between numbers, because the numbers are not adjacent segments of one track. The outgoing number loses its fill and the incoming one gains it."
+  - "Pagination never scrolls the page for the reader. The caller decides whether the new content replaces the old in place, and the component announces the change politely so a screen reader hears it without losing focus."
+  - "Pagination paints no material of its own and takes the tones of the material the enclosing Surface publishes. Every text part is 13 px — type.label.md for the `md` readout and the ellipsis, type.data for the `sm` readout and the numbers — so the spec declares no vivid cell anywhere: ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block, and a pager over a gradient sits inside a Card's header block or on glass above it, never straight on it. It declares no cell for inverse or accent either, which carry the one solid control and the one lit metric, not a row of chrome."
+
+motion:
+  change: motion.duration.fast
+  press: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  change: haptic.selection
+  limit: haptic.selection.limit
+
+accessibility:
+  role: navigation containing buttons; the readout is a live region
+  label: "the set being paged (\"Ride history\"), given by the caller; each control is labelled by what it moves to (\"Previous week\", \"Next week\"), never \"back\" and \"forward\""
+  traits: [button]
+  keyboard: "Tab reaches the previous control, the numbered buttons and the next control in reading order; Enter and Space activate; in the expanded layout the arrow keys move between numbers and Home and End jump to the first and last page. The focus ring is color.border.focus at border.focus width outside each control, following radius.control"
+  dynamicType: the readout and the numbers scale with their roles; the row grows from the readout's reserved width and, at the accessibility3 size, drops the numbered buttons back to the plain readout rather than wrapping or truncating the label
+  contrast: "the readout is color.text.primary and a resting number color.text.secondary, both functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the current page is comp.pagination.current.text on comp.pagination.current.bg, which is color.text.on-inverse on color.bg.fill.inverse (19.30:1), and on the scheme's glass color.text.on-inverse-media on color.bg.fill.inverse-media, the same white solid IconButton takes there. Both pairs are in tokens/contrast-pairs.json. The ellipsis is color.text.tertiary, functional on the same three grounds, and it carries no meaning a reader needs. The two controls carry IconButton's own pairs"
+  reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass, the current page takes comp.pagination.current.bg and every tone returns to the solid family
+  reduceMotion: nothing slides between numbers in either motion context; the readout crossfades to its new value over motion.duration.base with motion.easing.out, the current page's fill crossfades instead of scaling, and the controls' press scale is replaced by IconButton's pressed fill
+  voiceOver: "the readout is announced politely when it changes (\"6 to 12 June\", \"Page 3 of 12\") without moving focus; the two controls announce what they move to, and the numbered buttons announce their number and whether they are current"
+
+usage:
+  do:
+    - Label the two controls with what they move to, not with a direction.
+    - Use `range` under a chart and `pages` under a table or a list.
+    - Keep the readout's width steady, so the controls stay where the reader last found them.
+    - Say when the end is reached by making the control unavailable, not by looping.
+  dont:
+    - Don't draw a track, a stadium or a fill behind the row.
+    - Don't show numbered buttons on touch.
+    - Don't format the period inside the component; the caller owns the words and the locale.
+    - Don't use proportional figures for a page number or a count.
+    - Don't move focus or scroll the page when the position changes.
+
+examples:
+  - id: range-week
+    props: { kind: range, label: "6–12 June" }
+    description: the date pager under a chart; the caller writes the period
+  - id: range-month
+    props: { kind: range, label: "November", size: sm }
+  - id: range-at-end
+    props: { kind: range, label: "12–18 June", hasNext: false }
+    description: the next control takes IconButton's disabled look and leaves the focus order
+  - id: pages-compact
+    props: { kind: pages, page: 3, pageCount: 12 }
+  - id: pages-unknown-end
+    props: { kind: pages, page: 4 }
+    description: with no `pageCount` the readout is the page alone and the next control stays available
+  - id: pages-expanded
+    props: { kind: pages, page: 4, pageCount: 12, showPageNumbers: true }
+    description: the pointer layout — first, last, current and its neighbours, with an ellipsis for each run left out; the current number is the one solid
+  - id: pages-expanded-first
+    props: { kind: pages, page: 1, pageCount: 4, showPageNumbers: true, hasPrevious: false }
+  - id: small
+    props: { kind: pages, page: 2, pageCount: 8, size: sm }
+  - id: on-glass-over-map
+    props: { kind: range, label: "6–12 June" }
+    surface: glass
+    backdrop: map
+    description: inside a glass card over the map the readout takes the glass foreground and the controls become ghost circles
+  - id: russian-range
+    props: { kind: range, label: "6–12 июня 2026 года" }
+    description: the Russian period runs longer than its English twin; the row widens from the readout's size.card.min minimum and never truncates the label
+
+notes:
+  platform:
+    watchos: "`none`. Pagination is not in ADR-0010's Tier 3 set. A watch screen is a vertical stack of at most three glanceable tiles (spec/patterns/README.md), and two 44 pt circles around a readout would fill the 198 pt face of ADR-0029 §3.2; the wrist moves through a set with the crown and a list screen instead. This is a decision, not a gap."
+    macos: "compact density gives 32 pt controls and 32 pt numbers at `size: md`, 28 pt at `sm`; hover is required on the numbered buttons, and `showPageNumbers` is the layout a wide table footer asks for."
+    web-desktop: "the numbered buttons are React Aria Buttons inside a `nav` landmark, `data-selected` drives the solid, and the readout is an `aria-live=\"polite\"` element."
+  design: >-
+    Two of eleven shots carry a pager (docs/research/component-inventory.md), and the row merges both: the
+    range pager under a chart (chevron, period label, chevron, about 13 px) and the double-chevron pager
+    with a page number beside a ruler. The inventory folds the date-range pager into Pagination and notes
+    that, apart from the month grid, it is the only date control in the set — which is why `range` is a
+    first-class kind here rather than a variant of page numbers. The 13 px readout is type.label.md and
+    the numbers type.data, the tabular role of ADR-0021 §5; the reference's pager stadium is dropped,
+    because docs/research/visual-dna.md §1 principle 2 puts the pill on the control and §11 anti-pattern
+    24 forbids a filled track behind a group. The one solid current page is §1 principle 9 and §4.7. The
+    numbered layout has no sighting at all: it is the desktop form ADR-0010 Tier 2 needs for the Table
+    component, held to the same pointer-only rule the inventory records for the desktop sightings.
+    Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

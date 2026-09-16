@@ -1,8 +1,11 @@
 // spec:validate (roadmap P2-1; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
 // rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10).
 //
-// Every spec/components/*.yaml (and spec/patterns/*.yaml once spec/pattern.schema.json exists) is
-// checked against its JSON Schema and against the built token dictionary:
+// Every spec/components/*.yaml is checked against spec/component.schema.json, and every
+// spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
+// against the built token dictionary. A pattern is documented like a component (ADR-0012 rule 3), so it
+// takes every component check, binds `sys` roles only, resolves the token paths of its recipe
+// (`layout`, `rules`, `composition`) like prose, and composes specs that exist with props they declare:
 //
 //   spec/parse                   the file does not parse, or does not round-trip through `yaml`
 //   spec/schema                  a JSON Schema error
@@ -12,12 +15,15 @@
 //   matrix/axis                  a binding matrix mixes axes, or uses a key from none
 //   binding/unknown              a bound token path is in no permutation of the dictionary
 //   binding/not-bindable         a `ref.*` path, or a `sys` category ADR-0024 §5.3 does not bind
-//   binding/foreign-comp         another component's comp token
+//   binding/foreign-comp         another component's comp token, or any comp token in a pattern
 //   comp/orphan                  a comp token of this component that its spec does not bind
 //   comp/no-spec                 a comp group with no spec file
-//   prose/unknown                a token path in behavior, accessibility, usage or notes that does not resolve
+//   prose/unknown                a token path in behavior, accessibility, usage or notes (and a pattern's
+//                                layout, rules or composition) that does not resolve
 //   category/unclassified        a sys category that is neither in the schema regex nor in NON_BINDABLE
 //   haptic/unknown               a haptics binding that spec/haptics.yaml does not declare
+//   composition/unknown          a pattern composes a name with no spec in spec/components/ or spec/patterns/
+//   composition/prop             a pattern sets a prop the composed spec does not declare, or a value its type does not allow
 //   example/light-glass-backdrop light glass over something other than an image or a map
 //   example/vivid-unit           a vivid example whose hero carries the unit (V3)
 //   example/vivid-icon           a vivid example that sets an icon (ADR-0022 rule 8)
@@ -52,7 +58,7 @@ import {
   LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
-import { proseTokenPaths } from './prose.ts';
+import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, compileSchema, errorMessage, pointerToPath, SchemaShapeError } from './schema.ts';
 
 export interface SpecValidateOptions {
@@ -126,10 +132,11 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
 
   let validateComponent: ValidateFunction;
   let bindable: Set<string>;
+  let componentSchema: string;
   try {
-    const text = reader.readText(COMPONENT_SCHEMA);
-    validateComponent = compileSchema(text, COMPONENT_SCHEMA);
-    bindable = bindableCategories(text, COMPONENT_SCHEMA);
+    componentSchema = reader.readText(COMPONENT_SCHEMA);
+    validateComponent = compileSchema(componentSchema, COMPONENT_SCHEMA);
+    bindable = bindableCategories(componentSchema, COMPONENT_SCHEMA);
   } catch (e) {
     const message = e instanceof SchemaShapeError || e instanceof Error ? e.message : String(e);
     return { files, diagnostics: [error('spec/schema', message, { file: COMPONENT_SCHEMA, hint: 'the component schema must compile and keep the token-path alternation of ADR-0024 §5.3' })] };
@@ -170,36 +177,55 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
   if (patternFiles.length > 0) {
     if (reader.exists(PATTERN_SCHEMA)) {
       try {
-        validatePattern = compileSchema(reader.readText(PATTERN_SCHEMA), PATTERN_SCHEMA);
+        validatePattern = compileSchema(reader.readText(PATTERN_SCHEMA), PATTERN_SCHEMA, [{ text: componentSchema, path: COMPONENT_SCHEMA }]);
       } catch (e) {
-        diagnostics.push(error('spec/schema', e instanceof Error ? e.message : String(e), { file: PATTERN_SCHEMA }));
+        diagnostics.push(error('spec/schema', e instanceof Error ? e.message : String(e), {
+          file: PATTERN_SCHEMA, hint: `the pattern schema must compile, with its $refs into ${COMPONENT_SCHEMA} resolving`,
+        }));
       }
     } else {
       for (const path of patternFiles) {
         diagnostics.push(error('spec/no-schema', `${PATTERN_SCHEMA} does not exist, so this pattern is unchecked`, {
-          file: path, line: 1, hint: `add ${PATTERN_SCHEMA} with the pattern ticket (spec/patterns/README.md)`,
+          file: path, line: 1, hint: `add ${PATTERN_SCHEMA} (spec/patterns/README.md)`,
         }));
       }
     }
   }
+  const patterns: { doc: SpecDoc; value: Record<string, unknown> }[] = [];
   for (const path of patternFiles) {
     files.push(path);
     const doc = loadSpec(path, reader.readText(path));
     for (const problem of doc.problems) {
       diagnostics.push(error('spec/parse', problem.message, { file: path, line: problem.line, hint: 'the pattern must parse and round-trip as plain YAML' }));
     }
-    if (doc.value !== null && validatePattern !== null) schemaDiagnostics(validatePattern, doc, doc.value, diagnostics);
+    // An unchecked pattern is `spec/no-schema` and nothing else: without its schema its shape is unknown.
+    if (doc.value !== null && validatePattern !== null) patterns.push({ doc, value: doc.value });
   }
 
   const bound = new Map<string, Set<string>>();
   const categories = categoriesOf(ids);
   for (const { doc, value } of specs) {
-    schemaDiagnostics(validateComponent, doc, value, diagnostics);
-    checkSpec(doc, value, { bundle, bindable, categories, haptics, diagnostics, bound });
+    schemaDiagnostics(validateComponent, COMPONENT_SCHEMA, doc, value, diagnostics);
+    checkSpec(doc, value, { bundle, bindable, categories, haptics, diagnostics, bound, kind: 'component' });
+  }
+  if (validatePattern !== null) {
+    // A pattern may compose a component or another pattern (DashboardGrid places a DetailScreen).
+    const composable = new Map<string, Record<string, unknown>>();
+    for (const { doc, value } of [...specs, ...patterns]) composable.set(specName(doc, value), value);
+    for (const { doc, value } of patterns) {
+      schemaDiagnostics(validatePattern, PATTERN_SCHEMA, doc, value, diagnostics);
+      checkSpec(doc, value, { bundle, bindable, categories, haptics, diagnostics, bound, kind: 'pattern' });
+      checkComposition(doc, value, composable, diagnostics);
+    }
   }
 
   checkCompTokens(specs, compGroups(ids), bound, collected, diagnostics);
   return { files, diagnostics: sortDiagnostics(diagnostics) };
+}
+
+/** The spec's `name`, or its file name when `name` is missing (which the schema reports). */
+function specName(doc: SpecDoc, value: Record<string, unknown>): string {
+  return typeof value['name'] === 'string' && value['name'] !== '' ? value['name'] : posix.basename(doc.path).replace(/\.ya?ml$/, '');
 }
 
 /** The haptic ids spec/haptics.yaml declares; null when the file is absent or unreadable. */
@@ -220,14 +246,17 @@ function loadHaptics(reader: SourceReader, path: string, diagnostics: Diagnostic
   return new Set(Object.keys(table));
 }
 
-function schemaDiagnostics(validate: ValidateFunction, doc: SpecDoc, value: Record<string, unknown>, diagnostics: Diagnostic[]): void {
+function schemaDiagnostics(validate: ValidateFunction, schema: string, doc: SpecDoc, value: Record<string, unknown>, diagnostics: Diagnostic[]): void {
   if (validate(value)) return;
   for (const e of validate.errors ?? []) {
-    // `oneOf` repeats what its branches already said.
-    if (e.keyword === 'oneOf' || e.keyword === 'if') continue;
+    // `oneOf`, `anyOf` and `if` repeat what their branches already said.
+    if (e.keyword === 'oneOf' || e.keyword === 'anyOf' || e.keyword === 'if') continue;
     const at = pointerToPath(e.instancePath);
     diagnostics.push(error('spec/schema', errorMessage(e), {
-      file: doc.path, line: doc.lineOf(at), hint: 'see spec/SCHEMA.md for the field and spec/component.schema.json for its shape',
+      file: doc.path, line: doc.lineOf(at),
+      hint: schema === PATTERN_SCHEMA
+        ? `see spec/patterns/README.md and spec/SCHEMA.md for the field and ${PATTERN_SCHEMA} for its shape`
+        : `see spec/SCHEMA.md for the field and ${COMPONENT_SCHEMA} for its shape`,
     }));
   }
 }
@@ -241,6 +270,12 @@ interface SpecContext {
   readonly diagnostics: Diagnostic[];
   /** comp group → the ids its spec binds. */
   readonly bound: Map<string, Set<string>>;
+  /**
+   * A component owns the comp group of its name (ADR-0024 §5.2). A pattern owns none: it is a recipe
+   * with no implementation (ADR-0012 rule 3), so it binds sys roles, and a value that belongs to a
+   * composed component stays that component's cell.
+   */
+  readonly kind: 'component' | 'pattern';
 }
 
 function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext): void {
@@ -252,9 +287,9 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
       file: doc.path, line: doc.lineOf(['name']), hint: `rename the file to ${name}.yaml, or the spec to ${base}`,
     }));
   }
-  const group = compGroup(name === '' ? base : name);
-  const own = ctx.bound.get(group) ?? new Set<string>();
-  ctx.bound.set(group, own);
+  const group = ctx.kind === 'component' ? compGroup(name === '' ? base : name) : null;
+  const own = group === null ? new Set<string>() : (ctx.bound.get(group) ?? new Set<string>());
+  if (group !== null) ctx.bound.set(group, own);
 
   const anatomy = new Set(
     (Array.isArray(spec['anatomy']) ? spec['anatomy'] : [])
@@ -290,6 +325,12 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
     }
     if (head === 'comp') {
       const other = segments[1] ?? '';
+      if (group === null) {
+        diagnostics.push(error('binding/foreign-comp', `\`${binding.path}\` is a component token, and a pattern binds sys roles only`, {
+          ...where, hint: `bind the sys role \`${binding.path}\` aliases; a value comp.${other} owns stays that component's cell (ADR-0012 rule 3, ADR-0024 §5.2)`,
+        }));
+        continue;
+      }
       if (other !== group) {
         diagnostics.push(error('binding/foreign-comp', `\`${binding.path}\` belongs to comp.${other}, not to this spec's comp.${group}`, {
           ...where, hint: `bind the sys role it aliases, or a comp.${group}.* token of this component`,
@@ -298,7 +339,10 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
       }
     } else if (!ctx.bindable.has(head)) {
       diagnostics.push(error('binding/not-bindable', `sys.${head} is not a spec-bindable category (ADR-0024 §5.3)`, {
-        ...where, hint: `bind a category the schema's token-path regex lists, or reach ${head} through a comp.${group}.* token`,
+        ...where,
+        hint: group === null
+          ? "bind a category the schema's token-path regex lists; a pattern reaches no other category"
+          : `bind a category the schema's token-path regex lists, or reach ${head} through a comp.${group}.* token`,
       }));
       continue;
     }
@@ -311,10 +355,13 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
     }
     // `lookup` falls back to `ref.<name>` (ADR-0024 §13.2), which a public path must never reach:
     // `gradient.vivid.orchid` is a reference gradient, not the `gradient.vivid.*` role a spec binds.
-    const outside = hits.filter((id) => !id.startsWith('sys.') && !id.startsWith(`comp.${group}.`));
+    const outside = hits.filter((id) => !id.startsWith('sys.') && (group === null || !id.startsWith(`comp.${group}.`)));
     if (outside.length > 0) {
       diagnostics.push(error('binding/not-bindable', `\`${binding.path}\` resolves to ${outside.join(', ')}, which is not a sys role of this spec's tier`, {
-        ...where, hint: `bind the sys role of the same name, or a comp.${group}.* token of this component (ADR-0024 §5.2)`,
+        ...where,
+        hint: group === null
+          ? 'bind the sys role of the same name (ADR-0024 §5.2)'
+          : `bind the sys role of the same name, or a comp.${group}.* token of this component (ADR-0024 §5.2)`,
       }));
       continue;
     }
@@ -331,7 +378,7 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
     }
   }
 
-  for (const hit of proseTokenPaths(spec, ctx.categories)) {
+  for (const hit of proseTokenPaths(spec, ctx.categories, ctx.kind === 'pattern' ? PATTERN_PROSE_FIELDS : PROSE_FIELDS)) {
     if (resolveIds(ctx.bundle, hit.text).length > 0) continue;
     diagnostics.push(error('prose/unknown', `prose names \`${hit.text}\`, which resolves to no token`, {
       file: doc.path, line: doc.lineOf(hit.at), hint: suggestion(ctx.bundle, hit.text),
@@ -425,6 +472,71 @@ function checkExamples(doc: SpecDoc, spec: Record<string, unknown>, diagnostics:
       }
     }
   });
+}
+
+/**
+ * A pattern composes specs that exist and sets only props they declare, with values their types allow
+ * (spec/patterns/README.md). The recipe is what an agent copies onto a screen, so a prop the composed
+ * spec does not have, or an enum value it does not list, would be copied into code that cannot exist.
+ * Props the pattern forwards are prose (`forwards`); only the ones it fixes in `props` are checked.
+ */
+function checkComposition(
+  doc: SpecDoc,
+  pattern: Record<string, unknown>,
+  composable: ReadonlyMap<string, Record<string, unknown>>,
+  diagnostics: Diagnostic[],
+): void {
+  const composition = pattern['composition'];
+  if (!Array.isArray(composition)) return;
+  composition.forEach((item, i) => {
+    if (!isRecord(item) || typeof item['component'] !== 'string') return;
+    const name = item['component'];
+    const at: JsonPath = ['composition', i];
+    const target = composable.get(name);
+    if (target === undefined) {
+      diagnostics.push(error('composition/unknown', `composition names \`${name}\`, which has no spec in ${COMPONENTS_DIR}/ or ${PATTERNS_DIR}/`, {
+        file: doc.path, line: doc.lineOf([...at, 'component']),
+        hint: 'compose a component or pattern that has a spec, or write its spec first (spec/SCHEMA.md)',
+      }));
+      return;
+    }
+    const declared = new Map<string, Record<string, unknown>>();
+    for (const prop of Array.isArray(target['props']) ? target['props'] : []) {
+      if (isRecord(prop) && typeof prop['name'] === 'string') declared.set(prop['name'], prop);
+    }
+    const props = isRecord(item['props']) ? item['props'] : {};
+    for (const [key, value] of Object.entries(props)) {
+      const where = { file: doc.path, line: doc.lineOf([...at, 'props', key]) };
+      const prop = declared.get(key);
+      if (prop === undefined) {
+        diagnostics.push(error('composition/prop', `\`${name}\` declares no prop \`${key}\``, {
+          ...where, hint: declared.size === 0 ? `${name} has no props to set` : `set one of ${[...declared.keys()].join(', ')}, or forward the value instead`,
+        }));
+        continue;
+      }
+      const problem = propValueProblem(prop, value);
+      if (problem !== null) {
+        diagnostics.push(error('composition/prop', `\`${name}.${key}\` ${problem}`, {
+          ...where, hint: `set a value ${name}'s \`${key}\` prop allows`,
+        }));
+      }
+    }
+  });
+}
+
+/** Why a fixed value does not fit a declared prop, or null when it does. Only closed types are checked. */
+function propValueProblem(prop: Record<string, unknown>, value: unknown): string | null {
+  const type = prop['type'];
+  if (type === 'boolean') return typeof value === 'boolean' ? null : `is a boolean, not ${JSON.stringify(value)}`;
+  if (type === 'number') return typeof value === 'number' ? null : `is a number, not ${JSON.stringify(value)}`;
+  if (type === 'enum' && Array.isArray(prop['values'])) {
+    const allowed = prop['values'].filter((v): v is string => typeof v === 'string');
+    // A list value sets a multi-value enum (Sheet's `detents: [peek, medium]`): each item must be allowed.
+    const given = Array.isArray(value) ? value : [value];
+    const bad = given.filter((v) => typeof v !== 'string' || !allowed.includes(v));
+    return bad.length === 0 ? null : `has no value ${bad.map((v) => `\`${String(v)}\``).join(', ')} (${allowed.join(', ')})`;
+  }
+  return null;
 }
 
 /** ADR-0024 §5.5: every comp token is bound by its component's spec, and every comp group has one. */

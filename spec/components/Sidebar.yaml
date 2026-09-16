@@ -1,0 +1,266 @@
+name: Sidebar
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The leading rail of a desktop window: either a narrow strip of round buttons or a full panel that
+  holds navigation and a stack of its own content, with one inverse-solid item for the place the
+  reader is in. It is the desktop half of AdaptiveShell - a phone puts the same destinations in a
+  TabBar - and it is a Tier 2 component (ADR-0010).
+since: 0.1.0
+
+platforms:
+  ios: none
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: adapted
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the rail or the panel; the panel is a Surface of material solid, the rail draws nothing and sits on the page
+  - part: header
+    optional: true
+    slot: true
+    description: the brand mark slot and, in the panel, the collapse control beside it
+  - part: nav
+    description: the list of destinations
+  - part: item
+  - part: itemIcon
+  - part: itemLabel
+    optional: true
+    description: absent in the rail, where the destination's name reaches the reader through its Tooltip and its accessibility label
+  - part: itemCount
+    optional: true
+    slot: true
+    description: one Badge trailing the label
+  - part: sectionHeader
+    optional: true
+    description: a quiet heading above a group of destinations
+  - part: content
+    optional: true
+    slot: true
+    description: the panel's own stack - tiles, cards, a composer - below the navigation
+  - part: footer
+    optional: true
+    slot: true
+    description: the bottom cluster - a support control, an Avatar
+  - part: collapseControl
+    optional: true
+    description: one IconButton carrying nav.sidebar, which switches the panel and the rail
+
+props:
+  - name: items
+    type: data
+    required: true
+    description: "[{ value, label, icon, count?, section? }]; every destination has a name, and every destination has a glyph, because the rail shows nothing else"
+  - name: value
+    type: string
+    required: true
+    description: the `value` of the destination the reader is in, the one item in the `selected` state
+  - name: variant
+    type: enum
+    values: [panel, rail]
+    default: panel
+    description: panel is the content slab, rail the narrow strip of round buttons
+  - name: isCollapsed
+    type: boolean
+    default: false
+    description: a panel that is collapsed renders as the rail and keeps its selection; the rail ignores it
+  - name: header
+    type: slot
+  - name: content
+    type: slot
+  - name: footer
+    type: slot
+  - name: onChange
+    type: action
+    required: true
+  - name: onCollapsedChange
+    type: action
+    description: unset, the collapse control is not drawn and the sidebar keeps the variant it was given
+
+states: [default, hover, pressed, selected, focus-visible]
+
+tokens:
+  root:
+    background:
+      panel: color.bg.surface
+    radius:
+      panel: radius.card
+    padding:
+      panel: space.5
+    width:
+      rail: comp.sidebar.rail.width
+    minWidth:
+      panel: size.card.min
+    gap: space.4
+    z: z.base
+  header:
+    height: size.control.md
+    paddingBottom: space.5
+  nav:
+    gap: space.1
+  item:
+    height: size.control.md
+    radius:
+      panel: radius.control
+      rail: radius.control
+    paddingX:
+      panel: space.4
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      background:
+        default: comp.sidebar.active.bg
+        glass: color.bg.fill.inverse
+        accent: color.bg.fill.inverse
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  itemIcon:
+    size: size.icon.md
+    color:
+      default: color.icon.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    selected:
+      color:
+        default: comp.sidebar.active.text
+        glass: color.text.on-inverse
+        accent: color.text.on-inverse
+  itemLabel:
+    typography: type.label.md
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    selected:
+      color:
+        default: comp.sidebar.active.text
+        glass: color.text.on-inverse
+        accent: color.text.on-inverse
+  itemCount:
+    gap: space.2
+  sectionHeader:
+    typography: type.label.sm
+    paddingX: space.4
+    paddingY: space.3
+    color:
+      default: color.text.tertiary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  content:
+    gap: space.4
+    paddingTop: space.5
+  footer:
+    gap: space.3
+    paddingTop: space.5
+  collapseControl:
+    size: size.control.sm
+    iconSize: size.icon.sm
+
+behavior:
+  - "`variant: panel` is a Surface of material solid at radius.card with space.5 of padding: one slab from the brand row to the footer, holding the navigation and then the panel's own content. `variant: rail` draws no surface at all - it is a comp.sidebar.rail.width strip of round items sitting on the page, the way the references' icon rail does."
+  - "A collapsed panel renders exactly as the rail, keeps its selection and its scroll position, and announces the change once; `isCollapsed` is ignored by a sidebar that is already a rail."
+  - "Exactly one destination is selected. The selected item is the one inverse solid of the whole rail - comp.sidebar.active.bg with comp.sidebar.active.text - and every other item is a bare row or ring with the secondary tone, which is visual-dna §1 principle 9 applied to navigation."
+  - "In the rail there is no visible label: the destination's name is its item's accessibility label and, under pointer modality, its Tooltip. Nothing exists only in that Tooltip - the same name is in the accessibility label - because a hover-only affordance is anti-pattern 31."
+  - "The panel's width belongs to the layout, not to this component: AdaptiveShell gives a leading rail 20-29 % of the viewport (visual-dna §6.4), and the panel refuses to go below size.card.min, where its labels would start truncating. The rail's width is comp.sidebar.rail.width, the icon-rail gutter of §6.1."
+  - "Truncation: an item's label is one line and truncates with an ellipsis when the panel is narrow; its full text stays in the accessibility label. A label that truncates at the panel's minimum width is a sign the destination needs a shorter name, not a wider rail."
+  - "Overflow: the navigation list scrolls inside the sidebar while the header and the footer stay pinned, so the brand row and the avatar are always reachable. The list never collapses its own sections automatically and never paginates."
+  - "`sectionHeader` groups destinations under a quiet heading in type.label.sm and the tertiary tone; it is not a control and never collapses on its own."
+  - "The panel's `content` slot holds the screen's own stack - tiles, a card, a composer. Its children keep the concentric rule: a nested Surface inside the panel computes radius.card minus space.5, which is radius.inner (Surface.yaml)."
+  - "The sidebar publishes what its root renders: `solid` for the panel, nothing for the rail, which leaves the rail's items on the page's own tones. Neither form renders a material of its own over media - a sidebar over a map or a render is an app composition that wraps this component in a glass Surface, and the item cells then follow that published material."
+  - "It declares no cell for vivid, in any part. Its labels are type.label.md and its section headings type.label.sm, both under 24 px, and ADR-0030 rule 7 allows text that small on a gradient only inside a Card's header block; a navigation rail over a gradient therefore sits on a glass or solid Surface above it, never straight on the vivid."
+  - "In the rail every item is a circle of size.control.md centred across comp.sidebar.rail.width, with no paddingX of its own and the same space.1 between items as in the panel; the header and the footer keep that centre line, so the brand mark, the destinations and the avatar all sit on one vertical axis."
+  - "The collapse control is one IconButton carrying nav.sidebar at size.control.sm; Sidebar forwards its label and its press to that component and draws nothing else. It is only present when `onCollapsedChange` is given."
+  - "The sidebar is one region and one Tab stop into its navigation: the header, the navigation list, the content and the footer are separate stops in that order, and the list itself moves with arrow keys."
+
+motion:
+  collapse: motion.spring.smooth
+  select: motion.spring.snappy
+  reduceMotion: crossfade
+
+accessibility:
+  role: navigation (the web `complementary`/`navigation` landmark, a SwiftUI sidebar list on Apple)
+  label: the sidebar's own name from the caller ("Main"); each destination is named by its label, and its count is read as part of that item's value
+  traits: [button, selected]
+  keyboard: Tab reaches the navigation list as one stop; Up and Down move between destinations and wrap, Home and End reach the first and last, Enter or Space activates, and the collapse control is its own stop. Every focus ring is color.border.focus at border.focus width following radius.control
+  dynamicType: labels scale with type.label.md and the items grow in height with them; the panel does not widen with text, so a long label truncates there rather than pushing the layout, and the full name stays in the accessibility label
+  contrast: "the selected item is comp.sidebar.active.text on comp.sidebar.active.bg, which are color.text.on-inverse on color.bg.fill.inverse (19.30:1); the other labels are color.text.secondary and the section headings color.text.tertiary, both functional on color.bg.surface, which the panel paints, and on color.bg.page, which the rail sits on. The panel draws no border and no shadow, because the luminance step is the separation (visual-dna §1 principle 1)"
+  reduceTransparency: no change of its own - the panel is an opaque solid Surface; when an app puts the sidebar inside a glass Surface, that Surface falls back to raised and the item cells follow it
+  reduceMotion: collapsing does not slide or morph; the panel and the rail crossfade by opacity over motion.duration.base with motion.easing.out and the new width is taken at once, and the selection changes fill instead of sliding between items
+
+usage:
+  do:
+    - Give every destination a glyph as well as a name; the rail shows only the glyph.
+    - Keep one solid in the sidebar - the destination the reader is in.
+    - Put the brand mark in the header and the account control in the footer, so both stay pinned while the list scrolls.
+  dont:
+    - Don't ship a Sidebar to a phone; AdaptiveShell puts those destinations in a TabBar.
+    - Don't put an action in the navigation list; a destination goes somewhere, a Button does something.
+    - Don't draw a border or a shadow around the panel; the surface step is the separation.
+    - Don't let a name exist only in the rail's Tooltip.
+
+examples:
+  - id: panel
+    props: { items: [{ value: "map", label: "Live map", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification, count: 3 }, { value: "reports", label: "Reports", icon: object.chart }], value: "map", header: true, footer: true }
+  - id: panel-with-sections
+    props: { items: [{ value: "map", label: "Live map", icon: object.map, section: "Operations" }, { value: "fleet", label: "Fleet", icon: object.bus, section: "Operations" }, { value: "reports", label: "Reports", icon: object.chart, section: "Analysis" }, { value: "settings", label: "Settings", icon: action.settings, section: "Analysis" }], value: "reports" }
+  - id: panel-with-content
+    props: { items: [{ value: "map", label: "Live map", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], value: "fleet", content: true, header: true }
+    description: the slab form - navigation above, the screen's own tiles and cards below
+  - id: rail
+    props: { variant: rail, items: [{ value: "map", label: "Live map", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }, { value: "reports", label: "Reports", icon: object.chart }], value: "alerts", footer: true }
+  - id: collapsed
+    props: { isCollapsed: true, items: [{ value: "map", label: "Live map", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], value: "map", onCollapsedChange: true }
+    description: the panel collapsed to the rail, with the nav.sidebar control in its header
+  - id: with-counts
+    props: { items: [{ value: "open", label: "Open incidents", icon: status.warning, count: 12 }, { value: "closed", label: "Closed", icon: status.check, count: 240 }], value: "open" }
+  - id: labels-ru
+    props: { items: [{ value: "map", label: "Карта в реальном времени", icon: object.map }, { value: "fleet", label: "Автопарк", icon: object.bus }, { value: "reports", label: "Отчёты", icon: object.chart }], value: "map" }
+    description: the longest Russian name truncates with an ellipsis at the panel's minimum width and keeps its full text in the accessibility label
+
+notes:
+  platform:
+    ios: "none. ADR-0010 makes Sidebar a Tier 2 component; on a phone AdaptiveShell puts the same destinations in a TabBar and secondary content behind a tab or a second screen (spec/patterns/README.md)."
+    ipados: "adapted. Only in regular width, where AdaptiveShell splits the layout, and only as a collapsible sidebar: the panel form with the collapse control, following the system sidebar's own presentation. In compact width the shell folds to the TabBar and this component is not drawn."
+    macos: "full. The default sizes follow compact density (32 pt controls); hover is required on every item, and the collapse control is the window toolbar's own sidebar toggle rather than a second button inside the panel."
+    watchos: "none. ADR-0010's Tier 3 list has no Sidebar; a watch screen is a vertical stack of at most three glanceable tiles."
+    web-touch: "adapted. Drawn only at tablet width, with touch hit areas from size.hit and no hover; at compact width the shell folds to the TabBar."
+    web-desktop: "full. The panel is a `navigation` landmark holding a list with roving focus; `data-selected` drives the solid."
+  design: >-
+    The two sightings in docs/research/component-inventory.md (2/11, CP and AR, desktop) are exactly the
+    two variants: "content slab (brand row, tiles, cards, assistant composer)" and "icon rail of outline
+    circles with an expander, a support button and an avatar". The slab's 24 px radius and its single
+    luminance step above the canvas come from the dark-ops reference analysis behind
+    docs/research/visual-dna.md §6.4 (a rounded ≈24 px slab, 340 wide at 1728 ≈ 20 % of the width),
+    which radius.card and color.bg.surface carry; the
+    rail's width is docs/research/visual-dna.md §6.1's space.12, "icon-rail gutter", and §6.4's "a leading
+    icon rail takes the narrower 64". The panel's 20-29 % share belongs to §6.4 and to the DashboardGrid
+    and AdaptiveShell patterns rather than to a token. The inverse-solid selected item is §1 principle 9,
+    the same rule PillTabs and SegmentedControl follow; the panel's lack of a border or shadow is §1
+    principle 1 and §11 anti-pattern 1. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

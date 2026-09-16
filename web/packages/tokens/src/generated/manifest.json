@@ -11538,6 +11538,26 @@
       "deprecated": null
     },
     {
+      "path": "comp.dialog.shadow",
+      "id": "comp.dialog.shadow",
+      "tier": "comp",
+      "type": "shadow",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-dialog-shadow",
+      "cssVars": [
+        "--ds-dialog-shadow"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.dialog.shadow",
+      "swift": "DSTokenSet.components.dialog.shadow",
+      "asset": null,
+      "description": "the modal panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Dialog.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 (\"drawers and modal sheets\") through this alias",
+      "deprecated": null
+    },
+    {
       "path": "comp.icon-button.danger.bg.rest",
       "id": "comp.icon-button.danger.bg.rest",
       "tier": "comp",
@@ -11875,6 +11895,146 @@
       "swift": "DSTokenSet.components.iconButton.sizeSm",
       "asset": null,
       "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.list-row.bg.pressed",
+      "id": "comp.list-row.bg.pressed",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-list-row-bg-pressed",
+      "cssVars": [
+        "--ds-list-row-bg-pressed"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.list-row.bg.pressed",
+      "swift": "DSTokenSet.components.listRow.bgPressed",
+      "asset": null,
+      "description": "the pressed row: one step up the luminance ladder, never a scale, because a row is the width of its container",
+      "deprecated": null
+    },
+    {
+      "path": "comp.list-row.rule.selected",
+      "id": "comp.list-row.rule.selected",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-list-row-rule-selected",
+      "cssVars": [
+        "--ds-list-row-rule-selected"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.list-row.rule.selected",
+      "swift": "DSTokenSet.components.listRow.ruleSelected",
+      "asset": null,
+      "description": "the leading rule of the selected row: the one active element of a group is the inverse solid (visual-dna §1 principle 9); a sub-item's rule takes color.border.strong instead",
+      "deprecated": null
+    },
+    {
+      "path": "comp.pagination.current.bg",
+      "id": "comp.pagination.current.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-pagination-current-bg",
+      "cssVars": [
+        "--ds-pagination-current-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.pagination.current.bg",
+      "swift": "DSTokenSet.components.pagination.currentBg",
+      "asset": null,
+      "description": "the current page in the expanded pointer layout: the one solid among plain numbers (visual-dna §1 principle 9); over media the spec binds color.bg.fill.inverse-media instead",
+      "deprecated": null
+    },
+    {
+      "path": "comp.pagination.current.text",
+      "id": "comp.pagination.current.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-pagination-current-text",
+      "cssVars": [
+        "--ds-pagination-current-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.pagination.current.text",
+      "swift": "DSTokenSet.components.pagination.currentText",
+      "asset": null,
+      "description": "the current page's number on its solid fill",
+      "deprecated": null
+    },
+    {
+      "path": "comp.pill-tabs.active.bg",
+      "id": "comp.pill-tabs.active.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-pill-tabs-active-bg",
+      "cssVars": [
+        "--ds-pill-tabs-active-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.pill-tabs.active.bg",
+      "swift": "DSTokenSet.components.pillTabs.activeBg",
+      "asset": null,
+      "description": "the pill of the place the reader is in: the one inverse solid of the row (visual-dna §1 principle 9, §4.7)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.pill-tabs.active.text",
+      "id": "comp.pill-tabs.active.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-pill-tabs-active-text",
+      "cssVars": [
+        "--ds-pill-tabs-active-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.pill-tabs.active.text",
+      "swift": "DSTokenSet.components.pillTabs.activeText",
+      "asset": null,
+      "description": "the label and the leading glyph of the active tab in the pill variant, on comp.pill-tabs.active.bg. The underline variant draws no fill, so it does not use this token: its active label is sys.color.text.primary, the ink of the ground it sits on. The pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+      "deprecated": null
+    },
+    {
+      "path": "comp.pill-tabs.underline",
+      "id": "comp.pill-tabs.underline",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-pill-tabs-underline",
+      "cssVars": [
+        "--ds-pill-tabs-underline"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.pill-tabs.underline",
+      "swift": "DSTokenSet.components.pillTabs.underline",
+      "asset": null,
+      "description": "the 2 px rule under the active label of the underline variant; it is ink, not a border tone, because a boundary role at 3:1 would read as a divider rather than as the mark of where the reader is",
       "deprecated": null
     },
     {
@@ -12222,6 +12382,84 @@
       "deprecated": null
     },
     {
+      "path": "comp.sheet.shadow",
+      "id": "comp.sheet.shadow",
+      "tier": "comp",
+      "type": "shadow",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-sheet-shadow",
+      "cssVars": [
+        "--ds-sheet-shadow"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sheet.shadow",
+      "swift": "DSTokenSet.components.sheet.shadow",
+      "asset": null,
+      "description": "the panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Sheet.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 (\"drawers and modal sheets\", and §4.10's long soft shadow under the detail drawer) through this alias",
+      "deprecated": null
+    },
+    {
+      "path": "comp.sidebar.active.bg",
+      "id": "comp.sidebar.active.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-sidebar-active-bg",
+      "cssVars": [
+        "--ds-sidebar-active-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sidebar.active.bg",
+      "swift": "DSTokenSet.components.sidebar.activeBg",
+      "asset": null,
+      "description": "the destination the reader is in: the one inverse solid of the rail, against bare rows for every other item (visual-dna §1 principle 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.sidebar.active.text",
+      "id": "comp.sidebar.active.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-sidebar-active-text",
+      "cssVars": [
+        "--ds-sidebar-active-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sidebar.active.text",
+      "swift": "DSTokenSet.components.sidebar.activeText",
+      "asset": null,
+      "description": "the label and the glyph of the active destination; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+      "deprecated": null
+    },
+    {
+      "path": "comp.sidebar.rail.width",
+      "id": "comp.sidebar.rail.width",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-sidebar-rail-width",
+      "cssVars": [
+        "--ds-sidebar-rail-width"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sidebar.rail.width",
+      "swift": "DSTokenSet.components.sidebar.railWidth",
+      "asset": null,
+      "description": "the width of the icon rail; space.12 is the references' 64 px icon-rail gutter (visual-dna §6.1, §6.4), which the role's number does not say",
+      "deprecated": null
+    },
+    {
       "path": "comp.skeleton.bg",
       "id": "comp.skeleton.bg",
       "tier": "comp",
@@ -12454,6 +12692,26 @@
       "deprecated": null
     },
     {
+      "path": "comp.table.row.selected.rule",
+      "id": "comp.table.row.selected.rule",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-table-row-selected-rule",
+      "cssVars": [
+        "--ds-table-row-selected-rule"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.table.row.selected.rule",
+      "swift": "DSTokenSet.components.table.rowSelectedRule",
+      "asset": null,
+      "description": "the leading rule of a selected row: the inverse solid, as ListRow's selection rule is (visual-dna §1 principle 9). It sits on the row's neutral selection overlay, where color.border.strong falls below 3:1 over a raised panel in both schemes; the pair color.bg.fill.inverse on color.bg.fill.neutral.subtle is checked in tokens/contrast-pairs.json",
+      "deprecated": null
+    },
+    {
       "path": "comp.text-area.border.error",
       "id": "comp.text-area.border.error",
       "tier": "comp",
@@ -12491,6 +12749,46 @@
       "swift": "DSTokenSet.components.textField.borderError",
       "asset": null,
       "description": "the invalid outline; the critical stroke is the critical text role, as it is on the danger button",
+      "deprecated": null
+    },
+    {
+      "path": "comp.timeline.marker.current.bg",
+      "id": "comp.timeline.marker.current.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-timeline-marker-current-bg",
+      "cssVars": [
+        "--ds-timeline-marker-current-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.timeline.marker.current.bg",
+      "swift": "DSTokenSet.components.timeline.markerCurrentBg",
+      "asset": null,
+      "description": "the marker of the one entry that is \"now\": the single inverse solid of the list, against hairline rings for every other entry (visual-dna §1 principle 9, §4.13)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.timeline.marker.current.icon",
+      "id": "comp.timeline.marker.current.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-timeline-marker-current-icon",
+      "cssVars": [
+        "--ds-timeline-marker-current-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.timeline.marker.current.icon",
+      "swift": "DSTokenSet.components.timeline.markerCurrentIcon",
+      "asset": null,
+      "description": "the glyph inside the current marker; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
       "deprecated": null
     },
     {
@@ -12649,6 +12947,24 @@
       "swift": "DSTokenSet.components.tooltip.text",
       "asset": null,
       "description": "the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+      "deprecated": null
+    },
+    {
+      "path": "comp.top-bar.height",
+      "id": "comp.top-bar.height",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-top-bar-height",
+      "cssVars": [
+        "--ds-top-bar-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.top-bar.height",
+      "swift": "DSTokenSet.components.topBar.height",
+      "asset": null,
+      "description": "the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say",
       "deprecated": null
     }
   ]

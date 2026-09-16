@@ -1,0 +1,238 @@
+name: TopBar
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The row along the top of a screen: a leading control or a brand mark, the screen's name, and a
+  trailing cluster of utilities. It draws no background and no divider at rest - the content below it
+  is the ground - and gains the scroll edge only once content passes under it. On Apple it is the
+  system navigation bar, which Prism fills and does not paint (ADR-0009 decision 1).
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: adapted
+  macos: adapted
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row; transparent at rest, and on Apple the system navigation bar rather than a box Prism paints
+  - part: brand
+    optional: true
+    slot: true
+    description: the brand mark slot, at the leading edge; the artwork belongs to brands/ and never to a component
+  - part: leading
+    optional: true
+    slot: true
+    description: one IconButton, usually nav.back or nav.menu; mutually exclusive with `brand`
+  - part: title
+    optional: true
+  - part: subtitle
+    optional: true
+  - part: navigation
+    optional: true
+    slot: true
+    description: one PillTabs row; only in a leading-aligned bar
+  - part: search
+    optional: true
+    slot: true
+    description: one SearchField
+  - part: actions
+    optional: true
+    slot: true
+    description: the trailing cluster - IconButtons, then at most one Button, then an Avatar
+  - part: scrollEdge
+    optional: true
+    description: the strip that appears under the bar once content scrolls beneath it
+
+props:
+  - name: title
+    type: string
+    description: the screen's name; absent in a bar that carries a brand mark and navigation
+  - name: subtitle
+    type: string
+    description: one qualifier under the title - a timestamp, a count, a scope
+  - name: align
+    type: enum
+    values: [center, leading]
+    default: center
+    description: center is the phone form (one control, the name, one control); leading is the desktop form and is implied by `brand` or `navigation`
+  - name: brand
+    type: slot
+  - name: leading
+    type: slot
+  - name: navigation
+    type: slot
+  - name: search
+    type: slot
+  - name: actions
+    type: slot
+  - name: scrollEdge
+    type: enum
+    values: [soft, hard, none]
+    default: soft
+    description: how the bar separates from content scrolling under it; soft fades, hard draws the full strip, none leaves the bar transparent always
+
+states: [default]
+
+tokens:
+  root:
+    height: comp.top-bar.height
+    paddingX: space.page-margin
+    gap: space.3
+    columnGap: space.8
+    z: z.raised
+  brand:
+    height: size.control.sm
+    gap: space.5
+  leading:
+    size: size.control.md
+  title:
+    typography:
+      center: type.title.sm
+      leading: type.title.md
+    color:
+      default: color.text.primary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  subtitle:
+    typography: type.caption
+    gap: space.1
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  navigation:
+    gap: space.8
+  search:
+    width: size.card.min
+    height: size.control.md
+  actions:
+    gap: space.3
+    size: size.control.md
+  scrollEdge:
+    background:
+      soft: material.glass.chip
+      hard: material.glass.chip
+    blur:
+      soft: material.glass.chip.blur
+      hard: material.glass.chip.blur
+    saturate:
+      soft: material.glass.chip.saturate
+      hard: material.glass.chip.saturate
+    fallbackBackground:
+      soft: color.bg.page
+      hard: color.bg.page
+    edgeColor:
+      soft: color.border.hairline
+      hard: color.border.hairline
+    edgeWidth:
+      soft: border.hairline
+      hard: border.hairline
+
+behavior:
+  - "At rest the bar paints nothing: no fill, no border and no shadow. The references' phone bars are a round button, a centred name and a round button over the page itself, and the desktop bars sit on the page's own vignette (docs/research/component-inventory.md, TopBar 10/11)."
+  - "`align: center` is the phone form - one leading control, the title block centred on the bar, one trailing control - and `align: leading` is the desktop form, which runs brand, navigation, then a trailing cluster of search, actions and avatar. Setting `brand` or `navigation` implies leading alignment, because a centred title cannot share a row with a navigation row."
+  - The bar is comp.top-bar.height tall and keeps the page's own margins, space.page-margin, so its leading control lines up with the first card below it (visual-dna §6.4, top row 36-48).
+  - "The bar has two gaps. `gap` (space.3) is the space inside a cluster - between the leading control and the title block, and between the title and its subtitle's own column. `columnGap` (space.8) is the space between the bar's three regions: the leading control or the brand mark, the centred title or the navigation row, and the trailing cluster. The trailing cluster's own items sit at the `actions` part's gap, not at either of these."
+  - "Content scrolls under the bar. `scrollEdge: soft` fades the material.glass.chip recipe in as the first content passes beneath, `hard` draws it at full strength at once, and `none` leaves the bar transparent - the `scrollEdge` part has no `none` cell and no default, so under `none` nothing about the strip is set and nothing is drawn. It is the choice ADR-0009 rule 2 names, and there is exactly one of them per view."
+  - "Under the fallback triggers of ADR-0022 §1.2 the scroll edge is drawn opaque, as `fallbackBackground` (color.bg.page) with a color.border.hairline rule along its bottom at border.hairline width, with blur and saturation dropped. Being chrome, the strip is not gated by the backdrop trigger (ADR-0009 decision 1). The choice between the two cells is made inside Prism's Surface module - DSCore's DSSurface on Apple, the React Surface and its stylesheet on the web - which is the only code that reads Prism's contrast and transparency context (ADR-0022 §1.3 and rule 2, ADR-0019 §4 item 6); TopBar reads neither setting."
+  - "The bar publishes `raised` to its contents while the scroll edge is showing and nothing at rest, so a control in the bar keeps one set of tones through the whole scroll (ADR-0022 §3.1). It never publishes a backdrop kind."
+  - "Truncation: the title is one line and truncates with an ellipsis; it never wraps and never shrinks its role. The subtitle is one line and truncates the same way. In the centred form the title block keeps a symmetric gap to both clusters, so the title truncates earlier on the side that has more controls rather than moving off centre."
+  - "Overflow of the trailing cluster: at most three IconButtons, then one Button, then one Avatar. Anything further collapses into a single nav.more IconButton that opens a Menu; the cluster never wraps to a second row and never scrolls."
+  - "Overflow of the navigation row: PillTabs owns it. The bar gives that slot the space left between the brand and the trailing cluster, and PillTabs scrolls inside it (spec/components/PillTabs.yaml)."
+  - "The bar holds one page name, not two: a large display title set into the page below the bar is a page header of the screen, and it is that screen's content, not a second title here (visual-dna §4.17)."
+  - "The bar declares no cell for vivid. Its centred title is type.title.sm (20 px) and its subtitle type.caption (12 px), and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block, so a bar over a gradient sits on a glass Surface above it - which is also what a bar over a map or imagery does."
+  - "Safe areas: the bar's height is measured below the top safe-area inset the platform reports, and its content never enters that inset. On the web the same inset is the browser's own chrome, and Prism reserves nothing behind it."
+  - "The search slot holds one SearchField at size.card.min wide and size.control.md tall; TopBar forwards nothing to it but its width and the placement, and the field owns its own material, its shortcut hint and its clear affordance."
+  - A bar with no title, no brand and no leading control is not a TopBar; a screen whose top row is only utilities is a Toolbar.
+
+motion:
+  scrollEdge: motion.duration.fast
+  scrollEdgeEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: banner (the web landmark) on the web, the system navigation bar on Apple
+  label: the `title` when there is one, otherwise the app's own name for the bar; the brand mark carries the product name as its label and is not read twice
+  traits: [header]
+  keyboard: the bar is the first tab stop of the page, in visual order - the leading control or the brand mark, which are mutually exclusive, then the navigation row, the search field and each item of the trailing cluster in the order it is drawn; the navigation row is one stop of its own, because PillTabs holds its focus with arrow keys; the title and the subtitle are not focusable; every focus ring is color.border.focus at border.focus width
+  dynamicType: the title and the subtitle scale with type.title.sm, type.title.md and type.caption; the bar grows in height with them rather than truncating (ADR-0011), and past the accessibility3 size the subtitle moves below the bar, into the screen
+  contrast: "the title is color.text.primary and the subtitle color.text.secondary on whatever the page publishes, both functional pairs in tokens/contrast-pairs.json; over a map or imagery the bar sits inside a Surface that publishes the scheme's glass and the two follow its backdrop kind (ADR-0029 §1.4); the scroll edge's hairline is decorative, because the bar is already separated by the material"
+  reduceTransparency: the scroll edge loses its blur and saturation and becomes opaque color.bg.page with a color.border.hairline rule; the bar at rest is unchanged, because it paints nothing
+  reduceMotion: the scroll edge does not slide or blur in; it crossfades by opacity over motion.duration.base with motion.easing.out, and the title does not move between its large and its bar position - it is replaced at motion.duration.instant
+
+usage:
+  do:
+    - Give a screen one name, in the bar or as a page header below it, never both.
+    - Keep the trailing cluster to one row - three IconButtons, one Button, one Avatar - and collapse the rest behind nav.more.
+    - Use the leading alignment as soon as the bar carries a brand mark or a navigation row.
+  dont:
+    - Don't draw a background or a divider under a bar at rest; the scroll edge is what separates it.
+    - Don't put a second scroll-edge effect in the same view (ADR-0009 rule 2).
+    - Don't let the bar hold content - a filter row, a stat, a segmented control belongs to the screen.
+    - Don't wrap the bar to two rows on a phone; a screen whose bar does not fit has too many utilities.
+
+examples:
+  - id: phone-centred
+    props: { title: "Unit 4417", align: center, leading: { glyph: nav.back, label: "Back to the fleet" }, actions: [{ glyph: nav.more, label: "More actions" }] }
+  - id: phone-with-subtitle
+    props: { title: "Line output", subtitle: "Last 24 hours", align: center, leading: { glyph: nav.back, label: "Back to reports" } }
+  - id: desktop-navigation
+    props: { align: leading, brand: true, navigation: true, search: true, actions: [{ glyph: object.notification, label: "Alerts" }, { glyph: action.settings, label: "Settings" }] }
+    description: the desktop form - brand, one PillTabs row, a SearchField and the trailing cluster with an Avatar
+  - id: desktop-utilities-only
+    props: { title: "Depot North", align: leading, actions: [{ glyph: action.refresh, label: "Refresh readings" }, { glyph: action.settings, label: "Settings" }, { glyph: object.notification, label: "Alerts" }] }
+  - id: scroll-edge-hard
+    props: { title: "Routes", align: center, scrollEdge: hard, leading: { glyph: nav.menu, label: "Open the menu" } }
+  - id: transparent
+    props: { title: "Live map", align: center, scrollEdge: none, leading: { glyph: nav.back, label: "Back" }, actions: [{ glyph: action.filter, label: "Filter routes" }] }
+    surface: map
+    description: over the map the bar keeps no edge at all and its controls are the glass chips of the map HUD
+  - id: overflow-actions
+    props: { title: "Fleet", align: leading, actions: [{ glyph: action.search, label: "Search the fleet" }, { glyph: action.filter, label: "Filter" }, { glyph: action.refresh, label: "Refresh" }, { glyph: nav.more, label: "More actions" }] }
+    description: the fourth and later utilities collapse behind one nav.more button
+  - id: title-ru
+    props: { title: "Выработка линии за сутки", subtitle: "Обновлено 21.11.2026, 14:05", align: center, leading: { glyph: nav.back, label: "Назад" } }
+    description: the Russian title runs about a third longer than its English twin and truncates with an ellipsis instead of wrapping the bar to two rows
+
+notes:
+  platform:
+    ios: "adapted. The row is the system navigation bar with Liquid Glass and the native scroll-edge effect (ADR-0009 decision 1 and rule 2): Prism supplies the title, the subtitle, the leading control and the trailing cluster, and paints no background, no edge and no shadow. `scrollEdge` maps to scrollEdgeEffectStyle."
+    ipados: "adapted. Same as iOS; the navigation slot appears only in regular width, where AdaptiveShell also offers a Sidebar."
+    macos: "adapted. The row is the window's own toolbar; the leading control is the sidebar toggle rather than nav.back, the default size follows compact density (32 pt controls), and hover is required on every control in the bar."
+    watchos: "none. ADR-0010's Tier 3 list has no TopBar; a watch screen is titled by the system navigation and holds at most three glanceable tiles (spec/patterns/README.md)."
+    web-desktop: "full. The bar is a `banner` landmark; the scroll edge is Prism's own imitation, since the web has no system bar to inherit one from."
+  design: >-
+    The two forms are the two docs/research/component-inventory.md records for TopBar (10/11, the most
+    used composite together with Card): "Desktop: brand mark, pill navigation, search, round utility
+    buttons and avatar over a soft vignette" and "Phone: round button, centred title, round button, with
+    no background or divider". The 48 px row and the trailing cluster are docs/research/visual-dna.md
+    §6.4's top row (36-48 tall, a search pill of 210-260, 44 round buttons grouped at the trailing end),
+    which comp.top-bar.height takes from space.11 ("header row height") and the search slot from
+    size.card.min (200). The refusal to draw a background at rest is §1 principle 1, depth from luminance
+    rather than lines, and §11 anti-pattern 1. Large page titles are counted separately in the inventory
+    as the PageHeader candidate, which is why this bar has only the small title role. Example strings are
+    invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0029-direction-board-sign-off.md

@@ -44,6 +44,7 @@
         "required": ["part"],
         "properties": {
           "part": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$" },
+          "parent": { "type": "string", "pattern": "^[a-z][A-Za-z0-9]*$", "description": "the part that contains this one, listed earlier in anatomy; absent, a part listed after root sits directly in root (spec/SCHEMA.md, Anatomy)" },
           "optional": { "type": "boolean" },
           "description": { "type": "string" },
           "slot": { "type": "boolean", "description": "true when the part accepts arbitrary child content" }

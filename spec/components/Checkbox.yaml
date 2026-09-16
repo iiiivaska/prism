@@ -35,6 +35,7 @@ props:
     type: enum
     values: ["off", "on", "mixed"]
     default: "off"
+    description: "`on` and `mixed` put the box in the `selected` state, where the two differ by glyph alone"
   - name: label
     type: string
     description: the visible label; when it is absent the control carries an explicit accessibility name

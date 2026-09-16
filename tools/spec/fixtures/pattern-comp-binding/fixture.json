@@ -1,0 +1,6 @@
+{
+  "description": "The pattern binds Card's component token; a pattern binds sys roles only (ADR-0012 rule 3, ADR-0024 §5.2).",
+  "expect": [
+    { "code": "binding/foreign-comp", "file": "spec/patterns/SamplePattern.yaml" }
+  ]
+}

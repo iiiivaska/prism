@@ -34,36 +34,60 @@ describe('the repository', () => {
     expect(result.diagnostics).toEqual([]);
     expect(result.lags).toEqual([]);
     expect(passed(result)).toBe(true);
-    // Every v1 spec, by layer then name: the ADR-0012 slice plus the P2-5 wave-1 primitives,
-    // composites and chart parts. Rows are ordered primitive, composite, chart (ADR-0012 layers).
+    // Every v1 spec, by layer then name (ADR-0012): the slice and the P2-5 wave-1 primitives, the
+    // wave-2 composites beside Card, the wave-1 chart parts, and the three v1 patterns last.
     expect(result.rows.map((r) => r.spec.name)).toEqual([
       'Avatar', 'Badge', 'Button', 'Checkbox', 'Chip', 'Divider', 'Icon', 'IconButton', 'ProgressBar',
       'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton', 'Slider', 'Spinner', 'Surface',
       'Text', 'TextArea', 'TextField', 'Toggle', 'Tooltip',
-      'Card',
+      'Alert', 'Banner', 'Card', 'CommandPalette', 'ContextMenu', 'Dialog', 'EmptyState', 'FormField',
+      'ListRow', 'Menu', 'Pagination', 'PillTabs', 'Popover', 'SearchField', 'Sheet', 'Sidebar', 'StatCard',
+      'StatusPill', 'Stepper', 'TabBar', 'Table', 'Timeline', 'Toast', 'Toolbar', 'TopBar',
       'AreaChart', 'ChartContainer', 'DeltaBadge', 'HeroNumber', 'LineChart', 'RangeBand',
       'ReferenceLine', 'RingGauge', 'Sparkline', 'StatTile',
+      'AdaptiveShell', 'DashboardGrid', 'DetailScreen',
     ]);
-    // result.files is the read order: every spec file, sorted.
-    expect(result.files).toEqual(result.rows.map((r) => r.spec.file).sort());
-    expect(result.files).toHaveLength(33);
+    // result.files is the read order: every component file, sorted, then every pattern file, sorted.
+    const byFile = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+    const components = result.rows.filter((r) => r.kind !== null).map((r) => r.spec.file).sort(byFile);
+    const patterns = result.rows.filter((r) => r.kind === null).map((r) => r.spec.file).sort(byFile);
+    expect(result.files).toEqual([...components, ...patterns]);
+    expect(result.files).toHaveLength(60);
   });
 
-  test('every row has one cell per platform, and every cell names the manifest behind it', () => {
+  test('every row has one cell per platform, and every component cell names the manifest behind it', () => {
     for (const row of result.rows) {
       expect(row.cells.map((c) => c.platform)).toEqual([...PLATFORMS]);
       expect(row.kind).toBe(LAYER_MANIFEST[row.spec.layer]);
       for (const cell of row.cells) {
-        expect(cell.manifest?.path).toBe(manifestFor(row.kind ?? 'components', cell.platform).path);
+        expect(cell.manifest?.path ?? null).toBe(row.kind === null ? null : manifestFor(row.kind, cell.platform).path);
         expect(cell.support).toBe(row.spec.platforms.get(cell.platform));
       }
     }
   });
 
-  test('nothing is implemented yet, so every row is pending rather than lagging (P2-5)', () => {
-    expect([...new Set(result.rows.map((r) => r.state))]).toEqual(['pending']);
+  test('nothing is implemented yet, so every component row is pending rather than lagging (P2-5)', () => {
+    expect([...new Set(result.rows.filter((r) => r.kind !== null).map((r) => r.state))]).toEqual(['pending']);
     expect(result.rows.every((r) => r.cells.every((c) => c.implemented === 0))).toBe(true);
-    expect(summaryLine(result)).toContain('198 cell(s): 0 lagging, 0 in parity, 172 pending, 26 satisfied by `none`');
+    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 0 in parity, 286 pending, 56 satisfied by `none`, 0 diagnostic(s)');
+  });
+
+  test('a pattern is a contract-only row with its own table and no manifest cell (ADR-0012 rule 3)', () => {
+    const patterns = result.rows.filter((r) => r.spec.layer === 'pattern');
+    expect(patterns.map((r) => r.spec.name)).toEqual(['AdaptiveShell', 'DashboardGrid', 'DetailScreen']);
+    for (const row of patterns) {
+      expect(row.state).toBe('contract');
+      expect(row.kind).toBeNull();
+      expect(row.cells.every((c) => c.manifest === null && c.implemented === 0 && !c.lag)).toBe(true);
+    }
+    // Patterns are layer 4, so they are the last rows.
+    expect(result.rows.slice(-3)).toEqual(patterns);
+    const markdown = renderReport(result);
+    expect(markdown).toContain('## Patterns');
+    expect(markdown).toContain('| [AdaptiveShell](../../spec/patterns/AdaptiveShell.yaml) | v1 | adapted | full | adapted | none | adapted | full |');
+    expect(markdown).toContain('| [DashboardGrid](../../spec/patterns/DashboardGrid.yaml) | v1 | adapted | full | full | none | full | full |');
+    expect(markdown).toContain('| [DetailScreen](../../spec/patterns/DetailScreen.yaml) | v1 | full | full | adapted | adapted | full | adapted |');
+    expect(markdown).not.toContain('| [DashboardGrid](../../spec/patterns/DashboardGrid.yaml) | pattern |');
   });
 
   test('the four manifests exist and are empty', () => {
@@ -151,25 +175,12 @@ describe('fixtures', () => {
     expect(lagging).toBeDefined();
     const result = runParity({ reader: caseReader(lagging!) });
     expect(result.rows.filter((r) => r.state === 'lag').map((r) => r.spec.name)).toEqual(['Button']);
-    // Everything the fixture's manifest does not name stays pending: lag is per row, not per run.
+    // Every other component stays pending, because lag is per row and not per run; patterns stay
+    // contract-only rows.
     expect(result.rows.filter((r) => r.state === 'pending').map((r) => r.spec.name)).toEqual(
-      result.rows.map((r) => r.spec.name).filter((n) => n !== 'Button'),
+      result.rows.filter((r) => r.kind !== null).map((r) => r.spec.name).filter((n) => n !== 'Button'),
     );
     expect(renderReport(result)).toContain('full v2 **LAG**');
-  });
-
-  test('a pattern is a contract-only row with its own table and no manifest cell', () => {
-    const result = runParity({ reader: caseReader(parityCases().find((c) => c.name === 'pattern')!) });
-    const pattern = result.rows.find((r) => r.spec.name === 'DashboardGrid');
-    expect(pattern?.state).toBe('contract');
-    expect(pattern?.kind).toBeNull();
-    expect(pattern?.cells.every((c) => c.manifest === null && c.implemented === 0 && !c.lag)).toBe(true);
-    // It is the last row: patterns are layer 4 (ADR-0012).
-    expect(result.rows.at(-1)?.spec.name).toBe('DashboardGrid');
-    const markdown = renderReport(result);
-    expect(markdown).toContain('## Patterns');
-    expect(markdown).toContain('| [DashboardGrid](../../spec/patterns/DashboardGrid.yaml) | v1 | adapted | full | full | none | adapted | full |');
-    expect(markdown).not.toContain('| [DashboardGrid](../../spec/patterns/DashboardGrid.yaml) | pattern |');
   });
 
   test('an in-parity manifest is read from both syntaxes at once', () => {
@@ -221,7 +232,7 @@ describe('the CLI', () => {
   test('--check passes on the committed report and exits 0', () => {
     const { value, out } = capture(() => main(['--check']));
     expect(value).toBe(0);
-    expect(out).toContain('33 component spec(s)');
+    expect(out).toContain('57 component spec(s), 3 pattern spec(s)');
   });
 
   test('--check fails when the report is written somewhere that has none', () => {

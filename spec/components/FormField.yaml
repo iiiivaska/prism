@@ -1,0 +1,242 @@
+name: FormField
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The wrapper that gives any control a name, a line of help and an error, and wires all three to it.
+  It owns the accessibility contract every Prism form field plugs into: the label points at the
+  control, the help and the error become its description, and the error is announced once. TextField,
+  TextArea and Select already draw those rows themselves, so for them FormField forwards its props and
+  draws nothing; for Checkbox, Radio, Toggle, Slider and app controls it draws them.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+    description: the control's name; drawn here only where the control does not draw its own — the inline settings row, a group's name, and a control with no `label` prop
+  - part: control
+    slot: true
+    description: one control, or one group of Checkboxes or Radios
+  - part: helper
+    optional: true
+    description: the row below the control while the field is valid
+  - part: errorMessage
+    optional: true
+    description: the row below the control while the field is invalid; a status glyph plus the message
+
+props:
+  - name: label
+    type: string
+    required: true
+    description: the control's name, in sentence case; it is required even when it is not visible
+  - name: control
+    type: slot
+    required: true
+  - name: helper
+    type: string
+    description: one line that says what a good value looks like, not what the control is
+  - name: errorText
+    type: string
+    description: shown in place of `helper` while `isInvalid`; it names what to do, not what failed
+  - name: kind
+    type: enum
+    values: [field, group]
+    default: field
+    description: field labels one control; group labels a set of Checkboxes or Radios and becomes their group label
+  - name: layout
+    type: enum
+    values: [stacked, inline]
+    default: stacked
+    description: stacked puts the label above the control; inline puts it before the control on one row, for a settings row
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps the label for assistive technology only, for a control whose place already names it
+  - name: isInvalid
+    type: boolean
+    default: false
+  - name: isRequired
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+
+states: [default, disabled, error]
+
+tokens:
+  root:
+    gap: space.2
+    columnGap: space.4
+    rowGap: space.3
+    disabled:
+      opacity: opacity.disabled
+  label:
+    typography:
+      stacked: type.label.md
+      inline: type.body.md
+    color:
+      stacked:
+        default: color.text.secondary
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
+        glassLight: color.text.on-glass-light
+        glass:
+          map: color.text.on-glass-fill-secondary
+          image: color.text.on-glass-fill-media-secondary
+          vivid: color.text.on-glass-fill-media-secondary
+      inline:
+        default: color.text.primary
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+  control:
+    gap: space.3
+  helper:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  errorMessage:
+    typography: type.caption
+    gap: space.2
+    iconSize: size.icon.sm
+    color:
+      default: color.text.critical
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    iconColor:
+      default: color.icon.status.critical
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+
+behavior:
+  - "FormField owns the wiring, not a second copy of the rows. TextField, TextArea and Select already declare `label`, `helper` and `errorText` and draw those rows themselves; when the control is one of them, FormField forwards `label`, `helper`, `errorText`, `isInvalid`, `isRequired` and `isDisabled` into the control's props of the same name and draws no label, helper or error row of its own."
+  - "When the control is a Checkbox, Radio, Toggle, Slider or an app control, FormField draws the helper and the error row itself and wires them: the label points at the control (`for`/`id` on web, an accessibility label on Apple), and the helper and the error together are the control's description."
+  - "One control, one name. Checkbox, Radio, Toggle and Slider each declare a `label` of their own, so FormField never draws a second copy of it: at `layout: stacked` it passes its `label` into the control's `label` prop and draws no label row, and at `layout: inline` it draws the label as the row's own title and renders the control with no visible label, the same accessible name reaching it through the wiring. FormField draws the `label` part only in that inline row, for a control that has no `label` prop of its own, and for `kind: group`. This is the anatomy note on the `label` part, stated as a rule."
+  - "`kind: group` is the one place two names are right: the group label names the set and each option keeps the label it draws itself, so a screen reader reads \"Channels, Email, checked\"."
+  - "`kind: group` labels a set rather than one control: the label becomes the group's own name (a `fieldset` legend on web, an accessibility container label on Apple), the options sit space.3 apart inside the group, and the error belongs to the group, not to one option."
+  - "`isInvalid` swaps the helper row for the error row and exposes `errorText` as the control's description; the message is announced once, politely, when it appears, and it is not re-announced while the value changes."
+  - "The error row pairs the status.danger glyph with the message, so the state never rests on colour alone (ADR-0011 rule 4). It replaces the helper rather than joining it, so a field never carries two lines of advice at once."
+  - "`isRequired` puts the word in the label (\"Batch id (required)\"), never a lone asterisk and never a colour, and sets the field's required state for assistive technology. In a form where most fields are required, the optional ones are marked the same way, in words."
+  - "`labelVisibility: hidden` keeps the label in the accessibility tree and removes it from the layout; it exists for a control whose place already names it — a search pill in a top bar, one field in a labelled table column — and a placeholder is never a substitute for it."
+  - "`layout: inline` puts the label before the control on one row, columnGap space.4 apart, and lifts it to type.body.md in color.text.primary, because there it reads as the row's own title rather than as a field name. It is the settings row: label leading, Toggle trailing. The helper and error rows stay below, aligned to the label."
+  - "The label, the helper and the error rows all wrap and never truncate; the field grows in height instead (ADR-0011). Nothing in this component shrinks below its role's size to keep a height."
+  - "`isDisabled` lowers the whole field to opacity.disabled and removes the control from the focus order; FormField never disables the label alone, because a label at opacity.disabled beside a live control reads as a broken field."
+  - "A FormField contributes exactly the focus stops its control contributes, in the control's own order. The field itself, the label, the helper and the error row are never focus stops; on web the helper and the error reach the control through its description, not through the tab order. A `kind: group` field contributes the group's options in reading order, and a Radio group contributes one stop with arrow keys inside it, which is Radio's contract."
+  - "One error, one haptic. haptic.error plays once per failed submission, and only where the error row is drawn: a FormField that forwards to a TextField, TextArea or Select lets that control play it and plays none of its own, because spec/haptics.yaml allows at most one haptic per user action."
+  - "A FormField paints no material of its own and takes the tones of the material the enclosing Surface publishes. It declares no cell for vivid: its rows run 12 to 15 px — type.caption for the helper and the error, type.label.md for the stacked label, type.body.md for the inline one — and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block, so a form on a vivid screen sits in a solid or glass Card over it."
+  - "One field per line under touch; a two-column form is a pointer layout, and it aligns the labels, not the boxes."
+
+haptics:
+  error: haptic.error
+
+accessibility:
+  role: "none of its own — FormField is a wiring element; `kind: group` exposes a group (a `fieldset` on web, an accessibility container on Apple)"
+  label: the `label` prop, always present and always attached to the control, whether or not it is visible; a placeholder, a unit or a glyph is never the label
+  traits: []
+  keyboard: not focusable itself; Tab reaches the control and then any control inside it, and the focus ring belongs to the control. The helper and the error are never focus stops — they reach the control as its description
+  dynamicType: "label, helper and error all scale with their roles; the field grows in height, the rows wrap, and at the accessibility3 size `layout: inline` reflows to `stacked` so the label keeps its full text"
+  contrast: "the stacked label, the helper and a group's caption are color.text.secondary, functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the inline label is color.text.primary. The error message is color.text.critical and its glyph color.icon.status.critical, both paired in tokens/contrast-pairs.json; on inverse, accent and the glass materials the critical tone is not available, so the message takes that material's foreground and the glyph alone carries the state, as ChartContainer's message does"
+  reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass and every tone returns to the solid family
+  reduceMotion: the helper and the error do not slide or grow; the row crossfades over motion.duration.base with motion.easing.out and the field's height changes at once
+  voiceOver: announces the label, then the control's value, then "required" and the helper; on `isInvalid` the error message replaces the helper in the description and is announced once when it appears
+
+motion:
+  message: motion.duration.fast
+  reduceMotion: crossfade
+
+usage:
+  do:
+    - Give every control a FormField, or a label of its own; a control with no name is a defect.
+    - Write a helper that says what a good value looks like, and an error that says what to do.
+    - Say "required" in words, in the label.
+    - "Use `kind: group` for a set of Checkboxes or Radios, so the set is named once."
+  dont:
+    - Don't wrap a TextField, a TextArea or a Select and draw a second label around it; forward the props instead.
+    - Don't give a Checkbox, a Radio, a Toggle or a Slider a label of its own and a FormField label too; one control carries one name.
+    - Don't use the placeholder as the label, and don't hide a label that the layout does not already supply.
+    - Don't show a helper and an error at the same time.
+    - Don't colour a label or a border for emphasis; the critical stroke means invalid and nothing else.
+    - Don't put a FormField straight on a vivid surface; put the form in a card over it.
+
+examples:
+  - id: toggle-inline
+    props: { label: "Notify on threshold", layout: inline, helper: "One message per breach, at most" }
+    description: the settings row — label leading, Toggle trailing, helper below
+  - id: checkbox-group
+    props: { label: "Channels", kind: group, helper: "Choose at least one" }
+    description: three Checkboxes space.3 apart under one group label
+  - id: radio-group-required
+    props: { label: "Shift (required)", kind: group, isRequired: true }
+  - id: slider-with-helper
+    props: { label: "Alert threshold", helper: "Between 1 and 6 bar" }
+    description: the control is a Slider, which draws its own label, so FormField passes the name into it and draws only the helper row
+  - id: invalid-group
+    props: { label: "Channels", kind: group, isInvalid: true, errorText: "Choose at least one channel" }
+    description: the error belongs to the group, not to one option
+  - id: forwarded-text-field
+    props: { label: "Batch id", helper: "Six characters: one letter, a dash and four digits" }
+    description: the control is a TextField, so FormField forwards the label and the helper and draws no rows of its own
+  - id: label-hidden
+    props: { label: "Search sites", labelVisibility: hidden }
+    description: a search pill in a top bar, whose place already names it; the label stays in the accessibility tree
+  - id: disabled
+    props: { label: "Archive after", helper: "Available once the run closes", isDisabled: true }
+  - id: on-glass-over-map
+    props: { label: "Show depots", layout: inline }
+    surface: glass
+    backdrop: map
+    description: inside a glass panel over the map the label follows the published backdrop kind
+  - id: russian-label
+    props: { label: "Порог оповещения по давлению", helper: "От одного до шести бар", isRequired: true }
+    description: the Russian label and helper run about a third longer, so both wrap and the field grows instead of truncating
+
+notes:
+  platform:
+    watchos: "`none`. FormField is not in ADR-0010's Tier 3 set, and neither are the controls it wraps: TextField says the watch collects text through the system dictation and scribble sheets, and Checkbox, Radio, Toggle and Slider are absent from the Tier 3 list too. A watch screen is a vertical stack of at most three glanceable tiles (spec/patterns/README.md), not a form. This is a decision, not a gap."
+    macos: "compact density tightens the gaps, and a two-column form aligns the labels rather than the boxes; the error row is a live region on every platform, not only here."
+    web-desktop: "built on React Aria's label, description and error slots — `Label`, `Text slot=\"description\"` and `FieldError` — so the wiring is the library's and this spec only says which rows exist and when; `kind: group` renders a `fieldset` with a `legend`."
+  design: >-
+    FormField has no sighting: docs/research/component-inventory.md records 0 of 11 and notes that
+    TextField appears only inside SearchField, so there is no reference for a labelled field at all. The
+    rows and their sizes therefore come from the system itself — TextField.yaml's label at type.label.md,
+    helper and error at type.caption, the status glyph beside the message and the "required in words"
+    rule — and this spec's job is to lift them off the three controls that already have them and give
+    them to the ones that do not. The split follows ADR-0012's layer rule: a composite may wrap
+    primitives, so FormField wraps a control rather than re-implementing one. The settings row of
+    `layout: inline` is the row form ADR-0012 lists as the settings-list pattern's building block. The
+    "never colour alone" error and the announced-once message are ADR-0011 rule 4 and its spec
+    requirements. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

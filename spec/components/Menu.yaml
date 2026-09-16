@@ -1,0 +1,239 @@
+name: Menu
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The list of actions an overflow control opens: items with an optional leading glyph and a trailing
+  detail, grouped into sections separated by a hairline, with destructive items in the critical tone at
+  the end. Its container is a Popover, so placement, dismissal, the focus return and the compact-width
+  Sheet fallback are that component's; Menu adds the items, the sections and the keyboard model that
+  reaches every one of them.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: adapted
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: "a Popover with `padding: flush`, forwarding `anchor`, `placement`, `width`, `isOpen` and `onDismiss`; it owns the panel, the offset, the flip and the dismissal"
+  - part: list
+    description: the scrolling list of sections and items
+  - part: section
+    optional: true
+  - part: sectionTitle
+    optional: true
+  - part: separator
+    optional: true
+    description: the hairline between two sections; the first section has none above it
+  - part: item
+  - part: itemIcon
+    optional: true
+  - part: itemLabel
+  - part: itemDetail
+    optional: true
+    description: a keyboard shortcut or a value, trailing-aligned in the quiet tone
+  - part: itemCheck
+    optional: true
+    description: the `status.check` glyph in the row's leading position under a selecting mode; it is what says "selected", not a fill, and its space is reserved on the unselected rows
+
+props:
+  - name: items
+    type: data
+    required: true
+    description: "[{ id, label, icon?, detail?, section?, isDestructive?, isDisabled?, isSelected? }] in the order they are shown"
+  - name: sections
+    type: data
+    description: "[{ id, title? }]; items with no `section` come first, in one unnamed section"
+  - name: selectionMode
+    type: enum
+    values: [none, single, multiple]
+    default: none
+    description: "`none` is a list of actions; the other two show the check glyph and keep the menu open on `multiple`"
+  - name: anchor
+    type: data
+    required: true
+    description: forwarded to the Popover; the control that opens the menu, which the caller owns and which focus returns to
+  - name: placement
+    type: enum
+    values: [top, bottom, leading, trailing]
+    default: bottom
+    description: forwarded to the Popover
+  - name: width
+    type: enum
+    values: [auto, anchor]
+    default: auto
+    description: forwarded to the Popover
+  - name: isOpen
+    type: boolean
+    default: false
+  - name: onAction
+    type: action
+    required: true
+    description: fires with the item's id; a destructive item fires it like any other, and the confirmation is a Dialog
+  - name: onDismiss
+    type: action
+    required: true
+
+states: [default, hover, pressed, focus-visible, selected, disabled]
+
+tokens:
+  list:
+    gap: space.0
+  sectionTitle:
+    typography: type.caption
+    color: color.text.tertiary
+    paddingX: space.3
+    paddingY: space.2
+  separator:
+    color: color.border.hairline
+    thickness: border.hairline
+    marginY: space.2
+  item:
+    height: size.row
+    radius: radius.inner
+    paddingX: space.3
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+      destructiveOverlay: color.bg.tint.critical
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+      destructiveOverlay: color.bg.tint.critical
+    selected:
+      overlay: color.bg.fill.neutral.subtle
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+    disabled:
+      opacity: opacity.disabled
+  itemIcon:
+    size: size.icon.md
+    color: color.icon.secondary
+    destructiveColor: color.icon.status.critical
+  itemLabel:
+    typography: type.label.md
+    color: color.text.primary
+    destructiveColor: color.text.critical
+  itemDetail:
+    typography: type.caption
+    color: color.text.tertiary
+    gap: space.4
+  itemCheck:
+    size: size.icon.sm
+    color: color.icon.primary
+
+behavior:
+  - "The Menu's container is a Popover and nothing about the panel is restated here: the material (the opaque raised surface), `radius.card-compact`, the `space.2` offset from the anchor, `elevation.3`, `z.overlay`, the flip and shift, the outside-press dismissal, the Escape return to the anchor, the one-open-at-a-time rule and the compact-width Sheet fallback are all Popover's. Menu forwards `anchor`, `placement`, `width`, `isOpen` and `onDismiss` to it, sets `padding: flush` so the rows run nearly edge to edge and a press anywhere on a row lands on that row, and adds the list. It changes exactly two things about the panel: that padding, and the keyboard model - Popover's Tab cycle inside the panel is replaced by the roving focus below, because a menu is not a set of tab stops."
+  - "An item is one row of `size.row`, holding an optional leading glyph, the label, and an optional trailing detail. Its hit region is the whole row and at least `size.hit` tall (28 under pointer, 44 under touch). Its radius is `radius.inner` 8: the concentric rule would give `radius.card-compact` 20 minus the panel's `space.2` 6, which is the 14 of visual-dna §1 principle 2's ladder (the nested tile, a `ref` primitive), and no radius role in the bindable set carries 14, so the row takes the role below it and stays smaller than its container, which is the half of the rule that always holds."
+  - "Sections keep related items together and are separated by one hairline of `color.border.hairline` at `border.hairline` width with `space.2` above and below it. A section may carry a title at `type.caption` in `color.text.tertiary`; the first section has no separator above it, and a menu with one section draws none at all."
+  - "Destructive items take `color.text.critical` for the label and `color.icon.status.critical` for the glyph - the tone, not a fill, because red is a material and never a block (visual-dna §4.11, §11 anti-pattern 10). Hovered or pressed, a destructive item's overlay is the critical wash `color.bg.tint.critical` instead of `color.bg.fill.neutral.subtle`: the critical label holds 4.5:1 on the raised panel under that wash in both schemes, and under the neutral overlay it does not in dark. The caller puts them last, alone in the final section, so the separator is between them and everything else, and a slip of the finger lands on a hairline rather than on a delete. Menu renders sections and items exactly in the order `sections` and `items` give and never reorders them; a section that holds no item is not drawn and takes no separator."
+  - "A destructive item confirms nothing by itself: it fires `onAction` and the irreversible step is confirmed in a Dialog, which is where an irreversible question belongs."
+  - "`selectionMode: none` is a list of actions: choosing one fires `onAction` with its id and then `onDismiss`. `single` shows the `status.check` glyph on the chosen item and also fires `onAction` and then `onDismiss`. `multiple` fires `onAction` alone, so the menu stays open while the caller toggles the glyph, and it is closed by Escape, by an outside press or by the anchor, which fire `onDismiss` as Popover states. `isOpen` is Popover's controlled prop, so the panel closes when the caller writes it back as false, and Enter, Space, a press and a release on the row are the same choice. Selection is told by the glyph, never by the fill alone (ADR-0011 rule 4); the quiet overlay is a second, redundant cue."
+  - "In `single` and `multiple` the leading position of every row is the check: `status.check` on a selected item and the same space reserved and empty on the others, so the labels keep one text edge. An item's `icon` is not drawn in those two modes - a row shows one leading mark, not two - and in `none` there is no check and `icon` has the leading position to itself."
+  - "Selection is controlled, in both selecting modes: `onAction` fires with the item's id and the caller writes the new `isSelected` back into `items`. The Menu keeps no selection of its own, so what it draws and what the caller believes cannot drift, and a `multiple` menu that rejects a toggle simply does not change."
+  - "A Menu with no items does not open: the control that would open it is disabled and says why, because an empty panel beside a control tells the reader nothing."
+  - "Keyboard: the anchor opens the menu with Space, Enter or Down and focus moves to the first enabled item, or to the first selected one in list order when there is a selection. The model is the same in the compact-width Sheet form: the items keep their roving focus, and Tab closes the sheet as it closes the panel instead of reaching the sheet's close control. Down and Up move by one item and wrap; Home and End jump to the first and last enabled item; typing letters jumps to the first item whose label starts with what was typed, and the buffer clears 1 s after the last keystroke - a spec value in seconds, like Toast's dwell, because it times reading and typing rather than an animation. Enter and Space activate the focused item. Escape closes the menu and returns focus to the anchor without activating anything. Tab closes the menu and moves focus on, because a menu is not a set of tab stops."
+  - "Focus moves between items with a roving focus: exactly one item is in the tab order at a time, and disabled items are skipped by every key and by the typeahead. Separators and section titles are never focused."
+  - "The active item changes at `motion.duration.instant`: moving through a menu is a keyboard-initiated action used many times a day, and visual-dna §11 anti-pattern 32 keeps animation off both."
+  - "Labels wrap to at most two lines at the panel's width and never truncate (ADR-0011): a menu item's name is the only thing that says what it does. A name that needs more than two lines is too long for a menu."
+  - "Overflow: the list scrolls inside the panel once it would pass the Popover's height bound, with the section it is in kept intact at the scroll edges. A menu of more than about a dozen items is the wrong control - a choice that long is a Select with a search, or a screen."
+  - "`itemDetail` is a keyboard shortcut or a short value, trailing-aligned in `color.text.tertiary`, `space.4` from the label. It never carries meaning the label does not, because a pointer-less or narrow presentation may drop it."
+  - "There are no submenus in v1. A submenu needs hover intent, a second keyboard model and a second layer of dismissal, no reference shows one (docs/research/component-inventory.md records 0 of 11 for Menu), and a nested choice is a Sheet or a screen."
+  - "The one haptic is `haptic.selection` when an item is chosen, the same discrete-selection feedback Select declares for the same event; opening and closing the menu play none."
+
+motion:
+  present: motion.spring.snappy
+  activeItem: motion.duration.instant
+  reduceMotion: crossfade
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: "`menu` on the panel and `menuitem` on each row, with `menuitemradio` under `selectionMode: single` and `menuitemcheckbox` under `multiple`; sections are groups, and their titles name those groups"
+  label: "each item's visible label; the `anchor` carries its own name and an expanded state. A destructive item's label says what is destroyed (\"Delete route\"), because the critical tone is not announced"
+  traits: [menu]
+  keyboard: "Space, Enter or Down opens from the anchor; Down and Up move and wrap; Home and End jump; typeahead jumps by first letters and its buffer clears 1 s after the last keystroke; Enter and Space activate; Escape closes and returns focus to the anchor; Tab closes and moves on. The focused item draws the ring of `color.border.focus` at `border.focus` width, following the item's own `radius.inner`"
+  dynamicType: "labels, details and section titles scale with their roles; rows grow from `size.row` and labels wrap to two lines rather than truncating (ADR-0011). The trailing detail moves under the label once the two no longer fit on one line, and from the accessibility sizes on the menu presents as a Sheet at every width, which Popover already does"
+  contrast: "`color.text.primary`, `color.text.tertiary` and `color.text.critical` on `color.bg.surface.raised` are checked functional pairs in tokens/contrast-pairs.json, and `raised` composites over `color.bg.page`, which is what the pairs check; `color.icon.secondary`, `color.icon.primary` and `color.icon.status.critical` on the same ground are checked at the 3:1 boundary tier. The hover, pressed and selected cues are `color.bg.fill.neutral.subtle` drawn as an overlay, and the text and glyph tones are paired on that overlay over the raised panel as well. A destructive item's hover and pressed cue is `color.bg.tint.critical`, on which `color.text.critical` is a functional pair over raised in both schemes; its glyph on that wash is paired in dark only, because in light it falls below 3:1 and the label, which names what is destroyed, carries the tone (docs/research/a11y-reconciliation.md §8.3). The separator is `color.border.hairline`, which is decorative structure and carries no meaning of its own (visual-dna §7.5)"
+  reduceTransparency: "not applicable - the panel is Popover's opaque raised surface in every context and never renders glass, so the ADR-0022 fallback does not change it"
+  reduceMotion: "the panel does not scale or move: it crossfades by opacity over `motion.duration.base` with `motion.easing.out`, as Popover states. The active-item highlight already changes at `motion.duration.instant` in both contexts, so nothing about moving through the menu changes (ADR-0023 §8.4)"
+  voiceOver: "opening announces the menu, its item count and the focused item; sections are announced with their titles; a selected item is announced as selected, and a disabled one is skipped"
+
+usage:
+  do:
+    - Use a Menu for the secondary actions of an object - the ones an overflow control holds.
+    - Group related items into sections, and put destructive items last, alone.
+    - Write each label as a verb and its object ("Duplicate route").
+    - Confirm an irreversible item in a Dialog after it is chosen.
+  dont:
+    - Don't build a navigation out of a Menu; a choice acts, it does not move the screen.
+    - Don't nest menus; a nested choice is a Sheet or a screen.
+    - Don't put more than about a dozen items in one menu.
+    - Don't show selection with a fill alone; the check glyph says it.
+    - Don't put an item's only explanation in its trailing detail.
+
+examples:
+  - id: actions
+    props: { placement: bottom, items: [{ id: duplicate, label: "Duplicate route", icon: action.copy }, { id: share, label: "Share route", icon: action.share }, { id: delete, label: "Delete route", icon: action.delete, isDestructive: true, section: danger }], sections: [{ id: danger }] }
+    description: the first two items have no `section`, so they form the unnamed first section; the destructive item sits alone below the one separator
+  - id: with-sections
+    props: { placement: bottom, items: [{ id: rename, label: "Rename", icon: action.edit }, { id: export, label: "Export as CSV", icon: action.share, section: data }, { id: archive, label: "Archive", section: data }], sections: [{ id: data, title: "Data" }] }
+  - id: single-selection
+    props: { placement: bottom, selectionMode: single, items: [{ id: h24, label: "Last 24 hours", isSelected: true }, { id: d7, label: "Last 7 days" }, { id: d30, label: "Last 30 days" }] }
+  - id: with-shortcuts
+    props: { placement: bottom, items: [{ id: refresh, label: "Refresh", icon: action.refresh, detail: "R" }, { id: search, label: "Find a unit", icon: action.search, detail: "F" }] }
+  - id: with-disabled
+    props: { placement: bottom, items: [{ id: duplicate, label: "Duplicate route", icon: action.copy }, { id: publish, label: "Publish plan", isDisabled: true }] }
+  - id: anchor-width
+    props: { placement: bottom, width: anchor, items: [{ id: north, label: "North yard" }, { id: south, label: "South yard" }, { id: depot4, label: "Depot 4" }] }
+    description: the panel is exactly as wide as its trigger, which is how a menu reads as that trigger's own list
+  - id: scrolling
+    props: { placement: bottom, items: [{ id: s1, label: "North yard", section: yards }, { id: s2, label: "South yard", section: yards }, { id: s3, label: "East yard", section: yards }, { id: s4, label: "West yard", section: yards }, { id: s5, label: "Depot 1", section: depots }, { id: s6, label: "Depot 2", section: depots }, { id: s7, label: "Depot 3", section: depots }, { id: s8, label: "Depot 4", section: depots }, { id: s9, label: "Depot 5", section: depots }, { id: s10, label: "Depot 6", section: depots }, { id: s11, label: "Depot 7", section: depots }, { id: s12, label: "Depot 8", section: depots }], sections: [{ id: yards, title: "Yards" }, { id: depots, title: "Depots" }] }
+    description: twelve items, the most a menu should hold, rendered under a trigger low in a short window, so the list passes the Popover's height bound and scrolls inside the panel while each section stays intact at the scroll edges
+  - id: ru-long-labels
+    props: { placement: bottom, items: [{ id: duplicate, label: "Дублировать маршрут", icon: action.copy }, { id: delete, label: "Удалить маршрут и все остановки", icon: action.delete, isDestructive: true, section: danger }], sections: [{ id: danger }] }
+    description: the Russian destructive label runs past one line and wraps to two instead of truncating; the row grows with it
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Menu, and a wrist chooses from a list screen with the system's own picker rather than from a panel beside a control."
+    ios: "`adapted`. Menu inherits Popover's compact-width behavior: on a phone the items present in a bottom Sheet at detent `medium`, which is the platform's own idiom for a choice on a small screen. The keyboard model still applies with a hardware keyboard attached."
+    ipados: "`full`; the anchored panel, with the sheet only below 600 points of width."
+    macos: "`full`; compact density gives rows `size.row` 32 and the pointer hit area (`size.hit` 28), and the trailing detail is where a keyboard shortcut is shown."
+    web-touch: "`adapted`. Same as iOS - the compact-width Sheet."
+    web-desktop: "built on React Aria's menu for the roving focus, the typeahead and the trigger's expanded state; the sections, the tones and the destructive rule are this spec's."
+  design: >-
+    docs/research/component-inventory.md records 0 of 11 sightings and names the two cases ADR-0012 needs
+    Menu for: "the open state of Select (the 5 sightings show closed triggers only) and overflow actions".
+    Select.yaml v1 leaves its list to the platform's own menu and says Prism's Menu is a later composite;
+    this spec is that composite, and pointing Select at it is a change to Select.yaml, not to this one. The
+    look is therefore derived. The panel is Popover's, so there is one floating-panel recipe rather than
+    two; the item row follows visual-dna §6.7 (rows follow `size.row`, icon plus an 8 gap) and §4.12's spec
+    rows. The destructive tone rather than a red fill is §4.11 and §11 anti-pattern 10; the hairline between
+    sections is §7.5, which reserves hairlines for table rows, inputs and tile edges and says spacing, not
+    lines, carries grouping - so the separator appears only between sections, never between items. The
+    instant highlight follows §11 anti-pattern 32 ("animation on actions used 100+ times a day or started
+    from the keyboard"). `radius.inner` on the row is as close as Prism gets to §1 principle 2's
+    concentric rule here: the panel's `radius.card-compact` 20 minus the flush `space.2` 6 is 14, the
+    "nested tile" of that principle's own ladder, and 14 exists only as a `ref` primitive with no radius
+    role above it, which a spec may not bind (ADR-0024 §5.2). The row takes the role below it instead and stays
+    smaller than its container; the missing 14 role is a note for the token owner, not a licence to bind
+    `ref`. Popover's `padding: flush` exists for this component rather than Menu rebinding another
+    component's part, which ADR-0024 §5.2 does not allow. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

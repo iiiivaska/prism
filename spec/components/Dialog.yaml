@@ -1,0 +1,217 @@
+name: Dialog
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The modal that stops the screen to ask one question about something irreversible. It is a raised
+  content panel centered over a scrim - never glass, because a decision is content and content is solid -
+  with a title, one paragraph, and two Buttons: the verb and the way out. It takes focus, keeps it, gives it back, always offers
+  a way out, and it is the only Prism layer that interrupts.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: scrim
+    description: the dim over everything behind the dialog; it is `material.glass.scrim`, a legibility and blocking layer, not a material the dialog renders
+  - part: root
+    description: the panel; a Surface of material raised, opaque in every context
+  - part: header
+    description: the title and, below it, the message; the title stays pinned while the dialog scrolls
+  - part: title
+    parent: header
+  - part: message
+    parent: header
+    optional: true
+    description: one paragraph; not drawn when `body` is set, and the part that scrolls when there is no body
+  - part: body
+    optional: true
+    slot: true
+    description: what replaces `message` when the question needs more than a paragraph; it never holds a second decision
+  - part: actions
+    description: the action row - on one line, trailing-aligned, while both Buttons fit under a pointer; full-width and stacked otherwise
+  - part: confirm
+    parent: actions
+    slot: true
+    description: "one Button - `variant: primary`, or `danger` when `tone` is destructive - forwarding `label`, `onPress`, `isLoading` and `isDisabled`"
+  - part: cancel
+    parent: actions
+    slot: true
+    description: "one Button (`variant: ghost`), forwarding `label`, `onPress` and `isDisabled`; it is mandatory, because a Dialog always offers a way out"
+
+props:
+  - name: title
+    type: string
+    required: true
+    description: the question or the consequence, in sentence case ("Delete this route?"); one line is the aim, and a longer title wraps and never truncates
+  - name: message
+    type: string
+    description: one paragraph that says what happens and what cannot be undone
+  - name: body
+    type: slot
+    description: replaces `message`; it holds text, a list or one input, never a second decision. When both are set, `body` renders and `message` does not
+  - name: tone
+    type: enum
+    values: [default, destructive]
+    default: default
+  - name: confirmLabel
+    type: string
+    required: true
+    description: the verb of the action, not "OK" ("Delete route")
+  - name: cancelLabel
+    type: string
+    required: true
+    description: the way out, in the user's words ("Keep route")
+  - name: onConfirm
+    type: action
+    required: true
+  - name: onCancel
+    type: action
+    required: true
+    description: fires for the cancel button, for Escape, and for a scrim press when the dialog is dismissible
+  - name: isDismissible
+    type: boolean
+    default: true
+    description: "whether a press on the scrim cancels; Escape cancels whatever this says. `tone: destructive` forces it to false, and a `true` passed with that tone is ignored"
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` - the confirm Button is loading, and the cancel Button and the dismissals are inert
+  - name: isOpen
+    type: boolean
+    default: false
+    description: controlled; the dialog is presented exactly while this is true
+
+states: [default, loading]
+
+tokens:
+  scrim:
+    background: material.glass.scrim
+    z: z.overlay
+  root:
+    background: color.bg.surface.raised
+    radius: radius.sheet
+    padding: space.7
+    gap: space.5
+    minWidth: size.card.min
+    shadow: comp.dialog.shadow
+    z: z.overlay
+  header:
+    gap: space.2
+  title:
+    typography: type.title.sm
+    color: color.text.primary
+  message:
+    typography: type.body.md
+    color: color.text.secondary
+  body:
+    gap: space.4
+  actions:
+    gap: space.3
+    paddingTop: space.4
+
+behavior:
+  - "A Dialog asks exactly one question. It has one confirm and one cancel, and nothing else in it is a decision; a screen that needs two decisions is a screen, not a dialog."
+  - "It is modal: while it is open, everything behind the scrim is inert to the pointer, to touch and to assistive technology, and the page behind it does not scroll."
+  - "Placement: the scrim covers the whole window, the system bars included, and the panel is centered in the window horizontally and vertically, at least `space.page-margin` from every window edge. The scrim sits directly under the panel, both at `z.overlay`. Every overlay layer shares `z.overlay`, and among them the one presented most recently paints on top: a Dialog opened while a Sheet or a Popover is open renders its scrim and panel above that layer, and closing the Dialog uncovers that layer as it was. The toast region stays above all of them at `z.toast`, inert like everything else outside the dialog."
+  - "Layout: inside the panel's `space.7` padding, the header, the body and the action row stack `root.gap` (space.5) apart. The header holds the title and, `header.gap` (space.2) below it, the message. `body.gap` (space.4) is the space between the children the body slot holds. `actions.gap` (space.3) separates the two Buttons, side by side or stacked, and `actions.paddingTop` (space.4) is inside the action row, so it adds to `root.gap`: the Buttons sit space.5 plus space.4 below the header or the body, whichever comes last."
+  - "`isOpen` is controlled. The Buttons and the dismissals only ask: confirm fires `onConfirm`, and cancel, Escape and a dismissing scrim press fire `onCancel`, each once, and the dialog closes only when the caller writes `isOpen` back as false. A caller that runs a request after `onConfirm` sets `isLoading` while it is in flight and closes the dialog when it succeeds."
+  - "Presenting, the panel fades in from opacity 0 while it scales from 0.98 to 1 over `motion.duration.slow` with `motion.easing.out`, and the scrim fades in over `motion.duration.base` with the same easing; closing reverses both (ADR-0023 §9: exit mirrors enter). The 0.98 is visual-dna §9.2's card-open cue, and `motion.duration.slow` is §9.1's duration for modals on the non-spring path. Nothing blurs and nothing moves."
+  - "Its material is the opaque raised surface in every context, over `color.bg.page` (ADR-0030 §5.1), with `radius.sheet` and `comp.dialog.shadow`. It never renders glass: ADR-0009 decision 2 keeps content on solid materials, and a dialog is content the reader has to weigh."
+  - "The scrim is `material.glass.scrim`, black at 45 % in both schemes. It is the one place Prism dims instead of changing material, because the dim is what says the screen is blocked; a layer that only sits above the page and stays usable takes no scrim (visual-dna §11 anti-pattern 6)."
+  - "Dismissal: Escape cancels and fires `onCancel` in every tone; only `isLoading`, below, makes it inert. A press on the scrim cancels only while `isDismissible` is true. `tone: destructive` forces `isDismissible` to false inside the component, so an irreversible action is never cancelled by a stray press whatever the caller passed. There is no other dismissal; the dialog never leaves on a timer."
+  - "`tone: destructive` renders the confirm Button as `variant: danger` - a critical-tinted pill with critical text, not a solid red block (visual-dna §11 anti-pattern 10) - and puts the consequence in the message. The confirm is never the only place the consequence is stated."
+  - "Focus: on open, focus moves to the body's first input when the body holds one; otherwise to the cancel Button when the tone is destructive and to the confirm Button when it is not. Tab and Shift-Tab cycle inside the dialog and never leave it, in reading order: the focusable elements of the body, then the action row in its visual order - cancel then confirm on one line, confirm then cancel when the row stacks. On close, focus returns to the element that had it when the dialog opened, or, when that element is gone, to the nearest surviving container."
+  - "`isLoading` enters `loading`: it puts the confirm Button in its loading state, disables the cancel Button, and makes Escape and the scrim inert, so a request in flight cannot be cancelled halfway. It never changes the dialog's size (Button preserves its width while loading)."
+  - "Width: the dialog is at least `size.card.min` (200) and at most twice `size.card.min` plus one `space.card-gap`, the width of two card columns in the grid of spec/patterns/README.md, and never wider than the window minus twice `space.page-margin`. The narrower of those two ceilings is the cap, and on a window too narrow for `size.card.min` plus its margins the window ceiling wins over the minimum. It grows with its content until that cap and then wraps."
+  - "Height: the title and the action row stay pinned. Once the dialog would grow past the window minus twice `space.page-margin`, the one part between them scrolls: the body when `body` is set, and otherwise the message, which scrolls under the pinned title inside the header. Nothing else scrolls. A body or a message that needs scrolling more than briefly is a sign the question belongs on a screen or in a Sheet."
+  - "On touch the action row always stacks full-width with the confirm on top, which puts both buttons inside the thumb's reach. Under pointer modality the two Buttons sit on one line, trailing-aligned with the confirm last, while both fit at their natural widths plus `actions.gap` inside the dialog's content width at its width cap. When they do not - long labels, a narrow window, the accessibility text sizes - the row stacks full-width in the touch order instead. A Dialog never truncates a label to keep the row on one line; a stacked label still wider than the content width truncates as Button does, and a verb with its object stays far from that. `size.hit` gives each Button its hit area."
+  - "A Dialog never nests: a caller does not open a second Dialog while one is open, and a flow that needs several questions is a Sheet or a screen."
+  - "A Dialog never carries a status tint, a chart, a hero numeral or media; it carries a sentence and two verbs."
+  - "A Dialog declares no haptics. `spec/haptics.yaml` rule 2 allows at most one haptic per user action and none on a programmatic state change, and a Dialog can satisfy neither clause: it sees only `isOpen`, so it cannot tell the presentation a user asked for from one the app opened, and the control that asked for it - a Button, an IconButton, a ListRow or a Menu item - has already played that action's one haptic. The Buttons inside own their own press feedback, and `tone: destructive` says what it says in the title, the message and the danger variant rather than in the wrist."
+
+motion:
+  present: motion.duration.slow
+  presentEasing: motion.easing.out
+  scrim: motion.duration.base
+  scrimEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: "`dialog` with the modal flag: `aria-modal` on the web, and on Apple a container that is modal to assistive technology, so the accessibility viewport is limited to it"
+  label: "the `title` names the dialog; `message` or the body describes it. The confirm and cancel labels are verbs, so they are self-describing out of context"
+  traits: [dialog]
+  keyboard: "Escape cancels, Space or Enter activates the focused Button, Tab and Shift-Tab cycle inside the dialog, and nothing behind it is reachable. On macOS one Button is the window's default and Return activates it from anywhere in the dialog: the confirm Button by default, and the cancel Button when `tone` is destructive, which is the same Button focus opens on. Escape still cancels. On every other platform Return activates only the focused Button. Each Button draws the focus ring of `color.border.focus` at `border.focus` width outside its own shape"
+  dynamicType: "title, message and the button labels scale with their roles and the dialog grows with them; at the accessibility sizes the action row stacks on pointer as well, and the body, or the message when there is no body, scrolls rather than truncating (ADR-0011)"
+  contrast: "`color.text.primary` and `color.text.secondary` on `color.bg.surface.raised` are checked functional pairs in tokens/contrast-pairs.json, and `raised` composites over `color.bg.page`, which is what the pairs check. The scrim's own pair is `color.text.on-glass` on `material.glass.scrim` over white at the large tier (ADR-0029 §1.7); nothing of the dialog's own text sits on it. The buttons carry Button's own pairs, and the destructive confirm's is checked on this ground too: the danger variant's `color.text.critical` on `color.bg.tint.critical` has `color.bg.surface.raised` among its underlays in tokens/contrast-pairs.json (ADR-0011 rule 1)"
+  reduceTransparency: "the dialog is opaque in every context and never renders glass, so the ADR-0022 fallback does not change it. The scrim keeps its alpha: a legibility and blocking scrim is not a translucency effect, and ADR-0022 §1.4 leaves it out of every reduced-transparency delta"
+  reduceMotion: "the dialog does not scale from 0.98 and does not move: it crossfades by opacity over `motion.duration.base` with `motion.easing.out` and takes its final position and size at once, and the scrim fades with it. Nothing blurs, because Prism's scrim is a fill rather than a backdrop blur (ADR-0023 §8.4 item 1)"
+  voiceOver: "on open, the dialog's title and message are announced and focus enters it; the rest of the screen is removed from the accessibility tree. On close, focus and the announcement return to the trigger"
+
+usage:
+  do:
+    - Ask about one irreversible thing, and name the thing in the title ("Delete route 14?").
+    - Label the confirm with its verb and the cancel with what keeps the state as it was.
+    - State the consequence in the message, not in the button.
+    - "Reach for `tone: destructive` when the action cannot be undone; it makes the scrim inert by itself, so the decision stays deliberate."
+  dont:
+    - Don't use a Dialog to report something that already happened; that is a Toast, a Banner or an Alert.
+    - Don't use "OK" and "Cancel" as labels; a verb pair is readable out of context.
+    - Don't stack dialogs, and don't open one from inside another.
+    - Don't put a form, a chart or a long list in a Dialog; that is a Sheet or a screen.
+    - Don't dim the page for a layer that does not block; a change of material separates it (visual-dna §11 anti-pattern 6).
+
+examples:
+  - id: destructive
+    props: { tone: destructive, title: "Delete route 14?", message: "The route and its 42 stops are removed for every driver. This cannot be undone.", confirmLabel: "Delete route", cancelLabel: "Keep route", isDismissible: false }
+  - id: default
+    props: { title: "Publish tomorrow's plan?", message: "Every driver sees the new shifts as soon as it is published.", confirmLabel: "Publish plan", cancelLabel: "Not yet" }
+  - id: loading
+    props: { tone: destructive, title: "Delete route 14?", confirmLabel: "Delete route", cancelLabel: "Keep route", isLoading: true }
+    description: the confirm Button is loading, the cancel is disabled, and Escape and the scrim are inert
+  - id: with-body
+    props: { title: "Move 3 units to the north depot?", confirmLabel: "Move units", cancelLabel: "Leave them", body: { fixture: list, count: 3 } }
+  - id: scrolling-body
+    props: { title: "Accept the new plan?", confirmLabel: "Accept plan", cancelLabel: "Review later", body: { fixture: text, lines: 40 } }
+    description: the title and the action row stay pinned and the body scrolls between them
+  - id: ru-destructive
+    props: { tone: destructive, title: "Удалить маршрут 14?", message: "Маршрут и все 42 остановки исчезнут у всех водителей. Отменить это будет нельзя.", confirmLabel: "Удалить маршрут", cancelLabel: "Оставить маршрут", isDismissible: false }
+    description: "the Russian labels are about a third longer and are never truncated: the row stacks full-width on touch as always, and under pointer it stays on one line only while both Buttons fit inside the width cap"
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Dialog, and ADR-0022 F4 records Apple's instruction not to replace the material of a watchOS modal presentation. A watch app asks an irreversible question through the system's own confirmation, which adapts by itself (ADR-0009 decision 1); Prism supplies the words, not the layer."
+    macos: "the dialog is modal to its window, not to the app: the scrim covers that window and the panel is centered in it, as on every platform, and it is not a system window sheet, which would draw its own material. The action row stays on one line, trailing-aligned, while both Buttons fit, and stacks by the rule in behavior when they do not. Escape cancels, and Return activates the default Button - the confirm, or the cancel when `tone` is destructive."
+    ios: "Prism draws the scrim and the panel over the whole window, the system bars included; it is neither a system alert, which cannot carry the danger variant or a body, nor a system sheet, which ADR-0009 decision 1 keeps native and which Prism does not paint."
+    web-desktop: "built on React Aria's modal dialog: the trap, the inert background and the focus return are the library's, and the look, the tones and the labels are this spec's."
+  design: >-
+    docs/research/component-inventory.md records 0 of 11 sightings - no reference screen shows a modal -
+    and names the case ADR-0012 requires it for: "confirmation of destructive or irreversible actions". The
+    look is therefore derived. It is the content ladder of ADR-0009 decision 2 (content is solid, glass is
+    for things floating over imagery) with the elevation of visual-dna §7.2's `shadow.drawer` row, which
+    names "drawers and modal sheets" and is the one shadow the token set has for this layer; because
+    `shadow` is not a spec-bindable category (ADR-0024 §5.3), the spec reaches it through
+    `comp.dialog.shadow`. `radius.sheet` 28 and the `space.7` padding are §6.5's sheet geometry (padding
+    20-24, top radius `radius.sheet`). The scrim at 45 % is ADR-0029 §1.7. The danger confirm is
+    visual-dna §1 principle 2's danger variant and §4.11's rule that red is a translucent material, never a
+    flat block. `color.bg.surface.overlay` exists in the token set but no pair checks text on it, so this
+    spec binds `color.bg.surface.raised`, which is checked; the overlay role stays unpaired until a spec binds it (docs/roadmap.md, P2-5). Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md

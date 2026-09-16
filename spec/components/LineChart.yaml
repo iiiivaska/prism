@@ -105,6 +105,10 @@ props:
     default: false
   - name: visibleDomain
     type: data
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while new data is on its way; it stays false inside a ChartContainer that is loading, because the container holds the whole block once
 
 states: [default, hover, focus-visible, selected, loading]
 
@@ -214,12 +218,13 @@ behavior:
   - "Series are labelled inline at their endpoint in type.data, never in the series color; a legend is a v1.1 component, so a v1 chart that cannot label inline splits into panels instead."
   - "Markers are drawn when `markers: always`, or automatically when the x values are irregular or fewer than eight; each is chart.marker-size with a ring in the plot fill of the published material — color.chart.plot on the solid family and color.chart.on-glass-fill.plot on the scheme's glass — so touching marks stay apart. On vivid there is no plot fill and so no ring, and no markers."
   - A ReferenceLine is the only dashed line over the data and a RangeBand the only wash under it; the chart composes them and never draws its own.
+  - "The chart places a time-axis RangeBand's bookends: each dot's centre sits on the series drawn in color.chart.series.1 — the emphasised series, or the first series when none is emphasised, and the one series on the scheme's glass — where its drawn curve crosses x = `from` and x = `to`, after interpolation. An edge where that series has no value, or that lies outside the visible domain, carries no dot; the comparison and ghost layers never carry bookends. The dot's size and tone are RangeBand's."
   - "Selection snaps to the nearest x over the whole plot area, which is the hit target — never the marks themselves — and the hit region is at least size.hit on each axis."
-  - "The selected x draws the crosshair rule and a chart.endpoint-size now-dot in color.chart.now; the values live outside the plot, in the ChartContainer's header, where the hero and its delta update together."
+  - "`selection` enters the `selected` state: while it is set, the selected x draws the crosshair rule and a chart.endpoint-size now-dot in color.chart.now; the values live outside the plot, in the ChartContainer's header, where the hero and its delta update together."
   - "Selection fires haptic.selection once per snapped index on touch, and never on pointer platforms."
   - "Keyboard and Switch Control: the plot is focusable; arrow keys move the selection one point, Home and End jump to the ends, PageUp and PageDown move ten points, and Escape clears it. Focus shows the same readout as hover."
   - "`scrollable` lets the x axis scroll inside `visibleDomain`; the y domain is computed over the visible window and stated in the chart's caption when it changes."
-  - "`loading` holds the previous render at opacity.dimmed-row and never flashes a skeleton; an empty or failed series is the ChartContainer's message, not the plot's."
+  - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row and never flashes a skeleton. Inside a ChartContainer the container's own `isLoading` holds the whole block and the chart's stays false, so the hold is applied once (spec/SCHEMA.md). An empty or failed series is the ChartContainer's message, not the plot's."
   - "The plot fill is color.chart.plot on the solid family and the white lift color.chart.on-glass-fill.plot on the scheme's glass; a chart never sits on raw glass. On vivid the plot has no fill at all — the on-media family carries no plot role, and a grey plot box would flatten the gradient — so the marks are drawn straight on it, inside its large zone and away from its lightest end."
 
 motion:

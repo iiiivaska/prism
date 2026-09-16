@@ -12,52 +12,70 @@ extension DSTokenSet {
         public let card: Card
         public let checkbox: Checkbox
         public let chip: Chip
+        public let dialog: Dialog
         public let iconButton: IconButton
+        public let listRow: ListRow
+        public let pagination: Pagination
+        public let pillTabs: PillTabs
         public let progressBar: ProgressBar
         public let progressRing: ProgressRing
         public let radio: Radio
         public let ringGauge: RingGauge
         public let segmentedControl: SegmentedControl
         public let select: Select
+        public let sheet: Sheet
+        public let sidebar: Sidebar
         public let skeleton: Skeleton
         public let slider: Slider
         public let sparkline: Sparkline
         public let spinner: Spinner
+        public let table: Table
         public let textArea: TextArea
         public let textField: TextField
+        public let timeline: Timeline
         public let toggle: Toggle
         public let tooltip: Tooltip
+        public let topBar: TopBar
 
-        init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
-            self.areaChart = AreaChart(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.avatar = Avatar(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.badge = Badge(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.button = Button(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.card = Card(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.checkbox = Checkbox(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.chip = Chip(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.iconButton = IconButton(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.progressBar = ProgressBar(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.progressRing = ProgressRing(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.radio = Radio(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.ringGauge = RingGauge(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.segmentedControl = SegmentedControl(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.select = Select(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.skeleton = Skeleton(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.slider = Slider(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.sparkline = Sparkline(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.spinner = Spinner(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.textArea = TextArea(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.textField = TextField(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.toggle = Toggle(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.tooltip = Tooltip(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+        init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            self.areaChart = AreaChart(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.avatar = Avatar(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.badge = Badge(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.button = Button(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.card = Card(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.checkbox = Checkbox(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.chip = Chip(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.dialog = Dialog(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.iconButton = IconButton(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.listRow = ListRow(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.pagination = Pagination(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.pillTabs = PillTabs(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.progressBar = ProgressBar(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.progressRing = ProgressRing(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.radio = Radio(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.ringGauge = RingGauge(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.segmentedControl = SegmentedControl(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.select = Select(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.sheet = Sheet(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.sidebar = Sidebar(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.skeleton = Skeleton(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.slider = Slider(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.sparkline = Sparkline(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.spinner = Spinner(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.table = Table(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.textArea = TextArea(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.textField = TextField(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.timeline = Timeline(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.toggle = Toggle(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.tooltip = Tooltip(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.topBar = TopBar(c, color: color, material: material, border: border, shadow: shadow, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
         }
 
         public struct AreaChart: Hashable, Sendable {
             /// the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4)
             public let fill: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.fill = color.chartBand
             }
         }
@@ -68,7 +86,7 @@ extension DSTokenSet {
             /// the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media
             public let ring: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bg = color.bgSurfaceRaised
                 self.ring = color.bgFillInverse
             }
@@ -86,7 +104,7 @@ extension DSTokenSet {
             public let neutralBg: Color
             public let neutralText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.accentBg = color.bgFillAccent
                 self.accentText = color.textOnAccent
                 self.criticalBg = color.bgFillCritical
@@ -122,7 +140,7 @@ extension DSTokenSet {
             public let secondaryBorder: Color
             public let secondaryText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.dangerBgRest = color.bgTintCritical
                 self.dangerBorder = color.textCritical
                 self.dangerText = color.textCritical
@@ -163,7 +181,7 @@ extension DSTokenSet {
             public let vividCaption: Color
             public let vividText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.glassFill = material.glassFill
                 self.glassText = color.textOnGlassFill
                 self.padding = space.cardPadding
@@ -190,7 +208,7 @@ extension DSTokenSet {
             /// the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it
             public let size: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bgSelected = color.bgFillInverse
                 self.mark = color.textOnInverse
                 self.radius = radius.badge
@@ -207,11 +225,20 @@ extension DSTokenSet {
             /// selection is a full-strength stroke and label, never a solid fill
             public let borderSelected: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bgPressed = color.bgSurfaceNested
                 self.bgRest = color.bgSurfaceRaised
                 self.borderRest = color.borderHairline
                 self.borderSelected = color.borderStrong
+            }
+        }
+
+        public struct Dialog: Hashable, Sendable {
+            /// the modal panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Dialog.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 ("drawers and modal sheets") through this alias
+            public let shadow: DSShadowToken
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.shadow = shadow.drawer
             }
         }
 
@@ -241,7 +268,7 @@ extension DSTokenSet {
             public let sizeMd: CGFloat
             public let sizeSm: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.dangerBgRest = color.bgTintCritical
                 self.dangerBorder = color.textCritical
                 self.dangerIcon = color.textCritical
@@ -262,6 +289,45 @@ extension DSTokenSet {
             }
         }
 
+        public struct ListRow: Hashable, Sendable {
+            /// the pressed row: one step up the luminance ladder, never a scale, because a row is the width of its container
+            public let bgPressed: Color
+            /// the leading rule of the selected row: the one active element of a group is the inverse solid (visual-dna §1 principle 9); a sub-item's rule takes color.border.strong instead
+            public let ruleSelected: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bgPressed = color.bgSurfaceNested
+                self.ruleSelected = color.bgFillInverse
+            }
+        }
+
+        public struct Pagination: Hashable, Sendable {
+            /// the current page in the expanded pointer layout: the one solid among plain numbers (visual-dna §1 principle 9); over media the spec binds color.bg.fill.inverse-media instead
+            public let currentBg: Color
+            /// the current page's number on its solid fill
+            public let currentText: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.currentBg = color.bgFillInverse
+                self.currentText = color.textOnInverse
+            }
+        }
+
+        public struct PillTabs: Hashable, Sendable {
+            /// the pill of the place the reader is in: the one inverse solid of the row (visual-dna §1 principle 9, §4.7)
+            public let activeBg: Color
+            /// the label and the leading glyph of the active tab in the pill variant, on comp.pill-tabs.active.bg. The underline variant draws no fill, so it does not use this token: its active label is sys.color.text.primary, the ink of the ground it sits on. The pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json
+            public let activeText: Color
+            /// the 2 px rule under the active label of the underline variant; it is ink, not a border tone, because a boundary role at 3:1 would read as a divider rather than as the mark of where the reader is
+            public let underline: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.activeBg = color.bgFillInverse
+                self.activeText = color.textOnInverse
+                self.underline = color.textPrimary
+            }
+        }
+
         public struct ProgressBar: Hashable, Sendable {
             /// the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)
             public let fill: Color
@@ -274,7 +340,7 @@ extension DSTokenSet {
             /// the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own
             public let track: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.fill = color.bgFillInverse
                 self.fillSecondary = color.chartComparison
                 self.height = space.step1
@@ -291,7 +357,7 @@ extension DSTokenSet {
             /// the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25)
             public let track: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.arc = color.bgFillInverse
                 self.strokeMin = space.step1
                 self.track = color.bgFillNeutralSubtle
@@ -308,7 +374,7 @@ extension DSTokenSet {
             /// the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it
             public let size: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bgSelected = color.bgFillInverse
                 self.dotFill = color.textOnInverse
                 self.dotSize = space.step3
@@ -324,7 +390,7 @@ extension DSTokenSet {
             /// glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5)
             public let sizeSm: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.sizeLg = space.step13
                 self.sizeMd = space.step12
                 self.sizeSm = size.iconRing
@@ -337,7 +403,7 @@ extension DSTokenSet {
             /// the label and glyph on the selected segment
             public let activeText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.activeBg = color.bgFillInverse
                 self.activeText = color.textOnInverse
             }
@@ -347,8 +413,32 @@ extension DSTokenSet {
             /// the invalid outline of the trigger; the critical stroke is the critical text role
             public let borderError: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.borderError = color.textCritical
+            }
+        }
+
+        public struct Sheet: Hashable, Sendable {
+            /// the panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Sheet.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 ("drawers and modal sheets", and §4.10's long soft shadow under the detail drawer) through this alias
+            public let shadow: DSShadowToken
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.shadow = shadow.drawer
+            }
+        }
+
+        public struct Sidebar: Hashable, Sendable {
+            /// the destination the reader is in: the one inverse solid of the rail, against bare rows for every other item (visual-dna §1 principle 9)
+            public let activeBg: Color
+            /// the label and the glyph of the active destination; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json
+            public let activeText: Color
+            /// the width of the icon rail; space.12 is the references' 64 px icon-rail gutter (visual-dna §6.1, §6.4), which the role's number does not say
+            public let railWidth: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.activeBg = color.bgFillInverse
+                self.activeText = color.textOnInverse
+                self.railWidth = space.step12
             }
         }
 
@@ -358,7 +448,7 @@ extension DSTokenSet {
             /// the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4)
             public let shimmer: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bg = color.bgFillNeutralSubtle
                 self.shimmer = color.bgFillNeutralSubtle
             }
@@ -378,7 +468,7 @@ extension DSTokenSet {
             /// 4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own
             public let trackHeight: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.fill = color.bgFillInverse
                 self.thumbFill = color.bgFillInverse
                 self.thumbSize = size.controlSm
@@ -394,7 +484,7 @@ extension DSTokenSet {
             /// sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20)
             public let heightTile: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.heightTable = space.step6
                 self.heightTile = space.step10
             }
@@ -406,9 +496,18 @@ extension DSTokenSet {
             /// 1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces
             public let stroke: CGFloat
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.arc = color.iconPrimary
                 self.stroke = border.strong
+            }
+        }
+
+        public struct Table: Hashable, Sendable {
+            /// the leading rule of a selected row: the inverse solid, as ListRow's selection rule is (visual-dna §1 principle 9). It sits on the row's neutral selection overlay, where color.border.strong falls below 3:1 over a raised panel in both schemes; the pair color.bg.fill.inverse on color.bg.fill.neutral.subtle is checked in tokens/contrast-pairs.json
+            public let rowSelectedRule: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.rowSelectedRule = color.bgFillInverse
             }
         }
 
@@ -416,7 +515,7 @@ extension DSTokenSet {
             /// the invalid outline of the multi-line box; the critical stroke is the critical text role
             public let borderError: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.borderError = color.textCritical
             }
         }
@@ -425,8 +524,20 @@ extension DSTokenSet {
             /// the invalid outline; the critical stroke is the critical text role, as it is on the danger button
             public let borderError: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.borderError = color.textCritical
+            }
+        }
+
+        public struct Timeline: Hashable, Sendable {
+            /// the marker of the one entry that is "now": the single inverse solid of the list, against hairline rings for every other entry (visual-dna §1 principle 9, §4.13)
+            public let markerCurrentBg: Color
+            /// the glyph inside the current marker; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json
+            public let markerCurrentIcon: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.markerCurrentBg = color.bgFillInverse
+                self.markerCurrentIcon = color.textOnInverse
             }
         }
 
@@ -444,7 +555,7 @@ extension DSTokenSet {
             /// on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9)
             public let trackOn: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.height = size.controlSm
                 self.inset = space.step1
                 self.knobOff = color.iconSecondary
@@ -460,9 +571,18 @@ extension DSTokenSet {
             /// the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json
             public let text: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.bg = color.bgFillInverse
                 self.text = color.textOnInverse
+            }
+        }
+
+        public struct TopBar: Hashable, Sendable {
+            /// the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say
+            public let height: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, shadow: Shadow, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.height = space.step11
             }
         }
     }

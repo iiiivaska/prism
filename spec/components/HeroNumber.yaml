@@ -22,21 +22,21 @@ schemes: [light, dark]
 
 anatomy:
   - part: root
-  - part: value
-    description: the significant digits, in a metric role
-  - part: trailing
-    optional: true
-    description: the dimmed tail — decimals, the thousands remainder, or the compact name ("тыс.")
-  - part: unit
-    optional: true
-    description: unit hung on the baseline beside the numeral
   - part: label
     optional: true
-    description: what the number measures; it sits above the value, and on vivid it also carries the unit (V3)
+    description: what the number measures; the label line above the value, which on vivid also carries the unit and the delta (V3)
+  - part: value
+    description: the significant digits, in a metric role; an em dash when there is no value
+  - part: trailing
+    optional: true
+    description: the dimmed tail — decimals, the thousands remainder, or the compact name ("тыс.") — at the value's own size
+  - part: unit
+    optional: true
+    description: unit hung on the baseline after the trailing group
   - part: delta
     optional: true
     slot: true
-    description: one DeltaBadge, after the value on the same baseline
+    description: one DeltaBadge, after the unit on the same baseline
   - part: trend
     optional: true
     slot: true
@@ -45,14 +45,13 @@ anatomy:
 props:
   - name: value
     type: string
-    required: true
-    description: the formatted significant part of the figure
+    description: "the formatted significant part of the figure, sign included. Unset or empty, the value renders an em dash in its own role and tone"
   - name: trailing
     type: string
     description: the dimmed tail, rendered at the same size as the value
   - name: unit
     type: string
-    description: not set on vivid, where the unit joins the label line (ADR-0030 §8)
+    description: "the unit as written; on vivid it joins the label line (ADR-0030 §8)"
   - name: label
     type: string
   - name: size
@@ -66,7 +65,11 @@ props:
   - name: live
     type: boolean
     default: false
-    description: the value changes while visible; sets tabular figures and the numeric transition
+    description: the value changes while visible; sets tabular figures and lets changed digits roll
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while a new value is on its way; it stays false inside a container that is loading itself, because the container holds the whole block once
   - name: delta
     type: data
     description: DeltaBadge props; its `value` is the bare magnitude, because the badge writes the sign and the basis symbol itself
@@ -78,10 +81,21 @@ states: [default, loading]
 
 tokens:
   root:
-    gap: space.3
     rowGap: space.2
     loading:
       opacity: opacity.dimmed-row
+  label:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
   value:
     typography:
       xl: type.metric.xl
@@ -95,6 +109,10 @@ tokens:
       glassLight: color.text.on-glass-light
       glass: color.text.on-glass-fill
   trailing:
+    typography:
+      xl: type.metric.xl
+      lg: type.metric.lg
+      md: type.metric.md
     color:
       default:
         xl: color.text.dimmed
@@ -123,18 +141,6 @@ tokens:
         map: color.text.on-glass-fill-secondary
         image: color.text.on-glass-fill-media-secondary
         vivid: color.text.on-glass-fill-media-secondary
-  label:
-    typography: type.caption
-    color:
-      default: color.text.secondary
-      vivid: color.text.on-vivid
-      inverse: color.text.on-inverse
-      accent: color.text.on-accent-secondary
-      glassLight: color.text.on-glass-light
-      glass:
-        map: color.text.on-glass-fill-secondary
-        image: color.text.on-glass-fill-media-secondary
-        vivid: color.text.on-glass-fill-media-secondary
   delta:
     gap: space.3
   trend:
@@ -142,46 +148,47 @@ tokens:
 
 behavior:
   - One HeroNumber per view; a second headline figure is a StatTile, and a number inside a card is Text at metric-lg.
-  - "Layout is fixed so both stacks land on the same block. Three rows, separated by the root's `rowGap`: the label line, then the value line, then the trend. On the value line the value, its trailing group and the hung unit run together — the unit at the `unit` part's own gap, the trailing group with none — and the delta follows at the `delta` part's gap; the root's `gap` is the space between that line and anything a caller places beside it. The label row is the header block and the value row is the hero block, the two zones ADR-0030 §8 names."
+  - "Layout is fixed so both stacks land on the same block. `root` stacks three rows `rowGap` (space.2) apart: the label line, the value line and the trend, whose own `gap` is the same space.2. On the value line the value and its trailing group run together with no space between them, the unit follows the trailing group at `unit.gap` (space.2), and the delta follows the unit at `delta.gap` (space.3), all on one baseline; a part that is absent takes its space with it, so the delta follows the value when there is no tail and no unit. The hero sets no space outside its root — the layout that places it owns that. The label row is the header block and the value row is the hero block, the two zones ADR-0030 §8 names."
   - "The component writes no sign; `value` carries the string it is given, sign included, and a signed hero states its sign explicitly. A leading currency symbol is not a dimmed group in v1 — `trailing` is the tail only — so a prefixed symbol stays at the value's tone and a hung symbol goes in `unit`."
-  - "Figures follow ADR-0021 §5 as ADR-0030 §7.1 amends it: a static hero is proportional on every metric role, and `live: true` sets tabular figures on the role so the digits stop jittering while the value ticks."
+  - "Figures follow ADR-0021 §5 as ADR-0030 §7.1 amends it: a static hero is proportional on every metric role, and `live: true` sets tabular figures on the value and the trailing group, so the digits stop jittering while the value ticks."
   - "The caller formats the figure and passes the pieces as strings; `format` describes what it did. Compact notation carries at most three significant digits, and the layout reserves width for Cyrillic compact names (\"12,9 тыс.\", \"4,2 млн\"), which run two to three glyphs longer than \"K\" and \"M\". The compact name is the dimmed tail, so it goes in `trailing`, not in `unit`."
-  - "The trailing group renders in color.text.dimmed at the same size as the value, and only on a role of 24 px or more; at `size: md` (type.metric.md, 20 px) it resolves to color.text.secondary instead, as Text does, because the dimmed pair is the decorative tier and ADR-0011 grants that tier only from 24 px. The same split applies on the scheme's glass over a map, where color.text.on-glass-fill-dimmed gives way to color.text.on-glass-fill-secondary; the -media tones are functional at every size and do not split."
-  - The unit hangs on the baseline in type.metric.unit with a space.2 gap; a product dims either the trailing group or the unit, never both.
-  - "On a vivid surface the hero block holds only the value and its trailing group, both 24 px or more; the unit joins the label line, where V2 guarantees the functional tier (ADR-0030 §8, V3). An implementation that is given `unit` on vivid moves it to the label."
-  - "On vivid the delta leaves the hero row too, for the same reason: its text is 12-13 px, and ADR-0030 rule 7 puts text below 24 px in the header block only. It renders at the end of the label line, or not at all; `size: md` is likewise not a hero on vivid, because a 20 px numeral is below V1's tier."
-  - The delta sits after the unit on the hero's baseline; the trend sits below the number and never exceeds its width.
-  - A value that counts up or rolls animates over motion.duration.slow; a value that only replaces another does not animate.
-  - An absent value renders an em dash in the same role and keeps the label; the delta and the trend are not drawn.
-  - "`loading` holds the previous render at opacity.dimmed-row; the hero never flashes a skeleton."
+  - "The trailing group takes the value's own role at every size and renders in color.text.dimmed, but only on a role of 24 px or more; at `size: md` (type.metric.md, 20 px) it resolves to color.text.secondary instead, as Text does, because the dimmed pair is the decorative tier and ADR-0011 grants that tier only from 24 px. The same split applies on the scheme's glass over a map, where color.text.on-glass-fill-dimmed gives way to color.text.on-glass-fill-secondary; the -media tones are functional at every size and do not split."
+  - "The unit hangs on the baseline in type.metric.unit, which is 12 px, so it takes a functional tone on every material and is never dimmed. The trailing group is therefore the only part of a hero that dims, and a hero never carries two dimmed groups, whatever the caller passes."
+  - "On a vivid surface the hero block holds only the value and its trailing group, both 24 px or more; everything under 24 px moves to the label line, where V2 guarantees the functional tier (ADR-0030 §8, V3 and rule 7). An implementation given `unit` on vivid writes the label line as the label, a comma, one space and the unit exactly as passed (\"Line output, %\"), or as the unit alone when there is no label. A delta on vivid is always drawn, at the end of that line, `delta.gap` after its text and on its baseline, and it wraps with the line rather than being dropped. `size: md` is not a hero on vivid, because a 20 px numeral is below V1's tier."
+  - The trend sits below the value line and never exceeds its width.
+  - "Only digits roll, and only when `live` is true. When a new value arrives and the joined string of `value` and `trailing` has the same length and the same non-digit characters in the same positions as the one on screen, each position whose decimal digit (Unicode category Nd) changed rolls to its new digit inside that digit's own box — upward when the new digit is greater, downward when it is smaller — over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out); the unchanged positions, the unit and the label do not move. Any other change — the first render, a change while `live` is false, a change of length, of sign, of a separator or of the compact name, and a switch to or from the em dash — replaces the value at once. There is no count-up: the component never parses the strings as numbers, so it never draws a value it was not given."
+  - An absent value renders an em dash in the value's role and tone; the label and the unit stay so the block keeps its shape, and the trailing group, the delta and the trend are not drawn.
+  - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row; the hero never flashes a skeleton. A hero inside a container that is loading itself — the hero of a ChartContainer — keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
   - Tones follow the material the enclosing Surface publishes, and on the scheme's glass also its backdrop kind; the hero never reads the color scheme itself.
 
 motion:
-  countUp: motion.duration.slow
+  roll: motion.duration.base
+  rollEasing: motion.easing.out
   reduceMotion: instant
 
 accessibility:
   role: text
-  label: value, trailing group and unit as one spoken value ("86.4 percent"), preceded by the label ("Line output")
+  label: value, trailing group and unit as one spoken value ("86.4 percent"), preceded by the label ("Line output"); an em dash is spoken as "no value"
   traits: [staticText]
   keyboard: not focusable; the delta and the trend are decorative to the keyboard and are described by this label
   dynamicType: the numeral scales along its role's Dynamic Type style and clamps at the accessibility3 size so the hero cannot push the layout; the label wraps instead of truncating
-  contrast: "at `size: xl` and `lg` the numeral is large text and holds 3:1 (ADR-0011); at `size: md` it is 20 px, so it is functional text at 4.5:1, which color.text.primary holds on every material cell bound here. The trailing group takes the decorative pair (color.text.dimmed, color.text.on-glass-fill-dimmed) only at 24 px or more and a functional pair below it. On vivid the only pairs color.text.on-vivid has are V1 (24 px or more, anywhere on the gradient) and V2 (the header block), which is why the label line carries every sub-24 px part there"
+  contrast: "at `size: xl` and `lg` the numeral is large text and holds 3:1 (ADR-0011); at `size: md` it is 20 px, so it is functional text at 4.5:1, which color.text.primary holds on every material cell bound here. The trailing group takes the decorative pair (color.text.dimmed, color.text.on-glass-fill-dimmed) only at 24 px or more and a functional pair below it; the 12 px unit takes a functional pair on every material. On vivid the only pairs color.text.on-vivid has are V1 (24 px or more, anywhere on the gradient) and V2 (the header block), which is why the label line carries the unit and the delta there"
   reduceTransparency: no change of its own — the enclosing Surface publishes raised instead of glass and every tone follows it
-  reduceMotion: the count-up and the numeric roll do not run; the value is replaced at motion.duration.instant and nothing scales, blurs or moves
+  reduceMotion: the numeric roll does not run; a changed value is replaced at motion.duration.instant and nothing scales, blurs or moves
 
 usage:
   do:
     - Exactly one hero per view, at the top of the reading order.
-    - "Dim the tail or the unit, not both: the hero reads as one instrument."
-    - "Set `live: true` on anything that ticks, so the numeral keeps tabular figures."
-    - Put the unit and the delta in the label line on vivid, and keep the hero block to the value.
+    - "Put the insignificant tail in `trailing`; it is the one part of the hero that dims."
+    - "Set `live: true` on anything that ticks, so the numeral keeps tabular figures and its digits roll."
+    - On vivid, write the unit into the label where the word reads better than the symbol ("Line output, percent").
   dont:
-    - "Don't put a `size: md` hero, a unit or a delta on a vivid surface; below 24 px only the label line is a checked pair there."
+    - "Don't put a `size: md` hero on a vivid surface; below 24 px only the label line is a checked pair there."
     - Don't set tabular figures on a static hero or proportional figures on a live one.
     - Don't render the hero in a serif or display face of its own; it is the same family as the rest of the screen.
     - Don't color the numeral for emphasis; hierarchy is size and tone.
     - Don't put a second hero on the same screen to balance a layout.
+    - Don't set `isLoading` on a hero whose container is already loading.
 
 examples:
   - id: hero-xl
@@ -189,7 +196,7 @@ examples:
     description: the instrument numeral — significant digits, dimmed decimal, hung unit
   - id: hero-live
     props: { value: "1 284", unit: "req/s", label: "Ingest rate", size: xl, live: true }
-    description: a ticking value, so the role takes tabular figures
+    description: a ticking value, so the role takes tabular figures and a changed digit rolls
   - id: hero-with-delta
     props: { value: "12", trailing: ".9", unit: "%", label: "Conversion", size: xl, delta: { value: "0.8", basis: points, direction: up, polarity: upIsGood } }
     description: the badge writes the sign and the "pp" itself, so the forwarded magnitude is bare
@@ -199,15 +206,25 @@ examples:
   - id: hero-lg-card
     props: { value: "2 450", unit: "₽", label: "Average yield", size: lg }
   - id: hero-md-inline
-    props: { value: "37", unit: "queued", size: md }
-    description: at metric-md the tail is never dimmed; it resolves to the secondary tone
+    props: { value: "4", trailing: ".7", unit: "min", label: "Average wait", size: md }
+    description: at metric-md the trailing group is never dimmed; it resolves to the secondary tone at the value's size
   - id: hero-compact-ru
     props: { value: "12,9", trailing: " тыс.", label: "Выручка за сутки", unit: "₽", size: xl, format: { compact: true, significantDigits: 3, locale: "ru-RU" } }
     description: the Cyrillic compact name is the dimmed tail and needs two to three glyphs more width than "K"
+  - id: hero-empty
+    props: { label: "Line output, last 24 hours", unit: "%", size: xl }
+    description: no value yet — an em dash in the value's role, with the label and the unit kept
+  - id: hero-loading
+    props: { value: "86", trailing: ".4", unit: "%", label: "Line output, last 24 hours", size: xl, isLoading: true }
+    description: the previous render held at opacity.dimmed-row
   - id: hero-on-vivid
     props: { value: "86", trailing: ".4", label: "Line output, percent", size: xl }
     surface: vivid
     description: the unit sits in the label line, because the hero block on vivid holds only the value
+  - id: hero-on-vivid-with-delta
+    props: { value: "86", trailing: ".4", label: "Line output, percent", size: xl, delta: { value: "1.2", basis: points, direction: up, polarity: upIsGood } }
+    surface: vivid
+    description: the delta ends the label line instead of the value line
   - id: hero-on-glass-over-map
     props: { value: "21", trailing: ".4", unit: "km", label: "Distance to depot", size: lg }
     surface: glass
@@ -221,16 +238,21 @@ notes:
     The instrument numeral is docs/research/visual-dna.md §4.2 with the roles and tones of §2.2 and §2.4
     and the hero sizes of §6.6; the one-hero rule and the compact-notation rule are
     docs/research/dataviz-design.md §3 rules A1, A2, F28 and F30. Cyrillic compact-name widths are that
-    document's §8 open question 4 and remain a verify item for P3. Two forms the inventory records are
-    deliberately out: the dot-matrix face is a MicroGlyphs candidate, and the leading dimmed currency
-    sign has no anatomy here, because `trailing` is the tail and a second dimmed group would need a
-    second decorative pair. "Explicit sign on signed values" is the caller's string, stated in behavior.
-    The two-zone layout (label line above, hero row below) is what keeps every sub-24 px part inside
-    ADR-0030 rule 7's header block on vivid. Example copy is invented (ADR-0015 rule 3).
+    document's §8 open question 4 and remain a verify item for P3. The numeral roll is visual-dna §9.2's
+    cue, which maps a 250-350 ms roll to motion.duration.base with motion.easing.out and turns it off under
+    Reduce Motion; the per-digit rule is Prism's, so the strings stay the caller's and no stack has to parse
+    a locale. Two forms the inventory records are deliberately out: the dot-matrix face is a MicroGlyphs
+    candidate, and the leading dimmed currency sign has no anatomy here, because `trailing` is the tail and
+    a second dimmed group would need a second decorative pair. visual-dna §4.2 dims the tail only and hangs the
+    unit at type.metric.unit (12/400) in the secondary tone, where the decorative tier does not exist, so
+    the unit is never the dimmed group. "Explicit sign on signed values" is the caller's string,
+    stated in behavior. The two-zone layout (label line above, hero row below) is what keeps every
+    sub-24 px part inside ADR-0030 rule 7's header block on vivid. Example copy is invented (ADR-0015 rule 3).
   references:
     - docs/adr/0007-dataviz-first-class.md
     - docs/adr/0010-platform-tiers-density-modality.md
     - docs/adr/0011-accessibility-tiers-ci.md
     - docs/adr/0015-references-inspiration-only.md
     - docs/adr/0021-typography-rules.md
+    - docs/adr/0023-motion-tokens.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md

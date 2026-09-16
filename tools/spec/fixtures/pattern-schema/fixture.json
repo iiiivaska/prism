@@ -1,0 +1,6 @@
+{
+  "description": "The pattern has no composition, and its watchOS `none` carries no note under notes.platform (spec/SCHEMA.md, \"Platforms and modes\").",
+  "expect": [
+    { "code": "spec/schema", "file": "spec/patterns/SamplePattern.yaml" }
+  ]
+}

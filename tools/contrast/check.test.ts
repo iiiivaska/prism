@@ -228,9 +228,15 @@ describe('the repository (acceptance: passes on the reference brand; ADR-0020 ru
     // accent.700 and this pair to both schemes.
     expect(find('color.chart.now', 'color.chart.plot', ['dark'])?.tier).toBe('boundary');
     expect(pairs.filter((p) => p.fg === 'color.chart.now' && (p.schemes === null || p.schemes.includes('light')))).toEqual([]);
-    // Every chart pair sits on the plot over the page, a card and a raised surface (the glass fallback).
+    // Every chart pair sits on the plot over the page, a card and a raised surface (the glass fallback). The
+    // accent label of ReferenceLine and RangeBand is text on that plot, so it is color.text.accent there and
+    // never the now marker's accent.500.
     const charts = pairs.filter((p) => p.bg === 'color.chart.plot');
-    expect(charts.map((p) => p.fg)).toEqual(['axis', 'series.1', 'series.2', 'series.3', 'series.4', 'series.5', 'series.6', 'target', 'comparison', 'now'].map((n) => `color.chart.${n}`));
+    expect(charts.map((p) => p.fg)).toEqual([
+      'color.chart.axis', 'color.text.accent',
+      ...['series.1', 'series.2', 'series.3', 'series.4', 'series.5', 'series.6', 'target', 'comparison', 'now'].map((n) => `color.chart.${n}`),
+    ]);
+    expect(find('color.text.accent', 'color.chart.plot')?.tier).toBe('functional');
     for (const p of charts) expect(p.underlays, p.fg).toEqual(['color.bg.page', 'color.bg.surface', 'color.bg.surface.raised']);
   });
 

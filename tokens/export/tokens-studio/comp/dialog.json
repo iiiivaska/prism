@@ -1,0 +1,11 @@
+{
+  "comp": {
+    "dialog": {
+      "shadow": {
+        "$type": "boxShadow",
+        "$value": "{shadow.drawer}",
+        "$description": "the modal panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Dialog.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 (\"drawers and modal sheets\") through this alias"
+      }
+    }
+  }
+}

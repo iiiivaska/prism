@@ -463,6 +463,8 @@ export interface TokenTable {
   readonly 'comp.chip.border.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-border-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** selection is a full-strength stroke and label, never a solid fill */
   readonly 'comp.chip.border.selected': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-border-selected'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the modal panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Dialog.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 ("drawers and modal sheets") through this alias */
+  readonly 'comp.dialog.shadow': { readonly $type: 'shadow'; readonly $cssVar: '--ds-dialog-shadow'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: readonly ShadowLayerValue[]; readonly dark: readonly ShadowLayerValue[] } };
   readonly 'comp.icon-button.danger.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-danger-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.icon-button.danger.border': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-danger-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint */
@@ -487,6 +489,20 @@ export interface TokenTable {
   readonly 'comp.icon-button.size.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'comp.icon-button.size.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'comp.icon-button.size.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  /** the pressed row: one step up the luminance ladder, never a scale, because a row is the width of its container */
+  readonly 'comp.list-row.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-list-row-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the leading rule of the selected row: the one active element of a group is the inverse solid (visual-dna §1 principle 9); a sub-item's rule takes color.border.strong instead */
+  readonly 'comp.list-row.rule.selected': { readonly $type: 'color'; readonly $cssVar: '--ds-list-row-rule-selected'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the current page in the expanded pointer layout: the one solid among plain numbers (visual-dna §1 principle 9); over media the spec binds color.bg.fill.inverse-media instead */
+  readonly 'comp.pagination.current.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-pagination-current-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the current page's number on its solid fill */
+  readonly 'comp.pagination.current.text': { readonly $type: 'color'; readonly $cssVar: '--ds-pagination-current-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the pill of the place the reader is in: the one inverse solid of the row (visual-dna §1 principle 9, §4.7) */
+  readonly 'comp.pill-tabs.active.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-pill-tabs-active-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the label and the leading glyph of the active tab in the pill variant, on comp.pill-tabs.active.bg. The underline variant draws no fill, so it does not use this token: its active label is sys.color.text.primary, the ink of the ground it sits on. The pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json */
+  readonly 'comp.pill-tabs.active.text': { readonly $type: 'color'; readonly $cssVar: '--ds-pill-tabs-active-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the 2 px rule under the active label of the underline variant; it is ink, not a border tone, because a boundary role at 3:1 would read as a divider rather than as the mark of where the reader is */
+  readonly 'comp.pill-tabs.underline': { readonly $type: 'color'; readonly $cssVar: '--ds-pill-tabs-underline'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9) */
   readonly 'comp.progress-bar.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-bar-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26) */
@@ -523,6 +539,14 @@ export interface TokenTable {
   readonly 'comp.segmented-control.active.text': { readonly $type: 'color'; readonly $cssVar: '--ds-segmented-control-active-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the invalid outline of the trigger; the critical stroke is the critical text role */
   readonly 'comp.select.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-select-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Sheet.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 ("drawers and modal sheets", and §4.10's long soft shadow under the detail drawer) through this alias */
+  readonly 'comp.sheet.shadow': { readonly $type: 'shadow'; readonly $cssVar: '--ds-sheet-shadow'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: readonly ShadowLayerValue[]; readonly dark: readonly ShadowLayerValue[] } };
+  /** the destination the reader is in: the one inverse solid of the rail, against bare rows for every other item (visual-dna §1 principle 9) */
+  readonly 'comp.sidebar.active.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-sidebar-active-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the label and the glyph of the active destination; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json */
+  readonly 'comp.sidebar.active.text': { readonly $type: 'color'; readonly $cssVar: '--ds-sidebar-active-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the width of the icon rail; space.12 is the references' 64 px icon-rail gutter (visual-dna §6.1, §6.4), which the role's number does not say */
+  readonly 'comp.sidebar.rail.width': { readonly $type: 'dimension'; readonly $cssVar: '--ds-sidebar-rail-width'; readonly $value: number };
   /** the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1) */
   readonly 'comp.skeleton.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-skeleton-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4) */
@@ -547,10 +571,16 @@ export interface TokenTable {
   readonly 'comp.spinner.arc': { readonly $type: 'color'; readonly $cssVar: '--ds-spinner-arc'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** 1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces */
   readonly 'comp.spinner.stroke': { readonly $type: 'dimension'; readonly $cssVar: '--ds-spinner-stroke'; readonly $value: number };
+  /** the leading rule of a selected row: the inverse solid, as ListRow's selection rule is (visual-dna §1 principle 9). It sits on the row's neutral selection overlay, where color.border.strong falls below 3:1 over a raised panel in both schemes; the pair color.bg.fill.inverse on color.bg.fill.neutral.subtle is checked in tokens/contrast-pairs.json */
+  readonly 'comp.table.row.selected.rule': { readonly $type: 'color'; readonly $cssVar: '--ds-table-row-selected-rule'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the invalid outline of the multi-line box; the critical stroke is the critical text role */
   readonly 'comp.text-area.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-text-area-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the invalid outline; the critical stroke is the critical text role, as it is on the danger button */
   readonly 'comp.text-field.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-text-field-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the marker of the one entry that is "now": the single inverse solid of the list, against hairline rings for every other entry (visual-dna §1 principle 9, §4.13) */
+  readonly 'comp.timeline.marker.current.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-timeline-marker-current-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the glyph inside the current marker; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json */
+  readonly 'comp.timeline.marker.current.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-timeline-marker-current-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1) */
   readonly 'comp.toggle.height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-toggle-height'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   /** the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1) */
@@ -567,6 +597,8 @@ export interface TokenTable {
   readonly 'comp.tooltip.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-tooltip-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json */
   readonly 'comp.tooltip.text': { readonly $type: 'color'; readonly $cssVar: '--ds-tooltip-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say */
+  readonly 'comp.top-bar.height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-top-bar-height'; readonly $value: number };
 }
 
 export const table: TokenTable = {
@@ -2470,6 +2502,13 @@ export const table: TokenTable = {
       dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
     },
   },
+  'comp.dialog.shadow': {
+    $type: 'shadow', $cssVar: '--ds-dialog-shadow', $axis: 'colorScheme',
+    $values: {
+      light: [{ color: 'rgb(0 0 0 / 0.25)', x: 0, y: 30, blur: 80, spread: 0, inset: false }],
+      dark: [{ color: 'rgb(0 0 0 / 0.5)', x: 0, y: 30, blur: 80, spread: 0, inset: false }],
+    },
+  },
   'comp.icon-button.danger.bg.rest': {
     $type: 'color', $cssVar: '--ds-icon-button-danger-bg-rest', $axis: 'colorScheme',
     $values: {
@@ -2603,6 +2642,55 @@ export const table: TokenTable = {
       watch: 32,
     },
   },
+  'comp.list-row.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-list-row-bg-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.12)', cssP3: null, hex: '#ffffff', alpha: 0.12 },
+    },
+  },
+  'comp.list-row.rule.selected': {
+    $type: 'color', $cssVar: '--ds-list-row-rule-selected', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.pagination.current.bg': {
+    $type: 'color', $cssVar: '--ds-pagination-current-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.pagination.current.text': {
+    $type: 'color', $cssVar: '--ds-pagination-current-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.pill-tabs.active.bg': {
+    $type: 'color', $cssVar: '--ds-pill-tabs-active-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.pill-tabs.active.text': {
+    $type: 'color', $cssVar: '--ds-pill-tabs-active-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.pill-tabs.underline': {
+    $type: 'color', $cssVar: '--ds-pill-tabs-underline', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
   'comp.progress-bar.fill': {
     $type: 'color', $cssVar: '--ds-progress-bar-fill', $axis: 'colorScheme',
     $values: {
@@ -2709,6 +2797,31 @@ export const table: TokenTable = {
       dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
     },
   },
+  'comp.sheet.shadow': {
+    $type: 'shadow', $cssVar: '--ds-sheet-shadow', $axis: 'colorScheme',
+    $values: {
+      light: [{ color: 'rgb(0 0 0 / 0.25)', x: 0, y: 30, blur: 80, spread: 0, inset: false }],
+      dark: [{ color: 'rgb(0 0 0 / 0.5)', x: 0, y: 30, blur: 80, spread: 0, inset: false }],
+    },
+  },
+  'comp.sidebar.active.bg': {
+    $type: 'color', $cssVar: '--ds-sidebar-active-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.sidebar.active.text': {
+    $type: 'color', $cssVar: '--ds-sidebar-active-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.sidebar.rail.width': {
+    $type: 'dimension', $cssVar: '--ds-sidebar-rail-width',
+    $value: 64,
+  },
   'comp.skeleton.bg': {
     $type: 'color', $cssVar: '--ds-skeleton-bg', $axis: 'colorScheme',
     $values: {
@@ -2791,6 +2904,13 @@ export const table: TokenTable = {
     $type: 'dimension', $cssVar: '--ds-spinner-stroke',
     $value: 1.5,
   },
+  'comp.table.row.selected.rule': {
+    $type: 'color', $cssVar: '--ds-table-row-selected-rule', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
   'comp.text-area.border.error': {
     $type: 'color', $cssVar: '--ds-text-area-border-error', $axis: 'colorScheme',
     $values: {
@@ -2803,6 +2923,20 @@ export const table: TokenTable = {
     $values: {
       light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
       dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.timeline.marker.current.bg': {
+    $type: 'color', $cssVar: '--ds-timeline-marker-current-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.timeline.marker.current.icon': {
+    $type: 'color', $cssVar: '--ds-timeline-marker-current-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
     },
   },
   'comp.toggle.height': {
@@ -2859,6 +2993,10 @@ export const table: TokenTable = {
       light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
       dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
     },
+  },
+  'comp.top-bar.height': {
+    $type: 'dimension', $cssVar: '--ds-top-bar-height',
+    $value: 48,
   },
 };
 

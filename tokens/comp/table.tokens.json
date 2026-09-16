@@ -1,0 +1,26 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "table": {
+      "row": {
+        "selected": {
+          "rule": {
+            "$type": "color",
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$description": "the leading rule of a selected row: the inverse solid, as ListRow's selection rule is (visual-dna §1 principle 9). It sits on the row's neutral selection overlay, where color.border.strong falls below 3:1 over a raised panel in both schemes; the pair color.bg.fill.inverse on color.bg.fill.neutral.subtle is checked in tokens/contrast-pairs.json",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

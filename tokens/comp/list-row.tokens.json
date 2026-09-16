@@ -1,0 +1,42 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "list-row": {
+      "bg": {
+        "$type": "color",
+        "pressed": {
+          "$value": "{sys.color.bg.surface.nested}",
+          "$description": "the pressed row: one step up the luminance ladder, never a scale, because a row is the width of its container",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "rule": {
+        "$type": "color",
+        "selected": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the leading rule of the selected row: the one active element of a group is the inverse solid (visual-dna §1 principle 9); a sub-item's rule takes color.border.strong instead",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

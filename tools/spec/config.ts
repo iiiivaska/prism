@@ -8,7 +8,10 @@ export const SPEC_DIR = 'spec';
 export const COMPONENTS_DIR = `${SPEC_DIR}/components`;
 export const PATTERNS_DIR = `${SPEC_DIR}/patterns`;
 export const COMPONENT_SCHEMA = `${SPEC_DIR}/component.schema.json`;
-/** Added with the first pattern ticket (spec/patterns/README.md); patterns are checked once it exists. */
+/**
+ * The pattern contract (spec/patterns/README.md, P2-5). It `$ref`s the component schema's definitions,
+ * so both are loaded together; without it a pattern is reported as unchecked (`spec/no-schema`).
+ */
 export const PATTERN_SCHEMA = `${SPEC_DIR}/pattern.schema.json`;
 export const HAPTICS = `${SPEC_DIR}/haptics.yaml`;
 

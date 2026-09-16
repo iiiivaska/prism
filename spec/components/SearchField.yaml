@@ -1,0 +1,211 @@
+name: SearchField
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The search pill: one TextField in its search form, with the magnifier leading, the clear control
+  trailing and, under pointer modality only, a keyboard hint in the trailing corner. The box, its edge,
+  the glass chip it becomes over a map and the clear affordance are TextField's and are not restated
+  here; SearchField adds submission, the hint and the rule that a search box never draws a results list
+  of its own.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: "one TextField with `contentType: search`; the box, the edge, the glass chip over media, the leading glyph and the clear control are TextField's"
+  - part: shortcutHint
+    optional: true
+    description: the keyboard hint inside the box's trailing corner; drawn under pointer modality only, and never once the field has a value or focus
+
+props:
+  - name: label
+    type: string
+    required: true
+    description: forwarded to TextField; a pill with no visible label carries it as an accessibility label
+  - name: value
+    type: string
+    description: forwarded to TextField
+  - name: placeholder
+    type: string
+    description: forwarded to TextField; an example of what to type, never the field's name
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+    description: forwarded to TextField
+  - name: shortcut
+    type: data
+    description: "the keyboard hint as each platform writes it, `{ apple, other }`: `apple` is drawn on iPadOS, macOS and on the web when the browser runs on an Apple operating system, `other` everywhere else (\"⇧⌘F\" and \"Ctrl+Shift+F\"). The component draws the chosen string as passed and never composes one; the app registers the same shortcut for real"
+  - name: scope
+    type: string
+    description: what the search covers ("Routes", "Batches"); it goes into the accessibility label, not into the placeholder
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while a query is running; the trailing slot shows a Spinner instead of the clear control, and the input stays live
+  - name: isMenuOpen
+    type: boolean
+    default: false
+    description: true while a Menu the caller anchors to this field is open; it gives Escape to `onMenuDismiss` before any clearing
+  - name: isDisabled
+    type: boolean
+    default: false
+    description: forwarded to TextField
+  - name: onChange
+    type: action
+    required: true
+  - name: onSubmit
+    type: action
+  - name: onClear
+    type: action
+  - name: onMenuDismiss
+    type: action
+    description: fired by Escape while `isMenuOpen` is true, asking the caller to close its anchored Menu
+
+states: [default, focus-visible, disabled, loading]
+
+tokens:
+  shortcutHint:
+    typography: type.label.sm
+    height: size.icon.lg
+    paddingX: space.2
+    gap: space.3
+    trailingInset:
+      sm: space.4
+      md: space.5
+      lg: space.6
+    radius: radius.inner
+    border:
+      page:
+        default: color.border.hairline
+      solid: color.border.hairline
+      raised: color.border.hairline
+      nested: color.border.hairline
+    borderWidth: border.hairline
+    color:
+      default: color.text.tertiary
+      page:
+        default: color.text.tertiary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      glassLight: color.text.on-glass-light
+      accent: color.text.on-accent-secondary
+
+behavior:
+  - "A SearchField is one TextField with `contentType: search`, `leadingIcon: action.search` and `isClearable: true`. It forwards `label`, `value`, `placeholder`, `size` and `isDisabled` unchanged and adds `onSubmit`, `scope`, `isLoading`, the Menu routing of `isMenuOpen` and `onMenuDismiss`, and the hint. The pill, its color.border.boundary edge, the glass chip it becomes over a map or an image, the keyboard-accessible clear control and the hit rule are TextField's and are not restated here."
+  - "The magnifier is in the leading slot, not the trailing one. Every sighting puts it at the trailing end; Prism keeps the trailing slot for the one control that changes the value, so a field has exactly one trailing target (TextField.yaml's design note)."
+  - "`shortcut` is drawn only while the modality flag interaction.tooltip is 1, which is pointer modality and ADR-0010's Tier 2. Under touch it is not drawn at all, and there is no long-press substitute: a keyboard hint on a device with no keyboard is noise."
+  - "The hint is decoration. It is hidden from assistive technology, because the app registers the same shortcut as a real keyboard shortcut, and a screen reader announces that, not a chip of text. The field still works with the hint removed."
+  - "The trailing corner holds one thing at a time, and the order is fixed: the Spinner while `isLoading`, then the clear control once the value is non-empty, then the hint. So the hint disappears the moment the field has focus or a value, which is exactly when the shortcut has already done its job. One element gives way to the next by an opacity crossfade in the same box: the outgoing one fades out as the incoming one fades in, over the motion block's `hint` (motion.duration.fast) with its `hintEasing` (motion.easing.out). Nothing slides or scales, and the box's width never animates."
+  - "The hint sits inside the box's trailing corner, vertically centred on the input, with its trailing edge `trailingInset` from the box's trailing edge - TextField's box padding for the same `size` (space.4, space.5, space.6) - and its leading edge `gap` (space.3) after the end of the input's text area, which it shortens rather than overlaps. Its own `paddingX` (space.2) is inside its hairline box."
+  - "Enter fires `onSubmit`. Escape, while focus is in the box, works in a fixed order. First, while `isMenuOpen` is true, it fires `onMenuDismiss` and nothing else: the value and the focus stay, and the caller closes its Menu. Otherwise, on a non-empty value, Escape and the trailing clear control both empty the value, keep focus and fire `onChange` with the empty string and then `onClear`, in that order: `onChange` is TextField's, `onClear` is this component's extra notification, and a caller that listens to only one of them still sees the empty value. On an empty value Escape does nothing, fires no event and is not consumed, so it reaches whatever encloses the field - a Sheet or a Popover then closes. While focus is inside the anchored Menu itself, the Menu's own Escape applies (Menu.yaml) and the field sees no key. A search that runs as the user types fires `onChange` and never `onSubmit`, and it never moves focus away from the box."
+  - "A SearchField draws no results list, no suggestion popover and no history menu. The open list is a Menu anchored to the field, and the results are a list of ListRows or a Table below it; this component owns the input only."
+  - "The value scrolls horizontally inside the box while the field has focus and never truncates, and a long query is not shortened to fit — the box keeps its width and the text moves (TextField.yaml)."
+  - "Over a map, an image or a vivid surface the field is the glass chip TextField already defines, with color.text.on-glass-fill for every tone, and the hint follows the same foreground. Its label, helper and error rows are not drawn there, so a search pill over a map carries its name as an accessibility label only."
+  - "The hint's hairline box has a cell on the solid family only — page with no backdrop, solid, raised and nested. Over a map, an image, a vivid surface or glass the property is simply not set, so the hint is the word alone on the chip: no hairline role is checked on those grounds (ADR-0030 §3.2), and a stroke nothing checks is worse than no stroke."
+  - "`scope` is the second half of the name, never of the placeholder: the accessible name is `label` then `scope`, joined by one space and taken as written (\"Search\" plus \"Routes\" reads \"Search Routes\"). The component neither lowercases, inflects nor reorders them, so a caller that wants one sentence writes the two halves as one."
+  - "`isLoading` enters `loading`: it replaces the clear control with a Spinner of the same box and does not disable the input, so a user can keep typing while a query runs. It does not change the field's width."
+  - "One SearchField per screen region. A top bar has one; a filter row does not get a second, because two boxes that both say \"search\" cannot be told apart by their placeholders."
+
+motion:
+  hint: motion.duration.fast
+  hintEasing: motion.easing.out
+  reduceMotion: none
+
+accessibility:
+  role: searchbox
+  label: "the `label` prop, always present; with `scope` the two are joined by one space and read as one string (\"Search\" plus \"Routes\" reads \"Search Routes\"), and a pill with no visible label carries the same string as its accessibility label"
+  traits: [searchField]
+  keyboard: "Tab moves into the box and then onto the trailing control; Enter submits; Escape first asks the caller to close an anchored Menu (`isMenuOpen`), otherwise clears a non-empty value and keeps focus, and on an empty value does nothing and lets the key through. The `shortcut` strings are a hint only: the app registers the real key, and its handler moves focus into the box — this component registers nothing and works with the hint removed. The focus ring is TextField's — color.border.focus at border.focus width outside the pill, following radius.control"
+  dynamicType: the value, the placeholder and the hint all scale with their roles; the box grows with them up to the accessibility3 size, and the hint is dropped before the value loses room, because the shortcut still works without it
+  contrast: "the hint is color.text.tertiary at type.label.sm (12 px), functional text at 4.5:1, which that role holds on color.bg.page, color.bg.surface, color.bg.surface.raised and color.bg.surface.nested; over media it is color.text.on-glass-fill on material.glass.chip, the chip's only checked foreground, and on light glass color.text.on-glass-light. Its hairline box is color.border.hairline and is decoration beside that word; it has a cell on the solid family only, so on every media material the hint is the word alone and no unchecked stroke renders. Everything else is TextField's"
+  reduceTransparency: no material of its own — the glass chip resolves with its Surface to the opaque raised fallback, the field takes its color.border.boundary edge back, and the hint returns to color.text.tertiary inside its color.border.hairline box, which the raised cell restores
+  reduceMotion: "nothing to substitute: the hint, the clear control and the Spinner already give way to each other by an opacity crossfade at motion.duration.fast with motion.easing.out, which Prism's reduced motion context resolves by itself; nothing slides or scales, and the box's width does not animate in either motion context"
+  voiceOver: announces the label and the scope, then the value or the placeholder; the hint is not announced, and the clear control is a separate element labelled "Clear the search"
+
+usage:
+  do:
+    - Give the field a name, visible or not, and say what it searches in `scope`.
+    - Put the magnifier in the leading slot and the clear control in the trailing one.
+    - Register every hinted shortcut for real, and design the screen to work with the hint removed.
+    - Use the glass chip form over a map or an image, with no label row.
+  dont:
+    - Don't show a keyboard hint on touch.
+    - Don't use the placeholder as the label, and don't put the scope in it.
+    - Don't draw a results list inside the field; anchor a Menu or list the results below.
+    - Don't put two search fields in one screen region.
+    - Don't move focus out of the box while results arrive.
+
+examples:
+  - id: default-md
+    props: { label: "Search sites", placeholder: "Name or id", size: md }
+  - id: with-value
+    props: { label: "Search sites", value: "North yard" }
+    description: the clear control takes the trailing corner once the value is non-empty
+  - id: with-shortcut
+    props: { label: "Search everything", placeholder: "Sites, batches, units", shortcut: { apple: "⇧⌘F", other: "Ctrl+Shift+F" } }
+    description: pointer modality only; macOS draws the apple string and web-desktop on another system the other one, and the hint is hidden from assistive technology
+  - id: scoped
+    props: { label: "Search", scope: "Routes", placeholder: "Route number" }
+  - id: loading
+    props: { label: "Search batches", value: "B-44", isLoading: true }
+    description: a Spinner takes the trailing corner and the input stays live
+  - id: small
+    props: { label: "Filter rows", placeholder: "Any column", size: sm }
+  - id: disabled
+    props: { label: "Search sites", placeholder: "Name or id", isDisabled: true }
+  - id: chip-over-map
+    props: { label: "Search this area", placeholder: "Street or depot" }
+    surface: map
+    description: the glass chip form; the label is an accessibility label only and the hint takes the glass foreground
+  - id: on-glass-over-image
+    props: { label: "Search the gallery", placeholder: "Camera or bay" }
+    surface: glass
+    backdrop: image
+  - id: russian-placeholder
+    props: { label: "Поиск по участкам", placeholder: "Название или номер", shortcut: { apple: "⇧⌘F", other: "Ctrl+Shift+F" } }
+    description: the Russian placeholder is about a third longer than its English twin, so it is the first thing to lose room and the hint is dropped before it
+
+notes:
+  platform:
+    watchos: "`none`. SearchField is not in ADR-0010's Tier 3 set and it is built on TextField, which is `none` there for the same reason: the watch has no Prism keyboard and collects text through the system dictation and scribble sheets. A watch app filters with a list screen."
+    ios: "no hint, ever — interaction.tooltip is 0 under touch. The keyboard's own return key reads \"Search\" and fires `onSubmit`."
+    ipados: "the hint appears only while a trackpad or mouse makes the modality pointer, which ADR-0010 makes a runtime property rather than a platform one."
+    macos: "compact density gives a 32 pt pill; the hint is drawn, and the system focus ring replaces color.border.focus when Increase Contrast is on."
+    web-desktop: "built on React Aria SearchField, whose `onSubmit` and `onClear` this spec forwards; the hint is an `aria-hidden` element and the shortcut is registered by the app, not by the component. While `isMenuOpen` is true the component takes Escape before React Aria's own clear."
+  design: >-
+    Four of eleven shots carry a search field (docs/research/component-inventory.md), all desktop or
+    tablet: a glass pill over a map with a trailing magnifier and a keyboard-shortcut hint, a translucent
+    pill on the page, and a field that is almost invisible until focused. Prism keeps the pill, the glass
+    chip and the hint and moves the magnifier to the leading slot, because TextField.yaml reserves the
+    trailing slot for the one control that changes the value. The hint's pointer-only rule is ADR-0010's
+    modality dimension and Tooltip.yaml's use of interaction.tooltip; the ban on affordances only a
+    hovering pointer can discover is docs/research/visual-dna.md §11 anti-pattern 31, which is why the
+    shortcut is registered for real and the hint is only its reminder. The pill's 44 pt height and its
+    210–260 px width in the references are the one control height of §1 principle 13 and §6.4's top row;
+    Prism takes the height from size.control.lg through TextField and leaves the width to the layout. The
+    component is a composite, not a primitive, because it is a TextField plus rules, which is the split
+    ADR-0012 draws. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

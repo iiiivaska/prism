@@ -71,6 +71,10 @@ props:
   - name: clampOverflow
     type: boolean
     default: true
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while a new value is on its way; it stays false inside a container that is loading itself (a StatCard's aside), because the container holds the whole block once
 
 states: [default, loading]
 
@@ -152,7 +156,7 @@ behavior:
   - "A value outside [min, max] clamps the arc and draws an overflow tick at the end when `clampOverflow` is true; the written figure is never clamped."
   - "An indeterminate ring draws the track alone with an em dash in the value slot; it never spins under Reduce Motion."
   - "The arc animates from the minimum to the value on motion.spring.smooth when the ring first appears, and follows later changes with the same spring."
-  - "`loading` holds the previous arc at opacity.dimmed-row."
+  - "`isLoading` enters `loading`, which holds the previous arc, figure and caption at opacity.dimmed-row. A gauge inside a container that is loading itself keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
   - "Prefer a bar over a ring when several ratios must be compared: an angle is a glance and length is the accurate encoding."
 
 motion:

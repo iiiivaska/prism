@@ -1,6 +1,6 @@
 {
-  "description": "Card.yaml is removed, so the comp.card group has no spec.",
-  "remove": ["spec/components/Card.yaml"],
+  "description": "Card.yaml is removed, so the comp.card group has no spec. The repository's patterns compose Card, so they are removed with it and the case reports only the orphaned group.",
+  "remove": ["spec/components/Card.yaml", "spec/patterns"],
   "expect": [
     { "code": "comp/no-spec", "file": "tokens/comp/card.tokens.json", "tokenId": "comp.card" }
   ]

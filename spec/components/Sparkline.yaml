@@ -76,6 +76,10 @@ props:
   - name: comparison
     type: data
     description: a second array of the same length, drawn as the ghost trace
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while a new series is on its way; it stays false inside a container that is loading itself (a StatCard, a ChartContainer), because the container holds the whole block once
 
 states: [default, loading]
 
@@ -145,7 +149,7 @@ behavior:
   - "The endpoint bead is chart.endpoint-size in color.chart.now and ties the trace to the number beside it; `extremes: true` adds chart.marker-size dots on the minimum and the maximum."
   - "A sparkline never sits on raw glass: on the scheme's glass it takes color.chart.on-glass-fill.line and needs no plot fill, and on vivid it takes color.chart.on-media.line and stays out of the gradient's lightest end."
   - The sparkline has no hover, no tooltip and no selection; a series that has to be inspected is a LineChart inside a ChartContainer.
-  - "`loading` holds the previous trace at opacity.dimmed-row rather than showing a skeleton."
+  - "`isLoading` enters `loading`, which holds the previous trace at opacity.dimmed-row rather than showing a skeleton. A sparkline inside a StatCard, a StatTile, a HeroNumber or a ChartContainer that is loading keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
 
 motion:
   draw: motion.duration.base
