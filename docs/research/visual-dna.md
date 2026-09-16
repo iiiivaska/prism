@@ -287,6 +287,8 @@ Origins:
 
 Light dots for success and warning sit below 3:1 on white. On light they carry a 1 px ink ring (Soma §12.5) and always an icon and a label **(reconstructed)**.
 
+> **P1-9 (2026-09-16; ADR-0030 §6.1).** The tint-light column is gone as tokens: `ref.color.status.*.tint-light` is deleted, and the light `bg.tint.success|warning|critical|info` are each status's dot-light step at 12 % alpha, which reproduces the values above over white within 0.5/255 (`tools/contrast/pairs.test.ts`). A light status wash over a map now shows the map through it, as the dark 10 % tints do.
+
 ### 3.4 Chart series (`ref.color.series`)
 
 > **Superseded in part by P1-1 (2026-09-15; ADR-0020 §4).** Slots 1 and 2 are aliases of ramp steps, so a brand's ramps reach its charts: light 1 = `neutral.950`, light 2 = `accent.700`, dark 1 = `neutral.0`, dark 2 = `accent.500`. Only light slot 1 changes value: #0D0E11 (19.30:1 on white) instead of #0E0F12. Slots 3–6 are unchanged. `tokens/ref/color.palette.tokens.json` wins over this table.
@@ -307,6 +309,8 @@ Every slot clears 3:1 on the solid surface in both schemes, so no slot needs the
 Light slots 2–6 share an OKLCH lightness band of 0.55–0.59, so hue alone separates them. Until the CVD validator runs (`tools/viz-validate`, P4), charts use at most three colored series without direct labels. The difference from `dataviz-design.md` §4 is explained in §8.
 
 ### 3.5 Vivid gradients (`ref.gradient.vivid`)
+
+> **P1-9 (2026-09-16; ADR-0029 §2, ADR-0030 §4.3).** The light set spends its contrast budget on chroma: `sky` @50 `oklch(0.5366 0.12 267.6)` #4F69B3 and @100 `oklch(0.655 0.12 235)` #349BCF; `rose` #8C4A49 @0 · #B05E4E @65 · #C6835A @100; `olive` @100 #879C34. `navy-cyan` keeps its colors and moves its middle stops to 30 % and 85 %, so its lightness climbs without a hard horizon. A ninth gradient, `night-lagoon` (dark, 160°, grain 0.08: #091821 @0 · #0D303C @35 · #0C6468 @72 · #2E9891 @100), a deep night-blue rising into lagoon teal, takes dark slot 3. Every gradient declares a temperature: cool `sky`, `orchid`, `plum-dusk`, `navy-cyan`, `night-lagoon`, `forest-moss`; warm `rose`, `olive`, `ember-night`. The slots are two one-temperature pairs: light sky + orchid and rose + olive, dark plum-dusk + navy-cyan and night-lagoon + forest-moss (§4.4). `ember-night` leaves the slots (its end sits 0.078 from the accent) and stays for a single warm hero card on a screen without the accent. The bloom blur is 75 (the value both stacks pass to their blur; 150 barely showed), the dark gradients bloom at 45 %, and the bloom color is derived: the gradient's brightest stop. `ref.blur.bloom` is deleted.
 
 > **Superseded by P1-1 (2026-09-15; ADR-0022 V1, V2).** The stops in the table below are the seeded ones; read it for the derivations, not the values. P1-1 retuned `orchid`, `olive`, `rose`, `sky`, `ember-night` and `navy-cyan` so that every stop reaches 3.0:1 against white and the Card header block 4.5:1; `orchid` now starts dark at the top (#6C5A66 @0 · #A35E9E @55 · #CA78B5 @100). Only `plum-dusk` and `forest-moss` keep their seeded stops. Angles, grain and blooms are unchanged. The stops live in `tokens/ref/gradient.tokens.json`, which wins over this table; build direction boards from it.
 
@@ -383,6 +387,13 @@ Composites are over the default ground: surfaces over the page, tints over `bg.s
 - Dark: secondary → white 80 %, tertiary → 70 %, dimmed → 64 %, hairline → 25 %, strong → 60 %; chart grid 25 %, target 85 %, comparison 60 %.
 
 **Reduce Transparency** makes glass opaque (§7.3). *(Superseded by ADR-0022, 2026-09-15: glass renders the opaque `raised` surface under Reduce Transparency and Increase Contrast, chosen by Surface; the reduced-transparency contexts carry no token delta.)*
+
+> **P1-9 (2026-09-16; ADR-0029, ADR-0030).** Changes to the table above:
+> - Light `bg.surface.raised` is `neutral.50` #F7F8FA, opaque, with `color.edge.raised` as its 1 px top edge and `elevation.1`; in dark the raised top edge is `color.edge.raised` (white 8 %).
+> - The ghost button has no fill at rest and `bg.fill.neutral.subtle` when pressed and on hover; the "ghost fill" reading of `bg.fill.neutral.subtle` is dropped (ADR-0029 §3.3).
+> - Light `chart.target` is ink 60 % (75 % under Increase Contrast); `chart.comparison` stays ink 45 %. `border.strong` stays ink 45 % (3.03:1 on the page for the ghost outline).
+> - Light status tints are the dot step at 12 % (§3.3).
+> - New roles: the scheme's glass `material.glass.fill|chip` (light glass in light, smoked glass in dark) with `text.on-glass-fill` and its `-secondary`, `-tertiary`, `-dimmed` tones over Prism's map and `-media-secondary|-media-tertiary` over imagery and vivid; `bg.fill.inverse-media` and `text.on-inverse-media` (the white solid on vivid); `border.on-media` (white 40 %) and `border.on-glass-fill`; `text.on-accent-secondary` (on-accent at 70 % on the lit tile); `color.edge.highlight|raised`; `chart.on-media.*` and `chart.on-glass-fill.*`; the map palette `color.map.*`.
 
 ### 3.7 Values lifted from the references
 
@@ -511,6 +522,8 @@ Four vivid tiles in a 2×2 grid are the one thing a screen sells, usually its ke
 - Tokens and specs: `Card variant: vivid`, `vivid: <name>` (`Card.yaml` example `vivid-orchid-kpi`, whose strings are invented, B26); `ref.gradient.vivid.*`; `DashboardGrid` hero row.
 - Sources: Hydroflask §3, §4, §7 (capsule stat tiles with grain, dotted seam and color-bleed glow), §10; CreditPros §2 Vivid surfaces, §9 #3; Credit Karma, Principles #5 (vivid is at most one card in six); Family A (a 2×2 vivid grid in the owner's light CRM screenshot) **(reconstructed)**.
 
+> **P1-9 (2026-09-16; ADR-0029 §2.5).** A 2×2 is one temperature through two gradients, not four: it alternates one slot pair on its diagonals, slot 1 on the leading diagonal and slot 2 on the other (or slots 3 and 4), and two vivid cards side by side use one pair. The pairs are light sky + orchid and rose + olive, dark plum-dusk + navy-cyan and night-lagoon + forest-moss; `gradient/slot-temperature` keeps each pair one temperature for every brand. The bloom behind a tile is its brightest stop at 30 % (light) or 45 % (dark) with a 75 blur.
+
 ### 4.5 The lit tile in a slab
 
 A group of tiles is set almost edge to edge, so the group reads as one dark slab. Exactly one tile is filled with the attention color. That tile is "lit", and its nested controls lighten with it.
@@ -635,6 +648,8 @@ An incident is marked in layers of translucent red. Red is never a flat block an
   - Map marker (app-side): a 32 disc at 45 % with blur, and an 80 dashed halo 1 px at 70 %, dash 4/4.
 - Tokens and specs: `bg.tint.critical`, `text.critical`, `bg.fill.critical`, `Badge`, `StatusPill`, `Banner`.
 - Sources: Vexto incident, Overview, What makes it beautiful #7–8 and Principles #12–14; Vexto traffic §11.10; Arvion §11.13 (glowing alert with quiet text).
+
+> **P1-9 (2026-09-16; ADR-0030 §1.8, §6.2).** Over media (a map, an image, vivid or glass), a tinted element that carries text or a glyph (a status pill, a badge, the danger button) paints `color.bg.page` under its tint: dark `text.critical` on the critical tint reads 5.76:1 over a map road with the page under it and only 4.04:1 without (the negative fixture `tools/contrast/fixtures/broken-tint-on-map/`). A text-free area wash, such as a closed bridge on the map, paints the tint alone so the map shows through, carries its status stroke, and puts its label in a pill that follows the rule. Map hue never carries status: light water is the info hue at 16 %, so status on the map is always a stroke and a labelled pill.
 
 ### 4.12 Datasheet ornament
 
@@ -834,6 +849,8 @@ Pattern specs (`spec/patterns/*.yaml`) take their column counts, gaps and hero s
 
 Defaults (ADR-0010): compact on desktop, regular on touch, comfortable on watchOS and as an accessibility choice. Modality sets `size.hit` to 28 (pointer) or 44 (touch).
 
+> **P1-9 (2026-09-16; ADR-0029 §3.1, §3.2).** The compact page margin is 24, so every density has a 24 page margin. A fourth density, `watch`, is regular with a 16 card padding (controls 32 / 40 / 44, row 44) and is the watchOS default; `comfortable` stays an accessibility choice and no platform's default.
+
 > **2026-09-15.** ADR-0024 §7 replaces the single `size.control` row with `size.control.sm|md|lg` = 28/32/40 (compact), 32/40/44 (regular), 44/48/52 (comfortable); ADR-0021 §6 deletes the body line-height row (density does not change typography). ADR-0019 §2 fixes the per-platform defaults, with the web choosing regular while a touchscreen is present.
 
 The references measure phones at 16–20 pt margins and 16–20 card padding. Compact density reproduces that; regular, the touch default, is one step airier. Desktop dashboards in the references (24–36 margins, 16–24 card padding, 12 gaps) measure like regular density.
@@ -953,6 +970,8 @@ The families disagree about shadow. Hydroflask and Vexto incident use none at al
 **Consequence.** Functional text on light glass is 100 % white. 78 % is the floor for captions, which reach 4.5:1 only over backdrops of OKLCH L ≤ 0.28 (Appendix B, B6).
 
 > **ADR-0022 (2026-09-15).** The recipes become typed tokens (`$root`, `blur`, `saturate`, `edge.start`, `edge.end`, `grain`, `bloom`), light gains a `glass.cell`, and the dark-scheme `glass.dark.chip` and `glass.cell` become smoked fills (#101410 at 35 %). Light glass takes `text.on-glass-light` (ink in light, white in dark) with no alpha tones. Dark glass is limited to backdrops where white holds 3:1 (OKLCH L ≤ 0.67 for a neutral).
+
+> **P1-9 (2026-09-16; ADR-0029 §1).** Glass follows the scheme. Two role recipes, `material.glass.fill` and `material.glass.chip`, alias `glass.light.fill|chip` in light and `glass.dark.fill|chip` in dark field by field; Card glass and Surface `glass` bind `fill`, chips, controls and status cells over media bind `chip`. The smoke loses its green-yellow hue: `ref.color.smoke.light` #0A0B0E and `.dark` #111316 sit at the neutral ramp's hue 265 with chroma 0.007, at the same lightness. The scrim is black 45 % in both schemes (large white text holds 3:1 over it on pure white); maps need no scrim. Over Prism's map, light glass carries ink with `neutral.600` for secondary and tertiary text and `neutral.500` for dimmed digits; over imagery and vivid it carries ink only; smoked glass keeps white 100 / 78 / 64 % everywhere. A dark photograph in the light scheme is a dark scope, not a smoked card.
 
 **Fallbacks.**
 
