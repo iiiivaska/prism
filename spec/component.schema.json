@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/iiiivaska/prism/spec/component.schema.json",
   "title": "Prism component spec",
-  "description": "Contract for one Prism component. Applied to spec/components/*.yaml. See spec/SCHEMA.md for intent.",
+  "description": "Contract for one Prism component. Applied to spec/components/*.yaml. See spec/SCHEMA.md for intent; tools/spec/validate.ts checks what JSON Schema cannot (token paths, the binding-matrix axes, component tokens, prose and examples).",
   "type": "object",
   "additionalProperties": false,
   "required": ["name", "layer", "specVersion", "status", "summary", "since", "platforms", "schemes", "anatomy", "states", "tokens", "behavior", "accessibility", "usage", "examples"],
@@ -27,7 +27,12 @@
         "web-desktop": { "$ref": "#/$defs/support" }
       }
     },
-    "density": { "type": "array", "items": { "enum": ["compact", "regular", "comfortable"] }, "uniqueItems": true },
+    "density": {
+      "type": "array",
+      "description": "The density contexts the component responds to; `watch` is the watchOS default (ADR-0029 §3.2).",
+      "items": { "enum": ["compact", "regular", "comfortable", "watch"] },
+      "uniqueItems": true
+    },
     "modality": { "type": "array", "items": { "enum": ["pointer", "touch"] }, "uniqueItems": true },
     "schemes": { "type": "array", "items": { "enum": ["light", "dark"] }, "minItems": 1, "uniqueItems": true },
     "anatomy": {
@@ -69,24 +74,27 @@
     },
     "tokens": {
       "type": "object",
-      "description": "part -> property -> token path or matrix keyed by variant/size/state",
+      "description": "part -> property -> binding, plus one block per state. A binding is a token path or a matrix keyed by ONE axis: the values of one enum prop, the material the enclosing Surface publishes, or the backdrop kind it publishes with it, beside the reserved key `default`. A value with no cell and no `default` is simply not set (the ghost button has no rest fill). spec/SCHEMA.md states the grammar; tools/spec/validate.ts checks the axes.",
       "minProperties": 1,
       "additionalProperties": {
         "type": "object",
+        "minProperties": 1,
         "additionalProperties": { "$ref": "#/$defs/binding" }
       }
     },
     "behavior": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 10 } },
     "motion": {
       "type": "object",
-      "additionalProperties": { "type": "string" },
-      "properties": { "reduceMotion": { "enum": ["none", "crossfade", "instant"] } }
+      "description": "What the component animates, and what it does under Reduce Motion (ADR-0023 rule 9). Every binding but `reduceMotion` is a motion role or the component's own comp.<component>.motion.* token.",
+      "required": ["reduceMotion"],
+      "properties": { "reduceMotion": { "enum": ["none", "crossfade", "instant"] } },
+      "additionalProperties": { "$ref": "#/$defs/motionBinding" }
     },
     "haptics": { "type": "object", "additionalProperties": { "type": "string", "pattern": "^haptic\\." } },
     "accessibility": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["role", "label", "keyboard", "dynamicType", "contrast"],
+      "required": ["role", "label", "keyboard", "dynamicType", "contrast", "reduceTransparency", "reduceMotion"],
       "properties": {
         "role": { "type": "string" },
         "label": { "type": "string" },
@@ -94,8 +102,8 @@
         "keyboard": { "type": "string" },
         "dynamicType": { "type": "string" },
         "contrast": { "type": "string" },
-        "reduceTransparency": { "type": "string" },
-        "reduceMotion": { "type": "string" },
+        "reduceTransparency": { "type": "string", "description": "Required (ADR-0011, ADR-0022 rule 9): what the component looks like when glass resolves to raised." },
+        "reduceMotion": { "type": "string", "description": "Required (ADR-0022 rule 9, ADR-0023 rule 9): the substitute in words, naming the token it reaches; it must agree with `motion.reduceMotion`." },
         "voiceOver": { "type": "string" }
       }
     },
@@ -118,7 +126,28 @@
         "properties": {
           "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
           "props": { "type": "object" },
-          "surface": { "enum": ["solid", "vivid", "glass", "image"] },
+          "surface": {
+            "description": "What the example is rendered on when the props do not say it themselves. `glass` and `glassLight` name the enclosing material, and `backdrop` then says what that material sits on.",
+            "enum": ["page", "solid", "raised", "vivid", "glass", "glassLight", "image", "map"]
+          },
+          "backdrop": {
+            "description": "What the enclosing surface sits on, when `surface` names a glass material rather than the backdrop itself (ADR-0029 §1.4: the scheme's glass keys its tones by this).",
+            "enum": ["image", "map", "vivid"]
+          },
+          "schemes": {
+            "type": "array",
+            "description": "Schemes the example renders in; both unless the look belongs to one (a `tinted` Card is light only, ADR-0030 §3.3).",
+            "items": { "enum": ["light", "dark"] },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "grid": {
+            "type": "array",
+            "description": "A 2x2 of vivid tiles, row-major: the gradient slots of top-leading, top-trailing, bottom-leading and bottom-trailing. One slot pair alternates on the diagonals, so the grid is one temperature (ADR-0029 §2.5).",
+            "items": { "type": "string", "pattern": "^[1-4]$" },
+            "minItems": 4,
+            "maxItems": 4
+          },
           "description": { "type": "string" }
         }
       }
@@ -135,13 +164,22 @@
   },
   "$defs": {
     "support": { "enum": ["full", "adapted", "none"] },
-    "tokenPath": { "type": "string", "pattern": "^(comp\\.[a-z0-9-]+|color|type|space|size|radius|elevation|opacity|motion|border|material|gradient|chart|icon|z)\\.[a-z0-9.-]+$", "description": "A sys.* token written without the sys prefix, or a comp.<component>.* token" },
+    "tokenPath": {
+      "type": "string",
+      "pattern": "^(comp\\.[a-z0-9-]+|color|type|space|size|radius|elevation|opacity|motion|border|material|gradient|chart|stroke|icon|z)\\.[a-z0-9.-]+$",
+      "description": "A sys.* token written without the sys prefix, in one of the spec-bindable categories, or a comp.<component>.* token of this spec's own component (ADR-0024 §5.3). The alternation above is the single copy of the bindable set; tools/spec/validate.ts reads it back and classifies every sys category against it."
+    },
+    "motionBinding": {
+      "type": "string",
+      "pattern": "^(motion\\.(spring|duration|easing)\\.[a-z0-9.-]+|comp\\.[a-z0-9-]+\\.motion\\.[a-z0-9.-]+)$",
+      "description": "ADR-0023 rule 9: the motion block binds only motion.spring.*, motion.duration.*, motion.easing.* or comp.<component>.motion.*."
+    },
     "binding": {
       "oneOf": [
         { "$ref": "#/$defs/tokenPath" },
         {
           "type": "object",
-          "description": "matrix keyed by variant, size or state name",
+          "description": "A matrix keyed by one axis: the values of one enum prop, a published material, a published backdrop, or `default`.",
           "minProperties": 1,
           "additionalProperties": { "$ref": "#/$defs/binding" }
         }

@@ -1,0 +1,9 @@
+{
+  "description": "A property named `focus` holds `ring`, which is on no axis: the focus state is `focus-visible`.",
+  "expect": [
+    {
+      "code": "matrix/axis",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

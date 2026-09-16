@@ -1,0 +1,9 @@
+{
+  "description": "The haptics block binds an id the registry does not declare.",
+  "expect": [
+    {
+      "code": "haptic/unknown",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

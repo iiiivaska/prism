@@ -1,0 +1,100 @@
+name: Button
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A stripped Button that binds every comp.button token but the gap, so that spec:validate reports the
+  gap as an orphan component token.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+
+props:
+  - name: variant
+    type: enum
+    values: [primary, secondary, ghost, danger]
+    default: primary
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+
+states: [default, pressed, focus-visible, disabled]
+
+tokens:
+  root:
+    background:
+      primary: comp.button.primary.bg.rest
+      secondary: comp.button.secondary.bg.rest
+      danger: comp.button.danger.bg.rest
+    foreground:
+      primary: comp.button.primary.text
+      secondary: comp.button.secondary.text
+      ghost: comp.button.ghost.text
+      danger: comp.button.danger.text
+    border:
+      secondary: comp.button.secondary.border
+      ghost: comp.button.ghost.border
+      danger: comp.button.danger.border
+    radius: comp.button.radius
+    height:
+      sm: comp.button.height.sm
+      md: comp.button.height.md
+      lg: comp.button.height.lg
+    paddingX:
+      sm: comp.button.padding-x.sm
+      md: comp.button.padding-x.md
+      lg: comp.button.padding-x.lg
+    pressed:
+      background:
+        primary: comp.button.primary.bg.pressed
+        secondary: comp.button.secondary.bg.pressed
+        ghost: comp.button.ghost.bg.pressed
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+
+behavior:
+  - Pressing fires the action once on release inside the hit area.
+
+motion:
+  press: comp.button.motion.press
+  reduceMotion: crossfade
+
+accessibility:
+  role: button
+  label: the visible label
+  keyboard: Space and Enter activate
+  dynamicType: the label scales with type.label.*
+  contrast: every variant pair is in tokens/contrast-pairs.json
+  reduceTransparency: not applicable (no glass)
+  reduceMotion: the press scale is replaced by a fill change to comp.button.primary.bg.pressed
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: primary-md
+    props: { variant: primary, size: md }

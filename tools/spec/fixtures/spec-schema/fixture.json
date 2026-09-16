@@ -1,0 +1,9 @@
+{
+  "description": "The accessibility block omits `reduceTransparency`, which ADR-0022 rule 9 requires.",
+  "expect": [
+    {
+      "code": "spec/schema",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

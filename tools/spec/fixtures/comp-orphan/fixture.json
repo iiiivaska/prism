@@ -1,0 +1,6 @@
+{
+  "description": "A Button spec that binds every comp.button token but the gap.",
+  "expect": [
+    { "code": "comp/orphan", "file": "spec/components/Button.yaml", "tokenId": "comp.button.gap" }
+  ]
+}

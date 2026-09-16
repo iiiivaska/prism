@@ -1,0 +1,9 @@
+{
+  "description": "Behavior names a radius role that does not exist.",
+  "expect": [
+    {
+      "code": "prose/unknown",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

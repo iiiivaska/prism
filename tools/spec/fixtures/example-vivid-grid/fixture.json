@@ -1,0 +1,9 @@
+{
+  "description": "A 2x2 mixes slots from two pairs, so the grid is not one temperature.",
+  "expect": [
+    {
+      "code": "example/vivid-grid",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

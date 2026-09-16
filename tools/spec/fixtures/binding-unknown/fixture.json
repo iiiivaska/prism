@@ -1,0 +1,9 @@
+{
+  "description": "The root radius binds a token path the dictionary does not hold.",
+  "expect": [
+    {
+      "code": "binding/unknown",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

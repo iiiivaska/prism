@@ -1,11 +1,12 @@
 name: Text
 layer: primitive
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
   Typography primitive. A role (display, title, headline, body, label, caption, metric, data) selects
-  size, weight, line height, tracking and numeric features from the type tokens; a tone selects the
-  foreground from the surface it sits on. Hero numerals get the dimmed trailing group and hung unit.
+  size, weight, line height, tracking and numeric features from the type tokens; a tone, read against
+  the material and backdrop the enclosing Surface publishes, selects the foreground. Hero numerals get
+  the dimmed trailing group and hung unit.
 since: 0.1.0
 
 platforms:
@@ -15,7 +16,7 @@ platforms:
   watchos: adapted
   web-touch: full
   web-desktop: full
-density: [compact, regular, comfortable]
+density: [compact, regular, comfortable, watch]
 modality: [pointer, touch]
 schemes: [light, dark]
 
@@ -80,42 +81,136 @@ tokens:
       metric-md: type.metric.md
       data: type.data
     color:
-      primary: color.text.primary
-      secondary: color.text.secondary
-      tertiary: color.text.tertiary
-      dimmed: color.text.dimmed
-      accent: color.text.accent
-      success: color.text.success
-      warning: color.text.warning
-      critical: color.text.critical
-      info: color.text.info
-      on-vivid: color.text.on-vivid
-      on-glass: color.text.on-glass
-      on-inverse: color.text.on-inverse
-      on-accent: color.text.on-accent
+      default:
+        primary: color.text.primary
+        secondary: color.text.secondary
+        tertiary: color.text.tertiary
+        dimmed: color.text.dimmed
+        accent: color.text.accent
+        success: color.text.success
+        warning: color.text.warning
+        critical: color.text.critical
+        info: color.text.info
+      vivid:
+        primary: color.text.on-vivid
+        secondary: color.text.on-vivid
+        tertiary: color.text.on-vivid
+        dimmed: color.text.on-vivid
+        accent: color.text.on-vivid
+        success: color.text.on-vivid
+        warning: color.text.on-vivid
+        critical: color.text.on-vivid
+        info: color.text.on-vivid
+      inverse:
+        primary: color.text.on-inverse
+        secondary: color.text.on-inverse
+        tertiary: color.text.on-inverse
+        dimmed: color.text.on-inverse
+        accent: color.text.on-inverse
+        success: color.text.on-inverse
+        warning: color.text.on-inverse
+        critical: color.text.on-inverse
+        info: color.text.on-inverse
+      accent:
+        primary: color.text.on-accent
+        secondary: color.text.on-accent-secondary
+        tertiary: color.text.on-accent-secondary
+        dimmed: color.text.on-accent-secondary
+        accent: color.text.on-accent
+        success: color.text.on-accent
+        warning: color.text.on-accent
+        critical: color.text.on-accent
+        info: color.text.on-accent
+      glassLight:
+        primary: color.text.on-glass-light
+        secondary: color.text.on-glass-light
+        tertiary: color.text.on-glass-light
+        dimmed: color.text.on-glass-light
+        accent: color.text.on-glass-light
+        success: color.text.on-glass-light
+        warning: color.text.on-glass-light
+        critical: color.text.on-glass-light
+        info: color.text.on-glass-light
+      glass:
+        map:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-secondary
+          tertiary: color.text.on-glass-fill-tertiary
+          dimmed: color.text.on-glass-fill-dimmed
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
+        image:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-media-secondary
+          tertiary: color.text.on-glass-fill-media-tertiary
+          dimmed: color.text.on-glass-fill-media-tertiary
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
+        vivid:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-media-secondary
+          tertiary: color.text.on-glass-fill-media-tertiary
+          dimmed: color.text.on-glass-fill-media-tertiary
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
   trailing:
-    color: color.text.dimmed
+    color:
+      default: color.text.dimmed
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-dimmed
+        image: color.text.on-glass-fill-media-tertiary
+        vivid: color.text.on-glass-fill-media-tertiary
   unit:
     typography: type.metric.unit
-    color: color.text.secondary
     gap: space.2
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
 
 behavior:
-  - "When the enclosing Surface publishes vivid, glass or inverse, `tone: primary` resolves to the matching on-material token; secondary and tertiary map to white at 78 % and 64 % on those materials."
+  - Every tone is resolved against the material the enclosing Surface publishes, and on the scheme's glass also against the backdrop kind it publishes with it; the component never reads the color scheme itself.
+  - "On vivid, light glass and inverse no tone is dimmed with alpha: hierarchy there comes from size, so the trailing group and the unit keep the primary tone."
+  - On accent the quieter tones, the trailing group and the unit take color.text.on-accent-secondary; an alpha tone is allowed on that material, where an opaque grey on the lit fill fails its pair.
+  - On vivid, light glass, inverse, accent and the scheme's glass the accent and status tones take that material's primary foreground; a status is carried there by its icon, never by the color of the text.
   - "`dimmed` and the trailing group are permitted only for metric roles at ≥ 24 px; at smaller sizes they resolve to `secondary`."
   - Weights below 300 exist only for metric-xl/lg; under Bold Text or Increase Contrast every weight below 400 resolves to 400.
   - "Metric and data roles use tabular figures; heroes use proportional figures unless `numeric: tabular` (live counters)."
   - Fade truncation dims the last line to 60 % then 25 % instead of an ellipsis; ids truncate with an ellipsis and keep the copy affordance.
   - Text scales with Dynamic Type on Apple and rem on web; line height and letter spacing scale with the size.
+  - A value that counts up animates over motion.duration.slow; a value that only replaces another does not animate.
+
+motion:
+  countUp: motion.duration.slow
+  reduceMotion: instant
 
 accessibility:
   role: text (heading level when role is title-* or display-*)
   label: the visible string; metric roles expose value + unit as one accessibility value ("86.4 percent")
   keyboard: not focusable
   dynamicType: all roles scale; metric-xl clamps at the accessibility3 size so cards do not overflow
-  contrast: every tone/surface pair is listed in tokens/contrast-pairs.json; dimmed is decorative-tier and limited to ≥ 24 px
-  reduceTransparency: no change (surfaces handle it)
-  reduceMotion: numeric transitions (count-up) are disabled
+  contrast: every tone/material pair is listed in tokens/contrast-pairs.json; dimmed is decorative-tier and limited to ≥ 24 px
+  reduceTransparency: no change; the enclosing Surface publishes raised instead of glass and the tones follow it
+  reduceMotion: the count-up does not run; the value changes at motion.duration.instant and nothing else animates
 
 usage:
   do:
@@ -139,12 +234,17 @@ examples:
   - id: on-vivid
     props: { role: headline, tone: primary }
     surface: vivid
+  - id: on-glass-over-map
+    props: { role: caption, tone: secondary }
+    surface: glass
+    backdrop: map
+    description: the scheme's glass over a map, where the secondary tone is color.text.on-glass-fill-secondary
   - id: data-tabular
     props: { role: data, numeric: tabular }
 
 notes:
   platform:
-    watchos: display and title roles collapse to title-sm and headline; metric-xl renders at 40 px.
+    watchos: display and title roles collapse to title-sm and headline; the hero size comes from the watch platform context, not from this spec.
     macos: no Dynamic Type; density is the size lever.
-  design: Roles and weights follow docs/research/visual-dna.md §2 type scales; the thin-weight floors are ADR-0011 rules.
-  references: [docs/adr/0008-typography-slots-and-presets.md, docs/adr/0011-accessibility-tiers-ci.md]
+  design: Roles and weights follow docs/research/visual-dna.md §2 type scales; the thin-weight floors are ADR-0011 rules and the tone table is ADR-0022 §3.1 as ADR-0029 §1.4 and ADR-0030 §3.4 amend it.
+  references: [docs/adr/0008-typography-slots-and-presets.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0029-direction-board-sign-off.md]

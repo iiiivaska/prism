@@ -1,11 +1,11 @@
 name: Card
 layer: composite
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
   The corner-pinned card: a Surface with a fixed anatomy (title and caption top-left, one action or
   the open affordance top-right, hero content bottom-left, meta or a mini chart bottom-right) in solid,
-  vivid or glass materials. Most screens in the references are grids of this card.
+  vivid, glass or tinted materials. Most screens in the references are grids of this card.
 since: 0.1.0
 
 platforms:
@@ -15,7 +15,7 @@ platforms:
   watchos: adapted
   web-touch: full
   web-desktop: full
-density: [compact, regular, comfortable]
+density: [compact, regular, comfortable, watch]
 modality: [pointer, touch]
 schemes: [light, dark]
 
@@ -28,7 +28,7 @@ anatomy:
     optional: true
   - part: iconRing
     optional: true
-    description: 44 px hairline ring with a 20 px icon, top-left, above the title
+    description: hairline ring with an icon, top-left, above the title; not drawn on vivid
   - part: action
     optional: true
     description: top-right affordance; either the nav.open glyph or one solid circular IconButton
@@ -36,7 +36,7 @@ anatomy:
     slot: true
   - part: hero
     optional: true
-    description: bottom-left metric (Text role metric-lg) with trailing group and unit
+    description: bottom-left metric (Text role metric-lg) with trailing group and, off vivid, a hung unit
   - part: aside
     optional: true
     slot: true
@@ -49,12 +49,14 @@ props:
     default: solid
   - name: vivid
     type: enum
-    values: [orchid, olive, rose, sky, ember-night, plum-dusk, forest-moss, navy-cyan]
+    values: ["1", "2", "3", "4"]
+    description: which gradient slot a vivid card uses; unset it takes the default gradient
   - name: title
     type: string
     required: true
   - name: caption
     type: string
+    description: on vivid it also carries the hero's unit (V3)
   - name: icon
     type: icon
   - name: action
@@ -65,7 +67,7 @@ props:
     type: action
   - name: hero
     type: data
-    description: "{ value, trailing?, unit?, tone? } rendered with Text metric-lg"
+    description: "{ value, trailing?, unit?, tone? } rendered with Text metric-lg; `unit` is not set on vivid"
   - name: size
     type: enum
     values: [compact, regular, large]
@@ -87,7 +89,11 @@ tokens:
       tinted: color.bg.tint.accent
       glass: comp.card.glass.fill
     gradient:
-      vivid: gradient.vivid.orchid
+      default: gradient.vivid.default
+      "1": gradient.vivid.1
+      "2": gradient.vivid.2
+      "3": gradient.vivid.3
+      "4": gradient.vivid.4
     radius:
       compact: comp.card.radius.compact
       regular: comp.card.radius.regular
@@ -96,22 +102,38 @@ tokens:
     shadow:
       solid: comp.card.shadow.solid
       glass: comp.card.shadow.floating
-    selected:
-      background: material.glass.light.fill
     hover:
       overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      shadow: comp.card.shadow.floating
+      border:
+        glass: color.border.on-glass-fill
+        vivid: color.border.on-media
+        solid: color.border.strong
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
   title:
     typography: type.headline
     color:
       solid: comp.card.solid.text
       vivid: comp.card.vivid.text
       glass: comp.card.glass.text
+      glassLight: color.text.on-glass-light
+      inverse: color.text.on-inverse
   caption:
     typography: type.caption
     color:
       solid: comp.card.solid.caption
       vivid: comp.card.vivid.caption
-      glass: color.text.on-glass
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      glassLight: color.text.on-glass-light
+      inverse: color.text.on-inverse
   iconRing:
     size: size.icon.ring
     border: color.border.hairline
@@ -122,19 +144,26 @@ tokens:
     color:
       solid: color.icon.secondary
       vivid: color.text.on-vivid
+      glass: color.text.on-glass-fill
+    border:
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
   hero:
     typography: type.metric.lg
   aside:
     gap: space.3
 
 behavior:
-  - The card is a Surface of the chosen material; `glass` requires `backdrop` image, map or vivid or it resolves to solid.raised.
+  - The card is a Surface of the chosen material; `glass` needs a `backdrop` of image, map or vivid or the Surface falls back to an opaque raised card.
   - Header pins to the top-left with the action at the padding corner top-right; hero pins bottom-left; aside pins bottom-right and shares the hero's baseline; the middle may be empty and the card keeps its declared aspect.
-  - "`action: open` renders the nav.open glyph at 16 px in the secondary icon color and makes the whole card pressable; `custom` renders one solid circular IconButton and only that button is pressable."
-  - "`isSelected` on glass switches to the light glass material with the bloom clipped away from the header text block."
-  - Vivid cards render their bloom behind themselves; at most one 2×2 vivid grid or one vivid card in six per screen (enforced by the pattern spec, warned by the gallery lint).
-  - Hover (pointer) adds the neutral overlay on solid; vivid and glass do not change on hover.
-  - Compact density uses radius.compact and 16 px padding; large size uses radius.large for cards with a side of 200 px or more.
+  - "`action: open` renders the nav.open glyph at the small icon size in the secondary icon color and makes the whole card pressable; `custom` renders one solid circular IconButton and only that button is pressable."
+  - "`isSelected` passes `selected` to the Surface and adds its own cue: the card lifts to comp.card.shadow.floating and draws the selection outline, so selection reads in both schemes even where glass and light glass share one fill."
+  - Vivid cards render their bloom behind themselves; at most one 2×2 vivid grid or one vivid card in six per screen (enforced by the pattern spec, warned by the gallery lint). A 2×2 alternates one gradient slot pair on its diagonals.
+  - "On vivid the hero holds only its value and trailing group, which are 24 px or more; the unit joins the caption line in the header block, where V2 guarantees the functional tier (ADR-0030 §8). The icon ring is not drawn, and the aside holds a sparkline, a glyph or text of 24 px or more."
+  - "`tinted` is a light-scheme look: it fills the card with color.bg.tint.accent over the page. A dark screen leads with a Surface of material accent instead."
+  - Hover (pointer) adds the neutral overlay on solid and tinted; vivid and glass do not change on hover.
+  - Title and caption colors follow the material the enclosing Surface publishes, and on the scheme's glass also its backdrop kind; a part with no cell for the published material takes its tone from Text.
+  - "Compact density uses comp.card.radius.compact and the compact card padding; `size: large` uses comp.card.radius.large for cards with a side of 200 px or more."
 
 motion:
   press: motion.spring.snappy
@@ -148,11 +177,11 @@ accessibility:
   role: button when pressable, otherwise group
   label: title plus caption plus hero value ("Line output, last 24 hours, 86.4 percent")
   traits: [button]
-  keyboard: focusable when pressable; Enter activates; focus ring follows the card radius at 2 px
-  dynamicType: title and caption scale; hero clamps at accessibility3; the aside wraps below the hero when both cannot fit
-  contrast: title and caption on solid use text.primary/secondary; on vivid the header must sit in the gradient's declared text-safe zone; on glass captions are ≥ 78 % white or a scrim is added (tools/contrast checks both backdrops)
-  reduceTransparency: glass resolves to solid.raised; bloom dropped
-  reduceMotion: press scale replaced by an opacity dip; selection crossfades
+  keyboard: focusable when pressable; Enter activates; the focus ring is color.border.focus at border.focus width, following the card radius
+  dynamicType: title and caption scale; hero clamps at the accessibility3 size; the aside wraps below the hero when both cannot fit
+  contrast: title and caption on solid use comp.card.solid.text and comp.card.solid.caption; on vivid every tone is color.text.on-vivid; on the scheme's glass the caption follows the published backdrop kind (tools/contrast checks every backdrop)
+  reduceTransparency: glass resolves to an opaque raised card over color.bg.page, the bloom is dropped, and a selected card publishes inverse
+  reduceMotion: the press scale is replaced by a fill change to color.bg.fill.neutral.subtle over motion.duration.base with motion.easing.out, and selection crossfades to the selected shadow and outline instead of scaling
 
 usage:
   do:
@@ -163,12 +192,18 @@ usage:
     - Don't put a button row inside a card; a card has one action.
     - Don't mix radii within one card family on a screen.
     - Don't place captions or hairlines on the bloom or the lightest stop of a vivid card.
+    - Don't use `tinted` in a dark scope; the lit tile is a Surface of material accent.
 
 examples:
   - id: solid-metric
     props: { variant: solid, title: "Line output", caption: "Last 24 hours", hero: { value: "86", trailing: ".4", unit: "%" } }
-  - id: vivid-orchid-kpi
-    props: { variant: vivid, vivid: orchid, title: "Average yield", hero: { value: "$2,450", unit: "/batch" } }
+  - id: vivid-default-kpi
+    props: { variant: vivid, title: "Average yield", caption: "Dollars per batch", hero: { value: "$2,450" } }
+    description: the unit sits in the caption, because the hero block on vivid holds only the value
+  - id: vivid-pair
+    props: { variant: vivid, size: compact, title: "Average yield" }
+    grid: ["1", "2", "2", "1"]
+    description: a 2×2 of vivid cards, one slot pair on the diagonals
   - id: glass-vehicle
     props: { variant: glass, backdrop: image, title: "Unit 4417", caption: "21.11.2026, 14:05:22" }
     surface: image
@@ -177,12 +212,13 @@ examples:
     surface: image
   - id: tinted-focus
     props: { variant: tinted, title: "Sensor", caption: "Active", icon: object.gps }
+    schemes: [light]
   - id: compact
     props: { variant: solid, size: compact, title: "Queued", hero: { value: "37" } }
 
 notes:
   platform:
-    watchos: solid only, compact size, no aside; the card is a full-width row.
+    watchos: solid only, compact size, no aside; the card is a full-width row and the watch density gives it 16 px of padding.
     macos: "hover overlay on solid cards; the action glyph appears on hover only when `action: open` (always visible on touch)."
   design: Corner-pinned anatomy from docs/research/visual-dna.md §4.9; vivid 2×2 from §4.4; glass vehicle card from §4.3. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0009-materials-in-layers.md, docs/adr/0015-references-inspiration-only.md]
+  references: [docs/adr/0009-materials-in-layers.md, docs/adr/0015-references-inspiration-only.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

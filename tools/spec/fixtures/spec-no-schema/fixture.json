@@ -1,0 +1,6 @@
+{
+  "description": "A pattern spec exists while spec/pattern.schema.json does not, so it is unchecked.",
+  "expect": [
+    { "code": "spec/no-schema", "file": "spec/patterns/SamplePattern.yaml" }
+  ]
+}

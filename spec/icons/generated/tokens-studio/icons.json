@@ -1,0 +1,267 @@
+{
+  "icon": {
+    "action": {
+      "add": {
+        "$type": "other",
+        "$value": "plus",
+        "$description": "icon.action.add — add, plus, create, new"
+      },
+      "collapse": {
+        "$type": "other",
+        "$value": "arrows-in-simple",
+        "$description": "icon.action.collapse — collapse, minimize, exit-fullscreen, restore"
+      },
+      "copy": {
+        "$type": "other",
+        "$value": "copy",
+        "$description": "icon.action.copy — copy, duplicate, clipboard"
+      },
+      "delete": {
+        "$type": "other",
+        "$value": "trash",
+        "$description": "icon.action.delete — delete, trash, bin, destroy"
+      },
+      "edit": {
+        "$type": "other",
+        "$value": "pencil-simple",
+        "$description": "icon.action.edit — edit, pencil, write, rename"
+      },
+      "expand": {
+        "$type": "other",
+        "$value": "arrows-out-simple",
+        "$description": "icon.action.expand — expand, fullscreen, maximize, enter-fullscreen"
+      },
+      "filter": {
+        "$type": "other",
+        "$value": "sliders-horizontal",
+        "$description": "icon.action.filter — filter, sliders, tune, adjust, sort"
+      },
+      "locate": {
+        "$type": "other",
+        "$value": "crosshair",
+        "$description": "icon.action.locate — locate, target, crosshair, center, my-location"
+      },
+      "pause": {
+        "$type": "other",
+        "$value": "pause",
+        "$description": "icon.action.pause — pause, hold, suspend, media"
+      },
+      "play": {
+        "$type": "other",
+        "$value": "play",
+        "$description": "icon.action.play — play, start, resume, media"
+      },
+      "refresh": {
+        "$type": "other",
+        "$value": "arrows-clockwise",
+        "$description": "icon.action.refresh — refresh, reload, sync, retry"
+      },
+      "remove": {
+        "$type": "other",
+        "$value": "minus",
+        "$description": "icon.action.remove — remove, minus, subtract"
+      },
+      "search": {
+        "$type": "other",
+        "$value": "magnifying-glass",
+        "$description": "icon.action.search — search, find, magnifier, magnifying-glass, query"
+      },
+      "settings": {
+        "$type": "other",
+        "$value": "gear-six",
+        "$description": "icon.action.settings — settings, preferences, gear, options, configure"
+      },
+      "share": {
+        "$type": "other",
+        "$value": "share-network",
+        "$description": "icon.action.share — share, export, send, upload"
+      },
+      "zoom-in": {
+        "$type": "other",
+        "$value": "magnifying-glass-plus",
+        "$description": "icon.action.zoom-in — zoom-in, magnify, enlarge, scale-up"
+      },
+      "zoom-out": {
+        "$type": "other",
+        "$value": "magnifying-glass-minus",
+        "$description": "icon.action.zoom-out — zoom-out, shrink, scale-down"
+      }
+    },
+    "nav": {
+      "back": {
+        "$type": "other",
+        "$value": "caret-left",
+        "$description": "icon.nav.back — back, previous, chevron-left, caret-left"
+      },
+      "close": {
+        "$type": "other",
+        "$value": "x",
+        "$description": "icon.nav.close — close, dismiss, cancel, x, xmark"
+      },
+      "down": {
+        "$type": "other",
+        "$value": "caret-down",
+        "$description": "icon.nav.down — down, expand, disclosure, chevron-down, caret-down"
+      },
+      "forward": {
+        "$type": "other",
+        "$value": "caret-right",
+        "$description": "icon.nav.forward — forward, next, chevron-right, caret-right"
+      },
+      "home": {
+        "$type": "other",
+        "$value": "house",
+        "$description": "icon.nav.home — home, start, house, dashboard"
+      },
+      "menu": {
+        "$type": "other",
+        "$value": "list",
+        "$description": "icon.nav.menu — menu, hamburger, list, lines"
+      },
+      "more": {
+        "$type": "other",
+        "$value": "dots-three",
+        "$description": "icon.nav.more — more, overflow, ellipsis, dots"
+      },
+      "open": {
+        "$type": "other",
+        "$value": "arrow-up-right",
+        "$description": "icon.nav.open — external, detail, open, arrow-up-right, link"
+      },
+      "sidebar": {
+        "$type": "other",
+        "$value": "sidebar-simple",
+        "$description": "icon.nav.sidebar — sidebar, panel, drawer, navigation"
+      },
+      "up": {
+        "$type": "other",
+        "$value": "caret-up",
+        "$description": "icon.nav.up — up, collapse, chevron-up, caret-up"
+      }
+    },
+    "object": {
+      "bus": {
+        "$type": "other",
+        "$value": "bus",
+        "$description": "icon.object.bus — bus, transit, vehicle, transport, route"
+      },
+      "calendar": {
+        "$type": "other",
+        "$value": "calendar-blank",
+        "$description": "icon.object.calendar — calendar, date, schedule, day"
+      },
+      "camera": {
+        "$type": "other",
+        "$value": "camera",
+        "$description": "icon.object.camera — camera, photo, capture, snapshot"
+      },
+      "chart": {
+        "$type": "other",
+        "$value": "chart-line",
+        "$description": "icon.object.chart — chart, graph, analytics, report, line-chart"
+      },
+      "clock": {
+        "$type": "other",
+        "$value": "clock",
+        "$description": "icon.object.clock — clock, time, duration, recent, history"
+      },
+      "document": {
+        "$type": "other",
+        "$value": "file",
+        "$description": "icon.object.document — document, file, page, doc"
+      },
+      "eye": {
+        "$type": "other",
+        "$value": "eye",
+        "$description": "icon.object.eye — eye, visible, show, preview, watch"
+      },
+      "eye-off": {
+        "$type": "other",
+        "$value": "eye-slash",
+        "$description": "icon.object.eye-off — eye-off, hidden, hide, invisible, conceal"
+      },
+      "gps": {
+        "$type": "other",
+        "$value": "broadcast",
+        "$description": "icon.object.gps — gps, broadcast, tracking, telemetry, radio"
+      },
+      "lock": {
+        "$type": "other",
+        "$value": "lock-simple",
+        "$description": "icon.object.lock — lock, secure, private, locked"
+      },
+      "map": {
+        "$type": "other",
+        "$value": "map-trifold",
+        "$description": "icon.object.map — map, route, atlas, geography"
+      },
+      "map-pin": {
+        "$type": "other",
+        "$value": "map-pin",
+        "$description": "icon.object.map-pin — map-pin, marker, place, location, stop"
+      },
+      "notification": {
+        "$type": "other",
+        "$value": "bell",
+        "$description": "icon.object.notification — notification, bell, alert, reminder"
+      },
+      "signal": {
+        "$type": "other",
+        "$value": "wifi-high",
+        "$description": "icon.object.signal — signal, wifi, network, connection, reception"
+      },
+      "sparkle": {
+        "$type": "other",
+        "$value": "sparkle",
+        "$description": "icon.object.sparkle — sparkle, ai, magic, assistant, generate"
+      },
+      "user": {
+        "$type": "other",
+        "$value": "user",
+        "$description": "icon.object.user — user, person, account, profile, avatar"
+      }
+    },
+    "status": {
+      "check": {
+        "$type": "other",
+        "$value": "check",
+        "$description": "icon.status.check — check, checkmark, tick, selected, confirm"
+      },
+      "danger": {
+        "$type": "other",
+        "$value": "x-circle",
+        "$description": "icon.status.danger — danger, error, failure, critical, negative"
+      },
+      "info": {
+        "$type": "other",
+        "$value": "info",
+        "$description": "icon.status.info — info, information, note, hint, about"
+      },
+      "online": {
+        "$type": "other",
+        "$value": "circle",
+        "$description": "icon.status.online — online, live, dot, presence, active"
+      },
+      "success": {
+        "$type": "other",
+        "$value": "check-circle",
+        "$description": "icon.status.success — success, ok, done, check-circle, positive"
+      },
+      "trend-down": {
+        "$type": "other",
+        "$value": "trend-down",
+        "$description": "icon.status.trend-down — trend-down, decrease, decline, delta-negative, arrow-down-right"
+      },
+      "trend-up": {
+        "$type": "other",
+        "$value": "trend-up",
+        "$description": "icon.status.trend-up — trend-up, increase, growth, delta-positive, arrow-up-right"
+      },
+      "warning": {
+        "$type": "other",
+        "$value": "warning",
+        "$description": "icon.status.warning — warning, caution, alert, triangle, attention"
+      }
+    }
+  }
+}

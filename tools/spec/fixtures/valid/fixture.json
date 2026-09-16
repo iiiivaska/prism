@@ -1,0 +1,4 @@
+{
+  "description": "A minimal spec that breaks no rule; the repository plus this file still validates.",
+  "expect": []
+}
