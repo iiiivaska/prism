@@ -59,6 +59,11 @@
           "$value": "{ref.color.neutral.0}",
           "$description": "active segmented button, send button; black glyph"
         },
+        "inverse-media": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.0}",
+          "$description": "the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)"
+        },
         "neutral": {
           "subtle": {
             "$type": "color",
@@ -182,6 +187,16 @@
         "$value": "rgba(255, 255, 255, 0.08)",
         "$description": "table rows, tile top edge"
       },
+      "on-glass-fill": {
+        "$type": "color",
+        "$value": "{color.border.on-media}",
+        "$description": "rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2)"
+      },
+      "on-media": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.4)",
+        "$description": "rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2)"
+      },
       "strong": {
         "$type": "color",
         "$value": "rgba(255, 255, 255, 0.35)",
@@ -216,6 +231,45 @@
       "now": {
         "$type": "color",
         "$value": "{ref.color.accent.500}"
+      },
+      "on-glass-fill": {
+        "grid": {
+          "$type": "color",
+          "$value": "{color.chart.on-media.grid}",
+          "$description": "gridlines on the scheme's glass (ADR-0030 §2.3)"
+        },
+        "line": {
+          "$type": "color",
+          "$value": "{color.chart.on-media.line}",
+          "$description": "chart line on the scheme's glass: white on smoke in dark (ADR-0030 §2.3)"
+        },
+        "plot": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.08)",
+          "$description": "the plot on the scheme's glass: a white 8% lift (ADR-0030 §2.3)"
+        },
+        "reference": {
+          "$type": "color",
+          "$value": "{color.chart.on-media.reference}",
+          "$description": "the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2)"
+        }
+      },
+      "on-media": {
+        "grid": {
+          "$type": "color",
+          "$value": "rgba(255, 255, 255, 0.24)",
+          "$description": "gridlines on vivid; decorative (ADR-0030 §2.2)"
+        },
+        "line": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.0}",
+          "$description": "chart line on vivid (ADR-0030 §2.2)"
+        },
+        "reference": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.0}",
+          "$description": "the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2)"
+        }
       },
       "plot": {
         "$type": "color",
@@ -253,6 +307,28 @@
         "$value": "rgba(255, 255, 255, 0.6)"
       }
     },
+    "edge": {
+      "highlight": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2)"
+      },
+      "raised": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.0}",
+        "$description": "the 1 px top edge of raised: tiles and nav pills (ADR-0030 §4.1)",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.08",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      }
+    },
     "icon": {
       "accent": {
         "$type": "color",
@@ -285,6 +361,83 @@
         }
       }
     },
+    "map": {
+      "block": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.025)",
+        "$description": "map ground: city blocks, over the land"
+      },
+      "building": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.065)",
+        "$description": "map ground: buildings, over the land"
+      },
+      "label": {
+        "$type": "color",
+        "$value": "{color.text.tertiary}",
+        "$description": "map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground"
+      },
+      "land": {
+        "$type": "color",
+        "$value": "{color.bg.page}",
+        "$description": "map ground: the land, the page (ADR-0030 §1.1)"
+      },
+      "park": {
+        "$type": "color",
+        "$value": "{ref.color.map.dark.park}",
+        "$description": "map ground: parks, over the land",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.11",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
+      "road": {
+        "$type": "color",
+        "$value": "rgba(255, 255, 255, 0.13)",
+        "$description": "map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3)"
+      },
+      "road-casing": {
+        "$type": "color",
+        "$value": "{color.bg.page}",
+        "$description": "map ground: the casing under roads"
+      },
+      "route": {
+        "$type": "color",
+        "$value": "{color.chart.series.1}",
+        "$description": "the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4)"
+      },
+      "route-ahead": {
+        "$type": "color",
+        "$value": "{color.chart.comparison}",
+        "$description": "the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4)"
+      },
+      "route-casing": {
+        "$type": "color",
+        "$value": "{color.bg.page}",
+        "$description": "the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4)"
+      },
+      "water": {
+        "$type": "color",
+        "$value": "{ref.color.map.dark.water}",
+        "$description": "map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2)",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.16",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      }
+    },
     "text": {
       "accent": {
         "$type": "color",
@@ -308,6 +461,21 @@
         "$type": "color",
         "$value": "{ref.color.slot.dark.text-on-accent}"
       },
+      "on-accent-secondary": {
+        "$type": "color",
+        "$value": "{color.text.on-accent}",
+        "$description": "the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4)",
+        "$extensions": {
+          "studio.tokens": {
+            "modify": {
+              "type": "alpha",
+              "value": "0.7",
+              "space": "srgb",
+              "format": "hex"
+            }
+          }
+        }
+      },
       "on-accent-strong": {
         "$type": "color",
         "$value": "{ref.color.neutral.0}"
@@ -320,6 +488,36 @@
         "$type": "color",
         "$value": "{ref.color.neutral.0}",
         "$description": "white on dark glass; light glass uses on-glass-light (ADR-0022)"
+      },
+      "on-glass-fill": {
+        "$type": "color",
+        "$value": "{color.text.on-glass}",
+        "$description": "the scheme's glass (material.glass.fill and .chip): white on smoked glass in dark (ADR-0029 §1.3)"
+      },
+      "on-glass-fill-dimmed": {
+        "$type": "color",
+        "$value": "{color.text.on-glass-tertiary}",
+        "$description": "dimmed tone on the scheme's glass over Prism's map: white 64% (ADR-0029 §1.4)"
+      },
+      "on-glass-fill-media-secondary": {
+        "$type": "color",
+        "$value": "{color.text.on-glass-secondary}",
+        "$description": "secondary tone on the scheme's glass over imagery and vivid: white 78% in dark (ADR-0029 §1.4)"
+      },
+      "on-glass-fill-media-tertiary": {
+        "$type": "color",
+        "$value": "{color.text.on-glass-tertiary}",
+        "$description": "tertiary and dimmed tones on the scheme's glass over imagery and vivid: white 64% in dark (ADR-0029 §1.4)"
+      },
+      "on-glass-fill-secondary": {
+        "$type": "color",
+        "$value": "{color.text.on-glass-secondary}",
+        "$description": "secondary tone on the scheme's glass over Prism's map: white 78% (ADR-0029 §1.4)"
+      },
+      "on-glass-fill-tertiary": {
+        "$type": "color",
+        "$value": "{color.text.on-glass-tertiary}",
+        "$description": "tertiary tone on the scheme's glass over Prism's map: white 64% (ADR-0029 §1.4)"
       },
       "on-glass-light": {
         "$type": "color",
@@ -340,10 +538,15 @@
         "$type": "color",
         "$value": "{ref.color.neutral.950}"
       },
+      "on-inverse-media": {
+        "$type": "color",
+        "$value": "{ref.color.neutral.950}",
+        "$description": "ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1)"
+      },
       "on-vivid": {
         "$type": "color",
         "$value": "{ref.color.neutral.0}",
-        "$description": "every vivid gradient passes ADR-0022 V1/V2"
+        "$description": "every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2"
       },
       "primary": {
         "$type": "color",
@@ -393,19 +596,21 @@
     "vivid": {
       "1": {
         "$type": "color",
-        "$value": "{ref.gradient.vivid.plum-dusk}"
+        "$value": "{ref.gradient.vivid.plum-dusk}",
+        "$description": "slot pair 1 + 2 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)"
       },
       "2": {
         "$type": "color",
-        "$value": "{ref.gradient.vivid.forest-moss}"
+        "$value": "{ref.gradient.vivid.navy-cyan}"
       },
       "3": {
         "$type": "color",
-        "$value": "{ref.gradient.vivid.ember-night}"
+        "$value": "{ref.gradient.vivid.night-lagoon}",
+        "$description": "slot pair 3 + 4 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)"
       },
       "4": {
         "$type": "color",
-        "$value": "{ref.gradient.vivid.navy-cyan}"
+        "$value": "{ref.gradient.vivid.forest-moss}"
       },
       "default": {
         "$type": "color",
@@ -457,6 +662,39 @@
         "saturate": {
           "$type": "number",
           "$value": "1"
+        }
+      },
+      "chip": {
+        "default": {
+          "$type": "color",
+          "$value": "{material.glass.dark.chip.default}",
+          "$description": "the scheme's glass for chips, controls and status cells over media; aliases glass.dark.chip field by field (ADR-0029 §1.2)"
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": "{material.glass.dark.chip.bloom}"
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": "{material.glass.dark.chip.blur}"
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": "{material.glass.dark.chip.edge.end}"
+          },
+          "start": {
+            "$type": "number",
+            "$value": "{material.glass.dark.chip.edge.start}"
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": "{material.glass.dark.chip.grain}"
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": "{material.glass.dark.chip.saturate}"
         }
       },
       "dark": {
@@ -547,6 +785,39 @@
           }
         }
       },
+      "fill": {
+        "default": {
+          "$type": "color",
+          "$value": "{material.glass.dark.fill.default}",
+          "$description": "the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.dark.fill field by field (ADR-0029 §1.2)"
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": "{material.glass.dark.fill.bloom}"
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": "{material.glass.dark.fill.blur}"
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": "{material.glass.dark.fill.edge.end}"
+          },
+          "start": {
+            "$type": "number",
+            "$value": "{material.glass.dark.fill.edge.start}"
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": "{material.glass.dark.fill.grain}"
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": "{material.glass.dark.fill.saturate}"
+        }
+      },
       "light": {
         "chip": {
           "default": {
@@ -617,8 +888,22 @@
       },
       "scrim": {
         "$type": "color",
-        "$value": "rgba(0, 0, 0, 0.4)",
-        "$description": "modal backdrop dim; text scrim over bright photos"
+        "$value": "rgba(0, 0, 0, 0.45)",
+        "$description": "modal backdrop dim; bottom-up text scrim over bright photos: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim"
+      }
+    },
+    "vivid": {
+      "edge": {
+        "end": {
+          "$type": "number",
+          "$value": "0",
+          "$description": "alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2)"
+        },
+        "start": {
+          "$type": "number",
+          "$value": "0.18",
+          "$description": "alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2)"
+        }
       }
     }
   },

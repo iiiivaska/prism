@@ -1,5 +1,5 @@
 // lint-orthogonality.ts (ADR-0024 §9.2, §9.4; ARCHITECTURE §14 P1-2): the repository resolver is orthogonal
-// with 432 permutations, and the non-orthogonal fixture fails, naming sys.interaction.hover. The Terrazzo
+// with 576 permutations (ADR-0029 §3.2), and the non-orthogonal fixture fails, naming sys.interaction.hover. The Terrazzo
 // internals this relies on (`orthogonal`, `listPermutations`, `permutationLimit`, `source`) are undocumented
 // (ARCHITECTURE F36), so these tests are the alarm when a Terrazzo upgrade changes them.
 import { spawnSync } from 'node:child_process';
@@ -19,13 +19,13 @@ function runCli(...args: string[]) {
 }
 
 describe('the repository resolver', () => {
-  test('is orthogonal with 432 permutations, the product of its context counts', async () => {
+  test('is orthogonal with 576 permutations, the product of its context counts', async () => {
     const result = await lintOrthogonality(join(repo, RESOLVER));
     expect(result.orthogonal).toBe(true);
     expect(result.overlaps).toEqual([]);
-    expect(result.expected).toBe(432);
-    expect(result.permutations).toBe(432);
-    expect(contextProduct(readJson(join(repo, RESOLVER)))).toBe(432);
+    expect(result.expected).toBe(576);
+    expect(result.permutations).toBe(576);
+    expect(contextProduct(readJson(join(repo, RESOLVER)))).toBe(576);
     expect(problems(result)).toEqual([]);
   });
 });
@@ -37,7 +37,7 @@ describe('the non-orthogonal fixture', () => {
     expect(result.overlaps).toEqual([
       { id: 'sys.interaction.hover', writers: ['density/compact', 'modality/pointer', 'modality/touch'] },
     ]);
-    expect(result.permutations).toBe(432);
+    expect(result.permutations).toBe(576);
     expect(problems(result)).toEqual(['sys.interaction.hover is written by density/compact, modality/pointer, modality/touch']);
   });
 
@@ -119,7 +119,7 @@ describe('CLI', () => {
   test('exits 0 on the repository', () => {
     const run = runCli();
     expect(run.status).toBe(0);
-    expect(run.stdout).toMatch(/resolver orthogonal \(@terrazzo\/parser\), 432 permutations/);
+    expect(run.stdout).toMatch(/resolver orthogonal \(@terrazzo\/parser\), 576 permutations/);
   });
 
   test('exits 1 on the non-orthogonal fixture and names the id', () => {

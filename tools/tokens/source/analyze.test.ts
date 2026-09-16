@@ -12,7 +12,7 @@ describe('config tables (ADR-0020 rule 15: a change needs an ADR and shows up he
       'ref.color.accent.50|100|200|300|400|500|600|700|800|900|950',
       'ref.color.slot.light|dark.bg-page|bg-fill-accent|text-on-accent|text-accent',
       'ref.color.series.light|dark.*',
-      'ref.gradient.vivid.orchid|olive|rose|sky|ember-night|plum-dusk|forest-moss|navy-cyan',
+      'ref.gradient.vivid.orchid|olive|rose|sky|ember-night|plum-dusk|forest-moss|navy-cyan|night-lagoon',
       'ref.font.ui|display|mono',
       'ref.font.apple.ui|display|mono',
       'ref.type.scale',
@@ -33,6 +33,8 @@ describe('config tables (ADR-0020 rule 15: a change needs an ADR and shows up he
     expect(Object.keys(OWNERSHIP)).toEqual(['brand', 'platform', 'colorScheme', 'density', 'modality', 'motion']);
     expect(OWNERSHIP['brand']?.include).toBe(BRAND_OVERRIDABLE);
     expect(OWNERSHIP['density']).toEqual({ include: ['sys.space.**', 'sys.size.**'], exclude: ['sys.size.hit'] });
+    // ADR-0030 §7.2: the platform modifier also writes the watch hero size.
+    expect(OWNERSHIP['platform']).toEqual({ include: ['sys.font.**', 'sys.type.metric.xl'], exclude: [] });
   });
 });
 
@@ -47,7 +49,8 @@ describe('valid fixtures', () => {
 });
 
 const SOURCE_STAGE = [
-  'a11y-', 'brand-not-overridable', 'brand-radius-order', 'brand-unknown-path', 'brand-value', 'color-alpha-target',
+  'a11y-', 'brand-not-overridable', 'brand-radius-order', 'brand-unknown-path', 'brand-value', 'color-alpha-target', 'color-edge-neutral',
+  'color-smoke-chroma',
   'completeness-', 'extension-alias-override', 'font-', 'material-', 'naming-root-default-collision', 'orthogonality-', 'slot-',
   'source-dead-write', 'source-group-deprecated-mismatch', 'source-group-type-conflict', 'source-tier', 'spring-', 'sys-literal',
   'tier-alias-direction', 'type-flag-value', 'type-group-type-mismatch', 'type-role-metadata', 'type-scale-range',
@@ -79,7 +82,7 @@ describe('broken fixtures of the source checks (each yields exactly its codes an
       // ir/typography.test.ts
       'type-thin-weight', 'type-light-weight', 'type-weight-instance', 'type-contrast-floor',
       // ir/analyze.test.ts
-      'analysis-', 'motion-reduced-policy', 'gradient-scheme-mismatch',
+      'analysis-', 'motion-reduced-policy', 'gradient-scheme-mismatch', 'gradient-slot-temperature',
       // ir/bundle.test.ts
       'naming-reserved-category',
     ];

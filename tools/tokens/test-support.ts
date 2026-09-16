@@ -120,7 +120,23 @@ export function projectPrism(value: import('./ir/types.ts').IRValue, opts: { alp
 
 export interface OracleResult { readonly inputs: number; readonly compared: number; readonly differences: readonly string[] }
 
-export interface TerrazzoToken { readonly $type: string; readonly $value: unknown; readonly $description?: string; readonly $extensions?: unknown }
+export interface TerrazzoToken { readonly $type: string; readonly $value: unknown; readonly $description?: string; readonly $extensions?: unknown; readonly aliasOf?: string }
+
+/**
+ * Terrazzo 2.7.1 leaves a whole-value alias of a number token whose value is 0 unresolved: its `$value`
+ * stays the reference string while `aliasOf` names the target (ARCHITECTURE §15 F42; the role recipes of
+ * ADR-0029 §1.2 alias the zero grain, bloom and edge.end of their appearance recipes). The oracle follows
+ * `aliasOf` for such a value, so it still compares what Terrazzo resolved everywhere else.
+ */
+export function terrazzoValue(tokens: Readonly<Record<string, TerrazzoToken>>, token: TerrazzoToken): unknown {
+  let cur: TerrazzoToken | undefined = token;
+  for (let n = 0; cur !== undefined && n < 32; n++) {
+    const v: unknown = cur.$value;
+    if (typeof v !== 'string' || !/^\{[^{}]+\}$/.test(v) || cur.aliasOf === undefined) return v;
+    cur = tokens[cur.aliasOf];
+  }
+  return cur?.$value;
+}
 export interface TerrazzoResolver { apply(input: Record<string, string>): Record<string, TerrazzoToken> }
 
 /** `@terrazzo/parser`'s resolver for `<root>/tokens/prism.resolver.json`. */
@@ -168,7 +184,7 @@ export async function terrazzoOracle(root: string, bundle: import('./ir/types.ts
         if (cur.alpha !== null) alpha = false;
       }
       const a = JSON.stringify(projectPrism(t.value, { alpha, typeScaled }));
-      const b = JSON.stringify(projectTerrazzo(other.$type, other.$value, { alpha, typeScaled }));
+      const b = JSON.stringify(projectTerrazzo(other.$type, terrazzoValue(tz, other), { alpha, typeScaled }));
       compared++;
       if (a !== b) differences.push(`${key} ${id}: prism ${a.slice(0, 160)} terrazzo ${b.slice(0, 160)}`);
     }

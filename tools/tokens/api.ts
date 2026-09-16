@@ -75,6 +75,8 @@ export interface ContrastContext {
   readonly permutation: PermKey;
   /** Name via lookup; must resolve to exactly one color token. */
   color(name: string): ResolvedColor;
+  /** Name or glob via lookup: every color token it matches (other types are skipped), in lookup order. */
+  colors(name: string): readonly ResolvedColor[];
   gradient(name: string): readonly ResolvedGradient[];
 }
 
@@ -157,6 +159,9 @@ export function contrastContexts(bundle: IRBundle): readonly ContrastContext[] {
             throw new Error(`"${name}" must resolve to exactly one color token, got ${hits.map((h) => `${h.id} (${h.type})`).join(', ') || 'nothing'}`);
           }
           return resolved(perm, t, t.value);
+        },
+        colors(name) {
+          return pick(name).flatMap((t) => (t.value.kind === 'color' ? [resolved(perm, t, t.value)] : []));
         },
         gradient(name) {
           return pick(name)

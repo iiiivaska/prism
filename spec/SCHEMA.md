@@ -74,7 +74,7 @@ The heart of the contract. Every visual property points to a token path; impleme
 ```yaml
 tokens:
   root:
-    background: { primary: comp.button.primary.bg.rest, secondary: comp.button.secondary.bg.rest, ghost: comp.button.ghost.bg.rest, danger: comp.button.danger.bg.rest }
+    background: { primary: comp.button.primary.bg.rest, secondary: comp.button.secondary.bg.rest, danger: comp.button.danger.bg.rest }
     foreground: { primary: comp.button.primary.text, secondary: comp.button.secondary.text, ghost: color.text.primary, danger: color.text.critical }
     radius: radius.control
     height: { sm: size.control.sm, md: size.control.md, lg: size.control.lg }

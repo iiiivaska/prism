@@ -128,7 +128,8 @@
     },
     "gauge-stroke-ratio": {
       "$type": "number",
-      "$value": 0.1,
+      "$value": 0.05,
+      "$description": "ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5)",
       "$extensions": {
         "com.figma.codeSyntax": {
           "WEB": "var(--ds-chart-gauge-stroke-ratio)",
@@ -379,6 +380,30 @@
             ]
           }
         },
+        "inverse-media": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-inverse-media)",
+              "iOS": "tokens.color.bgFillInverseMedia"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
         "neutral": {
           "subtle": {
             "$type": "color",
@@ -506,14 +531,14 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              1,
-              1,
-              1
+              0.9685,
+              0.9725,
+              0.9804
             ],
-            "alpha": 0.7,
-            "hex": "#ffffff"
+            "alpha": 1,
+            "hex": "#f7f8fa"
           },
-          "$description": "puffy chip / round button on the page, plus inset top highlight and elevation.1",
+          "$description": "puffy chip / round button on the page (#F7F8FA, opaque; ADR-0030 §5.2), with color.edge.raised as its top edge and elevation.1; also the glass fallback",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-surface-raised)",
@@ -556,13 +581,14 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.992,
-              0.9138,
-              0.9138
+              0.9412,
+              0.294,
+              0.2706
             ],
-            "alpha": 1,
-            "hex": "#fde9e9"
+            "alpha": 0.12,
+            "hex": "#f04b45"
           },
+          "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-tint-critical)",
@@ -579,13 +605,14 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9176,
-              0.9294,
-              0.9763
+              0.3058,
+              0.4235,
+              0.8038
             ],
-            "alpha": 1,
-            "hex": "#eaedf9"
+            "alpha": 0.12,
+            "hex": "#4e6ccd"
           },
+          "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-tint-info)",
@@ -602,13 +629,14 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9019,
-              0.9647,
-              0.9137
+              0.1765,
+              0.698,
+              0.2902
             ],
-            "alpha": 1,
-            "hex": "#e6f6e9"
+            "alpha": 0.12,
+            "hex": "#2db24a"
           },
+          "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-tint-success)",
@@ -625,13 +653,14 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.9961,
-              0.9647,
-              0.9097
+              0.9606,
+              0.7217,
+              0.2395
             ],
-            "alpha": 1,
-            "hex": "#fef6e8"
+            "alpha": 0.12,
+            "hex": "#f5b83d"
           },
+          "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-tint-warning)",
@@ -708,6 +737,52 @@
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-color-border-hairline)",
             "iOS": "tokens.color.borderHairline"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "on-glass-fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.45,
+          "hex": "#0d0e11"
+        },
+        "$description": "rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-on-glass-fill)",
+            "iOS": "tokens.color.borderOnGlassFill"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "on-media": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.4,
+          "hex": "#ffffff"
+        },
+        "$description": "rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-on-media)",
+            "iOS": "tokens.color.borderOnMedia"
           },
           "com.figma.scopes": [
             "STROKE_COLOR"
@@ -904,6 +979,178 @@
           ]
         }
       },
+      "on-glass-fill": {
+        "grid": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.1,
+            "hex": "#0d0e11"
+          },
+          "$description": "gridlines on the scheme's glass (ADR-0030 §2.3)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-glass-fill-grid)",
+              "iOS": "tokens.color.chartOnGlassFillGrid"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "line": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "chart line on the scheme's glass: the glass foreground, ink in light (ADR-0030 §2.3)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-glass-fill-line)",
+              "iOS": "tokens.color.chartOnGlassFillLine"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "plot": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.08,
+            "hex": "#ffffff"
+          },
+          "$description": "the plot on the scheme's glass: a white 8% lift, not a white hole (ADR-0030 §2.3)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-glass-fill-plot)",
+              "iOS": "tokens.color.chartOnGlassFillPlot"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "reference": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.6,
+            "hex": "#0d0e11"
+          },
+          "$description": "the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-glass-fill-reference)",
+              "iOS": "tokens.color.chartOnGlassFillReference"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      },
+      "on-media": {
+        "grid": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.24,
+            "hex": "#ffffff"
+          },
+          "$description": "gridlines on vivid; decorative (ADR-0030 §2.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-media-grid)",
+              "iOS": "tokens.color.chartOnMediaGrid"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "line": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "chart line on vivid (ADR-0030 §2.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-media-line)",
+              "iOS": "tokens.color.chartOnMediaLine"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "reference": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-chart-on-media-reference)",
+              "iOS": "tokens.color.chartOnMediaReference"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL",
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      },
       "plot": {
         "$type": "color",
         "$value": {
@@ -1077,10 +1324,10 @@
             0.0549,
             0.0667
           ],
-          "alpha": 0.45,
+          "alpha": 0.6,
           "hex": "#0d0e11"
         },
-        "$description": "the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14)",
+        "$description": "the mandatory target line (ADR-0007 rule 2); ink 60% (5.07:1 on white) reads above comparison's 45% (ADR-0030 §2.4)",
         "$extensions": {
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-color-chart-target)",
@@ -1088,6 +1335,54 @@
           },
           "com.figma.scopes": [
             "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      }
+    },
+    "edge": {
+      "highlight": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-edge-highlight)",
+            "iOS": "tokens.color.edgeHighlight"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "raised": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the 1 px top edge of raised: the puffy chip (ADR-0030 §4.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-edge-raised)",
+            "iOS": "tokens.color.edgeRaised"
+          },
+          "com.figma.scopes": [
             "STROKE_COLOR"
           ]
         }
@@ -1259,6 +1554,271 @@
         }
       }
     },
+    "map": {
+      "block": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.03,
+          "hex": "#0d0e11"
+        },
+        "$description": "map ground: city blocks, over the land",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-block)",
+            "iOS": "tokens.color.mapBlock"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "building": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.075,
+          "hex": "#0d0e11"
+        },
+        "$description": "map ground: buildings, over the land",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-building)",
+            "iOS": "tokens.color.mapBuilding"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "label": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-label)",
+            "iOS": "tokens.color.mapLabel"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "land": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.9451,
+            0.949,
+            0.9606
+          ],
+          "alpha": 1,
+          "hex": "#f1f2f5"
+        },
+        "$description": "map ground: the land, the page (ADR-0030 §1.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-land)",
+            "iOS": "tokens.color.mapLand"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "park": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.122,
+            0.5608,
+            0.5019
+          ],
+          "alpha": 0.16,
+          "hex": "#1f8f80"
+        },
+        "$description": "map ground: parks, over the land",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-park)",
+            "iOS": "tokens.color.mapPark"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "road": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-road)",
+            "iOS": "tokens.color.mapRoad"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "road-casing": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.08,
+          "hex": "#0d0e11"
+        },
+        "$description": "map ground: the casing under roads",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-road-casing)",
+            "iOS": "tokens.color.mapRoadCasing"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "route": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-route)",
+            "iOS": "tokens.color.mapRoute"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "route-ahead": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.45,
+          "hex": "#0d0e11"
+        },
+        "$description": "the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-route-ahead)",
+            "iOS": "tokens.color.mapRouteAhead"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "route-casing": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-route-casing)",
+            "iOS": "tokens.color.mapRouteCasing"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL",
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "water": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3058,
+            0.4235,
+            0.8038
+          ],
+          "alpha": 0.16,
+          "hex": "#4e6ccd"
+        },
+        "$description": "map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-map-water)",
+            "iOS": "tokens.color.mapWater"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
     "text": {
       "accent": {
         "$type": "color",
@@ -1373,6 +1933,29 @@
           ]
         }
       },
+      "on-accent-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 0.7,
+          "hex": "#0d0e11"
+        },
+        "$description": "the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-accent-secondary)",
+            "iOS": "tokens.color.textOnAccentSecondary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
       "on-accent-strong": {
         "$type": "color",
         "$value": {
@@ -1434,6 +2017,144 @@
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-color-text-on-glass)",
             "iOS": "tokens.color.textOnGlass"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the scheme's glass (material.glass.fill and .chip): ink on light glass in light (ADR-0029 §1.3)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill)",
+            "iOS": "tokens.color.textOnGlassFill"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill-dimmed": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.4941,
+            0.5137,
+            0.5609
+          ],
+          "alpha": 1,
+          "hex": "#7e838f"
+        },
+        "$description": "dimmed tone (trailing digits and units at >= 24 px) on the scheme's glass over Prism's map only (backdrop L >= 0.89; ADR-0029 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill-dimmed)",
+            "iOS": "tokens.color.textOnGlassFillDimmed"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill-media-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "secondary tone on the scheme's glass over imagery and vivid: ink, the primary tone, in light (ADR-0029 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill-media-secondary)",
+            "iOS": "tokens.color.textOnGlassFillMediaSecondary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill-media-tertiary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "tertiary and dimmed tones on the scheme's glass over imagery and vivid: ink in light (ADR-0029 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill-media-tertiary)",
+            "iOS": "tokens.color.textOnGlassFillMediaTertiary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "secondary tone on the scheme's glass over Prism's map only (backdrop L >= 0.84; ADR-0029 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill-secondary)",
+            "iOS": "tokens.color.textOnGlassFillSecondary"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
+      "on-glass-fill-tertiary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.3608,
+            0.3765,
+            0.4078
+          ],
+          "alpha": 1,
+          "hex": "#5c6068"
+        },
+        "$description": "tertiary tone on the scheme's glass over Prism's map only (ADR-0029 §1.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-glass-fill-tertiary)",
+            "iOS": "tokens.color.textOnGlassFillTertiary"
           },
           "com.figma.scopes": [
             "TEXT_FILL"
@@ -1531,6 +2252,29 @@
           ]
         }
       },
+      "on-inverse-media": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-text-on-inverse-media)",
+            "iOS": "tokens.color.textOnInverseMedia"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
+        }
+      },
       "on-vivid": {
         "$type": "color",
         "$value": {
@@ -1543,7 +2287,7 @@
           "alpha": 1,
           "hex": "#ffffff"
         },
-        "$description": "every vivid gradient passes ADR-0022 V1/V2",
+        "$description": "every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2",
         "$extensions": {
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-color-text-on-vivid)",
@@ -1768,12 +2512,12 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.0393,
-              0.0471,
-              0.0315
+              0.0382,
+              0.044,
+              0.0559
             ],
             "alpha": 0.35,
-            "hex": "#0a0c08"
+            "hex": "#0a0b0e"
           },
           "$description": "status cells over a render or vivid; smoked fill, primary foreground text.on-glass only; a 1.5 px status border carries the status (ADR-0022)",
           "$extensions": {
@@ -1861,6 +2605,105 @@
           }
         }
       },
+      "chip": {
+        "default": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.25,
+            "hex": "#ffffff"
+          },
+          "$description": "the scheme's glass for chips, controls and status cells over media; aliases glass.light.chip field by field (ADR-0029 §1.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-chip)",
+              "iOS": "tokens.material.glassChip"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-chip-bloom)",
+              "iOS": "tokens.material.glassChipBloom"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-chip-blur)",
+              "iOS": "tokens.material.glassChipBlur"
+            },
+            "com.figma.scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-chip-edge-end)",
+                "iOS": "tokens.material.glassChipEdgeEnd"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "start": {
+            "$type": "number",
+            "$value": 0.55,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-chip-edge-start)",
+                "iOS": "tokens.material.glassChipEdgeStart"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-chip-grain)",
+              "iOS": "tokens.material.glassChipGrain"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": 1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-chip-saturate)",
+              "iOS": "tokens.material.glassChipSaturate"
+            },
+            "com.figma.scopes": []
+          }
+        }
+      },
       "dark": {
         "chip": {
           "default": {
@@ -1868,12 +2711,12 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.0393,
-                0.0471,
-                0.0315
+                0.0382,
+                0.044,
+                0.0559
               ],
               "alpha": 0.35,
-              "hex": "#0a0c08"
+              "hex": "#0a0b0e"
             },
             "$description": "controls over a photo, map or vivid; primary foreground text.on-glass only (ADR-0022 §3)",
             "$extensions": {
@@ -1967,12 +2810,12 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.0393,
-                0.0471,
-                0.0315
+                0.0382,
+                0.044,
+                0.0559
               ],
               "alpha": 0.55,
-              "hex": "#0a0c08"
+              "hex": "#0a0b0e"
             },
             "$description": "card or drawer over a photo or vivid, on backdrops where white holds 3:1 (ADR-0022 §3.3); drawer 0.35",
             "$extensions": {
@@ -2058,6 +2901,105 @@
               },
               "com.figma.scopes": []
             }
+          }
+        }
+      },
+      "fill": {
+        "default": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.3,
+            "hex": "#ffffff"
+          },
+          "$description": "the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.light.fill field by field (ADR-0029 §1.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-fill)",
+              "iOS": "tokens.material.glassFill"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "bloom": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-fill-bloom)",
+              "iOS": "tokens.material.glassFillBloom"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "blur": {
+          "$type": "dimension",
+          "$value": {
+            "value": 24,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-fill-blur)",
+              "iOS": "tokens.material.glassFillBlur"
+            },
+            "com.figma.scopes": [
+              "EFFECT_FLOAT"
+            ]
+          }
+        },
+        "edge": {
+          "end": {
+            "$type": "number",
+            "$value": 0,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-fill-edge-end)",
+                "iOS": "tokens.material.glassFillEdgeEnd"
+              },
+              "com.figma.scopes": []
+            }
+          },
+          "start": {
+            "$type": "number",
+            "$value": 0.55,
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-material-glass-fill-edge-start)",
+                "iOS": "tokens.material.glassFillEdgeStart"
+              },
+              "com.figma.scopes": []
+            }
+          }
+        },
+        "grain": {
+          "$type": "number",
+          "$value": 0,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-fill-grain)",
+              "iOS": "tokens.material.glassFillGrain"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "saturate": {
+          "$type": "number",
+          "$value": 1.1,
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-glass-fill-saturate)",
+              "iOS": "tokens.material.glassFillSaturate"
+            },
+            "com.figma.scopes": []
           }
         }
       },
@@ -2270,10 +3212,10 @@
             0,
             0
           ],
-          "alpha": 0.35,
+          "alpha": 0.45,
           "hex": "#000000"
         },
-        "$description": "bottom-up under text on unpredictable backdrops",
+        "$description": "bottom-up under text on unpredictable backdrops: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim",
         "$extensions": {
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-material-glass-scrim)",
@@ -2283,6 +3225,34 @@
             "FRAME_FILL",
             "SHAPE_FILL"
           ]
+        }
+      }
+    },
+    "vivid": {
+      "edge": {
+        "end": {
+          "$type": "number",
+          "$value": 0,
+          "$description": "alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-vivid-edge-end)",
+              "iOS": "tokens.material.vividEdgeEnd"
+            },
+            "com.figma.scopes": []
+          }
+        },
+        "start": {
+          "$type": "number",
+          "$value": 0.3,
+          "$description": "alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-material-vivid-edge-start)",
+              "iOS": "tokens.material.vividEdgeStart"
+            },
+            "com.figma.scopes": []
+          }
         }
       }
     }
@@ -3163,7 +4133,7 @@
     "page-margin": {
       "$type": "dimension",
       "$value": {
-        "value": 16,
+        "value": 24,
         "unit": "px"
       },
       "$extensions": {
@@ -3210,6 +4180,64 @@
     }
   },
   "type": {
+    "axis": {
+      "font-family": {
+        "$type": "fontFamily",
+        "$value": "Onest",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-axis-font-family)",
+            "iOS": "tokens.context.brand.faces[.ui]"
+          }
+        }
+      },
+      "font-size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-axis-font-size)",
+            "iOS": "tokens.typography.axis.size"
+          }
+        }
+      },
+      "font-weight": {
+        "$type": "number",
+        "$value": 400,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-axis-font-weight)",
+            "iOS": "tokens.typography.axis.weight"
+          }
+        }
+      },
+      "line-height": {
+        "$type": "number",
+        "$value": 1.2,
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-axis-line-height)",
+            "iOS": "tokens.typography.axis.lineHeight"
+          }
+        }
+      },
+      "letter-spacing": {
+        "$type": "dimension",
+        "$value": {
+          "value": 0,
+          "unit": "px"
+        },
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-type-axis-letter-spacing)",
+            "iOS": "tokens.typography.axis.trackingEm"
+          }
+        }
+      }
+    },
     "body": {
       "lg": {
         "font-family": {
@@ -4149,6 +5177,7 @@
         "font-family": {
           "$type": "fontFamily",
           "$value": "Onest",
+          "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-type-metric-xl-font-family)",
@@ -4162,6 +5191,7 @@
             "value": 48,
             "unit": "px"
           },
+          "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-type-metric-xl-font-size)",
@@ -4172,6 +5202,7 @@
         "font-weight": {
           "$type": "number",
           "$value": 300,
+          "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-type-metric-xl-font-weight)",
@@ -4182,6 +5213,7 @@
         "line-height": {
           "$type": "number",
           "$value": 1,
+          "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-type-metric-xl-line-height)",
@@ -4195,6 +5227,7 @@
             "value": -0.48,
             "unit": "px"
           },
+          "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
           "$extensions": {
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-type-metric-xl-letter-spacing)",
@@ -4494,12 +5527,12 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                0.992,
-                0.9138,
-                0.9138
+                0.9412,
+                0.294,
+                0.2706
               ],
-              "alpha": 1,
-              "hex": "#fde9e9"
+              "alpha": 0.12,
+              "hex": "#f04b45"
             },
             "$extensions": {
               "com.figma.codeSyntax": {
@@ -4576,7 +5609,7 @@
       },
       "ghost": {
         "bg": {
-          "rest": {
+          "pressed": {
             "$type": "color",
             "$value": {
               "colorSpace": "srgb",
@@ -4588,10 +5621,11 @@
               "alpha": 0.06,
               "hex": "#0d0e11"
             },
+            "$description": "the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
             "$extensions": {
               "com.figma.codeSyntax": {
-                "WEB": "var(--ds-button-ghost-bg-rest)",
-                "iOS": "tokens.components.button.ghostBgRest"
+                "WEB": "var(--ds-button-ghost-bg-pressed)",
+                "iOS": "tokens.components.button.ghostBgPressed"
               },
               "com.figma.scopes": [
                 "FRAME_FILL",
@@ -4891,12 +5925,12 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                1,
-                1,
-                1
+                0.9685,
+                0.9725,
+                0.9804
               ],
-              "alpha": 0.7,
-              "hex": "#ffffff"
+              "alpha": 1,
+              "hex": "#f7f8fa"
             },
             "$extensions": {
               "com.figma.codeSyntax": {
@@ -4963,12 +5997,12 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              0.0393,
-              0.0471,
-              0.0315
+              1,
+              1,
+              1
             ],
-            "alpha": 0.55,
-            "hex": "#0a0c08"
+            "alpha": 0.3,
+            "hex": "#ffffff"
           },
           "$extensions": {
             "com.figma.codeSyntax": {
@@ -4986,12 +6020,12 @@
           "$value": {
             "colorSpace": "srgb",
             "components": [
-              1,
-              1,
-              1
+              0.051,
+              0.0549,
+              0.0667
             ],
             "alpha": 1,
-            "hex": "#ffffff"
+            "hex": "#0d0e11"
           },
           "$extensions": {
             "com.figma.codeSyntax": {

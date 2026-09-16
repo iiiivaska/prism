@@ -1,10 +1,13 @@
 // Gradient renderers (ARCHITECTURE §7.9; ADR-0022 §4, ADR-0024 §6). The angle has CSS semantics
 // (default 180°). Grain and bloom belong to the bound gradient, so CSS always emits the derived
-// declarations `-grain`, `-bloom-alpha` and `-bloom-blur`, with the neutral 0, 0 and 0px when absent.
+// declarations `-grain`, `-bloom-alpha`, `-bloom-blur` and `-bloom-color`, with the neutral 0, 0 and
+// 0px when absent. The bloom color is derived, never authored (ADR-0030 §4.3): the stop of highest
+// relative luminance, the later stop on a tie.
 // Both stacks interpolate the stops in OKLab (P1-5's parity decision, ARCHITECTURE §7.9 and §16.3):
 // the CSS forms say `in oklab`, because CSS interpolates a gradient whose stops are all legacy sRGB
 // forms (`rgb()`) in gamma sRGB unless told otherwise; DSCore draws the same space (P3-1).
-import type { IRGradient } from '../ir/types.ts';
+import { relativeLuminance } from '../ir/color-math.ts';
+import type { IRGradient, IRGradientStop } from '../ir/types.ts';
 import { cssColor, studioColor, swiftRGBA, tsColor, type TsColor } from './color.ts';
 import { DECIMALS, fmt, round } from './format-number.ts';
 import { part, sortParts, type CssPart } from './types.ts';
@@ -16,6 +19,30 @@ export const GRADIENT_INTERPOLATION = 'in oklab';
 
 function angleOf(g: IRGradient): number {
   return g.angle ?? DEFAULT_ANGLE;
+}
+
+/**
+ * The index of the stop the bloom takes its color from (ADR-0030 §4.3): the highest WCAG relative
+ * luminance of the gamut-mapped sRGB color, the later stop on a tie.
+ */
+export function bloomStopIndex(g: IRGradient): number {
+  let best = 0;
+  let bestL = -Infinity;
+  g.stops.forEach((s, i) => {
+    const l = relativeLuminance(s.color.srgb);
+    if (l >= bestL) {
+      best = i;
+      bestL = l;
+    }
+  });
+  return best;
+}
+
+/** The stop of {@link bloomStopIndex}. */
+export function bloomStop(g: IRGradient): IRGradientStop {
+  const stop = g.stops[bloomStopIndex(g)];
+  if (stop === undefined) throw new Error('a gradient has at least two stops');
+  return stop;
 }
 
 function position(p: number): string {
@@ -31,9 +58,10 @@ function linearGradient(g: IRGradient, colors: readonly string[], interpolation:
 
 /**
  * CSS parts: `linear-gradient(<angle>deg in oklab, <color> <position>%, …)` with a P3 twin of the whole
- * declaration when a literal stop lies outside sRGB, then `-bloom-alpha`, `-bloom-blur` and `-grain`.
- * `stopColors[i]`, when given, replaces stop i's color text (the format passes `var(--ds-…)` for a
- * stop that aliases an emitted color; such a stop never causes a twin).
+ * declaration when a literal stop lies outside sRGB, then `-bloom-alpha`, `-bloom-blur`, `-bloom-color`
+ * (the bloom stop's color, with its own P3 twin) and `-grain`. `stopColors[i]`, when given, replaces
+ * stop i's color text in the base declaration (the format passes `var(--ds-…)` for a stop that aliases
+ * an emitted color; such a stop never causes a twin).
  */
 export function cssGradient(g: IRGradient, stopColors: readonly (string | null | undefined)[] = []): readonly CssPart[] {
   const texts = g.stops.map((s, i) => {
@@ -43,21 +71,27 @@ export function cssGradient(g: IRGradient, stopColors: readonly (string | null |
   });
   const base = linearGradient(g, texts.map((c) => c.base), GRADIENT_INTERPOLATION);
   const twin = texts.some((c) => c.p3 !== null) ? linearGradient(g, texts.map((c) => c.p3 ?? c.base), GRADIENT_INTERPOLATION) : null;
+  const bloom = cssColor(bloomStop(g).color);
   return sortParts([
     part('', base, twin === null ? [] : [{ kind: 'p3', value: twin }]),
     part('-grain', fmt(g.grain ?? 0, DECIMALS.other)),
     part('-bloom-alpha', fmt(g.bloom?.alpha ?? 0, DECIMALS.other)),
     part('-bloom-blur', `${fmt(g.bloom?.blur ?? 0, DECIMALS.px)}px`),
+    part('-bloom-color', bloom.base, bloom.p3 === null ? [] : [{ kind: 'p3', value: bloom.p3 }]),
   ]);
 }
 
-/** Swift `DSGradientToken(stops:angle:grain:scheme:bloomAlpha:bloomBlur:)`; DSCore draws CSS angles (ADR-0022 §4.1) in OKLab. */
+/**
+ * Swift `DSGradientToken(stops:angle:grain:scheme:bloomAlpha:bloomBlur:bloomColor:)`; DSCore draws CSS
+ * angles (ADR-0022 §4.1) in OKLab, and the bloom in `bloomColor` (the bloom stop's color, ADR-0030 §4.3).
+ */
 export function swiftGradient(g: IRGradient): string {
   const stops = g.stops.map((s) => `DSGradientStop(color: ${swiftRGBA(s.color)}, location: ${fmt(s.position, DECIMALS.other)})`);
   const scheme = g.scheme === null ? 'nil' : `.${g.scheme}`;
   return (
     `DSGradientToken(stops: [${stops.join(', ')}], angle: ${fmt(angleOf(g), DECIMALS.other)}, grain: ${fmt(g.grain ?? 0, DECIMALS.other)}, ` +
-    `scheme: ${scheme}, bloomAlpha: ${fmt(g.bloom?.alpha ?? 0, DECIMALS.other)}, bloomBlur: ${fmt(g.bloom?.blur ?? 0, DECIMALS.px)})`
+    `scheme: ${scheme}, bloomAlpha: ${fmt(g.bloom?.alpha ?? 0, DECIMALS.other)}, bloomBlur: ${fmt(g.bloom?.blur ?? 0, DECIMALS.px)}, ` +
+    `bloomColor: ${swiftRGBA(bloomStop(g).color)})`
   );
 }
 
@@ -69,7 +103,8 @@ export interface TsGradient {
   readonly angle: number;
   readonly grain: number;
   readonly scheme: 'light' | 'dark' | null;
-  readonly bloom: { readonly alpha: number; readonly blur: number } | null;
+  /** The bloom, with its derived color (ADR-0030 §4.3); null when the gradient declares no bloom. */
+  readonly bloom: { readonly alpha: number; readonly blur: number; readonly color: TsColor } | null;
 }
 
 export function tsGradient(g: IRGradient): TsGradient {
@@ -81,7 +116,7 @@ export function tsGradient(g: IRGradient): TsGradient {
     angle: round(angleOf(g), DECIMALS.other),
     grain: round(g.grain ?? 0, DECIMALS.other),
     scheme: g.scheme,
-    bloom: g.bloom === null ? null : { alpha: round(g.bloom.alpha, DECIMALS.other), blur: round(g.bloom.blur ?? 0, DECIMALS.px) },
+    bloom: g.bloom === null ? null : { alpha: round(g.bloom.alpha, DECIMALS.other), blur: round(g.bloom.blur ?? 0, DECIMALS.px), color: tsColor(bloomStop(g).color) },
   };
 }
 

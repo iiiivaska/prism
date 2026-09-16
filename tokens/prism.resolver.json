@@ -39,7 +39,7 @@
       "contexts": {
         "apple": [ { "$ref": "sys/platform/apple.tokens.json" } ],
         "web": [ { "$ref": "sys/platform/web.tokens.json" } ],
-        "watch": [ { "$ref": "sys/platform/apple.tokens.json" } ]
+        "watch": [ { "$ref": "sys/platform/apple.tokens.json" }, { "$ref": "sys/platform/watch.tokens.json" } ]
       },
       "default": "web"
     },
@@ -58,7 +58,8 @@
       "contexts": {
         "compact": [ { "$ref": "sys/density/compact.tokens.json" } ],
         "regular": [ { "$ref": "sys/density/regular.tokens.json" } ],
-        "comfortable": [ { "$ref": "sys/density/comfortable.tokens.json" } ]
+        "comfortable": [ { "$ref": "sys/density/comfortable.tokens.json" } ],
+        "watch": [ { "$ref": "sys/density/regular.tokens.json" }, { "$ref": "sys/density/watch.tokens.json" } ]
       },
       "default": "compact"
     },

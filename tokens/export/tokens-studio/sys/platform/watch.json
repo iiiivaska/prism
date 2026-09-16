@@ -1,0 +1,11 @@
+{
+  "type": {
+    "metric": {
+      "xl": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.xl-watch}",
+        "$description": "the watch hero at 40 px, layered over the apple platform file (ADR-0030 §7.2)"
+      }
+    }
+  }
+}

@@ -39,7 +39,7 @@
       "contexts": {
         "apple": [ { "$ref": "../../../../../tokens/sys/platform/apple.tokens.json" } ],
         "web": [ { "$ref": "../../../../../tokens/sys/platform/web.tokens.json" } ],
-        "watch": [ { "$ref": "../../../../../tokens/sys/platform/apple.tokens.json" } ]
+        "watch": [ { "$ref": "../../../../../tokens/sys/platform/apple.tokens.json" }, { "$ref": "../../../../../tokens/sys/platform/watch.tokens.json" } ]
       },
       "default": "web"
     },
@@ -58,7 +58,8 @@
       "contexts": {
         "compact": [ { "$ref": "../../../../../tokens/sys/density/compact.tokens.json" }, { "$ref": "sys/density/compact-hover.tokens.json" } ],
         "regular": [ { "$ref": "../../../../../tokens/sys/density/regular.tokens.json" } ],
-        "comfortable": [ { "$ref": "../../../../../tokens/sys/density/comfortable.tokens.json" } ]
+        "comfortable": [ { "$ref": "../../../../../tokens/sys/density/comfortable.tokens.json" } ],
+        "watch": [ { "$ref": "../../../../../tokens/sys/density/regular.tokens.json" }, { "$ref": "../../../../../tokens/sys/density/watch.tokens.json" } ]
       },
       "default": "compact"
     },

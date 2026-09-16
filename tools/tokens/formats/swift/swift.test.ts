@@ -10,6 +10,7 @@ import { fsReader, memoryReader, overlayReader } from '../../source/reader.ts';
 import { fixtureReader } from '../../test-support.ts';
 import { renderAll, type FormatInput, type OutputFile } from '../index.ts';
 import { allMembers, DEFAULT_CONTEXT, swiftModel, verifySwiftTables, XCASSETS_ROOT, type SwiftModel } from './model.ts';
+import { CHECKS_PER_PART } from './tests.ts';
 import { xcodeJson } from './xcode-json.ts';
 
 const cache = new Map<string, Promise<FormatInput>>();
@@ -188,7 +189,7 @@ describe('the repository', () => {
     expect(statics).toEqual([
       'public static let `default`: DSBrand = .prism',
       'public static let `default` = DSTokenContext()',
-      'public static let platformDefault = DSTokenContext(colorScheme: .dark, density: .comfortable, modality: .touch)',
+      'public static let platformDefault = DSTokenContext(colorScheme: .dark, density: .watch, modality: .touch)',
       'public static let platformDefault = DSTokenContext(density: .compact, modality: .pointer)',
       'public static let platformDefault = DSTokenContext(density: .regular, modality: .touch)',
       'package static var bundle: Bundle { .module }',
@@ -226,7 +227,19 @@ describe('the repository', () => {
     const tests = text(files, 'swift/Tests/DSTokensTests/Generated/GeneratedTokenTests.swift');
     expect(tests).not.toContain('settlingDuration');
     expect(tests).toContain('checkSpring(');
-    expect(tests).toContain('check(DSTokenContext.platformDefault, DSTokenContext(colorScheme: .dark, density: .comfortable, modality: .touch), "watchos platformDefault")');
+    expect(tests).toContain('check(DSTokenContext.platformDefault, DSTokenContext(colorScheme: .dark, density: .watch, modality: .touch), "watchos platformDefault")');
+    // ADR-0030 §7.2: the watch hero is metric.xl at 40 px in the watch platform context, still thin in dark.
+    expect(typography).toMatch(/#if os\(watchOS\)[\s\S]*?case \(\.dark, \.standard\):[\s\S]*?self\.metricXl = DSTypeRole\(slot: \.display, size: 40, weight: 200, boldWeight: 400,[\s\S]*?#else/);
+    expect(tests).toContain('check(t.space.cardPadding, 16, "prism density=watch: space.cardPadding")');
+    // Every generated function stays under CHECKS_PER_PART checks, so a debug build fits the 512 KiB stack
+    // of the thread Swift Testing runs it on; a larger test calls its parts in order.
+    const bodies = tests.split(/\n {4}(?:@Test |private )func /).slice(1);
+    expect(bodies.length).toBeGreaterThan(20);
+    for (const body of bodies) {
+      const items = body.replace(/#if os\(watchOS\)\n[^\n]*\n#else\n/g, '');   // a watch pair is one check
+      expect((items.match(/^\s+check(?:Spring)?\(/gm) ?? []).length, body.slice(0, 40)).toBeLessThanOrEqual(CHECKS_PER_PART + 1);
+    }
+    expect(tests).toMatch(/@Test func prismTypeWeights\(\) \{\n {8}prismTypeWeightsPart1\(\)\n {8}prismTypeWeightsPart2\(\)/);
   }, 60_000);
 });
 

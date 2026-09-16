@@ -3,6 +3,7 @@ import SwiftUI
 
 extension DSTokenSet {
     public struct Typography: Hashable, Sendable {
+        public let axis: DSTypeRole
         public let bodyLg: DSTypeRole
         public let bodyMd: DSTypeRole
         public let bodySm: DSTypeRole
@@ -19,6 +20,7 @@ extension DSTokenSet {
         public let metricLg: DSTypeRole
         public let metricMd: DSTypeRole
         public let metricUnit: DSTypeRole
+        /// the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)
         public let metricXl: DSTypeRole
         public let micro: DSTypeRole
         public let titleLg: DSTypeRole
@@ -26,6 +28,7 @@ extension DSTokenSet {
         public let titleSm: DSTypeRole
 
         init(_ c: DSTokenContext) {
+            self.axis = DSTypeRole(slot: .ui, size: 12, weight: 400, boldWeight: 600, lineHeight: 1.2, trackingEm: 0, numeric: .tabular, textStyle: .caption)
             self.bodyLg = DSTypeRole(slot: .ui, size: 17, weight: 400, boldWeight: 600, lineHeight: 1.5, trackingEm: 0, numeric: .proportional, textStyle: .body)
             self.bodyMd = DSTypeRole(slot: .ui, size: 15, weight: 400, boldWeight: 600, lineHeight: 1.5, trackingEm: 0, numeric: .proportional, textStyle: .subheadline)
             self.bodySm = DSTypeRole(slot: .ui, size: 14, weight: 400, boldWeight: 600, lineHeight: 1.45, trackingEm: 0, numeric: .proportional, textStyle: .subheadline)
@@ -37,7 +40,7 @@ extension DSTokenSet {
             self.labelLg = DSTypeRole(slot: .ui, size: 15, weight: 500, boldWeight: 700, lineHeight: 1.2, trackingEm: 0, numeric: .proportional, textStyle: .subheadline)
             self.labelMd = DSTypeRole(slot: .ui, size: 13, weight: 500, boldWeight: 700, lineHeight: 1.2, trackingEm: 0, numeric: .proportional, textStyle: .footnote)
             self.labelSm = DSTypeRole(slot: .ui, size: 12, weight: 500, boldWeight: 700, lineHeight: 1.2, trackingEm: 0, numeric: .proportional, textStyle: .caption)
-            self.metricMd = DSTypeRole(slot: .display, size: 20, weight: 400, boldWeight: 600, lineHeight: 1.1, trackingEm: 0, numeric: .tabular, textStyle: .title3)
+            self.metricMd = DSTypeRole(slot: .display, size: 20, weight: 400, boldWeight: 600, lineHeight: 1.1, trackingEm: 0, numeric: .proportional, textStyle: .title3)
             self.metricUnit = DSTypeRole(slot: .ui, size: 12, weight: 400, boldWeight: 600, lineHeight: 1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
             self.micro = DSTypeRole(slot: .ui, size: 11, weight: 500, boldWeight: 700, lineHeight: 1.2, trackingEm: 0, numeric: .proportional, textStyle: .caption2)
             self.titleLg = DSTypeRole(slot: .ui, size: 32, weight: 500, boldWeight: 700, lineHeight: 1.1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
@@ -48,23 +51,42 @@ extension DSTokenSet {
                 self.displayLg = DSTypeRole(slot: .display, size: 48, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
                 self.displayXl = DSTypeRole(slot: .display, size: 64, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.02, numeric: .proportional, textStyle: .largeTitle)
                 self.metricLg = DSTypeRole(slot: .display, size: 32, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
-                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
             case (.light, .increased):
                 self.displayLg = DSTypeRole(slot: .display, size: 48, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
                 self.displayXl = DSTypeRole(slot: .display, size: 64, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.02, numeric: .proportional, textStyle: .largeTitle)
                 self.metricLg = DSTypeRole(slot: .display, size: 32, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
-                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
             case (.dark, .standard):
                 self.displayLg = DSTypeRole(slot: .display, size: 48, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
                 self.displayXl = DSTypeRole(slot: .display, size: 64, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.02, numeric: .proportional, textStyle: .largeTitle)
                 self.metricLg = DSTypeRole(slot: .display, size: 32, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
-                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 200, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
             case (.dark, .increased):
                 self.displayLg = DSTypeRole(slot: .display, size: 48, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
                 self.displayXl = DSTypeRole(slot: .display, size: 64, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.02, numeric: .proportional, textStyle: .largeTitle)
                 self.metricLg = DSTypeRole(slot: .display, size: 32, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: 0, numeric: .proportional, textStyle: .largeTitle)
+            }
+#if os(watchOS)
+            switch (c.colorScheme, c.contrast) {
+            case (.light, .standard):
+                self.metricXl = DSTypeRole(slot: .display, size: 40, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.light, .increased):
+                self.metricXl = DSTypeRole(slot: .display, size: 40, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.dark, .standard):
+                self.metricXl = DSTypeRole(slot: .display, size: 40, weight: 200, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.dark, .increased):
+                self.metricXl = DSTypeRole(slot: .display, size: 40, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            }
+#else
+            switch (c.colorScheme, c.contrast) {
+            case (.light, .standard):
+                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 300, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.light, .increased):
+                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.dark, .standard):
+                self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 200, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
+            case (.dark, .increased):
                 self.metricXl = DSTypeRole(slot: .display, size: 48, weight: 400, boldWeight: 400, lineHeight: 1, trackingEm: -0.01, numeric: .proportional, textStyle: .largeTitle)
             }
+#endif
         }
     }
 }

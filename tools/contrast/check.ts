@@ -2,8 +2,9 @@
 // token bundle, takes every brand × colorScheme context (`api.contrastContexts`, platform web, the other
 // axes at their defaults), evaluates every pair of tokens/contrast-pairs.json in every context its
 // `schemes` allow, checks that every a11y.pairsWith of a sys.color.text.* token is a pair (tokens/README.md
-// rule 4) and that V1 and V2 reach every vivid gradient, then prints a Markdown table on stdout and appends
-// it to $GITHUB_STEP_SUMMARY.
+// rule 4), that V1 and V2 reach every vivid gradient and that every map ground keeps its backdrop limit
+// (`map/backdrop-limit`, ADR-0030 §1.5), then prints a Markdown table on stdout and appends it to
+// $GITHUB_STEP_SUMMARY.
 //
 //   node contrast/check.ts [--root <dir>] [--resolver <path>] [--pairs <path>] [--report <file>]
 //
@@ -20,6 +21,7 @@ import {
   type ContrastContext, type Diagnostic, type IRBundle, type PermKey, type SourceReader,
 } from '../tokens/api.ts';
 import { cardGeometries, type CardGeometry } from './gradient.ts';
+import { checkMapBackdrops, type MapGround } from './map.ts';
 import {
   appliesTo, contextLabel, evaluatePair, gradientCoverageProblems, pairLabel, PairError, pairsWithProblems, parsePairsFile,
   type Env, type Evaluation, type PairsFile, type Problem,
@@ -45,6 +47,8 @@ export interface CheckResult {
   readonly bundle: IRBundle | null;
   readonly contexts: readonly ContrastContext[];
   readonly evaluations: readonly Evaluation[];
+  /** The map grounds of every context over the land (ADR-0030 §1.5); empty without a map. */
+  readonly maps: readonly MapGround[];
   readonly problems: readonly Problem[];
   readonly diagnostics: readonly Diagnostic[];
 }
@@ -70,8 +74,8 @@ export async function runCheck(opts: CheckOptions = {}): Promise<CheckResult> {
 
   const collected = await collectBundle({ reader, resolver });
   const bundle = collected.bundle;
-  const result = (contexts: readonly ContrastContext[], evaluations: readonly Evaluation[]): CheckResult =>
-    ({ pairsPath, file, bundle, contexts, evaluations, problems, diagnostics: collected.diagnostics });
+  const result = (contexts: readonly ContrastContext[], evaluations: readonly Evaluation[], maps: readonly MapGround[] = []): CheckResult =>
+    ({ pairsPath, file, bundle, contexts, evaluations, maps, problems, diagnostics: collected.diagnostics });
   if (bundle === null) return result([], []);
 
   let contexts: readonly ContrastContext[];
@@ -120,7 +124,9 @@ export async function runCheck(opts: CheckOptions = {}): Promise<CheckResult> {
   }
   problems.push(...pairsWithProblems(bundle, contexts, file.pairs));
   problems.push(...gradientCoverageProblems(bundle, contexts, evaluations));
-  return result(contexts, evaluations);
+  const maps = checkMapBackdrops(contexts);
+  problems.push(...maps.problems);
+  return result(contexts, evaluations, maps.grounds);
 }
 
 export function report(r: CheckResult): string {
@@ -130,6 +136,7 @@ export function report(r: CheckResult): string {
     pairs: r.file?.pairs.length ?? 0,
     contexts: r.contexts.map(contextLabel),
     evaluations: r.evaluations,
+    maps: r.maps,
     problems: r.problems,
     diagnostics: r.diagnostics,
   });

@@ -15,9 +15,9 @@ public enum DSTransparency: String, CaseIterable, Hashable, Sendable {
     case standard, reduced
 }
 
-/// `density`, web attribute `data-ds-density`: `compact` (default), `regular`, `comfortable` (ADR-0019 §1).
+/// `density`, web attribute `data-ds-density`: `compact` (default), `regular`, `comfortable`, `watch` (ADR-0019 §1).
 public enum DSDensity: String, CaseIterable, Hashable, Sendable {
-    case compact, regular, comfortable
+    case compact, regular, comfortable, watch
 }
 
 /// `modality`, web attribute `data-ds-modality`: `pointer` (default), `touch` (ADR-0019 §1).
@@ -65,7 +65,7 @@ public struct DSTokenContext: Hashable, Sendable {
 
     /// Where DSCore starts on this OS (ADR-0019 §2); iPadOS switches to pointer while a pointing device is connected.
     #if os(watchOS)
-    public static let platformDefault = DSTokenContext(colorScheme: .dark, density: .comfortable, modality: .touch)
+    public static let platformDefault = DSTokenContext(colorScheme: .dark, density: .watch, modality: .touch)
     #elseif os(macOS)
     public static let platformDefault = DSTokenContext(density: .compact, modality: .pointer)
     #else

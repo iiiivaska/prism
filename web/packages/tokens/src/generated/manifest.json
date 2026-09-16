@@ -35,7 +35,8 @@
       "contexts": [
         "compact",
         "regular",
-        "comfortable"
+        "comfortable",
+        "watch"
       ],
       "default": "compact"
     },
@@ -126,6 +127,10 @@
         "comfortable": {
           "context": "comfortable",
           "swift": "DSDensity.comfortable"
+        },
+        "watch": {
+          "context": "watch",
+          "swift": "DSDensity.watch"
         }
       },
       "media": {
@@ -189,7 +194,7 @@
     },
     "watchos": {
       "colorScheme": "dark",
-      "density": "comfortable",
+      "density": "watch",
       "modality": "touch"
     }
   },
@@ -201,24 +206,6 @@
     "ds-reduce-motion"
   ],
   "tokens": [
-    {
-      "path": "ref.blur.bloom",
-      "id": "ref.blur.bloom",
-      "tier": "ref",
-      "type": "dimension",
-      "dependsOn": [],
-      "css": "--ds-ref-blur-bloom",
-      "cssVars": [
-        "--ds-ref-blur-bloom"
-      ],
-      "tailwind": [],
-      "tailwindTheme": [],
-      "ts": null,
-      "swift": null,
-      "asset": null,
-      "description": null,
-      "deprecated": null
-    },
     {
       "path": "ref.blur.cell",
       "id": "ref.blur.cell",
@@ -559,6 +546,78 @@
       "swift": null,
       "asset": null,
       "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.map.dark.park",
+      "id": "ref.color.map.dark.park",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-map-dark-park",
+      "cssVars": [
+        "--ds-ref-color-map-dark-park"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "dark park hue; sys.color.map.park draws it at alpha 0.11",
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.map.dark.water",
+      "id": "ref.color.map.dark.water",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-map-dark-water",
+      "cssVars": [
+        "--ds-ref-color-map-dark-water"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "dark water hue; sys.color.map.water draws it at alpha 0.16",
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.map.light.park",
+      "id": "ref.color.map.light.park",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-map-light-park",
+      "cssVars": [
+        "--ds-ref-color-map-light-park"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "light park hue; sys.color.map.park draws it at alpha 0.16",
+      "deprecated": null
+    },
+    {
+      "path": "ref.color.map.light.water",
+      "id": "ref.color.map.light.water",
+      "tier": "ref",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-ref-color-map-light-water",
+      "cssVars": [
+        "--ds-ref-color-map-light-water"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "light water hue; sys.color.map.water draws it at alpha 0.16",
       "deprecated": null
     },
     {
@@ -1206,7 +1265,7 @@
       "ts": null,
       "swift": null,
       "asset": null,
-      "description": "smoked-glass tint; system-owned (ADR-0020)",
+      "description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)",
       "deprecated": null
     },
     {
@@ -1224,7 +1283,7 @@
       "ts": null,
       "swift": null,
       "asset": null,
-      "description": "smoked-glass tint; system-owned (ADR-0020)",
+      "description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)",
       "deprecated": null
     },
     {
@@ -1308,24 +1367,6 @@
       "css": "--ds-ref-color-status-danger-text-light",
       "cssVars": [
         "--ds-ref-color-status-danger-text-light"
-      ],
-      "tailwind": [],
-      "tailwindTheme": [],
-      "ts": null,
-      "swift": null,
-      "asset": null,
-      "description": null,
-      "deprecated": null
-    },
-    {
-      "path": "ref.color.status.danger.tint-light",
-      "id": "ref.color.status.danger.tint-light",
-      "tier": "ref",
-      "type": "color",
-      "dependsOn": [],
-      "css": "--ds-ref-color-status-danger-tint-light",
-      "cssVars": [
-        "--ds-ref-color-status-danger-tint-light"
       ],
       "tailwind": [],
       "tailwindTheme": [],
@@ -1426,24 +1467,6 @@
       "deprecated": null
     },
     {
-      "path": "ref.color.status.info.tint-light",
-      "id": "ref.color.status.info.tint-light",
-      "tier": "ref",
-      "type": "color",
-      "dependsOn": [],
-      "css": "--ds-ref-color-status-info-tint-light",
-      "cssVars": [
-        "--ds-ref-color-status-info-tint-light"
-      ],
-      "tailwind": [],
-      "tailwindTheme": [],
-      "ts": null,
-      "swift": null,
-      "asset": null,
-      "description": null,
-      "deprecated": null
-    },
-    {
       "path": "ref.color.status.success.dark",
       "id": "ref.color.status.success.dark",
       "tier": "ref",
@@ -1498,24 +1521,6 @@
       "deprecated": null
     },
     {
-      "path": "ref.color.status.success.tint-light",
-      "id": "ref.color.status.success.tint-light",
-      "tier": "ref",
-      "type": "color",
-      "dependsOn": [],
-      "css": "--ds-ref-color-status-success-tint-light",
-      "cssVars": [
-        "--ds-ref-color-status-success-tint-light"
-      ],
-      "tailwind": [],
-      "tailwindTheme": [],
-      "ts": null,
-      "swift": null,
-      "asset": null,
-      "description": null,
-      "deprecated": null
-    },
-    {
       "path": "ref.color.status.warning.dark",
       "id": "ref.color.status.warning.dark",
       "tier": "ref",
@@ -1560,24 +1565,6 @@
       "css": "--ds-ref-color-status-warning-text-light",
       "cssVars": [
         "--ds-ref-color-status-warning-text-light"
-      ],
-      "tailwind": [],
-      "tailwindTheme": [],
-      "ts": null,
-      "swift": null,
-      "asset": null,
-      "description": null,
-      "deprecated": null
-    },
-    {
-      "path": "ref.color.status.warning.tint-light",
-      "id": "ref.color.status.warning.tint-light",
-      "tier": "ref",
-      "type": "color",
-      "dependsOn": [],
-      "css": "--ds-ref-color-status-warning-tint-light",
-      "cssVars": [
-        "--ds-ref-color-status-warning-tint-light"
       ],
       "tailwind": [],
       "tailwindTheme": [],
@@ -1700,6 +1687,7 @@
         "--ds-ref-gradient-vivid-ember-night",
         "--ds-ref-gradient-vivid-ember-night-bloom-alpha",
         "--ds-ref-gradient-vivid-ember-night-bloom-blur",
+        "--ds-ref-gradient-vivid-ember-night-bloom-color",
         "--ds-ref-gradient-vivid-ember-night-grain"
       ],
       "tailwind": [],
@@ -1707,7 +1695,7 @@
       "ts": null,
       "swift": null,
       "asset": null,
-      "description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2",
+      "description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2; outside the slots: a single warm hero card on a screen without the accent (ADR-0029 §2.6)",
       "deprecated": null
     },
     {
@@ -1721,6 +1709,7 @@
         "--ds-ref-gradient-vivid-forest-moss",
         "--ds-ref-gradient-vivid-forest-moss-bloom-alpha",
         "--ds-ref-gradient-vivid-forest-moss-bloom-blur",
+        "--ds-ref-gradient-vivid-forest-moss-bloom-color",
         "--ds-ref-gradient-vivid-forest-moss-grain"
       ],
       "tailwind": [],
@@ -1742,6 +1731,7 @@
         "--ds-ref-gradient-vivid-navy-cyan",
         "--ds-ref-gradient-vivid-navy-cyan-bloom-alpha",
         "--ds-ref-gradient-vivid-navy-cyan-bloom-blur",
+        "--ds-ref-gradient-vivid-navy-cyan-bloom-color",
         "--ds-ref-gradient-vivid-navy-cyan-grain"
       ],
       "tailwind": [],
@@ -1749,7 +1739,29 @@
       "ts": null,
       "swift": null,
       "asset": null,
-      "description": "dark vivid surface; linear 180 deg; grain 0.10; passes ADR-0022 V1/V2",
+      "description": "dark vivid surface; linear 180 deg; grain 0.10; stops at 0.30 and 0.85 keep the lightness climb soft (ADR-0029 §2.2); passes ADR-0022 V1/V2",
+      "deprecated": null
+    },
+    {
+      "path": "ref.gradient.vivid.night-lagoon",
+      "id": "ref.gradient.vivid.night-lagoon",
+      "tier": "ref",
+      "type": "gradient",
+      "dependsOn": [],
+      "css": "--ds-ref-gradient-vivid-night-lagoon",
+      "cssVars": [
+        "--ds-ref-gradient-vivid-night-lagoon",
+        "--ds-ref-gradient-vivid-night-lagoon-bloom-alpha",
+        "--ds-ref-gradient-vivid-night-lagoon-bloom-blur",
+        "--ds-ref-gradient-vivid-night-lagoon-bloom-color",
+        "--ds-ref-gradient-vivid-night-lagoon-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "dark vivid surface: a deep night-blue rising into lagoon teal; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2 (ADR-0029 §2.3)",
       "deprecated": null
     },
     {
@@ -1763,6 +1775,7 @@
         "--ds-ref-gradient-vivid-olive",
         "--ds-ref-gradient-vivid-olive-bloom-alpha",
         "--ds-ref-gradient-vivid-olive-bloom-blur",
+        "--ds-ref-gradient-vivid-olive-bloom-color",
         "--ds-ref-gradient-vivid-olive-grain"
       ],
       "tailwind": [],
@@ -1784,6 +1797,7 @@
         "--ds-ref-gradient-vivid-orchid",
         "--ds-ref-gradient-vivid-orchid-bloom-alpha",
         "--ds-ref-gradient-vivid-orchid-bloom-blur",
+        "--ds-ref-gradient-vivid-orchid-bloom-color",
         "--ds-ref-gradient-vivid-orchid-grain"
       ],
       "tailwind": [],
@@ -1805,6 +1819,7 @@
         "--ds-ref-gradient-vivid-plum-dusk",
         "--ds-ref-gradient-vivid-plum-dusk-bloom-alpha",
         "--ds-ref-gradient-vivid-plum-dusk-bloom-blur",
+        "--ds-ref-gradient-vivid-plum-dusk-bloom-color",
         "--ds-ref-gradient-vivid-plum-dusk-grain"
       ],
       "tailwind": [],
@@ -1826,6 +1841,7 @@
         "--ds-ref-gradient-vivid-rose",
         "--ds-ref-gradient-vivid-rose-bloom-alpha",
         "--ds-ref-gradient-vivid-rose-bloom-blur",
+        "--ds-ref-gradient-vivid-rose-bloom-color",
         "--ds-ref-gradient-vivid-rose-grain"
       ],
       "tailwind": [],
@@ -1847,6 +1863,7 @@
         "--ds-ref-gradient-vivid-sky",
         "--ds-ref-gradient-vivid-sky-bloom-alpha",
         "--ds-ref-gradient-vivid-sky-bloom-blur",
+        "--ds-ref-gradient-vivid-sky-bloom-color",
         "--ds-ref-gradient-vivid-sky-grain"
       ],
       "tailwind": [],
@@ -2953,6 +2970,29 @@
       "deprecated": null
     },
     {
+      "path": "ref.type.axis",
+      "id": "ref.type.axis",
+      "tier": "ref",
+      "type": "typography",
+      "dependsOn": [],
+      "css": null,
+      "cssVars": [
+        "--ds-ref-type-axis-font-family",
+        "--ds-ref-type-axis-font-size",
+        "--ds-ref-type-axis-font-variant-numeric",
+        "--ds-ref-type-axis-font-weight",
+        "--ds-ref-type-axis-letter-spacing",
+        "--ds-ref-type-axis-line-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "chart axis labels and ticks; tabular, so tick values align (ADR-0030 §2.6)",
+      "deprecated": null
+    },
+    {
       "path": "ref.type.body.lg",
       "id": "ref.type.body.lg",
       "tier": "ref",
@@ -3300,7 +3340,7 @@
       "ts": null,
       "swift": null,
       "asset": null,
-      "description": "inline metric '41 %'",
+      "description": "inline metric '41 %'; proportional like every metric role, numeric: tabular when the value is live (ADR-0021 §5, ADR-0030 §7.1)",
       "deprecated": null
     },
     {
@@ -3349,6 +3389,31 @@
       "swift": null,
       "asset": null,
       "description": "the one hero numeral per screen; 300 in light, 200 in dark (darkWeight); proportional figures unless the value is live; trailing group in text.dimmed at the same size",
+      "deprecated": null
+    },
+    {
+      "path": "ref.type.metric.xl-watch",
+      "id": "ref.type.metric.xl-watch",
+      "tier": "ref",
+      "type": "typography",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": null,
+      "cssVars": [
+        "--ds-ref-type-metric-xl-watch-font-family",
+        "--ds-ref-type-metric-xl-watch-font-size",
+        "--ds-ref-type-metric-xl-watch-font-variant-numeric",
+        "--ds-ref-type-metric-xl-watch-font-weight",
+        "--ds-ref-type-metric-xl-watch-letter-spacing",
+        "--ds-ref-type-metric-xl-watch-line-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": null,
+      "swift": null,
+      "asset": null,
+      "description": "the watch face of the metric.xl role, not a role of its own: sys.type.metric.xl in the watch platform context (ADR-0030 §7.2); 300 in light, 200 in dark (darkWeight, 40 >= 34 px)",
       "deprecated": null
     },
     {
@@ -3620,7 +3685,7 @@
       "ts": "chart.gauge-stroke-ratio",
       "swift": "DSTokenSet.chart.gaugeStrokeRatio",
       "asset": null,
-      "description": null,
+      "description": "ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5)",
       "deprecated": null
     },
     {
@@ -3882,6 +3947,28 @@
       "deprecated": null
     },
     {
+      "path": "color.bg.fill.inverse-media",
+      "id": "sys.color.bg.fill.inverse-media",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-bg-fill-inverse-media",
+      "cssVars": [
+        "--ds-color-bg-fill-inverse-media"
+      ],
+      "tailwind": [
+        "bg-ds-fill-inverse-media"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-fill-inverse-media"
+      ],
+      "ts": "color.bg.fill.inverse-media",
+      "swift": "DSColor.bgFillInverseMedia",
+      "asset": "color-bg-fill-inverse-media",
+      "description": "the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)",
+      "deprecated": null
+    },
+    {
       "path": "color.bg.fill.neutral.subtle",
       "id": "sys.color.bg.fill.neutral.subtle",
       "tier": "sys",
@@ -4022,7 +4109,7 @@
       "ts": "color.bg.surface.raised",
       "swift": "DSColor.bgSurfaceRaised",
       "asset": "color-bg-surface-raised",
-      "description": "puffy chip / round button on the page, plus inset top highlight and elevation.1",
+      "description": "puffy chip / round button on the page (#F7F8FA, opaque; ADR-0030 §5.2), with color.edge.raised as its top edge and elevation.1; also the glass fallback",
       "deprecated": null
     },
     {
@@ -4070,7 +4157,7 @@
       "ts": "color.bg.tint.critical",
       "swift": "DSColor.bgTintCritical",
       "asset": "color-bg-tint-critical",
-      "description": null,
+      "description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
       "deprecated": null
     },
     {
@@ -4094,7 +4181,7 @@
       "ts": "color.bg.tint.info",
       "swift": "DSColor.bgTintInfo",
       "asset": "color-bg-tint-info",
-      "description": null,
+      "description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
       "deprecated": null
     },
     {
@@ -4118,7 +4205,7 @@
       "ts": "color.bg.tint.success",
       "swift": "DSColor.bgTintSuccess",
       "asset": "color-bg-tint-success",
-      "description": null,
+      "description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
       "deprecated": null
     },
     {
@@ -4142,7 +4229,7 @@
       "ts": "color.bg.tint.warning",
       "swift": "DSColor.bgTintWarning",
       "asset": "color-bg-tint-warning",
-      "description": null,
+      "description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)",
       "deprecated": null
     },
     {
@@ -4224,6 +4311,58 @@
       "swift": "DSColor.borderHairline",
       "asset": "color-border-hairline",
       "description": "inputs, table rows, chip strokes",
+      "deprecated": null
+    },
+    {
+      "path": "color.border.on-glass-fill",
+      "id": "sys.color.border.on-glass-fill",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-border-on-glass-fill",
+      "cssVars": [
+        "--ds-color-border-on-glass-fill"
+      ],
+      "tailwind": [
+        "border-ds-on-glass-fill",
+        "divide-ds-on-glass-fill",
+        "outline-ds-on-glass-fill"
+      ],
+      "tailwindTheme": [
+        "--border-color-ds-on-glass-fill",
+        "--outline-color-ds-on-glass-fill"
+      ],
+      "ts": "color.border.on-glass-fill",
+      "swift": "DSColor.borderOnGlassFill",
+      "asset": "color-border-on-glass-fill",
+      "description": "rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2)",
+      "deprecated": null
+    },
+    {
+      "path": "color.border.on-media",
+      "id": "sys.color.border.on-media",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-border-on-media",
+      "cssVars": [
+        "--ds-color-border-on-media"
+      ],
+      "tailwind": [
+        "border-ds-on-media",
+        "divide-ds-on-media",
+        "outline-ds-on-media"
+      ],
+      "tailwindTheme": [
+        "--border-color-ds-on-media",
+        "--outline-color-ds-on-media"
+      ],
+      "ts": "color.border.on-media",
+      "swift": "DSColor.borderOnMedia",
+      "asset": "color-border-on-media",
+      "description": "rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2)",
       "deprecated": null
     },
     {
@@ -4448,6 +4587,194 @@
       "deprecated": null
     },
     {
+      "path": "color.chart.on-glass-fill.grid",
+      "id": "sys.color.chart.on-glass-fill.grid",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-chart-on-glass-fill-grid",
+      "cssVars": [
+        "--ds-color-chart-on-glass-fill-grid"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-glass-fill-grid",
+        "text-ds-chart-on-glass-fill-grid",
+        "border-ds-chart-on-glass-fill-grid",
+        "fill-ds-chart-on-glass-fill-grid",
+        "stroke-ds-chart-on-glass-fill-grid"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-glass-fill-grid"
+      ],
+      "ts": "color.chart.on-glass-fill.grid",
+      "swift": "DSColor.chartOnGlassFillGrid",
+      "asset": "color-chart-on-glass-fill-grid",
+      "description": "gridlines on the scheme's glass (ADR-0030 §2.3)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-glass-fill.line",
+      "id": "sys.color.chart.on-glass-fill.line",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-chart-on-glass-fill-line",
+      "cssVars": [
+        "--ds-color-chart-on-glass-fill-line"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-glass-fill-line",
+        "text-ds-chart-on-glass-fill-line",
+        "border-ds-chart-on-glass-fill-line",
+        "fill-ds-chart-on-glass-fill-line",
+        "stroke-ds-chart-on-glass-fill-line"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-glass-fill-line"
+      ],
+      "ts": "color.chart.on-glass-fill.line",
+      "swift": "DSColor.chartOnGlassFillLine",
+      "asset": "color-chart-on-glass-fill-line",
+      "description": "chart line on the scheme's glass: the glass foreground, ink in light (ADR-0030 §2.3)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-glass-fill.plot",
+      "id": "sys.color.chart.on-glass-fill.plot",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-chart-on-glass-fill-plot",
+      "cssVars": [
+        "--ds-color-chart-on-glass-fill-plot"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-glass-fill-plot",
+        "text-ds-chart-on-glass-fill-plot",
+        "border-ds-chart-on-glass-fill-plot",
+        "fill-ds-chart-on-glass-fill-plot",
+        "stroke-ds-chart-on-glass-fill-plot"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-glass-fill-plot"
+      ],
+      "ts": "color.chart.on-glass-fill.plot",
+      "swift": "DSColor.chartOnGlassFillPlot",
+      "asset": "color-chart-on-glass-fill-plot",
+      "description": "the plot on the scheme's glass: a white 8% lift, not a white hole (ADR-0030 §2.3)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-glass-fill.reference",
+      "id": "sys.color.chart.on-glass-fill.reference",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-chart-on-glass-fill-reference",
+      "cssVars": [
+        "--ds-color-chart-on-glass-fill-reference"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-glass-fill-reference",
+        "text-ds-chart-on-glass-fill-reference",
+        "border-ds-chart-on-glass-fill-reference",
+        "fill-ds-chart-on-glass-fill-reference",
+        "stroke-ds-chart-on-glass-fill-reference"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-glass-fill-reference"
+      ],
+      "ts": "color.chart.on-glass-fill.reference",
+      "swift": "DSColor.chartOnGlassFillReference",
+      "asset": "color-chart-on-glass-fill-reference",
+      "description": "the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-media.grid",
+      "id": "sys.color.chart.on-media.grid",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-chart-on-media-grid",
+      "cssVars": [
+        "--ds-color-chart-on-media-grid"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-media-grid",
+        "text-ds-chart-on-media-grid",
+        "border-ds-chart-on-media-grid",
+        "fill-ds-chart-on-media-grid",
+        "stroke-ds-chart-on-media-grid"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-media-grid"
+      ],
+      "ts": "color.chart.on-media.grid",
+      "swift": "DSColor.chartOnMediaGrid",
+      "asset": "color-chart-on-media-grid",
+      "description": "gridlines on vivid; decorative (ADR-0030 §2.2)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-media.line",
+      "id": "sys.color.chart.on-media.line",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-chart-on-media-line",
+      "cssVars": [
+        "--ds-color-chart-on-media-line"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-media-line",
+        "text-ds-chart-on-media-line",
+        "border-ds-chart-on-media-line",
+        "fill-ds-chart-on-media-line",
+        "stroke-ds-chart-on-media-line"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-media-line"
+      ],
+      "ts": "color.chart.on-media.line",
+      "swift": "DSColor.chartOnMediaLine",
+      "asset": "color-chart-on-media-line",
+      "description": "chart line on vivid (ADR-0030 §2.2)",
+      "deprecated": null
+    },
+    {
+      "path": "color.chart.on-media.reference",
+      "id": "sys.color.chart.on-media.reference",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-chart-on-media-reference",
+      "cssVars": [
+        "--ds-color-chart-on-media-reference"
+      ],
+      "tailwind": [
+        "bg-ds-chart-on-media-reference",
+        "text-ds-chart-on-media-reference",
+        "border-ds-chart-on-media-reference",
+        "fill-ds-chart-on-media-reference",
+        "stroke-ds-chart-on-media-reference"
+      ],
+      "tailwindTheme": [
+        "--color-ds-chart-on-media-reference"
+      ],
+      "ts": "color.chart.on-media.reference",
+      "swift": "DSColor.chartOnMediaReference",
+      "asset": "color-chart-on-media-reference",
+      "description": "the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2)",
+      "deprecated": null
+    },
+    {
       "path": "color.chart.plot",
       "id": "sys.color.chart.plot",
       "tier": "sys",
@@ -4668,7 +4995,45 @@
       "ts": "color.chart.target",
       "swift": "DSColor.chartTarget",
       "asset": "color-chart-target",
-      "description": "the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14)",
+      "description": "the mandatory target line (ADR-0007 rule 2); ink 60% (5.07:1 on white) reads above comparison's 45% (ADR-0030 §2.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.edge.highlight",
+      "id": "sys.color.edge.highlight",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-edge-highlight",
+      "cssVars": [
+        "--ds-color-edge-highlight"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.edge.highlight",
+      "swift": "DSColor.edgeHighlight",
+      "asset": "color-edge-highlight",
+      "description": "the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2)",
+      "deprecated": null
+    },
+    {
+      "path": "color.edge.raised",
+      "id": "sys.color.edge.raised",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-edge-raised",
+      "cssVars": [
+        "--ds-color-edge-raised"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.edge.raised",
+      "swift": "DSColor.edgeRaised",
+      "asset": "color-edge-raised",
+      "description": "the 1 px top edge of raised: the puffy chip (ADR-0030 §4.1)",
       "deprecated": null
     },
     {
@@ -4850,6 +5215,226 @@
       "deprecated": null
     },
     {
+      "path": "color.map.block",
+      "id": "sys.color.map.block",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-block",
+      "cssVars": [
+        "--ds-color-map-block"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.block",
+      "swift": "DSColor.mapBlock",
+      "asset": "color-map-block",
+      "description": "map ground: city blocks, over the land",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.building",
+      "id": "sys.color.map.building",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-building",
+      "cssVars": [
+        "--ds-color-map-building"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.building",
+      "swift": "DSColor.mapBuilding",
+      "asset": "color-map-building",
+      "description": "map ground: buildings, over the land",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.label",
+      "id": "sys.color.map.label",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-label",
+      "cssVars": [
+        "--ds-color-map-label"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.label",
+      "swift": "DSColor.mapLabel",
+      "asset": "color-map-label",
+      "description": "map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.land",
+      "id": "sys.color.map.land",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-land",
+      "cssVars": [
+        "--ds-color-map-land"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.land",
+      "swift": "DSColor.mapLand",
+      "asset": "color-map-land",
+      "description": "map ground: the land, the page (ADR-0030 §1.1)",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.park",
+      "id": "sys.color.map.park",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-park",
+      "cssVars": [
+        "--ds-color-map-park"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.park",
+      "swift": "DSColor.mapPark",
+      "asset": "color-map-park",
+      "description": "map ground: parks, over the land",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.road",
+      "id": "sys.color.map.road",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-road",
+      "cssVars": [
+        "--ds-color-map-road"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.road",
+      "swift": "DSColor.mapRoad",
+      "asset": "color-map-road",
+      "description": "map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3)",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.road-casing",
+      "id": "sys.color.map.road-casing",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-road-casing",
+      "cssVars": [
+        "--ds-color-map-road-casing"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.road-casing",
+      "swift": "DSColor.mapRoadCasing",
+      "asset": "color-map-road-casing",
+      "description": "map ground: the casing under roads",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.route",
+      "id": "sys.color.map.route",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-route",
+      "cssVars": [
+        "--ds-color-map-route"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.route",
+      "swift": "DSColor.mapRoute",
+      "asset": "color-map-route",
+      "description": "the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.route-ahead",
+      "id": "sys.color.map.route-ahead",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-route-ahead",
+      "cssVars": [
+        "--ds-color-map-route-ahead"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.route-ahead",
+      "swift": "DSColor.mapRouteAhead",
+      "asset": "color-map-route-ahead",
+      "description": "the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.route-casing",
+      "id": "sys.color.map.route-casing",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-route-casing",
+      "cssVars": [
+        "--ds-color-map-route-casing"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.route-casing",
+      "swift": "DSColor.mapRouteCasing",
+      "asset": "color-map-route-casing",
+      "description": "the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.map.water",
+      "id": "sys.color.map.water",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-map-water",
+      "cssVars": [
+        "--ds-color-map-water"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "color.map.water",
+      "swift": "DSColor.mapWater",
+      "asset": "color-map-water",
+      "description": "map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2)",
+      "deprecated": null
+    },
+    {
       "path": "color.text.accent",
       "id": "sys.color.text.accent",
       "tier": "sys",
@@ -4968,6 +5553,28 @@
       "deprecated": null
     },
     {
+      "path": "color.text.on-accent-secondary",
+      "id": "sys.color.text.on-accent-secondary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-text-on-accent-secondary",
+      "cssVars": [
+        "--ds-color-text-on-accent-secondary"
+      ],
+      "tailwind": [
+        "text-ds-on-accent-secondary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-accent-secondary"
+      ],
+      "ts": "color.text.on-accent-secondary",
+      "swift": "DSColor.textOnAccentSecondary",
+      "asset": "color-text-on-accent-secondary",
+      "description": "the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4)",
+      "deprecated": null
+    },
+    {
       "path": "color.text.on-accent-strong",
       "id": "sys.color.text.on-accent-strong",
       "tier": "sys",
@@ -5031,6 +5638,150 @@
       "swift": "DSColor.textOnGlass",
       "asset": "color-text-on-glass",
       "description": "white on dark glass; light glass uses on-glass-light (ADR-0022)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill",
+      "id": "sys.color.text.on-glass-fill",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill"
+      ],
+      "ts": "color.text.on-glass-fill",
+      "swift": "DSColor.textOnGlassFill",
+      "asset": "color-text-on-glass-fill",
+      "description": "the scheme's glass (material.glass.fill and .chip): ink on light glass in light (ADR-0029 §1.3)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill-dimmed",
+      "id": "sys.color.text.on-glass-fill-dimmed",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill-dimmed",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill-dimmed"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill-dimmed"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill-dimmed"
+      ],
+      "ts": "color.text.on-glass-fill-dimmed",
+      "swift": "DSColor.textOnGlassFillDimmed",
+      "asset": "color-text-on-glass-fill-dimmed",
+      "description": "dimmed tone (trailing digits and units at >= 24 px) on the scheme's glass over Prism's map only (backdrop L >= 0.89; ADR-0029 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill-media-secondary",
+      "id": "sys.color.text.on-glass-fill-media-secondary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill-media-secondary",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill-media-secondary"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill-media-secondary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill-media-secondary"
+      ],
+      "ts": "color.text.on-glass-fill-media-secondary",
+      "swift": "DSColor.textOnGlassFillMediaSecondary",
+      "asset": "color-text-on-glass-fill-media-secondary",
+      "description": "secondary tone on the scheme's glass over imagery and vivid: ink, the primary tone, in light (ADR-0029 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill-media-tertiary",
+      "id": "sys.color.text.on-glass-fill-media-tertiary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill-media-tertiary",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill-media-tertiary"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill-media-tertiary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill-media-tertiary"
+      ],
+      "ts": "color.text.on-glass-fill-media-tertiary",
+      "swift": "DSColor.textOnGlassFillMediaTertiary",
+      "asset": "color-text-on-glass-fill-media-tertiary",
+      "description": "tertiary and dimmed tones on the scheme's glass over imagery and vivid: ink in light (ADR-0029 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill-secondary",
+      "id": "sys.color.text.on-glass-fill-secondary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill-secondary",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill-secondary"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill-secondary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill-secondary"
+      ],
+      "ts": "color.text.on-glass-fill-secondary",
+      "swift": "DSColor.textOnGlassFillSecondary",
+      "asset": "color-text-on-glass-fill-secondary",
+      "description": "secondary tone on the scheme's glass over Prism's map only (backdrop L >= 0.84; ADR-0029 §1.4)",
+      "deprecated": null
+    },
+    {
+      "path": "color.text.on-glass-fill-tertiary",
+      "id": "sys.color.text.on-glass-fill-tertiary",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-text-on-glass-fill-tertiary",
+      "cssVars": [
+        "--ds-color-text-on-glass-fill-tertiary"
+      ],
+      "tailwind": [
+        "text-ds-on-glass-fill-tertiary"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-glass-fill-tertiary"
+      ],
+      "ts": "color.text.on-glass-fill-tertiary",
+      "swift": "DSColor.textOnGlassFillTertiary",
+      "asset": "color-text-on-glass-fill-tertiary",
+      "description": "tertiary tone on the scheme's glass over Prism's map only (ADR-0029 §1.4)",
       "deprecated": null
     },
     {
@@ -5126,6 +5877,28 @@
       "deprecated": null
     },
     {
+      "path": "color.text.on-inverse-media",
+      "id": "sys.color.text.on-inverse-media",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-text-on-inverse-media",
+      "cssVars": [
+        "--ds-color-text-on-inverse-media"
+      ],
+      "tailwind": [
+        "text-ds-on-inverse-media"
+      ],
+      "tailwindTheme": [
+        "--text-color-ds-on-inverse-media"
+      ],
+      "ts": "color.text.on-inverse-media",
+      "swift": "DSColor.textOnInverseMedia",
+      "asset": "color-text-on-inverse-media",
+      "description": "ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1)",
+      "deprecated": null
+    },
+    {
       "path": "color.text.on-vivid",
       "id": "sys.color.text.on-vivid",
       "tier": "sys",
@@ -5144,7 +5917,7 @@
       "ts": "color.text.on-vivid",
       "swift": "DSColor.textOnVivid",
       "asset": "color-text-on-vivid",
-      "description": "every vivid gradient passes ADR-0022 V1/V2",
+      "description": "every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2",
       "deprecated": null
     },
     {
@@ -5440,6 +6213,7 @@
         "--ds-gradient-vivid-1",
         "--ds-gradient-vivid-1-bloom-alpha",
         "--ds-gradient-vivid-1-bloom-blur",
+        "--ds-gradient-vivid-1-bloom-color",
         "--ds-gradient-vivid-1-grain"
       ],
       "tailwind": [],
@@ -5447,7 +6221,7 @@
       "ts": "gradient.vivid.1",
       "swift": "DSTokenSet.gradient.vivid1",
       "asset": null,
-      "description": null,
+      "description": "slot pair 1 + 2 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)",
       "deprecated": null
     },
     {
@@ -5463,6 +6237,7 @@
         "--ds-gradient-vivid-2",
         "--ds-gradient-vivid-2-bloom-alpha",
         "--ds-gradient-vivid-2-bloom-blur",
+        "--ds-gradient-vivid-2-bloom-color",
         "--ds-gradient-vivid-2-grain"
       ],
       "tailwind": [],
@@ -5486,6 +6261,7 @@
         "--ds-gradient-vivid-3",
         "--ds-gradient-vivid-3-bloom-alpha",
         "--ds-gradient-vivid-3-bloom-blur",
+        "--ds-gradient-vivid-3-bloom-color",
         "--ds-gradient-vivid-3-grain"
       ],
       "tailwind": [],
@@ -5493,7 +6269,7 @@
       "ts": "gradient.vivid.3",
       "swift": "DSTokenSet.gradient.vivid3",
       "asset": null,
-      "description": null,
+      "description": "slot pair 3 + 4 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)",
       "deprecated": null
     },
     {
@@ -5509,6 +6285,7 @@
         "--ds-gradient-vivid-4",
         "--ds-gradient-vivid-4-bloom-alpha",
         "--ds-gradient-vivid-4-bloom-blur",
+        "--ds-gradient-vivid-4-bloom-color",
         "--ds-gradient-vivid-4-grain"
       ],
       "tailwind": [],
@@ -5532,6 +6309,7 @@
         "--ds-gradient-vivid-default",
         "--ds-gradient-vivid-default-bloom-alpha",
         "--ds-gradient-vivid-default-bloom-blur",
+        "--ds-gradient-vivid-default-bloom-color",
         "--ds-gradient-vivid-default-grain"
       ],
       "tailwind": [],
@@ -5746,6 +6524,138 @@
       "tailwindTheme": [],
       "ts": "material.glass.cell.saturate",
       "swift": "DSTokenSet.material.glassCellSaturate",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip",
+      "id": "sys.material.glass.chip.$root",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-chip",
+      "cssVars": [
+        "--ds-material-glass-chip"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip",
+      "swift": "DSTokenSet.material.glassChip",
+      "asset": "material-glass-chip",
+      "description": "the scheme's glass for chips, controls and status cells over media; aliases glass.light.chip field by field (ADR-0029 §1.2)",
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.bloom",
+      "id": "sys.material.glass.chip.bloom",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-chip-bloom",
+      "cssVars": [
+        "--ds-material-glass-chip-bloom"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.bloom",
+      "swift": "DSTokenSet.material.glassChipBloom",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.blur",
+      "id": "sys.material.glass.chip.blur",
+      "tier": "sys",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-material-glass-chip-blur",
+      "cssVars": [
+        "--ds-material-glass-chip-blur"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.blur",
+      "swift": "DSTokenSet.material.glassChipBlur",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.edge.end",
+      "id": "sys.material.glass.chip.edge.end",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-chip-edge-end",
+      "cssVars": [
+        "--ds-material-glass-chip-edge-end"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.edge.end",
+      "swift": "DSTokenSet.material.glassChipEdgeEnd",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.edge.start",
+      "id": "sys.material.glass.chip.edge.start",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-chip-edge-start",
+      "cssVars": [
+        "--ds-material-glass-chip-edge-start"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.edge.start",
+      "swift": "DSTokenSet.material.glassChipEdgeStart",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.grain",
+      "id": "sys.material.glass.chip.grain",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-chip-grain",
+      "cssVars": [
+        "--ds-material-glass-chip-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.grain",
+      "swift": "DSTokenSet.material.glassChipGrain",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.chip.saturate",
+      "id": "sys.material.glass.chip.saturate",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-chip-saturate",
+      "cssVars": [
+        "--ds-material-glass-chip-saturate"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.chip.saturate",
+      "swift": "DSTokenSet.material.glassChipSaturate",
       "asset": null,
       "description": null,
       "deprecated": null
@@ -6023,6 +6933,140 @@
       "deprecated": null
     },
     {
+      "path": "material.glass.fill",
+      "id": "sys.material.glass.fill.$root",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-fill",
+      "cssVars": [
+        "--ds-material-glass-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill",
+      "swift": "DSTokenSet.material.glassFill",
+      "asset": "material-glass-fill",
+      "description": "the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.light.fill field by field (ADR-0029 §1.2)",
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.bloom",
+      "id": "sys.material.glass.fill.bloom",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-fill-bloom",
+      "cssVars": [
+        "--ds-material-glass-fill-bloom"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.bloom",
+      "swift": "DSTokenSet.material.glassFillBloom",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.blur",
+      "id": "sys.material.glass.fill.blur",
+      "tier": "sys",
+      "type": "dimension",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-fill-blur",
+      "cssVars": [
+        "--ds-material-glass-fill-blur"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.blur",
+      "swift": "DSTokenSet.material.glassFillBlur",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.edge.end",
+      "id": "sys.material.glass.fill.edge.end",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-fill-edge-end",
+      "cssVars": [
+        "--ds-material-glass-fill-edge-end"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.edge.end",
+      "swift": "DSTokenSet.material.glassFillEdgeEnd",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.edge.start",
+      "id": "sys.material.glass.fill.edge.start",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-fill-edge-start",
+      "cssVars": [
+        "--ds-material-glass-fill-edge-start"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.edge.start",
+      "swift": "DSTokenSet.material.glassFillEdgeStart",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.grain",
+      "id": "sys.material.glass.fill.grain",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-glass-fill-grain",
+      "cssVars": [
+        "--ds-material-glass-fill-grain"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.grain",
+      "swift": "DSTokenSet.material.glassFillGrain",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "material.glass.fill.saturate",
+      "id": "sys.material.glass.fill.saturate",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-glass-fill-saturate",
+      "cssVars": [
+        "--ds-material-glass-fill-saturate"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.glass.fill.saturate",
+      "swift": "DSTokenSet.material.glassFillSaturate",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
       "path": "material.glass.light.chip",
       "id": "sys.material.glass.light.chip.$root",
       "tier": "sys",
@@ -6293,9 +7337,7 @@
       "id": "sys.material.glass.scrim",
       "tier": "sys",
       "type": "color",
-      "dependsOn": [
-        "colorScheme"
-      ],
+      "dependsOn": [],
       "css": "--ds-material-glass-scrim",
       "cssVars": [
         "--ds-material-glass-scrim"
@@ -6305,7 +7347,45 @@
       "ts": "material.glass.scrim",
       "swift": "DSTokenSet.material.glassScrim",
       "asset": "material-glass-scrim",
-      "description": "bottom-up under text on unpredictable backdrops",
+      "description": "bottom-up under text on unpredictable backdrops: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim",
+      "deprecated": null
+    },
+    {
+      "path": "material.vivid.edge.end",
+      "id": "sys.material.vivid.edge.end",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [],
+      "css": "--ds-material-vivid-edge-end",
+      "cssVars": [
+        "--ds-material-vivid-edge-end"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.vivid.edge.end",
+      "swift": "DSTokenSet.material.vividEdgeEnd",
+      "asset": null,
+      "description": "alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2)",
+      "deprecated": null
+    },
+    {
+      "path": "material.vivid.edge.start",
+      "id": "sys.material.vivid.edge.start",
+      "tier": "sys",
+      "type": "number",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-material-vivid-edge-start",
+      "cssVars": [
+        "--ds-material-vivid-edge-start"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "material.vivid.edge.start",
+      "swift": "DSTokenSet.material.vividEdgeStart",
+      "asset": null,
+      "description": "alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2)",
       "deprecated": null
     },
     {
@@ -8456,9 +9536,7 @@
       "id": "sys.space.page-margin",
       "tier": "sys",
       "type": "dimension",
-      "dependsOn": [
-        "density"
-      ],
+      "dependsOn": [],
       "css": "--ds-space-page-margin",
       "cssVars": [
         "--ds-space-page-margin"
@@ -8668,6 +9746,37 @@
       "swift": "DSTokenSet.stroke.target",
       "asset": null,
       "description": "dashed reference / target line",
+      "deprecated": null
+    },
+    {
+      "path": "type.axis",
+      "id": "sys.type.axis",
+      "tier": "sys",
+      "type": "typography",
+      "dependsOn": [],
+      "css": null,
+      "cssVars": [
+        "--ds-type-axis-font-family",
+        "--ds-type-axis-font-size",
+        "--ds-type-axis-font-variant-numeric",
+        "--ds-type-axis-font-weight",
+        "--ds-type-axis-letter-spacing",
+        "--ds-type-axis-line-height"
+      ],
+      "tailwind": [
+        "text-ds-axis",
+        "type-ds-axis"
+      ],
+      "tailwindTheme": [
+        "--text-ds-axis",
+        "--text-ds-axis--font-weight",
+        "--text-ds-axis--letter-spacing",
+        "--text-ds-axis--line-height"
+      ],
+      "ts": "type.axis",
+      "swift": "DSTokenSet.typography.axis",
+      "asset": null,
+      "description": null,
       "deprecated": null
     },
     {
@@ -9202,7 +10311,7 @@
       "ts": "type.metric.xl",
       "swift": "DSTokenSet.typography.metricXl",
       "asset": null,
-      "description": null,
+      "description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)",
       "deprecated": null
     },
     {
@@ -9496,23 +10605,23 @@
       "deprecated": null
     },
     {
-      "path": "comp.button.ghost.bg.rest",
-      "id": "comp.button.ghost.bg.rest",
+      "path": "comp.button.ghost.bg.pressed",
+      "id": "comp.button.ghost.bg.pressed",
       "tier": "comp",
       "type": "color",
       "dependsOn": [
         "colorScheme"
       ],
-      "css": "--ds-button-ghost-bg-rest",
+      "css": "--ds-button-ghost-bg-pressed",
       "cssVars": [
-        "--ds-button-ghost-bg-rest"
+        "--ds-button-ghost-bg-pressed"
       ],
       "tailwind": [],
       "tailwindTheme": [],
-      "ts": "comp.button.ghost.bg.rest",
-      "swift": "DSTokenSet.components.button.ghostBgRest",
+      "ts": "comp.button.ghost.bg.pressed",
+      "swift": "DSTokenSet.components.button.ghostBgPressed",
       "asset": null,
-      "description": null,
+      "description": "the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
       "deprecated": null
     },
     {
@@ -9875,7 +10984,9 @@
       "id": "comp.card.glass.text",
       "tier": "comp",
       "type": "color",
-      "dependsOn": [],
+      "dependsOn": [
+        "colorScheme"
+      ],
       "css": "--ds-card-glass-text",
       "cssVars": [
         "--ds-card-glass-text"

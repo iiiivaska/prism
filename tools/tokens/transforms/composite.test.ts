@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 import { irColor } from '../ir/color.ts';
 import type { IRBorder, IRColor, IRDimension, IRGradient, IRNumber, IRShadow, IRStrokeStyle, IRValue } from '../ir/types.ts';
 import { cssFontFamily, figmaFontFamily, studioFontFamily, swiftFontFamilies, swiftString, tsFontFamily, cssFontWeight, studioFontWeight } from './font.ts';
-import { cssGradient, studioGradient, swiftGradient, tsGradient } from './gradient.ts';
+import { bloomStop, bloomStopIndex, cssGradient, studioGradient, swiftGradient, tsGradient } from './gradient.ts';
+import { tsColor } from './color.ts';
 import {
   appleOptions, colorsetOf, cssParts, emitsAlias, swiftLiteral, TRANSFORM_NAMES, tsLiteral,
 } from './index.ts';
@@ -37,6 +38,7 @@ const vivid: IRGradient = {
   angle: 165,
   grain: 0.06,
   scheme: 'light',
+  temperature: 'warm',
   bloom: { alpha: 0.3, blur: 150 },
 };
 
@@ -65,7 +67,7 @@ describe('shadow', () => {
 });
 
 describe('gradient', () => {
-  it('CSS: linear-gradient with a P3 twin of the whole declaration, then -bloom-alpha, -bloom-blur and -grain', () => {
+  it('CSS: linear-gradient with a P3 twin of the whole declaration, then -bloom-alpha, -bloom-blur, -bloom-color and -grain', () => {
     expect(cssGradient(vivid).map((p) => [p.suffix, p.value, p.twins])).toEqual([
       [
         '',
@@ -74,8 +76,20 @@ describe('gradient', () => {
       ],
       ['-bloom-alpha', '0.3', []],
       ['-bloom-blur', '150px', []],
+      ['-bloom-color', 'rgb(255 255 255 / 0.5)', []],
       ['-grain', '0.06', []],
     ]);
+  });
+
+  it('the bloom color is the stop of highest relative luminance, the later stop on a tie (ADR-0030 §4.3)', () => {
+    const brightFirst: IRGradient = { ...vivid, stops: [vivid.stops[1]!, vivid.stops[0]!] };
+    expect(bloomStopIndex(brightFirst)).toBe(0);
+    expect(cssGradient(brightFirst).find((p) => p.suffix === '-bloom-color')).toEqual({
+      suffix: '-bloom-color', value: 'oklch(0.8506 0.1133 68.21)', twins: [{ kind: 'p3', value: 'oklch(0.8506 0.1133 68.2)' }],
+    });
+    const tie: IRGradient = { ...vivid, stops: [vivid.stops[0]!, { ...vivid.stops[0]!, position: 0.5 }, { ...vivid.stops[1]!, position: 0.6 }, { ...vivid.stops[1]!, position: 1 }] };
+    expect(bloomStopIndex(tie)).toBe(3);
+    expect(bloomStop(vivid)).toBe(vivid.stops[2]);
   });
 
   it('CSS: defaults (angle 180, neutral 0 / 0 / 0px) and var() stops, which never twin', () => {
@@ -84,6 +98,7 @@ describe('gradient', () => {
       ['', 'linear-gradient(180deg in oklab, var(--ds-ref-color-accent-500) 0%, var(--ds-ref-color-accent-300) 55%, rgb(255 255 255 / 0.5) 100%)', 0],
       ['-bloom-alpha', '0', 0],
       ['-bloom-blur', '0px', 0],
+      ['-bloom-color', 'rgb(255 255 255 / 0.5)', 0],
       ['-grain', '0', 0],
     ]);
     expect(cssGradient({ ...vivid, bloom: { alpha: 0.2, blur: null } }).find((p) => p.suffix === '-bloom-blur')?.value).toBe('0px');
@@ -93,13 +108,15 @@ describe('gradient', () => {
     expect(swiftGradient(vivid)).toBe(
       'DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), location: 0), ' +
         'DSGradientStop(color: DSRGBA(.displayP3, 0.9622, 0.7628, 0.5194, 1), location: 0.55), ' +
-        'DSGradientStop(color: DSRGBA(.sRGB, 1, 1, 1, 0.5), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 150)',
+        'DSGradientStop(color: DSRGBA(.sRGB, 1, 1, 1, 0.5), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 150, ' +
+        'bloomColor: DSRGBA(.sRGB, 1, 1, 1, 0.5))',
     );
-    expect(swiftGradient({ ...vivid, angle: null, grain: null, scheme: null, bloom: null })).toMatch(/angle: 180, grain: 0, scheme: nil, bloomAlpha: 0, bloomBlur: 0\)$/);
+    expect(swiftGradient({ ...vivid, angle: null, grain: null, scheme: null, bloom: null })).toMatch(/angle: 180, grain: 0, scheme: nil, bloomAlpha: 0, bloomBlur: 0, bloomColor: DSRGBA\(\.sRGB, 1, 1, 1, 0\.5\)\)$/);
     const ts = tsGradient(vivid);
     expect(ts.cssP3).toContain('68.2)');
     expect(ts.stops.map((s) => [s.color.hex, s.position])).toEqual([['#f39444', 0], ['#ffc07a', 0.55], ['#ffffff', 1]]);
-    expect([ts.angle, ts.grain, ts.scheme, ts.bloom]).toEqual([165, 0.06, 'light', { alpha: 0.3, blur: 150 }]);
+    expect([ts.angle, ts.grain, ts.scheme, ts.bloom]).toEqual([165, 0.06, 'light', { alpha: 0.3, blur: 150, color: tsColor(irColor('srgb', [1, 1, 1], 0.5)) }]);
+    expect(tsGradient({ ...vivid, bloom: null }).bloom).toBeNull();
     expect(studioGradient(vivid)).toBe('linear-gradient(165deg, #f39444 0%, #ffc07a 55%, rgba(255, 255, 255, 0.5) 100%)');
   });
 });
@@ -308,6 +325,7 @@ describe('index', () => {
             "(base)=linear-gradient(165deg in oklab, oklch(0.7517 0.1475 57.6... [p3]",
             "-bloom-alpha=0.3",
             "-bloom-blur=150px",
+            "-bloom-color=rgb(255 255 255 / 0.5)",
             "-grain=0.06",
           ],
           "kind": "gradient",

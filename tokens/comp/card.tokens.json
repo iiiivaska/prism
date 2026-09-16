@@ -77,7 +77,7 @@
       "glass": {
         "$type": "color",
         "fill": {
-          "$value": "{sys.material.glass.dark.fill.$root}",
+          "$value": "{sys.material.glass.fill.$root}",
           "$extensions": {
             "app.prism": {
               "figma": {
@@ -91,7 +91,7 @@
           }
         },
         "text": {
-          "$value": "{sys.color.text.on-glass}",
+          "$value": "{sys.color.text.on-glass-fill}",
           "$extensions": {
             "app.prism": {
               "figma": {

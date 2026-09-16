@@ -52,9 +52,10 @@
               "angle": 165,
               "grain": 0.06,
               "scheme": "light",
+              "temperature": "cool",
               "bloom": {
                 "alpha": 0.3,
-                "blur": 150
+                "blur": 75
               }
             }
           }
@@ -91,12 +92,12 @@
               "color": {
                 "colorSpace": "oklch",
                 "components": [
-                  0.6584,
-                  0.1108,
+                  0.655,
+                  0.13,
                   119.7
                 ],
                 "alpha": 1,
-                "hex": "#899b49"
+                "hex": "#879c34"
               },
               "position": 1.0
             }
@@ -107,9 +108,10 @@
               "angle": 135,
               "grain": 0.05,
               "scheme": "light",
+              "temperature": "warm",
               "bloom": {
                 "alpha": 0.3,
-                "blur": 150
+                "blur": 75
               }
             }
           }
@@ -120,12 +122,12 @@
               "color": {
                 "colorSpace": "oklch",
                 "components": [
-                  0.5237,
-                  0.0697,
-                  25.7
+                  0.49,
+                  0.09,
+                  22.0
                 ],
                 "alpha": 1,
-                "hex": "#8e5a55"
+                "hex": "#8c4a49"
               },
               "position": 0.0
             },
@@ -133,12 +135,12 @@
               "color": {
                 "colorSpace": "oklch",
                 "components": [
-                  0.5749,
-                  0.0806,
-                  25.4
+                  0.575,
+                  0.11,
+                  32.0
                 ],
                 "alpha": 1,
-                "hex": "#a36660"
+                "hex": "#b05e4e"
               },
               "position": 0.65
             },
@@ -146,12 +148,12 @@
               "color": {
                 "colorSpace": "oklch",
                 "components": [
-                  0.6714,
-                  0.0714,
-                  44.6
+                  0.67,
+                  0.1,
+                  52.0
                 ],
                 "alpha": 1,
-                "hex": "#bb8871"
+                "hex": "#c6835a"
               },
               "position": 1.0
             }
@@ -162,9 +164,10 @@
               "angle": 135,
               "grain": 0.05,
               "scheme": "light",
+              "temperature": "warm",
               "bloom": {
                 "alpha": 0.3,
-                "blur": 150
+                "blur": 75
               }
             }
           }
@@ -189,11 +192,11 @@
                 "colorSpace": "oklch",
                 "components": [
                   0.5366,
-                  0.0966,
+                  0.12,
                   267.6
                 ],
                 "alpha": 1,
-                "hex": "#556ba6"
+                "hex": "#4f69b3"
               },
               "position": 0.5
             },
@@ -201,12 +204,12 @@
               "color": {
                 "colorSpace": "oklch",
                 "components": [
-                  0.6632,
-                  0.0435,
-                  241.3
+                  0.655,
+                  0.12,
+                  235.0
                 ],
                 "alpha": 1,
-                "hex": "#7c97ac"
+                "hex": "#349bcf"
               },
               "position": 1.0
             }
@@ -217,9 +220,10 @@
               "angle": 165,
               "grain": 0.06,
               "scheme": "light",
+              "temperature": "cool",
               "bloom": {
                 "alpha": 0.3,
-                "blur": 150
+                "blur": 75
               }
             }
           }
@@ -279,15 +283,16 @@
               "position": 1.0
             }
           ],
-          "$description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2",
+          "$description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2; outside the slots: a single warm hero card on a screen without the accent (ADR-0029 §2.6)",
           "$extensions": {
             "app.prism": {
               "angle": 160,
               "grain": 0.08,
               "scheme": "dark",
+              "temperature": "warm",
               "bloom": {
-                "alpha": 0.3,
-                "blur": 150
+                "alpha": 0.45,
+                "blur": 75
               }
             }
           }
@@ -353,9 +358,10 @@
               "angle": 150,
               "grain": 0.08,
               "scheme": "dark",
+              "temperature": "cool",
               "bloom": {
-                "alpha": 0.3,
-                "blur": 150
+                "alpha": 0.45,
+                "blur": 75
               }
             }
           }
@@ -421,9 +427,10 @@
               "angle": 170,
               "grain": 0.08,
               "scheme": "dark",
+              "temperature": "cool",
               "bloom": {
-                "alpha": 0.3,
-                "blur": 150
+                "alpha": 0.45,
+                "blur": 75
               }
             }
           }
@@ -454,7 +461,7 @@
                 "alpha": 1,
                 "hex": "#223545"
               },
-              "position": 0.45
+              "position": 0.3
             },
             {
               "color": {
@@ -467,7 +474,7 @@
                 "alpha": 1,
                 "hex": "#4d8e9c"
               },
-              "position": 0.75
+              "position": 0.85
             },
             {
               "color": {
@@ -483,15 +490,85 @@
               "position": 1.0
             }
           ],
-          "$description": "dark vivid surface; linear 180 deg; grain 0.10; passes ADR-0022 V1/V2",
+          "$description": "dark vivid surface; linear 180 deg; grain 0.10; stops at 0.30 and 0.85 keep the lightness climb soft (ADR-0029 §2.2); passes ADR-0022 V1/V2",
           "$extensions": {
             "app.prism": {
               "angle": 180,
               "grain": 0.1,
               "scheme": "dark",
+              "temperature": "cool",
               "bloom": {
-                "alpha": 0.3,
-                "blur": 150
+                "alpha": 0.45,
+                "blur": 75
+              }
+            }
+          }
+        },
+        "night-lagoon": {
+          "$value": [
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.2,
+                  0.028,
+                  240.0
+                ],
+                "alpha": 1,
+                "hex": "#091821"
+              },
+              "position": 0.0
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.29,
+                  0.045,
+                  225.0
+                ],
+                "alpha": 1,
+                "hex": "#0d303c"
+              },
+              "position": 0.35
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.46,
+                  0.075,
+                  200.0
+                ],
+                "alpha": 1,
+                "hex": "#0c6468"
+              },
+              "position": 0.72
+            },
+            {
+              "color": {
+                "colorSpace": "oklch",
+                "components": [
+                  0.62,
+                  0.095,
+                  188.0
+                ],
+                "alpha": 1,
+                "hex": "#2e9891"
+              },
+              "position": 1.0
+            }
+          ],
+          "$description": "dark vivid surface: a deep night-blue rising into lagoon teal; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2 (ADR-0029 §2.3)",
+          "$extensions": {
+            "app.prism": {
+              "angle": 160,
+              "grain": 0.08,
+              "scheme": "dark",
+              "temperature": "cool",
+              "bloom": {
+                "alpha": 0.45,
+                "blur": 75
               }
             }
           }

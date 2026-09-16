@@ -134,6 +134,7 @@ describe('tokens.css and motion.css of the repository', () => {
       'density: compact (default)',
       'density: regular',
       'density: comfortable',
+      'density: watch',
       'density: regular under (any-pointer: coarse) without a valid data-ds-density',
       'density rescope: same text in every context, value depends on density',
       'modality: pointer (default)',
@@ -143,7 +144,7 @@ describe('tokens.css and motion.css of the repository', () => {
     const selectorsOf = (comment: string): readonly string[] => model.tokens.find((r) => r.comment === comment)?.selectors ?? [];
     expect(selectorsOf('colorScheme: light (default)')).toEqual([':root', '[data-ds-color-scheme="light"]']);
     expect(selectorsOf('colorScheme rescope: same text in every context, value depends on colorScheme')).toEqual([':root', '[data-ds-color-scheme]']);
-    expect(selectorsOf('density: regular under (any-pointer: coarse) without a valid data-ds-density')).toEqual([':root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"])']);
+    expect(selectorsOf('density: regular under (any-pointer: coarse) without a valid data-ds-density')).toEqual([':root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"], [data-ds-density="watch"])']);
     expect(selectorsOf('modality: touch')).toEqual([':root[data-ds-modality="touch"]']);
     // The four variant groups of light increased contrast (ARCHITECTURE §9.2 item 3).
     const at = model.tokens.findIndex((r) => r.comment === 'colorScheme variant: light-increased-contrast (delta over light)');
@@ -188,7 +189,7 @@ describe('tokens.css and motion.css of the repository', () => {
     const light = model.tokens.find((r) => r.comment === 'colorScheme: light (default)');
     const decl = (name: string): string | undefined => light?.decls.find((d) => d.name === name)?.value;
     expect(decl('--ds-color-bg-tint-accent')).toBe('oklch(0.7517 0.1475 57.6 / 0.12)');
-    expect(decl('--ds-material-glass-dark-fill')).toBe('oklch(0.1504 0.0092 128.7 / 0.55)');
+    expect(decl('--ds-material-glass-dark-fill')).toBe('oklch(0.1504 0.007 265 / 0.55)');
     expect(decl('--ds-color-bg-page')).toBe('var(--ds-ref-color-slot-light-bg-page)');
     const scope = webScope(await repoBundle(), 'prism');
     let alphaTexts = 0;

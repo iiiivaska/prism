@@ -1,10 +1,6 @@
 {
   "ref": {
     "blur": {
-      "bloom": {
-        "$type": "dimension",
-        "$value": "150px"
-      },
       "cell": {
         "$type": "dimension",
         "$value": "12px",

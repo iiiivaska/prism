@@ -1,0 +1,9 @@
+{
+  "description": "In the light scheme file the role recipe sys.material.glass.fill takes its $root from the smoked appearance recipe (glass.dark.fill) instead of glass.light.fill; every other field aliases the light recipe (ADR-0029 §1.2).",
+  "expect": [
+    {
+      "code": "material/role-recipe",
+      "tokenId": "sys.material.glass.fill.$root"
+    }
+  ]
+}

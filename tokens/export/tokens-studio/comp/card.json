@@ -4,11 +4,11 @@
       "glass": {
         "fill": {
           "$type": "color",
-          "$value": "{material.glass.dark.fill.default}"
+          "$value": "{material.glass.fill.default}"
         },
         "text": {
           "$type": "color",
-          "$value": "{color.text.on-glass}"
+          "$value": "{color.text.on-glass-fill}"
         }
       },
       "padding": {

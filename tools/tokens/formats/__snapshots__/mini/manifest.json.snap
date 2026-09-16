@@ -97,6 +97,10 @@
         "comfortable": {
           "context": "comfortable",
           "swift": "DSDensity.comfortable"
+        },
+        "watch": {
+          "context": "watch",
+          "swift": "DSDensity.watch"
         }
       },
       "media": {
@@ -160,7 +164,7 @@
     },
     "watchos": {
       "colorScheme": "dark",
-      "density": "comfortable",
+      "density": "watch",
       "modality": "touch"
     }
   },
@@ -489,6 +493,7 @@
         "--ds-ref-gradient-vivid-plum-dusk",
         "--ds-ref-gradient-vivid-plum-dusk-bloom-alpha",
         "--ds-ref-gradient-vivid-plum-dusk-bloom-blur",
+        "--ds-ref-gradient-vivid-plum-dusk-bloom-color",
         "--ds-ref-gradient-vivid-plum-dusk-grain"
       ],
       "tailwind": [],
@@ -510,6 +515,7 @@
         "--ds-ref-gradient-vivid-sky",
         "--ds-ref-gradient-vivid-sky-bloom-alpha",
         "--ds-ref-gradient-vivid-sky-bloom-blur",
+        "--ds-ref-gradient-vivid-sky-bloom-color",
         "--ds-ref-gradient-vivid-sky-grain"
       ],
       "tailwind": [],
@@ -942,6 +948,7 @@
         "--ds-gradient-vivid-default",
         "--ds-gradient-vivid-default-bloom-alpha",
         "--ds-gradient-vivid-default-bloom-blur",
+        "--ds-gradient-vivid-default-bloom-color",
         "--ds-gradient-vivid-default-grain"
       ],
       "tailwind": [],

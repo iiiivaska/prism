@@ -1,0 +1,9 @@
+{
+  "description": "ref.color.smoke.light keeps its old green-yellow tint (OKLCH chroma 0.0092 at hue 128.7); smoke is neutral, chroma 0.007 or less (ADR-0029 §1.1).",
+  "expect": [
+    {
+      "code": "color/smoke-chroma",
+      "tokenId": "ref.color.smoke.light"
+    }
+  ]
+}

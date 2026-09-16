@@ -12,6 +12,7 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case bgFillAccentStrong = "color-bg-fill-accent-strong"
     case bgFillCritical = "color-bg-fill-critical"
     case bgFillInverse = "color-bg-fill-inverse"
+    case bgFillInverseMedia = "color-bg-fill-inverse-media"
     case bgFillNeutralSubtle = "color-bg-fill-neutral-subtle"
     case bgPage = "color-bg-page"
     case bgSurface = "color-bg-surface"
@@ -26,6 +27,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case borderBoundary = "color-border-boundary"
     case borderFocus = "color-border-focus"
     case borderHairline = "color-border-hairline"
+    case borderOnGlassFill = "color-border-on-glass-fill"
+    case borderOnMedia = "color-border-on-media"
     case borderStrong = "color-border-strong"
     case chartAxis = "color-chart-axis"
     case chartBand = "color-chart-band"
@@ -34,6 +37,13 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case chartGhost = "color-chart-ghost"
     case chartGrid = "color-chart-grid"
     case chartNow = "color-chart-now"
+    case chartOnGlassFillGrid = "color-chart-on-glass-fill-grid"
+    case chartOnGlassFillLine = "color-chart-on-glass-fill-line"
+    case chartOnGlassFillPlot = "color-chart-on-glass-fill-plot"
+    case chartOnGlassFillReference = "color-chart-on-glass-fill-reference"
+    case chartOnMediaGrid = "color-chart-on-media-grid"
+    case chartOnMediaLine = "color-chart-on-media-line"
+    case chartOnMediaReference = "color-chart-on-media-reference"
     case chartPlot = "color-chart-plot"
     case chartSeries1 = "color-chart-series-1"
     case chartSeries2 = "color-chart-series-2"
@@ -42,6 +52,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case chartSeries5 = "color-chart-series-5"
     case chartSeries6 = "color-chart-series-6"
     case chartTarget = "color-chart-target"
+    case edgeHighlight = "color-edge-highlight"
+    case edgeRaised = "color-edge-raised"
     case iconAccent = "color-icon-accent"
     case iconPrimary = "color-icon-primary"
     case iconSecondary = "color-icon-secondary"
@@ -49,18 +61,37 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case iconStatusInfo = "color-icon-status-info"
     case iconStatusSuccess = "color-icon-status-success"
     case iconStatusWarning = "color-icon-status-warning"
+    case mapBlock = "color-map-block"
+    case mapBuilding = "color-map-building"
+    case mapLabel = "color-map-label"
+    case mapLand = "color-map-land"
+    case mapPark = "color-map-park"
+    case mapRoad = "color-map-road"
+    case mapRoadCasing = "color-map-road-casing"
+    case mapRoute = "color-map-route"
+    case mapRouteAhead = "color-map-route-ahead"
+    case mapRouteCasing = "color-map-route-casing"
+    case mapWater = "color-map-water"
     case textAccent = "color-text-accent"
     case textCritical = "color-text-critical"
     case textDimmed = "color-text-dimmed"
     case textInfo = "color-text-info"
     case textOnAccent = "color-text-on-accent"
+    case textOnAccentSecondary = "color-text-on-accent-secondary"
     case textOnAccentStrong = "color-text-on-accent-strong"
     case textOnBadge = "color-text-on-badge"
     case textOnGlass = "color-text-on-glass"
+    case textOnGlassFill = "color-text-on-glass-fill"
+    case textOnGlassFillDimmed = "color-text-on-glass-fill-dimmed"
+    case textOnGlassFillMediaSecondary = "color-text-on-glass-fill-media-secondary"
+    case textOnGlassFillMediaTertiary = "color-text-on-glass-fill-media-tertiary"
+    case textOnGlassFillSecondary = "color-text-on-glass-fill-secondary"
+    case textOnGlassFillTertiary = "color-text-on-glass-fill-tertiary"
     case textOnGlassLight = "color-text-on-glass-light"
     case textOnGlassSecondary = "color-text-on-glass-secondary"
     case textOnGlassTertiary = "color-text-on-glass-tertiary"
     case textOnInverse = "color-text-on-inverse"
+    case textOnInverseMedia = "color-text-on-inverse-media"
     case textOnVivid = "color-text-on-vivid"
     case textPrimary = "color-text-primary"
     case textSecondary = "color-text-secondary"
@@ -68,8 +99,10 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case textTertiary = "color-text-tertiary"
     case textWarning = "color-text-warning"
     case materialGlassCell = "material-glass-cell"
+    case materialGlassChip = "material-glass-chip"
     case materialGlassDarkChip = "material-glass-dark-chip"
     case materialGlassDarkFill = "material-glass-dark-fill"
+    case materialGlassFill = "material-glass-fill"
     case materialGlassLightChip = "material-glass-light-chip"
     case materialGlassLightFill = "material-glass-light-fill"
     case materialGlassScrim = "material-glass-scrim"
@@ -97,20 +130,23 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .bgFillAccentStrong: DSColorAppearances(any: DSRGBA(.displayP3, 0.6732, 0.3589, 0.1689, 1), dark: DSRGBA(.displayP3, 0.8149, 0.498, 0.2279, 1), highContrast: DSRGBA(.displayP3, 0.6732, 0.3589, 0.1689, 1), darkHighContrast: DSRGBA(.displayP3, 0.8149, 0.498, 0.2279, 1), watch: DSRGBA(.displayP3, 0.8149, 0.498, 0.2279, 1))
         case .bgFillCritical: DSColorAppearances(any: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), dark: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), highContrast: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), darkHighContrast: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), watch: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1))
         case .bgFillInverse: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .bgFillInverseMedia: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .bgFillNeutralSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgPage: DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
         case .bgSurface: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgSurfaceNested: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.12), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
         case .bgSurfaceOverlay: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.12), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
-        case .bgSurfaceRaised: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.7), dark: DSRGBA(.sRGB, 1, 1, 1, 0.09), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.7), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.09), watch: DSRGBA(.sRGB, 1, 1, 1, 0.09))
+        case .bgSurfaceRaised: DSColorAppearances(any: DSRGBA(.displayP3, 0.9692, 0.9724, 0.9797, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.09), highContrast: DSRGBA(.displayP3, 0.9692, 0.9724, 0.9797, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.09), watch: DSRGBA(.sRGB, 1, 1, 1, 0.09))
         case .bgTintAccent: DSColorAppearances(any: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 0.12), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 0.14), highContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 0.14), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 0.14))
-        case .bgTintCritical: DSColorAppearances(any: DSRGBA(.displayP3, 0.9787, 0.9165, 0.9152, 1), dark: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1), highContrast: DSRGBA(.displayP3, 0.9787, 0.9165, 0.9152, 1), darkHighContrast: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1), watch: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1))
-        case .bgTintInfo: DSColorAppearances(any: DSRGBA(.displayP3, 0.9197, 0.929, 0.9721, 1), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1), highContrast: DSRGBA(.displayP3, 0.9197, 0.929, 0.9721, 1), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1))
-        case .bgTintSuccess: DSColorAppearances(any: DSRGBA(.displayP3, 0.9135, 0.9627, 0.9173, 1), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1), highContrast: DSRGBA(.displayP3, 0.9135, 0.9627, 0.9173, 1), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1))
-        case .bgTintWarning: DSColorAppearances(any: DSRGBA(.displayP3, 0.9907, 0.9658, 0.9154, 1), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), highContrast: DSRGBA(.displayP3, 0.9907, 0.9658, 0.9154, 1), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1))
+        case .bgTintCritical: DSColorAppearances(any: DSRGBA(.displayP3, 0.8699, 0.3439, 0.3019, 0.12), dark: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1), highContrast: DSRGBA(.displayP3, 0.8699, 0.3439, 0.3019, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1), watch: DSRGBA(.displayP3, 0.9229, 0.3361, 0.2956, 0.1))
+        case .bgTintInfo: DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.12), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.1))
+        case .bgTintSuccess: DSColorAppearances(any: DSRGBA(.displayP3, 0.3502, 0.6881, 0.3407, 0.12), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1), highContrast: DSRGBA(.displayP3, 0.3502, 0.6881, 0.3407, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 0.1))
+        case .bgTintWarning: DSColorAppearances(any: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), highContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1))
         case .borderBoundary: DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.36), highContrast: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.36), watch: DSRGBA(.sRGB, 1, 1, 1, 0.36))
         case .borderFocus: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .borderHairline: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.08), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.3), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), watch: DSRGBA(.sRGB, 1, 1, 1, 0.08))
+        case .borderOnGlassFill: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4))
+        case .borderOnMedia: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.4), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4))
         case .borderStrong: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.35), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.6), watch: DSRGBA(.sRGB, 1, 1, 1, 0.35))
         case .chartAxis: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.55), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.55), watch: DSRGBA(.sRGB, 1, 1, 1, 0.55))
         case .chartBand: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.05), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.05), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
@@ -119,6 +155,13 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .chartGhost: DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.12), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
         case .chartGrid: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.2), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
         case .chartNow: DSColorAppearances(any: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1))
+        case .chartOnGlassFillGrid: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.24), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.2), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.24), watch: DSRGBA(.sRGB, 1, 1, 1, 0.24))
+        case .chartOnGlassFillLine: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .chartOnGlassFillPlot: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.08), dark: DSRGBA(.sRGB, 1, 1, 1, 0.08), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.08), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.08), watch: DSRGBA(.sRGB, 1, 1, 1, 0.08))
+        case .chartOnGlassFillReference: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.75), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .chartOnMediaGrid: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.24), dark: DSRGBA(.sRGB, 1, 1, 1, 0.24), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.24), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.24), watch: DSRGBA(.sRGB, 1, 1, 1, 0.24))
+        case .chartOnMediaLine: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .chartOnMediaReference: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .chartPlot: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .chartSeries1: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .chartSeries2: DSColorAppearances(any: DSRGBA(.displayP3, 0.6732, 0.3589, 0.1689, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.6732, 0.3589, 0.1689, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1))
@@ -126,7 +169,9 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .chartSeries4: DSColorAppearances(any: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), dark: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), highContrast: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), darkHighContrast: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), watch: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1))
         case .chartSeries5: DSColorAppearances(any: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), dark: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), highContrast: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), darkHighContrast: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), watch: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1))
         case .chartSeries6: DSColorAppearances(any: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), dark: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), highContrast: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), darkHighContrast: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), watch: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1))
-        case .chartTarget: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.6), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.85), watch: DSRGBA(.sRGB, 1, 1, 1, 0.6))
+        case .chartTarget: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), dark: DSRGBA(.sRGB, 1, 1, 1, 0.6), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.75), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.85), watch: DSRGBA(.sRGB, 1, 1, 1, 0.6))
+        case .edgeHighlight: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .edgeRaised: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 0.08), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 0.08), watch: DSRGBA(.displayP3, 1, 1, 1, 0.08))
         case .iconAccent: DSColorAppearances(any: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1))
         case .iconPrimary: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.8), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.8), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .iconSecondary: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
@@ -134,30 +179,51 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .iconStatusInfo: DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1))
         case .iconStatusSuccess: DSColorAppearances(any: DSRGBA(.displayP3, 0.3502, 0.6881, 0.3407, 1), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), highContrast: DSRGBA(.displayP3, 0.3502, 0.6881, 0.3407, 1), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1))
         case .iconStatusWarning: DSColorAppearances(any: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), highContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1))
+        case .mapBlock: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.03), dark: DSRGBA(.sRGB, 1, 1, 1, 0.025), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.03), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.025), watch: DSRGBA(.sRGB, 1, 1, 1, 0.025))
+        case .mapBuilding: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.075), dark: DSRGBA(.sRGB, 1, 1, 1, 0.065), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.075), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.065), watch: DSRGBA(.sRGB, 1, 1, 1, 0.065))
+        case .mapLabel: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.55), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.7), watch: DSRGBA(.sRGB, 1, 1, 1, 0.55))
+        case .mapLand: DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .mapPark: DSColorAppearances(any: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 0.16), dark: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 0.11), highContrast: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 0.16), darkHighContrast: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 0.11), watch: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 0.11))
+        case .mapRoad: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.13), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.13), watch: DSRGBA(.sRGB, 1, 1, 1, 0.13))
+        case .mapRoadCasing: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.08), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.08), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .mapRoute: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .mapRouteAhead: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.6), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4))
+        case .mapRouteCasing: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .mapWater: DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16))
         case .textAccent: DSColorAppearances(any: DSRGBA(.displayP3, 0.5694, 0.2904, 0.1309, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.39, 0.1976, 0.0856, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1))
         case .textCritical: DSColorAppearances(any: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), dark: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), highContrast: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), darkHighContrast: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), watch: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1))
         case .textDimmed: DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.42), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.42))
         case .textInfo: DSColorAppearances(any: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), dark: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), highContrast: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), darkHighContrast: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), watch: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1))
         case .textOnAccent: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .textOnAccentSecondary: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.7), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.7), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.7), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.7), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.7))
         case .textOnAccentStrong: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .textOnBadge: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .textOnGlass: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .textOnGlassFill: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .textOnGlassFillDimmed: DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
+        case .textOnGlassFillMediaSecondary: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.78), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.78), watch: DSRGBA(.sRGB, 1, 1, 1, 0.78))
+        case .textOnGlassFillMediaTertiary: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
+        case .textOnGlassFillSecondary: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.78), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.78), watch: DSRGBA(.sRGB, 1, 1, 1, 0.78))
+        case .textOnGlassFillTertiary: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
         case .textOnGlassLight: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .textOnGlassSecondary: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.78), dark: DSRGBA(.sRGB, 1, 1, 1, 0.78), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.78), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.78), watch: DSRGBA(.sRGB, 1, 1, 1, 0.78))
         case .textOnGlassTertiary: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.64), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
         case .textOnInverse: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .textOnInverseMedia: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
         case .textOnVivid: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .textPrimary: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .textSecondary: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.64), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.8), watch: DSRGBA(.sRGB, 1, 1, 1, 0.64))
         case .textSuccess: DSColorAppearances(any: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), highContrast: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1))
         case .textTertiary: DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.55), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.7), watch: DSRGBA(.sRGB, 1, 1, 1, 0.55))
         case .textWarning: DSColorAppearances(any: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), highContrast: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1))
-        case .materialGlassCell: DSColorAppearances(any: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.35), dark: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35), highContrast: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35), watch: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35))
-        case .materialGlassDarkChip: DSColorAppearances(any: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.35), dark: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35), highContrast: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35), watch: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.35))
-        case .materialGlassDarkFill: DSColorAppearances(any: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.55), dark: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.6), highContrast: DSRGBA(.displayP3, 0.0407, 0.0469, 0.0328, 0.55), darkHighContrast: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.6), watch: DSRGBA(.displayP3, 0.0657, 0.078, 0.0639, 0.6))
+        case .materialGlassCell: DSColorAppearances(any: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35))
+        case .materialGlassChip: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.25), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35))
+        case .materialGlassDarkChip: DSColorAppearances(any: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35))
+        case .materialGlassDarkFill: DSColorAppearances(any: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.55), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6), highContrast: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.55), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6))
+        case .materialGlassFill: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.3), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.3), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.6))
         case .materialGlassLightChip: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.25), dark: DSRGBA(.sRGB, 1, 1, 1, 0.16), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.16), watch: DSRGBA(.sRGB, 1, 1, 1, 0.16))
         case .materialGlassLightFill: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.3), dark: DSRGBA(.sRGB, 1, 1, 1, 0.26), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.3), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.26), watch: DSRGBA(.sRGB, 1, 1, 1, 0.26))
-        case .materialGlassScrim: DSColorAppearances(any: DSRGBA(.sRGB, 0, 0, 0, 0.35), dark: DSRGBA(.sRGB, 0, 0, 0, 0.4), highContrast: DSRGBA(.sRGB, 0, 0, 0, 0.35), darkHighContrast: DSRGBA(.sRGB, 0, 0, 0, 0.4), watch: DSRGBA(.sRGB, 0, 0, 0, 0.4))
+        case .materialGlassScrim: DSColorAppearances(any: DSRGBA(.sRGB, 0, 0, 0, 0.45), dark: DSRGBA(.sRGB, 0, 0, 0, 0.45), highContrast: DSRGBA(.sRGB, 0, 0, 0, 0.45), darkHighContrast: DSRGBA(.sRGB, 0, 0, 0, 0.45), watch: DSRGBA(.sRGB, 0, 0, 0, 0.45))
         }
     }
 }
@@ -213,6 +279,9 @@ public struct DSColor: Hashable, Sendable {
     /// primary pill, active tab, solid action circle
     public var bgFillInverse: Color { DSColorToken.bgFillInverse.color(brand) }
 
+    /// the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)
+    public var bgFillInverseMedia: Color { DSColorToken.bgFillInverseMedia.color(brand) }
+
     public var bgFillNeutralSubtle: Color { DSColorToken.bgFillNeutralSubtle.color(brand) }
 
     /// never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%
@@ -226,18 +295,22 @@ public struct DSColor: Hashable, Sendable {
 
     public var bgSurfaceOverlay: Color { DSColorToken.bgSurfaceOverlay.color(brand) }
 
-    /// puffy chip / round button on the page, plus inset top highlight and elevation.1
+    /// puffy chip / round button on the page (#F7F8FA, opaque; ADR-0030 §5.2), with color.edge.raised as its top edge and elevation.1; also the glass fallback
     public var bgSurfaceRaised: Color { DSColorToken.bgSurfaceRaised.color(brand) }
 
     /// tinted focus card (= #FEF2E9 on white)
     public var bgTintAccent: Color { DSColorToken.bgTintAccent.color(brand) }
 
+    /// the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)
     public var bgTintCritical: Color { DSColorToken.bgTintCritical.color(brand) }
 
+    /// the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)
     public var bgTintInfo: Color { DSColorToken.bgTintInfo.color(brand) }
 
+    /// the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)
     public var bgTintSuccess: Color { DSColorToken.bgTintSuccess.color(brand) }
 
+    /// the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)
     public var bgTintWarning: Color { DSColorToken.bgTintWarning.color(brand) }
 
     /// control edges that must pass 3:1
@@ -247,6 +320,12 @@ public struct DSColor: Hashable, Sendable {
 
     /// inputs, table rows, chip strokes
     public var borderHairline: Color { DSColorToken.borderHairline.color(brand) }
+
+    /// rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2)
+    public var borderOnGlassFill: Color { DSColorToken.borderOnGlassFill.color(brand) }
+
+    /// rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2)
+    public var borderOnMedia: Color { DSColorToken.borderOnMedia.color(brand) }
 
     /// outline controls such as the ghost button; ink 45% keeps 3:1 on surface and page (visual-dna B1)
     public var borderStrong: Color { DSColorToken.borderStrong.color(brand) }
@@ -269,6 +348,27 @@ public struct DSColor: Hashable, Sendable {
     /// the now marker; 2.3:1 on white, so it always carries its label or value (visual-dna B3)
     public var chartNow: Color { DSColorToken.chartNow.color(brand) }
 
+    /// gridlines on the scheme's glass (ADR-0030 §2.3)
+    public var chartOnGlassFillGrid: Color { DSColorToken.chartOnGlassFillGrid.color(brand) }
+
+    /// chart line on the scheme's glass: the glass foreground, ink in light (ADR-0030 §2.3)
+    public var chartOnGlassFillLine: Color { DSColorToken.chartOnGlassFillLine.color(brand) }
+
+    /// the plot on the scheme's glass: a white 8% lift, not a white hole (ADR-0030 §2.3)
+    public var chartOnGlassFillPlot: Color { DSColorToken.chartOnGlassFillPlot.color(brand) }
+
+    /// the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2)
+    public var chartOnGlassFillReference: Color { DSColorToken.chartOnGlassFillReference.color(brand) }
+
+    /// gridlines on vivid; decorative (ADR-0030 §2.2)
+    public var chartOnMediaGrid: Color { DSColorToken.chartOnMediaGrid.color(brand) }
+
+    /// chart line on vivid (ADR-0030 §2.2)
+    public var chartOnMediaLine: Color { DSColorToken.chartOnMediaLine.color(brand) }
+
+    /// the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2)
+    public var chartOnMediaReference: Color { DSColorToken.chartOnMediaReference.color(brand) }
+
     /// charts never sit on raw glass
     public var chartPlot: Color { DSColorToken.chartPlot.color(brand) }
 
@@ -284,8 +384,14 @@ public struct DSColor: Hashable, Sendable {
 
     public var chartSeries6: Color { DSColorToken.chartSeries6.color(brand) }
 
-    /// the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14)
+    /// the mandatory target line (ADR-0007 rule 2); ink 60% (5.07:1 on white) reads above comparison's 45% (ADR-0030 §2.4)
     public var chartTarget: Color { DSColorToken.chartTarget.color(brand) }
+
+    /// the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2)
+    public var edgeHighlight: Color { DSColorToken.edgeHighlight.color(brand) }
+
+    /// the 1 px top edge of raised: the puffy chip (ADR-0030 §4.1)
+    public var edgeRaised: Color { DSColorToken.edgeRaised.color(brand) }
 
     /// marks only, never text; 2.3:1 on white, so always paired with a value, sign or label (visual-dna B3)
     public var iconAccent: Color { DSColorToken.iconAccent.color(brand) }
@@ -302,6 +408,39 @@ public struct DSColor: Hashable, Sendable {
 
     public var iconStatusWarning: Color { DSColorToken.iconStatusWarning.color(brand) }
 
+    /// map ground: city blocks, over the land
+    public var mapBlock: Color { DSColorToken.mapBlock.color(brand) }
+
+    /// map ground: buildings, over the land
+    public var mapBuilding: Color { DSColorToken.mapBuilding.color(brand) }
+
+    /// map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground
+    public var mapLabel: Color { DSColorToken.mapLabel.color(brand) }
+
+    /// map ground: the land, the page (ADR-0030 §1.1)
+    public var mapLand: Color { DSColorToken.mapLand.color(brand) }
+
+    /// map ground: parks, over the land
+    public var mapPark: Color { DSColorToken.mapPark.color(brand) }
+
+    /// map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3)
+    public var mapRoad: Color { DSColorToken.mapRoad.color(brand) }
+
+    /// map ground: the casing under roads
+    public var mapRoadCasing: Color { DSColorToken.mapRoadCasing.color(brand) }
+
+    /// the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4)
+    public var mapRoute: Color { DSColorToken.mapRoute.color(brand) }
+
+    /// the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4)
+    public var mapRouteAhead: Color { DSColorToken.mapRouteAhead.color(brand) }
+
+    /// the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4)
+    public var mapRouteCasing: Color { DSColorToken.mapRouteCasing.color(brand) }
+
+    /// map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2)
+    public var mapWater: Color { DSColorToken.mapWater.color(brand) }
+
     /// 5.7:1 on page; the light accent is text-safe only at step 800
     public var textAccent: Color { DSColorToken.textAccent.color(brand) }
 
@@ -315,12 +454,33 @@ public struct DSColor: Hashable, Sendable {
     /// ink on accent-300 = 12.0:1
     public var textOnAccent: Color { DSColorToken.textOnAccent.color(brand) }
 
+    /// the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4)
+    public var textOnAccentSecondary: Color { DSColorToken.textOnAccentSecondary.color(brand) }
+
     public var textOnAccentStrong: Color { DSColorToken.textOnAccentStrong.color(brand) }
 
     public var textOnBadge: Color { DSColorToken.textOnBadge.color(brand) }
 
     /// white on dark glass; light glass uses on-glass-light (ADR-0022)
     public var textOnGlass: Color { DSColorToken.textOnGlass.color(brand) }
+
+    /// the scheme's glass (material.glass.fill and .chip): ink on light glass in light (ADR-0029 §1.3)
+    public var textOnGlassFill: Color { DSColorToken.textOnGlassFill.color(brand) }
+
+    /// dimmed tone (trailing digits and units at >= 24 px) on the scheme's glass over Prism's map only (backdrop L >= 0.89; ADR-0029 §1.4)
+    public var textOnGlassFillDimmed: Color { DSColorToken.textOnGlassFillDimmed.color(brand) }
+
+    /// secondary tone on the scheme's glass over imagery and vivid: ink, the primary tone, in light (ADR-0029 §1.4)
+    public var textOnGlassFillMediaSecondary: Color { DSColorToken.textOnGlassFillMediaSecondary.color(brand) }
+
+    /// tertiary and dimmed tones on the scheme's glass over imagery and vivid: ink in light (ADR-0029 §1.4)
+    public var textOnGlassFillMediaTertiary: Color { DSColorToken.textOnGlassFillMediaTertiary.color(brand) }
+
+    /// secondary tone on the scheme's glass over Prism's map only (backdrop L >= 0.84; ADR-0029 §1.4)
+    public var textOnGlassFillSecondary: Color { DSColorToken.textOnGlassFillSecondary.color(brand) }
+
+    /// tertiary tone on the scheme's glass over Prism's map only (ADR-0029 §1.4)
+    public var textOnGlassFillTertiary: Color { DSColorToken.textOnGlassFillTertiary.color(brand) }
 
     /// ink on light glass in the light scheme; hierarchy by size, never by alpha (ADR-0022 §3)
     public var textOnGlassLight: Color { DSColorToken.textOnGlassLight.color(brand) }
@@ -333,7 +493,10 @@ public struct DSColor: Hashable, Sendable {
 
     public var textOnInverse: Color { DSColorToken.textOnInverse.color(brand) }
 
-    /// every vivid gradient passes ADR-0022 V1/V2
+    /// ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1)
+    public var textOnInverseMedia: Color { DSColorToken.textOnInverseMedia.color(brand) }
+
+    /// every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2
     public var textOnVivid: Color { DSColorToken.textOnVivid.color(brand) }
 
     /// 17.2:1 on page

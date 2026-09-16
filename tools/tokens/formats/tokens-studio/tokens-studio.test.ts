@@ -268,9 +268,9 @@ describe('the repository flavor', () => {
     const input = await repoInput();
     const themes = studioThemes(input.model);
     const typed: ThemeObject[] = themes.map((t) => ({ ...t, selectedTokenSets: t.selectedTokenSets as Record<string, TokenSetStatus> }));
-    expect(typed).toHaveLength(2 + 6 + 3);
+    expect(typed).toHaveLength(2 + 6 + 4);
     const times = (n: number, group: string): string[] => Array.from({ length: n }, () => group);
-    expect(themes.map((t) => t.group)).toEqual([...times(2, 'brand'), ...times(6, 'colorScheme'), ...times(3, 'density')]);
+    expect(themes.map((t) => t.group)).toEqual([...times(2, 'brand'), ...times(6, 'colorScheme'), ...times(4, 'density')]);
     expect(new Set(themes.map((t) => t.id)).size).toBe(themes.length);
     const order = tokenSetOrder(input.model);
     const statuses: readonly string[] = Object.values(TokenSetStatus);
@@ -299,7 +299,7 @@ describe('the repository flavor', () => {
   test('every alias resolves under every combination of one theme per group', async () => {
     const files = parsed(renderTokensStudio(await repoInput()).files);
     const { combinations, failures } = unresolved(files);
-    expect(combinations).toBe(2 * 6 * 3);
+    expect(combinations).toBe(2 * 6 * 4);
     expect(failures).toEqual([]);
   }, 60_000);
 

@@ -38,6 +38,7 @@
   --background-color-ds-fill-accent-strong: var(--ds-color-bg-fill-accent-strong);
   --background-color-ds-fill-critical: var(--ds-color-bg-fill-critical);
   --background-color-ds-fill-inverse: var(--ds-color-bg-fill-inverse);
+  --background-color-ds-fill-inverse-media: var(--ds-color-bg-fill-inverse-media);
   --background-color-ds-fill-neutral-subtle: var(--ds-color-bg-fill-neutral-subtle);
   --background-color-ds-page: var(--ds-color-bg-page);
   --background-color-ds-surface: var(--ds-color-bg-surface);
@@ -52,6 +53,8 @@
   --border-color-ds-boundary: var(--ds-color-border-boundary);
   --border-color-ds-focus: var(--ds-color-border-focus);
   --border-color-ds-hairline: var(--ds-color-border-hairline);
+  --border-color-ds-on-glass-fill: var(--ds-color-border-on-glass-fill);
+  --border-color-ds-on-media: var(--ds-color-border-on-media);
   --border-color-ds-strong: var(--ds-color-border-strong);
   --color-ds-chart-axis: var(--ds-color-chart-axis);
   --color-ds-chart-band: var(--ds-color-chart-band);
@@ -60,6 +63,13 @@
   --color-ds-chart-ghost: var(--ds-color-chart-ghost);
   --color-ds-chart-grid: var(--ds-color-chart-grid);
   --color-ds-chart-now: var(--ds-color-chart-now);
+  --color-ds-chart-on-glass-fill-grid: var(--ds-color-chart-on-glass-fill-grid);
+  --color-ds-chart-on-glass-fill-line: var(--ds-color-chart-on-glass-fill-line);
+  --color-ds-chart-on-glass-fill-plot: var(--ds-color-chart-on-glass-fill-plot);
+  --color-ds-chart-on-glass-fill-reference: var(--ds-color-chart-on-glass-fill-reference);
+  --color-ds-chart-on-media-grid: var(--ds-color-chart-on-media-grid);
+  --color-ds-chart-on-media-line: var(--ds-color-chart-on-media-line);
+  --color-ds-chart-on-media-reference: var(--ds-color-chart-on-media-reference);
   --color-ds-chart-plot: var(--ds-color-chart-plot);
   --color-ds-chart-series-1: var(--ds-color-chart-series-1);
   --color-ds-chart-series-2: var(--ds-color-chart-series-2);
@@ -97,6 +107,8 @@
   --outline-color-ds-boundary: var(--ds-color-border-boundary);
   --outline-color-ds-focus: var(--ds-color-border-focus);
   --outline-color-ds-hairline: var(--ds-color-border-hairline);
+  --outline-color-ds-on-glass-fill: var(--ds-color-border-on-glass-fill);
+  --outline-color-ds-on-media: var(--ds-color-border-on-media);
   --outline-color-ds-strong: var(--ds-color-border-strong);
   --radius-ds-badge: var(--ds-radius-badge);
   --radius-ds-card: var(--ds-radius-card);
@@ -160,19 +172,31 @@
   --text-color-ds-icon-status-warning: var(--ds-color-icon-status-warning);
   --text-color-ds-info: var(--ds-color-text-info);
   --text-color-ds-on-accent: var(--ds-color-text-on-accent);
+  --text-color-ds-on-accent-secondary: var(--ds-color-text-on-accent-secondary);
   --text-color-ds-on-accent-strong: var(--ds-color-text-on-accent-strong);
   --text-color-ds-on-badge: var(--ds-color-text-on-badge);
   --text-color-ds-on-glass: var(--ds-color-text-on-glass);
+  --text-color-ds-on-glass-fill: var(--ds-color-text-on-glass-fill);
+  --text-color-ds-on-glass-fill-dimmed: var(--ds-color-text-on-glass-fill-dimmed);
+  --text-color-ds-on-glass-fill-media-secondary: var(--ds-color-text-on-glass-fill-media-secondary);
+  --text-color-ds-on-glass-fill-media-tertiary: var(--ds-color-text-on-glass-fill-media-tertiary);
+  --text-color-ds-on-glass-fill-secondary: var(--ds-color-text-on-glass-fill-secondary);
+  --text-color-ds-on-glass-fill-tertiary: var(--ds-color-text-on-glass-fill-tertiary);
   --text-color-ds-on-glass-light: var(--ds-color-text-on-glass-light);
   --text-color-ds-on-glass-secondary: var(--ds-color-text-on-glass-secondary);
   --text-color-ds-on-glass-tertiary: var(--ds-color-text-on-glass-tertiary);
   --text-color-ds-on-inverse: var(--ds-color-text-on-inverse);
+  --text-color-ds-on-inverse-media: var(--ds-color-text-on-inverse-media);
   --text-color-ds-on-vivid: var(--ds-color-text-on-vivid);
   --text-color-ds-primary: var(--ds-color-text-primary);
   --text-color-ds-secondary: var(--ds-color-text-secondary);
   --text-color-ds-success: var(--ds-color-text-success);
   --text-color-ds-tertiary: var(--ds-color-text-tertiary);
   --text-color-ds-warning: var(--ds-color-text-warning);
+  --text-ds-axis: var(--ds-type-axis-font-size);
+  --text-ds-axis--font-weight: var(--ds-type-axis-font-weight);
+  --text-ds-axis--letter-spacing: var(--ds-type-axis-letter-spacing);
+  --text-ds-axis--line-height: var(--ds-type-axis-line-height);
   --text-ds-body-lg: var(--ds-type-body-lg-font-size);
   --text-ds-body-lg--font-weight: var(--ds-type-body-lg-font-weight);
   --text-ds-body-lg--letter-spacing: var(--ds-type-body-lg-letter-spacing);
@@ -272,6 +296,14 @@
   --z-index-ds-overlay: var(--ds-z-overlay);
   --z-index-ds-raised: var(--ds-z-raised);
   --z-index-ds-toast: var(--ds-z-toast);
+}
+@utility type-ds-axis {
+  font-family: var(--ds-type-axis-font-family);
+  font-size: var(--ds-type-axis-font-size);
+  font-weight: var(--ds-type-axis-font-weight);
+  line-height: var(--ds-type-axis-line-height);
+  letter-spacing: var(--ds-type-axis-letter-spacing);
+  font-variant-numeric: var(--ds-type-axis-font-variant-numeric);
 }
 @utility type-ds-body-lg {
   font-family: var(--ds-type-body-lg-font-family);

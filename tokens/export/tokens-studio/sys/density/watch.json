@@ -1,0 +1,9 @@
+{
+  "space": {
+    "card-padding": {
+      "$type": "spacing",
+      "$value": "16px",
+      "$description": "the watch density: regular with a 16 px card padding, the watchOS default (ADR-0029 §3.2)"
+    }
+  }
+}

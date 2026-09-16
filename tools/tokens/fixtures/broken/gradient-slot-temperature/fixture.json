@@ -1,0 +1,9 @@
+{
+  "description": "The light slots 1 and 2 pair sky (cool) with rose (warm); each pair of vivid slots resolves to gradients of one temperature, so a 2x2 that alternates the pair is one temperature (ADR-0029 §2.5).",
+  "expect": [
+    {
+      "code": "gradient/slot-temperature",
+      "tokenId": "sys.gradient.vivid.2"
+    }
+  ]
+}

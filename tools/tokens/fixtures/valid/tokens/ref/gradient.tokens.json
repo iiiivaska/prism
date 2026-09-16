@@ -38,6 +38,7 @@
               "angle": 165,
               "grain": 0.06,
               "scheme": "light",
+              "temperature": "cool",
               "bloom": {
                 "alpha": 0.3,
                 "blur": 150
@@ -78,7 +79,8 @@
             "app.prism": {
               "angle": 200,
               "grain": 0.05,
-              "scheme": "dark"
+              "scheme": "dark",
+              "temperature": "cool"
             }
           }
         }

@@ -23,9 +23,10 @@
       },
       "ghost": {
         "bg": {
-          "rest": {
+          "pressed": {
             "$type": "color",
-            "$value": "{color.bg.fill.neutral.subtle}"
+            "$value": "{color.bg.fill.neutral.subtle}",
+            "$description": "the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)"
           }
         },
         "border": {

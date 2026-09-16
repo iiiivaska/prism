@@ -1,0 +1,116 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.slot.dark.bg-page}"
+        },
+        "fill": {
+          "accent": {
+            "$value": "{ref.color.slot.dark.bg-fill-accent}"
+          }
+        },
+        "tint": {
+          "critical": {
+            "$value": "{ref.color.status.danger.mark-dark}",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.1
+              }
+            }
+          }
+        }
+      },
+      "text": {
+        "primary": {
+          "$value": "{ref.color.neutral.0}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.64,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "on-accent": {
+          "$value": "{ref.color.slot.dark.text-on-accent}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.accent"
+                ]
+              }
+            }
+          }
+        },
+        "accent": {
+          "$value": "{ref.color.slot.dark.text-accent}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.page"
+                ]
+              }
+            }
+          }
+        },
+        "critical": {
+          "$value": "{ref.color.status.danger.dark}",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.tint.critical"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "map": {
+        "land": {
+          "$value": "{sys.color.bg.page}"
+        },
+        "road": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.13,
+            "hex": "#ffffff"
+          }
+        }
+      }
+    }
+  }
+}

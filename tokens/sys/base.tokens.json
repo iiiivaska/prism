@@ -681,7 +681,7 @@
       },
       "gauge-stroke-ratio": {
         "$type": "number",
-        "$value": 0.1,
+        "$value": 0.05,
         "$extensions": {
           "app.prism": {
             "figma": {
@@ -689,7 +689,8 @@
               "scopes": []
             }
           }
-        }
+        },
+        "$description": "ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5)"
       }
     },
     "stroke": {
@@ -817,10 +818,6 @@
         "$value": "{ref.type.eyebrow}"
       },
       "metric": {
-        "xl": {
-          "$type": "typography",
-          "$value": "{ref.type.metric.xl}"
-        },
         "lg": {
           "$type": "typography",
           "$value": "{ref.type.metric.lg}"
@@ -837,6 +834,10 @@
       "data": {
         "$type": "typography",
         "$value": "{ref.type.data}"
+      },
+      "axis": {
+        "$type": "typography",
+        "$value": "{ref.type.axis}"
       }
     }
   }

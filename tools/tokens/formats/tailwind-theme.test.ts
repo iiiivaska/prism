@@ -64,7 +64,7 @@ describe('tailwind.css', () => {
     for (const v of model.variants) expect(v.name).toMatch(/^ds-/);
     const roles = scope.ids.filter((id) => id.startsWith('sys.type.'));
     expect(model.utilities.map((u) => u.name)).toEqual(roles.map((id) => `type-ds-${id.slice('sys.type.'.length).replace(/\./g, '-')}`));
-    expect(roles).toHaveLength(21);
+    expect(roles).toHaveLength(22);   // 21 roles plus axis (ADR-0030 §2.6)
     for (const u of model.utilities) expect(u.properties.map(([p]) => p)).toEqual(['font-family', 'font-size', 'font-weight', 'line-height', 'letter-spacing', 'font-variant-numeric']);
   }, 60_000);
 

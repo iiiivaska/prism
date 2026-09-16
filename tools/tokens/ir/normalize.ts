@@ -186,7 +186,7 @@ function gradient(v: unknown): IRGradient {
     if (position < 0 || position > 1) throw new Invalid(`gradient stop ${i} position must lie in [0, 1]`);
     return { kind: 'gradientStop', color: color(o['color'], `gradient stop ${i} color`), position };
   });
-  return { kind: 'gradient', stops, angle: null, grain: null, scheme: null, bloom: null };
+  return { kind: 'gradient', stops, angle: null, grain: null, scheme: null, temperature: null, bloom: null };
 }
 
 export function boldWeightOf(s: number): number {
@@ -299,6 +299,8 @@ function fold(value: IRValue, ext: Record<string, unknown>): IRValue {
       if (typeof grain === 'number' && grain !== g.grain) g = { ...g, grain };
       const scheme = ext['scheme'];
       if ((scheme === 'light' || scheme === 'dark') && scheme !== g.scheme) g = { ...g, scheme };
+      const temperature = ext['temperature'];
+      if ((temperature === 'warm' || temperature === 'cool') && temperature !== g.temperature) g = { ...g, temperature };
       const bloom = obj(ext['bloom']);
       if (bloom !== null) {
         const next = { alpha: num(bloom['alpha'], 'app.prism.bloom.alpha'), blur: bloom['blur'] === undefined || bloom['blur'] === null ? null : num(bloom['blur'], 'app.prism.bloom.blur') };

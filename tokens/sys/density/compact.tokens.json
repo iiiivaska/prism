@@ -85,7 +85,7 @@
       },
       "page-margin": {
         "$value": {
-          "value": 16,
+          "value": 24,
           "unit": "px"
         },
         "$extensions": {

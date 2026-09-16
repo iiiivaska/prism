@@ -6,6 +6,12 @@
 // asset name, the brand's faces; the `Spring.value` checkpoints of ADR-0023 §11 P4; and one
 // `platformDefault` expectation per OS (ADR-0019 rule 12). A value that differs on watchOS is
 // expected inside `#if os(watchOS)`. The file never reads SwiftUI's spring settling estimate.
+//
+// A test with more than CHECKS_PER_PART checks calls one private part function per chunk: Swift Testing
+// runs tests on secondary threads with 512 KiB stacks, and a debug build keeps a stack slot for every
+// temporary of a function, so a single function with every check of a large group overflows its stack
+// (SIGBUS; the colorScheme type weights did at 22 roles in P1-9). The parts run one after another, so the
+// stack holds one part at a time.
 import { COLOR_SCHEME_MODIFIER, PLATFORM_DEFAULTS, PLATFORM_MODIFIER } from '../../config.ts';
 import { stepResponse, settleMs } from '../../ir/spring.ts';
 import type { IRToken } from '../../ir/types.ts';
@@ -79,17 +85,49 @@ interface Check {
   readonly name: string;
 }
 
+/** The lines of one check: a `check(…)` call, or its `#if os(watchOS)` pair when the watch value differs. */
+function checkItem(c: Check, indent: string): string[] {
+  if (c.watch === c.expected) return [`${indent}check(${c.actual}, ${c.expected}, ${swiftString(c.name)})`];
+  return ['#if os(watchOS)', `${indent}check(${c.actual}, ${c.watch}, ${swiftString(c.name)})`, '#else', `${indent}check(${c.actual}, ${c.expected}, ${swiftString(c.name)})`, '#endif'];
+}
+
 function checkLines(checks: readonly Check[], indent: string): string[] {
-  const out: string[] = [];
-  for (const c of checks) {
-    if (c.watch === c.expected) out.push(`${indent}check(${c.actual}, ${c.expected}, ${swiftString(c.name)})`);
-    else out.push('#if os(watchOS)', `${indent}check(${c.actual}, ${c.watch}, ${swiftString(c.name)})`, '#else', `${indent}check(${c.actual}, ${c.expected}, ${swiftString(c.name)})`, '#endif');
+  return checks.flatMap((c) => checkItem(c, indent));
+}
+
+/** The most checks one generated function holds (see the header). */
+export const CHECKS_PER_PART = 48;
+
+/**
+ * Checks that share one context: `setup` builds the `DSTokenSet` their `t.` accessors read, once per
+ * part that needs it; each item is the lines of one check, indented for a function body.
+ */
+interface Block {
+  readonly setup: string | null;
+  readonly items: readonly (readonly string[])[];
+}
+
+/** One `@Test`; above CHECKS_PER_PART checks, it calls one private part function per chunk of a block. */
+function testFunction(name: string, blocks: readonly Block[]): string[] {
+  const parts: string[][] = [];
+  for (const b of blocks) {
+    for (let i = 0; i < b.items.length; i += CHECKS_PER_PART) {
+      const chunk = b.items.slice(i, i + CHECKS_PER_PART);
+      const needsSet = b.setup !== null && chunk.some((item) => item.some((l) => l.includes('check(t.')));
+      parts.push([...(needsSet && b.setup !== null ? [`        ${b.setup}`] : []), ...chunk.flat()]);
+    }
   }
+  const [only] = parts;
+  if (only === undefined) return [];
+  if (parts.length === 1) return ['', `    @Test func ${name}() {`, ...only, '    }'];
+  const out = ['', `    @Test func ${name}() {`, ...parts.map((_, i) => `        ${name}Part${i + 1}()`), '    }'];
+  parts.forEach((body, i) => out.push('', `    private func ${name}Part${i + 1}() {`, ...body, '    }'));
   return out;
 }
 
-function testFunction(name: string, body: readonly string[]): string[] {
-  return body.length === 0 ? [] : ['', `    @Test func ${name}() {`, ...body, '    }'];
+/** A block of plain lines (one item per line). */
+function lineBlock(lines: readonly string[]): Block {
+  return { setup: null, items: lines.map((l) => [l]) };
 }
 
 export function renderTestsText(model: SwiftModel, resolver: string): string {
@@ -148,18 +186,15 @@ export function renderTestsText(model: SwiftModel, resolver: string): string {
       }
     }
     for (const [group, perCtx] of byAxis) {
-      const body: string[] = [];
-      for (const { ctx, checks } of perCtx.values()) {
-        const needsSet = checks.some((c) => c.actual.startsWith('t.'));
-        body.push('        do {');
-        if (needsSet) body.push(`            let t = DSTokenSet(${contextExpr(b, ctx)})`);
-        body.push(...checkLines(checks, '            '), '        }');
-      }
-      lines.push(...testFunction(`${b.caseName}${group.charAt(0).toUpperCase()}${group.slice(1)}`, body));
+      const blocks: Block[] = [...perCtx.values()].map(({ ctx, checks }) => ({
+        setup: `let t = DSTokenSet(${contextExpr(b, ctx)})`,
+        items: checks.map((c) => checkItem(c, '        ')),
+      }));
+      lines.push(...testFunction(`${b.caseName}${group.charAt(0).toUpperCase()}${group.slice(1)}`, blocks));
     }
 
     // ADR-0021 rule 3: weight and boldWeight of every type role in every scheme × contrast × transparency context.
-    const weights: string[] = [];
+    const weights: Block[] = [];
     for (const ctx of variations(COLOR_SCHEME_MODIFIER)) {
       const checks: Check[] = [];
       for (const m of members) {
@@ -171,7 +206,7 @@ export function renderTestsText(model: SwiftModel, resolver: string): string {
           { actual: `t.${m.accessor}.boldWeight`, expected: w(at(model.primary), 'boldWeight'), watch: w(at(model.watch), 'boldWeight'), name: `${label(b, ctx)}: ${m.accessor}.boldWeight` },
         );
       }
-      if (checks.length > 0) weights.push('        do {', `            let t = DSTokenSet(${contextExpr(b, ctx)})`, ...checkLines(checks, '            '), '        }');
+      if (checks.length > 0) weights.push({ setup: `let t = DSTokenSet(${contextExpr(b, ctx)})`, items: checks.map((c) => checkItem(c, '        ')) });
     }
     lines.push(...testFunction(`${b.caseName}TypeWeights`, weights));
 
@@ -194,7 +229,7 @@ export function renderTestsText(model: SwiftModel, resolver: string): string {
     catalog.push(...checkLines([facesCheck], '        '));
     catalog.push(`        check(DSBrand.${ident(b.caseName)}.colorNamespace, ${swiftString(model.namespaces.get(b.context) ?? b.context)}, ${swiftString(`${b.context}: colorNamespace`)})`);
     if (b.meta !== null) catalog.push(`        check(DSBrand.${ident(b.caseName)}.preset, .${b.meta.preset}, ${swiftString(`${b.context}: preset`)})`);
-    lines.push(...testFunction(`${b.caseName}Catalog`, catalog));
+    lines.push(...testFunction(`${b.caseName}Catalog`, [{ setup: null, items: catalogItems(catalog) }]));
   }
 
   // ADR-0023 §11 P4: one entry per distinct spring, reached through the first member and context that has it.
@@ -221,7 +256,7 @@ export function renderTestsText(model: SwiftModel, resolver: string): string {
       }
     }
   }
-  lines.push(...testFunction('springCurves', springs));
+  lines.push(...testFunction('springCurves', [lineBlock(springs)]));
 
   // ADR-0019 §2, rule 12: one expectation per OS.
   const platform: string[] = [];
@@ -231,9 +266,27 @@ export function renderTestsText(model: SwiftModel, resolver: string): string {
     platform.push(br.condition, `        check(DSTokenContext.platformDefault, ${platformDefaultExpr(d)}, ${swiftString(`${br.platform} platformDefault`)})`);
   }
   if (platform.length > 0) platform.push('#endif');
-  lines.push(...testFunction('platformDefault', platform));
+  lines.push(...testFunction('platformDefault', [{ setup: null, items: platform.length === 0 ? [] : [platform] }]));
   lines.push('}');
   return swiftFile(lines);
+}
+
+/** The catalog lines as items: an `#if os(watchOS)` … `#endif` group stays one item. */
+function catalogItems(lines: readonly string[]): string[][] {
+  const out: string[][] = [];
+  let open: string[] | null = null;
+  for (const l of lines) {
+    if (open !== null) {
+      open.push(l);
+      if (l === '#endif') {
+        out.push(open);
+        open = null;
+      }
+    } else if (l.startsWith('#if ')) open = [l];
+    else out.push([l]);
+  }
+  if (open !== null) out.push(open);
+  return out;
 }
 
 export function renderSwiftTests(input: FormatInput): FormatOutput {

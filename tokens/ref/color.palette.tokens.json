@@ -347,18 +347,6 @@
               "hex": "#187530"
             }
           },
-          "tint-light": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.9577,
-                0.0241,
-                151.2
-              ],
-              "alpha": 1,
-              "hex": "#e6f6e9"
-            }
-          },
           "dark": {
             "$value": {
               "colorSpace": "oklch",
@@ -397,18 +385,6 @@
               "hex": "#8f5b00"
             }
           },
-          "tint-light": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.9756,
-                0.0204,
-                81.8
-              ],
-              "alpha": 1,
-              "hex": "#fef6e8"
-            }
-          },
           "dark": {
             "$value": {
               "colorSpace": "oklch",
@@ -445,18 +421,6 @@
               ],
               "alpha": 1,
               "hex": "#bf2222"
-            }
-          },
-          "tint-light": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.95,
-                0.0218,
-                17.5
-              ],
-              "alpha": 1,
-              "hex": "#fde9e9"
             }
           },
           "dark": {
@@ -519,18 +483,6 @@
               ],
               "alpha": 1,
               "hex": "#3d5bc4"
-            }
-          },
-          "tint-light": {
-            "$value": {
-              "colorSpace": "oklch",
-              "components": [
-                0.9473,
-                0.0164,
-                274.8
-              ],
-              "alpha": 1,
-              "hex": "#eaedf9"
             }
           },
           "dark": {
@@ -735,26 +687,85 @@
             "colorSpace": "oklch",
             "components": [
               0.1504,
-              0.0092,
-              128.7
+              0.007,
+              265.0
             ],
             "alpha": 1,
-            "hex": "#0a0c08"
+            "hex": "#0a0b0e"
           },
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)"
         },
         "dark": {
           "$value": {
             "colorSpace": "oklch",
             "components": [
               0.1853,
-              0.0102,
-              145.1
+              0.007,
+              265.0
             ],
             "alpha": 1,
-            "hex": "#101410"
+            "hex": "#111316"
           },
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)"
+        }
+      },
+      "map": {
+        "$description": "Map hue primitives (ADR-0030 §1.2): the water and park hues sys.color.map.water and .park draw at alpha over the land. Separate ids from the chart series and the status scale, so a brand's series or a status retune does not move the map; system-owned (a brand-owned map needs an ADR, ADR-0020 rule 15).",
+        "light": {
+          "water": {
+            "$value": {
+              "colorSpace": "oklch",
+              "components": [
+                0.5582,
+                0.1535,
+                268.2
+              ],
+              "alpha": 1,
+              "hex": "#4e6ccd"
+            },
+            "$description": "light water hue; sys.color.map.water draws it at alpha 0.16"
+          },
+          "park": {
+            "$value": {
+              "colorSpace": "oklch",
+              "components": [
+                0.5868,
+                0.0979,
+                181.4
+              ],
+              "alpha": 1,
+              "hex": "#1f8f80"
+            },
+            "$description": "light park hue; sys.color.map.park draws it at alpha 0.16"
+          }
+        },
+        "dark": {
+          "water": {
+            "$value": {
+              "colorSpace": "oklch",
+              "components": [
+                0.6361,
+                0.141,
+                270.5
+              ],
+              "alpha": 1,
+              "hex": "#6b84e0"
+            },
+            "$description": "dark water hue; sys.color.map.water draws it at alpha 0.16"
+          },
+          "park": {
+            "$value": {
+              "colorSpace": "oklch",
+              "components": [
+                0.7637,
+                0.1043,
+                180.3
+              ],
+              "alpha": 1,
+              "hex": "#5bc8b5"
+            },
+            "$description": "dark park hue; sys.color.map.park draws it at alpha 0.11"
+          }
         }
       }
     }

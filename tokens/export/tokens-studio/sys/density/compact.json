@@ -34,7 +34,7 @@
     },
     "page-margin": {
       "$type": "spacing",
-      "$value": "16px"
+      "$value": "24px"
     },
     "section-gap": {
       "$type": "spacing",

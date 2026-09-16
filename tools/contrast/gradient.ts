@@ -4,8 +4,8 @@
 // V1 (`stops: "all"`) samples every stop plus 100 points per segment, interpolated in both spaces the
 // stacks may render in: gamma-encoded sRGB and OKLab (CSS's default for oklch() stops). V2
 // (`region: "card-header"`) takes the same samples inside the t interval that the Card header block
-// spans, plus the colors at the interval's ends, at twelve reference geometries: four Card sizes by the
-// padding and action size of each density.
+// spans, plus the colors at the interval's ends, at sixteen reference geometries: four Card sizes by the
+// padding and action size of each density (four since ADR-0029 §3.2 added `watch`).
 //
 // The stop colors are the CSS-gamut-mapped sRGB colors, which is what the emitted CSS paints on an sRGB
 // display (ARCHITECTURE §7.2); an OKLab sample is mapped back to sRGB with the same CSS gamut mapping
@@ -166,7 +166,7 @@ function px(bundle: IRBundle, key: PermKey, name: string): number {
 }
 
 /**
- * The twelve reference geometries of V2 for the permutation of a contrast context: every Card size with
+ * The sixteen reference geometries of V2 for the permutation of a contrast context: every Card size with
  * the padding and action size of every density context (the context's own permutation when the resolver
  * has no density modifier).
  */

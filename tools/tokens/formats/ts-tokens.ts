@@ -192,7 +192,8 @@ export interface GradientValue {
   readonly css: string; readonly cssP3: string | null;
   readonly stops: readonly { readonly color: ColorValue; readonly position: number }[];
   readonly angle: number; readonly grain: number; readonly scheme: 'light' | 'dark' | null;
-  readonly bloom: { readonly alpha: number; readonly blur: number } | null;
+  /** \`color\` is derived: the stop of highest relative luminance, the later stop on a tie (ADR-0030 §4.3). */
+  readonly bloom: { readonly alpha: number; readonly blur: number; readonly color: ColorValue } | null;
 }
 /** The DSTextStyle cases (ADR-0021 §7). */
 export type TextStyleName = 'largeTitle' | 'title' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subheadline' | 'footnote' | 'caption' | 'caption2';

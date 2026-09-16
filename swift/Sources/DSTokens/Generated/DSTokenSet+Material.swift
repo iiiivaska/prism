@@ -11,6 +11,14 @@ extension DSTokenSet {
         public let glassCellEdgeStart: Double
         public let glassCellGrain: Double
         public let glassCellSaturate: Double
+        /// the scheme's glass for chips, controls and status cells over media; aliases glass.light.chip field by field (ADR-0029 §1.2)
+        public let glassChip: Color
+        public let glassChipBloom: Double
+        public let glassChipBlur: CGFloat
+        public let glassChipEdgeEnd: Double
+        public let glassChipEdgeStart: Double
+        public let glassChipGrain: Double
+        public let glassChipSaturate: Double
         /// controls over a photo, map or vivid; primary foreground text.on-glass only (ADR-0022 §3)
         public let glassDarkChip: Color
         public let glassDarkChipBloom: Double
@@ -27,6 +35,14 @@ extension DSTokenSet {
         public let glassDarkFillEdgeStart: Double
         public let glassDarkFillGrain: Double
         public let glassDarkFillSaturate: Double
+        /// the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.light.fill field by field (ADR-0029 §1.2)
+        public let glassFill: Color
+        public let glassFillBloom: Double
+        public let glassFillBlur: CGFloat
+        public let glassFillEdgeEnd: Double
+        public let glassFillEdgeStart: Double
+        public let glassFillGrain: Double
+        public let glassFillSaturate: Double
         /// primary foreground text.on-glass-light only (ADR-0022 §3)
         public let glassLightChip: Color
         public let glassLightChipBloom: Double
@@ -43,13 +59,19 @@ extension DSTokenSet {
         public let glassLightFillEdgeStart: Double
         public let glassLightFillGrain: Double
         public let glassLightFillSaturate: Double
-        /// bottom-up under text on unpredictable backdrops
+        /// bottom-up under text on unpredictable backdrops: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim
         public let glassScrim: Color
+        /// alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2)
+        public let vividEdgeEnd: Double
+        /// alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2)
+        public let vividEdgeStart: Double
 
         init(_ c: DSTokenContext) {
             self.glassCell = DSColorToken.materialGlassCell.color(c.brand)
+            self.glassChip = DSColorToken.materialGlassChip.color(c.brand)
             self.glassDarkChip = DSColorToken.materialGlassDarkChip.color(c.brand)
             self.glassDarkFill = DSColorToken.materialGlassDarkFill.color(c.brand)
+            self.glassFill = DSColorToken.materialGlassFill.color(c.brand)
             self.glassLightChip = DSColorToken.materialGlassLightChip.color(c.brand)
             self.glassLightFill = DSColorToken.materialGlassLightFill.color(c.brand)
             self.glassScrim = DSColorToken.materialGlassScrim.color(c.brand)
@@ -57,10 +79,17 @@ extension DSTokenSet {
             self.glassCellBlur = 12
             self.glassCellGrain = 0
             self.glassCellSaturate = 1
+            self.glassChipBloom = 0
+            self.glassChipBlur = 20
+            self.glassChipGrain = 0
+            self.glassChipSaturate = 1
             self.glassDarkChipBloom = 0
             self.glassDarkChipGrain = 0
             self.glassDarkChipSaturate = 1
             self.glassDarkFillBloom = 0
+            self.glassFillBloom = 0
+            self.glassFillEdgeEnd = 0
+            self.glassFillGrain = 0
             self.glassLightChipBloom = 0
             self.glassLightChipBlur = 20
             self.glassLightChipEdgeEnd = 0
@@ -68,10 +97,13 @@ extension DSTokenSet {
             self.glassLightChipSaturate = 1
             self.glassLightFillEdgeEnd = 0
             self.glassLightFillGrain = 0
+            self.vividEdgeEnd = 0
             switch c.colorScheme {
             case .light:
                 self.glassCellEdgeEnd = 0.08
                 self.glassCellEdgeStart = 0.22
+                self.glassChipEdgeEnd = 0
+                self.glassChipEdgeStart = 0.55
                 self.glassDarkChipBlur = 24
                 self.glassDarkChipEdgeEnd = 0.08
                 self.glassDarkChipEdgeStart = 0.22
@@ -80,14 +112,20 @@ extension DSTokenSet {
                 self.glassDarkFillEdgeStart = 0.22
                 self.glassDarkFillGrain = 0.04
                 self.glassDarkFillSaturate = 0.8
+                self.glassFillBlur = 24
+                self.glassFillEdgeStart = 0.55
+                self.glassFillSaturate = 1.1
                 self.glassLightChipEdgeStart = 0.55
                 self.glassLightFillBloom = 0
                 self.glassLightFillBlur = 24
                 self.glassLightFillEdgeStart = 0.55
                 self.glassLightFillSaturate = 1.1
+                self.vividEdgeStart = 0.3
             case .dark:
                 self.glassCellEdgeEnd = 0
                 self.glassCellEdgeStart = 0.15
+                self.glassChipEdgeEnd = 0.12
+                self.glassChipEdgeStart = 0.2
                 self.glassDarkChipBlur = 20
                 self.glassDarkChipEdgeEnd = 0.12
                 self.glassDarkChipEdgeStart = 0.2
@@ -96,11 +134,15 @@ extension DSTokenSet {
                 self.glassDarkFillEdgeStart = 0.15
                 self.glassDarkFillGrain = 0
                 self.glassDarkFillSaturate = 1.2
+                self.glassFillBlur = 32
+                self.glassFillEdgeStart = 0.15
+                self.glassFillSaturate = 1.2
                 self.glassLightChipEdgeStart = 0.15
                 self.glassLightFillBloom = 0.35
                 self.glassLightFillBlur = 40
                 self.glassLightFillEdgeStart = 0.15
                 self.glassLightFillSaturate = 1
+                self.vividEdgeStart = 0.18
             }
         }
     }

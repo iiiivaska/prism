@@ -1,7 +1,8 @@
 // The Markdown report (ARCHITECTURE §10 step 8): ratio to two decimals, threshold, verdict per pair and context.
 import { describe, expect, test } from 'vitest';
 import { evaluatePair } from './pairs.ts';
-import { bgCell, formatRatio, renderReport, table, thresholdCell } from './report.ts';
+import { MAP_LIMITS } from './map.ts';
+import { bgCell, formatRatio, mapTable, renderReport, table, thresholdCell } from './report.ts';
 import { env, fakeContext, pair } from './test-support.ts';
 import { ADR_0011_THRESHOLDS } from './thresholds.ts';
 
@@ -49,6 +50,19 @@ describe('renderReport', () => {
     expect(md).toContain(`### Failures\n\n${table([failing])}`);
     expect(md).toContain('| `grey` | `color.bg.page` | prism/light | 4.47 | 4.50 functional | **FAIL** | #777777 on #ffffff |');
     expect(md).toContain('| `ink` | `color.bg.page` | prism/light | 21.00 | 4.50 functional | pass | #000000 on #ffffff |');
+  });
+
+  test('map grounds get their own section: OKLCH L over the land against the scheme\'s limit (ADR-0030 §1.5)', () => {
+    const dark = fakeContext({ colorScheme: 'dark', colors: {} });
+    const road = { context: dark, id: 'sys.color.map.road', path: 'color.map.road', lightness: 0.2994, hex: '#2c2d30', limit: MAP_LIMITS.dark, pass: true };
+    expect(mapTable([road])).toBe([
+      '| ground | context | over `color.map.land` | OKLCH L | limit | pass |',
+      '|---|---|---|--:|---|---|',
+      '| `color.map.road` | prism/dark | #2c2d30 | 0.299 | L <= 0.35 | pass |',
+    ].join('\n'));
+    const md = renderReport({ pairsPath: 'p.json', thresholds: null, pairs: 1, contexts: [], evaluations: [passing], maps: [road], problems: [], diagnostics: [] });
+    expect(md).toContain(`### Map backdrops (ADR-0030 §1.5)\n\n${mapTable([road])}\n\n### All pairs`);
+    expect(renderReport({ pairsPath: 'p.json', thresholds: null, pairs: 1, contexts: [], evaluations: [passing], problems: [], diagnostics: [] })).not.toContain('### Map backdrops');
   });
 
   test('no failure section when everything passes; build diagnostics are shown', () => {

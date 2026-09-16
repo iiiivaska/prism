@@ -36,17 +36,8 @@
             }
           },
           "raised": {
-            "$value": {
-              "colorSpace": "srgb",
-              "components": [
-                1.0,
-                1.0,
-                1.0
-              ],
-              "alpha": 0.7,
-              "hex": "#ffffff"
-            },
-            "$description": "puffy chip / round button on the page, plus inset top highlight and elevation.1",
+            "$value": "{ref.color.neutral.50}",
+            "$description": "puffy chip / round button on the page (#F7F8FA, opaque; ADR-0030 §5.2), with color.edge.raised as its top edge and elevation.1; also the glass fallback",
             "$extensions": {
               "app.prism": {
                 "figma": {
@@ -94,6 +85,21 @@
           "inverse": {
             "$value": "{ref.color.neutral.950}",
             "$description": "primary pill, active tab, solid action circle",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "inverse-media": {
+            "$value": "{ref.color.neutral.0}",
+            "$description": "the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)",
             "$extensions": {
               "app.prism": {
                 "figma": {
@@ -187,9 +193,10 @@
             }
           },
           "success": {
-            "$value": "{ref.color.status.success.tint-light}",
+            "$value": "{ref.color.status.success.dot-light}",
             "$extensions": {
               "app.prism": {
+                "alpha": 0.12,
                 "figma": {
                   "collection": "colorScheme",
                   "scopes": [
@@ -198,12 +205,14 @@
                   ]
                 }
               }
-            }
+            },
+            "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)"
           },
           "warning": {
-            "$value": "{ref.color.status.warning.tint-light}",
+            "$value": "{ref.color.status.warning.dot-light}",
             "$extensions": {
               "app.prism": {
+                "alpha": 0.12,
                 "figma": {
                   "collection": "colorScheme",
                   "scopes": [
@@ -212,12 +221,14 @@
                   ]
                 }
               }
-            }
+            },
+            "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)"
           },
           "critical": {
-            "$value": "{ref.color.status.danger.tint-light}",
+            "$value": "{ref.color.status.danger.dot-light}",
             "$extensions": {
               "app.prism": {
+                "alpha": 0.12,
                 "figma": {
                   "collection": "colorScheme",
                   "scopes": [
@@ -226,12 +237,14 @@
                   ]
                 }
               }
-            }
+            },
+            "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)"
           },
           "info": {
-            "$value": "{ref.color.status.info.tint-light}",
+            "$value": "{ref.color.status.info.dot-light}",
             "$extensions": {
               "app.prism": {
+                "alpha": 0.12,
                 "figma": {
                   "collection": "colorScheme",
                   "scopes": [
@@ -240,7 +253,8 @@
                   ]
                 }
               }
-            }
+            },
+            "$description": "the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2)"
           }
         }
       },
@@ -347,6 +361,25 @@
             }
           }
         },
+        "on-inverse-media": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.inverse-media"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
         "on-accent": {
           "$value": "{ref.color.slot.light.text-on-accent}",
           "$description": "ink on accent-300 = 12.0:1",
@@ -384,14 +417,34 @@
             }
           }
         },
+        "on-accent-secondary": {
+          "$value": "{sys.color.text.on-accent}",
+          "$description": "the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4)",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.7,
+              "a11y": {
+                "pairsWith": [
+                  "color.bg.fill.accent"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
         "on-vivid": {
           "$value": "{ref.color.neutral.0}",
-          "$description": "every vivid gradient passes ADR-0022 V1/V2",
+          "$description": "every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2",
           "$extensions": {
             "app.prism": {
               "a11y": {
                 "pairsWith": [
-                  "gradient.vivid.*"
+                  "ref.gradient.vivid.*"
                 ]
               },
               "figma": {
@@ -412,7 +465,8 @@
                 "pairsWith": [
                   "material.glass.dark.fill",
                   "material.glass.dark.chip",
-                  "material.glass.cell"
+                  "material.glass.cell",
+                  "material.glass.scrim"
                 ]
               },
               "figma": {
@@ -489,6 +543,121 @@
               "a11y": {
                 "pairsWith": [
                   "material.glass.dark.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill": {
+          "$value": "{sys.color.text.on-glass-light}",
+          "$description": "the scheme's glass (material.glass.fill and .chip): ink on light glass in light (ADR-0029 §1.3)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill",
+                  "material.glass.chip"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill-secondary": {
+          "$value": "{sys.color.text.secondary}",
+          "$description": "secondary tone on the scheme's glass over Prism's map only (backdrop L >= 0.84; ADR-0029 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill-tertiary": {
+          "$value": "{sys.color.text.tertiary}",
+          "$description": "tertiary tone on the scheme's glass over Prism's map only (ADR-0029 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill-dimmed": {
+          "$value": "{sys.color.text.dimmed}",
+          "$description": "dimmed tone (trailing digits and units at >= 24 px) on the scheme's glass over Prism's map only (backdrop L >= 0.89; ADR-0029 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill-media-secondary": {
+          "$value": "{sys.color.text.on-glass-light}",
+          "$description": "secondary tone on the scheme's glass over imagery and vivid: ink, the primary tone, in light (ADR-0029 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill-media-tertiary": {
+          "$value": "{sys.color.text.on-glass-light}",
+          "$description": "tertiary and dimmed tones on the scheme's glass over imagery and vivid: ink in light (ADR-0029 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "material.glass.fill"
                 ]
               },
               "figma": {
@@ -785,6 +954,73 @@
               }
             }
           }
+        },
+        "on-media": {
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1.0,
+              1.0,
+              1.0
+            ],
+            "alpha": 0.4,
+            "hex": "#ffffff"
+          },
+          "$description": "rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "on-glass-fill": {
+          "$value": "{sys.color.border.strong}",
+          "$description": "rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "edge": {
+        "highlight": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "raised": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "the 1 px top edge of raised: the puffy chip (ADR-0030 §4.1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       },
       "accent": {
@@ -967,10 +1203,10 @@
         },
         "target": {
           "$value": "{ref.color.neutral.950}",
-          "$description": "the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14)",
+          "$description": "the mandatory target line (ADR-0007 rule 2); ink 60% (5.07:1 on white) reads above comparison's 45% (ADR-0030 §2.4)",
           "$extensions": {
             "app.prism": {
-              "alpha": 0.45,
+              "alpha": 0.6,
               "figma": {
                 "collection": "colorScheme",
                 "scopes": [
@@ -1070,11 +1306,506 @@
               }
             }
           }
+        },
+        "on-media": {
+          "line": {
+            "$value": "{ref.color.neutral.0}",
+            "$description": "chart line on vivid (ADR-0030 §2.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          },
+          "reference": {
+            "$value": "{ref.color.neutral.0}",
+            "$description": "the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          },
+          "grid": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "alpha": 0.24,
+              "hex": "#ffffff"
+            },
+            "$description": "gridlines on vivid; decorative (ADR-0030 §2.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "on-glass-fill": {
+          "plot": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1.0,
+                1.0,
+                1.0
+              ],
+              "alpha": 0.08,
+              "hex": "#ffffff"
+            },
+            "$description": "the plot on the scheme's glass: a white 8% lift, not a white hole (ADR-0030 §2.3)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "line": {
+            "$value": "{sys.color.text.on-glass-light}",
+            "$description": "chart line on the scheme's glass: the glass foreground, ink in light (ADR-0030 §2.3)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          },
+          "reference": {
+            "$value": "{sys.color.chart.target}",
+            "$description": "the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          },
+          "grid": {
+            "$value": "{sys.color.chart.grid}",
+            "$description": "gridlines on the scheme's glass (ADR-0030 §2.3)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "SHAPE_FILL",
+                    "STROKE_COLOR"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "map": {
+        "land": {
+          "$value": "{sys.color.bg.page}",
+          "$description": "map ground: the land, the page (ADR-0030 §1.1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "block": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "map ground: city blocks, over the land",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.03,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "building": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "map ground: buildings, over the land",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.075,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "road": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "road-casing": {
+          "$value": "{ref.color.neutral.950}",
+          "$description": "map ground: the casing under roads",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.08,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "water": {
+          "$value": "{ref.color.map.light.water}",
+          "$description": "map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2)",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.16,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "park": {
+          "$value": "{ref.color.map.light.park}",
+          "$description": "map ground: parks, over the land",
+          "$extensions": {
+            "app.prism": {
+              "alpha": 0.16,
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "label": {
+          "$value": "{sys.color.text.secondary}",
+          "$description": "map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground",
+          "$extensions": {
+            "app.prism": {
+              "a11y": {
+                "pairsWith": [
+                  "color.map.land",
+                  "color.map.block",
+                  "color.map.building",
+                  "color.map.road",
+                  "color.map.road-casing",
+                  "color.map.water",
+                  "color.map.park"
+                ]
+              },
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "route": {
+          "$value": "{sys.color.chart.series.1}",
+          "$description": "the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "route-ahead": {
+          "$value": "{sys.color.chart.comparison}",
+          "$description": "the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "route-casing": {
+          "$value": "{ref.color.neutral.0}",
+          "$description": "the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "SHAPE_FILL",
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
         }
       }
     },
     "material": {
       "glass": {
+        "fill": {
+          "$root": {
+            "$value": "{sys.material.glass.light.fill.$root}",
+            "$description": "the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.light.fill field by field (ADR-0029 §1.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{sys.material.glass.light.fill.blur}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "EFFECT_FLOAT"
+                  ]
+                }
+              }
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.fill.saturate}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "edge": {
+            "start": {
+              "$type": "number",
+              "$value": "{sys.material.glass.light.fill.edge.start}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "end": {
+              "$type": "number",
+              "$value": "{sys.material.glass.light.fill.edge.end}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.fill.grain}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.fill.bloom}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          }
+        },
+        "chip": {
+          "$root": {
+            "$value": "{sys.material.glass.light.chip.$root}",
+            "$description": "the scheme's glass for chips, controls and status cells over media; aliases glass.light.chip field by field (ADR-0029 §1.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "blur": {
+            "$type": "dimension",
+            "$value": "{sys.material.glass.light.chip.blur}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "EFFECT_FLOAT"
+                  ]
+                }
+              }
+            }
+          },
+          "saturate": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.chip.saturate}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "edge": {
+            "start": {
+              "$type": "number",
+              "$value": "{sys.material.glass.light.chip.edge.start}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            },
+            "end": {
+              "$type": "number",
+              "$value": "{sys.material.glass.light.chip.edge.end}",
+              "$extensions": {
+                "app.prism": {
+                  "figma": {
+                    "collection": "colorScheme",
+                    "scopes": []
+                  }
+                }
+              }
+            }
+          },
+          "grain": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.chip.grain}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "bloom": {
+            "$type": "number",
+            "$value": "{sys.material.glass.light.chip.bloom}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          }
+        },
         "dark": {
           "fill": {
             "$root": {
@@ -1579,10 +2310,10 @@
               0.0,
               0.0
             ],
-            "alpha": 0.35,
+            "alpha": 0.45,
             "hex": "#000000"
           },
-          "$description": "bottom-up under text on unpredictable backdrops",
+          "$description": "bottom-up under text on unpredictable backdrops: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim",
           "$extensions": {
             "app.prism": {
               "figma": {
@@ -1591,6 +2322,36 @@
                   "FRAME_FILL",
                   "SHAPE_FILL"
                 ]
+              }
+            }
+          }
+        }
+      },
+      "vivid": {
+        "edge": {
+          "start": {
+            "$type": "number",
+            "$value": 0.3,
+            "$description": "alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
+              }
+            }
+          },
+          "end": {
+            "$type": "number",
+            "$value": 0.0,
+            "$description": "alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": []
+                }
               }
             }
           }
@@ -1627,16 +2388,18 @@
           "$description": "the unset vivid of Card and Surface: sky in the light scheme (ADR-0022 §4.4)"
         },
         "1": {
-          "$value": "{ref.gradient.vivid.sky}"
+          "$value": "{ref.gradient.vivid.sky}",
+          "$description": "slot pair 1 + 2 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)"
         },
         "2": {
-          "$value": "{ref.gradient.vivid.olive}"
+          "$value": "{ref.gradient.vivid.orchid}"
         },
         "3": {
-          "$value": "{ref.gradient.vivid.rose}"
+          "$value": "{ref.gradient.vivid.rose}",
+          "$description": "slot pair 3 + 4 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5)"
         },
         "4": {
-          "$value": "{ref.gradient.vivid.orchid}"
+          "$value": "{ref.gradient.vivid.olive}"
         }
       }
     }

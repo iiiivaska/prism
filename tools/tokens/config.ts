@@ -41,7 +41,7 @@ export const BRAND_OVERRIDABLE: readonly string[] = [
   'ref.color.accent.50|100|200|300|400|500|600|700|800|900|950',
   'ref.color.slot.light|dark.bg-page|bg-fill-accent|text-on-accent|text-accent',
   'ref.color.series.light|dark.*',
-  'ref.gradient.vivid.orchid|olive|rose|sky|ember-night|plum-dusk|forest-moss|navy-cyan',
+  'ref.gradient.vivid.orchid|olive|rose|sky|ember-night|plum-dusk|forest-moss|navy-cyan|night-lagoon',
   'ref.font.ui|display|mono',
   'ref.font.apple.ui|display|mono',
   'ref.type.scale',
@@ -59,7 +59,7 @@ export interface OwnershipRow {
  */
 export const OWNERSHIP: Readonly<Record<string, OwnershipRow>> = {
   brand: { include: BRAND_OVERRIDABLE, exclude: [] },
-  platform: { include: ['sys.font.**'], exclude: [] },
+  platform: { include: ['sys.font.**', 'sys.type.metric.xl'], exclude: [] },
   colorScheme: {
     include: ['sys.color.**', 'sys.material.**', 'sys.shadow.**', 'sys.elevation.**', 'sys.gradient.**'],
     exclude: [],
@@ -155,12 +155,12 @@ export const WEB_RUNTIME: Readonly<Record<string, WebRuntimeAxis>> = {
   },
   density: {
     attribute: 'data-ds-density',
-    values: ['compact', 'regular', 'comfortable'],
+    values: ['compact', 'regular', 'comfortable', 'watch'],
     nestable: true,
     media: { value: 'regular', query: '(any-pointer: coarse)' },
-    resolver: { modifier: 'density', contexts: { compact: 'compact', regular: 'regular', comfortable: 'comfortable' } },
+    resolver: { modifier: 'density', contexts: { compact: 'compact', regular: 'regular', comfortable: 'comfortable', watch: 'watch' } },
     swiftType: 'DSDensity',
-    swiftCases: { compact: 'compact', regular: 'regular', comfortable: 'comfortable' },
+    swiftCases: { compact: 'compact', regular: 'regular', comfortable: 'comfortable', watch: 'watch' },
   },
   modality: {
     attribute: 'data-ds-modality',
@@ -233,14 +233,30 @@ export type FontSlot = (typeof FONT_SLOTS)[number];
 /** `sys` rules of ADR-0020 §3: categories whose tokens are always whole-value aliases, and types likewise. */
 export const SYS_ALIAS_PREFIXES: readonly string[] = ['sys.radius'];
 export const SYS_ALIAS_TYPES: readonly string[] = ['gradient'];
-/** What a sys color alias (whole value or color sub-value) may target (ADR-0020 §3). */
-export const SYS_COLOR_ALIAS_TARGETS: readonly string[] = ['ref.color.**', 'sys.color.**'];
+/**
+ * What a sys color alias (whole value or color sub-value) may target (ADR-0020 §3); a role recipe's
+ * `$root` aliases an appearance recipe's `$root` (ADR-0029 §1.2).
+ */
+export const SYS_COLOR_ALIAS_TARGETS: readonly string[] = ['ref.color.**', 'sys.color.**', 'sys.material.glass.**'];
 
 /** Materials (ADR-0022 §1.4, §2.1). */
 export const MATERIAL_PREFIX = 'sys.material';
 export const GLASS_PREFIX = 'sys.material.glass';
 export const GLASS_SCRIM = 'sys.material.glass.scrim';
 export const BLUR_PREFIX = 'ref.blur';
+/**
+ * The scheme's glass (ADR-0029 §1.2): each role recipe `sys.material.glass.<role>` aliases, field by
+ * field, the appearance recipe `sys.material.glass.<scheme>.<role>` of the base scheme file it sits in
+ * (`material/role-recipe`). Adding a role needs an ADR.
+ */
+export const GLASS_ROLE_RECIPES: readonly string[] = ['fill', 'chip'];
+
+/** Smoked-glass tints are neutral: OKLCH chroma at most SMOKE_MAX_CHROMA (ADR-0029 §1.1, `color/smoke-chroma`). */
+export const SMOKE_PREFIX = 'ref.color.smoke';
+export const SMOKE_MAX_CHROMA = 0.007;
+/** Every `sys.color.edge.*` is the brand's white, with or without alpha (ADR-0030 §4.1, `color/edge-neutral`). */
+export const EDGE_PREFIX = 'sys.color.edge';
+export const EDGE_TARGET = 'ref.color.neutral.0';
 
 /** Motion (ADR-0023). */
 export const EASING_REF_PREFIX = 'ref.motion.easing';
@@ -252,11 +268,19 @@ export const EASING_SYS_PREFIX = 'sys.motion.easing';
 
 /** Gradients (ADR-0024 §6). */
 export const GRADIENT_SYS_PREFIX = 'sys.gradient';
+/**
+ * The vivid slot pairs (ADR-0029 §2.5): a 2×2 alternates one pair on its diagonals, so each pair
+ * resolves to gradients of one `temperature` in every permutation (`gradient/slot-temperature`).
+ */
+export const GRADIENT_SLOT_PAIRS: readonly (readonly [string, string])[] = [
+  ['sys.gradient.vivid.1', 'sys.gradient.vivid.2'],
+  ['sys.gradient.vivid.3', 'sys.gradient.vivid.4'],
+];
 
 /** Extension keys (§5.4, ADR-0024 §4.1). */
 export const EXTENSION_NAMESPACE = 'app.prism';
 export const FOLDED_KEYS: readonly string[] = [
-  'spring', 'slot', 'numeric', 'textStyle', 'darkWeight', 'opsz', 'flag', 'angle', 'grain', 'scheme', 'bloom',
+  'spring', 'slot', 'numeric', 'textStyle', 'darkWeight', 'opsz', 'flag', 'angle', 'grain', 'scheme', 'temperature', 'bloom',
 ];
 /** The one functional key declared on aliases only (ADR-0020 §3). */
 export const ALIAS_ONLY_KEYS: readonly string[] = ['alpha'];
@@ -275,6 +299,7 @@ export const EXTENSION_KEY_TYPES: Readonly<Record<string, string>> = {
   angle: 'gradient',
   grain: 'gradient',
   scheme: 'gradient',
+  temperature: 'gradient',
   bloom: 'gradient',
   alpha: 'color',
 };
@@ -311,14 +336,15 @@ export interface PlatformDefault {
  * ADR-0019 §2: where each platform starts. Web: compact + pointer while no input is coarse and the
  * primary input hovers finely (the fallbacks of WEB_RUNTIME do the rest); iOS and iPadOS regular +
  * touch (iPadOS pointer while a mouse or trackpad is connected); macOS compact + pointer; watchOS
- * comfortable + touch + dark. The one hand-written copy (ADR-0019 rule 1).
+ * watch (regular with a 16 px card padding, ADR-0029 §3.2) + touch + dark. The one hand-written copy
+ * (ADR-0019 rule 1).
  */
 export const PLATFORM_DEFAULTS: Readonly<Record<string, PlatformDefault>> = {
   web: { density: 'compact', modality: 'pointer' },
   ios: { density: 'regular', modality: 'touch' },
   ipados: { density: 'regular', modality: 'touch' },
   macos: { density: 'compact', modality: 'pointer' },
-  watchos: { colorScheme: 'dark', density: 'comfortable', modality: 'touch' },
+  watchos: { colorScheme: 'dark', density: 'watch', modality: 'touch' },
 };
 
 /** Tokens that go to motion.css instead of tokens.css (ARCHITECTURE §9.2, §9.3). */

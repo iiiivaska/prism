@@ -37,7 +37,8 @@
           "$extensions": {
             "app.prism": {
               "angle": 165,
-              "scheme": "light"
+              "scheme": "light",
+              "temperature": "cool"
             }
           }
         },
@@ -87,7 +88,8 @@
           "$extensions": {
             "app.prism": {
               "angle": 150,
-              "scheme": "dark"
+              "scheme": "dark",
+              "temperature": "cool"
             }
           }
         },
@@ -137,7 +139,8 @@
           "$extensions": {
             "app.prism": {
               "angle": 180,
-              "scheme": "light"
+              "scheme": "light",
+              "temperature": "cool"
             }
           }
         }

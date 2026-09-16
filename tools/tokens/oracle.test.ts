@@ -8,7 +8,7 @@ import { runPermutation } from './engine/sd.ts';
 import { buildBundle } from './ir/bundle.ts';
 import { merge } from './resolver.ts';
 import { loadModel } from './source/model.ts';
-import { FIXTURES, fixtureReader, terrazzoOracle, terrazzoResolver } from './test-support.ts';
+import { FIXTURES, fixtureReader, terrazzoOracle, terrazzoResolver, terrazzoValue, type TerrazzoToken } from './test-support.ts';
 
 describe('Terrazzo oracle', () => {
   test('the valid fixture agrees with Terrazzo on every value of 11 inputs', async () => {
@@ -17,6 +17,17 @@ describe('Terrazzo oracle', () => {
     expect(result.differences).toEqual([]);
     expect(result.inputs).toBe(11);
     expect(result.compared).toBeGreaterThan(1000);
+  });
+
+  test('the oracle follows aliasOf where Terrazzo 2.7.1 leaves an alias of a 0-valued number unresolved (ARCHITECTURE §15 F42)', () => {
+    const tokens: Record<string, TerrazzoToken> = {
+      'sys.a.grain': { $type: 'number', $value: 0 },
+      'sys.b.grain': { $type: 'number', $value: '{sys.a.grain}', aliasOf: 'sys.a.grain' },
+      'sys.c.grain': { $type: 'number', $value: '{sys.b.grain}', aliasOf: 'sys.b.grain' },
+      'sys.d.saturate': { $type: 'number', $value: 1.1, aliasOf: 'sys.a.grain' },
+    };
+    expect(terrazzoValue(tokens, tokens['sys.c.grain'] as TerrazzoToken)).toBe(0);
+    expect(terrazzoValue(tokens, tokens['sys.d.saturate'] as TerrazzoToken)).toBe(1.1);   // a resolved value is taken as it is
   });
 
   test('merge-semantics documents the one known divergence: Terrazzo deep-merges object values, Prism replaces the token', async () => {

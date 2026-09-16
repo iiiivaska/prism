@@ -53,7 +53,7 @@ describe('unionShapes', () => {
 });
 
 describe('broken fixtures of the IR analysis (§5.7)', () => {
-  for (const c of casesWithPrefix('analysis-', 'motion-reduced-policy', 'gradient-scheme-mismatch')) {
+  for (const c of casesWithPrefix('analysis-', 'motion-reduced-policy', 'gradient-scheme-mismatch', 'gradient-slot-temperature')) {
     test(`${c.name}: ${c.description}`, async () => {
       const { got, want } = await runBroken(c);
       expect(got).toEqual(want);
@@ -66,6 +66,14 @@ describe('broken fixtures of the IR analysis (§5.7)', () => {
     const { result } = await runBroken(c);
     expect(result.diagnostics.map((d) => d.code)).toEqual(['analysis/composition']);
     expect(result.diagnostics[0]?.message).toContain('sys.space.card-padding → sys.material.glass.dark.fill.blur → ref.blur.chip');
+  });
+
+  test('the slot temperature names both slots, their gradients and temperatures (ADR-0029 §2.5)', async () => {
+    const [c] = casesWithPrefix('gradient-slot-temperature');
+    if (c === undefined) throw new Error('fixture');
+    const { result } = await runBroken(c);
+    expect(result.diagnostics.map((d) => d.code)).toEqual(['gradient/slot-temperature', 'gradient/slot-temperature']);   // once per brand
+    expect(result.diagnostics[0]?.message).toContain('sys.gradient.vivid.1 (ref.gradient.vivid.sky, cool) and sys.gradient.vivid.2 (ref.gradient.vivid.rose, warm) form a slot pair of mixed temperature');
   });
 
   test('the motion policy names the token and the field', async () => {
