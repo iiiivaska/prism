@@ -37,7 +37,8 @@
     },
     "gauge-stroke-ratio": {
       "$type": "number",
-      "$value": "0.1"
+      "$value": "0.05",
+      "$description": "ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5)"
     },
     "line-width": {
       "$type": "dimension",
@@ -207,6 +208,10 @@
     }
   },
   "type": {
+    "axis": {
+      "$type": "typography",
+      "$value": "{ref.type.axis}"
+    },
     "body": {
       "lg": {
         "$type": "typography",
@@ -277,10 +282,6 @@
       "unit": {
         "$type": "typography",
         "$value": "{ref.type.metric.unit}"
-      },
-      "xl": {
-        "$type": "typography",
-        "$value": "{ref.type.metric.xl}"
       }
     },
     "micro": {

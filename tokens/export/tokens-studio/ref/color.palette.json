@@ -47,6 +47,32 @@
           "$value": "#3d1a06"
         }
       },
+      "map": {
+        "dark": {
+          "park": {
+            "$type": "color",
+            "$value": "#5bc8b5",
+            "$description": "dark park hue; sys.color.map.park draws it at alpha 0.11"
+          },
+          "water": {
+            "$type": "color",
+            "$value": "#6b84e0",
+            "$description": "dark water hue; sys.color.map.water draws it at alpha 0.16"
+          }
+        },
+        "light": {
+          "park": {
+            "$type": "color",
+            "$value": "#1f8f80",
+            "$description": "light park hue; sys.color.map.park draws it at alpha 0.16"
+          },
+          "water": {
+            "$type": "color",
+            "$value": "#4e6ccd",
+            "$description": "light water hue; sys.color.map.water draws it at alpha 0.16"
+          }
+        }
+      },
       "neutral": {
         "0": {
           "$type": "color",
@@ -216,13 +242,13 @@
       "smoke": {
         "dark": {
           "$type": "color",
-          "$value": "#101410",
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$value": "#111316",
+          "$description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)"
         },
         "light": {
           "$type": "color",
-          "$value": "#0a0c08",
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$value": "#0a0b0e",
+          "$description": "smoked-glass tint, neutral: the neutral ramp's hue at chroma 0.007 (ADR-0029 §1.1, color/smoke-chroma); system-owned (ADR-0020)"
         }
       },
       "status": {
@@ -246,10 +272,6 @@
           "text-light": {
             "$type": "color",
             "$value": "#bf2222"
-          },
-          "tint-light": {
-            "$type": "color",
-            "$value": "#fde9e9"
           }
         },
         "info": {
@@ -272,10 +294,6 @@
           "text-light": {
             "$type": "color",
             "$value": "#3d5bc4"
-          },
-          "tint-light": {
-            "$type": "color",
-            "$value": "#eaedf9"
           }
         },
         "success": {
@@ -290,10 +308,6 @@
           "text-light": {
             "$type": "color",
             "$value": "#187530"
-          },
-          "tint-light": {
-            "$type": "color",
-            "$value": "#e6f6e9"
           }
         },
         "warning": {
@@ -308,10 +322,6 @@
           "text-light": {
             "$type": "color",
             "$value": "#8f5b00"
-          },
-          "tint-light": {
-            "$type": "color",
-            "$value": "#fef6e8"
           }
         }
       }

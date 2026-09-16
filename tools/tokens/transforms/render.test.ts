@@ -93,7 +93,7 @@ describe('the real values ARCHITECTURE quotes', () => {
     expect(color(light, 'ref.color.accent.300')).toEqual({ base: 'oklch(0.8506 0.1133 68.21)', p3: 'oklch(0.8506 0.1133 68.2)' });
     expect(css(light, 'sys.color.bg.tint.accent')).toBe('oklch(0.7517 0.1475 57.6 / 0.12)');
     expect(css(dark, 'sys.color.bg.tint.accent')).toBe('oklch(0.7517 0.1475 57.6 / 0.14)');
-    expect(css(light, 'sys.material.glass.dark.fill.$root')).toBe('oklch(0.1504 0.0092 128.7 / 0.55)');
+    expect(css(light, 'sys.material.glass.dark.fill.$root')).toBe('oklch(0.1504 0.007 265 / 0.55)');
     expect(css(dark, 'sys.color.text.secondary')).toBe('rgb(255 255 255 / 0.64)');
     expect(swiftLiteral(token(light, 'sys.color.text.secondary').value)).toBe('DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1)');
     expect(swiftLiteral(token(dark, 'sys.color.text.secondary').value)).toBe('DSRGBA(.sRGB, 1, 1, 1, 0.64)');

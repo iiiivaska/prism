@@ -1,0 +1,55 @@
+{
+  "$comment": "tools/contrast fixture (ADR-0030 §1.8): a tinted element with text over media paints color.bg.page under its tint (§6.2). Over color.map.road without that underlay, dark color.text.critical on color.bg.tint.critical reaches only 4.04:1 and fails; with the page underlay it passes. Every other pair passes.",
+  "thresholds": {
+    "functional": 4.5,
+    "functionalLarge": 3,
+    "decorative": 3,
+    "boundary": 3
+  },
+  "pairs": [
+    {
+      "fg": "color.text.primary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.secondary",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.on-accent",
+      "bg": "color.bg.fill.accent",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.accent",
+      "bg": "color.bg.page",
+      "tier": "functional"
+    },
+    {
+      "fg": "color.text.critical",
+      "bg": "color.bg.tint.critical",
+      "tier": "functional",
+      "underlays": [
+        "color.bg.page"
+      ],
+      "backdrops": [
+        "color.map.road over color.map.land"
+      ],
+      "note": "the pill paints the page under its tint (ADR-0030 §6.2)"
+    },
+    {
+      "fg": "color.text.critical",
+      "bg": "color.bg.tint.critical",
+      "tier": "functional",
+      "schemes": [
+        "dark"
+      ],
+      "backdrops": [
+        "color.map.road over color.map.land"
+      ],
+      "note": "without the page underlay the road shows through the tint (ADR-0030 M3)"
+    }
+  ]
+}

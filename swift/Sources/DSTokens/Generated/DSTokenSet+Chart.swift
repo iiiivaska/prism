@@ -9,6 +9,7 @@ extension DSTokenSet {
         /// 1 = monotone (default), 2 = catmullRom(0.5), 3 = step
         public let curve: Double
         public let endpointSize: CGFloat
+        /// ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5)
         public let gaugeStrokeRatio: Double
         public let lineWidth: CGFloat
         public let markerSize: CGFloat
@@ -20,7 +21,7 @@ extension DSTokenSet {
             self.comparisonWidth = 1
             self.curve = 1
             self.endpointSize = 10
-            self.gaugeStrokeRatio = 0.1
+            self.gaugeStrokeRatio = 0.05
             self.lineWidth = 2
             self.markerSize = 8
             self.sparklineWidth = 1.5

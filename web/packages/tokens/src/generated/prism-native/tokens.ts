@@ -16,7 +16,8 @@ export interface GradientValue {
   readonly css: string; readonly cssP3: string | null;
   readonly stops: readonly { readonly color: ColorValue; readonly position: number }[];
   readonly angle: number; readonly grain: number; readonly scheme: 'light' | 'dark' | null;
-  readonly bloom: { readonly alpha: number; readonly blur: number } | null;
+  /** `color` is derived: the stop of highest relative luminance, the later stop on a tie (ADR-0030 §4.3). */
+  readonly bloom: { readonly alpha: number; readonly blur: number; readonly color: ColorValue } | null;
 }
 /** The DSTextStyle cases (ADR-0021 §7). */
 export type TextStyleName = 'largeTitle' | 'title' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subheadline' | 'footnote' | 'caption' | 'caption2';
@@ -43,6 +44,7 @@ export interface TokenTable {
   /** 1 = monotone (default), 2 = catmullRom(0.5), 3 = step */
   readonly 'chart.curve': { readonly $type: 'number'; readonly $cssVar: '--ds-chart-curve'; readonly $value: number };
   readonly 'chart.endpoint-size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-chart-endpoint-size'; readonly $value: number };
+  /** ring stroke as a fraction of the ring's diameter: a 170 px ring gets an 8.5 px stroke (ADR-0030 §2.5) */
   readonly 'chart.gauge-stroke-ratio': { readonly $type: 'number'; readonly $cssVar: '--ds-chart-gauge-stroke-ratio'; readonly $value: number };
   readonly 'chart.line-width': { readonly $type: 'dimension'; readonly $cssVar: '--ds-chart-line-width'; readonly $value: number };
   readonly 'chart.marker-size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-chart-marker-size'; readonly $value: number };
@@ -60,6 +62,8 @@ export interface TokenTable {
   readonly 'color.bg.fill.critical': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-critical'; readonly $value: ColorValue };
   /** primary pill, active tab, solid action circle */
   readonly 'color.bg.fill.inverse': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1) */
+  readonly 'color.bg.fill.inverse-media': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse-media'; readonly $value: ColorValue };
   readonly 'color.bg.fill.neutral.subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-neutral-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35% */
   readonly 'color.bg.page': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-page'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -68,19 +72,27 @@ export interface TokenTable {
   /** filled control, dock tray (= #F0F1F1 on white) */
   readonly 'color.bg.surface.nested': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-surface-nested'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.bg.surface.overlay': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-surface-overlay'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
-  /** puffy chip / round button on the page, plus inset top highlight and elevation.1 */
+  /** puffy chip / round button on the page (#F7F8FA, opaque; ADR-0030 §5.2), with color.edge.raised as its top edge and elevation.1; also the glass fallback */
   readonly 'color.bg.surface.raised': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-surface-raised'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** tinted focus card (= #FEF2E9 on white) */
   readonly 'color.bg.tint.accent': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-accent'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2) */
   readonly 'color.bg.tint.critical': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-critical'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2) */
   readonly 'color.bg.tint.info': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-info'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2) */
   readonly 'color.bg.tint.success': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-success'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the dot step at 12%, so a status wash over a map shows the map through it (ADR-0030 §6.1); a tinted element with text over media paints color.bg.page under it (§6.2) */
   readonly 'color.bg.tint.warning': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-warning'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** control edges that must pass 3:1 */
   readonly 'color.border.boundary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-boundary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.border.focus': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-focus'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** inputs, table rows, chip strokes */
   readonly 'color.border.hairline': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-hairline'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2) */
+  readonly 'color.border.on-glass-fill': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-on-glass-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
+  /** rings and outlines on vivid; decorative, next to a label or glyph (ADR-0030 §3.2) */
+  readonly 'color.border.on-media': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-on-media'; readonly $value: ColorValue };
   /** outline controls such as the ghost button; ink 45% keeps 3:1 on surface and page (visual-dna B1) */
   readonly 'color.border.strong': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-strong'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** reference #B7B7B9 failed at 1.7:1 */
@@ -94,6 +106,20 @@ export interface TokenTable {
   readonly 'color.chart.grid': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-grid'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the now marker; 2.3:1 on white, so it always carries its label or value (visual-dna B3) */
   readonly 'color.chart.now': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-now'; readonly $value: ColorValue };
+  /** gridlines on the scheme's glass (ADR-0030 §2.3) */
+  readonly 'color.chart.on-glass-fill.grid': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-glass-fill-grid'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
+  /** chart line on the scheme's glass: the glass foreground, ink in light (ADR-0030 §2.3) */
+  readonly 'color.chart.on-glass-fill.line': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-glass-fill-line'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the plot on the scheme's glass: a white 8% lift, not a white hole (ADR-0030 §2.3) */
+  readonly 'color.chart.on-glass-fill.plot': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-glass-fill-plot'; readonly $value: ColorValue };
+  /** the target or reference line on the scheme's glass (ADR-0030 §2.3; ADR-0007 rule 2) */
+  readonly 'color.chart.on-glass-fill.reference': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-glass-fill-reference'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
+  /** gridlines on vivid; decorative (ADR-0030 §2.2) */
+  readonly 'color.chart.on-media.grid': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-media-grid'; readonly $value: ColorValue };
+  /** chart line on vivid (ADR-0030 §2.2) */
+  readonly 'color.chart.on-media.line': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-media-line'; readonly $value: ColorValue };
+  /** the target or reference line on vivid, told apart from the line by stroke.target's dash (ADR-0030 §2.2; ADR-0007 rule 2) */
+  readonly 'color.chart.on-media.reference': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-on-media-reference'; readonly $value: ColorValue };
   /** charts never sit on raw glass */
   readonly 'color.chart.plot': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-plot'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.chart.series.1': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-series-1'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -102,8 +128,12 @@ export interface TokenTable {
   readonly 'color.chart.series.4': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-series-4'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.chart.series.5': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-series-5'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.chart.series.6': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-series-6'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
-  /** the mandatory target line (ADR-0007 rule 2); ink 45% keeps 3:1 on the plot, the boundary tier (ADR-0011; ink 30% was 2.0:1, critic G-14) */
+  /** the mandatory target line (ADR-0007 rule 2); ink 60% (5.07:1 on white) reads above comparison's 45% (ADR-0030 §2.4) */
   readonly 'color.chart.target': { readonly $type: 'color'; readonly $cssVar: '--ds-color-chart-target'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the glass edge, drawn at the recipe's edge.start and edge.end alphas, and the vivid highlight at material.vivid.edge.* (ADR-0030 §4.1, §4.2) */
+  readonly 'color.edge.highlight': { readonly $type: 'color'; readonly $cssVar: '--ds-color-edge-highlight'; readonly $value: ColorValue };
+  /** the 1 px top edge of raised: the puffy chip (ADR-0030 §4.1) */
+  readonly 'color.edge.raised': { readonly $type: 'color'; readonly $cssVar: '--ds-color-edge-raised'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** marks only, never text; 2.3:1 on white, so always paired with a value, sign or label (visual-dna B3) */
   readonly 'color.icon.accent': { readonly $type: 'color'; readonly $cssVar: '--ds-color-icon-accent'; readonly $value: ColorValue };
   readonly 'color.icon.primary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-icon-primary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -112,6 +142,28 @@ export interface TokenTable {
   readonly 'color.icon.status.info': { readonly $type: 'color'; readonly $cssVar: '--ds-color-icon-status-info'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.icon.status.success': { readonly $type: 'color'; readonly $cssVar: '--ds-color-icon-status-success'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.icon.status.warning': { readonly $type: 'color'; readonly $cssVar: '--ds-color-icon-status-warning'; readonly $value: ColorValue };
+  /** map ground: city blocks, over the land */
+  readonly 'color.map.block': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-block'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: buildings, over the land */
+  readonly 'color.map.building': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-building'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map labels, with a halo of color.map.land at 2 x border.strong (ADR-0030 §1.4); functional on every ground */
+  readonly 'color.map.label': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-label'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: the land, the page (ADR-0030 §1.1) */
+  readonly 'color.map.land': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-land'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: parks, over the land */
+  readonly 'color.map.park': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-park'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: roads; a major road is road at a wider stroke over road-casing (ADR-0030 §1.3) */
+  readonly 'color.map.road': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-road'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: the casing under roads */
+  readonly 'color.map.road-casing': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-road-casing'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the ridden route, 2 x chart.line-width over route-casing (ADR-0030 §1.4) */
+  readonly 'color.map.route': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-route'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the route ahead, 1.5 x chart.line-width, dashed with stroke.target (ADR-0030 §1.4) */
+  readonly 'color.map.route-ahead': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-route-ahead'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the casing under the route lines, 3.5 x chart.line-width (ADR-0030 §1.4) */
+  readonly 'color.map.route-casing': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-route-casing'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** map ground: water, over the land; hue never carries status on the map (ADR-0030 §1.2) */
+  readonly 'color.map.water': { readonly $type: 'color'; readonly $cssVar: '--ds-color-map-water'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** 5.7:1 on page; the light accent is text-safe only at step 800 */
   readonly 'color.text.accent': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-accent'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
   readonly 'color.text.critical': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-critical'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -120,10 +172,24 @@ export interface TokenTable {
   readonly 'color.text.info': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-info'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** ink on accent-300 = 12.0:1 */
   readonly 'color.text.on-accent': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-accent'; readonly $value: ColorValue };
+  /** the lit tile's second tone: on-accent at 70% for the secondary, tertiary and dimmed tones of the accent material (ADR-0030 §3.4) */
+  readonly 'color.text.on-accent-secondary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-accent-secondary'; readonly $value: ColorValue };
   readonly 'color.text.on-accent-strong': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-accent-strong'; readonly $value: ColorValue };
   readonly 'color.text.on-badge': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-badge'; readonly $value: ColorValue };
   /** white on dark glass; light glass uses on-glass-light (ADR-0022) */
   readonly 'color.text.on-glass': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass'; readonly $value: ColorValue };
+  /** the scheme's glass (material.glass.fill and .chip): ink on light glass in light (ADR-0029 §1.3) */
+  readonly 'color.text.on-glass-fill': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** dimmed tone (trailing digits and units at >= 24 px) on the scheme's glass over Prism's map only (backdrop L >= 0.89; ADR-0029 §1.4) */
+  readonly 'color.text.on-glass-fill-dimmed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill-dimmed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
+  /** secondary tone on the scheme's glass over imagery and vivid: ink, the primary tone, in light (ADR-0029 §1.4) */
+  readonly 'color.text.on-glass-fill-media-secondary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill-media-secondary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** tertiary and dimmed tones on the scheme's glass over imagery and vivid: ink in light (ADR-0029 §1.4) */
+  readonly 'color.text.on-glass-fill-media-tertiary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill-media-tertiary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** secondary tone on the scheme's glass over Prism's map only (backdrop L >= 0.84; ADR-0029 §1.4) */
+  readonly 'color.text.on-glass-fill-secondary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill-secondary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
+  /** tertiary tone on the scheme's glass over Prism's map only (ADR-0029 §1.4) */
+  readonly 'color.text.on-glass-fill-tertiary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-fill-tertiary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue } };
   /** ink on light glass in the light scheme; hierarchy by size, never by alpha (ADR-0022 §3) */
   readonly 'color.text.on-glass-light': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-light'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** secondary tone on dark glass (the glass material) only; chips and cells use on-glass (ADR-0022 §3) */
@@ -131,7 +197,9 @@ export interface TokenTable {
   /** tertiary and dimmed tones on dark glass (the glass material) only (ADR-0022 §3) */
   readonly 'color.text.on-glass-tertiary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-glass-tertiary'; readonly $value: ColorValue };
   readonly 'color.text.on-inverse': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-inverse'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
-  /** every vivid gradient passes ADR-0022 V1/V2 */
+  /** ink on the white solid over vivid (bg.fill.inverse-media; ADR-0030 §3.1) */
+  readonly 'color.text.on-inverse-media': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-inverse-media'; readonly $value: ColorValue };
+  /** every vivid gradient, the nine reference gradients included, passes ADR-0022 V1/V2 */
   readonly 'color.text.on-vivid': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-on-vivid'; readonly $value: ColorValue };
   /** 17.2:1 on page */
   readonly 'color.text.primary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-text-primary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -148,8 +216,10 @@ export interface TokenTable {
   readonly 'font.display': { readonly $type: 'fontFamily'; readonly $cssVar: '--ds-font-display'; readonly $value: string };
   readonly 'font.mono': { readonly $type: 'fontFamily'; readonly $cssVar: '--ds-font-mono'; readonly $value: string };
   readonly 'font.ui': { readonly $type: 'fontFamily'; readonly $cssVar: '--ds-font-ui'; readonly $value: string };
+  /** slot pair 1 + 2 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5) */
   readonly 'gradient.vivid.1': { readonly $type: 'gradient'; readonly $cssVar: '--ds-gradient-vivid-1'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: GradientValue; readonly dark: GradientValue } };
   readonly 'gradient.vivid.2': { readonly $type: 'gradient'; readonly $cssVar: '--ds-gradient-vivid-2'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: GradientValue; readonly dark: GradientValue } };
+  /** slot pair 3 + 4 is one temperature: a vivid 2x2 alternates the pair on its diagonals (ADR-0029 §2.5) */
   readonly 'gradient.vivid.3': { readonly $type: 'gradient'; readonly $cssVar: '--ds-gradient-vivid-3'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: GradientValue; readonly dark: GradientValue } };
   readonly 'gradient.vivid.4': { readonly $type: 'gradient'; readonly $cssVar: '--ds-gradient-vivid-4'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: GradientValue; readonly dark: GradientValue } };
   /** the unset vivid of Card and Surface: sky in the light scheme (ADR-0022 §4.4) */
@@ -168,6 +238,14 @@ export interface TokenTable {
   readonly 'material.glass.cell.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-cell-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   readonly 'material.glass.cell.grain': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-cell-grain'; readonly $value: number };
   readonly 'material.glass.cell.saturate': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-cell-saturate'; readonly $value: number };
+  /** the scheme's glass for chips, controls and status cells over media; aliases glass.light.chip field by field (ADR-0029 §1.2) */
+  readonly 'material.glass.chip': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-chip'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'material.glass.chip.bloom': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-chip-bloom'; readonly $value: number };
+  readonly 'material.glass.chip.blur': { readonly $type: 'dimension'; readonly $cssVar: '--ds-material-glass-chip-blur'; readonly $value: number };
+  readonly 'material.glass.chip.edge.end': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-chip-edge-end'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
+  readonly 'material.glass.chip.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-chip-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
+  readonly 'material.glass.chip.grain': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-chip-grain'; readonly $value: number };
+  readonly 'material.glass.chip.saturate': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-chip-saturate'; readonly $value: number };
   /** controls over a photo, map or vivid; primary foreground text.on-glass only (ADR-0022 §3) */
   readonly 'material.glass.dark.chip': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-dark-chip'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'material.glass.dark.chip.bloom': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-dark-chip-bloom'; readonly $value: number };
@@ -184,6 +262,14 @@ export interface TokenTable {
   readonly 'material.glass.dark.fill.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-dark-fill-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   readonly 'material.glass.dark.fill.grain': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-dark-fill-grain'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   readonly 'material.glass.dark.fill.saturate': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-dark-fill-saturate'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
+  /** the scheme's glass: Surface glass and Card glass over maps, imagery and vivid; aliases glass.light.fill field by field (ADR-0029 §1.2) */
+  readonly 'material.glass.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'material.glass.fill.bloom': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-fill-bloom'; readonly $value: number };
+  readonly 'material.glass.fill.blur': { readonly $type: 'dimension'; readonly $cssVar: '--ds-material-glass-fill-blur'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
+  readonly 'material.glass.fill.edge.end': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-fill-edge-end'; readonly $value: number };
+  readonly 'material.glass.fill.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-fill-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
+  readonly 'material.glass.fill.grain': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-fill-grain'; readonly $value: number };
+  readonly 'material.glass.fill.saturate': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-fill-saturate'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   /** primary foreground text.on-glass-light only (ADR-0022 §3) */
   readonly 'material.glass.light.chip': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-light-chip'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'material.glass.light.chip.bloom': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-light-chip-bloom'; readonly $value: number };
@@ -200,8 +286,12 @@ export interface TokenTable {
   readonly 'material.glass.light.fill.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-light-fill-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   readonly 'material.glass.light.fill.grain': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-light-fill-grain'; readonly $value: number };
   readonly 'material.glass.light.fill.saturate': { readonly $type: 'number'; readonly $cssVar: '--ds-material-glass-light-fill-saturate'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
-  /** bottom-up under text on unpredictable backdrops */
-  readonly 'material.glass.scrim': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-scrim'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** bottom-up under text on unpredictable backdrops: large white text holds 3:1 over it on pure white (ADR-0029 §1.7); maps need no scrim */
+  readonly 'material.glass.scrim': { readonly $type: 'color'; readonly $cssVar: '--ds-material-glass-scrim'; readonly $value: ColorValue };
+  /** alpha of color.edge.highlight at the end of a vivid surface's inner edge (ADR-0030 §4.2) */
+  readonly 'material.vivid.edge.end': { readonly $type: 'number'; readonly $cssVar: '--ds-material-vivid-edge-end'; readonly $value: number };
+  /** alpha of color.edge.highlight at the start of a vivid surface's 1 px inner edge (ADR-0030 §4.2) */
+  readonly 'material.vivid.edge.start': { readonly $type: 'number'; readonly $cssVar: '--ds-material-vivid-edge-start'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: number; readonly dark: number } };
   readonly 'motion.duration.base': { readonly $type: 'duration'; readonly $cssVar: '--ds-motion-duration-base'; readonly $axis: 'motion'; readonly $values: { readonly standard: number; readonly reduce: number } };
   readonly 'motion.duration.fast': { readonly $type: 'duration'; readonly $cssVar: '--ds-motion-duration-fast'; readonly $axis: 'motion'; readonly $values: { readonly standard: number; readonly reduce: number } };
   readonly 'motion.duration.instant': { readonly $type: 'duration'; readonly $cssVar: '--ds-motion-duration-instant'; readonly $value: number };
@@ -243,15 +333,15 @@ export interface TokenTable {
   readonly 'shadow.drawer': { readonly $type: 'shadow'; readonly $cssVar: '--ds-shadow-drawer'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: readonly ShadowLayerValue[]; readonly dark: readonly ShadowLayerValue[] } };
   /** minimum card width in pattern grids (spec/patterns/README.md) */
   readonly 'size.card.min': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-card-min'; readonly $value: number };
-  readonly 'size.control.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'size.control.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'size.control.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
+  readonly 'size.control.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'size.control.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'size.control.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-control-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'size.hit': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-hit'; readonly $axis: 'modality'; readonly $values: { readonly pointer: number; readonly touch: number } };
   readonly 'size.icon.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-icon-lg'; readonly $value: number };
   readonly 'size.icon.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-icon-md'; readonly $value: number };
   readonly 'size.icon.ring': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-icon-ring'; readonly $value: number };
   readonly 'size.icon.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-icon-sm'; readonly $value: number };
-  readonly 'size.row': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-row'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
+  readonly 'size.row': { readonly $type: 'dimension'; readonly $cssVar: '--ds-size-row'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'space.0': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-0'; readonly $value: number };
   readonly 'space.1': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-1'; readonly $value: number };
   readonly 'space.2': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-2'; readonly $value: number };
@@ -266,18 +356,19 @@ export interface TokenTable {
   readonly 'space.11': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-11'; readonly $value: number };
   readonly 'space.12': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-12'; readonly $value: number };
   readonly 'space.13': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-13'; readonly $value: number };
-  readonly 'space.card-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-card-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'space.card-padding': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-card-padding'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'space.group-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-group-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'space.page-margin': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-page-margin'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'space.section-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-section-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'space.tile-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-tile-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
+  readonly 'space.card-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-card-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'space.card-padding': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-card-padding'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'space.group-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-group-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'space.page-margin': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-page-margin'; readonly $value: number };
+  readonly 'space.section-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-section-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'space.tile-gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-space-tile-gap'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   /** horizontal gridlines only; never solid, never vertical */
   readonly 'stroke.grid': { readonly $type: 'strokeStyle'; readonly $value: StrokeStyleValue };
   /** dotted leaders in spec rows */
   readonly 'stroke.leader': { readonly $type: 'strokeStyle'; readonly $value: StrokeStyleValue };
   /** dashed reference / target line */
   readonly 'stroke.target': { readonly $type: 'strokeStyle'; readonly $value: StrokeStyleValue };
+  readonly 'type.axis': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-axis-font-family'; readonly fontSize: '--ds-type-axis-font-size'; readonly fontWeight: '--ds-type-axis-font-weight'; readonly lineHeight: '--ds-type-axis-line-height'; readonly letterSpacing: '--ds-type-axis-letter-spacing'; readonly fontVariantNumeric: '--ds-type-axis-font-variant-numeric' }; readonly $value: TypeRoleValue };
   readonly 'type.body.lg': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-body-lg-font-family'; readonly fontSize: '--ds-type-body-lg-font-size'; readonly fontWeight: '--ds-type-body-lg-font-weight'; readonly lineHeight: '--ds-type-body-lg-line-height'; readonly letterSpacing: '--ds-type-body-lg-letter-spacing'; readonly fontVariantNumeric: '--ds-type-body-lg-font-variant-numeric' }; readonly $value: TypeRoleValue };
   readonly 'type.body.md': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-body-md-font-family'; readonly fontSize: '--ds-type-body-md-font-size'; readonly fontWeight: '--ds-type-body-md-font-weight'; readonly lineHeight: '--ds-type-body-md-line-height'; readonly letterSpacing: '--ds-type-body-md-letter-spacing'; readonly fontVariantNumeric: '--ds-type-body-md-font-variant-numeric' }; readonly $value: TypeRoleValue };
   readonly 'type.body.sm': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-body-sm-font-family'; readonly fontSize: '--ds-type-body-sm-font-size'; readonly fontWeight: '--ds-type-body-sm-font-weight'; readonly lineHeight: '--ds-type-body-sm-line-height'; readonly letterSpacing: '--ds-type-body-sm-letter-spacing'; readonly fontVariantNumeric: '--ds-type-body-sm-font-variant-numeric' }; readonly $value: TypeRoleValue };
@@ -294,6 +385,7 @@ export interface TokenTable {
   readonly 'type.metric.lg': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-metric-lg-font-family'; readonly fontSize: '--ds-type-metric-lg-font-size'; readonly fontWeight: '--ds-type-metric-lg-font-weight'; readonly lineHeight: '--ds-type-metric-lg-line-height'; readonly letterSpacing: '--ds-type-metric-lg-letter-spacing'; readonly fontVariantNumeric: '--ds-type-metric-lg-font-variant-numeric' }; readonly $axis: 'colorScheme'; readonly $values: { readonly light: TypeRoleValue; readonly dark: TypeRoleValue }; readonly $increasedContrast: { readonly light: TypeRoleValue; readonly dark: TypeRoleValue } };
   readonly 'type.metric.md': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-metric-md-font-family'; readonly fontSize: '--ds-type-metric-md-font-size'; readonly fontWeight: '--ds-type-metric-md-font-weight'; readonly lineHeight: '--ds-type-metric-md-line-height'; readonly letterSpacing: '--ds-type-metric-md-letter-spacing'; readonly fontVariantNumeric: '--ds-type-metric-md-font-variant-numeric' }; readonly $value: TypeRoleValue };
   readonly 'type.metric.unit': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-metric-unit-font-family'; readonly fontSize: '--ds-type-metric-unit-font-size'; readonly fontWeight: '--ds-type-metric-unit-font-weight'; readonly lineHeight: '--ds-type-metric-unit-line-height'; readonly letterSpacing: '--ds-type-metric-unit-letter-spacing'; readonly fontVariantNumeric: '--ds-type-metric-unit-font-variant-numeric' }; readonly $value: TypeRoleValue };
+  /** the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2) */
   readonly 'type.metric.xl': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-metric-xl-font-family'; readonly fontSize: '--ds-type-metric-xl-font-size'; readonly fontWeight: '--ds-type-metric-xl-font-weight'; readonly lineHeight: '--ds-type-metric-xl-line-height'; readonly letterSpacing: '--ds-type-metric-xl-letter-spacing'; readonly fontVariantNumeric: '--ds-type-metric-xl-font-variant-numeric' }; readonly $axis: 'colorScheme'; readonly $values: { readonly light: TypeRoleValue; readonly dark: TypeRoleValue }; readonly $increasedContrast: { readonly light: TypeRoleValue; readonly dark: TypeRoleValue } };
   readonly 'type.micro': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-micro-font-family'; readonly fontSize: '--ds-type-micro-font-size'; readonly fontWeight: '--ds-type-micro-font-weight'; readonly lineHeight: '--ds-type-micro-line-height'; readonly letterSpacing: '--ds-type-micro-letter-spacing'; readonly fontVariantNumeric: '--ds-type-micro-font-variant-numeric' }; readonly $value: TypeRoleValue };
   readonly 'type.title.lg': { readonly $type: 'typography'; readonly $cssVars: { readonly fontFamily: '--ds-type-title-lg-font-family'; readonly fontSize: '--ds-type-title-lg-font-size'; readonly fontWeight: '--ds-type-title-lg-font-weight'; readonly lineHeight: '--ds-type-title-lg-line-height'; readonly letterSpacing: '--ds-type-title-lg-letter-spacing'; readonly fontVariantNumeric: '--ds-type-title-lg-font-variant-numeric' }; readonly $value: TypeRoleValue };
@@ -307,12 +399,13 @@ export interface TokenTable {
   readonly 'comp.button.danger.border': { readonly $type: 'color'; readonly $cssVar: '--ds-button-danger-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.danger.text': { readonly $type: 'color'; readonly $cssVar: '--ds-button-danger-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.gap': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-gap'; readonly $value: number };
-  readonly 'comp.button.ghost.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-button-ghost-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3) */
+  readonly 'comp.button.ghost.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-button-ghost-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.ghost.border': { readonly $type: 'color'; readonly $cssVar: '--ds-button-ghost-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.ghost.text': { readonly $type: 'color'; readonly $cssVar: '--ds-button-ghost-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
-  readonly 'comp.button.height.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'comp.button.height.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
-  readonly 'comp.button.height.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
+  readonly 'comp.button.height.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'comp.button.height.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'comp.button.height.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-height-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'comp.button.motion.press': { readonly $type: 'transition'; readonly $cssVar: '--ds-button-motion-press'; readonly $axis: 'motion'; readonly $values: { readonly standard: SpringValue; readonly reduce: SpringValue } };
   readonly 'comp.button.padding-x.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-padding-x-lg'; readonly $value: number };
   readonly 'comp.button.padding-x.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-padding-x-md'; readonly $value: number };
@@ -327,8 +420,8 @@ export interface TokenTable {
   readonly 'comp.button.secondary.border': { readonly $type: 'color'; readonly $cssVar: '--ds-button-secondary-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.secondary.text': { readonly $type: 'color'; readonly $cssVar: '--ds-button-secondary-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.card.glass.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-card-glass-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
-  readonly 'comp.card.glass.text': { readonly $type: 'color'; readonly $cssVar: '--ds-card-glass-text'; readonly $value: ColorValue };
-  readonly 'comp.card.padding': { readonly $type: 'dimension'; readonly $cssVar: '--ds-card-padding'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number } };
+  readonly 'comp.card.glass.text': { readonly $type: 'color'; readonly $cssVar: '--ds-card-glass-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.card.padding': { readonly $type: 'dimension'; readonly $cssVar: '--ds-card-padding'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
   readonly 'comp.card.radius.compact': { readonly $type: 'dimension'; readonly $cssVar: '--ds-card-radius-compact'; readonly $value: number };
   readonly 'comp.card.radius.large': { readonly $type: 'dimension'; readonly $cssVar: '--ds-card-radius-large'; readonly $value: number };
   readonly 'comp.card.radius.regular': { readonly $type: 'dimension'; readonly $cssVar: '--ds-card-radius-regular'; readonly $value: number };
@@ -376,7 +469,7 @@ export const table: TokenTable = {
   },
   'chart.gauge-stroke-ratio': {
     $type: 'number', $cssVar: '--ds-chart-gauge-stroke-ratio',
-    $value: 0.1,
+    $value: 0.05,
   },
   'chart.line-width': {
     $type: 'dimension', $cssVar: '--ds-chart-line-width',
@@ -440,6 +533,10 @@ export const table: TokenTable = {
       dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
     },
   },
+  'color.bg.fill.inverse-media': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-inverse-media',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
   'color.bg.fill.neutral.subtle': {
     $type: 'color', $cssVar: '--ds-color-bg-fill-neutral-subtle', $axis: 'colorScheme',
     $values: {
@@ -478,7 +575,7 @@ export const table: TokenTable = {
   'color.bg.surface.raised': {
     $type: 'color', $cssVar: '--ds-color-bg-surface-raised', $axis: 'colorScheme',
     $values: {
-      light: { css: 'rgb(255 255 255 / 0.7)', cssP3: null, hex: '#ffffff', alpha: 0.7 },
+      light: { css: 'oklch(0.9789 0.0029 264.5)', cssP3: null, hex: '#f7f8fa', alpha: 1 },
       dark: { css: 'rgb(255 255 255 / 0.09)', cssP3: null, hex: '#ffffff', alpha: 0.09 },
     },
   },
@@ -492,28 +589,28 @@ export const table: TokenTable = {
   'color.bg.tint.critical': {
     $type: 'color', $cssVar: '--ds-color-bg-tint-critical', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.95 0.0218 17.5)', cssP3: null, hex: '#fde9e9', alpha: 1 },
+      light: { css: 'oklch(0.6454 0.2026 26.6 / 0.12)', cssP3: null, hex: '#f04b45', alpha: 0.12 },
       dark: { css: 'oklch(0.6651 0.2218 26.6 / 0.1)', cssP3: null, hex: '#ff4642', alpha: 0.1 },
     },
   },
   'color.bg.tint.info': {
     $type: 'color', $cssVar: '--ds-color-bg-tint-info', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.9473 0.0164 274.8)', cssP3: null, hex: '#eaedf9', alpha: 1 },
+      light: { css: 'oklch(0.5582 0.1535 268.2 / 0.12)', cssP3: null, hex: '#4e6ccd', alpha: 0.12 },
       dark: { css: 'oklch(0.6361 0.141 270.5 / 0.1)', cssP3: null, hex: '#6b84e0', alpha: 0.1 },
     },
   },
   'color.bg.tint.success': {
     $type: 'color', $cssVar: '--ds-color-bg-tint-success', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.9577 0.0241 151.2)', cssP3: null, hex: '#e6f6e9', alpha: 1 },
+      light: { css: 'oklch(0.6714 0.1831 146.6 / 0.12)', cssP3: null, hex: '#2db24a', alpha: 0.12 },
       dark: { css: 'oklch(0.7545 0.1694 146.1 / 0.1)', cssP3: null, hex: '#5ccb6a', alpha: 0.1 },
     },
   },
   'color.bg.tint.warning': {
     $type: 'color', $cssVar: '--ds-color-bg-tint-warning', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.9756 0.0204 81.8)', cssP3: null, hex: '#fef6e8', alpha: 1 },
+      light: { css: 'oklch(0.8186 0.1495 80.8 / 0.12)', cssP3: null, hex: '#f5b83d', alpha: 0.12 },
       dark: { css: 'oklch(0.8186 0.1495 80.8 / 0.1)', cssP3: null, hex: '#f5b83d', alpha: 0.1 },
     },
   },
@@ -541,6 +638,20 @@ export const table: TokenTable = {
       light: { css: 'oklch(0.164 0.0065 271 / 0.3)', cssP3: null, hex: '#0d0e11', alpha: 0.3 },
       dark: { css: 'rgb(255 255 255 / 0.25)', cssP3: null, hex: '#ffffff', alpha: 0.25 },
     },
+  },
+  'color.border.on-glass-fill': {
+    $type: 'color', $cssVar: '--ds-color-border-on-glass-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.4)', cssP3: null, hex: '#ffffff', alpha: 0.4 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+    },
+  },
+  'color.border.on-media': {
+    $type: 'color', $cssVar: '--ds-color-border-on-media',
+    $value: { css: 'rgb(255 255 255 / 0.4)', cssP3: null, hex: '#ffffff', alpha: 0.4 },
   },
   'color.border.strong': {
     $type: 'color', $cssVar: '--ds-color-border-strong', $axis: 'colorScheme',
@@ -607,6 +718,49 @@ export const table: TokenTable = {
     $type: 'color', $cssVar: '--ds-color-chart-now',
     $value: { css: 'oklch(0.7517 0.1475 57.6)', cssP3: null, hex: '#f39444', alpha: 1 },
   },
+  'color.chart.on-glass-fill.grid': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-glass-fill-grid', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.1)', cssP3: null, hex: '#0d0e11', alpha: 0.1 },
+      dark: { css: 'rgb(255 255 255 / 0.24)', cssP3: null, hex: '#ffffff', alpha: 0.24 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.2)', cssP3: null, hex: '#0d0e11', alpha: 0.2 },
+    },
+  },
+  'color.chart.on-glass-fill.line': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-glass-fill-line', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'color.chart.on-glass-fill.plot': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-glass-fill-plot',
+    $value: { css: 'rgb(255 255 255 / 0.08)', cssP3: null, hex: '#ffffff', alpha: 0.08 },
+  },
+  'color.chart.on-glass-fill.reference': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-glass-fill-reference', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.75)', cssP3: null, hex: '#0d0e11', alpha: 0.75 },
+    },
+  },
+  'color.chart.on-media.grid': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-media-grid',
+    $value: { css: 'rgb(255 255 255 / 0.24)', cssP3: null, hex: '#ffffff', alpha: 0.24 },
+  },
+  'color.chart.on-media.line': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-media-line',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'color.chart.on-media.reference': {
+    $type: 'color', $cssVar: '--ds-color-chart-on-media-reference',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
   'color.chart.plot': {
     $type: 'color', $cssVar: '--ds-color-chart-plot', $axis: 'colorScheme',
     $values: {
@@ -659,12 +813,23 @@ export const table: TokenTable = {
   'color.chart.target': {
     $type: 'color', $cssVar: '--ds-color-chart-target', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
       dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
     },
     $increasedContrast: {
-      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      light: { css: 'oklch(0.164 0.0065 271 / 0.75)', cssP3: null, hex: '#0d0e11', alpha: 0.75 },
       dark: { css: 'rgb(255 255 255 / 0.85)', cssP3: null, hex: '#ffffff', alpha: 0.85 },
+    },
+  },
+  'color.edge.highlight': {
+    $type: 'color', $cssVar: '--ds-color-edge-highlight',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'color.edge.raised': {
+    $type: 'color', $cssVar: '--ds-color-edge-raised', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(1 0 0 / 0.08)', cssP3: null, hex: '#ffffff', alpha: 0.08 },
     },
   },
   'color.icon.accent': {
@@ -710,6 +875,91 @@ export const table: TokenTable = {
     $type: 'color', $cssVar: '--ds-color-icon-status-warning',
     $value: { css: 'oklch(0.8186 0.1495 80.8)', cssP3: null, hex: '#f5b83d', alpha: 1 },
   },
+  'color.map.block': {
+    $type: 'color', $cssVar: '--ds-color-map-block', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.03)', cssP3: null, hex: '#0d0e11', alpha: 0.03 },
+      dark: { css: 'rgb(255 255 255 / 0.025)', cssP3: null, hex: '#ffffff', alpha: 0.025 },
+    },
+  },
+  'color.map.building': {
+    $type: 'color', $cssVar: '--ds-color-map-building', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.075)', cssP3: null, hex: '#0d0e11', alpha: 0.075 },
+      dark: { css: 'rgb(255 255 255 / 0.065)', cssP3: null, hex: '#ffffff', alpha: 0.065 },
+    },
+  },
+  'color.map.label': {
+    $type: 'color', $cssVar: '--ds-color-map-label', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.55)', cssP3: null, hex: '#ffffff', alpha: 0.55 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.386 0.0146 264.4)', cssP3: null, hex: '#40444c', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.7)', cssP3: null, hex: '#ffffff', alpha: 0.7 },
+    },
+  },
+  'color.map.land': {
+    $type: 'color', $cssVar: '--ds-color-map-land', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.9612 0.0041 271.4)', cssP3: null, hex: '#f1f2f5', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'color.map.park': {
+    $type: 'color', $cssVar: '--ds-color-map-park', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5868 0.0979 181.4 / 0.16)', cssP3: null, hex: '#1f8f80', alpha: 0.16 },
+      dark: { css: 'oklch(0.7637 0.1043 180.3 / 0.11)', cssP3: null, hex: '#5bc8b5', alpha: 0.11 },
+    },
+  },
+  'color.map.road': {
+    $type: 'color', $cssVar: '--ds-color-map-road', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.13)', cssP3: null, hex: '#ffffff', alpha: 0.13 },
+    },
+  },
+  'color.map.road-casing': {
+    $type: 'color', $cssVar: '--ds-color-map-road-casing', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.08)', cssP3: null, hex: '#0d0e11', alpha: 0.08 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'color.map.route': {
+    $type: 'color', $cssVar: '--ds-color-map-route', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'color.map.route-ahead': {
+    $type: 'color', $cssVar: '--ds-color-map-route-ahead', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.4)', cssP3: null, hex: '#ffffff', alpha: 0.4 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'color.map.route-casing': {
+    $type: 'color', $cssVar: '--ds-color-map-route-casing', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'color.map.water': {
+    $type: 'color', $cssVar: '--ds-color-map-water', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5582 0.1535 268.2 / 0.16)', cssP3: null, hex: '#4e6ccd', alpha: 0.16 },
+      dark: { css: 'oklch(0.6361 0.141 270.5 / 0.16)', cssP3: null, hex: '#6b84e0', alpha: 0.16 },
+    },
+  },
   'color.text.accent': {
     $type: 'color', $cssVar: '--ds-color-text-accent', $axis: 'colorScheme',
     $values: {
@@ -749,6 +999,10 @@ export const table: TokenTable = {
     $type: 'color', $cssVar: '--ds-color-text-on-accent',
     $value: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
   },
+  'color.text.on-accent-secondary': {
+    $type: 'color', $cssVar: '--ds-color-text-on-accent-secondary',
+    $value: { css: 'oklch(0.164 0.0065 271 / 0.7)', cssP3: null, hex: '#0d0e11', alpha: 0.7 },
+  },
   'color.text.on-accent-strong': {
     $type: 'color', $cssVar: '--ds-color-text-on-accent-strong',
     $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
@@ -760,6 +1014,57 @@ export const table: TokenTable = {
   'color.text.on-glass': {
     $type: 'color', $cssVar: '--ds-color-text-on-glass',
     $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'color.text.on-glass-fill': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'color.text.on-glass-fill-dimmed': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill-dimmed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.6098 0.0191 267.7)', cssP3: null, hex: '#7e838f', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.64)', cssP3: null, hex: '#ffffff', alpha: 0.64 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+    },
+  },
+  'color.text.on-glass-fill-media-secondary': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill-media-secondary', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.78)', cssP3: null, hex: '#ffffff', alpha: 0.78 },
+    },
+  },
+  'color.text.on-glass-fill-media-tertiary': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill-media-tertiary', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.64)', cssP3: null, hex: '#ffffff', alpha: 0.64 },
+    },
+  },
+  'color.text.on-glass-fill-secondary': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill-secondary', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.78)', cssP3: null, hex: '#ffffff', alpha: 0.78 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.386 0.0146 264.4)', cssP3: null, hex: '#40444c', alpha: 1 },
+    },
+  },
+  'color.text.on-glass-fill-tertiary': {
+    $type: 'color', $cssVar: '--ds-color-text-on-glass-fill-tertiary', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.64)', cssP3: null, hex: '#ffffff', alpha: 0.64 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.386 0.0146 264.4)', cssP3: null, hex: '#40444c', alpha: 1 },
+    },
   },
   'color.text.on-glass-light': {
     $type: 'color', $cssVar: '--ds-color-text-on-glass-light', $axis: 'colorScheme',
@@ -782,6 +1087,10 @@ export const table: TokenTable = {
       light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
       dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
     },
+  },
+  'color.text.on-inverse-media': {
+    $type: 'color', $cssVar: '--ds-color-text-on-inverse-media',
+    $value: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
   },
   'color.text.on-vivid': {
     $type: 'color', $cssVar: '--ds-color-text-on-vivid',
@@ -870,36 +1179,36 @@ export const table: TokenTable = {
   'gradient.vivid.1': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-1', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4347 0.0722 281) 0%, oklch(0.5366 0.0966 267.6) 50%, oklch(0.6632 0.0435 241.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4347 0.0722 281)', cssP3: null, hex: '#4a4c78', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5366 0.0966 267.6)', cssP3: null, hex: '#556ba6', alpha: 1 }, position: 0.5 }, { color: { css: 'oklch(0.6632 0.0435 241.3)', cssP3: null, hex: '#7c97ac', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
-      dark: { css: 'linear-gradient(150deg in oklab, oklch(0.2085 0.0418 310.8) 0%, oklch(0.2898 0.0664 321.2) 40%, oklch(0.4473 0.079 299.5) 75%, oklch(0.6151 0.1122 273.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2085 0.0418 310.8)', cssP3: null, hex: '#1e1226', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2898 0.0664 321.2)', cssP3: null, hex: '#3a1f3f', alpha: 1 }, position: 0.4 }, { color: { css: 'oklch(0.4473 0.079 299.5)', cssP3: null, hex: '#5b4a7a', alpha: 1 }, position: 0.75 }, { color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 }, position: 1 }], angle: 150, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4347 0.0722 281) 0%, oklch(0.5366 0.12 267.6) 50%, oklch(0.655 0.12 235) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4347 0.0722 281)', cssP3: null, hex: '#4a4c78', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5366 0.12 267.6)', cssP3: null, hex: '#4f69b3', alpha: 1 }, position: 0.5 }, { color: { css: 'oklch(0.655 0.12 235)', cssP3: null, hex: '#349bcf', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 75, color: { css: 'oklch(0.655 0.12 235)', cssP3: null, hex: '#349bcf', alpha: 1 } } },
+      dark: { css: 'linear-gradient(150deg in oklab, oklch(0.2085 0.0418 310.8) 0%, oklch(0.2898 0.0664 321.2) 40%, oklch(0.4473 0.079 299.5) 75%, oklch(0.6151 0.1122 273.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2085 0.0418 310.8)', cssP3: null, hex: '#1e1226', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2898 0.0664 321.2)', cssP3: null, hex: '#3a1f3f', alpha: 1 }, position: 0.4 }, { color: { css: 'oklch(0.4473 0.079 299.5)', cssP3: null, hex: '#5b4a7a', alpha: 1 }, position: 0.75 }, { color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 }, position: 1 }], angle: 150, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.45, blur: 75, color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 } } },
     },
   },
   'gradient.vivid.2': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-2', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(135deg in oklab, oklch(0.4486 0.054 123.2) 0%, oklch(0.5602 0.1 119.2) 65%, oklch(0.6584 0.1108 119.7) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4486 0.054 123.2)', cssP3: null, hex: '#4f5a38', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5602 0.1 119.2)', cssP3: null, hex: '#6e7d33', alpha: 1 }, position: 0.65 }, { color: { css: 'oklch(0.6584 0.1108 119.7)', cssP3: null, hex: '#899b49', alpha: 1 }, position: 1 }], angle: 135, grain: 0.05, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
-      dark: { css: 'linear-gradient(170deg in oklab, oklch(0.2049 0.0199 160.1) 0%, oklch(0.2656 0.0232 162.6) 35%, oklch(0.4648 0.0544 132.1) 80%, oklch(0.557 0.0908 118.8) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2049 0.0199 160.1)', cssP3: null, hex: '#0f1a14', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2656 0.0232 162.6)', cssP3: null, hex: '#1b2922', alpha: 1 }, position: 0.35 }, { color: { css: 'oklch(0.4648 0.0544 132.1)', cssP3: null, hex: '#4e6040', alpha: 1 }, position: 0.8 }, { color: { css: 'oklch(0.557 0.0908 118.8)', cssP3: null, hex: '#6e7b3a', alpha: 1 }, position: 1 }], angle: 170, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4894 0.0296 338.4) 0%, oklch(0.5832 0.1229 329.4) 55%, oklch(0.6813 0.1273 337.2) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4894 0.0296 338.4)', cssP3: null, hex: '#6c5a66', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5832 0.1229 329.4)', cssP3: null, hex: '#a35e9e', alpha: 1 }, position: 0.55 }, { color: { css: 'oklch(0.6813 0.1273 337.2)', cssP3: null, hex: '#ca78b5', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 75, color: { css: 'oklch(0.6813 0.1273 337.2)', cssP3: null, hex: '#ca78b5', alpha: 1 } } },
+      dark: { css: 'linear-gradient(180deg in oklab, oklch(0.3006 0.0335 262.8) 0%, oklch(0.3201 0.0378 244.8) 30%, oklch(0.6082 0.0692 214.1) 85%, oklch(0.6599 0.0535 212.5) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.3006 0.0335 262.8)', cssP3: null, hex: '#252e3f', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.3201 0.0378 244.8)', cssP3: null, hex: '#223545', alpha: 1 }, position: 0.3 }, { color: { css: 'oklch(0.6082 0.0692 214.1)', cssP3: null, hex: '#4d8e9c', alpha: 1 }, position: 0.85 }, { color: { css: 'oklch(0.6599 0.0535 212.5)', cssP3: null, hex: '#6b9ba6', alpha: 1 }, position: 1 }], angle: 180, grain: 0.1, scheme: 'dark', bloom: { alpha: 0.45, blur: 75, color: { css: 'oklch(0.6599 0.0535 212.5)', cssP3: null, hex: '#6b9ba6', alpha: 1 } } },
     },
   },
   'gradient.vivid.3': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-3', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(135deg in oklab, oklch(0.5237 0.0697 25.7) 0%, oklch(0.5749 0.0806 25.4) 65%, oklch(0.6714 0.0714 44.6) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.5237 0.0697 25.7)', cssP3: null, hex: '#8e5a55', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5749 0.0806 25.4)', cssP3: null, hex: '#a36660', alpha: 1 }, position: 0.65 }, { color: { css: 'oklch(0.6714 0.0714 44.6)', cssP3: null, hex: '#bb8871', alpha: 1 }, position: 1 }], angle: 135, grain: 0.05, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
-      dark: { css: 'linear-gradient(160deg in oklab, oklch(0.2651 0.0627 47.6) 0%, oklch(0.4268 0.0981 42.9) 45%, oklch(0.615 0.1444 45.8) 85%, oklch(0.6746 0.1339 59.5) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2651 0.0627 47.6)', cssP3: null, hex: '#3d1a06', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.4268 0.0981 42.9)', cssP3: null, hex: '#7a3a1e', alpha: 1 }, position: 0.45 }, { color: { css: 'oklch(0.615 0.1444 45.8)', cssP3: null, hex: '#c9642f', alpha: 1 }, position: 0.85 }, { color: { css: 'oklch(0.6746 0.1339 59.5)', cssP3: null, hex: '#d28035', alpha: 1 }, position: 1 }], angle: 160, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(135deg in oklab, oklch(0.49 0.09 22) 0%, oklch(0.575 0.11 32) 65%, oklch(0.67 0.1 52) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.49 0.09 22)', cssP3: null, hex: '#8c4a49', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.575 0.11 32)', cssP3: null, hex: '#b05e4e', alpha: 1 }, position: 0.65 }, { color: { css: 'oklch(0.67 0.1 52)', cssP3: null, hex: '#c6835a', alpha: 1 }, position: 1 }], angle: 135, grain: 0.05, scheme: 'light', bloom: { alpha: 0.3, blur: 75, color: { css: 'oklch(0.67 0.1 52)', cssP3: null, hex: '#c6835a', alpha: 1 } } },
+      dark: { css: 'linear-gradient(160deg in oklab, oklch(0.2 0.028 240) 0%, oklch(0.29 0.045 225) 35%, oklch(0.46 0.075 200) 72%, oklch(0.62 0.095 188) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2 0.028 240)', cssP3: null, hex: '#091821', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.29 0.045 225)', cssP3: null, hex: '#0d303c', alpha: 1 }, position: 0.35 }, { color: { css: 'oklch(0.46 0.075 200)', cssP3: null, hex: '#0c6468', alpha: 1 }, position: 0.72 }, { color: { css: 'oklch(0.62 0.095 188)', cssP3: null, hex: '#2e9891', alpha: 1 }, position: 1 }], angle: 160, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.45, blur: 75, color: { css: 'oklch(0.62 0.095 188)', cssP3: null, hex: '#2e9891', alpha: 1 } } },
     },
   },
   'gradient.vivid.4': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-4', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4894 0.0296 338.4) 0%, oklch(0.5832 0.1229 329.4) 55%, oklch(0.6813 0.1273 337.2) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4894 0.0296 338.4)', cssP3: null, hex: '#6c5a66', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5832 0.1229 329.4)', cssP3: null, hex: '#a35e9e', alpha: 1 }, position: 0.55 }, { color: { css: 'oklch(0.6813 0.1273 337.2)', cssP3: null, hex: '#ca78b5', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
-      dark: { css: 'linear-gradient(180deg in oklab, oklch(0.3006 0.0335 262.8) 0%, oklch(0.3201 0.0378 244.8) 45%, oklch(0.6082 0.0692 214.1) 75%, oklch(0.6599 0.0535 212.5) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.3006 0.0335 262.8)', cssP3: null, hex: '#252e3f', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.3201 0.0378 244.8)', cssP3: null, hex: '#223545', alpha: 1 }, position: 0.45 }, { color: { css: 'oklch(0.6082 0.0692 214.1)', cssP3: null, hex: '#4d8e9c', alpha: 1 }, position: 0.75 }, { color: { css: 'oklch(0.6599 0.0535 212.5)', cssP3: null, hex: '#6b9ba6', alpha: 1 }, position: 1 }], angle: 180, grain: 0.1, scheme: 'dark', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(135deg in oklab, oklch(0.4486 0.054 123.2) 0%, oklch(0.5602 0.1 119.2) 65%, oklch(0.655 0.13 119.7) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4486 0.054 123.2)', cssP3: null, hex: '#4f5a38', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5602 0.1 119.2)', cssP3: null, hex: '#6e7d33', alpha: 1 }, position: 0.65 }, { color: { css: 'oklch(0.655 0.13 119.7)', cssP3: null, hex: '#879c34', alpha: 1 }, position: 1 }], angle: 135, grain: 0.05, scheme: 'light', bloom: { alpha: 0.3, blur: 75, color: { css: 'oklch(0.655 0.13 119.7)', cssP3: null, hex: '#879c34', alpha: 1 } } },
+      dark: { css: 'linear-gradient(170deg in oklab, oklch(0.2049 0.0199 160.1) 0%, oklch(0.2656 0.0232 162.6) 35%, oklch(0.4648 0.0544 132.1) 80%, oklch(0.557 0.0908 118.8) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2049 0.0199 160.1)', cssP3: null, hex: '#0f1a14', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2656 0.0232 162.6)', cssP3: null, hex: '#1b2922', alpha: 1 }, position: 0.35 }, { color: { css: 'oklch(0.4648 0.0544 132.1)', cssP3: null, hex: '#4e6040', alpha: 1 }, position: 0.8 }, { color: { css: 'oklch(0.557 0.0908 118.8)', cssP3: null, hex: '#6e7b3a', alpha: 1 }, position: 1 }], angle: 170, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.45, blur: 75, color: { css: 'oklch(0.557 0.0908 118.8)', cssP3: null, hex: '#6e7b3a', alpha: 1 } } },
     },
   },
   'gradient.vivid.default': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-default', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4347 0.0722 281) 0%, oklch(0.5366 0.0966 267.6) 50%, oklch(0.6632 0.0435 241.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4347 0.0722 281)', cssP3: null, hex: '#4a4c78', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5366 0.0966 267.6)', cssP3: null, hex: '#556ba6', alpha: 1 }, position: 0.5 }, { color: { css: 'oklch(0.6632 0.0435 241.3)', cssP3: null, hex: '#7c97ac', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
-      dark: { css: 'linear-gradient(150deg in oklab, oklch(0.2085 0.0418 310.8) 0%, oklch(0.2898 0.0664 321.2) 40%, oklch(0.4473 0.079 299.5) 75%, oklch(0.6151 0.1122 273.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2085 0.0418 310.8)', cssP3: null, hex: '#1e1226', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2898 0.0664 321.2)', cssP3: null, hex: '#3a1f3f', alpha: 1 }, position: 0.4 }, { color: { css: 'oklch(0.4473 0.079 299.5)', cssP3: null, hex: '#5b4a7a', alpha: 1 }, position: 0.75 }, { color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 }, position: 1 }], angle: 150, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(165deg in oklab, oklch(0.4347 0.0722 281) 0%, oklch(0.5366 0.12 267.6) 50%, oklch(0.655 0.12 235) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.4347 0.0722 281)', cssP3: null, hex: '#4a4c78', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.5366 0.12 267.6)', cssP3: null, hex: '#4f69b3', alpha: 1 }, position: 0.5 }, { color: { css: 'oklch(0.655 0.12 235)', cssP3: null, hex: '#349bcf', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 75, color: { css: 'oklch(0.655 0.12 235)', cssP3: null, hex: '#349bcf', alpha: 1 } } },
+      dark: { css: 'linear-gradient(150deg in oklab, oklch(0.2085 0.0418 310.8) 0%, oklch(0.2898 0.0664 321.2) 40%, oklch(0.4473 0.079 299.5) 75%, oklch(0.6151 0.1122 273.3) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.2085 0.0418 310.8)', cssP3: null, hex: '#1e1226', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.2898 0.0664 321.2)', cssP3: null, hex: '#3a1f3f', alpha: 1 }, position: 0.4 }, { color: { css: 'oklch(0.4473 0.079 299.5)', cssP3: null, hex: '#5b4a7a', alpha: 1 }, position: 0.75 }, { color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 }, position: 1 }], angle: 150, grain: 0.08, scheme: 'dark', bloom: { alpha: 0.45, blur: 75, color: { css: 'oklch(0.6151 0.1122 273.3)', cssP3: null, hex: '#6f7fc8', alpha: 1 } } },
     },
   },
   'icon.weight': {
@@ -927,8 +1236,8 @@ export const table: TokenTable = {
   'material.glass.cell': {
     $type: 'color', $cssVar: '--ds-material-glass-cell', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.1504 0.0092 128.7 / 0.35)', cssP3: null, hex: '#0a0c08', alpha: 0.35 },
-      dark: { css: 'oklch(0.1853 0.0102 145.1 / 0.35)', cssP3: null, hex: '#101410', alpha: 0.35 },
+      light: { css: 'oklch(0.1504 0.007 265 / 0.35)', cssP3: null, hex: '#0a0b0e', alpha: 0.35 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.35)', cssP3: null, hex: '#111316', alpha: 0.35 },
     },
   },
   'material.glass.cell.bloom': {
@@ -961,11 +1270,48 @@ export const table: TokenTable = {
     $type: 'number', $cssVar: '--ds-material-glass-cell-saturate',
     $value: 1,
   },
+  'material.glass.chip': {
+    $type: 'color', $cssVar: '--ds-material-glass-chip', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'rgb(255 255 255 / 0.25)', cssP3: null, hex: '#ffffff', alpha: 0.25 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.35)', cssP3: null, hex: '#111316', alpha: 0.35 },
+    },
+  },
+  'material.glass.chip.bloom': {
+    $type: 'number', $cssVar: '--ds-material-glass-chip-bloom',
+    $value: 0,
+  },
+  'material.glass.chip.blur': {
+    $type: 'dimension', $cssVar: '--ds-material-glass-chip-blur',
+    $value: 20,
+  },
+  'material.glass.chip.edge.end': {
+    $type: 'number', $cssVar: '--ds-material-glass-chip-edge-end', $axis: 'colorScheme',
+    $values: {
+      light: 0,
+      dark: 0.12,
+    },
+  },
+  'material.glass.chip.edge.start': {
+    $type: 'number', $cssVar: '--ds-material-glass-chip-edge-start', $axis: 'colorScheme',
+    $values: {
+      light: 0.55,
+      dark: 0.2,
+    },
+  },
+  'material.glass.chip.grain': {
+    $type: 'number', $cssVar: '--ds-material-glass-chip-grain',
+    $value: 0,
+  },
+  'material.glass.chip.saturate': {
+    $type: 'number', $cssVar: '--ds-material-glass-chip-saturate',
+    $value: 1,
+  },
   'material.glass.dark.chip': {
     $type: 'color', $cssVar: '--ds-material-glass-dark-chip', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.1504 0.0092 128.7 / 0.35)', cssP3: null, hex: '#0a0c08', alpha: 0.35 },
-      dark: { css: 'oklch(0.1853 0.0102 145.1 / 0.35)', cssP3: null, hex: '#101410', alpha: 0.35 },
+      light: { css: 'oklch(0.1504 0.007 265 / 0.35)', cssP3: null, hex: '#0a0b0e', alpha: 0.35 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.35)', cssP3: null, hex: '#111316', alpha: 0.35 },
     },
   },
   'material.glass.dark.chip.bloom': {
@@ -1004,8 +1350,8 @@ export const table: TokenTable = {
   'material.glass.dark.fill': {
     $type: 'color', $cssVar: '--ds-material-glass-dark-fill', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.1504 0.0092 128.7 / 0.55)', cssP3: null, hex: '#0a0c08', alpha: 0.55 },
-      dark: { css: 'oklch(0.1853 0.0102 145.1 / 0.6)', cssP3: null, hex: '#101410', alpha: 0.6 },
+      light: { css: 'oklch(0.1504 0.007 265 / 0.55)', cssP3: null, hex: '#0a0b0e', alpha: 0.55 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.6)', cssP3: null, hex: '#111316', alpha: 0.6 },
     },
   },
   'material.glass.dark.fill.bloom': {
@@ -1044,6 +1390,46 @@ export const table: TokenTable = {
     $type: 'number', $cssVar: '--ds-material-glass-dark-fill-saturate', $axis: 'colorScheme',
     $values: {
       light: 0.8,
+      dark: 1.2,
+    },
+  },
+  'material.glass.fill': {
+    $type: 'color', $cssVar: '--ds-material-glass-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'rgb(255 255 255 / 0.3)', cssP3: null, hex: '#ffffff', alpha: 0.3 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.6)', cssP3: null, hex: '#111316', alpha: 0.6 },
+    },
+  },
+  'material.glass.fill.bloom': {
+    $type: 'number', $cssVar: '--ds-material-glass-fill-bloom',
+    $value: 0,
+  },
+  'material.glass.fill.blur': {
+    $type: 'dimension', $cssVar: '--ds-material-glass-fill-blur', $axis: 'colorScheme',
+    $values: {
+      light: 24,
+      dark: 32,
+    },
+  },
+  'material.glass.fill.edge.end': {
+    $type: 'number', $cssVar: '--ds-material-glass-fill-edge-end',
+    $value: 0,
+  },
+  'material.glass.fill.edge.start': {
+    $type: 'number', $cssVar: '--ds-material-glass-fill-edge-start', $axis: 'colorScheme',
+    $values: {
+      light: 0.55,
+      dark: 0.15,
+    },
+  },
+  'material.glass.fill.grain': {
+    $type: 'number', $cssVar: '--ds-material-glass-fill-grain',
+    $value: 0,
+  },
+  'material.glass.fill.saturate': {
+    $type: 'number', $cssVar: '--ds-material-glass-fill-saturate', $axis: 'colorScheme',
+    $values: {
+      light: 1.1,
       dark: 1.2,
     },
   },
@@ -1125,10 +1511,18 @@ export const table: TokenTable = {
     },
   },
   'material.glass.scrim': {
-    $type: 'color', $cssVar: '--ds-material-glass-scrim', $axis: 'colorScheme',
+    $type: 'color', $cssVar: '--ds-material-glass-scrim',
+    $value: { css: 'rgb(0 0 0 / 0.45)', cssP3: null, hex: '#000000', alpha: 0.45 },
+  },
+  'material.vivid.edge.end': {
+    $type: 'number', $cssVar: '--ds-material-vivid-edge-end',
+    $value: 0,
+  },
+  'material.vivid.edge.start': {
+    $type: 'number', $cssVar: '--ds-material-vivid-edge-start', $axis: 'colorScheme',
     $values: {
-      light: { css: 'rgb(0 0 0 / 0.35)', cssP3: null, hex: '#000000', alpha: 0.35 },
-      dark: { css: 'rgb(0 0 0 / 0.4)', cssP3: null, hex: '#000000', alpha: 0.4 },
+      light: 0.3,
+      dark: 0.18,
     },
   },
   'motion.duration.base': {
@@ -1295,6 +1689,7 @@ export const table: TokenTable = {
       compact: 40,
       regular: 44,
       comfortable: 52,
+      watch: 44,
     },
   },
   'size.control.md': {
@@ -1303,6 +1698,7 @@ export const table: TokenTable = {
       compact: 32,
       regular: 40,
       comfortable: 48,
+      watch: 40,
     },
   },
   'size.control.sm': {
@@ -1311,6 +1707,7 @@ export const table: TokenTable = {
       compact: 28,
       regular: 32,
       comfortable: 44,
+      watch: 32,
     },
   },
   'size.hit': {
@@ -1342,6 +1739,7 @@ export const table: TokenTable = {
       compact: 32,
       regular: 44,
       comfortable: 52,
+      watch: 44,
     },
   },
   'space.0': {
@@ -1406,6 +1804,7 @@ export const table: TokenTable = {
       compact: 8,
       regular: 12,
       comfortable: 12,
+      watch: 12,
     },
   },
   'space.card-padding': {
@@ -1414,6 +1813,7 @@ export const table: TokenTable = {
       compact: 16,
       regular: 24,
       comfortable: 24,
+      watch: 16,
     },
   },
   'space.group-gap': {
@@ -1422,15 +1822,12 @@ export const table: TokenTable = {
       compact: 12,
       regular: 16,
       comfortable: 24,
+      watch: 16,
     },
   },
   'space.page-margin': {
-    $type: 'dimension', $cssVar: '--ds-space-page-margin', $axis: 'density',
-    $values: {
-      compact: 16,
-      regular: 24,
-      comfortable: 24,
-    },
+    $type: 'dimension', $cssVar: '--ds-space-page-margin',
+    $value: 24,
   },
   'space.section-gap': {
     $type: 'dimension', $cssVar: '--ds-space-section-gap', $axis: 'density',
@@ -1438,6 +1835,7 @@ export const table: TokenTable = {
       compact: 24,
       regular: 32,
       comfortable: 40,
+      watch: 32,
     },
   },
   'space.tile-gap': {
@@ -1446,6 +1844,7 @@ export const table: TokenTable = {
       compact: 4,
       regular: 6,
       comfortable: 8,
+      watch: 6,
     },
   },
   'stroke.grid': {
@@ -1459,6 +1858,10 @@ export const table: TokenTable = {
   'stroke.target': {
     $type: 'strokeStyle',
     $value: { keyword: null, dashArray: [8, 6], lineCap: 'round' },
+  },
+  'type.axis': {
+    $type: 'typography', $cssVars: { fontFamily: '--ds-type-axis-font-family', fontSize: '--ds-type-axis-font-size', fontWeight: '--ds-type-axis-font-weight', lineHeight: '--ds-type-axis-line-height', letterSpacing: '--ds-type-axis-letter-spacing', fontVariantNumeric: '--ds-type-axis-font-variant-numeric' },
+    $value: { fontFamily: '"Inter", system-ui, sans-serif', fontSize: 12, fontWeight: 400, lineHeight: 1.2, letterSpacing: 0, numeric: 'tabular', slot: 'ui', textStyle: 'caption' },
   },
   'type.body.lg': {
     $type: 'typography', $cssVars: { fontFamily: '--ds-type-body-lg-font-family', fontSize: '--ds-type-body-lg-font-size', fontWeight: '--ds-type-body-lg-font-weight', lineHeight: '--ds-type-body-lg-line-height', letterSpacing: '--ds-type-body-lg-letter-spacing', fontVariantNumeric: '--ds-type-body-lg-font-variant-numeric' },
@@ -1539,7 +1942,7 @@ export const table: TokenTable = {
   },
   'type.metric.md': {
     $type: 'typography', $cssVars: { fontFamily: '--ds-type-metric-md-font-family', fontSize: '--ds-type-metric-md-font-size', fontWeight: '--ds-type-metric-md-font-weight', lineHeight: '--ds-type-metric-md-line-height', letterSpacing: '--ds-type-metric-md-letter-spacing', fontVariantNumeric: '--ds-type-metric-md-font-variant-numeric' },
-    $value: { fontFamily: '"Inter", system-ui, sans-serif', fontSize: 20, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0, numeric: 'tabular', slot: 'display', textStyle: 'title3' },
+    $value: { fontFamily: '"Inter", system-ui, sans-serif', fontSize: 20, fontWeight: 400, lineHeight: 1.1, letterSpacing: 0, numeric: 'proportional', slot: 'display', textStyle: 'title3' },
   },
   'type.metric.unit': {
     $type: 'typography', $cssVars: { fontFamily: '--ds-type-metric-unit-font-family', fontSize: '--ds-type-metric-unit-font-size', fontWeight: '--ds-type-metric-unit-font-weight', lineHeight: '--ds-type-metric-unit-line-height', letterSpacing: '--ds-type-metric-unit-letter-spacing', fontVariantNumeric: '--ds-type-metric-unit-font-variant-numeric' },
@@ -1591,7 +1994,7 @@ export const table: TokenTable = {
   'comp.button.danger.bg.rest': {
     $type: 'color', $cssVar: '--ds-button-danger-bg-rest', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.95 0.0218 17.5)', cssP3: null, hex: '#fde9e9', alpha: 1 },
+      light: { css: 'oklch(0.6454 0.2026 26.6 / 0.12)', cssP3: null, hex: '#f04b45', alpha: 0.12 },
       dark: { css: 'oklch(0.6651 0.2218 26.6 / 0.1)', cssP3: null, hex: '#ff4642', alpha: 0.1 },
     },
   },
@@ -1613,8 +2016,8 @@ export const table: TokenTable = {
     $type: 'dimension', $cssVar: '--ds-button-gap',
     $value: 8,
   },
-  'comp.button.ghost.bg.rest': {
-    $type: 'color', $cssVar: '--ds-button-ghost-bg-rest', $axis: 'colorScheme',
+  'comp.button.ghost.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-button-ghost-bg-pressed', $axis: 'colorScheme',
     $values: {
       light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
       dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
@@ -1644,6 +2047,7 @@ export const table: TokenTable = {
       compact: 40,
       regular: 44,
       comfortable: 52,
+      watch: 44,
     },
   },
   'comp.button.height.md': {
@@ -1652,6 +2056,7 @@ export const table: TokenTable = {
       compact: 32,
       regular: 40,
       comfortable: 48,
+      watch: 40,
     },
   },
   'comp.button.height.sm': {
@@ -1660,6 +2065,7 @@ export const table: TokenTable = {
       compact: 28,
       regular: 32,
       comfortable: 44,
+      watch: 32,
     },
   },
   'comp.button.motion.press': {
@@ -1716,7 +2122,7 @@ export const table: TokenTable = {
   'comp.button.secondary.bg.rest': {
     $type: 'color', $cssVar: '--ds-button-secondary-bg-rest', $axis: 'colorScheme',
     $values: {
-      light: { css: 'rgb(255 255 255 / 0.7)', cssP3: null, hex: '#ffffff', alpha: 0.7 },
+      light: { css: 'oklch(0.9789 0.0029 264.5)', cssP3: null, hex: '#f7f8fa', alpha: 1 },
       dark: { css: 'rgb(255 255 255 / 0.09)', cssP3: null, hex: '#ffffff', alpha: 0.09 },
     },
   },
@@ -1741,13 +2147,16 @@ export const table: TokenTable = {
   'comp.card.glass.fill': {
     $type: 'color', $cssVar: '--ds-card-glass-fill', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.1504 0.0092 128.7 / 0.55)', cssP3: null, hex: '#0a0c08', alpha: 0.55 },
-      dark: { css: 'oklch(0.1853 0.0102 145.1 / 0.6)', cssP3: null, hex: '#101410', alpha: 0.6 },
+      light: { css: 'rgb(255 255 255 / 0.3)', cssP3: null, hex: '#ffffff', alpha: 0.3 },
+      dark: { css: 'oklch(0.1853 0.007 265 / 0.6)', cssP3: null, hex: '#111316', alpha: 0.6 },
     },
   },
   'comp.card.glass.text': {
-    $type: 'color', $cssVar: '--ds-card-glass-text',
-    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    $type: 'color', $cssVar: '--ds-card-glass-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
   },
   'comp.card.padding': {
     $type: 'dimension', $cssVar: '--ds-card-padding', $axis: 'density',
@@ -1755,6 +2164,7 @@ export const table: TokenTable = {
       compact: 16,
       regular: 24,
       comfortable: 24,
+      watch: 16,
     },
   },
   'comp.card.radius.compact': {

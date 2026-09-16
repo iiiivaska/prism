@@ -84,7 +84,7 @@ describe('the repository stylesheets', () => {
   test('every scenario computes the IR for every custom property, in both brands (ADR-0019 scenarios)', async () => {
     const b = await repoBundle();
     for (const scope of webScopes(b)) {
-      expect(webContexts(scope)).toHaveLength(96);
+      expect(webContexts(scope)).toHaveLength(128);
       const report = simulate(cssModel(scope));
       expect(report.mismatches, scope.brand).toEqual([]);
       expect(report.scenarios).toBe(scenarios(scope).length);
@@ -106,7 +106,7 @@ describe('the repository stylesheets', () => {
 
     test('`:not([attr])` instead of the valid-value list fails the unknown-value scenarios (ADR-0019 rule 2)', async () => {
       const m = await model();
-      const bare = mutate(m, (rs) => rs.map((r) => ({ ...r, selectors: r.selectors.map((s) => s.replace(/:not\(\[data-ds-density="compact"\], \[data-ds-density="regular"\], \[data-ds-density="comfortable"\]\)/, ':not([data-ds-density])')) })));
+      const bare = mutate(m, (rs) => rs.map((r) => ({ ...r, selectors: r.selectors.map((s) => s.replace(/:not\(\[data-ds-density="compact"\], \[data-ds-density="regular"\], \[data-ds-density="comfortable"\], \[data-ds-density="watch"\]\)/, ':not([data-ds-density])')) })));
       expect(failures(bare)).toBeGreaterThan(0);
     }, 60_000);
 

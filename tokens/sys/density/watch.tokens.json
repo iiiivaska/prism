@@ -1,0 +1,25 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "space": {
+      "$type": "dimension",
+      "card-padding": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        },
+        "$description": "the watch density: regular with a 16 px card padding, the watchOS default (ADR-0029 §3.2)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "density",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -37,6 +37,11 @@ extension DSTokenSet {
                 self.controlMd = 48
                 self.controlSm = 44
                 self.row = 52
+            case .watch:
+                self.controlLg = 44
+                self.controlMd = 40
+                self.controlSm = 32
+                self.row = 44
             }
             switch c.modality {
             case .pointer:

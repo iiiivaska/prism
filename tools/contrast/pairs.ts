@@ -3,8 +3,10 @@
 // Compositing policy (source-over in gamma-encoded sRGB, WCAG 2.x ratios):
 //   1. fg and bg resolve in the context through api.lookup; each must be exactly one color token.
 //   2. The bottom layer is color.bg.page, which must be opaque, or each entry of "backdrops" in turn (a hex
-//      color, or a gradient name or glob whose gradients of the context's base scheme contribute every stop
-//      and every V1 sample between stops, in both interpolation spaces; see bottoms()).
+//      color; a gradient name or glob whose gradients of the context's base scheme contribute every stop
+//      and every V1 sample between stops, in both interpolation spaces; or a token backdrop, color tokens
+//      by name or glob, each composited over the opaque ground named after " over " (ADR-0030 §1.5), or
+//      opaque on their own when no ground is named; see bottoms()).
 //   3. Each entry of "underlays" (a color name) is laid over the bottom layer in turn, then bg over that.
 //      Without "underlays" bg sits directly on the bottom layer.
 //   4. A translucent fg is composited over the flattened background.
@@ -33,7 +35,7 @@ export interface Pair {
   readonly minSizePx: number | null;
   /** Base schemes the pair is evaluated in (with their variants); null: every scheme. */
   readonly schemes: readonly BaseScheme[] | null;
-  /** Hex colors and gradient names or globs; empty: the page. */
+  /** Hex colors, gradient names or globs, and token backdrops (`<colors> over <ground>`); empty: the page. */
   readonly backdrops: readonly string[];
   /** Color names laid between the bottom layer and bg, one at a time; empty: none. */
   readonly underlays: readonly string[];
@@ -57,6 +59,23 @@ const TOP_KEYS = ['$comment', 'thresholds', 'pairs'];
 const PAIR_KEYS = ['fg', 'bg', 'tier', 'minSizePx', 'schemes', 'backdrops', 'underlays', 'stops', 'region', 'note'];
 const HEX = /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
 const PAGE = 'color.bg.page';
+/** The separator of a token backdrop: `color.map.water|park over color.map.land` (ADR-0030 §1.5). */
+export const OVER = ' over ';
+
+export interface TokenBackdrop {
+  /** A color name or glob. */
+  readonly colors: string;
+  /** The opaque color each of them is composited over, or null: they must be opaque themselves. */
+  readonly ground: string | null;
+}
+
+/** A backdrop entry that names color tokens, or null for a hex color or a gradient-only entry (decided per context). */
+export function tokenBackdrop(entry: string): TokenBackdrop | null {
+  if (entry.startsWith('#')) return null;
+  const at = entry.indexOf(OVER);
+  if (at < 0) return null;
+  return { colors: entry.slice(0, at).trim(), ground: entry.slice(at + OVER.length).trim() };
+}
 
 /** `color.text.primary on color.bg.page`, with the pair's qualifiers. */
 export function pairLabel(p: Pair): string {
@@ -122,9 +141,16 @@ export function parsePair(raw: unknown, index: number, line: number | null = nul
   let backdrops: string[] = [];
   if (raw['backdrops'] !== undefined) {
     const list = stringList(raw['backdrops']);
-    if (list === null) problems.push('"backdrops" must be a non-empty list of hex colors and gradient names');
+    if (list === null) problems.push('"backdrops" must be a non-empty list of hex colors, gradient names and token backdrops');
     else {
       for (const b of list) {
+        const tb = tokenBackdrop(b);
+        if (tb !== null) {
+          if (tb.colors === '' || tb.ground === '' || /\s/.test(tb.colors) || /\s/.test(tb.ground ?? '')) {
+            problems.push(`backdrop "${b}" must read "<color name or glob> over <color name>" (ADR-0030 §1.5)`);
+          }
+          continue;
+        }
         if (!b.startsWith('#')) continue;
         if (!HEX.test(b)) problems.push(`backdrop "${b}" is not a hex color`);
         else if (hexToRgba(b).alpha !== 1) problems.push(`backdrop "${b}" is translucent; a backdrop is the opaque bottom layer`);
@@ -289,6 +315,15 @@ function page(ctx: ContrastContext): Rgba {
   return rgba(p);
 }
 
+/** Whether a backdrop name without " over " names color tokens rather than gradients. */
+function isColorBackdrop(ctx: ContrastContext, name: string): boolean {
+  try {
+    return ctx.gradient(name).length === 0 && ctx.colors(name).length > 0;
+  } catch {
+    return false;   // gradients() reports the unknown name
+  }
+}
+
 /** The context's gradients for a name or glob, restricted to the context's base scheme. */
 function gradients(ctx: ContrastContext, name: string): ResolvedGradient[] {
   let all: readonly ResolvedGradient[];
@@ -305,11 +340,38 @@ function gradients(ctx: ContrastContext, name: string): ResolvedGradient[] {
 
 interface Bottom { readonly color: Rgba; readonly label: string }
 
+/** The colors a token backdrop names, in a context. */
+function backdropColors(ctx: ContrastContext, name: string): readonly ResolvedColor[] {
+  let list: readonly ResolvedColor[];
+  try {
+    list = ctx.colors(name);
+  } catch (e) {
+    throw new PairError(e instanceof Error ? e.message : String(e));
+  }
+  if (list.length === 0) throw new PairError(`"${name}" matches no color token`);
+  return list;
+}
+
+/**
+ * A token backdrop's opaque bottom layers (ADR-0030 §1.5): each named color composited over its ground,
+ * or taken as it is when no ground is named, which then requires it to be opaque.
+ */
+export function tokenBottoms(ctx: ContrastContext, tb: TokenBackdrop): { readonly color: Rgba; readonly label: string; readonly id: string }[] {
+  const ground = tb.ground === null ? null : color(ctx, tb.ground);
+  if (ground !== null && ground.alpha !== 1) throw new PairError(`${tb.ground ?? ''} is translucent (alpha ${ground.alpha}); a token backdrop's ground is opaque`);
+  return backdropColors(ctx, tb.colors).map((c) => {
+    if (ground === null && c.alpha !== 1) throw new PairError(`${c.id} is translucent (alpha ${c.alpha}); name the ground it sits on with "${c.path}${OVER}<color>"`);
+    const flat = ground === null ? c.srgb : flatten([rgba(ground), rgba(c)]);
+    return { color: { srgb: flat, alpha: 1 }, label: ground === null || c.id === ground.id ? `over ${c.path}` : `over ${c.path} on ${tb.ground ?? ''}`, id: c.id };
+  });
+}
+
 /**
  * The bottom layers of a pair: the page, or every backdrop. A gradient backdrop contributes every point
  * glass may sit on, sampled as V1 samples (every stop plus SAMPLES_PER_SEGMENT points per segment, in both
  * interpolation spaces): a hue-shifting segment can be darker (or, in OKLab, lighter) between two stops
- * than at either, so the stops alone that ADR-0022 §3.3 names are not the extreme. Repeated colors count once.
+ * than at either, so the stops alone that ADR-0022 §3.3 names are not the extreme. A token backdrop
+ * contributes each of its colors, flattened over its ground. Repeated colors count once.
  */
 function bottoms(ctx: ContrastContext, pair: Pair): Bottom[] {
   if (pair.backdrops.length === 0) return [{ color: page(ctx), label: '' }];
@@ -318,6 +380,11 @@ function bottoms(ctx: ContrastContext, pair: Pair): Bottom[] {
   for (const b of pair.backdrops) {
     if (b.startsWith('#')) {
       out.push({ color: hexToRgba(b), label: `over ${b}` });
+      continue;
+    }
+    const tb = tokenBackdrop(b) ?? (isColorBackdrop(ctx, b) ? { colors: b, ground: null } : null);
+    if (tb !== null) {
+      for (const t of tokenBottoms(ctx, tb)) out.push({ color: t.color, label: t.label });
       continue;
     }
     for (const g of gradients(ctx, b)) {

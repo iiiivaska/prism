@@ -1,11 +1,12 @@
 // IR analysis (ARCHITECTURE §5.7), per scope (the non-runtime modifiers: brand × platform) over the
 // full product of runtime contexts: dependency axes, at most one runtime axis per token, the
 // exhaustive composition proof, disjoint increased-contrast and reduced-transparency deltas, apple ↔
-// watch color invariance, the motion policy (ADR-0023 §8.3) and the gradient scheme invariant
-// (ADR-0024 §6). Values compare structurally (canonical JSON of the IR value).
+// watch color invariance, the motion policy (ADR-0023 §8.3), the gradient scheme invariant (ADR-0024
+// §6) and the slot temperature invariant (ADR-0029 §2.5). Values compare structurally (canonical JSON
+// of the IR value).
 import {
-  BASE_SCHEMES, COLOR_SCHEME_MODIFIER, CROSSFADE_ID, DURATION_MAX_REDUCED_MS, EASING_SYS_PREFIX, GRADIENT_SYS_PREFIX,
-  INTERACTIVE_SPRING_ID, MOTION_DEFAULT_CONTEXT, MOTION_MODIFIER, MOTION_REDUCED_CONTEXT, PLATFORM_MODIFIER, RUNTIME_AXES,
+  BASE_SCHEMES, BRAND_MODIFIER, COLOR_SCHEME_MODIFIER, CROSSFADE_ID, DURATION_MAX_REDUCED_MS, EASING_SYS_PREFIX, GRADIENT_SLOT_PAIRS,
+  GRADIENT_SYS_PREFIX, INTERACTIVE_SPRING_ID, MOTION_DEFAULT_CONTEXT, MOTION_MODIFIER, MOTION_REDUCED_CONTEXT, PLATFORM_MODIFIER, RUNTIME_AXES,
   SCHEME_VARIANT_SUFFIXES, SPRING_MAX_REDUCED_S,
 } from '../config.ts';
 import type { SourceModel } from '../source/types.ts';
@@ -197,6 +198,28 @@ export function analyze(perms: ReadonlyMap<PermKey, PermutationIR>, model: Sourc
       if (t.value.scheme !== scheme) {
         report('gradient/scheme-mismatch', `${id} resolves to a ${t.value.scheme ?? 'scheme-less'} gradient in the ${scheme} scheme (${p.key}); every sys.gradient.* token resolves to a gradient of its base scheme (ADR-0024 §6)`, { ...at(t, p.key), hint: `alias a ${scheme} ref.gradient.vivid.* gradient in the ${scheme} scheme file` }, `gradient|${id}|${scheme}`);
       }
+    }
+  }
+
+  // Slot temperatures (ADR-0029 §2.5, rule 5): each vivid slot pair resolves to gradients of one
+  // declared temperature in every permutation, so a 2×2 that alternates one pair is one temperature.
+  for (const p of perms.values()) {
+    for (const [a, b] of GRADIENT_SLOT_PAIRS) {
+      const ta = p.tokens.get(a);
+      const tb = p.tokens.get(b);
+      if (ta === undefined || tb === undefined || ta.value.kind !== 'gradient' || tb.value.kind !== 'gradient') continue;
+      const wa = ta.value.temperature;
+      const wb = tb.value.temperature;
+      if (wa !== null && wa === wb) continue;
+      const brand = p.input[BRAND_MODIFIER] ?? '';
+      const ga = chain(p, a).split(' → ').pop() ?? a;
+      const gb = chain(p, b).split(' → ').pop() ?? b;
+      report(
+        'gradient/slot-temperature',
+        `${a} (${ga}, ${wa ?? 'no temperature'}) and ${b} (${gb}, ${wb ?? 'no temperature'}) form a slot pair of ${wa === null || wb === null ? 'undeclared' : 'mixed'} temperature in ${p.key}; each pair of vivid slots (1 + 2, 3 + 4) resolves to gradients of one declared temperature (ADR-0029 §2.5)`,
+        { ...at(tb, p.key), hint: 'alias gradients of one temperature in both slots of the pair, and declare app.prism.temperature on every vivid gradient' },
+        `slot-temperature|${brand}|${a}|${b}|${ga}|${gb}`,
+      );
     }
   }
 

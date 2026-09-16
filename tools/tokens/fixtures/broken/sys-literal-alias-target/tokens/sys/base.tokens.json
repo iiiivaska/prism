@@ -43,7 +43,7 @@
       "bg": {
         "scrim": {
           "$type": "color",
-          "$value": "{sys.material.glass.scrim}"
+          "$value": "{sys.chart.ink}"
         }
       }
     },
@@ -51,7 +51,7 @@
       "glow": {
         "$type": "shadow",
         "$value": {
-          "color": "{sys.material.glass.scrim}",
+          "color": "{sys.chart.ink}",
           "offsetX": {
             "value": 0,
             "unit": "px"
@@ -68,6 +68,21 @@
             "value": 0,
             "unit": "px"
           }
+        }
+      }
+    },
+    "chart": {
+      "ink": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0,
+            0,
+            0
+          ],
+          "alpha": 1,
+          "hex": "#000000"
         }
       }
     }

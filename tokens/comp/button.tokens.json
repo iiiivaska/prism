@@ -111,8 +111,9 @@
       "ghost": {
         "$type": "color",
         "bg": {
-          "rest": {
+          "pressed": {
             "$value": "{sys.color.bg.fill.neutral.subtle}",
+            "$description": "the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
             "$extensions": {
               "app.prism": {
                 "figma": {

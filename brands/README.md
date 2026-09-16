@@ -12,16 +12,16 @@ A brand re-colors and re-types Prism without changing its structure. It is data 
 | Accent ramp | `ref.color.accent.50\|100\|200\|300\|400\|500\|600\|700\|800\|900\|950` | 11 | opaque color literal |
 | Semantic slots | `ref.color.slot.light\|dark.bg-page\|bg-fill-accent\|text-on-accent\|text-accent` | 8 | alias only (below) |
 | Chart series | `ref.color.series.light\|dark.1…6` | 12 today | opaque color literal, or alias of a step of the brand's neutral or accent ramp |
-| Vivid gradients | `ref.gradient.vivid.orchid\|olive\|rose\|sky\|ember-night\|plum-dusk\|forest-moss\|navy-cyan` | 8 | whole token, extensions included; keeps its `app.prism.scheme`; every stop reaches 3:1 against white and the Card header block 4.5:1, and light stops stay light enough for ink on light glass (ADR-0022 V1, V2) |
+| Vivid gradients | `ref.gradient.vivid.orchid\|olive\|rose\|sky\|ember-night\|plum-dusk\|forest-moss\|navy-cyan\|night-lagoon` | 9 | whole token, extensions included; keeps its `app.prism.scheme` and restates its `temperature`; every stop reaches 3:1 against white and the Card header block 4.5:1 (ADR-0022 V1, V2), light stops stay light enough for ink on light glass, every glass pair over vivid passes, and each slot pair stays one temperature (`gradient/slot-temperature`, ADR-0029 §2) |
 | Font slots, web | `ref.font.ui\|display\|mono` | 3 | see Fonts |
 | Font slots, Apple | `ref.font.apple.ui\|display\|mono` | 3 | see Fonts |
 | Type scale | `ref.type.scale` | 1 | positive number, within [1, 1.25] (ADR-0021 §6) |
 | Radius steps | `ref.radius.1…10` | 10 | non-decreasing with the step number |
 
-- **Everything else is system-owned:** status colors, the smoked-glass tints `ref.color.smoke.light|dark`, space, size, border, blur, opacity, shadow, motion, the typography role composites (`ref.type.<role>`), `ref.radius.0` and `ref.radius.pill`.
+- **Everything else is system-owned:** status colors, the smoked-glass tints `ref.color.smoke.light|dark` (neutral, OKLCH chroma 0.007 or less, ADR-0029 §1.1), the map hues `ref.color.map.light|dark.water|park` (a brand-owned map needs its own ADR, ADR-0030 §1.2), space, size, border, blur, opacity, shadow, motion, the typography role composites (`ref.type.<role>`), `ref.radius.0` and `ref.radius.pill`.
 - **No other writes.** A brand never writes `sys.*` or `comp.*` and never adds a path.
-- **Whole tokens.** The DTCG merge replaces tokens wholesale, so a brand overrides a whole token and restates its functional extensions (a gradient's `angle`, `grain`, `scheme` and `bloom`; a font's `opsz`).
-- **Gradient names.** The eight gradient ids keep the reference brand's names whatever a brand puts in them. Specs and components bind the `gradient.vivid.default` and `gradient.vivid.1…4` slots, which the scheme files map to them (ADR-0024 §6, ADR-0022 §4.4), never the names.
+- **Whole tokens.** The DTCG merge replaces tokens wholesale, so a brand overrides a whole token and restates its functional extensions (a gradient's `angle`, `grain`, `scheme`, `temperature` and `bloom`; a font's `opsz`). The bloom color is derived from the stops (the brightest stop), so a retuned gradient carries its own bloom color (ADR-0030 §4.3).
+- **Gradient names.** The nine gradient ids keep the reference brand's names whatever a brand puts in them. Specs and components bind the `gradient.vivid.default` and `gradient.vivid.1…4` slots, which the scheme files map to them (ADR-0024 §6, ADR-0022 §4.4), never the names. Slots 1 + 2 and 3 + 4 are one-temperature pairs that a vivid 2×2 alternates on its diagonals; `ember-night` sits in no slot and stays checked (ADR-0029 §2.5, §2.6).
 - **Radius and type scale.** Radius changes step by step; there is no radius profile. The type scale is the one number ADR-0008 decision 1 allows; role sizes cannot be changed individually.
 
 ## Semantic slots
@@ -97,8 +97,8 @@ brands/<name>/
 
 ## Acceptance
 
-- `tokens:build` diagnostics: `brand/not-overridable`, `brand/unknown-path`, `brand/registration`, `brand/value`, `brand/radius-order`, `slot/target`, `slot/mapping`, `sys/literal`, `color/alpha-target`, `font/web-stack`, `font/apple-face`, `font/preset`, `type/scale-range`.
-- `contrast:check` runs every pair in `tokens/contrast-pairs.json` in all six colorScheme contexts per brand, including ADR-0022's vivid checks (V1, V2) and the glass-over-vivid pairs with the light-scheme ink pairs on the brand's gradients; a brand that fails a functional pair does not build.
+- `tokens:build` diagnostics: `brand/not-overridable`, `brand/unknown-path`, `brand/registration`, `brand/value`, `brand/radius-order`, `slot/target`, `slot/mapping`, `sys/literal`, `color/alpha-target`, `color/edge-neutral`, `font/web-stack`, `font/apple-face`, `font/preset`, `type/scale-range`, `gradient/scheme-mismatch`, `gradient/slot-temperature`.
+- `contrast:check` runs every pair in `tokens/contrast-pairs.json` in all six colorScheme contexts per brand, including ADR-0022's vivid checks (V1, V2) on all nine reference gradients (`ref.gradient.vivid.*`, slotted or not) and the glass-over-vivid pairs with the light-scheme ink pairs on the brand's gradients, and it keeps the map grounds inside their backdrop limits (`map/backdrop-limit`); a brand that fails a functional pair does not build.
 - `fonts:check` checks every font file a brand serves: file and `OFL.txt`, SHA-256 and version against `brand.json`, Russian Cyrillic incl. Ё/ё, tabular digits (equal 0–9 advances with or without `tnum`), the PostScript instance map and the 2 MiB `DSTokens` budget.
 - `tools/viz-validate` runs per brand once it exists.
 - The gallery renders every brand in its own document; only the reference brand is snapshot-tested (ADR-0002 rule 3).

@@ -53,6 +53,13 @@ export function fakeContext(opts: {
       }
       return resolvedColor(name, spec);
     },
+    colors(name) {
+      const names = name.includes('|') || name.includes('*')
+        ? Object.keys(opts.colors).filter((n) => globMatch(name, n))
+        : [name];
+      if (names.length === 0 || names.some((n) => opts.colors[n] === undefined && opts.gradients?.[n] === undefined)) throw new LookupError(name, []);
+      return names.filter((n) => opts.colors[n] !== undefined).map((n) => resolvedColor(n, opts.colors[n] ?? '#000000'));
+    },
     gradient(name) {
       const list = opts.gradients?.[name];
       if (list === undefined) {
@@ -62,6 +69,13 @@ export function fakeContext(opts: {
       return list.map(resolvedGradient);
     },
   };
+}
+
+/** The segment glob of names (`a|b` alternation, `*` one segment) the fake context's `colors` accepts. */
+function globMatch(glob: string, name: string): boolean {
+  const g = glob.split('.');
+  const n = name.split('.');
+  return g.length === n.length && g.every((seg, i) => seg === '*' || seg.split('|').includes(n[i] ?? ''));
 }
 
 /** A pair from its raw JSON form; throws when it is invalid. */

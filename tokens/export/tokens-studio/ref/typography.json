@@ -32,6 +32,17 @@
       }
     },
     "type": {
+      "axis": {
+        "$type": "typography",
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": "12px",
+          "fontWeight": "400",
+          "lineHeight": "120%",
+          "letterSpacing": "0px"
+        },
+        "$description": "chart axis labels and ticks; tabular, so tick values align (ADR-0030 §2.6)"
+      },
       "body": {
         "lg": {
           "$type": "typography",
@@ -195,7 +206,7 @@
             "lineHeight": "110%",
             "letterSpacing": "0px"
           },
-          "$description": "inline metric '41 %'"
+          "$description": "inline metric '41 %'; proportional like every metric role, numeric: tabular when the value is live (ADR-0021 §5, ADR-0030 §7.1)"
         },
         "unit": {
           "$type": "typography",
@@ -218,6 +229,17 @@
             "letterSpacing": "-0.48px"
           },
           "$description": "the one hero numeral per screen; 300 in light, 200 in dark (darkWeight); proportional figures unless the value is live; trailing group in text.dimmed at the same size"
+        },
+        "xl-watch": {
+          "$type": "typography",
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": "40px",
+            "fontWeight": "300",
+            "lineHeight": "100%",
+            "letterSpacing": "-0.4px"
+          },
+          "$description": "the watch face of the metric.xl role, not a role of its own: sys.type.metric.xl in the watch platform context (ADR-0030 §7.2); 300 in light, 200 in dark (darkWeight, 40 >= 34 px)"
         }
       },
       "micro": {

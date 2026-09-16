@@ -39,28 +39,32 @@ extension DSTokenSet {
             self.step11 = 48
             self.step12 = 64
             self.step13 = 104
+            self.pageMargin = 24
             switch c.density {
             case .compact:
                 self.cardGap = 8
                 self.cardPadding = 16
                 self.groupGap = 12
-                self.pageMargin = 16
                 self.sectionGap = 24
                 self.tileGap = 4
             case .regular:
                 self.cardGap = 12
                 self.cardPadding = 24
                 self.groupGap = 16
-                self.pageMargin = 24
                 self.sectionGap = 32
                 self.tileGap = 6
             case .comfortable:
                 self.cardGap = 12
                 self.cardPadding = 24
                 self.groupGap = 24
-                self.pageMargin = 24
                 self.sectionGap = 40
                 self.tileGap = 8
+            case .watch:
+                self.cardGap = 12
+                self.cardPadding = 16
+                self.groupGap = 16
+                self.sectionGap = 32
+                self.tileGap = 6
             }
         }
     }

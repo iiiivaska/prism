@@ -1,5 +1,5 @@
 {
-  "description": "sys.color.bg.scrim and the color of sys.shadow.glow alias sys.material.glass.scrim; a sys color, whole or sub-value, aliases a ref.color.* or sys.color.* token (ADR-0020 §3).",
+  "description": "sys.color.bg.scrim and the color of sys.shadow.glow alias sys.chart.ink, a color outside ref.color.*, sys.color.* and sys.material.glass.*; a sys color, whole or sub-value, aliases one of those (ADR-0020 §3, ADR-0029 §1.2).",
   "expect": [
     {
       "code": "sys/literal",

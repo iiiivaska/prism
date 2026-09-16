@@ -125,7 +125,8 @@ public struct DSGradientStop: Hashable, Sendable {
 }
 
 /// A vivid gradient (ARCHITECTURE §7.9, ADR-0022 §4): `angle` in degrees with CSS semantics, which DSCore turns into
-/// start and end points for the surface size; grain and bloom belong to the gradient (ADR-0024 §6).
+/// start and end points for the surface size; grain and bloom belong to the gradient (ADR-0024 §6). `bloomColor` is
+/// derived: the stop of highest relative luminance, the later stop on a tie (ADR-0030 §4.3).
 /// Interpolation: OKLab on both stacks (P1-5's parity decision, ARCHITECTURE §7.9, §16.3). The web writes `in oklab`;
 /// DSCore (P3-1) draws the stops with `Gradient.ColorSpace.perceptual` once that space is verified to be OKLab
 /// (ARCHITECTURE §16.1 V14), else with stops resampled in OKLab. SwiftUI's default, `.device`, would not match the web.
@@ -136,14 +137,16 @@ public struct DSGradientToken: Hashable, Sendable {
     public let scheme: DSColorScheme?
     public let bloomAlpha: Double
     public let bloomBlur: CGFloat
+    public let bloomColor: DSRGBA
 
-    public init(stops: [DSGradientStop], angle: Double, grain: Double, scheme: DSColorScheme?, bloomAlpha: Double, bloomBlur: CGFloat) {
+    public init(stops: [DSGradientStop], angle: Double, grain: Double, scheme: DSColorScheme?, bloomAlpha: Double, bloomBlur: CGFloat, bloomColor: DSRGBA) {
         self.stops = stops
         self.angle = angle
         self.grain = grain
         self.scheme = scheme
         self.bloomAlpha = bloomAlpha
         self.bloomBlur = bloomBlur
+        self.bloomColor = bloomColor
     }
 }
 

@@ -277,12 +277,6 @@
           "value": 40,
           "unit": "px"
         }
-      },
-      "bloom": {
-        "$value": {
-          "value": 150,
-          "unit": "px"
-        }
       }
     }
   }

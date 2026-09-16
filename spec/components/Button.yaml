@@ -1,6 +1,6 @@
 name: Button
 layer: primitive
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
   A tappable action with one label and an optional leading or trailing icon. Controls in Prism are
@@ -66,7 +66,6 @@ tokens:
     background:
       primary: comp.button.primary.bg.rest
       secondary: comp.button.secondary.bg.rest
-      ghost: comp.button.ghost.bg.rest
       danger: comp.button.danger.bg.rest
     foreground:
       primary: comp.button.primary.text
@@ -90,6 +89,7 @@ tokens:
       background:
         primary: comp.button.primary.bg.pressed
         secondary: comp.button.secondary.bg.pressed
+        ghost: comp.button.ghost.bg.pressed
     hover:
       overlay: color.bg.fill.neutral.subtle
     disabled:

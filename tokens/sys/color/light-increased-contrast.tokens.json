@@ -135,7 +135,7 @@
           "$value": "{ref.color.neutral.950}",
           "$extensions": {
             "app.prism": {
-              "alpha": 0.6,
+              "alpha": 0.75,
               "figma": {
                 "collection": "colorScheme",
                 "scopes": [

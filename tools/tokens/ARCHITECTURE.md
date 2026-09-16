@@ -3,7 +3,7 @@
 This is the design the Phase 1 implementers follow. It covers the resolver driver (P1-3), the transforms (P1-4), the formats (P1-5), the interfaces that contrast (P1-6) and diff (P1-7) consume, and the entry point of the font check (P1-8). It also lists the source fixes that P1-1 and P1-2 must land first.
 
 - **Status:** accepted design, written 2026-09-15 against commit `2da5712` plus the uncommitted P0 work in the tree (gated `ci.yml`, `tools/tsconfig.json`, `tools/vitest.config.ts`, corrected `tokens/README.md` Motion section). Revised the same day for ADR-0019 to ADR-0024, which decided the open questions O1–O7 of §16.3; every design section below follows them.
-- **Implementation status (2026-09-15):** P1-1 to P1-8 are implemented and marked done in `docs/roadmap.md`; the repository builds its 432 permutations with zero diagnostics, and every Phase 1 gate file of §14 exists, so each gated CI step runs. Where the implementation departs from this design, §16.3 records it. One value changed after §14 was written: light `chart.target` and `chart.comparison` are ink at alpha 0.45, not 0.3 (§14 P1-2), because P1-6's boundary pairs on `chart.plot` (critic G-14) need 3:1 (ADR-0011; ink 0.3 is 2.01:1, ink 0.45 is 3.08:1 on the white plot), following `docs/research/a11y-reconciliation.md` §8.1 option 1.
+- **Implementation status (2026-09-15):** P1-1 to P1-8 are implemented and marked done in `docs/roadmap.md`; P1-9 (2026-09-16) folded the direction-board sign-off into the tokens (ADR-0029, ADR-0030), so the repository builds its 576 permutations with zero diagnostics, and every Phase 1 gate file of §14 exists, so each gated CI step runs. Where the implementation departs from this design, §16.3 records it. One value changed after §14 was written: light `chart.target` and `chart.comparison` are ink at alpha 0.45, not 0.3 (§14 P1-2), because P1-6's boundary pairs on `chart.plot` (critic G-14) need 3:1 (ADR-0011; ink 0.3 is 2.01:1, ink 0.45 is 3.08:1 on the white plot), following `docs/research/a11y-reconciliation.md` §8.1 option 1.
 - **Basis:** the "IR-first thin driver" design (the judges' consensus winner), with ideas grafted from the "SD-maximal" and "output-first" designs and every judge must-fix applied.
 - **Evidence:** every library fact marked *(verified: …)* was re-checked on 2026-09-15 against the versions this repository actually resolves (`tools/node_modules`: style-dictionary 5.5.3, colorjs.io 0.5.2, motion 13.2.0, @terrazzo/cli 2.7.1, vitest 4.1.11, typescript 6.0.3) or, for packages the tools package does not install yet, against scratch installs (@terrazzo/parser 2.7.1, tailwindcss and @tailwindcss/node 4.3.3, jsonc-parser 3.3.1, @tokens-studio/types 0.5.2), on Node 24.21.0 and Xcode 26.6 with the iOS 26.5 and watchOS 26.5 simulators. §15 lists them. The probes lived outside the repository; the tests in §14 turn each one into a permanent check.
 - **Precedence:** where this document disagrees with `tokens/README.md` or `tools/tokens/README.md`, those READMEs were updated in the same change to match. Where it disagrees with an ADR, the ADR wins; report the disagreement instead of implementing either reading. The decisions behind §9 (web runtime), §5.6 and §9.7 (brands), §3.3 and §7.7 (typography), §7.12 (materials), §7.6 (motion) and §5 and §11 (source conventions) are ADR-0019 to ADR-0025.
@@ -23,7 +23,7 @@ tokens/prism.resolver.json ─┐
 tokens/**/*.tokens.json ────┼─► source/model.ts ─► source/analyze.ts      (orthogonality, ownership, completeness,
 brands/*/brand(.tokens).json┘      SourceModel        brand rules, dead writes, group $type, names, literals)
                                         │
-                        resolver.ts  [DELETABLE]  enumerate() → 432 inputs; merge(input) → { tree, provenance }
+                        resolver.ts  [DELETABLE]  enumerate() → 576 inputs; merge(input) → { tree, provenance }
                                         │
                         engine/sd.ts   one Style Dictionary 5.5.3 instance per permutation, strictly sequential
                                         preprocessors prism/validate, prism/dtcg-types; transform prism/normalize
@@ -45,10 +45,10 @@ brands/*/brand(.tokens).json┘      SourceModel        brand rules, dead writes
 
 Key decisions:
 
-1. **Style Dictionary does what its future native resolver will still do**: DTCG typing (through a Prism preprocessor that fixes SD's type precedence), alias resolution with broken-reference errors, and transform orchestration. It runs in memory, sequentially, once per distinct document stack: permutations that apply the same documents in the same order (`watch` = [apple], a reduced-transparency context = its base file) share one run's output, so the 432 permutations need 192 runs today; the IR is still built per permutation (§6). Prism does not use SD formats or any SD built-in transform.
+1. **Style Dictionary does what its future native resolver will still do**: DTCG typing (through a Prism preprocessor that fixes SD's type precedence), alias resolution with broken-reference errors, and transform orchestration. It runs in memory, sequentially, once per distinct document stack: permutations that apply the same documents in the same order (a reduced-transparency context = its base file) share one run's output, so the 576 permutations need 384 runs today (192 for 432 before P1-9, when `watch` was [apple]); the IR is still built per permutation (§6). Prism does not use SD formats or any SD built-in transform.
 2. **`resolver.ts` holds only enumeration, merge and provenance** (about 150 lines). Parsing and every source check live in `source/` and survive when SD ships a `resolver` option (issue #1590).
 3. **Merge follows DTCG Resolver 2025.10 exactly**: a later declaration of a token id replaces the whole token; groups merge; aliases resolve only after the merge.
-4. **One transitive, idempotent, plain-data normalizer** (`prism/normalize`) turns every DTCG value into an `IRValue`. Functional extensions (`spring`, `slot`, `numeric`, `textStyle`, `darkWeight`, `opsz`, `flag`, gradient `angle`/`grain`/`scheme`/`bloom`) are folded into the value, so they flow through aliases; an alias never declares one (`extension/alias-override`, ADR-0024 §4.1). ADR-0020's `alpha` is the one exception: it is declared only on `sys` color aliases and replaces the alpha of the resolved target. Material recipes are ordinary typed tokens (ADR-0022): no extension keys, no defaults.
+4. **One transitive, idempotent, plain-data normalizer** (`prism/normalize`) turns every DTCG value into an `IRValue`. Functional extensions (`spring`, `slot`, `numeric`, `textStyle`, `darkWeight`, `opsz`, `flag`, gradient `angle`/`grain`/`scheme`/`temperature`/`bloom`) are folded into the value, so they flow through aliases; an alias never declares one (`extension/alias-override`, ADR-0024 §4.1). ADR-0020's `alpha` is the one exception: it is declared only on `sys` color aliases and replaces the alpha of the resolved target. Material recipes are ordinary typed tokens (ADR-0022): no extension keys, no defaults.
 5. **The IR is plain data and every format is a pure function** of the bundle. Cross-permutation outputs (CSS modes, colorset appearances, Swift and TS tables, Figma flavors) are possible only there, because an SD format sees one dictionary.
 6. **Orthogonality is proven on every build**, over resolved values of the full product: write-set disjointness, ownership, context completeness, disjoint increased-contrast and reduced-transparency deltas, and an exhaustive composition proof. `tz lint` cannot do it *(verified)*; `tokens:lint` adds Terrazzo's parser API as a second opinion.
 7. **Web runtime contract** (ADR-0019): `data-ds-color-scheme` and `data-ds-density` nest on any element; `data-ds-contrast`, `-transparency`, `-modality` and `-motion` act on `<html>` only. When an attribute has no valid value (absent, empty or unknown), the axis follows its media query: density `(any-pointer: coarse)` → regular, modality `not all and (hover: hover) and (pointer: fine)` → touch. One table in `config.ts` (`WEB_RUNTIME`, `PLATFORM_DEFAULTS`) drives every output, including `runtime.ts`. `var()` chains, a rescope block for nested scopes, compound delta blocks for contrast and transparency, `@media (color-gamut: p3)` twins, `@supports not (… linear() …)` twins, all inside `@layer ds.tokens`.
@@ -95,21 +95,21 @@ After S1, S2 and S7, `tz lint` passes with `core/consistent-naming` at error (AD
 
 ## 2. Permutation strategy per target
 
-All 432 permutations (2 brands × 3 platforms × 6 color schemes × 3 densities × 2 modalities × 2 motion) are resolved on every build; each target takes its slice. After ADR-0022 the two reduced-transparency contexts and the `watch` context carry no token delta; they stay in the resolver (ADR-0019 §1 item 6, ADR-0024 §9.5), so the product stays 432.
+All 576 permutations (2 brands × 3 platforms × 6 color schemes × 4 densities × 2 modalities × 2 motion) are resolved on every build; each target takes its slice. After ADR-0022 the two reduced-transparency contexts carry no token delta; they stay in the resolver (ADR-0019 §1 item 6, ADR-0024 §9.5). P1-9 (ADR-0029 §3.2, ADR-0030 §7.2) added the `watch` density (regular plus a 16 px card padding, the watchOS default) and gave the `watch` platform context a typography delta (`sys.type.metric.xl` at 40 px), so the product is 576 and apple and watch differ in that one non-color token.
 
 | Target | Build-time axes (one artifact each) | Runtime axes inside the artifact | Permutations read |
 |--------|-------------------------------------|----------------------------------|-------------------|
-| `tokens.css` | brand | colorScheme (nestable) with contrast and transparency variants (the transparency deltas are empty after ADR-0022; the contexts stay, ADR-0019 §1), density (nestable; root fallback `(any-pointer: coarse)` → regular), modality (root), gamut | web: 72 per brand |
+| `tokens.css` | brand | colorScheme (nestable) with contrast and transparency variants (the transparency deltas are empty after ADR-0022; the contexts stay, ADR-0019 §1), density (nestable; root fallback `(any-pointer: coarse)` → regular), modality (root), gamut | web: 96 per brand |
 | `motion.css` | — (brand invariance asserted) | motion (root) | web, default brand |
 | `tailwind.css` | — (name invariance asserted) | through `var()` | web, default brand |
-| `tokens.ts` | brand | colorScheme + variants, density, modality, motion; entry shapes are the union over brands (ADR-0020 §6) | web: 72 per brand |
+| `tokens.ts` | brand | colorScheme + variants, density, modality, motion; entry shapes are the union over brands (ADR-0020 §6) | web: 96 per brand |
 | `runtime.ts`, manifest `runtime` and `platformDefaults` | — (brand-invariant) | the attribute table itself | none: `config.ts` `WEB_RUNTIME` and `PLATFORM_DEFAULTS` (ADR-0019 §3) |
-| Swift sources + `Colors.xcassets` | platform apple/watch merged with `#if os(watchOS)` and the `watch` idiom; every repo brand, chosen at runtime by `DSTokenContext.brand` (ADR-0020 §7) | brand (root), colorScheme, contrast, transparency, density, modality, motion | apple + watch: 144 per brand |
+| Swift sources + `Colors.xcassets` | platform apple/watch merged with `#if os(watchOS)` and the `watch` idiom; every repo brand, chosen at runtime by `DSTokenContext.brand` (ADR-0020 §7) | brand (root), colorScheme, contrast, transparency, density, modality, motion | apple + watch: 192 per brand |
 | Tokens Studio flavor | — | themes = brand × colorScheme × density | `SourceModel` only (no resolution) |
 | Figma-native flavor | brand × colorScheme | — | web, other axes at defaults (density `compact` since ADR-0019): 12 |
 | Contrast (P1-6) | brand × colorScheme | — | web: 12, plus an apple-equality assertion |
-| Diff (P1-7) | all | all | all 432, both revisions |
-| Analysis (§5.7) | all | all | all 432 |
+| Diff (P1-7) | all | all | all 576, both revisions |
+| Analysis (§5.7) | all | all | all 576 |
 
 ---
 
@@ -207,10 +207,12 @@ Tests sit next to the code as `*.test.ts`; fixture trees live under `tools/token
 | File | Responsibility |
 |------|----------------|
 | `check.ts` | CLI `contrast:check`: `buildBundle()` → `contrastContexts()` → evaluate every pair of `tokens/contrast-pairs.json` → Markdown table on stdout and in `$GITHUB_STEP_SUMMARY` → exit 1 on any failure. `--resolver <path>` points it at a fixture. **Opens the CI gate.** |
-| `pairs.ts` | Loads and validates `contrast-pairs.json`; resolves names with `api.lookup`; applies the compositing policy (§10). |
+| `pairs.ts` | Loads and validates `contrast-pairs.json`; resolves names with `api.lookup`; applies the compositing policy (§10), token backdrops included (P1-9). |
+| `map.ts` | `map/backdrop-limit` (P1-9, ADR-0030 §1.5): every map ground over `color.map.land` at OKLCH L ≥ 0.45 in light and ≤ 0.35 in dark. |
 | `thresholds.ts` | Tier and size rules from ADR-0011 and the file's `thresholds`. |
-| `report.ts` | Markdown rendering. |
+| `report.ts` | Markdown rendering, with a map table when the resolver has a map. |
 | `fixtures/broken-pair/` | A mini resolver whose `color.text.secondary` fails on `color.bg.page`. |
+| `fixtures/broken-tint-on-map/` | ADR-0030 §1.8: `text.critical` on `bg.tint.critical` over `color.map.road` without the page underlay fails in dark (4.04:1); with it, 5.76:1 passes. |
 
 ### 3.3 `tools/fonts/` (P1-8)
 
@@ -344,7 +346,8 @@ export interface IRGradient {
   readonly angle: number | null;                                 // app.prism.angle (degrees)
   readonly grain: number | null;                                 // app.prism.grain
   readonly scheme: 'light' | 'dark' | null;                      // app.prism.scheme
-  readonly bloom: { readonly alpha: number; readonly blur: number | null } | null;
+  readonly temperature: 'warm' | 'cool' | null;                  // app.prism.temperature (ADR-0029 §2.4)
+  readonly bloom: { readonly alpha: number; readonly blur: number | null } | null;   // the bloom color is derived (§7.9)
 }
 export type TextStyleName = 'largeTitle' | 'title' | 'title2' | 'title3' | 'headline' | 'body'
   | 'callout' | 'subheadline' | 'footnote' | 'caption' | 'caption2';
@@ -464,7 +467,7 @@ IR invariants, checked by `ir/bundle.ts` after the loop:
 
 ### 5.2 Enumeration (`resolver.ts`)
 
-- `enumerate(model, filter?)`: Cartesian product over the modifiers in `resolutionOrder` order, contexts in declaration order. The real resolver gives 2 · 3 · 6 · 3 · 2 · 2 = **432**, the same as Terrazzo's `listPermutations()` *(verified)*.
+- `enumerate(model, filter?)`: Cartesian product over the modifiers in `resolutionOrder` order, contexts in declaration order. The real resolver gives 2 · 3 · 6 · 4 · 2 · 2 = **576** (432 before P1-9 added the `watch` density), the same as Terrazzo's `listPermutations()` *(verified)*.
 - `permKey(model, input)`: `name=context` pairs joined by `|`, in the same modifier order. The key is the cache and snapshot key.
 - `filter: Partial<Record<ModifierName, readonly ContextName[]>>` narrows the product (tests, `--only`, contrast).
 
@@ -505,7 +508,7 @@ Using the declaring document's group type, never the merged tree's, keeps a grou
 | `slot`, `numeric`, `textStyle`, `darkWeight` | `IRTypography` | Declared on `ref.type.*` roles only (ADR-0021 §4); `darkWeight` feeds §5.5's weight rule and is never emitted. |
 | `opsz` | `IRFontFamily` | Native preset `ref.font.display` → `sys.font.display`. |
 | `flag` | `IRNumber.flag` | On every declaration of the id (ADR-0024 §4.2). |
-| `angle`, `grain`, `scheme`, `bloom` on gradients | `IRGradient` | Needed for `sys.gradient.vivid.*` aliases (S6). |
+| `angle`, `grain`, `scheme`, `temperature`, `bloom` on gradients | `IRGradient` | Needed for `sys.gradient.vivid.*` aliases (S6). `temperature` (`warm` or `cool`, ADR-0029 §2.4) feeds `gradient/slot-temperature` (§5.7 item 11); the `app.prism` schema requires it on every gradient that declares `scheme`. |
 | `alpha` | `IRColor.alpha` | Declared only on a whole-value `sys` color alias with an opaque target; replaces the alpha of the resolved target; the one key exempt from `extension/alias-override` (ADR-0024 §4.1 as amended by ADR-0020 §3; `color/alpha-target`). |
 
 An **alias** is a token whose whole `$value` is one curly-brace reference; a composite whose sub-values reference other tokens is a literal (every `ref.type.*` role is one). An alias never declares a folded key: `extension/alias-override` rejects it, the only code for the rule (ADR-0024 §4.1; ADR-0023 §4 applies it to springs and ADR-0021 §4 to the typography keys). `alpha` is the exception, declared only on aliases and invalid on a literal. Not folded: metadata (`a11y`, `figma`, `llm`, `brand`), which stays on its token. `$extensions["app.prism"]` carries no material keys (ADR-0022 §2.4).
@@ -534,20 +537,23 @@ Each check has a `fixtures/broken/<code>/` case (§14, P1-3). The ownership tabl
 | Check | Rule | Today |
 |-------|------|-------|
 | Write-set disjointness | `W(M)` = union of ids declared by every source of every context of modifier `M`; `W(M1) ∩ W(M2) = ∅` for `M1 ≠ M2`. Same definition as Terrazzo's `isResolverOrthogonal`. Sets are not modifiers: they may declare invariant ids anywhere. | passes after S1 *(verified)* |
-| Ownership | Every id in `W(M)` matches `config.OWNERSHIP[M]`: brand `config.BRAND_OVERRIDABLE` (ADR-0020 §1, narrowing `ref.**`; `brand/not-overridable`); platform `sys.font.**`; colorScheme `sys.color.**`, `sys.material.**`, `sys.shadow.**`, `sys.elevation.**`, `sys.gradient.**`; density `sys.space.**`, `sys.size.**` except `sys.size.hit` (no `sys.type` id, ADR-0021 §6); modality `sys.size.hit`, `sys.interaction.**`; motion `sys.motion.**`. Token types may repeat across modifiers; orthogonality is defined on ids (ADR-0024 §9.1). | fails until S15, S16 |
+| Ownership | Every id in `W(M)` matches `config.OWNERSHIP[M]`: brand `config.BRAND_OVERRIDABLE` (ADR-0020 §1, narrowing `ref.**`; `brand/not-overridable`); platform `sys.font.**` and `sys.type.metric.xl` (ADR-0030 §7.2); colorScheme `sys.color.**`, `sys.material.**`, `sys.shadow.**`, `sys.elevation.**`, `sys.gradient.**`; density `sys.space.**`, `sys.size.**` except `sys.size.hit` (no `sys.type` id, ADR-0021 §6); modality `sys.size.hit`, `sys.interaction.**`; motion `sys.motion.**`. Token types may repeat across modifiers; orthogonality is defined on ids (ADR-0024 §9.1). | fails until S15, S16 |
 | Context completeness | Within one modifier, every context declares the same set of ids (the union of its sources), except the `brand` modifier, whose contexts are sparse overrides of the ref set (ADR-0020 rule 8); IR invariant 1 covers it. | fails: S3, S4 *(verified)* |
 | Brand paths | Every id a brand context declares is declared by the `ref` set (`brand/unknown-path`) and matches `BRAND_OVERRIDABLE` (`brand/not-overridable`). | fails: S8 *(verified)* |
 | Brand registration | Every `brands/<name>/` folder is a `brand` context and back; a brand's `extends` equals its context's parent layering (`brand/registration`). | passes |
 | Brand values | A brand's literal colors are opaque; its series aliases target a step of its own neutral or accent ramp; `ref.type.scale` is positive; an overridden gradient keeps its `app.prism.scheme` (`brand/value`); `ref.radius.1`–`10` never decrease (`brand/radius-order`). | passes |
 | Semantic slots | Each `ref.color.slot.<scheme>.<name>` is a whole-value alias, without `alpha`, of a step of the group ADR-0020 §2 names (`slot/target`); exactly the `sys` id its name encodes aliases it, in that scheme's base file (`slot/mapping`). | fails until S9 |
-| Sys literals | For every declaration in `tokens/sys/**` and every `sys.*` id wherever it is declared (another tier's file, an inline resolver source), so that a hue comes only from `ref`: every color value (whole token or composite sub-value) is a whole-value alias of a `ref.color.*` or `sys.color.*` token (`config.SYS_COLOR_ALIAS_TARGETS`), such an alias with `app.prism.alpha`, or a pure white or black sRGB literal; every `fontFamily` value aliases `ref.font.*` or `sys.font.*`; every `gradient` token and every `sys.radius.*` token is a whole-value alias; other values may be literals (`sys/literal`, ADR-0020 §3). ADR-0020 rule 5 says only "an alias"; its §3 decision text names the two target groups, and §3 is what the check enforces. Every `sys` typography token is an alias of a `ref.type.*` role (IR invariant 6). | fails until S13 |
+| Sys literals | For every declaration in `tokens/sys/**` and every `sys.*` id wherever it is declared (another tier's file, an inline resolver source), so that a hue comes only from `ref`: every color value (whole token or composite sub-value) is a whole-value alias of a `ref.color.*`, `sys.color.*` or `sys.material.glass.*` token (`config.SYS_COLOR_ALIAS_TARGETS`; the last for a role recipe's `$root`, ADR-0029 §1.2), such an alias with `app.prism.alpha`, or a pure white or black sRGB literal; every `fontFamily` value aliases `ref.font.*` or `sys.font.*`; every `gradient` token and every `sys.radius.*` token is a whole-value alias; other values may be literals (`sys/literal`, ADR-0020 §3). ADR-0020 rule 5 says only "an alias"; its §3 decision text names the two target groups, and §3 is what the check enforces. Every `sys` typography token is an alias of a `ref.type.*` role (IR invariant 6). | fails until S13 |
 | Alpha target | `app.prism.alpha` sits only on a `sys` color token declared in `tokens/sys/**` that is a whole-value alias of an opaque color, never on a `ref` or `comp` token (`color/alpha-target`, ADR-0020 §3). | passes |
 | Font stacks | Web stacks hold only families the brand's own `brand.json` serves on the web plus CSS generic keywords (`font/web-stack`); each Apple face is one family bundled on Apple or one system keyword (`font/apple-face`); `preset` matches the faces and stacks (`font/preset`) (ADR-0020 §5). | fails until S12 |
 | Folded keys on aliases | An alias declares no folded key except `alpha` (`extension/alias-override`, ADR-0024 §4.1). | passes |
 | Spring declarations | Every token with `app.prism.spring` is a `transition` token with a literal `$value` whose `timingFunction` aliases a `ref.motion.easing.*` token (`spring/fallback`, ADR-0023 §1). | passes |
 | Typography roles | Standard weights are 300, 400 or 500, and `darkWeight` is 100 or 200 on `ref.type.metric.*` only (`type/weight-ladder`); every `ref.type.*` role declares `slot`, `numeric` and `textStyle` (`type/role-metadata`); no typography value and no `fontWeight` token outside `ref.type.*` has a literal weight below 400 (`type/weight-outside-role`); `ref.type.scale` lies in [1, 1.25] in the ref source and every brand context (`type/scale-range`) (ADR-0021). | fails until S11, S14 |
 | Material writes | No source of an `*-increased-contrast` or `*-reduced-transparency` context other than its base scheme file, and no `platform` source, declares an id under `sys.material` (`material/variant-write`, ADR-0022 §1.4). | fails until S16 |
-| Recipe shape | Every id under `sys.material.glass` except `scrim` belongs to a group of exactly `$root` (color), `blur` (dimension, whole-value alias of `ref.blur.*`), `saturate` (number ≥ 0), `edge.start`, `edge.end`, `grain`, `bloom` (numbers in [0, 1]), each with its own `$type`, in both base scheme files (`material/recipe-shape`, ADR-0022 §2.1). | fails until S17 |
+| Recipe shape | Every id under `sys.material.glass` except `scrim` belongs to a group of exactly `$root` (color), `blur` (dimension, whole-value alias of `ref.blur.*`), `saturate` (number ≥ 0), `edge.start`, `edge.end`, `grain`, `bloom` (numbers in [0, 1]), each with its own `$type`, in both base scheme files (`material/recipe-shape`, ADR-0022 §2.1). The fields of a role recipe (`config.GLASS_ROLE_RECIPES`: `fill`, `chip`) are aliases, so their values are the next row's; their `$root` takes its type from its alias, because DTCG's reference pattern rejects `{….$root}` in a typed color token (§16.3). | fails until S17 |
+| Role recipes | In each base scheme file, every field of `sys.material.glass.<role>` is a whole-value alias, without `app.prism.alpha`, of the same field of `sys.material.glass.<scheme>.<role>`: the light recipes in light, the smoked ones in dark (`material/role-recipe`, ADR-0029 §1.2, rule 1). | passes (P1-9) |
+| Neutral smoke | Every `ref.color.smoke.*` declaration has OKLCH chroma ≤ `config.SMOKE_MAX_CHROMA` (0.007), computed with Color.js from the authored color (`color/smoke-chroma`, ADR-0029 §1.1, rule 3). | passes (P1-9) |
+| Edge colors | Every `sys.color.edge.*` declaration is a whole-value alias of `ref.color.neutral.0`, with or without `app.prism.alpha` (`color/edge-neutral`, ADR-0030 §4.1, rule 4). | passes (P1-9) |
 | Names and references | Token and group names are kebab-case (`source/name-case`); no JSON Pointer `$ref` in a token value (`ref/json-pointer`); no resolver source under `tokens/export/` (`source/export-path`) (ADR-0024 §1, §2, §11). | fails until S7 |
 | Group types | A token without its own `$type` agrees with every group `$type` on its path in every document (`type/group-type-mismatch`, §5.4); the same group path never carries two `$type`s (`source/group-type-conflict`). | passes *(verified)* |
 | Group deprecation | The counterpart for `$deprecated`: a token without its own `$deprecated` agrees with every `$deprecated` that any loaded document declares on the nearest group of its path that carries one; otherwise the token restates `$deprecated` (`source/group-deprecated-mismatch`, §5.3). | passes (no group is deprecated) |
@@ -564,12 +570,13 @@ Per scope (brand × platform), over the full product of runtime contexts:
 2. **At most one runtime axis per token.** `|axes(t)| > 1` is an error listing the alias chain, with the hint "split the token or introduce an alias". Today there are none *(verified)*.
 3. **Exhaustive composition proof.** For every permutation `p` of the scope and every token: `value(p) == base ⊕ Δ(colorScheme = p.colorScheme) ⊕ Δ(density = p.density) ⊕ Δ(modality = p.modality) ⊕ Δ(motion = p.motion)`, where `Δ` is the single-axis variation. A failure is an interaction that the axis test cannot see (for example an alias re-pointed by one modifier to a token another modifier changes). Today: 432 permutations, 170,856 comparisons, 0 failures *(verified: prototype, under 1 s naive)*.
 4. **Variant disjointness.** For each base scheme `s`: `ΔIC(s)` = ids whose value differs between `s` and `s-increased-contrast`, `ΔRT(s)` likewise; `ΔIC(s) ∩ ΔRT(s) = ∅`. This makes "increased contrast and reduced transparency together", which is not a resolver context, well-defined as `s ⊕ ΔIC(s) ⊕ ΔRT(s)` for CSS, Swift and TS. Before P1-2: light 20 / 7, dark 18 / 7, overlap 0 *(verified)*; after ADR-0022, ΔRT is empty in both schemes.
-5. **Platform invariance (Swift).** Tokens may differ between `apple` and `watch` only if they are not colors; a differing color is an error (the catalog has one `watch` entry per colorset, §9.8). After ADR-0022 no token differs between apple and watch; the watch glass rule lives in DSCore (ADR-0022 §1.2).
+5. **Platform invariance (Swift).** Tokens may differ between `apple` and `watch` only if they are not colors; a differing color is an error (the catalog has one `watch` entry per colorset, §9.8). After ADR-0022 and P1-9 only `sys.type.metric.xl` (40 px on the watch, ADR-0030 §7.2) differs between apple and watch; the watch glass rule lives in DSCore (ADR-0022 §1.2).
 6. **Brand invariance.** `motion.css` and `tailwind.css` must be identical when rendered for each brand; `manifest.json` is built once, with `dependsOn` as the union over brands. Generated API shapes (Swift members, reduced-transparency twins, TS entries) use the union of dependencies over brands, so every brand has the same API. Values may differ by brand only through `BRAND_OVERRIDABLE` ids, which the source checks guarantee; Swift emits them per brand (§9.7, ADR-0020 §6–§7). A new brand can only widen a shape, which `tokens:diff` reports as `axes-changed`.
 7. **Web text invariant.** A CSS declaration whose *literal text* depends on a runtime axis may depend on only that axis (checked per rendered declaration in `formats/css/model.ts`).
 8. **Typography (ADR-0021).** A resolved weight below 300 occurs only on a `type.metric.*` role (or an alias of one) with `fontSize` ≥ 34 px after the type scale, in the `dark` and `dark-reduced-transparency` contexts (`type/thin-weight`); weight 300 occurs only at ≥ 20 px (`type/light-weight`); every typography weight is ≥ 400 in every `*-increased-contrast` permutation (the Increase Contrast floor); for every role, the default brand's Apple face for the role's slot has an exact named instance at every `fontWeight` and `boldWeight` the rule produces (`type/weight-instance`, against `brand.json` `postscript`). Refresh the F12 counts after P1-1: four roles gain a colorScheme dependence.
 9. **Motion policy (ADR-0023 §8.3).** Per scope, compare the `default` and `reduced` motion contexts at the scope's other defaults, over `sys` and `comp` tokens only (`ref` does not vary by context). In `reduced`: every token with a spring has bounce 0, a duration ≤ min(its default duration, 0.30 s) and a settle ≤ its default settle; every token of type `duration` is ≤ min(its default, 150 ms) (spring fallback durations are transitions and are bounded by the settle clause). `sys.motion.presentation.crossfade` is 0 in `default` and 1 in `reduced`. `sys.motion.spring.interactive` and every `sys.motion.easing.*` are identical in both contexts. A violation is a `motion/reduced-policy` error naming the token and the field. Passes once P1-2 lands ADR-0023's data.
 10. **Gradient schemes.** In every permutation whose base scheme is S, each `sys.gradient.*` token resolves to a gradient whose `app.prism.scheme` is S (`gradient/scheme-mismatch`, ADR-0024 §6: ADR-0022's `gradient/default-scheme` widened to every `sys.gradient.*` token, one check with one code, which ADR-0020 rule 3 runs per brand).
+11. **Slot temperatures.** In every permutation, `sys.gradient.vivid.1` and `.2` resolve to gradients of one declared `temperature`, and so do `.3` and `.4` (`config.GRADIENT_SLOT_PAIRS`; `gradient/slot-temperature`, ADR-0029 §2.5, rule 5), per brand, so a vivid 2×2 that alternates one pair on its diagonals is one temperature. A slot gradient without a temperature fails too.
 
 ### 5.8 Deletion plan (SD native resolver, #1590)
 
@@ -621,10 +628,10 @@ Why each setting:
 - **One transitive transform.** SD applies a non-transitive value transform only to tokens whose original value contains no reference, so composites with an aliased sub-value (every `ref.type.*` role, whose `fontFamily` is `{ref.font.*}`) would never be transformed. A transitive transform runs once per token after resolution and receives already-transformed sub-values and targets *(verified: `lib/transform/token.js`; probe: the typography transform saw `fontFamily` as the target's transformed value; 170,856 transform calls for 432 × ~395 tokens)*.
 - **Plain data only.** `transformToken` begins with `structuredClone(token)`, so class instances returned by a transform reach alias tokens as plain `Object`s and `instanceof` markers fail *(verified: an alias received `{ v: … }` with prototype `Object` and was wrapped again)*. `IRValue`s are plain objects with a `kind` field; idempotency tests `kind`.
 - **Strictly sequential runs.** `GroupMessages` is a module singleton (`export default new GroupMessages()`), so concurrent instances in one process would mix messages *(verified)*. `resolveTokens` enforces the order for every caller, not only inside one build: it queues each run behind the previous one, so two overlapping `collectBundle` calls (`tokens:diff` builds two bundles in one process, §11) each get their own result *(verified: P1-3 review; without the queue, a valid build overlapped with a broken one failed with the other's reference error)*. Parallelism, if ever needed, uses `worker_threads` with one SD per worker.
-- **One run per document stack.** `ir/bundle.ts` splits `runPermutation` into `resolveTokens` (the SD run) and `finishPermutation` (`engine/to-ir.ts`) and keys SD's output by the permutation's document stack (the files `layersFor` applies, in order). Permutations with the same stack merge to the same tree, so they share one run: `watch` = [apple] and each reduced-transparency context = its base file make 192 runs for the 432 permutations today. The IR is still built per permutation, with its own key and input and the weight rule of its colorScheme context (§5.5); each permutation's IR equals a direct `runPermutation` *(verified: P1-3 review)*. A run that throws caches nothing usable: its permutation's diagnostics are recorded once and every permutation with that stack fails.
+- **One run per document stack.** `ir/bundle.ts` splits `runPermutation` into `resolveTokens` (the SD run) and `finishPermutation` (`engine/to-ir.ts`) and keys SD's output by the permutation's document stack (the files `layersFor` applies, in order). Permutations with the same stack merge to the same tree, so they share one run: each reduced-transparency context = its base file makes 384 runs for the 576 permutations today (before P1-9, `watch` = [apple] also shared, 192 runs for 432). The IR is still built per permutation, with its own key and input and the weight rule of its colorScheme context (§5.5); each permutation's IR equals a direct `runPermutation` *(verified: P1-3 review)*. A run that throws caches nothing usable: its permutation's diagnostics are recorded once and every permutation with that stack fails.
 - **What Prism does not use:** SD's `include`/`source` merge (property-level merge of object values), `expand`, built-in transforms and formats (on 2025.10 shapes they print `[object Object]` for durations, transitions and gradients, and hex or `rgba()` for colors; observed by the SD-maximal probe), `name/kebab` (it turns `$root` into a `-root` suffix *(verified)*).
 
-Cost: 432 instances with a minimal normalizer take 2.8 s (6.5 ms each), 95 unique colors, 408 MB RSS with every IR retained *(verified: prototype)*; the IR-first probe measured 4.2 s with a fuller normalizer. The stack cache above cuts the instances to 192.
+Cost: 432 instances with a minimal normalizer take 2.8 s (6.5 ms each), 95 unique colors, 408 MB RSS with every IR retained *(verified: prototype)*; the IR-first probe measured 4.2 s with a fuller normalizer. The stack cache above cuts the instances to 384 (576 permutations, P1-9).
 
 ---
 
@@ -752,7 +759,7 @@ CSS: per layer `[inset ]<offsetX> <offsetY> <blur> <spread> <color>`, layers joi
 
 ### 7.9 Gradient
 
-CSS `linear-gradient(<angle ?? 180>deg in oklab, <color> <position·100>%, …)`; stops that alias emitted colors become `var()`; a literal out-of-sRGB stop adds a P3 twin of the whole declaration. Gradients also emit the derived declarations `-grain`, `-bloom-alpha` and `-bloom-blur` (px), with the neutral values `0`, `0` and `0px` when absent (ADR-0024 §6: grain belongs to the bound gradient). Swift `DSGradientToken(stops: [DSGradientStop(color:location:)], angle:, grain:, scheme:, bloomAlpha:, bloomBlur:)`; DSCore draws the gradient line with CSS angle semantics for the surface's size (ADR-0022 §4.1). TS `{ css, stops, angle, grain, scheme, bloom }`. Tokens Studio: `color` token with the `linear-gradient(…)` string, without an interpolation method (the flavor is informative, and design tools draw gradients in their own space).
+CSS `linear-gradient(<angle ?? 180>deg in oklab, <color> <position·100>%, …)`; stops that alias emitted colors become `var()`; a literal out-of-sRGB stop adds a P3 twin of the whole declaration. Gradients also emit the derived declarations `-grain`, `-bloom-alpha`, `-bloom-blur` (px) and `-bloom-color`, with the neutral values `0`, `0` and `0px` when absent (ADR-0024 §6: grain belongs to the bound gradient). The bloom color is derived, never authored (ADR-0030 §4.3): the stop of highest WCAG relative luminance of its gamut-mapped sRGB color, the later stop on a tie (`transforms/gradient.ts` `bloomStopIndex`), rendered like any color (a P3 twin when it lies outside sRGB); the bloom blur is the value both stacks pass to their blur (75 on every reference gradient). Swift `DSGradientToken(stops: [DSGradientStop(color:location:)], angle:, grain:, scheme:, bloomAlpha:, bloomBlur:, bloomColor:)`; DSCore draws the gradient line with CSS angle semantics for the surface's size (ADR-0022 §4.1). TS `{ css, stops, angle, grain, scheme, bloom: { alpha, blur, color } | null }`. The folded `temperature` is a review key for `gradient/slot-temperature` and is not emitted. Tokens Studio: `color` token with the `linear-gradient(…)` string, without an interpolation method (the flavor is informative, and design tools draw gradients in their own space).
 
 Interpolation (ADR-0022 §4.1 left it to P1-5; decided 2026-09-15, §16.3): **both stacks interpolate every gradient in OKLab.**
 
@@ -796,7 +803,7 @@ From the id segments with `$root` dropped:
 |------|------|----------|
 | Public path (specs, contrast pairs, TS keys, manifest, diff) | `sys.` dropped; `ref.` and `comp.` kept | `sys.color.bg.surface.$root` → `color.bg.surface`; `comp.button.primary.bg.rest`; `ref.color.neutral.100` |
 | CSS custom property | `--ds-` + kebab of the segments; `sys` drops its prefix, `comp` drops `comp` (keeps the component), `ref` keeps `ref-`; camelCase segments become kebab | `--ds-color-bg-surface`, `--ds-button-primary-bg-rest`, `--ds-ref-color-neutral-100` |
-| CSS derived declaration | base name + suffix: typography `-font-family`, `-font-size`, `-font-weight`, `-line-height`, `-letter-spacing`, `-font-variant-numeric`; transition `-duration`, `-easing`, `-delay`; stroke `-dasharray`, `-linecap`; gradient `-grain`, `-bloom-alpha`, `-bloom-blur`. Glass recipe fields are tokens of their own, not suffixes (`--ds-material-glass-dark-fill-blur`, ADR-0022) | `--ds-ref-type-body-md-font-size` |
+| CSS derived declaration | base name + suffix: typography `-font-family`, `-font-size`, `-font-weight`, `-line-height`, `-letter-spacing`, `-font-variant-numeric`; transition `-duration`, `-easing`, `-delay`; stroke `-dasharray`, `-linecap`; gradient `-grain`, `-bloom-alpha`, `-bloom-blur`, `-bloom-color`. Glass recipe fields are tokens of their own, not suffixes (`--ds-material-glass-dark-fill-blur`, ADR-0022) | `--ds-ref-type-body-md-font-size` |
 | Tailwind theme variable | namespace per category (§9.4) + `ds-` + kebab of the rest | `--background-color-ds-page` → `bg-ds-page` |
 | TS key | the public path | `'color.bg.page'`, `'comp.button.radius'` |
 | Swift category | first public-path segment through `config.SWIFT_CATEGORIES`: `color` → `DSColor` as an instance (`DSTokenSet.color`, or `DSColor(brand:transparency:)`; ADR-0020 §7), `material` → `material`, `border` → `border`, `shadow` → `shadow`, `elevation` → `elevation`, `space` → `space`, `size` → `size`, `radius` → `radius`, `type` → `typography`, `font` → `DSBrand` faces, `motion` → `motion`, `gradient` → `gradient`, `opacity` → `opacity`, `z` → `zIndex`, `icon` → `icon`, `chart` → `chart`, `stroke` → `stroke`, `interaction` → `interaction`; `comp.<c>` → `components.<c>`. An unknown category is a build error. | |
@@ -838,16 +845,16 @@ One table in `config.ts` drives CSS, the Tailwind variants, `tokens.ts`, `runtim
 | colorScheme | `data-ds-color-scheme` | `light`, `dark` | base scheme of `colorScheme` / `DSColorScheme` | `<html>` and any element | `(prefers-color-scheme: dark)` → `dark` |
 | contrast | `data-ds-contrast` | `standard`, `more` | `-increased-contrast` variant / `DSContrast.increased` | `<html>` only | `(prefers-contrast: more)` → `more` |
 | transparency | `data-ds-transparency` | `standard`, `reduce` | `-reduced-transparency` variant / `DSTransparency.reduced` | `<html>` only | `(prefers-reduced-transparency: reduce)` → `reduce`; Safari and iOS Safari lack the feature, and nothing stands in for it (ADR-0019 §4 item 3) |
-| density | `data-ds-density` | `compact`, `regular`, `comfortable` | `density` / `DSDensity` | `<html>` and any element | `(any-pointer: coarse)` → `regular` |
+| density | `data-ds-density` | `compact`, `regular`, `comfortable`, `watch` | `density` / `DSDensity` | `<html>` and any element | `(any-pointer: coarse)` → `regular` |
 | modality | `data-ds-modality` | `pointer`, `touch` | `modality` / `DSModality` | `<html>` only | `not all and (hover: hover) and (pointer: fine)` → `touch` |
 | motion | `data-ds-motion` | `standard`, `reduce` | `motion` contexts `default`, `reduced` / `DSMotionMode` | `<html>` only (`motion.css`) | `(prefers-reduced-motion: reduce)` → `reduce` |
 | gamut | — | — | — | — | `@media (color-gamut: p3)` twins |
 | brand | none, per ADR-0020: one `tokens.css` per brand, a document loads one brand, and switching replaces the stylesheet | — | `brand` / `DSBrand` | build time on the web | — |
 | platform | none: always `web` on the web | — | `platform` | build time | — |
 
-Only a listed value counts. An absent, empty or unknown value behaves like no attribute: the media fallback applies at `<html>`, and a nested element inherits. Fallback selectors therefore list every valid value, e.g. `:root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"])`, and never use `:not([attr])`. `:not()` counts as its most specific argument, so the specificities below do not change. Any valid value, including the default, turns off its axis's fallback. Recorded in ADR-0019, which amends ADR-0003, ADR-0004 and ADR-0010.
+Only a listed value counts. An absent, empty or unknown value behaves like no attribute: the media fallback applies at `<html>`, and a nested element inherits. Fallback selectors therefore list every valid value, e.g. `:root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"], [data-ds-density="watch"])`, and never use `:not([attr])`. `:not()` counts as its most specific argument, so the specificities below do not change. Any valid value, including the default, turns off its axis's fallback. Recorded in ADR-0019, which amends ADR-0003, ADR-0004 and ADR-0010.
 
-The resolver default is the web root when no attribute is set and no fallback query matches: `colorScheme: light`, `density: compact`, `modality: pointer`, `motion: default`, no contrast or transparency variant (`resolver/web-default-mismatch`, §5.1). Apps start from the per-platform defaults instead (`PLATFORM_DEFAULTS`, ADR-0019 §2): web compact + pointer (regular while any input is coarse, touch while the primary input cannot hover and point finely); iOS and iPadOS regular + touch (iPadOS pointer while a mouse or trackpad is connected); macOS compact + pointer; watchOS comfortable + touch + dark.
+The resolver default is the web root when no attribute is set and no fallback query matches: `colorScheme: light`, `density: compact`, `modality: pointer`, `motion: default`, no contrast or transparency variant (`resolver/web-default-mismatch`, §5.1). Apps start from the per-platform defaults instead (`PLATFORM_DEFAULTS`, ADR-0019 §2): web compact + pointer (regular while any input is coarse, touch while the primary input cannot hover and point finely); iOS and iPadOS regular + touch (iPadOS pointer while a mouse or trackpad is connected); macOS compact + pointer; watchOS watch + touch + dark (ADR-0029 §3.2).
 
 ### 9.2 `tokens.css` (`prism/css-variables-modes`), one per brand
 
@@ -863,7 +870,7 @@ Every token of the web scope renders to one or more declarations (base plus deri
 1. **Invariant** (text and value identical in every context) → `:root`.
 2. **Nestable axis `A`** (colorScheme, density) with contexts `c1` (default) … `cn`:
    - text differs between contexts → one block per context, each holding the context's text: default `:root, [data-ds-A="c1"]`; others `[data-ds-A="ck"]`; for colorScheme `dark` also `@media (prefers-color-scheme: dark) { :root:not([data-ds-color-scheme="light"], [data-ds-color-scheme="dark"]) }`. The default block comes first, because equal specificity is decided by source order.
-   - Density also gets a root fallback block right after its context blocks: `@media (any-pointer: coarse) { :root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"]) { <regular text> } }` (ADR-0019 §3). Text-identical aliases declared on `:root` re-evaluate there by themselves.
+   - Density also gets a root fallback block right after its context blocks: `@media (any-pointer: coarse) { :root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"], [data-ds-density="watch"]) { <regular text> } }` (ADR-0019 §3). Text-identical aliases declared on `:root` re-evaluate there by themselves.
    - text identical but value different (typically a `comp` or `sys` alias of a token that switches) → the **rescope block** `:root, [data-ds-A]`. A custom property inherits its computed value, so a nested `[data-ds-color-scheme="dark"]` element must redeclare the alias or it keeps the root's light result. An unknown value on a nested element sets no context block, so the redeclared alias resolves to the inherited value, as ADR-0019 §1 requires *(verified: ADR-0019 fact 3)*.
 3. **colorScheme variants.** For `v` in (increased contrast, reduced transparency) and base scheme `s`: declarations whose text in `s-v` differs from `s`, in four rule groups (flag attribute `F` = `data-ds-contrast="more"` or `data-ds-transparency="reduce"`; valid-value list `Fvalid` = `[data-ds-contrast="standard"], [data-ds-contrast="more"]` or `[data-ds-transparency="standard"], [data-ds-transparency="reduce"]`; scheme list `Svalid` = `[data-ds-color-scheme="light"], [data-ds-color-scheme="dark"]`; media `M` = `(prefers-contrast: more)` or `(prefers-reduced-transparency: reduce)`; scheme query `Q(s)`, the condition under which a root without a valid scheme attribute resolves to `s` (`web.ts` `mediaFor`): `Q(dark)` = `(prefers-color-scheme: dark)`, the colorScheme fallback query, and `Q(light)` = `not all and (prefers-color-scheme: dark)`, its negation, because light is the root whenever the dark query does not match (ADR-0019 §1), and the cascade simulator (§9.12) proves exactly that pairing):
    ```
@@ -1211,14 +1218,14 @@ export const webRuntime = {
   colorScheme:  { attribute: 'data-ds-color-scheme', values: ['light', 'dark'], nestable: true, media: { value: 'dark', query: '(prefers-color-scheme: dark)' } },
   contrast:     { attribute: 'data-ds-contrast', values: ['standard', 'more'], nestable: false, media: { value: 'more', query: '(prefers-contrast: more)' } },
   transparency: { attribute: 'data-ds-transparency', values: ['standard', 'reduce'], nestable: false, media: { value: 'reduce', query: '(prefers-reduced-transparency: reduce)' } },
-  density:      { attribute: 'data-ds-density', values: ['compact', 'regular', 'comfortable'], nestable: true, media: { value: 'regular', query: '(any-pointer: coarse)' } },
+  density:      { attribute: 'data-ds-density', values: ['compact', 'regular', 'comfortable', 'watch'], nestable: true, media: { value: 'regular', query: '(any-pointer: coarse)' } },
   modality:     { attribute: 'data-ds-modality', values: ['pointer', 'touch'], nestable: false, media: { value: 'touch', query: 'not all and (hover: hover) and (pointer: fine)' } },
   motion:       { attribute: 'data-ds-motion', values: ['standard', 'reduce'], nestable: false, media: { value: 'reduce', query: '(prefers-reduced-motion: reduce)' } },
 } as const;
 export type ColorScheme = 'light' | 'dark';
 export type Contrast = 'standard' | 'more';
 export type Transparency = 'standard' | 'reduce';
-export type Density = 'compact' | 'regular' | 'comfortable';
+export type Density = 'compact' | 'regular' | 'comfortable' | 'watch';
 export type Modality = 'pointer' | 'touch';
 export type Motion = 'standard' | 'reduce';
 export interface TokenContext {                 // no brand field: one brand per document (ADR-0020 §6)
@@ -1262,7 +1269,7 @@ export const table = {
     $value: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 } },
   'space.4': { $type: 'dimension', $cssVar: '--ds-space-4', $value: 12 },
   'space.card-padding': { $type: 'dimension', $cssVar: '--ds-space-card-padding', $axis: 'density',
-    $values: { compact: 16, regular: 24, comfortable: 24 } },
+    $values: { compact: 16, regular: 24, comfortable: 24, watch: 16 } },
   'interaction.hover': { $type: 'number', $cssVar: '--ds-interaction-hover', $axis: 'modality',
     $values: { pointer: true, touch: false } },                     // flag (S10)
   'motion.spring.snappy': { $type: 'transition', $cssVar: '--ds-motion-spring-snappy', $axis: 'motion', $values: {
@@ -1313,7 +1320,7 @@ Brand-invariant name map for agents, `tools/spec` (P2-1), `tools/parity` (P2-3) 
   },
   "platformDefaults": {
     "web": { "density": "compact", "modality": "pointer" },
-    "watchos": { "colorScheme": "dark", "density": "comfortable", "modality": "touch" }
+    "watchos": { "colorScheme": "dark", "density": "watch", "modality": "touch" }
   },
   "tokens": [
     { "path": "color.text.secondary", "id": "sys.color.text.secondary", "tier": "sys", "type": "color", "dependsOn": ["colorScheme"],
@@ -1338,7 +1345,7 @@ DSTokens stays nonisolated value code in Swift 6 mode (`Package.swift` `valueSet
 public enum DSColorScheme: String, CaseIterable, Hashable, Sendable { case light, dark }
 public enum DSContrast: String, CaseIterable, Hashable, Sendable { case standard, increased }
 public enum DSTransparency: String, CaseIterable, Hashable, Sendable { case standard, reduced }
-public enum DSDensity: String, CaseIterable, Hashable, Sendable { case compact, regular, comfortable }
+public enum DSDensity: String, CaseIterable, Hashable, Sendable { case compact, regular, comfortable, watch }
 public enum DSModality: String, CaseIterable, Hashable, Sendable { case pointer, touch }
 public enum DSMotionMode: String, CaseIterable, Hashable, Sendable { case standard, reduced }   // resolver "default" → .standard
 
@@ -1361,7 +1368,7 @@ public struct DSTokenContext: Hashable, Sendable {
     /// Where DSCore starts on this OS (ADR-0019 §2).
     public static let platformDefault: DSTokenContext = {
         #if os(watchOS)
-        DSTokenContext(colorScheme: .dark, density: .comfortable, modality: .touch)
+        DSTokenContext(colorScheme: .dark, density: .watch, modality: .touch)
         #elseif os(macOS)
         DSTokenContext(density: .compact, modality: .pointer)
         #else
@@ -1371,7 +1378,7 @@ public struct DSTokenContext: Hashable, Sendable {
 }
 ```
 
-Mapping to resolver inputs (`formats/swift/context.ts`): `brand` → the `brand` context; `(s, .standard, .standard)` → `s`; `(s, .increased, .standard)` → `s-increased-contrast`; `(s, .standard, .reduced)` → `s-reduced-transparency`; `(s, .increased, .reduced)` → `s ⊕ ΔIC(s) ⊕ ΔRT(s)` (§5.7). 96 contexts per brand. DSCore (P3-1) starts from `DSTokenContext.platformDefault`, sets `brand` from `DSTheme(brand:)`, then overlays `colorScheme` (not on watchOS), `colorSchemeContrast`, `accessibilityReduceTransparency` and `accessibilityReduceMotion` (through `DSAccessibilityPolicy`), plus `dsDensity` and `dsModality` (ADR-0019 §5), and caches one `DSTokenSet` per context. Bold Text is not a context field: DSCore reads `DSAccessibilityPolicy.boldText` and uses `DSTypeRole.boldWeight` (ADR-0021 §4).
+Mapping to resolver inputs (`formats/swift/context.ts`): `brand` → the `brand` context; `(s, .standard, .standard)` → `s`; `(s, .increased, .standard)` → `s-increased-contrast`; `(s, .standard, .reduced)` → `s-reduced-transparency`; `(s, .increased, .reduced)` → `s ⊕ ΔIC(s) ⊕ ΔRT(s)` (§5.7). 128 contexts per brand (96 before P1-9 added `DSDensity.watch`). DSCore (P3-1) starts from `DSTokenContext.platformDefault`, sets `brand` from `DSTheme(brand:)`, then overlays `colorScheme` (not on watchOS), `colorSchemeContrast`, `accessibilityReduceTransparency` and `accessibilityReduceMotion` (through `DSAccessibilityPolicy`), plus `dsDensity` and `dsModality` (ADR-0019 §5), and caches one `DSTokenSet` per context. Bold Text is not a context field: DSCore reads `DSAccessibilityPolicy.boldText` and uses `DSTypeRole.boldWeight` (ADR-0021 §4).
 
 #### 9.7.2 Value types (`DSTokenTypes.swift`, emitted from a template)
 
@@ -1401,6 +1408,7 @@ public struct DSGradientStop: Hashable, Sendable { public let color: DSRGBA; pub
 public struct DSGradientToken: Hashable, Sendable {
     public let stops: [DSGradientStop]; public let angle: Double; public let grain: Double   // angle: CSS semantics (ADR-0022 §4.1)
     public let scheme: DSColorScheme?; public let bloomAlpha: Double; public let bloomBlur: CGFloat
+    public let bloomColor: DSRGBA                  // derived: the brightest stop, the later one on a tie (ADR-0030 §4.3)
 }
 public enum DSFontSlot: String, CaseIterable, Hashable, Sendable { case ui, display, mono }
 public enum DSNumericSpacing: String, Hashable, Sendable { case proportional, tabular }
@@ -1629,6 +1637,7 @@ public enum DSBrand: String, CaseIterable, Hashable, Sendable {
 #### 9.7.6 Tests
 
 - `swift/Tests/DSTokensTests/Generated/GeneratedTokenTests.swift` (owned): one `#expect` per non-color member and context variation, generated **directly from the IR**, not from the table model, so a renderer bug in `DSTokenSet+*.swift` fails in Swift: `#expect(DSTokenSet(DSTokenContext(density: .compact)).space.cardPadding == 16)`. It covers the brand-dependent members for every brand, `weight` and `boldWeight` for every typography member and context (ADR-0021 rule 3), the `Spring.value` checkpoints of ADR-0023 §11 P4, and one expectation per OS for `platformDefault` (compact + pointer under `swift test` on macOS, regular + touch on the iOS simulator, comfortable + touch + dark on the watchOS simulator; ADR-0019 rule 12).
+- A generated test with more than `CHECKS_PER_PART` (48) checks calls private part functions (`prismTypeWeightsPart1()` …), one per chunk of a context: Swift Testing runs tests on secondary threads with 512 KiB stacks, and a debug build keeps a stack slot for every temporary, so one function with every check of a large group overflows (F44, P1-9). `swift.test.ts` checks the bound.
 - `swift/Tests/DSTokensTests/SpringParityTests.swift` (hand-written, P1-5) checks every `DSSpringToken` in `DSTokenSet(DSTokenContext(motion: m))` for both `m`: `stiffness` and `damping` equal `Spring(duration:bounce:)` within 1e-4 (absolute); `mass == 1`; and the last sample t = k × 0.1 ms (k integer, t ≤ 5 s) at which `Spring.value(target: 1, initialVelocity: 0, time:)` is at least 0.001 from 1 lies within 1 ms of `settle` (ADR-0023 §11, P1–P3). Neither this file nor `GeneratedTokenTests.swift` reads `Spring.settlingDuration` (0.635 s for snappy against the 0.487 s settle) *(verified)*.
 - `swift/Tests/DSTokensTests/ColorCatalogTests.swift` (hand-written, P1-5): skips unless `DSTokensBundle.bundle` contains `Assets.car` (`swift test` copies the catalog uncompiled *(verified)*). Under `xcodebuild test` it iterates brands × colorsets by `<namespace>/<name>`: on iOS, `UIColor(named:in:compatibleWith:)` **followed by `resolvedColor(with:)`** under light, dark, light + high contrast and dark + high contrast trait collections equals `appearances(brand)` within 0.002 (without `resolvedColor(with:)` the dynamic color reports the Any value) *(verified on the iOS 26.5 simulator)*; on watchOS, `Color(name, bundle:).resolve(in: EnvironmentValues())` equals `appearances(brand).watch` *(verified on the watchOS 26.5 simulator)*; the bare name without a namespace returns nil (ADR-0020 facts). Its macOS branch (Any and Dark) runs only in a local `xcodebuild test` on macOS: CI tests on the iOS and watchOS simulators, and a macOS step waits for P3 and V8.
 
@@ -1737,7 +1746,7 @@ swift/Sources/DSTokens/Resources/Colors.xcassets/
 
 ### 9.12 Self-verification (runs inside `tokens:build` and in tests)
 
-- `verify/css-cascade.ts` evaluates the `CssRule` model in a small cascade engine: selector matching for exactly the forms Prism emits (`:root`, attribute tests, `:not()` including a selector list, which counts as its most specific argument, descendant), specificity (each counts (0,1,0)), source order, one layer, inheritance of computed values, `var()` substitution, media and `@supports` conditions. For all 96 runtime combinations per brand (the 72 resolver permutations plus the 24 synthesized contrast + transparency combinations) in these scenarios the computed value of every custom property must equal the literal rendering of the IR:
+- `verify/css-cascade.ts` evaluates the `CssRule` model in a small cascade engine: selector matching for exactly the forms Prism emits (`:root`, attribute tests, `:not()` including a selector list, which counts as its most specific argument, descendant), specificity (each counts (0,1,0)), source order, one layer, inheritance of computed values, `var()` substitution, media and `@supports` conditions. For all 128 runtime combinations per brand (the 96 resolver permutations plus the 32 synthesized contrast + transparency combinations) in these scenarios the computed value of every custom property must equal the literal rendering of the IR:
   1. all preferences as root attributes;
   2. the same preferences through media features only;
   3. nested scheme scopes (light in dark, dark in light, depth 3) under contrast and transparency;
@@ -1746,7 +1755,7 @@ swift/Sources/DSTokens/Resources/Colors.xcassets/
   6. absent, empty and unknown attribute values on `<html>` and on nested elements (ADR-0019 rule 2);
   7. the density root fallback, with and without nested density scopes;
   8. `(any-pointer: coarse)` and `(hover: hover) and (pointer: fine)` as independent booleans (four combinations; ADR-0019 rule 5).
-- `verify/tables.ts` evaluates `resolveTokens` for all 96 web contexts per brand against the IR (the synthesized contrast + transparency contexts against `s ⊕ ΔIC ⊕ ΔRT`); `verifySwiftTables` (`formats/swift/model.ts`, run by the Swift format on every render) does the same for the Swift table model over all 96 contexts × {apple, watch} × brands.
+- `verify/tables.ts` evaluates `resolveTokens` for all 128 web contexts per brand against the IR (the synthesized contrast + transparency contexts against `s ⊕ ΔIC ⊕ ΔRT`); `verifySwiftTables` (`formats/swift/model.ts`, run by the Swift format on every render) does the same for the Swift table model over all 128 contexts × {apple, watch} × brands.
 - A snapshot test proves `render.ts` against the model; a real-browser check of the selector forms belongs to P3-4 VRT.
 - `guards.test.ts` gives every guard of `verify/` and of the formats that no other test drives a failing input (a crafted file, model, table or source overlay), so each check is shown to fire, not only to stay quiet on the repository.
 
@@ -1785,6 +1794,7 @@ export interface ContrastContext {
   readonly variant: 'none' | 'increasedContrast' | 'reducedTransparency';
   readonly permutation: PermKey;
   color(name: string): ResolvedColor;                                    // name via lookup; must resolve to exactly one color
+  colors(name: string): readonly ResolvedColor[];                        // name or glob: every color token it matches (P1-9, token backdrops)
   gradient(name: string): readonly { readonly id: string; readonly stops: readonly { readonly color: ResolvedColor; readonly position: number }[] }[];
 }
 /** brand × colorScheme (12 today) at platform=web and the other axes at defaults. Throws if any color used by the
@@ -1805,13 +1815,13 @@ export function hexToRgba(hex: string): Rgba;                          // for co
 1. For each context and pair, resolve `fg` and `bg` with `ctx.color()`.
 2. Background: if translucent, `flatten([color.bg.page, bg])`; `color.bg.page` must be opaque.
 3. Foreground: if translucent, `over(fg, bgFlat)`.
-4. `backdrops`: each entry is a hex color or a gradient glob. A glob expands to every stop of every matched gradient of the context's base scheme. For each backdrop, `bgFlat = flatten([backdrop, bg])`; every backdrop must pass (ADR-0022 §3.3: dark glass over #283126, #5B6366, #959595 and the scheme's vivid stops; light glass per scheme).
+4. `backdrops`: each entry is a hex color, a gradient glob or a token backdrop. A glob expands to every stop of every matched gradient of the context's base scheme, plus every V1 sample between stops. A token backdrop (P1-9, ADR-0030 §1.5) names color tokens by name or glob and, after ` over `, the opaque color they sit on: `color.map.land|block|building|road|road-casing|water|park over color.map.land` composites each map ground over the land; without ` over ` the named colors must be opaque. For each backdrop, `bgFlat = flatten([backdrop, bg])`; every backdrop must pass (ADR-0022 §3.3: dark glass over #283126, #5B6366, #959595 and the scheme's vivid stops; light glass per scheme; ADR-0029 §1.6: the scheme's glass over the map grounds as well). Vivid pairs and backdrops name `ref.gradient.vivid.*`, so a gradient outside the slots (ember-night) stays checked (ADR-0029 §2.6).
 5. Optional `schemes`: the base schemes (`light`, `dark`) in which the pair is evaluated, their contrast and transparency variants included.
-6. `bg: "gradient.vivid.*"` with `stops: "all"`: every stop plus 100 samples per segment, interpolated in gamma sRGB and in OKLab (ADR-0022 V1). With `region: "card-header"`: the minimum over ADR-0022's header block (x from p to W − p − a − 16, y from p to p + 64; W × H ∈ {166×166, 240×240, 320×200, 180×240}; (p, a) ∈ {(16, 32), (24, 40), (24, 48)}; t per visual-dna §5.1 rule 2 with CSS angle semantics), sampled the same way (V2). No text-safe zone exists; `stops: "text-zone"` is gone.
+6. `bg: "gradient.vivid.*"` with `stops: "all"`: every stop plus 100 samples per segment, interpolated in gamma sRGB and in OKLab (ADR-0022 V1). With `region: "card-header"`: the minimum over ADR-0022's header block (x from p to W − p − a − 16, y from p to p + 64; W × H ∈ {166×166, 240×240, 320×200, 180×240}; (p, a) ∈ {(16, 32), (24, 40), (24, 48), (16, 40)}, the last from the `watch` density, sixteen geometries; t per visual-dna §5.1 rule 2 with CSS angle semantics), sampled the same way (V2). No text-safe zone exists; `stops: "text-zone"` is gone.
 7. Threshold: `thresholds[tier]`; `functional` uses `functionalLarge` when `minSizePx ≥ 24`; `decorative` requires `minSizePx ≥ 24`.
 8. Output: a Markdown table (pair × context: ratio to two decimals, threshold, pass); exit 1 on any failure.
 
-The tool also checks that every `a11y.pairsWith` declared on a `sys.color.text.*` token appears in `contrast-pairs.json` (tokens README rule 4). It runs every pair for every brand in all six colorScheme contexts (ADR-0020 rule 10); the pairs ADR-0022 adds (§3.1 tone table on `raised`, glass, light glass, vivid and inverse; the §3.3 backdrop sets; V1 and V2) must exist before the gate opens, which is after P1-1 retunes the gradients and P1-2 the dark chips and cells.
+The tool also checks that every `a11y.pairsWith` declared on a `sys.color.text.*` token appears in `contrast-pairs.json` (tokens README rule 4), and (P1-9, `tools/contrast/map.ts`) that every map ground composited over `color.map.land` stays inside the backdrop limit of the glass on the map: OKLCH L ≥ 0.45 in light and ≤ 0.35 in dark (`map/backdrop-limit`, ADR-0030 §1.5), listed in the report's "Map backdrops" table; a resolver without `color.map.land` has no map. It runs every pair for every brand in all six colorScheme contexts (ADR-0020 rule 10); the pairs ADR-0022 adds (§3.1 tone table on `raised`, glass, light glass, vivid and inverse; the §3.3 backdrop sets; V1 and V2) must exist before the gate opens, which is after P1-1 retunes the gradients and P1-2 the dark chips and cells.
 
 ---
 
@@ -1899,11 +1909,11 @@ Rules:
 | Composition proof over 432 permutations | < 1 s naive *(verified)*; 147 ms optimized (output-first probe) |
 | Formats + cascade simulation + table evaluation | ~1 s (estimate) |
 | Writing ~100 colorsets, ~20 Swift files, ~7 web files, ~30 flavor files | < 0.3 s (estimate) |
-| **`tokens:build` total** | ~6 s locally, ~12 s on a 2-vCPU runner (estimate) |
+| **`tokens:build` total** | ~6 s locally, ~12 s on a 2-vCPU runner (estimate); after P1-9, 576 permutations in 384 runs, about 10 s locally (measured 2026-09-16) |
 | Peak memory | ~410 MB RSS with every IR held *(verified)*; drop each merged tree after its run and intern identical `IRToken` objects if it grows |
 | `tokens:diff` | two bundles, ~2× the build |
 
-Each new brand adds 216 permutations (about 1.4 s at 6.5 ms each). Beyond ~30 s in CI, move SD runs to `worker_threads` (one SD per worker; in-process concurrency is unsafe because of the `GroupMessages` singleton).
+Each new brand adds 288 permutations since P1-9 (216 before; about 1.9 s at 6.5 ms each). Beyond ~30 s in CI, move SD runs to `worker_threads` (one SD per worker; in-process concurrency is unsafe because of the `GroupMessages` singleton).
 
 ---
 
@@ -2049,6 +2059,19 @@ The token work below applies ADR-0019 to ADR-0024 to the source. Values not list
 - **Tests**: the bundled Onest, JetBrains Mono and Inter pass all six checks; a synthesized Latin-only font and a synthesized proportional-digit font without `tnum` fail; the 2 MiB `DSTokens` budget; `brand.json` schema errors are reported; the woff2 output is byte-identical across two builds.
 - **Acceptance** ("brand builds; font check passes; a Latin-only test font fails"): `tokens:build` passes with both brands (brand-path, dead-write, registration and font-stack checks); `fonts:check` passes on the three families and fails on the synthesized fonts; no generated file references a remote font; the stale check covers the new Swift font root and the web font files.
 
+### P1-9 — the direction-board sign-off (ADR-0029, ADR-0030; done 2026-09-16, token part)
+
+- **Tools**:
+  - `config.ts`: `BRAND_OVERRIDABLE` gains `ref.gradient.vivid.night-lagoon`; `OWNERSHIP.platform` = `sys.font.**` and `sys.type.metric.xl`; `WEB_RUNTIME.density` gains `watch` (value, context, Swift case) and `PLATFORM_DEFAULTS.watchos.density` becomes `watch`; `FOLDED_KEYS` and `EXTENSION_KEY_TYPES` gain `temperature`; `SYS_COLOR_ALIAS_TARGETS` gains `sys.material.glass.**`; new `GLASS_ROLE_RECIPES`, `SMOKE_PREFIX`/`SMOKE_MAX_CHROMA`, `EDGE_PREFIX`/`EDGE_TARGET` and `GRADIENT_SLOT_PAIRS`.
+  - `schema/app-prism.schema.json`: `temperature` ∈ {`warm`, `cool`}, required whenever `scheme` is declared (`dependencies`).
+  - `IRGradient.temperature` (folded, §5.4); source checks `material/role-recipe`, `color/smoke-chroma`, `color/edge-neutral` (§5.6) and the IR invariant `gradient/slot-temperature` (§5.7 item 11), each with a `fixtures/broken/<code>/` case; `sys-literal-alias-target` now aliases a color outside the three alias-target globs.
+  - Gradient renderers: the derived bloom color (§7.9): CSS `-bloom-color`, TS `bloom.color`, Swift `DSGradientToken.bloomColor`.
+  - Swift tests: the generated file splits every test above `CHECKS_PER_PART` (48) checks into part functions (§9.7.6).
+  - `tools/contrast`: token backdrops and `ContrastContext.colors` (§10), `map.ts` (`map/backdrop-limit` and the report's map table), the fixture `broken-tint-on-map` (text.critical on the critical tint over the map road without the page underlay: 4.04:1 fails; with it 5.76:1 passes), the light-tint composite test in `pairs.test.ts`.
+- **Tokens** (every value in ADR-0029 §1–§3 and ADR-0030 §1–§7): neutral smoke; sky, rose and olive chroma, navy-cyan positions 0.30 / 0.85, `night-lagoon`, `temperature` on the nine gradients, bloom blur 75 and dark bloom alpha 0.45; `ref.color.map.light|dark.water|park`, `ref.type.axis`, `ref.type.metric.xl-watch`, `metric.md` proportional; `ref.blur.bloom` and `ref.color.status.*.tint-light` deleted; the role recipes, the six `text.on-glass-fill*` tones, the scrim at 0.45, the slots (light sky, orchid, rose, olive; dark plum-dusk, navy-cyan, night-lagoon, forest-moss), `color.map.*`, `chart.on-media.*`, `chart.on-glass-fill.*`, light `chart.target` 0.60 (0.75 under Increase Contrast), `bg.fill.inverse-media`, `text.on-inverse-media`, `border.on-media`, `border.on-glass-fill`, `text.on-accent-secondary`, `color.edge.*`, `material.vivid.edge.*`, light `raised` = `neutral.50`, light tints = dot step at 0.12, gauge ratio 0.05, `sys.type.axis`, `sys.type.metric.xl` in the platform files with a new `sys/platform/watch.tokens.json`, compact page margin 24, the `watch` density file, Card glass on the role recipe, the ghost button's `bg.pressed` instead of `bg.rest`, the resolver's `watch` contexts and the pairs of ADR-0029 §1.6–§1.7 and ADR-0030 §1.6, §2.7 and §3.
+- **Tests**: 576 permutations (`repo.test.ts`, `lint-orthogonality.test.ts`, the non-orthogonal fixture resolver), 14 oracle inputs, 96 permutations per scope, 128 web and Swift contexts per brand, sixteen V2 geometries and nine reached gradients (`check.test.ts`), the four-value density fallback selector, the watch card padding in `ts-tokens.test.ts`, the watchOS `platformDefault` of `.watch` and the 40 px watch hero in `swift.test.ts`, 22 `type-ds-*` utilities, 12 Tokens Studio themes.
+- **Acceptance**: `tokens:validate`, `tokens:lint` (576), `tokens:normalize:check`, `tokens:build` and `tokens:check`, `contrast:check` (99 pairs, 1,038 evaluations in 12 contexts, every map ground inside its limit), `fonts:check`, every tools test, `swift build` and `swift test`, the generic iOS and watchOS builds, `verify-xcassets.sh` and the DSTokens tests on the iPhone 17 and Apple Watch Series 11 simulators. The board recopy and re-render, the ride report and the changeset are P1-9's other part (roadmap).
+
 ---
 
 ## 15. Verified library facts
@@ -2098,6 +2121,9 @@ Re-checked on 2026-09-15 (Node 24.21.0, Xcode 26.6). "Repo" means the versions `
 | F39 | Tokens Studio reads 8-digit hex as ARGB (`#40000000` is black at 25 %) and accepts `rgba(0,0,0,0.25)`; CSS reads 8-digit hex as RRGGBBAA. Figma's variable import example carries `alpha` and `hex`; whether it imports an alpha below 1 is not documented. | docs.tokens.studio; help.figma.com (ADR-0024 T8, T9). |
 | F40 | `semver.inc('0.1.0', 'major')` is `1.0.0`, and Changesets has no 0.x special case; `^0.1.0` excludes 0.2.0; SwiftPM's `from:` goes up to the next major. | semver probe; Changesets source (ADR-0024 T10). |
 | F41 | Style Dictionary 5.5.3 silently drops a token or group named `constructor`: `{ ref: { constructor: { x }, ok, g: { constructor } } }` resolves to `ref.ok` only, with no message. | SD probe (P1-3 review). |
+| F42 | `@terrazzo/parser` 2.7.1 `resolver.apply()` leaves a whole-value alias of a `number` token whose value is `0` unresolved: its `$value` stays the reference string (`{sys.material.glass.light.fill.bloom}`) while `aliasOf` names the target; an alias of any other number resolves. The oracle (`test-support.ts` `terrazzoValue`) follows `aliasOf` for such a value. `tz lint` reports nothing. | Parser probe on the P1-9 role recipes (2026-09-16). |
+| F43 | The DTCG 2025.10 `format.json` curly-brace reference pattern rejects a segment that starts with `$`, so `{sys.material.glass.light.fill.$root}` fails validation on a token with its own `$type: color`; an untyped alias is not checked against the pattern. | `tokens:validate` on the P1-9 role recipes (2026-09-16). |
+| F44 | SwiftPM with Xcode 27 builds into `.build/out/` through Swift Build; inside a File Provider-managed folder (`~/Documents`) the resource bundle's files carry `com.apple.provenance` and codesign fails ("resource fork, Finder information, or similar detritus not allowed"); `--scratch-path` outside that folder builds. A debug `DSTokensTests` whose generated test held about 350 checks in one function crashed with SIGBUS on Swift Testing's 512 KiB thread stack. | `swift build` and `swift test` on the P1-9 tree (2026-09-16). |
 
 The facts behind the other decisions of 2026-09-15 live in their ADRs: ADR-0019 facts 1–7 (media-feature support, the Chromium 152 probe of the valid-value selectors and pointer queries, Tailwind 4.3.3 `@variant` and `@utility`), ADR-0021 T1–T12 (the bundled font files, Core Text, Dynamic Type, Bold Text, line height), ADR-0022 F1–F17 (contrast probes of glass and vivid) and ADR-0023 M1–M11 (SwiftUI and Motion spring math; M6 and M8 refine F14 and F15 above). F12's counts describe the source before P1-1 and P1-2; refresh them after.
 
@@ -2186,5 +2212,12 @@ Follow-ups in files this design does not own (each lands with the ticket that ne
 - `tools/lint/literals.ts`: the `runtime`, `motion`, `typography`, `material` and `brand` kinds (P1-5, P1-4, P1-4, P3-1/P3-4, P3-1/P3-2).
 - `spec/component.schema.json` and the four slice specs: the P2-1 migration of ADR-0022, ADR-0023 and ADR-0024 (bindable categories with `stroke`, the `motion` binding pattern with `reduceMotion` required, `accessibility.reduceTransparency` and `reduceMotion` required, gradient slots, `selected` on Surface, material-keyed foregrounds, the Button bindings of S21).
 - `licenses/inventory.json` and `THIRD_PARTY_NOTICES.md`: the DTCG schema entry (P1-1) and Inter 4.1 (P1-8).
+- **P1-9 (2026-09-16), where the implementation departs from or adds to ADR-0029 and ADR-0030:**
+  - The role recipes' `$root` carries no `$type` of its own and takes `color` from its alias (DTCG's reference pattern rejects `{….$root}` in a typed token, F43), as the comp tokens that alias a `$root` already do; `material/recipe-shape` accepts that one untyped field and `material/role-recipe` checks its target. The other six role fields keep their own `$type`.
+  - `SYS_COLOR_ALIAS_TARGETS` gains `sys.material.glass.**` as ADR-0029 §1.2 says, so any sys color may alias a glass color, not only a role recipe's `$root`; the hue concern of ADR-0020 §3 is unaffected, because every glass color is itself a ref alias or pure white or black.
+  - The temperature requirement of ADR-0029 rule 5 is enforced by the `app.prism` schema through `dependencies: { scheme: [temperature] }`: a gradient that declares its scheme declares its temperature.
+  - Token backdrops (ADR-0030 §1.5) are written `<color name or glob> over <ground>`; the map pairs of ADR-0030 §1.6 put the label on each ground as `bg` with the land as an opaque token backdrop.
+  - Chart and map "white α" values that ADR-0030 writes as "white" are pure white sRGB literals with alpha (the dark scheme's convention); those it writes as `{ref.color.neutral.0}` (the chart line and reference on media, the edges, the inverse-media fill, the route casing and road in light) alias the brand's white.
+  - The generated Swift tests split into part functions of at most 48 checks (F44), so the file's test names are unchanged and the stack holds one part at a time.
 - `docs/roadmap.md` (P1-5): mark the Phase 1 critic follow-ups R-03 and gradient interpolation parity as decided by P1-5 (above). Add to P3-1 the OKLab gradient rendering and its check, V14: `.colorSpace(.perceptual)` or resampled stops, tested against the OKLab samples. Done 2026-09-15 (the P3-1 row and "Verify before implementing").
 - `docs/research/critic.md` §6 (P1-5): R-03's "Still open" note becomes "Decided by P1-5 (2026-09-15): components read catalog colors, checked under `xcodebuild` (ARCHITECTURE §9.7.3)". Done 2026-09-15.

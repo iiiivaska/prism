@@ -170,26 +170,26 @@
             "colorSpace": "oklch",
             "components": [
               0.1504,
-              0.0092,
-              128.7
+              0.007,
+              265.0
             ],
             "alpha": 1,
-            "hex": "#0a0c08"
+            "hex": "#0a0b0e"
           },
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$description": "smoked-glass tint, neutral (ADR-0029 §1.1); system-owned (ADR-0020)"
         },
         "dark": {
           "$value": {
             "colorSpace": "oklch",
             "components": [
               0.1853,
-              0.0102,
-              145.1
+              0.007,
+              265.0
             ],
             "alpha": 1,
-            "hex": "#101410"
+            "hex": "#111316"
           },
-          "$description": "smoked-glass tint; system-owned (ADR-0020)"
+          "$description": "smoked-glass tint, neutral (ADR-0029 §1.1); system-owned (ADR-0020)"
         }
       }
     }

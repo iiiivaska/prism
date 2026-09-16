@@ -56,7 +56,7 @@ describe('cssColor (prism/color/css-gamut)', () => {
 
   it('an alpha alias renders as a literal of its target with its own alpha, P3 twin included', () => {
     expect(cssColor(withAlpha(real('ref.color.accent.500'), 0.12))).toEqual({ base: 'oklch(0.7517 0.1475 57.6 / 0.12)', p3: null });
-    expect(cssColor(withAlpha(real('ref.color.smoke.light'), 0.55)).base).toBe('oklch(0.1504 0.0092 128.7 / 0.55)');
+    expect(cssColor(withAlpha(real('ref.color.smoke.light'), 0.55)).base).toBe('oklch(0.1504 0.007 265 / 0.55)');
     expect(cssColor(withAlpha(real('ref.color.accent.300'), 0.4))).toEqual({
       base: 'oklch(0.8506 0.1133 68.21 / 0.4)',
       p3: 'oklch(0.8506 0.1133 68.2 / 0.4)',

@@ -1,9 +1,11 @@
 // tokens/contrast-pairs.json rules (ARCHITECTURE §10, ADR-0011, ADR-0022) on in-memory contexts: no Style
 // Dictionary run. check.test.ts covers the same rules end to end on built fixtures and the repository.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { contrastRatio, flatten, hexToRgba, over, type Triple } from '../tokens/api.ts';
+import { contrastRatio, flatten, hexToRgba, irColor, over, REPO_ROOT, type Triple } from '../tokens/api.ts';
 import { SAMPLES_PER_SEGMENT, type CardGeometry } from './gradient.ts';
-import { appliesTo, evaluatePair, PairError, parsePair, parsePairsFile, type Pair } from './pairs.ts';
+import { appliesTo, evaluatePair, PairError, parsePair, parsePairsFile, tokenBackdrop, type Pair } from './pairs.ts';
 import { env, fakeContext, pair, type ColorSpec } from './test-support.ts';
 import { ADR_0011_THRESHOLDS, parseThresholds, thresholdKey } from './thresholds.ts';
 
@@ -137,6 +139,83 @@ describe('backdrops (ADR-0022 §3.3)', () => {
     const e = evaluatePair(q, light({ fg: '#ffffff', bg: ['#101410', 0.6], u1: ['#000000', 0.2], u2: ['#ffffff', 0.2] }), env());
     expect(e.cases).toBe(4);
     expect(e.worst).toMatch(/^over #959595 on u2: /);
+  });
+});
+
+describe('token backdrops (ADR-0030 §1.5)', () => {
+  // The dark map of the repository: land is the page, the other grounds are white or hue at alpha over it.
+  const map = {
+    'color.bg.page': '#0d0e11', 'color.map.land': '#0d0e11', 'color.map.road': ['#ffffff', 0.13], 'color.map.water': ['#6b84e0', 0.16],
+    text: '#ff5a55', tint: ['#ff4642', 0.1], label: ['#ffffff', 0.55],
+  } as const;
+  const dark = (colors: Record<string, ColorSpec>) => fakeContext({ colorScheme: 'dark', colors });
+
+  test('"<colors> over <ground>": each named color composited over the opaque ground is a bottom layer', () => {
+    expect(tokenBackdrop('color.map.road|water over color.map.land')).toEqual({ colors: 'color.map.road|water', ground: 'color.map.land' });
+    expect(tokenBackdrop('#283126')).toBeNull();
+    expect(tokenBackdrop('ref.gradient.vivid.*')).toBeNull();
+    const e = evaluatePair(pair({ fg: 'label', bg: 'tint', tier: 'functional', backdrops: ['color.map.road|water over color.map.land'] }), dark({ ...map }), env());
+    expect(e.cases).toBe(2);
+    const land = hexToRgba('#0d0e11');
+    const road = flatten([land, { srgb: [1, 1, 1], alpha: 0.13 }]);
+    expect(e.worst).toMatch(/^over color\.map\.road on color\.map\.land: #/);
+    const bg = flatten([{ srgb: road, alpha: 1 }, { srgb: hexToRgba('#ff4642').srgb, alpha: 0.1 }]);
+    expect(e.ratio).toBeCloseTo(contrastRatio(over({ srgb: [1, 1, 1], alpha: 0.55 }, { srgb: bg, alpha: 1 }).srgb, bg), 12);
+  });
+
+  test('without a ground the named colors must be opaque; a translucent ground is an error', () => {
+    const ctx = dark({ ...map });
+    const opaque = evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.land'] }), ctx, env());
+    expect(opaque.worst).toMatch(/^over color\.map\.land: /);
+    expect(() => evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.road'] }), ctx, env()))
+      .toThrow(/color\.map\.road is translucent \(alpha 0\.13\); name the ground it sits on with "color\.map\.road over <color>"/);
+    expect(() => evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.water over color.map.road'] }), ctx, env()))
+      .toThrow(/color\.map\.road is translucent \(alpha 0\.13\); a token backdrop's ground is opaque/);
+    expect(() => evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.nope over color.map.land'] }), ctx, env())).toThrow(PairError);
+  });
+
+  test('a tint over the map road reads 4.04:1 without the page under it and 5.76:1 with it (ADR-0030 M3, §6.2)', () => {
+    const ctx = dark({ ...map });
+    const bare = evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.road over color.map.land'] }), ctx, env());
+    expect(bare.pass).toBe(false);
+    expect(bare.ratio).toBeCloseTo(4.04, 2);
+    const paged = evaluatePair(pair({ fg: 'text', bg: 'tint', tier: 'functional', backdrops: ['color.map.road over color.map.land'], underlays: ['color.bg.page'] }), ctx, env());
+    expect(paged.ratio).toBeCloseTo(5.76, 2);
+  });
+
+  test('a token backdrop reads "<color name or glob> over <color name>"', () => {
+    expect(parsePair({ fg: 'a', bg: 'b', tier: 'functional', backdrops: ['color.map.road over color.map.land'] }, 0).problems).toEqual([]);
+    expect(parsePair({ fg: 'a', bg: 'b', tier: 'functional', backdrops: ['color.map.road over '] }, 0).problems).toEqual([expect.stringMatching(/must read "<color name or glob> over <color name>"/)]);
+    expect(parsePair({ fg: 'a', bg: 'b', tier: 'functional', backdrops: ['color.map.road over land and sea'] }, 0).problems).toHaveLength(1);
+  });
+});
+
+describe('light status tints (ADR-0030 §6.1)', () => {
+  // The light tints were opaque ref.color.status.*.tint-light steps; they are now each status's dot-light
+  // step at alpha 0.12, and over white they reproduce the old values within 0.5/255 per channel (M7).
+  const TODAY: Readonly<Record<string, string>> = { success: '#e6f6e9', warning: '#fef6e8', critical: '#fde9e9', info: '#eaedf9' };
+  const read = (path: string): Record<string, unknown> => JSON.parse(readFileSync(join(REPO_ROOT, path), 'utf8')) as Record<string, unknown>;
+  const at = (node: unknown, path: readonly string[]): Record<string, unknown> => {
+    let cur = node;
+    for (const k of path) cur = (cur as Record<string, unknown>)[k];
+    return cur as Record<string, unknown>;
+  };
+  const palette = read('tokens/ref/color.palette.tokens.json');
+  const lightScheme = read('tokens/sys/color/light.tokens.json');
+  const literal = (id: string): Triple => {
+    const v = at(palette, id.split('.'))['$value'] as { colorSpace: 'oklch'; components: [number, number, number] };
+    return irColor(v.colorSpace, v.components, 1).srgb;
+  };
+
+  test.each(Object.entries(TODAY))('%s: the dot-light step at 0.12 over neutral.0 is today\'s tint', (status, hex) => {
+    const token = at(lightScheme, ['sys', 'color', 'bg', 'tint', status]);
+    const target = /^\{(.+)\}$/.exec(token['$value'] as string)?.[1] ?? '';
+    const alpha = (at(token, ['$extensions', 'app.prism']) as { alpha?: number }).alpha;
+    expect(target).toMatch(/^ref\.color\.status\.(success|warning|danger|info)\.dot-light$/);
+    expect(alpha).toBe(0.12);
+    const composite = flatten([{ srgb: literal('ref.color.neutral.0'), alpha: 1 }, { srgb: literal(target), alpha: alpha ?? 1 }]);
+    const want = hexToRgba(hex).srgb;
+    for (let i = 0; i < 3; i++) expect(Math.abs((composite[i] ?? 0) - (want[i] ?? 0)) * 255).toBeLessThanOrEqual(0.5);
   });
 });
 

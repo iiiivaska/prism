@@ -115,5 +115,14 @@
     "selectedTokenSets": {
       "sys/density/comfortable": "enabled"
     }
+  },
+  {
+    "id": "density-watch",
+    "name": "watch",
+    "group": "density",
+    "selectedTokenSets": {
+      "sys/density/regular": "enabled",
+      "sys/density/watch": "enabled"
+    }
   }
 ]

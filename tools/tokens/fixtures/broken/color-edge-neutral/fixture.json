@@ -1,0 +1,9 @@
+{
+  "description": "The dark scheme file draws sys.color.edge.highlight in the accent at 30 %; every sys.color.edge.* is the brand's white, with or without alpha (ADR-0030 §4.1).",
+  "expect": [
+    {
+      "code": "color/edge-neutral",
+      "tokenId": "sys.color.edge.highlight"
+    }
+  ]
+}

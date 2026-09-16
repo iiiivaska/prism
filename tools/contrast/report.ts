@@ -2,6 +2,7 @@
 // the ratio to two decimals, the threshold and the verdict, plus the worst case the ratio comes from.
 // Ratios are rounded down, so a displayed ratio never overstates the computed one.
 import { formatDiagnostics, type Diagnostic } from '../tokens/api.ts';
+import { limitText, MAP_LAND, type MapGround } from './map.ts';
 import { contextLabel, type Evaluation, type Pair, type Problem } from './pairs.ts';
 import { LARGE_TEXT_PX, type Thresholds } from './thresholds.ts';
 
@@ -11,6 +12,8 @@ export interface ReportInput {
   readonly pairs: number;
   readonly contexts: readonly string[];
   readonly evaluations: readonly Evaluation[];
+  /** Map grounds over the land (ADR-0030 §1.5); omitted or empty: no map section. */
+  readonly maps?: readonly MapGround[];
   readonly problems: readonly Problem[];
   readonly diagnostics: readonly Diagnostic[];
 }
@@ -53,6 +56,12 @@ export function table(evaluations: readonly Evaluation[]): string {
   return [...HEAD, ...evaluations.map(row)].join('\n');
 }
 
+/** One row per map ground and context: OKLCH L over the land against the scheme's limit (`map/backdrop-limit`). */
+export function mapTable(grounds: readonly MapGround[]): string {
+  const head = [`| ground | context | over \`${MAP_LAND}\` | OKLCH L | limit | pass |`, '|---|---|---|--:|---|---|'];
+  return [...head, ...grounds.map((g) => `| ${code(g.path)} | ${cell(contextLabel(g.context))} | ${g.hex} | ${g.lightness.toFixed(3)} | ${limitText(g.limit)} | ${g.pass ? 'pass' : '**FAIL**'} |`)].join('\n');
+}
+
 export function renderReport(r: ReportInput): string {
   const failures = r.evaluations.filter((e) => !e.pass);
   const out: string[] = [];
@@ -71,6 +80,7 @@ export function renderReport(r: ReportInput): string {
     for (const p of r.problems) out.push(`- \`${p.where}\`: ${p.message}`);
   }
   if (failures.length > 0) out.push('', '### Failures', '', table(failures));
+  if (r.maps !== undefined && r.maps.length > 0) out.push('', '### Map backdrops (ADR-0030 §1.5)', '', mapTable(r.maps));
   if (r.evaluations.length > 0) out.push('', '### All pairs', '', table(r.evaluations));
   return `${out.join('\n')}\n`;
 }

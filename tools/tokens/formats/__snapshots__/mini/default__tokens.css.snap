@@ -22,10 +22,12 @@
     --ds-ref-gradient-vivid-plum-dusk: linear-gradient(200deg in oklab, oklch(0.45 0.09 330) 0%, oklch(0.3 0.06 300) 100%);
     --ds-ref-gradient-vivid-plum-dusk-bloom-alpha: 0;
     --ds-ref-gradient-vivid-plum-dusk-bloom-blur: 0px;
+    --ds-ref-gradient-vivid-plum-dusk-bloom-color: oklch(0.45 0.09 330);
     --ds-ref-gradient-vivid-plum-dusk-grain: 0.05;
     --ds-ref-gradient-vivid-sky: linear-gradient(165deg in oklab, oklch(0.6 0.12 240) 0%, oklch(0.42 0.1 250) 100%);
     --ds-ref-gradient-vivid-sky-bloom-alpha: 0.3;
     --ds-ref-gradient-vivid-sky-bloom-blur: 150px;
+    --ds-ref-gradient-vivid-sky-bloom-color: oklch(0.6 0.12 240);
     --ds-ref-gradient-vivid-sky-grain: 0.06;
     --ds-ref-space-2: 8px;
     --ds-ref-space-4: 16px;
@@ -80,6 +82,7 @@
     --ds-gradient-vivid-default: var(--ds-ref-gradient-vivid-sky);
     --ds-gradient-vivid-default-bloom-alpha: var(--ds-ref-gradient-vivid-sky-bloom-alpha);
     --ds-gradient-vivid-default-bloom-blur: var(--ds-ref-gradient-vivid-sky-bloom-blur);
+    --ds-gradient-vivid-default-bloom-color: var(--ds-ref-gradient-vivid-sky-bloom-color);
     --ds-gradient-vivid-default-grain: var(--ds-ref-gradient-vivid-sky-grain);
   }
   /* colorScheme: dark */
@@ -98,6 +101,7 @@
     --ds-gradient-vivid-default: var(--ds-ref-gradient-vivid-plum-dusk);
     --ds-gradient-vivid-default-bloom-alpha: var(--ds-ref-gradient-vivid-plum-dusk-bloom-alpha);
     --ds-gradient-vivid-default-bloom-blur: var(--ds-ref-gradient-vivid-plum-dusk-bloom-blur);
+    --ds-gradient-vivid-default-bloom-color: var(--ds-ref-gradient-vivid-plum-dusk-bloom-color);
     --ds-gradient-vivid-default-grain: var(--ds-ref-gradient-vivid-plum-dusk-grain);
   }
   /* colorScheme: dark under (prefers-color-scheme: dark) without a valid data-ds-color-scheme */
@@ -117,6 +121,7 @@
       --ds-gradient-vivid-default: var(--ds-ref-gradient-vivid-plum-dusk);
       --ds-gradient-vivid-default-bloom-alpha: var(--ds-ref-gradient-vivid-plum-dusk-bloom-alpha);
       --ds-gradient-vivid-default-bloom-blur: var(--ds-ref-gradient-vivid-plum-dusk-bloom-blur);
+      --ds-gradient-vivid-default-bloom-color: var(--ds-ref-gradient-vivid-plum-dusk-bloom-color);
       --ds-gradient-vivid-default-grain: var(--ds-ref-gradient-vivid-plum-dusk-grain);
     }
   }
@@ -146,7 +151,7 @@
   }
   /* density: regular under (any-pointer: coarse) without a valid data-ds-density */
   @media (any-pointer: coarse) {
-    :root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"]) {
+    :root:not([data-ds-density="compact"], [data-ds-density="regular"], [data-ds-density="comfortable"], [data-ds-density="watch"]) {
       --ds-size-control-md: 40px;
       --ds-space-card-padding: var(--ds-ref-space-4);
     }

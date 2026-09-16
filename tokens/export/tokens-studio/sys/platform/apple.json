@@ -15,5 +15,14 @@
       "$value": "{ref.font.apple.ui}",
       "$description": "Apple face of the slot (ADR-0020)"
     }
+  },
+  "type": {
+    "metric": {
+      "xl": {
+        "$type": "typography",
+        "$value": "{ref.type.metric.xl}",
+        "$description": "the hero numeral; the watch platform context uses ref.type.metric.xl-watch (ADR-0030 §7.2)"
+      }
+    }
   }
 }

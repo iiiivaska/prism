@@ -18,7 +18,8 @@ extension DSTokenSet {
             public let dangerBorder: Color
             public let dangerText: Color
             public let gap: CGFloat
-            public let ghostBgRest: Color
+            /// the ghost is outlined and transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)
+            public let ghostBgPressed: Color
             public let ghostBorder: Color
             public let ghostText: Color
             public let heightLg: CGFloat
@@ -43,7 +44,7 @@ extension DSTokenSet {
                 self.dangerBorder = color.textCritical
                 self.dangerText = color.textCritical
                 self.gap = space.step3
-                self.ghostBgRest = color.bgFillNeutralSubtle
+                self.ghostBgPressed = color.bgFillNeutralSubtle
                 self.ghostBorder = color.borderStrong
                 self.ghostText = color.textPrimary
                 self.heightLg = size.controlLg
@@ -80,8 +81,8 @@ extension DSTokenSet {
             public let vividText: Color
 
             init(_ c: DSTokenContext, color: DSColor, material: Material, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
-                self.glassFill = material.glassDarkFill
-                self.glassText = color.textOnGlass
+                self.glassFill = material.glassFill
+                self.glassText = color.textOnGlassFill
                 self.padding = space.cardPadding
                 self.radiusCompact = radius.cardCompact
                 self.radiusLarge = radius.cardLarge

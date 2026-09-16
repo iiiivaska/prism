@@ -1,0 +1,40 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "name": "Contrast broken-tint-on-map",
+  "version": "2025.10",
+  "description": "ADR-0030 §1.8 and §6.2: color.text.critical on color.bg.tint.critical over color.map.road without the color.bg.page underlay fails in dark (4.04:1, ADR-0030 M3); with the page painted under the tint it passes (5.76:1).",
+  "sets": {
+    "ref": {
+      "sources": [
+        {
+          "$ref": "ref/color.tokens.json"
+        }
+      ]
+    }
+  },
+  "modifiers": {
+    "colorScheme": {
+      "contexts": {
+        "light": [
+          {
+            "$ref": "sys/color/light.tokens.json"
+          }
+        ],
+        "dark": [
+          {
+            "$ref": "sys/color/dark.tokens.json"
+          }
+        ]
+      },
+      "default": "light"
+    }
+  },
+  "resolutionOrder": [
+    {
+      "$ref": "#/sets/ref"
+    },
+    {
+      "$ref": "#/modifiers/colorScheme"
+    }
+  ]
+}

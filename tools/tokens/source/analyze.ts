@@ -2,11 +2,12 @@
 // resolving a permutation. Each check has a fixtures/broken/<code>/ case.
 import {
   BASE_SCHEMES, BLUR_PREFIX, BRAND_MODIFIER, BRAND_OVERRIDABLE, BRAND_RAMPS, COLOR_SCHEME_MODIFIER, CSS_GENERIC_FAMILIES,
-  EASING_REF_PREFIX, EXTENSION_NAMESPACE, FOLDED_KEYS, FONT_SLOTS, GLASS_PREFIX, GLASS_SCRIM, MATERIAL_PREFIX,
-  METRIC_ROLE_PREFIX, OWNERSHIP, PATHS, PLATFORM_MODIFIER, REF_SET, SCHEME_VARIANT_SUFFIXES, SEMANTIC_SLOTS, SLOT_PREFIX,
-  STANDARD_WEIGHTS, SYS_ALIAS_PREFIXES, SYS_ALIAS_TYPES, SYS_COLOR_ALIAS_TARGETS, SYSTEM_FONT_DESIGNS, TIERS, TYPE_ROLE_PREFIX, TYPE_SCALE,
-  TYPE_SCALE_ID, TYPOGRAPHY_ROLE_KEYS, WEIGHT_FLOOR,
+  EASING_REF_PREFIX, EDGE_PREFIX, EDGE_TARGET, EXTENSION_NAMESPACE, FOLDED_KEYS, FONT_SLOTS, GLASS_PREFIX, GLASS_ROLE_RECIPES,
+  GLASS_SCRIM, MATERIAL_PREFIX, METRIC_ROLE_PREFIX, OWNERSHIP, PATHS, PLATFORM_MODIFIER, REF_SET, SCHEME_VARIANT_SUFFIXES,
+  SEMANTIC_SLOTS, SLOT_PREFIX, SMOKE_MAX_CHROMA, SMOKE_PREFIX, STANDARD_WEIGHTS, SYS_ALIAS_PREFIXES, SYS_ALIAS_TYPES,
+  SYS_COLOR_ALIAS_TARGETS, SYSTEM_FONT_DESIGNS, TIERS, TYPE_ROLE_PREFIX, TYPE_SCALE, TYPE_SCALE_ID, TYPOGRAPHY_ROLE_KEYS, WEIGHT_FLOOR,
 } from '../config.ts';
+import { irColor, isColorSpace } from '../ir/color.ts';
 import { error, type Diagnostic, type DiagnosticDetails } from '../ir/diagnostics.ts';
 import { matches, matchesAny } from '../ir/glob.ts';
 import { findIds } from '../ir/lookup.ts';
@@ -183,6 +184,9 @@ class Analyzer {
     this.extensions();
     this.typography();
     this.materials();
+    this.roleRecipes();
+    this.smokeChroma();
+    this.edgeNeutral();
     this.groupTypes();
     this.groupDeprecation();
     this.flags();
@@ -485,7 +489,7 @@ class Analyzer {
           this.push('sys/literal', `${d.id} aliases {${target}}; a sys fontFamily aliases a ref.font.* or sys.font.* token (ADR-0020 §3)`, at(d));
         }
         if (type === 'color' && !colorTarget(target)) {
-          this.push('sys/literal', `${d.id} aliases {${target}}; a sys color is a whole-value alias of a ref.color.* or sys.color.* token (ADR-0020 §3)`, at(d, { hint: 'alias the ref.color.* step or the sys.color.* role that holds the color' }));
+          this.push('sys/literal', `${d.id} aliases {${target}}; a sys color is a whole-value alias of a ref.color.* or sys.color.* token, or of a sys.material.glass.* color for a role recipe (ADR-0020 §3, ADR-0029 §1.2)`, at(d, { hint: 'alias the ref.color.* step or the sys.color.* role that holds the color' }));
         }
         continue;
       }
@@ -500,7 +504,7 @@ class Analyzer {
         const sub = aliasTarget(value);
         if (sub !== null) {
           if (!colorTarget(sub)) {
-            this.push('sys/literal', `${d.id} aliases {${sub}} at ${pointer.replace('/$value/', '')}; a sys color sub-value aliases a ref.color.* or sys.color.* token (ADR-0020 §3)`, at(d, { line: lineAt(d, pointer) }));
+            this.push('sys/literal', `${d.id} aliases {${sub}} at ${pointer.replace('/$value/', '')}; a sys color sub-value aliases a ref.color.*, sys.color.* or sys.material.glass.* token (ADR-0020 §3, ADR-0029 §1.2)`, at(d, { line: lineAt(d, pointer) }));
           }
           return;
         }
@@ -645,6 +649,9 @@ class Analyzer {
         }
       }
       for (const [prefix, rec] of recipes) {
+        // A role recipe's fields alias an appearance recipe's fields (ADR-0029 §1.2); material/role-recipe
+        // checks their targets, and the appearance recipe's own checks cover the values.
+        const role = GLASS_ROLE_RECIPES.some((r) => prefix === `${GLASS_PREFIX}.${r}`);
         const missing = Object.keys(FIELDS).filter((f) => !rec.has(f));
         const first = [...rec.values()][0];
         if (missing.length > 0 && first !== undefined) {
@@ -657,10 +664,14 @@ class Analyzer {
         for (const [field, d] of rec) {
           const want = FIELDS[field];
           const v = d.token.node['$value'];
+          // A role recipe's $root takes its type from its alias: DTCG's reference pattern rejects
+          // `{….$root}` in a typed color token, as it does for the comp tokens that alias a $root.
+          if (role && field === '$root' && d.token.ownType === null && this.typeOfDecl(d) === want) continue;
           if (d.token.ownType !== want) {
             this.push('material/recipe-shape', `${d.id} must carry its own "$type": "${want}" (ADR-0022 §2.1)`, at(d));
             continue;
           }
+          if (role) continue;
           if (field === 'blur') {
             const t = aliasTarget(v);
             if (t === null || !matches(`${BLUR_PREFIX}.*`, t)) this.push('material/recipe-shape', `${d.id} must be a whole-value alias of a ${BLUR_PREFIX}.* token (ADR-0022 §2.1)`, at(d));
@@ -669,6 +680,75 @@ class Analyzer {
             if (!ok) this.push('material/recipe-shape', `${d.id} is ${JSON.stringify(v)}; ${field === 'saturate' ? 'saturate is a number ≥ 0' : `${field} is a number in [0, 1]`} (ADR-0022 §2.1)`, at(d));
           }
         }
+      }
+    }
+  }
+
+  // The scheme's glass (ADR-0029 §1.2, rule 1): in each base scheme file, every field of a role recipe
+  // sys.material.glass.<role> is a whole-value alias, without alpha, of the same field of the appearance
+  // recipe sys.material.glass.<scheme>.<role>. A blur that aliases an appearance blur counts as an alias
+  // of ref.blur.* (material/recipe-shape checks the appearance recipe's own blur).
+  private roleRecipes(): void {
+    const schemes = this.contextDocs(COLOR_SCHEME_MODIFIER);
+    for (const scheme of BASE_SCHEMES) {
+      const docs = schemes.get(scheme);
+      if (docs === undefined) continue;
+      for (const doc of docs) {
+        for (const token of doc.tokens.values()) {
+          const role = GLASS_ROLE_RECIPES.find((r) => token.id.startsWith(`${GLASS_PREFIX}.${r}.`));
+          if (role === undefined) continue;
+          const field = token.id.slice(`${GLASS_PREFIX}.${role}.`.length);
+          const want = `${GLASS_PREFIX}.${scheme}.${role}.${field}`;
+          const d: Decl = { id: token.id, doc, token, layer: { kind: 'modifier', name: COLOR_SCHEME_MODIFIER, context: scheme } };
+          const target = aliasTarget(token.node['$value']);
+          const alpha = ext(token)['alpha'];
+          if (target !== want || alpha !== undefined) {
+            this.push('material/role-recipe', `${token.id} in the ${scheme} scheme file is ${target === null ? 'a literal' : `{${target}}`}${alpha === undefined ? '' : ` with app.prism.alpha ${JSON.stringify(alpha)}`}; each field of the role recipe ${GLASS_PREFIX}.${role} is a whole-value alias, without alpha, of the same field of ${GLASS_PREFIX}.${scheme}.${role} (ADR-0029 §1.2)`, at(d, { hint: `write {${want}}` }));
+          }
+        }
+      }
+    }
+  }
+
+  // Neutral smoke (ADR-0029 §1.1, rule 3): every ref.color.smoke.* declaration has OKLCH chroma of at
+  // most SMOKE_MAX_CHROMA, so smoked glass takes no hue of its own.
+  private smokeChroma(): void {
+    for (const d of this.uniqueDecls()) {
+      if (!d.id.startsWith(`${SMOKE_PREFIX}.`)) continue;
+      const v = this.effectiveColorValue(d);
+      if (v === null) continue;
+      const chroma = irColor(v.space, v.components, 1).oklch[1];
+      if (chroma > SMOKE_MAX_CHROMA + 1e-9) {
+        this.push('color/smoke-chroma', `${d.id} has OKLCH chroma ${Number(chroma.toFixed(4))}; smoke is neutral, chroma ${SMOKE_MAX_CHROMA} or less (ADR-0029 §1.1)`, at(d, { hint: `move it to the neutral ramp's hue with chroma <= ${SMOKE_MAX_CHROMA}` }));
+      }
+    }
+  }
+
+  /** The literal color a declaration resolves to through ref/sys aliases in its own view, or null. */
+  private effectiveColorValue(d: Decl): { space: Parameters<typeof irColor>[0]; components: [number, number, number] } | null {
+    let v: unknown = d.token.node['$value'];
+    const seen = new Set<string>([d.id]);
+    for (let target = aliasTarget(v); target !== null; target = aliasTarget(v)) {
+      if (seen.has(target)) return null;
+      seen.add(target);
+      const next = this.byId.get(target)?.[0];
+      if (next === undefined) return null;
+      v = next.token.node['$value'];
+    }
+    if (!isPlainObject(v) || !isColorSpace(v['colorSpace']) || !Array.isArray(v['components'])) return null;
+    const c = v['components'].map((x) => (typeof x === 'number' ? x : NaN));
+    if (c.length !== 3 || c.some((x) => Number.isNaN(x))) return null;
+    return { space: v['colorSpace'], components: [c[0] ?? 0, c[1] ?? 0, c[2] ?? 0] };
+  }
+
+  // Edge colors (ADR-0030 §4.1, rule 4): every sys.color.edge.* declaration is a whole-value alias of the
+  // brand's white, with or without app.prism.alpha, so no hue reaches an edge.
+  private edgeNeutral(): void {
+    for (const d of this.uniqueDecls()) {
+      if (!matches(`${EDGE_PREFIX}.**`, d.id)) continue;
+      const target = aliasTarget(d.token.node['$value']);
+      if (target !== EDGE_TARGET) {
+        this.push('color/edge-neutral', `${d.id} is ${target === null ? 'a literal' : `{${target}}`}; every ${EDGE_PREFIX}.* token aliases {${EDGE_TARGET}}, with or without app.prism.alpha (ADR-0030 §4.1)`, at(d, { hint: `write {${EDGE_TARGET}}` }));
       }
     }
   }

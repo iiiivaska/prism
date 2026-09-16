@@ -1,5 +1,5 @@
 // `<brand>/tokens.ts` and `runtime.ts` (ARCHITECTURE §9.5, §14 P1-5; ADR-0019 §3, ADR-0020 §6): the
-// committed files equal the build, `resolveTokens` of the generated module equals the IR for all 96
+// committed files equal the build, `resolveTokens` of the generated module equals the IR for all 128
 // web contexts of each brand, both brands declare identical types, and runtime.ts is generated from
 // config.ts alone. Style Dictionary runs share a module singleton, so this file never uses test.concurrent.
 import { readFileSync } from 'node:fs';
@@ -39,7 +39,7 @@ describe('tokens.ts', () => {
     expect(read(RUNTIME_TS_PATH)).toBe(renderRuntimeText());
   }, 60_000);
 
-  test('resolveTokens of each generated module equals the IR in all 96 web contexts', async () => {
+  test('resolveTokens of each generated module equals the IR in all 128 web contexts', async () => {
     const b = await repoBundle();
     let compared = 0;
     let expectedChecks = 0;
@@ -48,7 +48,7 @@ describe('tokens.ts', () => {
       const ids = tsTable(b, scope).map((e) => [e.path, e.id] as const);
       expect(Object.keys(mod.table)).toEqual(ids.map(([p]) => p));
       const contexts = webContexts(scope);
-      expect(contexts).toHaveLength(96);
+      expect(contexts).toHaveLength(128);
       expectedChecks += contexts.length * ids.length;
       for (const ctx of contexts) {
         const resolved = mod.resolveTokens(ctx);
@@ -90,7 +90,7 @@ describe('tokens.ts', () => {
     expect(entry('color.text.secondary')).toMatchObject({ axis: 'colorScheme', valueType: 'ColorValue' });
     expect(entry('color.text.secondary')?.deltas.map((d) => [d.key, d.values.map(([k]) => k)])).toEqual([['$increasedContrast', ['light', 'dark']]]);
     expect(entry('color.text.accent')?.deltas.map((d) => d.values.map(([k]) => k))).toEqual([['light']]);
-    expect(entry('space.card-padding')).toMatchObject({ axis: 'density', values: [['compact', 16], ['regular', 24], ['comfortable', 24]] });
+    expect(entry('space.card-padding')).toMatchObject({ axis: 'density', values: [['compact', 16], ['regular', 24], ['comfortable', 24], ['watch', 16]] });
     expect(entry('interaction.hover')).toMatchObject({ axis: 'modality', valueType: 'boolean', values: [['pointer', true], ['touch', false]] });
     expect(entry('motion.spring.snappy')?.values.map(([k]) => k)).toEqual(['standard', 'reduce']);
     expect(entry('type.body.md')).toMatchObject({ axis: null, cssVar: null, valueType: 'TypeRoleValue' });

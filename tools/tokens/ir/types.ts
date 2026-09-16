@@ -75,6 +75,7 @@ export interface IRGradient {
   readonly angle: number | null;                                 // app.prism.angle (degrees)
   readonly grain: number | null;                                 // app.prism.grain
   readonly scheme: 'light' | 'dark' | null;                      // app.prism.scheme
+  readonly temperature: 'warm' | 'cool' | null;                  // app.prism.temperature (ADR-0029 §2.4)
   readonly bloom: { readonly alpha: number; readonly blur: number | null } | null;
 }
 export type TextStyleName = 'largeTitle' | 'title' | 'title2' | 'title3' | 'headline' | 'body'

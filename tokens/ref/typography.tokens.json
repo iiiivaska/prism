@@ -441,6 +441,30 @@
           },
           "$description": "the one hero numeral per screen; 300 in light, 200 in dark (darkWeight); proportional figures unless the value is live; trailing group in text.dimmed at the same size"
         },
+        "xl-watch": {
+          "$value": {
+            "fontFamily": "{ref.font.display}",
+            "fontSize": {
+              "value": 40,
+              "unit": "px"
+            },
+            "fontWeight": 300,
+            "lineHeight": 1.0,
+            "letterSpacing": {
+              "value": -0.4,
+              "unit": "px"
+            }
+          },
+          "$extensions": {
+            "app.prism": {
+              "slot": "display",
+              "numeric": "proportional",
+              "textStyle": "largeTitle",
+              "darkWeight": 200
+            }
+          },
+          "$description": "the watch face of the metric.xl role, not a role of its own: sys.type.metric.xl in the watch platform context (ADR-0030 §7.2); 300 in light, 200 in dark (darkWeight, 40 >= 34 px)"
+        },
         "lg": {
           "$value": {
             "fontFamily": "{ref.font.display}",
@@ -481,11 +505,11 @@
           "$extensions": {
             "app.prism": {
               "slot": "display",
-              "numeric": "tabular",
+              "numeric": "proportional",
               "textStyle": "title3"
             }
           },
-          "$description": "inline metric '41 %'"
+          "$description": "inline metric '41 %'; proportional like every metric role, numeric: tabular when the value is live (ADR-0021 §5, ADR-0030 §7.1)"
         },
         "unit": {
           "$value": {
@@ -533,6 +557,29 @@
           }
         },
         "$description": "tables, axes, timers, live counters"
+      },
+      "axis": {
+        "$value": {
+          "fontFamily": "{ref.font.ui}",
+          "fontSize": {
+            "value": 12,
+            "unit": "px"
+          },
+          "fontWeight": 400,
+          "lineHeight": 1.2,
+          "letterSpacing": {
+            "value": 0.0,
+            "unit": "px"
+          }
+        },
+        "$extensions": {
+          "app.prism": {
+            "slot": "ui",
+            "numeric": "tabular",
+            "textStyle": "caption"
+          }
+        },
+        "$description": "chart axis labels and ticks; tabular, so tick values align (ADR-0030 §2.6)"
       },
       "scale": {
         "$type": "number",

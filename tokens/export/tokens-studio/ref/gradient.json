@@ -5,7 +5,7 @@
         "ember-night": {
           "$type": "color",
           "$value": "linear-gradient(160deg, #3d1a06 0%, #7a3a1e 45%, #c9642f 85%, #d28035 100%)",
-          "$description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2"
+          "$description": "dark vivid surface; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2; outside the slots: a single warm hero card on a screen without the accent (ADR-0029 §2.6)"
         },
         "forest-moss": {
           "$type": "color",
@@ -14,12 +14,17 @@
         },
         "navy-cyan": {
           "$type": "color",
-          "$value": "linear-gradient(180deg, #252e3f 0%, #223545 45%, #4d8e9c 75%, #6b9ba6 100%)",
-          "$description": "dark vivid surface; linear 180 deg; grain 0.10; passes ADR-0022 V1/V2"
+          "$value": "linear-gradient(180deg, #252e3f 0%, #223545 30%, #4d8e9c 85%, #6b9ba6 100%)",
+          "$description": "dark vivid surface; linear 180 deg; grain 0.10; stops at 0.30 and 0.85 keep the lightness climb soft (ADR-0029 §2.2); passes ADR-0022 V1/V2"
+        },
+        "night-lagoon": {
+          "$type": "color",
+          "$value": "linear-gradient(160deg, #091821 0%, #0d303c 35%, #0c6468 72%, #2e9891 100%)",
+          "$description": "dark vivid surface: a deep night-blue rising into lagoon teal; linear 160 deg; grain 0.08; passes ADR-0022 V1/V2 (ADR-0029 §2.3)"
         },
         "olive": {
           "$type": "color",
-          "$value": "linear-gradient(135deg, #4f5a38 0%, #6e7d33 65%, #899b49 100%)",
+          "$value": "linear-gradient(135deg, #4f5a38 0%, #6e7d33 65%, #879c34 100%)",
           "$description": "light vivid surface; linear 135 deg; grain 0.05; passes ADR-0022 V1/V2"
         },
         "orchid": {
@@ -34,12 +39,12 @@
         },
         "rose": {
           "$type": "color",
-          "$value": "linear-gradient(135deg, #8e5a55 0%, #a36660 65%, #bb8871 100%)",
+          "$value": "linear-gradient(135deg, #8c4a49 0%, #b05e4e 65%, #c6835a 100%)",
           "$description": "light vivid surface; linear 135 deg; grain 0.05; passes ADR-0022 V1/V2"
         },
         "sky": {
           "$type": "color",
-          "$value": "linear-gradient(165deg, #4a4c78 0%, #556ba6 50%, #7c97ac 100%)",
+          "$value": "linear-gradient(165deg, #4a4c78 0%, #4f69b3 50%, #349bcf 100%)",
           "$description": "light vivid surface; linear 165 deg; grain 0.06; passes ADR-0022 V1/V2"
         }
       }

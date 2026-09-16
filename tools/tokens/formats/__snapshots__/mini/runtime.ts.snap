@@ -9,7 +9,7 @@ export const webRuntime = {
   colorScheme: { attribute: 'data-ds-color-scheme', values: ['light', 'dark'], nestable: true, media: { value: 'dark', query: '(prefers-color-scheme: dark)' } },
   contrast: { attribute: 'data-ds-contrast', values: ['standard', 'more'], nestable: false, media: { value: 'more', query: '(prefers-contrast: more)' } },
   transparency: { attribute: 'data-ds-transparency', values: ['standard', 'reduce'], nestable: false, media: { value: 'reduce', query: '(prefers-reduced-transparency: reduce)' } },
-  density: { attribute: 'data-ds-density', values: ['compact', 'regular', 'comfortable'], nestable: true, media: { value: 'regular', query: '(any-pointer: coarse)' } },
+  density: { attribute: 'data-ds-density', values: ['compact', 'regular', 'comfortable', 'watch'], nestable: true, media: { value: 'regular', query: '(any-pointer: coarse)' } },
   modality: { attribute: 'data-ds-modality', values: ['pointer', 'touch'], nestable: false, media: { value: 'touch', query: 'not all and (hover: hover) and (pointer: fine)' } },
   motion: { attribute: 'data-ds-motion', values: ['standard', 'reduce'], nestable: false, media: { value: 'reduce', query: '(prefers-reduced-motion: reduce)' } },
 } as const;
@@ -18,7 +18,7 @@ export type RuntimeAxis = keyof typeof webRuntime;
 export type ColorScheme = 'light' | 'dark';
 export type Contrast = 'standard' | 'more';
 export type Transparency = 'standard' | 'reduce';
-export type Density = 'compact' | 'regular' | 'comfortable';
+export type Density = 'compact' | 'regular' | 'comfortable' | 'watch';
 export type Modality = 'pointer' | 'touch';
 export type Motion = 'standard' | 'reduce';
 
@@ -41,7 +41,7 @@ export const platformDefaults = {
   ios: { density: 'regular', modality: 'touch' },
   ipados: { density: 'regular', modality: 'touch' },
   macos: { density: 'compact', modality: 'pointer' },
-  watchos: { colorScheme: 'dark', density: 'comfortable', modality: 'touch' },
+  watchos: { colorScheme: 'dark', density: 'watch', modality: 'touch' },
 } as const;
 
 /** The attributes any element may carry to scope the nestable axes (ADR-0019 §1 item 4); components forward them. */

@@ -13,6 +13,8 @@ extension DSTokenSet {
                 self.cardPadding = 24
             case .comfortable:
                 self.cardPadding = 16
+            case .watch:
+                self.cardPadding = 16
             }
         }
     }

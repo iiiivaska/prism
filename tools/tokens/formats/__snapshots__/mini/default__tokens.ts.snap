@@ -16,7 +16,8 @@ export interface GradientValue {
   readonly css: string; readonly cssP3: string | null;
   readonly stops: readonly { readonly color: ColorValue; readonly position: number }[];
   readonly angle: number; readonly grain: number; readonly scheme: 'light' | 'dark' | null;
-  readonly bloom: { readonly alpha: number; readonly blur: number } | null;
+  /** `color` is derived: the stop of highest relative luminance, the later stop on a tie (ADR-0030 §4.3). */
+  readonly bloom: { readonly alpha: number; readonly blur: number; readonly color: ColorValue } | null;
 }
 /** The DSTextStyle cases (ADR-0021 §7). */
 export type TextStyleName = 'largeTitle' | 'title' | 'title2' | 'title3' | 'headline' | 'body' | 'callout' | 'subheadline' | 'footnote' | 'caption' | 'caption2';
@@ -123,7 +124,7 @@ export const table: TokenTable = {
   'gradient.vivid.default': {
     $type: 'gradient', $cssVar: '--ds-gradient-vivid-default', $axis: 'colorScheme',
     $values: {
-      light: { css: 'linear-gradient(165deg in oklab, oklch(0.6 0.12 240) 0%, oklch(0.42 0.1 250) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.6 0.12 240)', cssP3: null, hex: '#2b88c0', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.42 0.1 250)', cssP3: null, hex: '#194f81', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 150 } },
+      light: { css: 'linear-gradient(165deg in oklab, oklch(0.6 0.12 240) 0%, oklch(0.42 0.1 250) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.6 0.12 240)', cssP3: null, hex: '#2b88c0', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.42 0.1 250)', cssP3: null, hex: '#194f81', alpha: 1 }, position: 1 }], angle: 165, grain: 0.06, scheme: 'light', bloom: { alpha: 0.3, blur: 150, color: { css: 'oklch(0.6 0.12 240)', cssP3: null, hex: '#2b88c0', alpha: 1 } } },
       dark: { css: 'linear-gradient(200deg in oklab, oklch(0.45 0.09 330) 0%, oklch(0.3 0.06 300) 100%)', cssP3: null, stops: [{ color: { css: 'oklch(0.45 0.09 330)', cssP3: null, hex: '#71426d', alpha: 1 }, position: 0 }, { color: { css: 'oklch(0.3 0.06 300)', cssP3: null, hex: '#332647', alpha: 1 }, position: 1 }], angle: 200, grain: 0.05, scheme: 'dark', bloom: null },
     },
   },
