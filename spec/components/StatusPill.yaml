@@ -1,0 +1,262 @@
+name: StatusPill
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The mark that says what state a thing is in: a word, always, with an outline, a tinted fill, a dot or
+  a leading bar around it. The word is what carries the state; the hue only repeats it. Over a map, an
+  image, a vivid surface or glass the pill paints the page under its tint, so the pair that renders is
+  the pair the contrast gate checks. A count is a Badge, a pressable filter is a Chip.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the pill; in the `dot` and `bar` forms it draws no container at all
+  - part: bar
+    optional: true
+    description: the leading edge bar of the `bar` form
+  - part: dot
+    optional: true
+    description: the status disc of the `dot` form
+  - part: icon
+    optional: true
+    description: a registry glyph before the word — the status glyph, or a domain glyph such as object.signal
+  - part: label
+    description: the state in words; never optional, in any form
+
+props:
+  - name: status
+    type: enum
+    values: [neutral, success, warning, critical, info]
+    default: neutral
+  - name: label
+    type: string
+    required: true
+    description: the state in words, sentence case, one or two words ("In service", "Degraded")
+  - name: form
+    type: enum
+    values: [outline, tint, dot, bar]
+    default: outline
+  - name: icon
+    type: icon
+    description: an optional registry glyph before the word; it repeats the state, it does not replace the word
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+
+states: [default]
+
+tokens:
+  root:
+    height:
+      outline:
+        sm: size.icon.lg
+        md: size.control.sm
+      tint:
+        sm: size.icon.lg
+        md: size.control.sm
+    radius:
+      outline: radius.control
+      tint: radius.control
+    paddingX:
+      outline:
+        sm: space.3
+        md: space.4
+      tint:
+        sm: space.3
+        md: space.4
+    gap: space.2
+    background:
+      tint:
+        neutral: color.bg.fill.neutral.subtle
+        success: color.bg.tint.success
+        warning: color.bg.tint.warning
+        critical: color.bg.tint.critical
+        info: color.bg.tint.info
+    underlay:
+      tint:
+        page:
+          map: color.bg.page
+          image: color.bg.page
+          vivid: color.bg.page
+        vivid: color.bg.page
+        glass: color.bg.page
+        glassLight: color.bg.page
+        inverse: color.bg.page
+        accent: color.bg.page
+    border:
+      outline:
+        neutral: color.border.strong
+        success: color.text.success
+        warning: color.text.warning
+        critical: color.text.critical
+        info: color.text.info
+      tint:
+        neutral: color.border.strong
+        success: color.text.success
+        warning: color.text.warning
+        critical: color.text.critical
+        info: color.text.info
+    borderWidth:
+      outline: border.hairline
+      tint: border.strong
+  bar:
+    width: border.strong
+    height: size.icon.sm
+    radius: radius.badge
+    gap: space.3
+    color:
+      neutral: color.icon.secondary
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+      info: color.icon.status.info
+  dot:
+    size: space.3
+    radius: radius.control
+    gap: space.2
+    color:
+      neutral: color.icon.secondary
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+      info: color.icon.status.info
+  icon:
+    size: size.icon.sm
+    color:
+      neutral: color.icon.secondary
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+      info: color.icon.status.info
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      neutral: color.text.secondary
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+      info: color.text.info
+
+behavior:
+  - "A StatusPill always shows its word. `label` is required in every form, the word is what carries the state, and no form of this component exists without it (ADR-0011 rule 4). The hue and the glyph repeat the word; they never replace it."
+  - "That rule is not decoration. color.icon.status.critical and color.icon.status.info hold the 3:1 boundary tier in both schemes, while color.icon.status.success and color.icon.status.warning hold it in dark and sit below it in light — 2.77 and 1.77 on color.bg.surface (docs/research/a11y-reconciliation.md B4) — which is why their pairs are dark-only and why a light success or warning dot without its word is not a status at all."
+  - "`form: outline` is the resting pill: no fill, a border.hairline stroke in the status text role, and the word in the same role. The neutral outline takes color.border.strong, the outline-pill role of docs/research/visual-dna.md §7.5."
+  - "`form: tint` is the incident pill: a status tint fill, a border.strong stroke in the status text role and the word in that role. It is the form that carries a state the reader must not miss."
+  - "`form: dot` draws a space.3 disc before the word and no container, so a status can sit inside a header row or a card title without adding a shape. `form: bar` replaces the disc with a leading edge bar of border.strong width and size.icon.sm height, which is the form that precedes an identifier in a table or a row."
+  - "Only the `outline` and `tint` forms have a box, which is why `height`, `paddingX`, `radius`, `background`, `border` and `borderWidth` carry cells for those two forms and none for `dot` and `bar`: an unset property is not drawn (ADR-0029 §3.3). A dot or bar lockup is therefore as tall as its own word, takes no padding and changes no row's height; `size` reaches it only through the label's role, and the disc and the bar keep their size at both sizes."
+  - "Over media — a map, an image, a vivid surface, the scheme's glass or light glass — and on an inverse or accent surface, only `form: tint` is used, and it paints color.bg.page under its tint (ADR-0030 §6.2 and rule 6). The tint then composites over the page, so color.text.critical on color.bg.tint.critical reads 5.76:1 over a map road instead of 4.04:1 (ADR-0030 M3), and the pill keeps its hue."
+  - "The outline, dot and bar forms have no fill to paint the page under, so their word and their stroke would sit straight on the backdrop, where no pair checks them. They are drawn on the solid family only: color.bg.page, color.bg.surface, color.bg.surface.raised and color.bg.surface.nested. This is the same rule Badge.yaml applies to its outline emphasis."
+  - "A status area on a map — a closed bridge, a restricted zone — is not this component. It is a text-free wash that paints the tint alone so the map shows through, carries its status stroke, and puts its label in a StatusPill that follows the rule above (ADR-0030 §6.2). Map hue never carries status: light water is the info hue at 16 % (ADR-0030 §1.2)."
+  - "The pill is not interactive: it has no press, hover or focus state and is never a tap target. A pill that filters is a Chip; a pill that counts is a Badge; a status word with a large number beside it is a StatTile with `status`."
+  - "The word never wraps and never truncates. A state that needs more than two words is not a pill but a sentence in the row's subtitle or in a Banner."
+  - "In the `outline` and `tint` forms the pill is size.control.sm tall at `size: md` (28 compact, 32 regular, 44 comfortable), the one control height of the system, and size.icon.lg (24 px) tall at `size: sm`, the mark that rides inside a dense table row or a card title without changing the row's height. The pill is not a control, so neither size answers size.hit."
+  - "`icon` is optional and takes a registry id: status.success, status.warning, status.danger or status.info to repeat the state, or a domain glyph — object.signal, object.gps, object.lock — where the pill names a channel rather than a severity. The glyph takes the status colour and sits space.2 before the word."
+  - "Status never fills a large block and never sits behind body text (docs/research/visual-dna.md §11 anti-patterns 8 and 10); the tint of this pill and the wash of an alert container are the only status fills in the system, and solid status colour exists only in a Badge and in the alert glyph."
+
+accessibility:
+  role: status when the pill announces a change, otherwise none — the word is read as part of the element the pill belongs to
+  label: the word itself; a pill that names a channel reads the channel and the state together ("GPS, degraded"), and the glyph adds nothing to the announcement
+  traits: [staticText]
+  keyboard: not focusable and not a stop in the tab order; a pressable pill is a Chip, which owns the focus ring and size.hit
+  dynamicType: the word scales with type.label.sm and type.label.md and the pill grows with it, up to the accessibility3 size; the word itself never wraps and never truncates, so a pill that no longer fits beside its neighbour moves whole to the next line of its row, and the dot and the bar keep their size, because they carry no text
+  contrast: "the word is functional text at 4.5:1 in color.text.secondary, color.text.success, color.text.warning, color.text.critical and color.text.info, each paired in tokens/contrast-pairs.json on color.bg.page, color.bg.surface and color.bg.surface.raised and on its own tint. The outline stroke is decorative beside the word, and the one that also carries the boundary tier is color.border.strong. The dot, the bar and the glyph are color.icon.status.*: on the page, a card and the raised step they hold 3:1 for critical and info in both schemes and for success and warning in dark only, and on their own tint for info in both schemes and for the other three in dark only (docs/research/a11y-reconciliation.md §8.3), which is why the word is mandatory. The neutral pill's color.text.secondary and color.icon.secondary are paired on its color.bg.fill.neutral.subtle wash. Over media the tint is painted over color.bg.page, so the checked pair is the pair that renders"
+  reduceTransparency: the pill draws no glass; when the enclosing Surface falls back from glass to raised, the pill keeps its tint form with its page underlay, which is opaque in either case
+  reduceMotion: not applicable — a StatusPill never animates. A live state does not pulse, glow or breathe; it changes at motion.duration.instant, and the halo around a live dot in the references is not drawn in Prism
+  voiceOver: read with the element it belongs to ("Unit 4417, in service"), not as a separate stop; a pill that appears on its own to announce a change is a live region announced once, politely
+
+usage:
+  do:
+    - Give every StatusPill its word, in every form and every scheme.
+    - Use the outline form at rest and the tint form for the state a reader must not miss.
+    - Use the tint form over a map, an image, a vivid surface or glass, and let it paint the page under itself.
+    - Keep the label to one or two words in sentence case.
+  dont:
+    - Don't ship a bare dot, a bare bar or a coloured word without its state in words.
+    - Don't make a StatusPill pressable; a pill that filters is a Chip.
+    - Don't put an outline or dot pill over a map, an image, a vivid surface or glass.
+    - Don't fill a card, a row or a panel with a status colour; the pill and the alert wash are the only status fills.
+    - Don't invent a sixth status; five is the scale the tokens check.
+
+examples:
+  - id: outline-neutral
+    props: { status: neutral, label: "In service", form: outline }
+  - id: outline-success
+    props: { status: success, label: "Online", form: outline, icon: status.success }
+  - id: tint-critical
+    props: { status: critical, label: "Accident", form: tint, icon: status.danger }
+    description: the incident pill — a critical tint, a border.strong stroke and the word
+  - id: tint-warning
+    props: { status: warning, label: "Degraded", form: tint, icon: status.warning }
+  - id: tint-info
+    props: { status: info, label: "Scheduled", form: tint }
+  - id: dot-success
+    props: { status: success, label: "Active", form: dot }
+    description: no container — a dot and its word inside a card header
+  - id: dot-warning
+    props: { status: warning, label: "Needs a check", form: dot }
+    description: in light the warning dot alone is 1.77:1, so the word is the state
+  - id: bar-critical
+    props: { status: critical, label: "Blocked", form: bar, size: sm }
+    description: the leading edge bar before an identifier in a dense table row
+  - id: channel-glyph
+    props: { status: neutral, label: "GPS degraded", form: outline, icon: object.gps }
+    description: a domain glyph names the channel; the word still carries the state
+  - id: small
+    props: { status: neutral, label: "Idle", form: outline, size: sm }
+  - id: tint-over-map
+    props: { status: critical, label: "Accident", form: tint, icon: status.danger }
+    surface: map
+    description: over the map the tint is painted over color.bg.page, which is what the checked pair measures
+  - id: tint-on-vivid
+    props: { status: success, label: "On target", form: tint }
+    surface: vivid
+  - id: tint-on-glass-over-image
+    props: { status: warning, label: "Degraded", form: tint }
+    surface: glass
+    backdrop: image
+  - id: russian-label
+    props: { status: critical, label: "Требует внимания", form: tint, icon: status.danger }
+    description: the Russian word is about half again as long as its English twin; the pill widens and never truncates
+
+notes:
+  platform:
+    watchos: "`none`. StatusPill is not in ADR-0010's Tier 3 set. On the wrist a state is shown by StatTile's `status`, which pairs the registry glyph with the label's own words on a screen of at most three glanceable tiles — one text element instead of a mark plus a mark, the same reduction Badge.yaml makes."
+    macos: "compact density gives a 28 pt pill; there is no hover state, because the pill is not a control."
+    web-desktop: "rendered as a plain element with `aria-hidden` when the state is already in the host row's accessible name, and as `role=\"status\"` only when it appears to announce a change."
+  design: >-
+    Five of eleven shots carry a status mark (docs/research/component-inventory.md), and the row merges
+    them all: the outlined pill in neutral and success, the incident pill with a tinted fill and a
+    half-alpha border, the bare dot with a halo plus a state word, the 2 × 14 edge bar before an
+    identifier, and the connectivity glyph with its label. The four forms here are those five shapes with
+    the halo dropped: docs/research/visual-dna.md §11 anti-pattern 5 allows a glow only as a vivid bloom
+    or a same-colour halo on a hairline mark, and §1 principle 14 puts status into dots, badges, 1–1.5 px
+    strokes and 10 % tints. The 1.5 px status stroke of §1 principle 14 is border.strong, and the pill
+    height follows the one control height of §1 principle 13. ADR-0030's Consequences hand this spec the
+    reference's 50 % critical border; the spec sets the stroke to the full-strength status role instead,
+    because a comp token is a whole-value alias of one sys token (ADR-0024 §5.1) and a half-alpha stroke
+    in component code would be the literal tokens/README.md rule 1 forbids — a half-alpha status stroke
+    needs a sys role of its own through an ADR. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

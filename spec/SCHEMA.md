@@ -49,6 +49,25 @@ anatomy:
     optional: true
 ```
 
+The list is the part tree, written flat, so both stacks build the same layout from it:
+
+- **Order.** A part comes after the part that contains it, and a layer the component draws outside its root, such as a Dialog's scrim or a Toast's region, is listed before `root`. A spec that declares `parent` lists the children of one part in the reading order of its default layout — leading before trailing, top before bottom — so the list is the layout, and `behavior` states any order that changes with modality or material; a flat anatomy may list its parts in any order, and its `behavior` gives the layout.
+- **`parent`** names the part that contains this one, and that part is listed earlier. A part listed after `root` with no `parent` sits directly in `root`. A part whose place changes with the published material (a unit that joins the label line on vivid) keeps the parent of its default layout, and `behavior` says where it moves.
+
+```yaml
+anatomy:
+  - part: root
+  - part: header
+  - part: title
+    parent: header
+  - part: message
+    parent: header
+    optional: true
+  - part: actions
+```
+
+**Spacing reads against the tree.** `padding`, `paddingX`, `paddingY`, `paddingTop` and `paddingBottom` are inside a part's own box, between its edge and what it contains. On a part that contains others, `gap` is the space between its children, split by axis as `rowGap` and `columnGap` when it lays them out both ways; a slot that holds the caller's children (a list, rows, a paragraph) reads the same way. On a part that contains nothing — a leaf, or a slot that holds exactly one component, such as a DeltaBadge — `gap` is the space between it and the part before it in its row or column, and it replaces the parent's gap on that side. Two gaps never add up; a padding inside a box does add to the gap outside that box. `margin` and `marginY` are outside a part, on both sides of its axis. A component sets no space outside its `root`: the layout that places it owns that space. A spec whose spacing does not follow this reading states the tree and what each spacing property separates in `behavior`.
+
 ## Props, variants, sizes, states
 
 ```yaml
@@ -68,6 +87,10 @@ states: [default, hover, pressed, focus-visible, disabled, loading]
 ```
 
 `hover` exists only under `modality: pointer`; `focus-visible` is mandatory on every interactive component.
+
+**Every state says what enters it.** Input enters `hover`, `pressed`, `focus-visible` and `dragging`. Every other state in `states` is entered by a declared prop, or by a field of the items a `data` prop carries (a Menu item's `isSelected`). A boolean that enters a state takes the one name Prism gives that state, so a composite forwards it under the same name and an agent can ask for it without reading the spec: `isLoading` for `loading`, `isDisabled` for `disabled`, `isInvalid` for `error`, `isReadOnly` for `readonly`, `isSelected` for `selected`, and `isExpanded` or `isOpen` for `expanded`; such a name says what it enters by itself. Any other trigger — a value (a Checkbox's `value`, a Sidebar's `value`, a LineChart's `selection`), a message (a ChartContainer's `errorMessage`), or a flag that keeps a name of its own (a Toggle's `isOn`) — names the state it enters in its `description` or in `behavior`. A spec never declares a second name for the same state (`isBusy` beside `isLoading`).
+
+Where `loading` is a hold at `opacity.dimmed-row`, the hold is applied once. A component inside a container that is loading — a chart in a loading ChartContainer, a Sparkline in a loading StatCard's aside — keeps its own `isLoading` false, so the opacity is never multiplied.
 
 ## Token bindings
 
@@ -215,6 +238,28 @@ examples:
 ```
 
 Every example is rendered by both stacks into `gallery/snapshots/<Name>/<id>.<platform>.<scheme>.png`. The gallery shows them side by side; that is how drift becomes visible to a human.
+
+### Slot content in examples
+
+An example fills a `slot` prop, or a `data` prop that holds components, in one of four forms. Both galleries implement all four the same way, so the two stacks render the same content:
+
+| Form | Renders |
+|------|---------|
+| `true` | the one component the anatomy names for the slot, with the props of that component's first example (TopBar's `search: true` is SearchField's `default-md`). A slot whose anatomy names no single component — a brand mark, a Sidebar's `content` — renders a placeholder box: `color.bg.fill.neutral.subtle` at `radius.inner`, the full width the slot gives it and `size.control.md` tall, or the whole box of a slot that stretches. |
+| a mapping with no `fixture` key | the one component the anatomy names for the slot, with these props (an Alert's `action: { label: "Open all", variant: secondary, size: sm }` is that Button). A `kind` key here is that component's own prop (a Sparkline's `kind: line`), never a fixture. |
+| a list | the items in order, each in one of the other forms, for a slot that holds several (a TopBar's `actions`); a spec that declares its own item grammar for the slot (Toolbar's `items`) uses that grammar |
+| `{ fixture: <name>, … }` | one of the fixtures below |
+
+| `fixture` | Parameters | Renders |
+|-----------|------------|---------|
+| `text` | `lines`, default 3 | `lines` single lines of `type.body.md` in the slot's primary text tone, the nth reading "Placeholder line n"; no line wraps, so both stacks break them identically |
+| `list` | `count`, default 3 | `count` ListRows at their defaults, the nth with `title: "Item n"` |
+| `form` | `fields`, default 1 | `fields` TextFields at `size: md`, the nth with `label: "Field n"` |
+| `readout` | none | three StatTiles at `size: sm` and `layout: inline`, the nth with `label: "Reading n"` and `value: "n0"` |
+| `buttonRow` | `count`, 1 or 2 | `count` Buttons at `size: md`: the last is `variant: primary` with `label: "Primary action"`, and with a count of 2 the first is `variant: secondary` with `label: "Secondary action"` |
+| `pager` | `label` | one Pagination with `kind: range`, `size: sm` and that `label` |
+
+Children a fixture renders stack with the slot's own `gap`. A fixture is gallery content only: it names no prop value an app passes, and a pattern's examples follow spec/patterns/README.md.
 
 Examples render in both schemes, so `spec:validate` holds them to five rules:
 

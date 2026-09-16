@@ -5,7 +5,7 @@ import { fsReader, REPO_ROOT } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import { compGroup, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
-import { bareWord, expandPath, isTokenPath, proseTokenPaths } from './prose.ts';
+import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, pointerToPath, SchemaShapeError } from './schema.ts';
 import { caseReader, repoDictionary, specCases, triples } from './test-support.ts';
 import { main, passed, runSpecValidate } from './validate.ts';
@@ -23,19 +23,29 @@ describe('the repository', () => {
     const result = await runSpecValidate({ reader: fsReader(REPO_ROOT), collected });
     expect(result.diagnostics).toEqual([]);
     expect(passed(result)).toBe(true);
-    // The ADR-0012 slice plus the P2-5 wave-1 specs: every file under spec/components/, sorted.
+    // Every file under spec/components/, sorted, then every file under spec/patterns/: the ADR-0012
+    // slice, the P2-5 wave-1 primitives and chart parts, the wave-2 composites and the three v1 patterns.
     expect(result.files).toEqual([
-      'spec/components/AreaChart.yaml', 'spec/components/Avatar.yaml', 'spec/components/Badge.yaml',
-      'spec/components/Button.yaml', 'spec/components/Card.yaml', 'spec/components/ChartContainer.yaml',
-      'spec/components/Checkbox.yaml', 'spec/components/Chip.yaml', 'spec/components/DeltaBadge.yaml',
-      'spec/components/Divider.yaml', 'spec/components/HeroNumber.yaml', 'spec/components/Icon.yaml',
-      'spec/components/IconButton.yaml', 'spec/components/LineChart.yaml', 'spec/components/ProgressBar.yaml',
+      'spec/components/Alert.yaml', 'spec/components/AreaChart.yaml', 'spec/components/Avatar.yaml',
+      'spec/components/Badge.yaml', 'spec/components/Banner.yaml', 'spec/components/Button.yaml',
+      'spec/components/Card.yaml', 'spec/components/ChartContainer.yaml', 'spec/components/Checkbox.yaml',
+      'spec/components/Chip.yaml', 'spec/components/CommandPalette.yaml', 'spec/components/ContextMenu.yaml',
+      'spec/components/DeltaBadge.yaml', 'spec/components/Dialog.yaml', 'spec/components/Divider.yaml',
+      'spec/components/EmptyState.yaml', 'spec/components/FormField.yaml', 'spec/components/HeroNumber.yaml',
+      'spec/components/Icon.yaml', 'spec/components/IconButton.yaml', 'spec/components/LineChart.yaml',
+      'spec/components/ListRow.yaml', 'spec/components/Menu.yaml', 'spec/components/Pagination.yaml',
+      'spec/components/PillTabs.yaml', 'spec/components/Popover.yaml', 'spec/components/ProgressBar.yaml',
       'spec/components/ProgressRing.yaml', 'spec/components/Radio.yaml', 'spec/components/RangeBand.yaml',
-      'spec/components/ReferenceLine.yaml', 'spec/components/RingGauge.yaml', 'spec/components/SegmentedControl.yaml',
-      'spec/components/Select.yaml', 'spec/components/Skeleton.yaml', 'spec/components/Slider.yaml',
-      'spec/components/Sparkline.yaml', 'spec/components/Spinner.yaml', 'spec/components/StatTile.yaml',
-      'spec/components/Surface.yaml', 'spec/components/Text.yaml', 'spec/components/TextArea.yaml',
-      'spec/components/TextField.yaml', 'spec/components/Toggle.yaml', 'spec/components/Tooltip.yaml',
+      'spec/components/ReferenceLine.yaml', 'spec/components/RingGauge.yaml', 'spec/components/SearchField.yaml',
+      'spec/components/SegmentedControl.yaml', 'spec/components/Select.yaml', 'spec/components/Sheet.yaml',
+      'spec/components/Sidebar.yaml', 'spec/components/Skeleton.yaml', 'spec/components/Slider.yaml',
+      'spec/components/Sparkline.yaml', 'spec/components/Spinner.yaml', 'spec/components/StatCard.yaml',
+      'spec/components/StatTile.yaml', 'spec/components/StatusPill.yaml', 'spec/components/Stepper.yaml',
+      'spec/components/Surface.yaml', 'spec/components/TabBar.yaml', 'spec/components/Table.yaml',
+      'spec/components/Text.yaml', 'spec/components/TextArea.yaml', 'spec/components/TextField.yaml',
+      'spec/components/Timeline.yaml', 'spec/components/Toast.yaml', 'spec/components/Toggle.yaml',
+      'spec/components/Toolbar.yaml', 'spec/components/Tooltip.yaml', 'spec/components/TopBar.yaml',
+      'spec/patterns/AdaptiveShell.yaml', 'spec/patterns/DashboardGrid.yaml', 'spec/patterns/DetailScreen.yaml',
     ]);
   }, 60_000);
 
@@ -66,7 +76,7 @@ describe('the repository', () => {
     } finally {
       console.log = log;
     }
-    expect(logged.join('\n')).toMatch(/^spec:validate: 33 specs, 0 diagnostic\(s\)/);
+    expect(logged.join('\n')).toMatch(/^spec:validate: 60 specs, 0 diagnostic\(s\)/);
   }, 120_000);
 
   test('the CLI rejects an unknown argument', async () => {
@@ -81,6 +91,75 @@ describe('the repository', () => {
   }, 30_000);
 });
 
+describe('the contract spec/SCHEMA.md states in prose', () => {
+  const reader = fsReader(REPO_ROOT);
+  const specs = reader
+    .list('spec/components')
+    .filter((e) => !e.dir && e.name.endsWith('.yaml'))
+    .map((e) => {
+      const path = `spec/components/${e.name}`;
+      return { path, value: loadSpec(path, reader.readText(path)).value ?? {} };
+    });
+  const records = (v: unknown): Record<string, unknown>[] =>
+    Array.isArray(v) ? v.filter((x): x is Record<string, unknown> => typeof x === 'object' && x !== null && !Array.isArray(x)) : [];
+
+  test('every anatomy `parent` names a part listed before it', () => {
+    const problems: string[] = [];
+    let parents = 0;
+    for (const { path, value } of specs) {
+      const listed = new Set<string>();
+      for (const part of records(value['anatomy'])) {
+        const name = typeof part['part'] === 'string' ? part['part'] : '';
+        const parent = part['parent'];
+        if (typeof parent === 'string') {
+          parents++;
+          if (!listed.has(parent)) problems.push(`${path}: ${name} names parent ${parent}, which is not listed before it`);
+        }
+        listed.add(name);
+      }
+    }
+    expect(problems).toEqual([]);
+    // Dialog declares its tree (spec/SCHEMA.md, Anatomy), so the check is not vacuous.
+    expect(parents).toBeGreaterThan(0);
+  });
+
+  test('a loading state is entered by `isLoading`, the one name Prism gives it', () => {
+    const problems: string[] = [];
+    for (const { path, value } of specs) {
+      const props = records(value['props']);
+      const states = Array.isArray(value['states']) ? value['states'] : [];
+      const isLoading = props.find((p) => p['name'] === 'isLoading');
+      if (states.includes('loading') && (isLoading === undefined || isLoading['type'] !== 'boolean')) problems.push(`${path}: \`loading\` has no boolean isLoading prop`);
+      if (props.some((p) => p['name'] === 'isBusy')) problems.push(`${path}: isBusy is spelled isLoading`);
+    }
+    expect(problems).toEqual([]);
+  });
+
+  test('slot fixtures in examples are the ones spec/SCHEMA.md documents', () => {
+    const documented = new Set(['text', 'list', 'form', 'readout', 'buttonRow', 'pager']);
+    const problems: string[] = [];
+    let fixtures = 0;
+    const walk = (v: unknown, where: string): void => {
+      if (Array.isArray(v)) {
+        v.forEach((item) => walk(item, where));
+        return;
+      }
+      if (typeof v !== 'object' || v === null) return;
+      const record = v as Record<string, unknown>;
+      if ('fixture' in record) {
+        fixtures++;
+        if (typeof record['fixture'] !== 'string' || !documented.has(record['fixture'])) problems.push(`${where}: fixture ${JSON.stringify(record['fixture'])}`);
+      }
+      for (const child of Object.values(record)) walk(child, where);
+    };
+    for (const { path, value } of specs) {
+      for (const example of records(value['examples'])) walk(example['props'], `${path} ${String(example['id'])}`);
+    }
+    expect(problems).toEqual([]);
+    expect(fixtures).toBeGreaterThan(0);
+  });
+});
+
 describe('fixtures', () => {
   const cases = specCases();
 
@@ -93,6 +172,8 @@ describe('fixtures', () => {
       'category/unclassified',
       'comp/no-spec',
       'comp/orphan',
+      'composition/prop',
+      'composition/unknown',
       'example/light-glass-backdrop',
       'example/tinted-scheme',
       'example/vivid-grid',
@@ -227,6 +308,18 @@ describe('prose paths', () => {
     );
     expect(hits.map((h) => h.text)).toEqual(['color.text.primary', 'opacity.disabled', 'radius.card']);
     expect(hits[0]?.at).toEqual(['behavior', 0]);
+  });
+
+  test('a pattern also resolves the token paths of its layout, rules and composition', () => {
+    const pattern = {
+      behavior: ['The grid keeps its gaps.'],
+      layout: { gap: 'size.card.min', columns: { compact: 1 } },
+      rules: ['One hero at type.metric.xl.'],
+      composition: [{ component: 'Card', where: 'a cell at radius.card' }],
+    };
+    expect(proseTokenPaths(pattern, categories)).toEqual([]);
+    expect(proseTokenPaths(pattern, categories, PATTERN_PROSE_FIELDS).map((h) => h.text)).toEqual(['size.card.min', 'type.metric.xl', 'radius.card']);
+    expect(proseTokenPaths(pattern, categories, PATTERN_PROSE_FIELDS)[0]?.at).toEqual(['layout', 'gap']);
   });
 });
 

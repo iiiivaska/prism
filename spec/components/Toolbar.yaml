@@ -1,0 +1,207 @@
+name: Toolbar
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  A group of actions on one track: a floating dock over a map or a render, a zoom cluster, a vertical
+  tool stack, or an action bar pinned to the bottom of a sheet. The track is one step up from what it
+  floats over, its buttons are IconButtons and Buttons, and exactly one of them may be the solid. It
+  navigates nothing - a group that changes where you are is a TabBar or PillTabs.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the track; `inline` draws none of it and the toolbar is only a row of gaps
+  - part: items
+    slot: true
+    description: IconButtons and at most one Button, in the order the caller gives them
+  - part: separator
+    optional: true
+    description: a hairline between two groups of items on one track
+  - part: edge
+    optional: true
+    description: the 1 px inner edge, drawn only where the track renders the chip recipe
+
+props:
+  - name: items
+    type: slot
+    description: "IconButtons, at most one Button, and separators written as `{ kind: separator }` between two groups; at most one of the controls is primary or selected"
+  - name: orientation
+    type: enum
+    values: [horizontal, vertical]
+    default: horizontal
+  - name: placement
+    type: enum
+    values: [floating, inline]
+    default: floating
+    description: floating draws the track and its shadow over content; inline draws no track and sits in a row of the layout
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+    description: forwarded to every item, so a toolbar is one control height throughout
+  - name: label
+    type: string
+    required: true
+    description: the group's name for assistive technology ("Map tools"); the buttons carry their own
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      floating:
+        default: color.bg.surface.raised
+        page:
+          default: color.bg.surface.raised
+          map: material.glass.chip
+          image: material.glass.chip
+          vivid: material.glass.chip
+        vivid: material.glass.chip
+        glass: material.glass.chip
+    blur:
+      floating:
+        page:
+          map: material.glass.chip.blur
+          image: material.glass.chip.blur
+          vivid: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+        glass: material.glass.chip.blur
+    saturate:
+      floating:
+        page:
+          map: material.glass.chip.saturate
+          image: material.glass.chip.saturate
+          vivid: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+        glass: material.glass.chip.saturate
+    radius:
+      floating: radius.control
+    padding:
+      floating: space.1
+    shadow:
+      floating: elevation.2
+      inline: elevation.0
+    z: z.raised
+  items:
+    gap: space.1
+    size:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+  separator:
+    color: color.border.hairline
+    width: border.hairline
+    margin: space.1
+  edge:
+    color: color.edge.highlight
+    startAlpha:
+      floating: material.glass.chip.edge.start
+    endAlpha:
+      floating: material.glass.chip.edge.end
+
+behavior:
+  - "The track is a pill at radius.control holding its items with space.1 of padding and space.1 between them, so a row of md controls at the regular density is a 48 pt track around 40 pt circles (visual-dna §4.7, which measures a 52 track around 44 buttons)."
+  - "The track's material follows what the toolbar floats over. On the page with no backdrop of its own, and on the solid family, it is color.bg.surface.raised - the default cell, which is also what the page cell falls to when the published backdrop kind is `none`. Over a map, over imagery, on a vivid surface or on the scheme's glass it is the whole material.glass.chip recipe - its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn."
+  - "The toolbar publishes `raised` to its items in every path, the chip included, so an item's tones are the ones tools/contrast checks on color.bg.surface.raised and nothing about a button changes when the glass drops out (ADR-0022 §1.1, §3.1)."
+  - "`placement: inline` removes the track entirely: every track cell - background, blur, saturate, radius, padding and the inner edge - is keyed by `floating` and has no `inline` cell and no default, so under `inline` none of them is set and the toolbar is the items at their gap, at elevation.0. It is the form a toolbar takes inside a card or a sheet, where the card is already the surface."
+  - "Exactly one item may be primary or selected - the active tool, the one solid action - and its siblings are hairline rings, ghosts or plain glyphs (visual-dna §1 principle 9 and §4.7). Two solids in one track is anti-pattern 24."
+  - "A toolbar acts; it does not navigate. A row of buttons that changes which screen you are on is a TabBar or PillTabs, and a row that changes one value out of two to four is a SegmentedControl."
+  - "Items are IconButtons and at most one Button. Toolbar forwards only `size`, so a track is one control height throughout; every other prop, and the whole press, hover, selected and focus behaviour, belongs to those components."
+  - "Overflow: the track never wraps, never scrolls and never shrinks its buttons. Items beyond what the track's axis can hold collapse into a single trailing nav.more IconButton that opens a Menu, and a vertical stack does the same at its bottom."
+  - "A floating toolbar never covers a control or the object it acts on: it is inset from the edge it hangs on by space.5 and keeps space.4 between itself and any other floating layer (visual-dna §11 anti-pattern 31)."
+  - "Safe areas: the inset of a floating toolbar is measured from the safe-area inset the platform reports on that edge, never from the physical edge, so a dock clears the home indicator and a vertical stack clears the notch and the rounded corners. A toolbar that shares an edge with a TabBar sits above it, with space.4 between them."
+  - "A separator is drawn only between two groups of items on one track, at border.hairline width in color.border.hairline with space.1 of margin; it is decorative, and the grouping also reaches assistive technology through the items' own names."
+  - "`orientation: vertical` stacks the items on the same track with the same padding and gap; it is the tool stack that hangs beside a render or a map, and it holds at most six items before the overflow rule applies."
+  - "Under Reduce Transparency and Increase Contrast the track drops to its default cell, color.bg.surface.raised, at the same radius, padding and elevation, with blur, saturation and the inner edge dropped; the items are unaffected, because the track already published raised. That choice is made inside Prism's Surface module - DSCore's DSSurface on Apple, the React Surface and its stylesheet on the web - which is the only code that reads Prism's contrast and transparency context (ADR-0022 §1.3 and rule 2, ADR-0019 §4 item 6); Toolbar reads neither setting."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: toolbar
+  label: the `label` prop, always explicit; the items carry their own names and are not renamed by the group
+  traits: [toolbar]
+  keyboard: the track is one Tab stop; arrow keys move between items along the toolbar's own axis and wrap at the ends, Home and End reach the first and last, and each item activates with Space or Enter; focus rings are color.border.focus at border.focus width
+  dynamicType: the track and its buttons do not scale with Dynamic Type - density is their lever (ADR-0024 §7.1) - and a Button inside the track grows with its label, which grows the track's short axis with it
+  contrast: "the track on the page is color.bg.surface.raised, whose pairs tools/contrast checks over color.bg.page; over media it is the material.glass.chip recipe, checked with its primary foreground only (ADR-0022 §3.1), and its inner edge and separators are decorative. Every foreground inside belongs to the item that draws it"
+  reduceTransparency: the chip recipe resolves to the opaque color.bg.surface.raised track at the same radius, padding and elevation.2; blur, saturation and the inner edge are dropped, and the items do not change
+  reduceMotion: a toolbar that appears does not slide or scale in; it crossfades by opacity over motion.duration.base with motion.easing.out, and each item keeps IconButton's own press substitute
+
+usage:
+  do:
+    - Give the group one name and let each button keep its own.
+    - Keep one solid in the track - the active tool, or the one primary action of a sheet's action bar.
+    - Use `inline` inside a card or a sheet, where a track would be a second surface on the same step.
+  dont:
+    - Don't navigate with a Toolbar; that is a TabBar or PillTabs.
+    - Don't fill a track behind a set of mutually exclusive options; that is a SegmentedControl, which has no track at all.
+    - Don't let a floating toolbar cover the control or the object it acts on.
+    - Don't mix control sizes on one track.
+
+examples:
+  - id: floating-dock
+    props: { label: "Map tools", items: [{ kind: iconButton, glyph: action.locate, label: "Centre on the vehicle" }, { kind: button, variant: primary, label: "Start the run" }, { kind: iconButton, glyph: action.filter, label: "Filter routes" }], placement: floating }
+  - id: zoom-cluster
+    props: { label: "Zoom", orientation: vertical, items: [{ kind: iconButton, glyph: action.zoom-in, label: "Zoom in" }, { kind: iconButton, glyph: action.zoom-out, label: "Zoom out" }] }
+  - id: tool-stack
+    props: { label: "Inspection tools", orientation: vertical, items: [{ kind: iconButton, glyph: action.locate, label: "Measure" }, { kind: iconButton, glyph: object.camera, label: "Capture" }, { kind: iconButton, glyph: action.edit, label: "Annotate" }, { kind: iconButton, glyph: action.share, label: "Share the view" }] }
+  - id: inline-action-bar
+    props: { label: "Report actions", placement: inline, items: [{ kind: button, variant: primary, label: "Send the report" }, { kind: iconButton, glyph: action.copy, label: "Copy the link" }] }
+  - id: with-separator
+    props: { label: "Playback", items: [{ kind: iconButton, glyph: action.play, label: "Play" }, { kind: iconButton, glyph: action.pause, label: "Pause" }, { kind: separator }, { kind: iconButton, glyph: action.refresh, label: "Replay from the start" }] }
+  - id: over-map
+    props: { label: "Map tools", items: [{ kind: iconButton, glyph: action.zoom-in, label: "Zoom in" }, { kind: iconButton, glyph: action.zoom-out, label: "Zoom out" }, { kind: iconButton, glyph: action.locate, label: "Centre on me" }] }
+    surface: map
+    description: the track renders the chip recipe over the map and still publishes raised to its buttons
+  - id: on-glass-over-image
+    props: { label: "Viewport tools", orientation: vertical, items: [{ kind: iconButton, glyph: action.zoom-in, label: "Zoom in" }, { kind: iconButton, glyph: object.eye, label: "Hide the overlay" }] }
+    surface: glass
+    backdrop: image
+  - id: overflow
+    props: { label: "Route actions", items: [{ kind: iconButton, glyph: action.edit, label: "Edit the route" }, { kind: iconButton, glyph: action.share, label: "Share" }, { kind: iconButton, glyph: action.copy, label: "Copy" }, { kind: iconButton, glyph: nav.more, label: "More route actions" }] }
+    description: everything past what the track can hold collapses behind one nav.more button
+  - id: label-ru
+    props: { label: "Инструменты карты", items: [{ kind: iconButton, glyph: action.zoom-in, label: "Приблизить" }, { kind: iconButton, glyph: action.zoom-out, label: "Отдалить" }, { kind: button, variant: primary, label: "Построить маршрут" }] }
+    description: the Russian Button label is about half again as long, so the track grows along its axis instead of wrapping
+
+notes:
+  platform:
+    ios: "adapted. A toolbar pinned to the bottom of a sheet or a screen is the system toolbar with Liquid Glass (ADR-0009 decision 1): Prism passes the items and paints no track, no edge and no shadow, so the `root` cells of this spec do not apply to it, which is the anatomy difference that makes the platform adapted rather than full - the same reason TabBar and TopBar are adapted. A floating dock over a map, a render or imagery is Prism's own track, and this spec's cells describe it."
+    ipados: "adapted. Same as iOS."
+    macos: "full. The default size follows compact density (32 pt controls); hover is required on every item, and a floating dock is used only over a map or a render, never over a document."
+    watchos: "none. ADR-0010's Tier 3 list has no Toolbar, no glass and no blur; a watch acts through one Button per screen (spec/components/Button.yaml)."
+    web-desktop: "full. The track is a `toolbar` with roving focus; `data-orientation` drives the axis the arrow keys follow."
+  design: >-
+    The six sightings in docs/research/component-inventory.md (6/11) fold into one object: a floating
+    dock, a round-button track inside a sheet, a vertical glass tool stack over a 3D viewport, a map zoom
+    cluster, a seven-button tool strip and a drawer action bar. The track's geometry and its two materials
+    are docs/research/visual-dna.md §4.7 - "Track: glass chip or surface.raised, 52 tall with 4 inset and
+    4 gaps around 44 buttons" - which space.1 and radius.control carry, and its "one solid among hairlines"
+    is §1 principle 9. Refusing to navigate is the inventory's own merging rule ("Groups that navigate are
+    TabBar or PillTabs"); refusing a filled track under mutually exclusive options is §11 anti-pattern 24,
+    which is why the one sighting whose track holds an inverse-solid active button is noted there as a
+    possible icon SegmentedControl and is not this component. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md

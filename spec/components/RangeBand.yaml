@@ -4,8 +4,9 @@ specVersion: 1
 status: draft
 summary: >-
   A translucent band behind the data marking a window on the time axis or a range on the value axis:
-  a highlighted period, a normal range, a flagged bucket. It is a part, not a chart — LineChart,
-  AreaChart and Sparkline compose it — and it is the only wash Prism puts under a plot.
+  a highlighted period, a normal range, a flagged bucket. It is a part, not a chart — LineChart and
+  AreaChart compose it, while Sparkline draws its own normal-range band and never this part — and it is
+  the only wash Prism puts under a full chart's plot.
 since: 0.1.0
 
 platforms:
@@ -21,21 +22,23 @@ schemes: [light, dark]
 
 anatomy:
   - part: root
+  - part: label
+    optional: true
+    description: what the window is; above the plot on the time axis, inside the plot beside the band on the value axis
   - part: band
   - part: bookend
     optional: true
-    description: a dot at each edge of a window on the time axis
-  - part: label
-    optional: true
-    description: what the window is, above the band and outside the plot
+    description: a dot at each edge of a window on the time axis, on the host chart's series
 
 props:
   - name: from
     type: number
     required: true
+    description: "one bound of the band, in the host chart's domain. On `axis: x` over a time scale it is a Unix time in whole seconds (1763528400), the unit of LineChart's `selection` and ReferenceLine's `value`; on a linear x scale and on `axis: y` it is a value in the data's own unit"
   - name: to
     type: number
     required: true
+    description: "the other bound, in the same unit as `from`. The band spans from the lower of the two to the higher, so their order does not matter; equal bounds draw nothing, because a moment is a ReferenceLine"
   - name: axis
     type: enum
     values: [x, y]
@@ -64,12 +67,12 @@ tokens:
       nested: { neutral: color.chart.band, accent: color.bg.tint.accent }
       glass: { neutral: color.chart.band, accent: color.bg.tint.accent }
   bookend:
-    size: chart.marker-size
+    size: chart.endpoint-size
     color:
-      page: color.chart.now
-      solid: color.chart.now
-      raised: color.chart.now
-      nested: color.chart.now
+      page: { neutral: color.chart.series.1, accent: color.chart.now }
+      solid: { neutral: color.chart.series.1, accent: color.chart.now }
+      raised: { neutral: color.chart.series.1, accent: color.chart.now }
+      nested: { neutral: color.chart.series.1, accent: color.chart.now }
       glass: color.chart.on-glass-fill.line
   label:
     typography: type.axis
@@ -77,7 +80,7 @@ tokens:
     color:
       default:
         neutral: color.chart.axis
-        accent: color.chart.now
+        accent: color.text.accent
       glass:
         map: color.text.on-glass-fill-secondary
         image: color.text.on-glass-fill-media-secondary
@@ -85,24 +88,29 @@ tokens:
 
 behavior:
   - The band is drawn behind the data, the gridlines and every reference line, with square corners and no stroke; it is a ground, not a mark.
-  - "On the time axis the band runs the full plot height and its edges are bookended by chart.marker-size dots; on the value axis it runs the full plot width and carries no bookends."
+  - "On the time axis the band runs the full plot height and its edges carry bookends; on the value axis it runs the full plot width and carries no bookends."
+  - "`from` and `to` are in the host chart's domain: Unix seconds on a time axis, the data's own unit otherwise. The band spans the lower bound to the higher whatever their order. A band that runs past the visible domain is clipped to the plot, and only an edge inside the domain carries a bookend, because the window does not end where the plot does; a band wholly outside the visible domain is not drawn, and neither is its label."
   - "`fill: neutral` is color.chart.band, the system's one chart wash — ink in light and white in dark, so it reads the same against either plot."
   - "`fill: accent` is color.bg.tint.accent, whose dark use ADR-0030 §3.3 narrows to exactly this: chart windows and bands, never a card."
   - A flagged window keeps its label and, where the flag is a rule, the ReferenceLine that states it; the tint alone never carries the meaning.
-  - "The band renders on the solid family and on the scheme's glass, and has no cell for any other material, so on vivid, light glass, inverse and accent it is simply not drawn. Neither media family carries a band role (ADR-0030 §2), but the two cases differ in what the wash would land on: on the scheme's glass the chart has a plot fill of its own (color.chart.on-glass-fill.plot), so the solid family's decorative wash sits inside that lift and stays legible, while on vivid the chart has no plot fill at all and the wash would be ink or white on the raw gradient, where it has neither a token nor a pair. The bookends follow the band."
-  - "The label is text, not a mark: color.chart.axis on the solid family and, on the scheme's glass, the quieter text tone of the published backdrop kind (ADR-0029 §1.4). It follows the band, so no label is drawn on vivid either."
+  - "Bookend placement: each bookend is a chart.endpoint-size dot whose centre sits on the host chart's series where it crosses the edge — at x = `from` and at x = `to`, on the drawn curve after interpolation. The series is the one in color.chart.series.1: the emphasised series, or the first series when none is emphasised; on vivid and on the scheme's glass there is only one. Where that series has no value at an edge (a gap in the data, or an edge outside the series' own range) that edge has no bookend. Rendered with no host series at all — this part's own gallery examples — each bookend's centre sits on its edge at the top of the plot."
+  - "Bookend tone follows `fill`: a neutral window's dots are color.chart.series.1, the ink of the series they sit on, and an accent window's dots are color.chart.now, the attention tone. On the scheme's glass the chart family holds one line role, so both fills take color.chart.on-glass-fill.line and the label alone tells an accent window apart."
+  - "The band renders on the solid family and on the scheme's glass, and has no cell for any other material, so on vivid, light glass, inverse and accent it is simply not drawn. Neither media family carries a band role (ADR-0030 §2), but the two cases differ in what the wash would land on: on the scheme's glass the chart has a plot fill of its own (color.chart.on-glass-fill.plot), so the solid family's decorative wash sits inside that lift and stays legible, while on vivid the chart has no plot fill at all and the wash would be ink or white on the raw gradient, where it has neither a token nor a pair. The bookends and the label follow the band."
+  - "The label is text, not a mark: color.chart.axis for a neutral window and color.text.accent for an accent one on the solid family, and on the scheme's glass the quieter text tone of the published backdrop kind (ADR-0029 §1.4) for both. color.chart.now is a mark tone and never colours the label."
+  - "Label on the time axis: it sits above the plot, outside it, in a row of type.axis that the host chart reserves inside its own box while any time-axis band carries a label; the row's bottom edge is `label.gap` (space.2) above the plot's top edge, and the label starts at the band's leading edge, or at the plot's leading edge when that edge is clipped. It fits when its width at the current text size is no more than the distance from that start to the plot's trailing edge, or to the next labelled band's leading edge less space.2, whichever is nearer."
+  - "Label on the value axis: it sits inside the plot on the plot fill, at the plot's leading edge, with its bottom edge `label.gap` above the band's upper edge. When that would cross the plot's top edge it sits `label.gap` below the band's lower edge instead. It fits when one of those two positions lies inside the plot and its width is no more than the plot's width."
+  - "A label that does not fit is not drawn over the plot and is never clipped: the band keeps its bookends, and the label's words are appended to the enclosing ChartContainer's caption as a sentence of their own."
   - "A projected or unusual period is told by its label and by a ReferenceLine of style `projection`; Prism has no hatch token yet, so no band is hatched."
-  - Two bands per plot is the ceiling, and bands never overlap; overlapping windows are separate panels.
-  - "The label sits above the band's leading edge in type.axis, outside the plot; where it does not fit the band keeps the bookends and the label moves into the chart's caption."
+  - "Two bands per plot is the ceiling, and bands never overlap. A host draws its `bands` in the order given: a band that overlaps one already drawn, and every band after the second, is not drawn and logs at debug level. Overlapping windows are separate panels."
   - The band never animates on its own; it enters and leaves with the chart that composes it.
 
 accessibility:
   role: none
   label: the window's bounds and its name, spoken as part of the chart's summary ("shaded, 02:00 to 06:00, maintenance window") and marked as a column in the ChartContainer table twin
   keyboard: not focusable; the window's rows are reachable through the scrubber and through the table twin
-  dynamicType: the label scales with type.axis and moves into the chart caption before it shrinks; the band's geometry follows the data, not the text size
-  contrast: the band is decorative and has no contrast tier of its own; every mark drawn over it keeps its own 3:1 against the plot, and the data is readable with the band removed — which is exactly what a vivid surface leaves behind. The label is functional text at 4.5:1 through color.chart.axis, and on the scheme's glass through the backdrop kind's quieter text tone (ADR-0029 §1.4)
-  reduceTransparency: glass resolves to the opaque raised surface and the band keeps color.chart.band over color.chart.plot; the accent band keeps color.bg.tint.accent, which is opaque over the page
+  dynamicType: the label scales with type.axis and moves into the chart caption once it no longer fits, before it would shrink or clip; the band's geometry follows the data, not the text size
+  contrast: "the band is decorative and has no contrast tier of its own; every mark drawn over it keeps its own 3:1 against the plot, and the data is readable with the band removed — which is exactly what a vivid surface leaves behind. A neutral window's bookends are color.chart.series.1, a boundary pair on color.chart.plot; an accent window's are color.chart.now, a boundary pair in dark and in light a redundant mark that the window's label always accompanies (tokens/contrast-pairs.json). The label is functional text at 4.5:1: color.chart.axis, checked on color.chart.plot; color.text.accent, checked on color.chart.plot, on the page, on a card, on a raised panel and on color.bg.surface.nested, which covers both the value-axis label inside the plot and the time-axis label above it; and on the scheme's glass the backdrop kind's quieter text tone (ADR-0029 §1.4)"
+  reduceTransparency: glass resolves to the opaque raised surface, so the band keeps color.chart.band over color.chart.plot and the bookends and the label take their solid-family cells. The accent band keeps color.bg.tint.accent, which is a translucent tint in both schemes and stays one, because it tints the opaque plot rather than letting a backdrop through
   reduceMotion: nothing animates; a band never sweeps in, pulses or marches, in either motion context
 
 usage:
@@ -115,20 +123,26 @@ usage:
     - Don't use a status hue for a band; a status is a glyph and a word.
     - Don't stack bands, and don't let a band double as a series.
     - Don't rely on the tint alone to say a period is a projection.
+    - Don't colour a window's label with the mark tone; an accent label is color.text.accent.
 
 examples:
   - id: window-neutral
     props: { from: 1763528400, to: 1763542800, axis: x, label: "Maintenance window" }
+    description: the bookends are drawn at the top of the plot, because this part is rendered with no host series
   - id: window-accent
     props: { from: 1763553600, to: 1763560800, axis: x, fill: accent, label: "Off target" }
+    description: the dots take the attention tone and the label takes color.text.accent
   - id: normal-range
     props: { from: 65, to: 80, axis: y, label: "Normal range" }
-    description: on the value axis the band runs the plot's width and drops the bookends
+    description: on the value axis the band runs the plot's width, drops the bookends and labels itself inside the plot, above its upper edge
+  - id: range-accent
+    props: { from: 90, to: 100, axis: y, fill: accent, label: "Above capacity" }
+    description: where the band reaches the plot's top edge there is no room above it, so the label sits below the band's lower edge in color.text.accent
   - id: no-bookends
     props: { from: 1763528400, to: 1763542800, axis: x, bookends: false }
   - id: label-ru
     props: { from: 1763528400, to: 1763542800, axis: x, label: "Плановое обслуживание" }
-    description: the Russian label is about half again as long and moves into the chart caption rather than clipping
+    description: the Russian label is about half again as long; where it no longer fits between the band's leading edge and the plot's trailing edge it moves into the chart caption rather than clipping
   - id: on-glass-over-map
     props: { from: 65, to: 80, axis: y, label: "Normal range" }
     surface: glass
@@ -140,15 +154,22 @@ notes:
     macos: the label renders at the role size under compact density; no hover readout, because the band is not interactive.
   design: >-
     Full-height translucent windows with bookend dots come from docs/research/visual-dna.md §4.6 and §8.2
-    (band ink 5 % / white 6 %) and the RangeBand row of docs/research/component-inventory.md; the band
-    semantics (normal range, confidence, unusual period, projection) and "behind everything, no stroke"
-    are docs/research/dataviz-design.md §3 rule C17 and fact F40. The accent-tinted flagged window is
-    visual-dna §8.2's last row and ADR-0030 §3.3. dataviz-design.md §6 proposes a hatch token for
-    projections and its §8 open question 6 leaves its Figma representation open, so `hatch` is not a prop
-    here. Example copy is invented (ADR-0015 rule 3).
+    (band ink 5 % / white 6 %, endpoint dots 10, accent tint 12 % / 14 %) and the RangeBand row of
+    docs/research/component-inventory.md. Where the dots sit and what colour they take is that document's
+    LineChart row — dots on the primary series, highlighted windows with bookend dots, and only an
+    off-target window in the accent — read through visual-dna §8.1's grammar (ink or white is data, accent
+    is attention, a dot is a bookend): hence chart.endpoint-size, the series ink for a neutral window and
+    color.chart.now for an accent one. The band semantics (normal range, confidence, unusual
+    period, projection) and "behind everything, no stroke" are docs/research/dataviz-design.md §3 rule C17
+    and fact F40. The accent-tinted flagged window is visual-dna §8.2's last row and ADR-0030 §3.3; its
+    label takes color.text.accent because visual-dna §3.2 starts light accent text at step 800, while
+    color.chart.now is step 500 at 2.30:1 on white (visual-dna Appendix B, B3).
+    dataviz-design.md §6 proposes a hatch token for projections and its §8 open question 6 leaves its
+    Figma representation open, so `hatch` is not a prop here. Example copy is invented (ADR-0015 rule 3).
   references:
     - docs/adr/0007-dataviz-first-class.md
     - docs/adr/0010-platform-tiers-density-modality.md
     - docs/adr/0011-accessibility-tiers-ci.md
     - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md

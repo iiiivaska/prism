@@ -1,0 +1,41 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "timeline": {
+      "marker": {
+        "current": {
+          "bg": {
+            "$type": "color",
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$description": "the marker of the one entry that is \"now\": the single inverse solid of the list, against hairline rings for every other entry (visual-dna §1 principle 9, §4.13)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "icon": {
+            "$type": "color",
+            "$value": "{sys.color.text.on-inverse}",
+            "$description": "the glyph inside the current marker; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "TEXT_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

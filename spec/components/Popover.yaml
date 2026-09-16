@@ -1,0 +1,196 @@
+name: Popover
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  A small panel anchored beside the control that opened it, holding things the user has to reach - a
+  readout with a close button, a few controls, a short form. It is pointer-first: it never opens on
+  hover, it takes focus, and at compact width it stops being anchored and presents as a Sheet instead.
+  Unlike a Tooltip it holds interactive content; unlike a Dialog it blocks nothing behind it.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: adapted
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the panel; an opaque Surface of material raised, so it stays legible over a map, an image or a vivid card
+  - part: header
+    optional: true
+  - part: title
+    optional: true
+  - part: close
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: plain`, `size: sm`, `glyph: nav.close`, `label` \"Close\", `onPress` = `onDismiss`), drawn while `showsClose`"
+  - part: content
+    slot: true
+
+props:
+  - name: anchor
+    type: data
+    required: true
+    description: the element the panel is anchored to and returns focus to; the caller owns that trigger, sets its expanded state from `isOpen` and owns `isOpen` itself, exactly as ContextMenu takes its anchor
+  - name: placement
+    type: enum
+    values: [top, bottom, leading, trailing]
+    default: bottom
+    description: the preferred side of the anchor; the panel flips to the opposite side when it would leave the viewport
+  - name: title
+    type: string
+    description: a short heading; it is also the panel's accessible name
+  - name: content
+    type: slot
+    required: true
+  - name: width
+    type: enum
+    values: [auto, anchor]
+    default: auto
+    description: "`anchor` matches the trigger's width, for a panel that reads as the trigger's own list; it has no meaning in the compact-width Sheet form and is ignored there"
+  - name: padding
+    type: enum
+    values: [regular, flush]
+    default: regular
+    description: "`flush` drops the panel's own padding to `space.2` so a list of rows runs nearly edge to edge and a press anywhere on a row lands on that row; it exists for Menu, and content that is not a row list uses `regular`"
+  - name: showsClose
+    type: boolean
+    default: false
+    description: draws the close control; a panel with nothing else to press should have it
+  - name: isOpen
+    type: boolean
+    default: false
+  - name: onDismiss
+    type: action
+    required: true
+
+states: [default, focus-visible]
+
+tokens:
+  root:
+    background: color.bg.surface.raised
+    radius: radius.card-compact
+    padding:
+      regular: space.5
+      flush: space.2
+    gap: space.4
+    offset: space.2
+    minWidth: size.card.min
+    shadow: elevation.3
+    z: z.overlay
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  header:
+    gap: space.3
+    paddingBottom: space.3
+  title:
+    typography: type.label.lg
+    color: color.text.primary
+  close:
+    gap: space.3
+  content:
+    gap: space.4
+
+behavior:
+  - "A Popover opens on a press or on a keyboard activation of its trigger, never on hover. A panel that holds things the user must reach may not be discoverable only by a hovering pointer (visual-dna §11 anti-pattern 31); what hovering reveals is a Tooltip, and a Tooltip holds nothing interactive."
+  - "Its material is the opaque raised surface in every context, over `color.bg.page` (ADR-0030 §5.1), with `elevation.3` - the level visual-dna §7.2 gives to popovers and floating readouts. It never renders glass and reads no published material, because it floats above the layer that publishes them."
+  - "It renders at `z.overlay`, offset `space.2` (6) from the anchor on the `placement` side. When that side does not fit it flips to the opposite one; when neither fits it shifts along the anchor's edge, keeping at least `space.page-margin` from the viewport edge; and when even that does not fit, it presents as a Sheet."
+  - "The panel has no arrow, tail or beak: it is one rounded rectangle offset from its anchor, the same rule Tooltip states, and the offset plus the `placement` side is what says which control it belongs to (visual-dna §1 principle 2: two shapes, and containers are rounded rectangles)."
+  - "At compact width (a window below 600, visual-dna §6.3) the Popover presents as a Sheet instead: `edge: bottom`, `detent: medium` with `detents` left unset, `isModal: true`, forwarding `isOpen`, `title`, `content` and `onDismiss` and passing `showsClose` through to the Sheet prop of the same name. `placement` and `width` have no meaning there and are ignored, and `padding` is not forwarded either, because the Sheet owns its own `space.6`: a list that ran flush to the panel's edges takes that inset instead. `anchor` still receives focus when the sheet closes. Everything the panel holds behaves the same in both forms, and the fallback is width-driven rather than modality-driven, so an iPhone and a narrow browser window get the sheet (under pointer modality the Sheet's pointer form, with its close control) and an iPad with no trackpad still gets the anchored panel. A window that crosses 600 while the Popover is open switches form at once and keeps focus inside it."
+  - "Focus: on open, focus moves into the panel - to its first focusable element, or to the panel itself when it holds none. Tab and Shift-Tab cycle inside the panel while it is open, but the rest of the page is not made inert and does not stop scrolling: the Popover contains focus without blocking. On close, focus returns to `anchor`, or, when that element is gone, to the nearest surviving container. A component built on Popover may replace this keyboard model with one of its own and says so in its spec; Menu does, with a roving focus and a Tab that closes the panel."
+  - "Dismissal: Escape, a press outside the panel and its anchor, the anchor being activated again, the anchor scrolling out of view and the window losing focus each fire `onDismiss` once. `isOpen` is controlled, as ContextMenu's is: the panel closes, and focus returns to the anchor, when the caller writes `isOpen` back as false. It never closes on a timer and never closes because the pointer left it."
+  - "Presenting, the panel fades in from opacity 0 while it moves out from the anchor's edge to its `space.2` offset, on `motion.spring.snappy`, the spring ADR-0023 §3 names for popovers; closing reverses both on the same spring. Nothing scales or blurs. A flip to the other side, or a shift along the anchor, is never animated: the panel takes its new position at once."
+  - "Only one Popover is open at a time: when a second opens, the first fires `onDismiss`, as it would for any press outside it. A Popover never opens from inside a Popover - a second level is a Sheet or a screen."
+  - "Size: the panel is at least `size.card.min` (200) wide and at most twice `size.card.min` plus one `space.card-gap`, the width of two card columns in the grid of spec/patterns/README.md, and at most the viewport height minus twice `space.page-margin` tall. Content past that height scrolls inside the panel with the header pinned; content that needs much more is a Sheet, which is also what the compact-width fallback already presents."
+  - "`width: anchor` makes the panel as wide as its trigger and pins its leading edge to the trigger's, which is what a list belonging to a trigger needs; the lower bound above still holds, so a trigger narrower than `size.card.min` gets a panel of `size.card.min` with the leading edges aligned. `auto` sizes to the content between the two bounds above."
+  - "A Popover never carries a page's worth of navigation, a second decision or a form that can fail in more than one place; those are screens."
+  - "A Popover declares no haptics: opening a panel is not a discrete selection, and the controls inside it own their own feedback."
+
+motion:
+  present: motion.spring.snappy
+  reduceMotion: crossfade
+
+accessibility:
+  role: "`dialog` without the modal flag on the web (React Aria's non-modal popover), and a non-modal accessibility container named like it on Apple - Prism draws the panel, so it is not the system popover presentation with its arrow and its own material; the `anchor` points at it with an expanded state"
+  label: "the `title`; a panel with no title carries an explicit accessibility label, usually the anchor's own name, because \"popover\" says nothing about what is in it. The close control is an IconButton labelled \"Close\", which this component supplies, because an IconButton never infers its name from its glyph"
+  traits: [dialog]
+  keyboard: "the anchor opens it with Space, Enter or Down and keeps its own focus ring; focus then moves into the panel, to its first focusable element or to the panel itself. Escape closes it and returns focus to the anchor without activating anything. Tab and Shift-Tab cycle inside the panel; the page behind it stays reachable only after the panel is closed. The panel itself takes the ring of `color.border.focus` at `border.focus` width when it holds nothing focusable and focus lands on it"
+  dynamicType: "title and content scale with their roles; the panel grows with them up to its width and height bounds and then scrolls, and nothing truncates to keep a size (ADR-0011). From the accessibility sizes on, the panel presents as a Sheet at every width, because an anchored panel that fills the viewport is no longer anchored to anything"
+  contrast: "`color.text.primary` and the quieter tones on `color.bg.surface.raised` are checked functional pairs in tokens/contrast-pairs.json, and `raised` composites over `color.bg.page`, which is what the pairs check. Content placed in the slot carries its own tones and is checked by its own component"
+  reduceTransparency: "not applicable - the panel is opaque in every context and never renders glass, so the ADR-0022 fallback does not change it. The compact-width Sheet it falls back to is solid for the same reason"
+  reduceMotion: "the panel does not move out from its anchor: opening and closing crossfade by opacity over `motion.duration.base` with `motion.easing.out`, and the panel takes its anchored position at once (ADR-0023 §8.4 item 1). A flip or a shift is not animated in either context, so nothing else changes"
+  voiceOver: "opening announces the panel's name and moves the cursor into it; the page behind stays in the accessibility tree, because the Popover does not block. Closing returns the cursor to the `anchor`"
+
+usage:
+  do:
+    - Use a Popover for something the user has to read, press or type beside the control that opened it.
+    - Give it a title, or give it an explicit accessibility label.
+    - Put a close control on a panel that holds nothing else to press.
+    - Let it become a Sheet at compact width; design the content so both forms read.
+  dont:
+    - Don't open a Popover on hover, and don't put anything in one that exists nowhere else.
+    - Don't use a Popover for a name or a hint; that is a Tooltip, which takes no focus.
+    - Don't block the page behind a Popover; a layer that blocks is a Dialog.
+    - Don't nest a Popover in a Popover, and don't put navigation in one.
+    - Don't draw a beak; the offset and the side say what it belongs to.
+
+examples:
+  - id: bottom-form
+    props: { placement: bottom, title: "Filter routes", showsClose: false, content: { fixture: form, fields: 2 } }
+  - id: trailing-readout
+    props: { placement: trailing, title: "Unit 4417", showsClose: true, content: { fixture: readout } }
+  - id: anchor-width
+    props: { placement: bottom, width: anchor, content: { fixture: list, count: 5 } }
+    description: the panel is exactly as wide as its trigger, with its leading edges aligned
+  - id: flipped
+    props: { placement: top, title: "Filter routes", content: { fixture: form, fields: 2 } }
+    description: the preferred side did not fit, so the panel flipped to the opposite one
+  - id: scrolling
+    props: { placement: bottom, title: "Stops", content: { fixture: list, count: 40 } }
+    description: the header stays pinned and the content scrolls inside the height bound
+  - id: over-map
+    props: { placement: trailing, title: "Unit 4417", showsClose: true, content: { fixture: readout } }
+    surface: map
+    description: the panel stays the opaque raised surface over the map; it never becomes glass
+  - id: ru-title
+    props: { placement: bottom, title: "Фильтр по маршрутам и депо", content: { fixture: form, fields: 2 } }
+    description: a Russian title about half again as long as its English twin; the header wraps to two lines and the panel grows to its width bound instead of truncating
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 list excludes every desktop-shaped layer, and a wrist has no room for a panel beside a control. A watch app pushes a screen instead."
+    ios: "`adapted`. At compact width the Popover presents as a Sheet at detent `medium`, which is how a phone presents an anchored panel; on a large iPhone in landscape the width rule decides, not the device."
+    ipados: "`full`. The anchored panel is the normal form; with no pointer attached it still opens on a press, because a Popover never opened on hover in the first place."
+    macos: "`full`; compact density gives it the tighter padding, and the panel takes the pointer hit area (`size.hit` 28) for the controls inside it."
+    web-touch: "`adapted`. Same as iOS: the compact-width Sheet. A touch tablet above 600 keeps the anchored panel."
+    web-desktop: "built on React Aria's popover, which owns the placement, the flip, the outside-press dismissal and the focus containment; the look, the bounds and the compact-width fallback are this spec's."
+  design: >-
+    docs/research/component-inventory.md records 0 of 11 sightings for Popover and names the nearest one -
+    the "pinned chart readout with a close button" of KD, listed under ChartTooltip (2 of 11) - so the panel
+    is derived from that readout plus the rules the rest of the system already fixes. The opaque raised
+    material and `elevation.3` are visual-dna §7.2 level 3, "popovers and floating readouts"; the beakless
+    rounded rectangle and the `space.2` offset repeat Tooltip.yaml, which sets the same rule for the same
+    reason (§1 principle 2). `motion.spring.snappy` is the spring ADR-0023 §3 names for popovers.
+    "Pointer-first with a touch fallback" is the adaptive presentation the platform already performs - an
+    anchored panel at regular width, a sheet at compact width - and Prism makes the trigger the width of
+    visual-dna §6.3 rather than the device, so one rule covers a narrow browser window as well. The ban on
+    hover-opening is §11 anti-pattern 31, the same rule that makes Tooltip pointer-only and forbids putting
+    anything in a Tooltip that exists nowhere else. `color.bg.surface.overlay` exists in the token set but
+    no pair checks text on it, so this spec binds `color.bg.surface.raised`, which is checked; the overlay role stays unpaired until a spec binds it (docs/roadmap.md, P2-5). Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

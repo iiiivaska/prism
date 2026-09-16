@@ -192,6 +192,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryBgRest")
         check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryBorder")
         check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryIcon")
+        check(t.components.listRow.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism: components.listRow.bgPressed")
+        check(t.components.listRow.ruleSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.listRow.ruleSelected")
+        check(t.components.pagination.currentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.pagination.currentBg")
+        check(t.components.pagination.currentText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.pagination.currentText")
+        check(t.components.pillTabs.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.pillTabs.activeBg")
+        check(t.components.pillTabs.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.pillTabs.activeText")
+        check(t.components.pillTabs.underline, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism: components.pillTabs.underline")
         check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.progressBar.fill")
         check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism: components.progressBar.fillSecondary")
         check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.progressBar.track")
@@ -202,6 +209,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.segmentedControl.activeBg")
         check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.segmentedControl.activeText")
         check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.select.borderError")
+        check(t.components.sidebar.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.sidebar.activeBg")
+        check(t.components.sidebar.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.sidebar.activeText")
         check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.skeleton.bg")
         check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.skeleton.shimmer")
         check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.slider.fill")
@@ -209,8 +218,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.slider.tick")
         check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.slider.trackBg")
         check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.spinner.arc")
+        check(t.components.table.rowSelectedRule, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.table.rowSelectedRule")
         check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.textArea.borderError")
         check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.textField.borderError")
+        check(t.components.timeline.markerCurrentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.timeline.markerCurrentBg")
+        check(t.components.timeline.markerCurrentIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.timeline.markerCurrentIcon")
         check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism: components.toggle.knobOff")
         check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.toggle.knobOn")
         check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.toggle.trackOff")
@@ -383,6 +395,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryBgRest")
         check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryBorder")
         check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryIcon")
+        check(t.components.listRow.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.listRow.bgPressed")
+        check(t.components.listRow.ruleSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.listRow.ruleSelected")
+        check(t.components.pagination.currentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.pagination.currentBg")
+        check(t.components.pagination.currentText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.pagination.currentText")
+        check(t.components.pillTabs.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.pillTabs.activeBg")
+        check(t.components.pillTabs.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.pillTabs.activeText")
+        check(t.components.pillTabs.underline, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.pillTabs.underline")
         check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.fill")
         check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.fillSecondary")
         check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.track")
@@ -393,6 +412,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.segmentedControl.activeBg")
         check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.segmentedControl.activeText")
         check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.select.borderError")
+        check(t.components.sidebar.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.sidebar.activeBg")
+        check(t.components.sidebar.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.sidebar.activeText")
         check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.skeleton.bg")
         check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.skeleton.shimmer")
         check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.fill")
@@ -400,8 +421,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.tick")
         check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.trackBg")
         check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.spinner.arc")
+        check(t.components.table.rowSelectedRule, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.table.rowSelectedRule")
         check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.textArea.borderError")
         check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.textField.borderError")
+        check(t.components.timeline.markerCurrentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.timeline.markerCurrentBg")
+        check(t.components.timeline.markerCurrentIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.timeline.markerCurrentIcon")
         check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.knobOff")
         check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.knobOn")
         check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.trackOff")
@@ -549,11 +573,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.ringGauge.sizeLg, 104, "prism: components.ringGauge.sizeLg")
         check(t.components.ringGauge.sizeMd, 64, "prism: components.ringGauge.sizeMd")
         check(t.components.ringGauge.sizeSm, 44, "prism: components.ringGauge.sizeSm")
+        check(t.components.sidebar.railWidth, 64, "prism: components.sidebar.railWidth")
         check(t.components.slider.trackHeight, 4, "prism: components.slider.trackHeight")
         check(t.components.sparkline.heightTable, 20, "prism: components.sparkline.heightTable")
         check(t.components.sparkline.heightTile, 40, "prism: components.sparkline.heightTile")
         check(t.components.spinner.stroke, 1.5, "prism: components.spinner.stroke")
         check(t.components.toggle.inset, 4, "prism: components.toggle.inset")
+        check(t.components.topBar.height, 48, "prism: components.topBar.height")
     }
 
     @Test func prismColorScheme() {
@@ -608,6 +634,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism: components.sheet.shadow")
     }
 
     private func prismColorSchemePart2() {
@@ -651,6 +679,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism transparency=reduced: components.sheet.shadow")
     }
 
     private func prismColorSchemePart3() {
@@ -694,6 +724,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism contrast=increased: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism contrast=increased: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism contrast=increased: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism contrast=increased: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism contrast=increased: components.sheet.shadow")
     }
 
     private func prismColorSchemePart4() {
@@ -737,6 +769,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism contrast=increased transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism contrast=increased transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism contrast=increased transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism contrast=increased transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism contrast=increased transparency=reduced: components.sheet.shadow")
     }
 
     private func prismColorSchemePart5() {
@@ -780,6 +814,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism colorScheme=dark: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism colorScheme=dark: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism colorScheme=dark: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark: components.sheet.shadow")
     }
 
     private func prismColorSchemePart6() {
@@ -823,6 +859,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism colorScheme=dark transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism colorScheme=dark transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism colorScheme=dark transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark transparency=reduced: components.sheet.shadow")
     }
 
     private func prismColorSchemePart7() {
@@ -866,6 +904,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism colorScheme=dark contrast=increased: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism colorScheme=dark contrast=increased: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased: components.sheet.shadow")
     }
 
     private func prismColorSchemePart8() {
@@ -909,6 +949,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism colorScheme=dark contrast=increased transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism colorScheme=dark contrast=increased transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism colorScheme=dark contrast=increased transparency=reduced: components.sheet.shadow")
     }
 
     @Test func prismDensity() {
@@ -1858,6 +1900,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryBgRest")
         check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryBorder")
         check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryIcon")
+        check(t.components.listRow.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native: components.listRow.bgPressed")
+        check(t.components.listRow.ruleSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.listRow.ruleSelected")
+        check(t.components.pagination.currentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.pagination.currentBg")
+        check(t.components.pagination.currentText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.pagination.currentText")
+        check(t.components.pillTabs.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.pillTabs.activeBg")
+        check(t.components.pillTabs.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.pillTabs.activeText")
+        check(t.components.pillTabs.underline, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native: components.pillTabs.underline")
         check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.fill")
         check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.fillSecondary")
         check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.track")
@@ -1868,6 +1917,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.segmentedControl.activeBg")
         check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.segmentedControl.activeText")
         check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.select.borderError")
+        check(t.components.sidebar.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.sidebar.activeBg")
+        check(t.components.sidebar.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.sidebar.activeText")
         check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.skeleton.bg")
         check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.skeleton.shimmer")
         check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.slider.fill")
@@ -1875,8 +1926,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.slider.tick")
         check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.slider.trackBg")
         check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.spinner.arc")
+        check(t.components.table.rowSelectedRule, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.table.rowSelectedRule")
         check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.textArea.borderError")
         check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.textField.borderError")
+        check(t.components.timeline.markerCurrentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.timeline.markerCurrentBg")
+        check(t.components.timeline.markerCurrentIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.timeline.markerCurrentIcon")
         check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.knobOff")
         check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.knobOn")
         check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.trackOff")
@@ -2049,6 +2103,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryBgRest")
         check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryBorder")
         check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryIcon")
+        check(t.components.listRow.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.listRow.bgPressed")
+        check(t.components.listRow.ruleSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.listRow.ruleSelected")
+        check(t.components.pagination.currentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.pagination.currentBg")
+        check(t.components.pagination.currentText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.pagination.currentText")
+        check(t.components.pillTabs.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.pillTabs.activeBg")
+        check(t.components.pillTabs.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.pillTabs.activeText")
+        check(t.components.pillTabs.underline, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.pillTabs.underline")
         check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.fill")
         check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.fillSecondary")
         check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.track")
@@ -2059,6 +2120,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.segmentedControl.activeBg")
         check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.segmentedControl.activeText")
         check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.select.borderError")
+        check(t.components.sidebar.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.sidebar.activeBg")
+        check(t.components.sidebar.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.sidebar.activeText")
         check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.skeleton.bg")
         check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.skeleton.shimmer")
         check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.fill")
@@ -2066,8 +2129,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.tick")
         check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.trackBg")
         check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.spinner.arc")
+        check(t.components.table.rowSelectedRule, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.table.rowSelectedRule")
         check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.textArea.borderError")
         check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.textField.borderError")
+        check(t.components.timeline.markerCurrentBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.timeline.markerCurrentBg")
+        check(t.components.timeline.markerCurrentIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.timeline.markerCurrentIcon")
         check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.knobOff")
         check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.knobOn")
         check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.trackOff")
@@ -2215,11 +2281,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.ringGauge.sizeLg, 104, "prism-native: components.ringGauge.sizeLg")
         check(t.components.ringGauge.sizeMd, 64, "prism-native: components.ringGauge.sizeMd")
         check(t.components.ringGauge.sizeSm, 44, "prism-native: components.ringGauge.sizeSm")
+        check(t.components.sidebar.railWidth, 64, "prism-native: components.sidebar.railWidth")
         check(t.components.slider.trackHeight, 4, "prism-native: components.slider.trackHeight")
         check(t.components.sparkline.heightTable, 20, "prism-native: components.sparkline.heightTable")
         check(t.components.sparkline.heightTile, 40, "prism-native: components.sparkline.heightTile")
         check(t.components.spinner.stroke, 1.5, "prism-native: components.spinner.stroke")
         check(t.components.toggle.inset, 4, "prism-native: components.toggle.inset")
+        check(t.components.topBar.height, 48, "prism-native: components.topBar.height")
     }
 
     @Test func prismNativeColorScheme() {
@@ -2274,6 +2342,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism-native: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism-native: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism-native: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart2() {
@@ -2317,6 +2387,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism-native transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism-native transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism-native transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native transparency=reduced: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart3() {
@@ -2360,6 +2432,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism-native contrast=increased: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism-native contrast=increased: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism-native contrast=increased: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native contrast=increased: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native contrast=increased: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart4() {
@@ -2403,6 +2477,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.3179, 0.3516, 0.2342, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.4423, 0.4871, 0.2422, 1), location: 0.65), DSGradientStop(color: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1), location: 1)], angle: 135, grain: 0.05, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.5458, 0.608, 0.271, 1)), "prism-native contrast=increased transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.2918, 0.2978, 0.4582, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.3313, 0.4097, 0.6818, 1), location: 0.5), DSGradientStop(color: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1), location: 1)], angle: 165, grain: 0.06, scheme: .light, bloomAlpha: 0.3, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.3259, 0.6012, 0.7938, 1)), "prism-native contrast=increased transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0.0784, 0.0784, 0.0784, 0.1), x: 0, y: 24, blur: 60, spread: 0, inset: false)]), "prism-native contrast=increased transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native contrast=increased transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.25), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native contrast=increased transparency=reduced: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart5() {
@@ -2446,6 +2522,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism-native colorScheme=dark: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism-native colorScheme=dark: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism-native colorScheme=dark: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart6() {
@@ -2489,6 +2567,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism-native colorScheme=dark transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism-native colorScheme=dark transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism-native colorScheme=dark transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark transparency=reduced: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart7() {
@@ -2532,6 +2612,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism-native colorScheme=dark contrast=increased: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism-native colorScheme=dark contrast=increased: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased: components.sheet.shadow")
     }
 
     private func prismNativeColorSchemePart8() {
@@ -2575,6 +2657,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.gradient.vivid4, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.0682, 0.1008, 0.0801, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.1175, 0.1593, 0.1351, 1), location: 0.35), DSGradientStop(color: DSRGBA(.displayP3, 0.3197, 0.3743, 0.2635, 1), location: 0.8), DSGradientStop(color: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1), location: 1)], angle: 170, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4409, 0.4807, 0.2612, 1)), "prism-native colorScheme=dark contrast=increased transparency=reduced: gradient.vivid4")
         check(t.gradient.vividDefault, DSGradientToken(stops: [DSGradientStop(color: DSRGBA(.displayP3, 0.1106, 0.0726, 0.1442, 1), location: 0), DSGradientStop(color: DSRGBA(.displayP3, 0.2129, 0.1266, 0.2401, 1), location: 0.4), DSGradientStop(color: DSRGBA(.displayP3, 0.3461, 0.2927, 0.466, 1), location: 0.75), DSGradientStop(color: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1), location: 1)], angle: 150, grain: 0.08, scheme: .dark, bloomAlpha: 0.45, bloomBlur: 75, bloomColor: DSRGBA(.displayP3, 0.4472, 0.4961, 0.7635, 1)), "prism-native colorScheme=dark contrast=increased transparency=reduced: gradient.vividDefault")
         check(t.components.card.shadowFloating, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.35), x: 0, y: 24, blur: 48, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased transparency=reduced: components.card.shadowFloating")
+        check(t.components.dialog.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased transparency=reduced: components.dialog.shadow")
+        check(t.components.sheet.shadow, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0.5), x: 0, y: 30, blur: 80, spread: 0, inset: false)]), "prism-native colorScheme=dark contrast=increased transparency=reduced: components.sheet.shadow")
     }
 
     @Test func prismNativeDensity() {

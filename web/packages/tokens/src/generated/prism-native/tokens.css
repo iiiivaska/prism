@@ -553,11 +553,13 @@
     --ds-ring-gauge-size-lg: var(--ds-space-13);
     --ds-ring-gauge-size-md: var(--ds-space-12);
     --ds-ring-gauge-size-sm: var(--ds-size-icon-ring);
+    --ds-sidebar-rail-width: var(--ds-space-12);
     --ds-slider-track-height: var(--ds-space-1);
     --ds-sparkline-height-table: var(--ds-space-6);
     --ds-sparkline-height-tile: var(--ds-space-10);
     --ds-spinner-stroke: var(--ds-border-strong);
     --ds-toggle-inset: var(--ds-space-1);
+    --ds-top-bar-height: var(--ds-space-11);
   }
   @media (color-gamut: p3) {
     :root {
@@ -1044,6 +1046,7 @@
     --ds-chip-bg-rest: var(--ds-color-bg-surface-raised);
     --ds-chip-border-rest: var(--ds-color-border-hairline);
     --ds-chip-border-selected: var(--ds-color-border-strong);
+    --ds-dialog-shadow: var(--ds-shadow-drawer);
     --ds-icon-button-danger-bg-rest: var(--ds-color-bg-tint-critical);
     --ds-icon-button-danger-border: var(--ds-color-text-critical);
     --ds-icon-button-danger-icon: var(--ds-color-text-critical);
@@ -1058,6 +1061,13 @@
     --ds-icon-button-secondary-bg-rest: var(--ds-color-bg-surface-raised);
     --ds-icon-button-secondary-border: var(--ds-color-border-hairline);
     --ds-icon-button-secondary-icon: var(--ds-color-icon-primary);
+    --ds-list-row-bg-pressed: var(--ds-color-bg-surface-nested);
+    --ds-list-row-rule-selected: var(--ds-color-bg-fill-inverse);
+    --ds-pagination-current-bg: var(--ds-color-bg-fill-inverse);
+    --ds-pagination-current-text: var(--ds-color-text-on-inverse);
+    --ds-pill-tabs-active-bg: var(--ds-color-bg-fill-inverse);
+    --ds-pill-tabs-active-text: var(--ds-color-text-on-inverse);
+    --ds-pill-tabs-underline: var(--ds-color-text-primary);
     --ds-progress-bar-fill: var(--ds-color-bg-fill-inverse);
     --ds-progress-bar-fill-secondary: var(--ds-color-chart-comparison);
     --ds-progress-bar-track: var(--ds-color-bg-fill-neutral-subtle);
@@ -1068,6 +1078,9 @@
     --ds-segmented-control-active-bg: var(--ds-color-bg-fill-inverse);
     --ds-segmented-control-active-text: var(--ds-color-text-on-inverse);
     --ds-select-border-error: var(--ds-color-text-critical);
+    --ds-sheet-shadow: var(--ds-shadow-drawer);
+    --ds-sidebar-active-bg: var(--ds-color-bg-fill-inverse);
+    --ds-sidebar-active-text: var(--ds-color-text-on-inverse);
     --ds-skeleton-bg: var(--ds-color-bg-fill-neutral-subtle);
     --ds-skeleton-shimmer: var(--ds-color-bg-fill-neutral-subtle);
     --ds-slider-fill: var(--ds-color-bg-fill-inverse);
@@ -1075,8 +1088,11 @@
     --ds-slider-tick: var(--ds-color-border-strong);
     --ds-slider-track-bg: var(--ds-color-border-strong);
     --ds-spinner-arc: var(--ds-color-icon-primary);
+    --ds-table-row-selected-rule: var(--ds-color-bg-fill-inverse);
     --ds-text-area-border-error: var(--ds-color-text-critical);
     --ds-text-field-border-error: var(--ds-color-text-critical);
+    --ds-timeline-marker-current-bg: var(--ds-color-bg-fill-inverse);
+    --ds-timeline-marker-current-icon: var(--ds-color-text-on-inverse);
     --ds-toggle-knob-off: var(--ds-color-icon-secondary);
     --ds-toggle-knob-on: var(--ds-color-text-on-inverse);
     --ds-toggle-track-off: var(--ds-color-bg-fill-neutral-subtle);

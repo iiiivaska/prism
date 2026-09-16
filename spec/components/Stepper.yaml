@@ -1,0 +1,232 @@
+name: Stepper
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  A number the user changes one step at a time: a decrement control, the value with its hung unit, and
+  an increment control. The two controls are IconButtons and are not restated here; what this spec owns
+  is the value, its tabular figures, the clamping at the ends and the one adjustable element assistive
+  technology sees. It is the numeric stepper, not a step indicator — a progress list of steps is a
+  Timeline.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: decrement
+    slot: true
+    description: one IconButton carrying action.remove; IconButton owns its size, its variant and its press
+  - part: value
+    description: the current value, with tabular figures
+  - part: unit
+    optional: true
+    description: hung on the value's baseline, or under it in the hero layout
+  - part: increment
+    slot: true
+    description: one IconButton carrying action.add
+  - part: label
+    optional: true
+    description: the name of what is being counted; drawn under the value in the hero layout, and supplied by a FormField otherwise
+
+props:
+  - name: value
+    type: number
+    required: true
+  - name: min
+    type: number
+    description: unset, the value has no lower bound
+  - name: max
+    type: number
+    description: unset, the value has no upper bound
+  - name: step
+    type: number
+    default: 1
+  - name: unit
+    type: string
+    description: the unit of the value ("ounces", "bar", "units"), hung on its baseline
+  - name: label
+    type: string
+    description: the name of the value; required unless a FormField supplies one
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+    description: sm is a form row, md an inline control, lg the screen's hero stepper
+  - name: format
+    type: string
+    description: how the number is written for display ("1 240", "16.5"); the caller formats, the component never invents a separator
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, focus-visible, disabled]
+
+tokens:
+  root:
+    gap:
+      sm: space.3
+      md: space.4
+      lg: space.10
+    rowGap: space.3
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  value:
+    typography:
+      sm: type.data
+      md: type.metric.md
+      lg: type.metric.xl
+    minWidth: size.control.lg
+    color:
+      default: color.text.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  unit:
+    typography: type.metric.unit
+    gap: space.2
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  label:
+    typography: type.label.md
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+
+behavior:
+  - "The two controls are IconButtons: `decrement` carries action.remove and `increment` carries action.add. Their ring, press, hit region and disabled look are IconButton's and are not restated here; a Stepper only says which glyph each one carries, what it does and when it is unavailable. A Stepper on the page uses the secondary variant, and one over a map, an image or a vivid surface uses the ghost variant, whose ring takes color.border.on-media or color.border.on-glass-fill."
+  - "IconButton requires an explicit `size` and an explicit `label`, so a Stepper supplies both: each control takes the Stepper's own size (`sm`, `md` or `lg` to IconButton's `sm`, `md` and `lg`), and its name is built from the Stepper's `label` — \"Decrease pour size\" and \"Increase pour size\". A glyph id is never a name (ADR-0011 rule 4), and neither is a bare minus or plus."
+  - "One press plays one haptic. The step haptics of this component — haptic.increase, haptic.decrease and haptic.selection.limit — replace IconButton's own haptic.press.button on these two controls, because spec/haptics.yaml allows at most one haptic per user action."
+  - "The value always renders with tabular figures, whatever its role: it changes while it is visible, and ADR-0021 §5 makes every such value tabular. Without it the numeral jumps sideways under the reader's thumb at every step."
+  - "The value reserves size.control.lg of width, so the row does not shift when the digit count changes; a value wider than that pushes the controls apart symmetrically and the row stays centred."
+  - "`step` is added or subtracted once per press and once per key. Holding a control does not repeat: a repeat that is fast enough to be useful is fast enough to overshoot, and a value that needs a sweep is a Slider."
+  - "At `min` the decrement control becomes unavailable and at `max` the increment control does; they take IconButton's disabled look and leave the focus order, and the value itself never leaves it. An unavailable control takes no press at all, so the bound is felt through the keyboard and the adjustable gesture instead: an arrow key, PageUp, PageDown or a VoiceOver adjust that would move past a bound plays haptic.selection.limit once and changes nothing. With `min` or `max` unset there is no bound on that side, so neither the control nor the key is ever stopped."
+  - "`format` is the caller's string, and it is what the value renders as. The component never invents a thousands separator or a decimal mark: docs/research/visual-dna.md §11 anti-pattern 20 rejects separators that differ between surfaces, and the app's locale decides them once. With `format` unset the bare digits of `value` are drawn, ungrouped, and a caller that wants \"1 240\" supplies it. `format` is display only: `onChange` always carries the number."
+  - "The unit hangs on the value's baseline in type.metric.unit, space.2 from it, at `size: sm` and `md`. At `size: lg` it moves under the value together with the label, so the hero row holds the two controls and one numeral and nothing else."
+  - "`size: lg` is the screen's hero stepper: the numeral is type.metric.xl and the controls sit space.10 from it on each side. A screen carries one hero numeral (docs/research/visual-dna.md §11 anti-pattern 25), so it carries at most one `size: lg` Stepper."
+  - "Focus is one stop, not three: Tab reaches the group, the arrow keys change the value, and a form with six steppers is six tab stops. The two controls stay real buttons — a pointer presses them, and a screen reader reaches them inside the group as it reaches any element there — but they are out of the tab order (`tabindex=\"-1\"` on web, accessibility elements inside the group on Apple) and they never take the focus ring. The ring follows the group."
+  - "The value is never editable here. A number the user types is a TextField with `contentType: number`, which already renders tabular figures; a Stepper is for a value reached in steps."
+  - "The row never wraps. At the accessibility3 text size the numeral clamps, the unit and the label move under it, and the controls keep their size, because IconButton does not scale with Dynamic Type — density is its lever."
+  - "A Stepper paints no material of its own and takes the tones of the material the enclosing Surface publishes. On a vivid surface only `size: lg` is used: the numeral is 48 px, which V1 covers at 24 px and above, while the unit and the label are 12 and 13 px and ADR-0030 rule 7 allows those on a gradient only inside a Card's header block — so a vivid hero stepper carries its unit in the header block above, not under the value."
+
+motion:
+  valueChange: motion.duration.fast
+  press: motion.spring.snappy
+  reduceMotion: instant
+
+haptics:
+  increment: haptic.increase
+  decrement: haptic.decrease
+  limit: haptic.selection.limit
+
+accessibility:
+  role: group containing a spinbutton; the two controls are buttons inside it
+  label: "the `label` prop, or the label of the FormField around it; the value is announced with its unit (\"Pour size, 12 ounces\")"
+  traits: [adjustable]
+  keyboard: "Tab reaches the group as one stop; ArrowUp and ArrowRight add `step`, ArrowDown and ArrowLeft subtract it, PageUp and PageDown move ten steps, and Home and End jump to `min` and `max`, doing nothing while that bound is unset. Every key clamps at the bounds rather than wrapping. The focus ring is color.border.focus at border.focus width around the group, not around one control"
+  dynamicType: "the value, the unit and the label scale with their roles; the numeral clamps at the accessibility3 size and the unit and label move under it. The two IconButtons keep their size, because density is their lever and Dynamic Type is not"
+  contrast: "the value is color.text.primary, which is large text at the 3:1 tier at type.metric.xl (48 px) and functional text at 4.5:1 at type.metric.md (20 px) and type.data (13 px); it holds 4.5:1 on every material cell bound here. The unit and the label are the secondary tones, functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised, and on the scheme's glass they follow the published backdrop kind (ADR-0029 §1.4). The controls carry IconButton's own pairs"
+  reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass, the IconButtons render their default cells and every tone returns to the solid family
+  reduceMotion: "the numeral does not roll or count up between steps; it is replaced at motion.duration.instant, and the motion-blurred digit roll of the reference is never drawn. The controls' press scale is replaced by IconButton's pressed fill over motion.duration.base with motion.easing.out"
+  voiceOver: "the group announces its label and then the value with its unit; VoiceOver's adjustable gesture and the crown-free arrow keys both move by `step`, and reaching `min` or `max` is announced once"
+
+usage:
+  do:
+    - Use a Stepper for a small count the user nudges — a quantity, a threshold, a number of units.
+    - Give the value a unit and a name, and let the caller format the number.
+    - "Use `size: lg` for the one hero stepper of a logging screen, and `sm` inside a form row."
+    - Set `min` and `max` whenever the value has real bounds, so the ends are visible and announced.
+  dont:
+    - Don't use a Stepper for a range with many values; that is a Slider.
+    - Don't use it for a step indicator in a process; that is a Timeline.
+    - Don't repeat on hold, and don't let a long press run past the bound.
+    - Don't put two hero steppers on one screen.
+    - Don't write the value with proportional figures, even when it is static in the mockup.
+
+examples:
+  - id: default-md
+    props: { value: 3, label: "Pallets", size: md }
+  - id: with-unit
+    props: { value: 12, unit: "ounces", label: "Pour size", size: md }
+  - id: bounded
+    props: { value: 1, min: 1, max: 12, label: "Batches", size: md }
+    description: at the lower bound the decrement control is unavailable and a press plays haptic.selection.limit
+  - id: form-row
+    props: { value: 6, unit: "bar", label: "Alert threshold", size: sm, step: 1 }
+    description: inside a FormField, which supplies the label and the helper row
+  - id: hero
+    props: { value: 12, unit: "Ounces", label: "Pour size", size: lg }
+    description: the hero form — a type.metric.xl numeral with the controls space.10 away and the unit under it
+  - id: formatted
+    props: { value: 1240, format: "1 240", unit: "units", label: "Batch size", size: md, step: 10 }
+    description: the caller formats the number; the component never invents a separator
+  - id: disabled
+    props: { value: 3, label: "Pallets", isDisabled: true }
+  - id: hero-on-vivid
+    props: { value: 12, label: "Pour size", size: lg }
+    surface: vivid
+    description: only the hero size goes on a gradient, and the unit moves into the card's header block above
+  - id: on-glass-over-image
+    props: { value: 4, unit: "cameras", label: "Bays", size: md }
+    surface: glass
+    backdrop: image
+  - id: russian-label
+    props: { value: 12, unit: "унций", label: "Объём порции", size: lg }
+    description: the Russian unit and label run longer, so both wrap under the numeral and the hero row keeps its width
+
+notes:
+  platform:
+    watchos: "`none`. Stepper is not in ADR-0010's Tier 3 set, and the wrist already has a stepper: the Digital Crown, which adjusts a value with haptic.increase and haptic.decrease and needs no two 44 pt circles on a 198 pt face (ADR-0029 §3.2). A watch screen shows the value with Text and adjusts it with the crown."
+    macos: "compact density gives 32 pt controls; hover is required on both, and the group keeps one focus ring rather than two."
+    ios: "the two controls play haptic.increase and haptic.decrease, which iOS maps to SensoryFeedback.selection (spec/haptics.yaml)."
+    web-desktop: "built on React Aria's NumberField group without its text input: the readout is the spinbutton, the two buttons are `Button` slots, and `data-disabled` marks the control at a bound."
+  design: >-
+    One of eleven shots carries a Stepper (docs/research/component-inventory.md), and the inventory notes
+    that ADR-0012 does not say whether Stepper is numeric or a step indicator — the only sighting is
+    numeric, so this spec is the numeric one and the inventory's note is settled here. That sighting is
+    the log screen of docs/research/visual-dna.md: a large numeral between two hairline round buttons on
+    a full-bleed gradient with a unit label beneath, the controls about 40 px from the numeral, which is
+    space.10. The dot-matrix face and its motion-blurred digit roll are a brand's `display` slot
+    (docs/research/component-inventory.md's dot-matrix row), not Prism's, and the roll is a decorative
+    animation that `reduceMotion: instant` stops; Prism draws the numeral in type.metric.xl instead. The
+    tabular rule is ADR-0021 §5 and §11 anti-pattern 18; the one-solid-among-hairlines grammar of the two
+    circles is §4.7 and belongs to IconButton. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

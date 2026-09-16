@@ -10,6 +10,12 @@
 /** The four prose fields (ADR-0024 §5.2). */
 export const PROSE_FIELDS: readonly string[] = ['behavior', 'accessibility', 'usage', 'notes'];
 
+/**
+ * A pattern's prose adds the recipe (spec/patterns/README.md): `layout` names its gaps and minimums by
+ * token path, and `rules` and `composition` name the roles a screen keeps, so they resolve as well.
+ */
+export const PATTERN_PROSE_FIELDS: readonly string[] = [...PROSE_FIELDS, 'layout', 'rules', 'composition'];
+
 const FILE_EXTENSIONS = new Set([
   'css', 'ts', 'tsx', 'js', 'mjs', 'cjs', 'json', 'swift', 'yaml', 'yml', 'html', 'txt', 'sh', 'png', 'svg',
   'ttf', 'otf', 'woff2', 'xcassets', 'colorset', 'plist',
@@ -65,8 +71,8 @@ export interface ProseHit {
   readonly at: readonly (string | number)[];
 }
 
-/** Every token path or glob in the prose fields of `spec`, in document order. */
-export function proseTokenPaths(spec: Record<string, unknown>, categories: ReadonlySet<string>): ProseHit[] {
+/** Every token path or glob in the prose `fields` of `spec` (a component's by default), in document order. */
+export function proseTokenPaths(spec: Record<string, unknown>, categories: ReadonlySet<string>, fields: readonly string[] = PROSE_FIELDS): ProseHit[] {
   const out: ProseHit[] = [];
   const walk = (value: unknown, at: readonly (string | number)[]): void => {
     if (typeof value === 'string') {
@@ -87,7 +93,7 @@ export function proseTokenPaths(spec: Record<string, unknown>, categories: Reado
       for (const [k, v] of Object.entries(value)) walk(v, [...at, k]);
     }
   };
-  for (const field of PROSE_FIELDS) {
+  for (const field of fields) {
     if (field in spec) walk(spec[field], [field]);
   }
   return out;

@@ -1,0 +1,25 @@
+{
+  "comp": {
+    "sidebar": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.fill.inverse}",
+          "$description": "the destination the reader is in: the one inverse solid of the rail, against bare rows for every other item (visual-dna §1 principle 9)"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}",
+          "$description": "the label and the glyph of the active destination; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json"
+        }
+      },
+      "rail": {
+        "width": {
+          "$type": "spacing",
+          "$value": "{space.12}",
+          "$description": "the width of the icon rail; space.12 is the references' 64 px icon-rail gutter (visual-dna §6.1, §6.4), which the role's number does not say"
+        }
+      }
+    }
+  }
+}

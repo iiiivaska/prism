@@ -1,0 +1,4 @@
+{
+  "description": "A minimal pattern that breaks no rule: the schema accepts the recipe shape, its layout and rules resolve, and it composes a component and another pattern with props they declare.",
+  "expect": []
+}

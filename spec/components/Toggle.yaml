@@ -32,6 +32,7 @@ props:
   - name: isOn
     type: boolean
     default: false
+    description: true puts the Toggle in its `selected` state
   - name: label
     type: string
     description: the visible label; when it is absent the control carries an explicit accessibility name

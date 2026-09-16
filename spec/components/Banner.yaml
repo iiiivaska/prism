@@ -1,0 +1,236 @@
+name: Banner
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  A status strip that says one thing about the region it sits at the top of - a degraded link, an
+  expired licence, an unsaved change. It is a tinted row in the content flow, not an overlay: it takes
+  no focus of its own, traps nothing, blocks nothing, and it stays until the condition it reports is
+  gone. It carries a status glyph, one sentence, at most one action, an optional dismiss and an
+  optional expander for the detail.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the tinted strip; it paints `color.bg.page` under its tint whenever it sits over media
+  - part: icon
+    description: the tone's registry glyph, or the id `icon` names
+  - part: message
+  - part: detail
+    optional: true
+    description: the second line, in the same tone at caption size
+  - part: action
+    optional: true
+    slot: true
+    description: "one Button (`variant: secondary`, `size: sm`), forwarding `label`, `onPress` and `isDisabled`"
+  - part: expander
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: secondary`, `size: sm`, `glyph: nav.down` closed and `nav.up` open, `label` \"Show details\" closed and \"Hide details\" open, `onPress` toggles `isExpanded`)"
+  - part: close
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: plain`, `size: sm`, `glyph: nav.close`, `label` \"Dismiss\", `onPress` = `onDismiss`)"
+  - part: details
+    optional: true
+    description: the paragraph the expander reveals, below the message and inside the same tint
+
+props:
+  - name: tone
+    type: enum
+    values: [info, success, warning, critical]
+    default: info
+  - name: message
+    type: string
+    required: true
+    description: one sentence about the whole region, in sentence case
+  - name: detail
+    type: string
+    description: a second line of at most one sentence; anything longer belongs behind the expander
+  - name: icon
+    type: icon
+    description: a registry id that replaces the tone's glyph
+  - name: action
+    type: slot
+    description: one Button that resolves or explains the condition; never two
+  - name: isDismissible
+    type: boolean
+    default: false
+    description: draws the close control; a condition the user cannot act on is the only case for it
+  - name: isExpandable
+    type: boolean
+    default: false
+  - name: isExpanded
+    type: boolean
+    default: false
+  - name: details
+    type: string
+    description: the longer explanation the expander reveals, as one paragraph; never rows or a list, because a status that has items under it is an Alert
+  - name: onDismiss
+    type: action
+  - name: onExpandedChange
+    type: action
+
+states: [default, expanded]
+
+tokens:
+  root:
+    background:
+      info: color.bg.tint.info
+      success: color.bg.tint.success
+      warning: color.bg.tint.warning
+      critical: color.bg.tint.critical
+    underlay:
+      page:
+        map: color.bg.page
+        image: color.bg.page
+        vivid: color.bg.page
+      raised: color.bg.page
+      nested: color.bg.page
+      vivid: color.bg.page
+      glass: color.bg.page
+      glassLight: color.bg.page
+      inverse: color.bg.page
+      accent: color.bg.page
+    radius: radius.tile
+    paddingX: space.5
+    paddingY: space.4
+    gap: space.3
+    minHeight: size.row
+    z: z.raised
+  icon:
+    size: size.icon.md
+    color:
+      info: color.icon.status.info
+      success: color.icon.status.success
+      warning: color.icon.status.warning
+      critical: color.icon.status.critical
+  message:
+    typography: type.body.sm
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+  detail:
+    typography: type.caption
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+  action:
+    gap: space.4
+  expander:
+    gap: space.3
+  close:
+    gap: space.3
+  details:
+    typography: type.body.sm
+    paddingTop: space.4
+    color:
+      info: color.text.info
+      success: color.text.success
+      warning: color.text.warning
+      critical: color.text.critical
+
+behavior:
+  - "A Banner is part of the layout, not a layer over it: it takes the width of the region it heads, pushes the content below it down, and scrolls with that content unless the region pins it, in which case it sits at `z.raised` and nothing else in the region overlaps it."
+  - "One Banner per region, and the caller keeps it that way: Banner holds no queue. When two conditions hold at once the caller renders the more severe one (critical over warning over info, and success last), and renders the other once the first is gone; two stacked strips are a defect, because the reader then has to decide which one the region is about."
+  - "Appearing, the strip fades in from opacity 0 over `motion.duration.base` with `motion.easing.out` while its height grows from 0 with `motion.spring.smooth`, and the content below moves down with that height; leaving reverses both. Expanding and collapsing change the height with the same `motion.spring.smooth`. Nothing slides in from an edge, scales or blurs."
+  - "Every tone is a translucent wash with no border - about 10 % in dark and 12 % in light (ADR-0030 §6.1) - so the surface under it still reads. The two grounds its pairs check are `color.bg.page` and `color.bg.surface`, so on the page and on a card the strip paints nothing under itself. On every other ground it paints `color.bg.page` under its tint first (ADR-0030 §6.2): over a map, an image or a vivid backdrop when nothing between them published a material, over a Surface that published `vivid`, `glass`, `glassLight`, `inverse` or `accent`, and over `raised` or `nested`, which are not underlays the tint pairs check."
+  - "The glyph, the words and the tint all say the same thing, and the tint is never the only one of the three that does (ADR-0011 rule 4). `info` takes `status.info`, `success` `status.success`, `warning` `status.warning` and `critical` `status.danger`."
+  - "The whole strip carries the tone's text token and nothing else: `message` and the revealed `details` at `type.body.sm`, `detail` at `type.caption`. Hierarchy comes from size, not from a second tone (visual-dna §1 principle 8), because a status tint has exactly one checked foreground; that is also why `details` is a string the Banner sets rather than a slot of the caller's components, whose own tones no pair checks on a tint."
+  - "`message` wraps and never truncates (ADR-0011). Two lines is the budget at the default text size; anything longer moves into `detail`, and anything longer than that moves behind the expander into `details`."
+  - "The trailing group is, in order, the action, the expander and the close control, each separated by `space.3` from the next. On a strip narrower than the message plus that group, the group wraps to its own line below the message and stays trailing-aligned."
+  - "`isExpandable` adds one IconButton whose glyph is `nav.down` while closed and `nav.up` while open; it is the only direction cue and it never rotates into a third position. Expanding grows the strip downward inside the same tint, and the content below it moves down by exactly that much; nothing else on the screen moves."
+  - "`isExpanded` is controlled: pressing the expander fires `onExpandedChange` with the value being asked for, and the strip changes only when the caller writes it back, so the strip and the caller's model cannot drift. Without `isExpandable`, `isExpanded` and `details` are ignored. `onDismiss` is a request in the same way: the close control fires it, and the strip stays until the caller stops rendering it."
+  - "`isDismissible` is off by default. A Banner reports a condition, so dismissing it hides a fact that is still true; it is offered only where the user cannot act on the condition, and a dismissed Banner returns the next time the condition is evaluated."
+  - "A Banner never asks a question, never carries two actions and never opens a flow by itself; the action it carries leads to the place where the condition is resolved."
+  - "A Banner declares no haptics: it appears because the app's state changed, and `spec/haptics.yaml` rule 2 forbids a haptic on a programmatic state change."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  expand: motion.spring.smooth
+  reduceMotion: crossfade
+
+accessibility:
+  role: "a `status` live region with an accessible name; the expander is a disclosure button with an expanded state, and the strip is never a `dialog` or an `alert`"
+  label: "the `message`, then the `detail`, then the `details` while expanded; the tone is announced as a word through the glyph's registry label, never as a color. The expander is an IconButton labelled \"Show details\" while closed and \"Hide details\" while open, and the close control one labelled \"Dismiss\"; this component supplies both strings, because an IconButton never infers its name from its glyph"
+  traits: [staticText]
+  keyboard: "the strip itself is not focusable and not in the tab order; the action, the expander and the close control are, in that order, all at the Banner's own position in the flow - before the content of the region it heads; the revealed `details` are text and take no focus, and collapsing removes them from the accessibility tree. Escape does nothing here, because a Banner is not a layer"
+  dynamicType: "`message`, `detail` and `details` scale with their roles, the strip grows and wraps with them, and nothing truncates to keep a height (ADR-0011); from the accessibility sizes on, the trailing control group sits on its own line"
+  contrast: "`color.text.<tone>` on `color.bg.tint.<tone>` is a checked functional pair in tokens/contrast-pairs.json, with `color.bg.page` and `color.bg.surface` as the underlays, which is exactly what the strip renders on and what it paints under itself everywhere else (ADR-0030 §6.2). It carries `message`, `detail` and `details`, which is why `detail` keeps the tone's own token and steps down in size instead of taking a quieter tone that no pair checks. The glyph is `color.icon.status.<tone>` on its own tint, a boundary pair in tokens/contrast-pairs.json over the same grounds: info clears 3:1 there in both schemes, and critical, success and warning in dark only, so in light no glyph carries the tone alone and the sentence does (ADR-0011 rule 4; docs/research/a11y-reconciliation.md §8.3)"
+  reduceTransparency: "no change. A status tint is a color token, not a material: ADR-0022 §1.4 leaves `color.bg.tint.*` out of every reduced-transparency delta, and the strip is already opaque over media because it paints `color.bg.page` under its tint"
+  reduceMotion: "appearing and leaving are a presentation, so the strip does not grow into place: it crossfades by opacity over `motion.duration.base` with `motion.easing.out` and takes its height at once, and the content below it takes its new position at once (ADR-0023 §8.4 item 1). Expanding and collapsing keep their bound `motion.spring.smooth`, which is in-place movement and has no bounce in the reduced context (ADR-0023 §8.4 item 3)"
+  voiceOver: "announced politely when it appears, including in the `critical` tone: a Banner never blocks, and an assertive interruption is reserved for a Dialog. The expander announces its state, and the revealed `details` follow the strip in reading order"
+
+usage:
+  do:
+    - Say what is true now and what it costs ("Live tracking is paused; positions may be up to 10 minutes old").
+    - Put the Banner at the top of the region the condition is about, not at the top of the app.
+    - Give it one action that leads to where the condition is fixed.
+    - Move anything longer than two lines behind the expander.
+  dont:
+    - Don't use a Banner for something that already happened and needs no decision; that is a Toast.
+    - Don't put rows, a list or a group of items inside a Banner; a status that contains things is an Alert.
+    - Don't stack two Banners in one region.
+    - Don't make a Banner dismissible when the user can act on it; dismissing then hides work.
+    - Don't use the accent for a Banner's tint; the accent means attention, not status (visual-dna §11 anti-pattern 8).
+
+examples:
+  - id: info
+    props: { tone: info, message: "Live tracking is paused; positions may be up to 10 minutes old" }
+  - id: warning-with-action
+    props: { tone: warning, message: "Two depots have no shift plan for tomorrow", action: { label: "Open planner", variant: secondary, size: sm } }
+  - id: critical-expandable
+    props: { tone: critical, message: "Live positions stopped updating", isExpandable: true, isExpanded: true, detail: "Since 14:05", details: "Positions after 14:05 have not reached the server. The last known position of each unit stays on the map, marked with the time it was received." }
+    description: the expanded strip reveals a paragraph of explanation inside the same tint; a list of the affected units would be an Alert
+  - id: success-dismissible
+    props: { tone: success, message: "Every route is back on plan", isDismissible: true }
+  - id: over-map
+    props: { tone: critical, message: "The north bridge is closed" }
+    surface: map
+    description: the strip paints `color.bg.page` under its tint over the map, so the critical pair holds (ADR-0030 §6.2)
+  - id: ru-two-lines
+    props: { tone: warning, message: "Для двух депо не заполнен план смен на завтра", detail: "Обновлено 21.11.2026, 14:05" }
+    description: a Russian sentence about a third longer than its English twin; the strip wraps to two lines and the control group moves onto its own line
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Banner, and a wrist screen has no region to head. A condition that matters on the watch is the screen's own content - a StatTile or a ListRow in the status tone - or a system notification."
+    macos: "compact density; the strip takes `size.row` 32 as its minimum height and the controls inside it take the pointer hit area (`size.hit` 28). Hover affects only the controls, never the strip."
+    web-desktop: "the strip is a `role=\"status\"` region inside the landmark it heads, so a screen reader reaches it with the region rather than through a live announcement alone."
+  design: >-
+    The one sighting is docs/research/component-inventory.md's Banner row (1 of 11, AR): "collapsed alert
+    strip: danger-tinted stadium with a glowing alert glyph and text, and a separate chevron stadium to
+    expand", with the expanded state not shown. Prism keeps the tint, the glyph, the sentence and the
+    separate expander, and changes two things. The container radius is `radius.tile` 16 rather than the
+    reference's stadium, so a Banner and the cards under it stay in one radius family (visual-dna §1
+    principle 2: every container is a rounded rectangle from one short radius scale, and only controls are
+    pills); a stadium two lines
+    tall stops reading as a pill anyway. And the glow is dropped: visual-dna §11 anti-pattern 5 rejects
+    glows as elevation, and Prism's only glow roles are the vivid bloom and `color.accent.glow`. The tint
+    values and the "no border, about a 10 % wash" rule are §1 principle 14 and §4.11; the page underlay
+    over media is ADR-0030 §6.2, the rule IconButton already applies to its danger variant. Example copy
+    is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

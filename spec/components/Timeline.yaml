@@ -1,0 +1,262 @@
+name: Timeline
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  A dated history read from the top down: a hairline rail, one marker per entry, a tabular time, a
+  title and an optional line under it, grouped under date headings. Everything that has happened is at
+  full contrast, what is still scheduled is dimmed as a whole row, and the one entry that is "now"
+  carries the single solid marker of the group.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: groupHeader
+    optional: true
+    description: the date heading, with an optional right-aligned caption
+  - part: rail
+    description: the hairline that runs behind the markers and joins the entries
+  - part: marker
+    description: a hairline ring, a filled dot for a status, or the one solid marker of the current entry
+  - part: item
+  - part: time
+    description: the entry's time or date, tabular
+  - part: title
+  - part: description
+    optional: true
+  - part: aside
+    optional: true
+    slot: true
+    description: trailing meta or one small control, baseline-locked to the title
+
+props:
+  - name: items
+    type: data
+    required: true
+    description: "[{ id, time, title, description?, icon?, status?, state?, aside? }]; `state` is past, current or future and defaults to past"
+  - name: groupBy
+    type: enum
+    values: [none, day, month, year]
+    default: none
+    description: inserts one date heading before each group; the heading's words are the caller's, formatted in the reader's locale
+  - name: order
+    type: enum
+    values: [newest, oldest]
+    default: newest
+    description: which end the reader starts at; the rail runs the same way either way, and the accessibility order is always the order the entries are drawn in
+  - name: isInteractive
+    type: boolean
+    default: false
+    description: makes each entry pressable; an entry then behaves like a ListRow and fires `onSelect`
+  - name: onSelect
+    type: action
+
+states: [default, hover, pressed, focus-visible]
+
+tokens:
+  root:
+    gap: space.4
+  groupHeader:
+    typography: type.label.sm
+    paddingY: space.3
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  rail:
+    color: color.border.hairline
+    width: border.hairline
+    gap: space.4
+  marker:
+    size: size.icon.sm
+    border: color.border.strong
+    borderWidth: border.hairline
+    color:
+      default: color.icon.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    successColor:
+      default: color.icon.status.success
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    warningColor:
+      default: color.icon.status.warning
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    criticalColor:
+      default: color.icon.status.critical
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    infoColor:
+      default: color.icon.status.info
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    currentBackground: comp.timeline.marker.current.bg
+    currentColor: comp.timeline.marker.current.icon
+  item:
+    minHeight: size.row
+    gap: space.1
+    columnGap: space.3
+    paddingY: space.3
+    futureOpacity: opacity.dimmed-row
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+    radius: radius.inner
+  time:
+    typography: type.data
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  title:
+    typography: type.body.md
+    color:
+      default: color.text.primary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  description:
+    typography: type.body.sm
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  aside:
+    gap: space.3
+
+behavior:
+  - A Timeline paints no background, border or shadow; it takes the tones of the material the enclosing Surface publishes, so the same list works in a solid card, a nested panel and the scheme's glass.
+  - "The rail is one hairline at border.hairline width in color.border.hairline, running behind the markers from the first entry's marker to the last. It is structure for sighted readers only: the order of the entries is what assistive technology reads, and the rail carries nothing (visual-dna §7.5)."
+  - "Every entry gets a marker at size.icon.sm on the rail. A plain entry is a hairline ring in color.border.strong; an entry with a `status` fills its registry glyph in that status's own colour cell - color.icon.status.success, .warning, .critical or .info - and always shows the status word in its title, so the state is never carried by colour alone (ADR-0011 rule 4). The glyph map is fixed: success → status.success, warning → status.warning, critical → status.danger, info → status.info."
+  - "On light glass, inverse, accent and the scheme's glass a status marker takes that material's own foreground, because the status hues have no pair there, and the state is read from the glyph's shape and the word beside it (ADR-0022 §3.1)."
+  - "`state: current` marks at most one entry, and it is the one solid marker of the whole list - comp.timeline.marker.current.bg with comp.timeline.marker.current.icon, the inverse solid of visual-dna §1 principle 9. Two current entries is the same mistake as two primary buttons in a group."
+  - "`state: future` dims the whole row - marker, time, title and description together - to opacity.dimmed-row, so the eye lands on what has already happened without any colour change (visual-dna §4.13). `state: past` is full contrast; a Timeline with no scheduled entries therefore has no dimmed rows at all."
+  - "The time is `type.data`, tabular, so times and dates line up down the column whatever their digits (ADR-0021 §5). A time that keeps ticking - a relative \"4 minutes ago\" - is a live value and stays on the same tabular role."
+  - "`groupBy` inserts one heading before each day, month or year, in type.label.sm and the secondary tone, with the rail continuing behind it. The heading's words come from the caller and are formatted in the reader's locale; the component never abbreviates a month itself."
+  - "Truncation: the title wraps to as many lines as it needs and the entry grows with it. A description longer than three lines fades on its last two lines instead of ending in an ellipsis (Text `truncation: fade`), which invites the reader to open the entry; identifiers inside a title truncate with an ellipsis and keep their full value in the accessibility label (visual-dna §4.15)."
+  - "Overflow: a long history scrolls; it never paginates inside the component and it never collapses groups by itself. A history too long to scroll belongs behind a period filter above the list, one row for the whole set."
+  - "`isInteractive` makes each entry a pressable row: it takes the hover and pressed overlay of color.bg.fill.neutral.subtle inside radius.inner, becomes one focus stop and fires `onSelect`. The marker, the rail and the group headings never become targets."
+  - "An entry's row is at least size.row tall and holds the time, the marker, the title and the aside on one baseline; the description sits under the title, inside the same row, indented to the title's edge."
+  - "An empty Timeline renders an EmptyState of variant `section` in place of the entries and keeps its group filter above it."
+  - "The list declares no cell for vivid, in any part: its time, title and description are 13-15 px, and ADR-0030 rule 7 allows text that small on a gradient only inside a Card's header block, so a Timeline is not drawn on a vivid surface at all - a history over a gradient sits on a glass or solid Surface above it."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  reduceMotion: instant
+
+haptics:
+  press: haptic.press.button
+
+accessibility:
+  role: list, with each entry a listitem; an interactive entry is a button inside it
+  label: "the list's own name from the caller (\"Service history\"); each entry announces its time, its status word when it has one, its title and then its description"
+  traits: [staticText]
+  keyboard: the list is not focusable while `isInteractive` is false; with it on, each entry is one Tab stop in reading order with a ring of color.border.focus at border.focus width following radius.inner, and Enter activates
+  dynamicType: time, title and description all scale; the entry grows in height and the rail grows with it, and nothing truncates to keep a row height (ADR-0011). Past the accessibility3 size the time moves above the title instead of beside it
+  contrast: "the title is color.text.primary, the time and the description color.text.secondary, all functional pairs in tokens/contrast-pairs.json; the current marker is comp.timeline.marker.current.icon on comp.timeline.marker.current.bg, which are color.text.on-inverse on color.bg.fill.inverse (19.30:1). A status marker's colour is never the only cue - color.icon.status.success and color.icon.status.warning sit below 3:1 on color.bg.surface in light (docs/research/a11y-reconciliation.md B4), which is why the status word is mandatory. The rail is decorative"
+  reduceTransparency: no change of its own - the enclosing Surface publishes raised instead of glass and every tone follows it
+  reduceMotion: entries do not slide, stagger or grow in; a new entry appears complete at motion.duration.instant, and the current marker does not pulse
+
+usage:
+  do:
+    - Give every entry a time the reader can compare, on the tabular role, and group by day when the history spans more than one.
+    - Pair a status marker with the status word in the entry's title.
+    - Dim what is still scheduled and leave what has happened at full contrast.
+  dont:
+    - Don't mark two entries as current; there is one "now" per list.
+    - Don't use colour alone for a state, and don't colour a title for emphasis.
+    - Don't put a second action row inside an entry; an entry opens, or it does nothing.
+    - Don't paginate a history inside the list; filter the period above it.
+
+examples:
+  - id: plain
+    props: { items: [{ id: "1", time: "14:05", title: "Left the north yard" }, { id: "2", time: "14:38", title: "Arrived at stop 12" }, { id: "3", time: "15:02", title: "Departed stop 12" }] }
+  - id: with-status
+    props: { items: [{ id: "1", time: "09:12", title: "Inspection passed", status: success }, { id: "2", time: "11:47", title: "Tyre pressure low, warning raised", status: warning }, { id: "3", time: "13:20", title: "Brake fault, vehicle withdrawn", status: critical }] }
+  - id: current-and-future
+    props: { items: [{ id: "1", time: "08:00", title: "Loaded at the depot", state: past }, { id: "2", time: "10:30", title: "On route to the north yard", state: current }, { id: "3", time: "12:15", title: "Scheduled unload", state: future }, { id: "4", time: "13:00", title: "Scheduled return", state: future }] }
+    description: the current entry carries the one solid marker and the scheduled rows are dimmed whole
+  - id: grouped-by-day
+    props: { groupBy: day, items: [{ id: "1", time: "21.11.2026", title: "Service completed", description: "Filters and brake pads replaced." }, { id: "2", time: "04.12.2026", title: "Next service due", state: future }] }
+  - id: with-description
+    props: { items: [{ id: "1", time: "14:05", title: "Gateway lost contact", description: "The depot gateway stopped answering for eleven minutes; readings for that window are missing." }] }
+  - id: interactive
+    props: { isInteractive: true, items: [{ id: "1", time: "14:05", title: "Left the north yard" }, { id: "2", time: "14:38", title: "Arrived at stop 12" }] }
+  - id: with-aside
+    props: { items: [{ id: "1", time: "14:05", title: "Left the north yard", aside: "12.4 km" }, { id: "2", time: "14:38", title: "Arrived at stop 12", aside: "0.0 km" }] }
+  - id: on-glass-over-image
+    props: { items: [{ id: "1", time: "14:05", title: "Camera armed" }, { id: "2", time: "14:09", title: "Motion recorded" }] }
+    surface: glass
+    backdrop: image
+  - id: titles-ru
+    props: { groupBy: day, items: [{ id: "1", time: "21.11.2026", title: "Техобслуживание завершено", description: "Заменены фильтры и тормозные колодки." }, { id: "2", time: "04.12.2026", title: "Плановое обслуживание", state: future }] }
+    description: the Russian titles run about a third longer and wrap to a second line, which grows the entry instead of truncating it
+
+notes:
+  platform:
+    macos: "full. Compact density gives the entries a 32 pt row; hover applies only while `isInteractive` is true."
+    watchos: "none. ADR-0010's Tier 3 list has no Timeline, and a watch screen holds at most three glanceable tiles; a wrist history is three ListRows, and the full list lives on the phone (spec/patterns/README.md)."
+    web-desktop: "full. The list is an `ol` with one `li` per entry, in the same order they are drawn: `order: newest` emits the newest entry first and sets `reversed`, so the numbering still counts down from the newest, and `order: oldest` emits them in event order. Nothing is reordered in CSS, because a reading order that differs from the visual one is a failure of WCAG 1.3.2, not a layout trick."
+  design: >-
+    docs/research/component-inventory.md records no product-frame sighting of a Timeline and lists it
+    under "Required by v1 but not observed"; its nearest neighbour is the drawer's dated year sections
+    with a month grid (CP), which is where the group headings and the right-aligned caption come from.
+    The faded past and future, the full-contrast active row and opacity.dimmed-row are
+    docs/research/visual-dna.md §4.13, which names Timeline as one of the two specs that own that
+    opacity; the one solid marker is §1 principle 9; the hairline rail, and the rule that a hairline is
+    structure for sighted readers only, are §7.5 and §1 principle 1. Tabular times are §2.4 and ADR-0021
+    §5, and fade truncation for prose beside ellipsis truncation for identifiers is §4.15. Example
+    strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

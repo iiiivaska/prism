@@ -1,0 +1,6 @@
+{
+  "description": "The pattern composes a Carousel, which has no spec under spec/components/ or spec/patterns/.",
+  "expect": [
+    { "code": "composition/unknown", "file": "spec/patterns/SamplePattern.yaml" }
+  ]
+}

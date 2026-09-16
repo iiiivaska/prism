@@ -12,18 +12,34 @@ const TOKEN_PATH_SHAPE = /^\^\((.+)\)\\\.\[a-z0-9\.-\]\+\$$/;
 
 export class SchemaShapeError extends Error {}
 
-export function compileSchema(text: string, path: string): ValidateFunction {
-  let schema: unknown;
+/** A schema file's text and its repository-relative path, for messages. */
+export interface SchemaSource {
+  readonly text: string;
+  readonly path: string;
+}
+
+function parseSchema(source: SchemaSource): Record<string, unknown> {
   try {
-    schema = JSON.parse(text);
+    return JSON.parse(source.text) as Record<string, unknown>;
   } catch (e) {
-    throw new SchemaShapeError(`${path} is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
+    throw new SchemaShapeError(`${source.path} is not valid JSON: ${e instanceof Error ? e.message : String(e)}`);
   }
+}
+
+/**
+ * Compiles one spec schema. `refs` are the schemas it may `$ref` by their `$id`: the pattern schema
+ * refers to the component schema's definitions instead of copying them, so the token-path alternation
+ * of ADR-0024 §5.3 keeps its single copy.
+ */
+export function compileSchema(text: string, path: string, refs: readonly SchemaSource[] = []): ValidateFunction {
+  const schema = parseSchema({ text, path });
   // The spec schemas use no formats, so Ajv needs no ajv-formats plugin here.
   const ajv = new Ajv2020({ allErrors: true, strict: true, allowUnionTypes: true });
   try {
-    return ajv.compile(schema as Record<string, unknown>);
+    for (const ref of refs) ajv.addSchema(parseSchema(ref));
+    return ajv.compile(schema);
   } catch (e) {
+    if (e instanceof SchemaShapeError) throw e;
     throw new SchemaShapeError(`${path} does not compile: ${e instanceof Error ? e.message : String(e)}`);
   }
 }

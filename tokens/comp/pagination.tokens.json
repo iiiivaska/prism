@@ -1,0 +1,39 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "pagination": {
+      "current": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the current page in the expanded pointer layout: the one solid among plain numbers (visual-dna §1 principle 9); over media the spec binds color.bg.fill.inverse-media instead",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the current page's number on its solid fill",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

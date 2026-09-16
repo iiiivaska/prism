@@ -1,0 +1,284 @@
+name: AdaptiveShell
+layer: pattern
+specVersion: 1
+status: draft
+summary: >-
+  The frame a Prism app lives in, and the one place that knows which chrome belongs to which width. It
+  stacks on a phone (a TopBar above the content and a floating TabBar over its bottom), puts a Sidebar
+  beside the content or a row of PillTabs in the TopBar from tablet width, and adds a CommandPalette and
+  a trailing detail region at desktop width. Layout follows the container width; hover, tooltips and hit
+  size follow input modality, so a tablet with a trackpad keeps its layout and gains its pointer
+  affordances.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: adapted
+  watchos: none
+  web-touch: adapted
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the window's ground
+  - part: navigation
+    slot: true
+    description: the primary destinations - a TabBar at `stack`, a Sidebar panel or rail at `split` and `sidebar`, and absent when the destinations are PillTabs, which live in the topBar; each draws its own material, spacing, item size and selected state, and the shell only decides which one is there and where
+  - part: topBar
+    optional: true
+    slot: true
+    description: the TopBar - brand slot, title or navigation row, search and the trailing cluster
+  - part: content
+    slot: true
+    description: the primary region; a DashboardGrid, a DetailScreen or a list fills it
+  - part: detail
+    optional: true
+    slot: true
+    description: the trailing region at desktop width - one DetailScreen drawer in a column or over the content; open while it holds one
+  - part: overlay
+    optional: true
+    slot: true
+    description: the layer over every region - one CommandPalette, modal Sheet or Dialog, each of which draws its own panel, scrim and z; the shell only decides that it paints last
+
+props:
+  - name: layout
+    type: enum
+    values: [auto, stack, split, sidebar]
+    default: auto
+    description: "auto picks stack, split or sidebar from the container width; `stack` and `split` cap the layout below what the width would pick, and a value above what the width allows resolves to auto, because `split` needs regular width and the palette and the detail region of `sidebar` need desktop width"
+  - name: navigation
+    type: enum
+    values: [auto, tabBar, pillTabs, rail, sidebar]
+    default: auto
+    description: "which component shows the destinations at `split` and `sidebar`: auto and sidebar give a Sidebar panel, rail gives Sidebar's rail, pillTabs gives a PillTabs row in the TopBar, and tabBar resolves as auto there. At `stack` every value gives the TabBar"
+  - name: destinations
+    type: data
+    required: true
+    description: "[{ value, label, icon, count?, section? }]; the app's top-level destinations in order, at least two, each with a name and a registry glyph, because the TabBar and the rail show only the glyph. An app with a single destination has no primary navigation and does not use this shell"
+  - name: selectedDestination
+    type: string
+    required: true
+    description: the `value` of the destination the reader is in; the navigation always has exactly one selected, because a bar or a rail with none selected, or with two, is not a state Prism draws
+  - name: onSelectDestination
+    type: action
+    required: true
+  - name: moreLabel
+    type: string
+    description: the name of the fifth TabBar destination that holds the rest when there are more than five destinations; required then
+  - name: topBar
+    type: boolean
+    default: true
+    description: "whether the shell draws the topBar region; `navigation: pillTabs` draws it at `split` and `sidebar` whatever this says"
+  - name: detail
+    type: enum
+    values: [none, column, overlay]
+    default: none
+    description: the kind of region the detail slot opens as at desktop width; below it a detail opens as a sheet
+  - name: commandPalette
+    type: boolean
+    default: false
+    description: whether the app offers a CommandPalette in the overlay slot; the shell presents it only at desktop width under pointer modality
+  - name: sidebarCollapsed
+    type: boolean
+    default: false
+  - name: onSidebarCollapsedChange
+    type: action
+    description: unset, the Sidebar draws no collapse control and keeps the form `navigation` gives it
+
+states: [default]
+
+tokens:
+  root:
+    background: color.bg.page
+  navigation:
+    panelInset: space.page-margin
+
+layout:
+  breakpoints:
+    compact: "< 600 px"
+    regular: "600-1023 px"
+    desktop: ">= 1024 px"
+  autoLayout: { compact: stack, regular: split, desktop: sidebar }
+  chrome:
+    stack: "a TopBar at `align: center` across the top, the content under it, and the floating TabBar over the content's bottom edge; no Sidebar, no PillTabs navigation, no CommandPalette and no detail region"
+    split: "a Sidebar panel or rail along the leading edge, or PillTabs in a leading-aligned TopBar; the TopBar over the content; no CommandPalette and no detail region"
+    sidebar: "the chrome of split, plus the CommandPalette under pointer modality and the detail region"
+  sidebarPanel:
+    width: "20 % of the container width, the lower bound of visual-dna §6.4's 20-29 % leading rail, and never narrower than size.card.min"
+    inset: space.page-margin
+  rail: "Sidebar's own rail width, flush with the leading edge"
+  topBar: "TopBar's own height; it spans the width beside the navigation region, or the whole width when there is no Sidebar"
+  detail:
+    column: "16 % of the container width, the lower bound of visual-dna §6.4's 16-19 % trailing column, and never narrower than size.card.min"
+    overlay: "Sheet's own trailing drawer geometry"
+  tabBarReserve: "TabBar's own bottom content inset - the capsule's height plus its space.7 inset plus the bottom safe-area inset"
+  destinationsShown: { tabBar: 5, pillTabs: 7, sidebar: "all, scrolling" }
+  contentMargin: "none of its own; the screen inside the content region carries its own margins"
+  hitSize: size.hit
+
+rules:
+  - "The shell owns navigation; a screen inside it never draws a second primary navigation, a second TopBar or a detail panel of its own."
+  - "The shell places chrome and paints none of it: TabBar, Sidebar, PillTabs, TopBar, SearchField and CommandPalette each draw their own material, spacing, item size, selected state and tooltip, and this pattern restates none of their cells."
+  - "Exactly one destination is selected, and it is the one inverse solid in its group; its siblings are hairline or bare."
+  - "Layout follows container width, and modality follows the input device; attaching a trackpad turns on hover and pointer hit sizes without changing the layout."
+  - "Hover is never the only way to reach an affordance, and a floating bar never covers a control."
+  - "An `overlay` detail overlaps the trailing part of the content instead of reflowing it, and a `column` detail takes its own region while the content shrinks. Neither carries a scrim or blocks the content behind it; only a modal in the overlay slot blocks, and it draws its own scrim."
+  - "Content scrolls under the floating TabBar, and the content region reserves the TabBar's own bottom inset, so the last row is always reachable."
+  - "The shell never nests: a screen inside it composes DashboardGrid or DetailScreen, not a second AdaptiveShell."
+
+composition:
+  - component: TabBar
+    props: { size: lg }
+    forwards: "items (from `destinations`: `value` and `label` as they are, `icon` as `glyph`, `count` as a `badge` count), value (from `selectedDestination`), onChange (to `onSelectDestination`)"
+    where: "navigation at `stack`, at `size: lg` under touch and `size: md` under pointer. It takes at most five items: with more destinations the first four are items and the fifth is a destination named by `moreLabel` with the nav.more glyph, which lists the rest. TabBar is a floating capsule by definition, and on the web it draws its own material.glass.chip capsule with its own insets and opaque fallback, while on Apple it is the system tab bar"
+  - component: Sidebar
+    props: { variant: panel }
+    forwards: "items (from `destinations`), value (from `selectedDestination`), onChange (to `onSelectDestination`), isCollapsed (from `sidebarCollapsed`), onCollapsedChange (to `onSidebarCollapsedChange`), header (slot, the brand mark), content (slot), footer (slot)"
+    where: "navigation at `split` and `sidebar` when `navigation` is auto, sidebar or tabBar; `navigation: rail` sets `variant: rail`, and a collapsed panel renders as the rail at Sidebar's own rail width"
+  - component: PillTabs
+    props: { variant: pill }
+    forwards: "tabs (from `destinations`: value, label, icon, count), value (from `selectedDestination`), onChange (to `onSelectDestination`)"
+    where: "TopBar's `navigation` slot at `split` and `sidebar` when `navigation: pillTabs`; PillTabs shows up to seven places and moves the rest behind the TopBar's nav.more Menu by its own rule. At `stack` the same destinations go to the TabBar"
+  - component: TopBar
+    forwards: title, subtitle, brand (slot), leading (slot), search (slot), actions (slot), scrollEdge
+    where: "topBar; the shell sets `align` - center at `stack`, leading at `split` and `sidebar` - fills `navigation` with PillTabs when asked, and leaves `brand` empty when a Sidebar carries the brand mark in its header"
+  - component: SearchField
+    forwards: label, placeholder, value, shortcut, onChange, onSubmit, onClear
+    where: "TopBar's `search` slot at `split` and `sidebar`; at `stack` search is a destination or a control inside the screen, not a field in the bar"
+  - component: CommandPalette
+    forwards: isOpen, query, onQueryChange, items, activeId, placeholder, emptyMessage, shortcut, isLoading, onSelect, onClose
+    where: "the overlay slot, when `commandPalette` is true, at desktop width under pointer modality only; it draws its own panel and scrim, binds its own z and traps focus itself"
+  - component: ListRow
+    props: { accessory: chevron }
+    forwards: title (from each remaining destination's `label`), leadingIcon (from its `icon`), onPress (to `onSelectDestination`)
+    where: "the content region while the `moreLabel` destination is selected at `stack`: one ListRow for each destination after the fourth, in `destinations` order"
+  - component: DashboardGrid
+    forwards: "the screen's own props, unchanged; the shell passes none of its own, and the grid keeps `detailPanel: none` because the shell owns the detail region"
+    where: content
+  - component: DetailScreen
+    props: { presentation: drawer }
+    forwards: "the DetailScreen's own props, unchanged; the shell sets `presentation` and nothing else"
+    where: "the detail slot at desktop width, in both kinds; below desktop width the same DetailScreen is presented with `presentation: sheet`"
+
+behavior:
+  - "`layout: auto` reads the shell's container width: `stack` below 600 px, `split` from 600 to 1023 px and `sidebar` at 1024 px and above (visual-dna §6.3). The breakpoints are the container's, not the window's, so a shell in a smaller box picks the layout that box allows. A forced `layout` changes the chrome and never the detail rule, which always follows the width."
+  - "The chrome of each layout is fixed by `layout.chrome`. At `stack`: a TopBar at `align: center` across the top, the content under it, and the floating TabBar over the content's bottom edge. At `split`: the navigation region along the leading edge - a Sidebar panel, or its rail - or, with `navigation: pillTabs`, no navigation region and a PillTabs row in the TopBar; the TopBar spans the width beside the navigation region. At `sidebar`: the chrome of `split`, plus the CommandPalette and the detail region. The shell decides which component exists and where it sits; each one paints itself, so no cell of TabBar, Sidebar, PillTabs or TopBar is repeated here."
+  - "Geometry: a Sidebar panel is `layout.sidebarPanel.width` wide and inset by space.page-margin from the window's leading, top and bottom edges, so its slab sits on the page ground; a rail is flush with the leading edge at Sidebar's own width. The content region starts at the navigation region's trailing edge with no gap of its own, because the screen inside it carries its own margin - DashboardGrid binds space.page-margin on its root - so a screen looks the same inside the shell as outside it. The brand mark sits in the Sidebar's header when there is a Sidebar and in the TopBar's `brand` slot when there is not, never in both."
+  - "Destinations map onto whichever component shows them: `value`, `label` and `icon` reach TabBar items (`icon` as `glyph`), Sidebar items and PillTabs tabs, `count` reaches each as its badge or count, and `section` reaches the Sidebar only. Exactly one destination is selected and renders as the inverse solid, which is those components' own rule (visual-dna §1 principle 9); the shell passes `selectedDestination` to exactly one of them and renders no selection of its own."
+  - "When the TabBar cannot hold the destinations it never shrinks them: it takes at most five, so with six or more the first four are items and the fifth is a destination named by `moreLabel` with the nav.more glyph. Selecting that item fires nothing and shows, in the content region, one ListRow with a chevron for each destination after the fourth, in `destinations` order; selecting one of those rows fires `onSelectDestination` with its value. Whenever `selectedDestination` names a destination after the fourth, the shell passes the More item's value to TabBar's `value`, so the bar still has exactly one selected item. PillTabs moves places after the seventh behind the TopBar's nav.more Menu, and a Sidebar scrolls, each by its own rule. A TabBar item shows no label - Prism's bar is icon-only - and a Sidebar label is one line that truncates with an ellipsis and keeps its full name in the accessible label."
+  - "A collapsed Sidebar is its rail: labels disappear, the rail keeps Sidebar's own width, and every item keeps its accessible label and, under pointer modality, the tooltip Sidebar draws, so a collapsed rail is never a set of unnamed glyphs. The collapse control is drawn only when `onSidebarCollapsedChange` is given."
+  - "The shell reads Prism's token context and never sets it: the axes come from `<Theme>` on the web and from DSTheme on Apple. The color scheme and the density nest per element, so a region inside the shell may declare its own (`scope()` on the web, a DSCore modifier on Apple); contrast, transparency, modality and motion are read from the root alone, and no nested element changes them (ADR-0019 §1 and §4, ADR-0025). A shell in a smaller box therefore picks its layout from its own width and still keeps the root's modality."
+  - "Modality, not width, decides hover, tooltips and hit size: size.hit is 44 under touch and 28 under pointer and extends invisibly around a smaller control, hover states render only under pointer, and tooltips and ContextMenu exist only there. A tablet that gains a trackpad gains all of these and keeps its layout."
+  - "At `stack` content scrolls under the floating TabBar, and the content region reserves `layout.tabBarReserve` - the TabBar's own formula of its height plus space.7 plus the bottom safe-area inset - as the bottom content inset of whatever scrolls inside it, so the last row clears the bar. On Apple the system tab bar reports the same reserve as a safe-area inset. A floating dock inside a screen sits above the TabBar by Toolbar's own rule, and no affordance is reachable only by hovering."
+  - "The detail region exists only at desktop width. It is open while the detail slot holds a DetailScreen and closed while it is empty; the app fills it in answer to the screen's own open action, such as DashboardGrid's `onOpenDetail`, and empties it on the DetailScreen's `onDismiss`. `detail: column` adds a trailing region of `layout.detail.column` below the TopBar, and the content region shrinks to make room; `overlay` lays the DetailScreen's docked drawer over the trailing part of the content without moving it, with no scrim, because the change of material separates the layer (visual-dna §6.4, §11 anti-pattern 6). In both kinds the DetailScreen has `presentation: drawer` and, through Sheet, draws the region's surface, width, inset, radius, elevation and z. Below desktop width the same DetailScreen is presented with `presentation: sheet`, which is modal over the content and the TabBar when it has no stage (component-inventory, layer 4: a desktop rail becomes a phone bottom sheet)."
+  - "A detail region is never modal: it takes focus when it opens, the content beside it stays reachable by pointer and by keyboard, and Escape while focus is inside it closes it and returns focus to what opened it."
+  - "The overlay slot holds one modal at a time - a CommandPalette, a modal Sheet or a Dialog - and paints after every other region. Those components and a DetailScreen drawer all bind z.overlay themselves, so at equal z the paint order decides: content, then the TabBar at its own z.raised, then the detail region, then the overlay slot. The shell binds no z; each modal draws its own material.glass.scrim and traps focus itself, and no second scrim is painted over the first."
+  - "`commandPalette: true` presents the app's CommandPalette only at desktop width under pointer modality. At `stack` and `split`, and under touch modality at any width, the shell does not present it: it is a keyboard-first affordance, and offering it without a keyboard would put a command behind a control nothing can reach."
+  - "Crossing a breakpoint keeps the app's state: the selected destination, the scroll position of the content region and the focused element all survive the change, focus never jumps to the top, and the layout change is not announced. A detail open at desktop width stays open across the change and moves between the drawer and the sheet presentation."
+  - "Selecting a destination fires `onSelectDestination` once; the selection haptic is TabBar's own haptic.selection, and the shell fires none of its own."
+  - "The shell paints color.bg.page on the root and nothing else; every surface inside it resolves its own material."
+
+motion:
+  layoutChange: motion.spring.smooth
+  chromeSwap: motion.duration.base
+  chromeSwapEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: "the root is the application frame; the navigation region is a navigation landmark, the topBar a banner, the content a main landmark, the detail a complementary region and a modal in the overlay slot a dialog"
+  label: each landmark carries a name - the navigation is named for the app's destinations, the detail region for the entity it shows, and the overlay for the modal it holds
+  keyboard: "Tab order is topBar, navigation, content, detail at every layout, whatever the navigation's position on screen. A modal in the overlay slot takes focus and traps it until it closes, then returns focus to what opened it - the trap is the modal's own, not the shell's. An open detail region takes focus and traps nothing. Arrow keys move within the navigation and Enter or Space selects, which is TabBar's, Sidebar's and PillTabs's keyboard model; Escape closes the overlay, or the detail region while focus is inside it; the CommandPalette opens from the keyboard at desktop width through a shortcut the app registers. Every focus ring is color.border.focus at border.focus width and belongs to the focused component, and a control that scrolls out of the navigation scrolls back into view when it takes focus."
+  dynamicType: "text size never changes the layout, which follows the container width alone. A Sidebar's labels scale with their role and its items grow in height while the panel does not widen, so a long label truncates and keeps its full name in the accessible label (Sidebar's own rule); a TabBar draws no label to grow, and its circles follow density rather than Dynamic Type (TabBar's own rule); the TopBar follows its own Dynamic Type rule. macOS has no Dynamic Type (ADR-0021 T6)."
+  contrast: "the shell binds no text tone of its own: it paints color.bg.page and lets every tone come from the chrome that draws it. TopBar, Sidebar, PillTabs and TabBar each state their own pairs in tokens/contrast-pairs.json, checked on the grounds this shell puts them on - color.bg.page for the TopBar, the rail and the content, and color.bg.surface for the Sidebar panel."
+  reduceTransparency: "the shell paints one opaque ground, color.bg.page, and declares no material of its own. The translucent chrome inside it is the TabBar's capsule, which on the web is the material.glass.chip recipe rather than a Surface material: a floating bar is chrome and exists to let the page show through it, so the backdrop trigger of ADR-0022 §1.2 does not gate it (ADR-0009 decision 1). On Apple the bar is the system tab bar, which Prism does not paint and which follows the system's own setting. Under Reduce Transparency and Increase Contrast the web capsule takes TabBar's own opaque fallback, and nothing about the shell's layout changes. A modal's material.glass.scrim keeps its alpha, because a scrim is a fill and not a blurred material (ADR-0022 §1.4). A shell whose ground is a map is the MapHUD pattern, which is v1.1."
+  reduceMotion: "the shell owns two animations. A layout change swaps chrome - a TabBar leaving and a Sidebar arriving, or the reverse - and a swap is a presentation, so the outgoing and the incoming component crossfade by opacity over motion.duration.base with motion.easing.out in both contexts and take their end positions at once. The regions that stay, the content and the detail, move to their new frames with motion.spring.smooth, which is in-place movement and has no bounce in the reduced context (ADR-0023 §8.4 item 3); nothing scales. The detail drawer's appearance, the Sidebar's collapse, the selection indicator and the overlay's entrance are the composed components' own substitutes, each declared in its spec"
+  voiceOver: "crossing a breakpoint announces nothing and moves no focus. Opening a modal in the overlay slot announces its name and makes everything behind it inert; opening a detail region announces its name without making the content inert, because both regions stay reachable. The selected destination is announced as selected, once."
+
+usage:
+  do:
+    - Let the shell own navigation, and let every screen inside it own only its own content.
+    - Keep one selected destination, drawn as the single inverse solid.
+    - Use the detail column or overlay at desktop width, and let a detail open as a sheet below it.
+    - Give every destination a glyph as well as a name; the TabBar and the rail show only the glyph.
+  dont:
+    - Don't change the layout because the user attached a trackpad; change hover, tooltips and hit size.
+    - Don't offer the CommandPalette on touch.
+    - Don't put a scrim behind a detail region.
+    - Don't nest one shell inside another, and don't add a second primary navigation inside the content.
+    - Don't let the floating TabBar cover the last row; reserve its inset.
+
+examples:
+  - id: phone-stack
+    props: { layout: stack, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "alerts", label: "Alerts", icon: object.notification, count: 3 }, { value: "reports", label: "Reports", icon: object.chart }], selectedDestination: "routes", topBar: true }
+    description: the floating TabBar over the content - the chip capsule on the web, the system bar on Apple - with the content region reserving its height plus space.7 and the safe area so the last row clears it
+  - id: phone-more
+    props: { layout: stack, moreLabel: "More", destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }, { value: "reports", label: "Reports", icon: object.chart }, { value: "people", label: "Drivers", icon: object.user }, { value: "settings", label: "Settings", icon: action.settings }], selectedDestination: "routes" }
+    description: six destinations at `stack` - four items and a fifth named More with the nav.more glyph, which lists Drivers and Settings as ListRows
+  - id: tablet-split
+    props: { layout: split, navigation: sidebar, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "reports", label: "Reports", icon: object.chart }], selectedDestination: "fleet" }
+    description: a Sidebar panel inset by space.page-margin beside the content, with the TopBar over the content; a detail opened here is a sheet, because the detail region needs desktop width
+  - id: tablet-rail
+    props: { layout: split, navigation: sidebar, sidebarCollapsed: true, onSidebarCollapsedChange: toggleSidebar, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
+    description: the collapsed Sidebar as its rail, every item still named, and still tooltipped under pointer
+  - id: desktop-sidebar
+    props: { layout: sidebar, navigation: sidebar, topBar: true, commandPalette: true, detail: overlay, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }], selectedDestination: "fleet" }
+    description: the desktop chrome in full - Sidebar, TopBar with a SearchField, CommandPalette on its shortcut - and a DetailScreen drawer over the trailing part of the content
+  - id: desktop-pill-tabs
+    props: { layout: sidebar, navigation: pillTabs, destinations: [{ value: "overview", label: "Overview", icon: object.chart }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }], selectedDestination: "overview" }
+    description: no Sidebar - the destinations are a PillTabs row in a leading-aligned TopBar that carries the brand mark, and the content takes the full width under it
+  - id: command-palette-open
+    props: { layout: sidebar, commandPalette: true, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
+    description: the palette is the one modal in the overlay slot; it paints last, draws its own panel and material.glass.scrim and traps focus itself
+  - id: detail-column
+    props: { layout: sidebar, detail: column, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "fleet" }
+    description: a DetailScreen drawer filling a trailing column of 16 % of the width, with the content region narrowed beside it, undimmed and reachable
+  - id: destinations-ru
+    props: { layout: split, navigation: sidebar, destinations: [{ value: "overview", label: "Обзор", icon: object.chart }, { value: "fleet", label: "Автопарк", icon: object.bus }, { value: "service", label: "Техническое обслуживание", icon: action.settings }], selectedDestination: "overview" }
+    description: Russian destination names run about a third longer than English ones; in the Sidebar panel a name that outgrows its one line truncates with an ellipsis and keeps its full text in the accessible label, and at `stack` they change nothing, because the TabBar is icon-only and the name lives in each item's accessible label
+
+notes:
+  platform:
+    ios: "adapted — `stack` at every width. The TabBar is the system tab bar, which Prism hands the destinations and the selection and does not paint (TabBar.yaml, ADR-0009 decision 1). An iPhone in landscape is wider than 600 pt, but Sidebar is `ios: none` and PillTabs on a phone are section tabs rather than primary navigation (PillTabs.yaml), so `layout: auto` resolves to `stack` there, and a forced `split` or `sidebar` does too. With no desktop width there is no detail region; a detail opens as a sheet."
+    ipados: "full — all three layouts by width: `stack` in a narrow multitasking window, `split` in portrait and `sidebar` from 1024 px, which every iPad reaches in landscape and where the detail region appears; modality flips to pointer while a trackpad is connected and the layout does not change (ADR-0010, ADR-0019 §2)."
+    macos: "adapted — compact density, pointer modality, and the Sidebar, CommandPalette and ContextMenu of ADR-0010 Tier 2. A Mac never takes `stack`, because TabBar is `macos: none`: a window below 600 px takes `split` with the Sidebar as its rail (or PillTabs, when asked), from 600 px `split`, and from 1024 px `sidebar`; a forced `stack` resolves to `split`."
+    watchos: "none — ADR-0010 Tier 3 has no TabBar, Sidebar, PillTabs, TopBar, CommandPalette or Tooltip, and the watch navigates with the system's own navigation, so there is no chrome for a shell to arrange. A pattern is a recipe rather than an implementation (ADR-0012 rule 3), and a recipe that composes nothing has nothing to say; a watch screen follows DetailScreen's watch form, a title and a vertical stack of at most three glanceable tiles (spec/patterns/README.md)."
+    web-touch: "adapted — every layout by container width, exactly as on web-desktop, because the layout follows the container and not the platform. What differs is the modality: touch means no hover state, no tooltips, no ContextMenu, no CommandPalette (`web-touch: none` in its own spec) and size.hit at 44. The web chooses density from the presence of a coarse pointer and modality from whether the primary input can hover finely (ADR-0019 §2), so a touchscreen laptop gets the regular density with pointer affordances, and this row's restrictions lift."
+  design: >-
+    The three widths are docs/research/visual-dna.md §6.3; the leading rail of 20-29 % and the trailing
+    column of 16-19 %, of which the shell takes the lower bounds, and the 36-48 px top row are §6.4; the
+    floating tab bar 24 above the bottom and 16 from the sides, with content scrolling under it, and the
+    overflow rule are §6.5 and §4.16 - values TabBar now owns, which is why this file cites them as
+    provenance and binds none. The one inverse solid per group is §1 principle 9 and §4.7; the 64 px icon
+    rail is §6.1's space.12 and §6.4, and Sidebar carries it. The layout swaps - top pill navigation to a
+    bottom floating tab bar, a docked band to a sheet, side-by-side cards to a carousel, a desktop rail to a
+    phone bottom sheet, a secondary grid to a tab - are docs/research/component-inventory.md, layer 4,
+    which is also the only place the reference set documents them; the first is why `navigation` offers
+    PillTabs as well as a Sidebar (PillTabs.yaml: the navigation of a window that has no Sidebar), and the
+    fourth is why a detail below desktop width opens as a sheet. The three input worlds and what each tier
+    ships are ADR-0010; the per-platform density and modality defaults are ADR-0019 §2, and size.hit follows
+    modality after ADR-0024 §7. On the web the TabBar keeps the glass capsule of §4.16 (on Apple it is the
+    system bar): it is chrome rather than content, so ADR-0022's backdrop trigger does not gate it
+    (ADR-0009 decision 1), and TabBar.yaml owns both that recipe and its opaque fallback. A shell whose
+    ground is a map is MapHUD, which is v1.1 (ADR-0012). Hover-only affordances and floating bars that cover
+    controls are anti-pattern 31. This pattern binds only what it draws or places itself - the page ground
+    and the Sidebar panel's inset - because every other value is a cell of TabBar, Sidebar, PillTabs, TopBar,
+    Sheet or the modal components, and two copies of a number drift (ADR-0024 §5). Example copy is invented
+    (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0025-web-component-css-and-root-axes.md
+    - docs/adr/0029-direction-board-sign-off.md

@@ -69,16 +69,22 @@ props:
     type: enum
     values: [auto, visible, hidden]
     default: auto
-    description: auto keeps the twin collapsed behind the toggle and always in the accessibility tree
+    description: "auto keeps the twin collapsed behind the toggle, which enters and leaves `expanded`; visible holds `expanded` from the first render with no toggle; hidden never enters it. The twin is in the accessibility tree in every case"
   - name: height
     type: number
     description: the plot box in px, including the x-axis band
   - name: emptyMessage
     type: string
+    description: set by the caller only while there is nothing to plot; the message replaces the plot. The container never inspects the data itself
   - name: errorMessage
     type: string
+    description: set by the caller only while the data failed to load; it enters `error`, and it wins over `emptyMessage` when both are set
   - name: onRetry
     type: action
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while new data is on its way; the container holds its whole block once, so the chart in `plot` and the hero keep their own `isLoading` false
 
 states: [default, focus-visible, loading, error, expanded]
 
@@ -183,9 +189,9 @@ behavior:
   - "The table twin lists one row per x and one column per series, with tabular figures in type.data and rows at size.row. It is always present in the accessibility tree; `tableView: auto` collapses it visually behind the toggle, `visible` keeps it open below the plot, and `hidden` is legal only when the same numbers are already in the page as text."
   - "A value is never reachable only by hovering: whatever the tooltip would say is in the hero, the direct labels or the table twin."
   - "`height` sets the plot box and always includes the x-axis band, so a container never crops its own axis. Unset, the plot takes the height its parent gives it and the container computes none of its own; a container in a scrolling layout therefore states one, because a plot with no intrinsic height collapses there."
-  - "`loading` holds the previous render at opacity.dimmed-row and keeps the title, the hero and the axes in place; the container never swaps in a skeleton, which would flash on every refetch."
-  - "Empty renders `emptyMessage` with the status.info glyph in place of the plot, and keeps the title and the caption; error renders `errorMessage` in color.text.critical with the status.danger glyph and offers `onRetry`. Both keep the table twin's toggle hidden, because there is nothing to tabulate. On inverse, accent and the glass materials the critical tone is not available, so the message takes that material's foreground and the glyph alone carries the state, as Text does with every status tone (ADR-0022 §3.1, ADR-0011 rule 4); on vivid no message is drawn at all, and an empty or failed chart there is stated in the subtitle."
-  - "`expanded` is the table twin's open state: the toggle reads as expanded, the twin sits below the plot, and the container's height grows. It is the state `tableView: visible` starts in, and `tableView: hidden` never reaches."
+  - "`isLoading` enters `loading`, which holds the previous render — the plot, or the empty or error message last shown — at opacity.dimmed-row and keeps the title, the hero and the axes in place; the container never swaps in a skeleton, which would flash on every refetch. The hold is the container's alone: the chart in `plot` and the HeroNumber built from `hero` keep their own `isLoading` false, so the opacity is applied once (spec/SCHEMA.md)."
+  - "A set `emptyMessage` renders with the status.info glyph in place of the plot, and keeps the title and the caption. A set `errorMessage` enters `error`, wins over `emptyMessage`, and renders in color.text.critical with the status.danger glyph, offering `onRetry`. Both keep the table twin's toggle hidden, because there is nothing to tabulate. On inverse, accent and the glass materials the critical tone is not available, so the message takes that material's foreground and the glyph alone carries the state, as Text does with every status tone (ADR-0022 §3.1, ADR-0011 rule 4); on vivid no message is drawn at all, and an empty or failed chart there is stated in the subtitle."
+  - "`expanded` is the table twin's open state. Under `tableView: auto` a press on the table toggle enters it and the next press leaves it; `tableView: visible` holds it from the first render and draws no toggle; `tableView: hidden` never enters it. While expanded the toggle reads as expanded, the twin sits below the plot, and the container's height grows."
   - "The caption carries what the plot cannot: the unit, the domain, and any statement a chart owes its reader — that panels use independent scales, or that the visible window changed the y domain."
   - "One `action` in the header's trailing corner at size.control.sm, and filters for a set of charts live in one row above them all, not per chart."
   - "Axis text is hidden from assistive technology; the table twin carries the ticks."
@@ -230,11 +236,14 @@ examples:
   - id: table-visible
     props: { title: "Line output", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", tableView: visible, height: 180 }
   - id: with-action
-    props: { title: "Yield", subtitle: "Per batch", summary: "Yield per batch over 30 days, 2,180 to 2,640 roubles, steady", action: { kind: pager, label: "November" }, height: 180 }
+    props: { title: "Yield", subtitle: "Per batch", summary: "Yield per batch over 30 days, 2,180 to 2,640 roubles, steady", action: { fixture: pager, label: "November" }, height: 180 }
   - id: empty
     props: { title: "Line output", summary: "No samples in the selected period", emptyMessage: "No samples in this period" }
   - id: error
     props: { title: "Line output", summary: "The samples could not be loaded", errorMessage: "Couldn't load samples" }
+  - id: loading
+    props: { title: "Line output", subtitle: "Last 24 hours", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", caption: "Percent of rated capacity", height: 180, isLoading: true }
+    description: the previous render held once at opacity.dimmed-row; the chart inside is not set loading as well
   - id: title-ru
     props: { title: "Выработка линии", subtitle: "За последние 24 часа", summary: "Выработка линии за 24 часа, от 61 до 86 процентов, рост после 06:00", caption: "Процент от номинальной мощности", height: 180 }
     description: the Russian title and caption run about a third longer and wrap to two lines rather than truncating

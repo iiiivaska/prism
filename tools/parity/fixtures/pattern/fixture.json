@@ -1,5 +1,0 @@
-{
-  "description": "a pattern: platform support with no implementation manifest entry anywhere (ADR-0012 rule 3)",
-  "expect": [],
-  "lags": []
-}

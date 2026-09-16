@@ -25,9 +25,10 @@ import { studioAlias, studioTypeOf, type TokenFacts } from './values.ts';
 /** The comp set of tokens/prism.resolver.json, in resolver order: it resolves last, so it is the tail of every set order. */
 const COMP_SETS = [
   'comp/area-chart', 'comp/avatar', 'comp/badge', 'comp/button', 'comp/card', 'comp/checkbox', 'comp/chip',
-  'comp/icon-button', 'comp/progress-bar', 'comp/progress-ring', 'comp/radio', 'comp/ring-gauge',
-  'comp/segmented-control', 'comp/select', 'comp/skeleton', 'comp/slider', 'comp/sparkline', 'comp/spinner',
-  'comp/text-area', 'comp/text-field', 'comp/toggle', 'comp/tooltip',
+  'comp/dialog', 'comp/icon-button', 'comp/list-row', 'comp/pagination', 'comp/pill-tabs', 'comp/progress-bar',
+  'comp/progress-ring', 'comp/radio', 'comp/ring-gauge', 'comp/segmented-control', 'comp/select', 'comp/sheet',
+  'comp/sidebar', 'comp/skeleton', 'comp/slider', 'comp/sparkline', 'comp/spinner', 'comp/table',
+  'comp/text-area', 'comp/text-field', 'comp/timeline', 'comp/toggle', 'comp/tooltip', 'comp/top-bar',
 ] as const;
 
 async function inputOf(reader: SourceReader, root: string): Promise<FormatInput> {

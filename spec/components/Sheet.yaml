@@ -1,0 +1,262 @@
+name: Sheet
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The panel that comes in from an edge and holds a screen's worth of content: a bottom sheet with
+  detents and a drag handle under touch, a bottom sheet at one height or an edge drawer under a
+  pointer. Its root is a Surface - solid, because content is solid, and glass only when it floats over
+  the world - and it is modal with a scrim or docked without one, which decides whether it traps focus.
+  It is the content panel of the screen's own layer, not the system's sheet presentation.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: adapted
+  watchos: none
+  web-touch: full
+  web-desktop: adapted
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: scrim
+    optional: true
+    description: drawn only while the sheet is modal; `material.glass.scrim`, the dim that says the rest is blocked
+  - part: root
+    description: the panel; a Surface of material solid, or glass when it floats over an image, a map or a vivid surface
+  - part: grabber
+    optional: true
+    description: the drag handle, centered above the header; drawn only under touch modality and only where the sheet can be dragged
+  - part: header
+    description: the drag area - grabber, title and the close control; it stays in place while the content scrolls
+  - part: title
+    optional: true
+  - part: close
+    optional: true
+    slot: true
+    description: "one IconButton (`variant: plain`, `size: sm`, `glyph: nav.close`, `label` \"Close\", `onPress` = `onDismiss`), drawn while `showsClose`"
+  - part: content
+    slot: true
+    description: the scrolling body
+  - part: actions
+    optional: true
+    slot: true
+    description: the action bar pinned to the bottom edge, inside the sheet's padding
+
+props:
+  - name: edge
+    type: enum
+    values: [bottom, leading, trailing]
+    default: bottom
+    description: which edge the sheet comes from; detents and the grabber exist only for `bottom`, and `leading` and `trailing` are the drawer
+  - name: material
+    type: enum
+    values: [solid, glass]
+    default: solid
+    description: glass is legal only with a `backdrop` of image, map or vivid, and Surface renders the opaque raised fallback otherwise
+  - name: backdrop
+    type: enum
+    values: [none, image, map, vivid]
+    default: none
+  - name: detents
+    type: data
+    description: "the detents this sheet offers, in order, from [peek, medium, large]; unset, it offers the one detent `detent` names"
+  - name: detent
+    type: enum
+    values: [peek, medium, large]
+    default: medium
+    description: the detent the sheet rests at; a value the sheet does not offer resolves to the nearest offered detent, and the user changing it fires `onDetentChange`
+  - name: isModal
+    type: boolean
+    default: true
+    description: modal draws the scrim, traps focus and makes the rest inert; docked does none of the three
+  - name: isDismissible
+    type: boolean
+    default: true
+    description: whether a press on the scrim and a drag below the smallest offered detent dismiss; Escape and the close control request dismissal whatever this says
+  - name: showsGrabber
+    type: boolean
+    default: true
+    description: ignored where the sheet cannot be dragged
+  - name: showsClose
+    type: boolean
+    default: false
+    description: draws the close control in the header; it is forced to true wherever there is no dismissing gesture, which is the drawer (`edge` leading or trailing) and pointer modality
+  - name: title
+    type: string
+  - name: content
+    type: slot
+    required: true
+  - name: actions
+    type: slot
+  - name: onDetentChange
+    type: action
+  - name: onDismiss
+    type: action
+    required: true
+    description: a request; it fires once per dismissal, and the sheet closes only when the caller writes `isOpen` back as false
+  - name: isOpen
+    type: boolean
+    default: false
+    description: controlled; the sheet is presented exactly while this is true
+
+states: [default, dragging]
+
+tokens:
+  scrim:
+    background: material.glass.scrim
+    z: z.overlay
+  root:
+    background:
+      solid: color.bg.surface
+      glass: material.glass.fill
+    radius: radius.sheet
+    padding: space.6
+    gap: space.5
+    shadow: comp.sheet.shadow
+    z: z.overlay
+  grabber:
+    width: size.control.md
+    color:
+      default: color.border.strong
+      glass: color.border.on-glass-fill
+    radius: radius.control
+    gap: space.3
+  header:
+    gap: space.3
+    paddingBottom: space.4
+  title:
+    typography: type.title.sm
+    color:
+      default: color.text.primary
+      glass: color.text.on-glass-fill
+  content:
+    gap: space.4
+  actions:
+    gap: space.3
+    paddingTop: space.5
+
+behavior:
+  - "What a Sheet is. ADR-0009 decision 1 keeps the system's own sheet presentation native: a system flow - a share sheet, a picker, a presentation with its own navigation bar - uses the platform's presentation, which Prism neither paints nor wraps, and Prism components fill it. Sheet is the other thing the references draw: the content panel of the screen's own layer - the map HUD's sheet over the world, the docked band on the page's columns, the drawer beside a grid, and the anchored panel of Popover and Menu at compact width. ADR-0029 §1.2 gives exactly that panel the scheme's glass (\"cards, panels and sheets over maps\"), which no system presentation renders, so Prism draws it on every platform, as it draws Dialog."
+  - "The sheet's root is a Surface. `solid` is the default because a sheet carries content and ADR-0009 decision 2 keeps content on solid materials; `glass` exists for the one case the references show - a panel floating over the world - and it is legal only with a `backdrop` of image, map or vivid. Over anything else Surface renders the opaque raised fallback and logs at debug level (ADR-0022 §1.2)."
+  - "The `root` background cells are keyed by this spec's own `material` prop, as Card's are by its variant: the sheet is the Surface, so it requests the material and Surface renders it. On glass Surface draws the whole `material.glass.fill` recipe - the fill, `material.glass.fill.blur`, `material.glass.fill.saturate`, the 1 px inner edge from `material.glass.fill.edge.start` to `material.glass.fill.edge.end`, `material.glass.fill.grain` and `material.glass.fill.bloom` - and under any trigger of ADR-0022 §1.2 it renders the opaque raised fallback instead. Surface publishes the material it rendered and the `backdrop` kind to everything inside, and the `grabber` and `title` cells keyed `glass` follow that published material, so under the fallback they take their `default` cells. On glass the title is `color.text.on-glass-fill`, and the quieter tones inside follow the published backdrop kind (ADR-0029 §1.4)."
+  - "Detents are fractions of the container the sheet covers, and they exist only for `edge: bottom`. `peek` is the header block alone - grabber, title and the top padding - which is the docked band at rest. `medium` covers 0.45 of the container height, the deepest partial sheet the references show (visual-dna §6.5: sheets rise from 55 % of the height). `large` covers the container minus a top inset of `space.11` (48), so the stage above stays visible as a strip. The set is a spec value, not a token: Prism has no layout-fraction token."
+  - "`detents` lists what this sheet offers, in order, and `detent` names one of them; with `detents` unset the sheet offers exactly the detent `detent` names, and a `detent` that an explicit list does not hold resolves to the offered detent nearest to it in height. A sheet that offers one detent cannot be dragged between detents, and its grabber is then drawn only when the sheet is dismissible by a drag."
+  - "Modality decides the drag, never the platform: ADR-0010 makes modality a runtime property, and its rule 1 forbids a platform branch inside a component. Under touch the header drags, the grabber is drawn and every offered detent is reachable. Under pointer - macOS always, web-desktop, and iPadOS while a trackpad or mouse is attached - the sheet is not dragged, draws no grabber, rests at the largest detent it offers and forces `showsClose` to true, because a pointer has neither a dismissing gesture nor a detent to drag to. `detent` and `onDetentChange` keep working there for a caller that changes the height itself."
+  - "The drag area is the whole header, not the grabber alone, plus the content while the content is scrolled to its top. Dragging follows the finger directly with `motion.spring.interactive`; on release the sheet settles to the nearest detent in the direction of the drag with `motion.spring.sheet`, and `haptic.impact.medium` plays once when that release settles on a detent, which is exactly that registry entry's stated intent. A detent change the caller makes plays none, because `spec/haptics.yaml` rule 2 forbids a haptic on a programmatic state change."
+  - "Dragging below the smallest offered detent dismisses the sheet while `isDismissible`; while it is false the sheet resists past that detent and springs back."
+  - "While the sheet is `dragging`, its scrim's alpha follows the sheet's position between the smallest offered detent and the one it is heading for, so a drag toward dismissal lightens the dim as the screen behind comes back; the alpha it interpolates toward is `material.glass.scrim`'s own, and a docked sheet has no scrim to track. Nothing else changes visually while dragging: the sheet does not scale, tilt or blur."
+  - "Nested scrolling: the content scrolls inside the sheet at every detent. A downward drag that begins while the content is at scroll offset 0 moves the sheet instead of the content; a drag that begins anywhere else scrolls the content, and the sheet does not move until the content reaches its top and the finger lifts."
+  - "Content that outgrows the sheet scrolls; the header and the action bar stay pinned, so the way out and the decision are always on screen. A sheet whose content outgrows `large` is a screen, not a sheet."
+  - "Modal and docked. `isModal` draws the scrim, makes everything behind it inert to the pointer, to touch and to assistive technology, and traps Tab and Shift-Tab inside the sheet. A docked sheet - `isModal: false` - draws no scrim, traps nothing and leaves the page usable, which is the drawer of visual-dna §4.10 and §11 anti-pattern 6: a layer that does not block is separated by material, never by a dim. In the document a docked sheet sits after the content of the region it overlaps, so Tab reaches it after that content."
+  - "Focus. When `isOpen` turns from false to true, focus moves into the sheet, modal or docked, to its first focusable element in this order: the grabber when it is adjustable, the close control, the content, the action bar. A docked sheet that is already open on the screen's first render - the band at rest - takes no focus. On close, focus returns to the element that had it before the sheet opened, or, when that element is gone, to the nearest surviving container; a docked sheet moves focus only if focus was inside it."
+  - "Dismissal. Escape while focus is inside the sheet fires `onDismiss`, modal or docked, and so does the close control. A press on the scrim and a drag below the smallest offered detent fire it only while `isDismissible` is true. `isDismissible: false` removes those two gestures and nothing else, because `onDismiss` is a request the caller may refuse. The sheet never leaves on a timer."
+  - "`isOpen` and `detent` are controlled: the sheet renders what the props say. A drag tracks the finger, and on release the sheet settles to the detent it is about to report and fires `onDetentChange`; a caller that does not write the new value back returns the sheet to the `detent` it still passes, with `motion.spring.sheet`. A caller can refuse a dismissal - by asking a Dialog first, for instance - and the sheet stays."
+  - "`edge: leading` and `edge: trailing` are the drawer form in both modalities and at every width: no detents, no grabber, no drag, and `showsClose` forced to true. The drawer is 460 px wide - visual-dna §4.10's detail drawer; Prism has no layout-width token, so like the detent fractions it is a spec value - and never wider than the container minus twice `space.5`. It is inset `space.5` from the container's top, its bottom and its own edge, takes the height between, rounds all four corners at `radius.sheet`, and overlaps the content beside it instead of pushing it (visual-dna §6.4, overlap instead of reflow). `detents` and `detent` are accepted and ignored there, so one API serves the bottom sheet and the drawer."
+  - "The grabber is `size.control.md` wide (40 at regular density) and 3 px tall, the handle of visual-dna §4.10, in `color.border.strong` (`color.border.on-glass-fill` on glass), pill-shaped at `radius.control`, centered, `space.3` below the sheet's top edge. Prism has no grabber-height token, so the 3 px is the research value, and the grabber's own hit region is at least `size.hit` on both axes."
+  - "The detent is reachable without a drag. Under touch, a sheet that offers more than one detent exposes the grabber as an adjustable element named by the sheet's title (\"Unit 4417, sheet height\"): it is the first stop of the sheet's focus order, Up and Down or the accessibility increment and decrement actions step to the next larger and smaller offered detent, and each step announces the new height as \"Collapsed\" (`peek`), \"Half height\" (`medium`) or \"Full height\" (`large`), strings this component supplies. Under pointer the sheet rests at one height, so there is nothing to adjust. A sheet that offers one detent has nothing to adjust either: its grabber is decorative and hidden from assistive technology, and the close control, Escape or a drag is what gets the reader out."
+  - "Geometry of the bottom sheet: it spans the full width of the container it covers and sits flush with that container's bottom edge at every width, so only its two top corners are rounded, at `radius.sheet` 28, or at the device's own corner radius where the platform reports one and it is larger (visual-dna §6.5). The drawer's four rounded corners are the drawer bullet's."
+  - "Only one sheet at a time. A caller does not open a sheet from inside a sheet; it replaces the open sheet's content instead, so there is never a stack of panels to unwind. A Dialog may open over a sheet, and renders above it with its own scrim."
+  - "Presenting, the panel moves in from beyond its edge to its detent, or to its drawer position, with `motion.spring.sheet`, and a modal sheet's scrim fades in over `motion.duration.base` with `motion.easing.out`; dismissing reverses both. Nothing scales and nothing blurs (visual-dna §9.2's drawer cue, which Prism takes without the backdrop blur ramp). A detent change the caller makes moves the panel with `motion.spring.sheet` as well."
+
+motion:
+  present: motion.spring.sheet
+  drag: motion.spring.interactive
+  settle: motion.spring.sheet
+  scrim: motion.duration.base
+  scrimEasing: motion.easing.out
+  reduceMotion: crossfade
+
+haptics:
+  detent: haptic.impact.medium
+
+accessibility:
+  role: "`dialog` with the modal flag while `isModal`; a `complementary` region with an accessible name while it is docked"
+  label: "the `title`; a sheet with no title carries an explicit accessibility label, because \"sheet\" says nothing about what is in it. The close control is an IconButton labelled \"Close\", which this component supplies, because an IconButton never infers its name from its glyph"
+  traits: [dialog]
+  keyboard: "on open, focus moves to the first of: the adjustable grabber, the close control, the content, the action bar. Escape fires `onDismiss` while focus is inside the sheet, modal or docked. A modal sheet traps Tab and Shift-Tab in that order; a docked sheet traps nothing, sits in the Tab order after the content it overlaps, and Tab leaves it after its action bar. Under touch, a sheet that offers more than one detent takes Up and Down on its focused grabber to step between detents; under pointer it rests at one height and the close control is always drawn, so the keyboard never needs a drag. Focus rings belong to the focused grabber or control: `color.border.focus` at `border.focus` width outside its shape"
+  dynamicType: "title, content and the action bar scale with their roles; the sheet keeps its detent and scrolls, rather than growing past it, and nothing truncates to keep a height (ADR-0011). At the accessibility sizes a sheet that would rest at `peek` rests at `medium` instead, offering `medium` in place of `peek` when its list lacks it, because a header block alone no longer shows the title"
+  contrast: "on solid, `color.text.primary` and `color.text.secondary` on `color.bg.surface` are checked functional pairs in tokens/contrast-pairs.json. On glass, the sheet publishes the scheme's glass and its text is `color.text.on-glass-fill`, with the quieter tones following the published backdrop kind; both sets are checked over every backdrop the material may meet (ADR-0029 §1.6). The grabber's 3 px bar is decoration rather than a UI boundary that has to hold 3:1: the drag area is the whole header, not the bar, and the detent reaches a reader through the adjustable grabber. On the solid grounds it is `color.border.strong`, which holds the boundary tier there anyway (a checked pair on page, surface and raised); on glass it is `color.border.on-glass-fill`, the decorative outline role of ADR-0030 §3.2, which no pair checks and which carries nothing by itself. The scrim's own pair is `color.text.on-glass` on `material.glass.scrim` at the large tier"
+  reduceTransparency: "a glass sheet resolves with its Surface to the opaque raised fallback painted over `color.bg.page`: the blur, the saturation, the edge, the grain and the bloom are dropped, the radius and the elevation stay, and every tone inside returns to the solid family (ADR-0022 §1.1). Detents, the grabber and the drag are unchanged. The scrim keeps its alpha, because a blocking scrim is not a translucency effect (ADR-0022 §1.4)"
+  reduceMotion: "the sheet does not slide in or out and does not scale: presenting and dismissing crossfade by opacity over `motion.duration.base` with `motion.easing.out`, the panel takes its detent's or its drawer's position at once, and the scrim fades with it. A drag still tracks the finger directly with `motion.spring.interactive`, which the reduced context leaves unchanged; the release, and a detent change the caller makes, still move with `motion.spring.sheet`, which is in-place movement and has no bounce there (ADR-0023 §8.4 item 3 and rule 11)"
+  voiceOver: "presenting a modal sheet announces its title and moves focus into it, and the rest of the screen leaves the accessibility tree; dismissing returns both. A docked sheet is announced as a region; one that opens moves focus into itself, and a band that is part of the screen from the start is reached in reading order"
+
+usage:
+  do:
+    - Use a Sheet for a task that needs a screen's worth of room but keeps the screen behind it in mind.
+    - Offer `peek` when the sheet is the second half of the screen, as the map HUD and the docked band are.
+    - Pin the action bar to the bottom edge so the decision stays reachable while the content scrolls.
+    - Use `glass` only over a map, an image or a vivid surface, and let it fall back everywhere else.
+    - Use the platform's own sheet presentation for a system flow with its own navigation, and fill it with Prism components.
+  dont:
+    - Don't dim the page behind a docked sheet; a drawer separates itself by material (visual-dna §11 anti-pattern 6).
+    - Don't open a sheet from inside a sheet.
+    - Don't make the grabber the only way to change the detent; a pointer and a keyboard have no drag.
+    - Don't ask an irreversible question in a Sheet; that is a Dialog.
+    - Don't put a sheet on the watch; the system owns modal presentation there.
+
+examples:
+  - id: medium-solid
+    props: { edge: bottom, detent: medium, title: "Unit 4417", detents: [peek, medium, large] }
+  - id: peek-docked
+    props: { edge: bottom, detent: peek, isModal: false, title: "Today's routes", detents: [peek, medium] }
+    description: the docked band at rest under touch; no scrim, no trap, the page behind it stays usable (under pointer the sheet rests at `medium`, its largest offered detent)
+  - id: large-with-actions
+    props: { edge: bottom, detent: large, title: "Reassign shift", actions: { fixture: buttonRow, count: 2 } }
+  - id: glass-over-map
+    props: { edge: bottom, material: glass, backdrop: map, detent: medium, title: "Unit 4417" }
+    surface: map
+    description: the sheet's Surface draws the whole `material.glass.fill` recipe and its title takes `color.text.on-glass-fill`
+  - id: dragging
+    props: { edge: bottom, detent: medium, detents: [peek, medium, large], title: "Unit 4417" }
+    description: mid-drag between `medium` and `large` under touch; the drag tracks the finger and the release settles to the nearest detent
+  - id: trailing-drawer
+    props: { edge: trailing, isModal: false, title: "Incident 2211", showsClose: true }
+    description: the desktop form - a 460 px edge drawer inset `space.5`, with no detents, no grabber and no scrim, overlapping the trailing column; the close control and Escape are its way out
+  - id: ru-title
+    props: { edge: bottom, detent: medium, title: "Назначить смену на завтра" }
+    description: a Russian title about a third longer than its English twin; it wraps to two lines and the header grows with it
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 set has no Sheet, and ADR-0022 F4 records Apple's instruction not to replace the material of a watchOS modal presentation. A watch app presents the system's own sheet and fills it with Tier 3 components; Prism supplies the content, not the panel."
+    macos: "`adapted`. macOS is always pointer modality, so every bottom sheet takes the pointer form of the behavior block: no grabber, no drag, one height (the largest offered detent) and a close control that is always drawn. The props keep their defaults; the desktop form of the references - the 460 px drawer, docked - is what a caller asks for with `edge: trailing` and `isModal: false`, as DetailScreen's `presentation: drawer` does. Compact density gives it the tighter content rhythm."
+    web-desktop: "`adapted`. The same pointer form as macOS, built on React Aria's dialog for the modal case; `data-open` drives the presented state. A narrow browser window still gets the bottom sheet that Popover and Menu fall back to, at one height with its close control."
+    ios: "`full`; the sheet is Prism's content panel, not the system's sheet presentation (the first behavior bullet), so the detents, the grabber and the scrim are this spec's. At compact width it is the bottom sheet of the map HUD."
+    ipados: "`full`; the same panel as iOS. While a trackpad or mouse is attached the modality is pointer and the sheet takes the pointer form, which ADR-0010 makes a runtime property rather than a platform one."
+  design: >-
+    docs/research/component-inventory.md records 5 of 11 sightings (KM KD CP TM IM) and folds three forms
+    into one component: "partial bottom sheet with device-matched corners (opaque, or glass with the map
+    showing through); draggable dark sheet with a concave notch and handle; the same content docked as a
+    dark band on desktop; side drawer in dark glass over the page with no scrim". The detents come from
+    visual-dna §6.5 and §4.16, where the observed sheets rise from 55-72 % of the height, so `medium` takes
+    the deepest of them and `peek` is the docked band of §4.10. Padding `space.6` 20 and `radius.sheet` 28
+    are §6.5's sheet geometry; the 40 x 3 handle and the 460 px drawer inset 16 are §4.10, and Prism has
+    no token for the handle's 3 px height or the drawer's width. The drawer's "no scrim" and the overlap
+    instead of reflow are §6.4 and §11 anti-pattern 6, and the drawer shadow is §7.2's `shadow.drawer`
+    row, reached through `comp.sheet.shadow` because `shadow` is not a spec-bindable category (ADR-0024
+    §5.3). The reference's concave notch around the handle is not adopted: it is one shape outside the two
+    of §1 principle 2, and it would need a custom silhouette per sheet width. The reference's fourth form,
+    a drawer in dark glass over a light page, is not reproducible as glass either: the page is not
+    `image`, `map` or `vivid`, so ADR-0022 §1.2's fourth trigger fires and Surface renders the opaque
+    raised fallback. Prism's drawer is therefore `solid` over the page, and it separates itself by
+    material and by `comp.sheet.shadow` rather than by translucency, which is what §11 anti-pattern 6 asks
+    of a layer that does not block. Why Prism draws the panel rather than the system is the first behavior
+    bullet: the system's sheet presentation stays native chrome under ADR-0009 decision 1, and this is the
+    content panel ADR-0029 §1.2 names. The near-black band under a light dashboard (§4.10) is a docked
+    solid Sheet inside a dark color-scheme scope that the caller sets on the region (ADR-0019 §1), not a
+    material of the Sheet's own: nothing here reads the scheme to pick a fill. Example copy is invented
+    (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md

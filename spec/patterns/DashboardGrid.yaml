@@ -1,0 +1,330 @@
+name: DashboardGrid
+layer: pattern
+specVersion: 1
+status: draft
+summary: >-
+  The screen most Prism products open on: an optional header, a card grid of one, two or four columns
+  with one hero at its leading top corner, and optionally a slab of tiles, a bottom band of charts and a
+  trailing detail panel. The pattern owns the column counts, the gaps, where every region sits and the
+  counting rules - one hero numeral, one accent, one vivid form - and composes Card, StatTile, Surface,
+  ChartContainer, EmptyState, Sheet and DetailScreen instead of drawing anything of its own.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the page ground; it carries the page margin and stacks the regions top to bottom - header, grid, tileGroup, band
+  - part: header
+    optional: true
+    slot: true
+    description: a title lock-up with an optional trailing control cluster, or one PillTabs row; outside an AdaptiveShell it may instead be a TopBar
+  - part: title
+    optional: true
+    description: the title lock-up's text, drawn only when the header holds a lock-up
+  - part: heroRow
+    optional: true
+    slot: true
+    description: the hero block at the grid's leading top corner - one StatTile at size lg, one vivid Card, or a 2x2 of vivid Cards
+  - part: grid
+    slot: true
+    description: the card grid; it holds the hero block and the cells
+  - part: cell
+    description: one grid position; an empty one keeps its full size and holds an EmptyState of variant slot
+  - part: tileGroup
+    optional: true
+    slot: true
+    description: a slab of tiles set almost edge to edge under the grid, with at most one of them lit
+  - part: band
+    optional: true
+    slot: true
+    description: the bottom band of charts, spanning the grid's full width
+  - part: detailPanel
+    optional: true
+    slot: true
+    description: the trailing panel at desktop width; it holds one DetailScreen, is open while it holds one, and that screen draws the panel's surface
+
+props:
+  - name: title
+    type: string
+    description: the page title, drawn by the header's title lock-up; inside an AdaptiveShell whose TopBar shows the screen's name the header draws no title, because a screen has one name (TopBar.yaml)
+  - name: hero
+    type: enum
+    values: [none, metric, vivid, vividGrid]
+    default: none
+    description: what the hero block holds - nothing, one StatTile at size lg, one vivid Card, or a 2x2 of vivid Cards
+  - name: columns
+    type: number
+    description: an upper limit on the width-derived column count of `layout.columns`; it lowers the count and never raises it, and size.card.min still applies
+  - name: tileGroup
+    type: boolean
+    default: false
+  - name: litTile
+    type: number
+    description: the zero-based index of the one lit tile in the slab, counted in reading order; unset, no tile is lit, and an index outside the slab lights none
+  - name: band
+    type: boolean
+    default: false
+  - name: bandTitle
+    type: string
+    description: the name of the band region and of the Sheet that replaces it at compact width; required when `band` is true
+  - name: detailPanel
+    type: enum
+    values: [none, column, overlay]
+    default: none
+    description: the kind of panel the detailPanel slot opens as at desktop width; below it either kind opens as a sheet, and a grid inside an AdaptiveShell keeps `none` because the shell owns the detail region
+  - name: onOpenDetail
+    type: action
+    description: fired by a cell's open affordance with that cell's identity; the app answers by filling the detailPanel slot with a DetailScreen and empties the slot on that screen's `onDismiss`
+
+states: [default, loading, error]
+
+tokens:
+  root:
+    background: color.bg.page
+    padding: space.page-margin
+  header:
+    gap: space.3
+    marginBottom: space.group-gap
+  title:
+    typography: type.title.lg
+    color: color.text.primary
+  heroRow:
+    gap: space.4
+  grid:
+    gap: space.4
+    gutter: space.5
+    minColumnWidth: size.card.min
+    loading:
+      opacity: opacity.dimmed-row
+  tileGroup:
+    gap: space.tile-gap
+    loading:
+      opacity: opacity.dimmed-row
+  band:
+    background: color.bg.page
+    radius: radius.sheet
+    padding: space.card-padding
+    gap: space.4
+    marginTop: space.section-gap
+    loading:
+      opacity: opacity.dimmed-row
+
+layout:
+  breakpoints:
+    compact: "< 600 px"
+    regular: "600-1023 px"
+    desktop: ">= 1024 px"
+  columns: { compact: 1, regular: 2, desktop: 4 }
+  gap: space.4
+  gutter: space.5
+  cardMinWidth: size.card.min
+  heroSpan: { compact: 1, regular: 2, desktop: 2 }
+  heroRows: { metric: 1, vivid: 1, vividGrid: 2 }
+  tileColumns: { compact: 2, regular: 2, desktop: 4 }
+  bandCharts: { regular: 1, desktop: 2 }
+  pageMargin: space.page-margin
+  sectionGap: space.section-gap
+  detailPanel:
+    column: "16 % of the container width, the lower bound of visual-dna §6.4's 16-19 % trailing column, and never narrower than size.card.min"
+    overlay: "Sheet's own trailing drawer geometry; this pattern restates none of it"
+  carousel:
+    peek: "40 px"
+    gap: space.4
+  phoneCap: "one hero card plus four tiles, or one hero numeral plus three action rows"
+
+rules:
+  - "At most one hero numeral per screen, at type.metric.xl; a card's own figure is type.metric.lg and a tile's or an inline number type.metric.md, so no second number reaches the hero's role (visual-dna §4.2, §6.6). A DetailScreen drawer beside the grid therefore shows its figure at type.metric.lg."
+  - "One accent per screen, and it means attention: when the slab has a lit tile, that tile is the accent. Status hues appear only as dots, glyphs, strokes and tints."
+  - "Vivid appears in one form per screen and only in the hero: one vivid card, on a screen of at least six cards, or one 2x2 (visual-dna §1 principle 5, §6.6). Every grid cell is a solid Card, so no vivid card has a vivid sibling that could make the count odd, and none touches a glass card."
+  - "A 2x2 alternates one gradient slot pair on its diagonals, so the group is one temperature (ADR-0029 §2.5)."
+  - "A chart sits inside a solid Card or in the band, never on raw glass."
+  - "A slot that has no content keeps its full size and shows an add affordance; the grid never reflows around a hole."
+  - "At most one lit tile in a slab, and the slab holds no vivid tile."
+  - "Content that does not fit becomes a carousel, a tab or a second screen, never a denser grid or a shrunken card."
+  - "Every card on a screen keeps one radius family and one action inset, and the heroes of the cards in one grid row share a baseline row (visual-dna §6.7)."
+  - "A grid inside an AdaptiveShell draws no TopBar, no title the shell's TopBar already shows and no detail panel of its own."
+
+composition:
+  - component: StatTile
+    props: { size: lg }
+    forwards: label, value, unit, status, delta, trend, live
+    where: "heroRow, when `hero: metric`"
+  - component: Card
+    props: { variant: vivid }
+    forwards: title, caption, hero, vivid, action, onAction, body (slot), aside (slot)
+    where: "heroRow, when `hero: vivid` (one card) or `hero: vividGrid` (four). In a 2x2 the pattern sets each card's `vivid` so the grid runs 1, 2, 2, 1 or 3, 4, 4, 3 row-major (ADR-0029 §2.5); a lone card passes the app's `vivid` through. `size` is `large` when the card's shorter side is 200 px or more and `regular` otherwise, and the unit of a vivid hero goes in the caption (Card.yaml)."
+  - component: Card
+    props: { variant: solid }
+    forwards: title, caption, icon, hero, action, onAction, isSelected, body (slot), aside (slot)
+    where: "every grid cell that has content, with `size` set by the same 200 px rule"
+  - component: Surface
+    props: { material: solid, radius: tile, padding: card }
+    forwards: nothing; `material` comes from `litTile`
+    where: "one tile of a tileGroup; the tile `litTile` names is the same Surface at `material: accent`, and everything on it follows the material it publishes (ADR-0022 §3.1, ADR-0030 §3.4)"
+  - component: StatTile
+    props: { size: sm, layout: stacked }
+    forwards: label, value, unit, status, delta, trend, live
+    where: "inside each tile of a tileGroup; `size: sm` renders type.metric.md, the tile metric of visual-dna §6.6"
+  - component: ChartContainer
+    props: { tableView: auto }
+    forwards: title, subtitle, summary, hero, caption, height, emptyMessage, errorMessage, onRetry, action (slot)
+    where: "each chart of the band, and a chart inside a grid cell's solid Card; it never draws card chrome of its own"
+  - component: EmptyState
+    props: { variant: slot }
+    forwards: title, action (slot)
+    where: "a grid position with no card; EmptyState draws the outline, the action.add affordance and its label, and this pattern restates none of that geometry"
+  - component: EmptyState
+    props: { variant: page }
+    forwards: title, description, icon, tone, action (slot)
+    where: "`error`, when the whole page failed; it takes the place of the grid, the slab and the band, and the header stays"
+  - component: DetailScreen
+    props: { presentation: drawer }
+    forwards: "the DetailScreen's own props, unchanged; the pattern sets `presentation` and nothing else"
+    where: "the detailPanel slot at desktop width, in both kinds; at compact and regular width the same DetailScreen is presented with `presentation: sheet`"
+  - component: Sheet
+    props: { edge: bottom, detents: [peek, medium], detent: peek, isModal: false, isDismissible: false, material: solid }
+    forwards: "title (from `bandTitle`), detent, onDetentChange, content (slot, the band's charts)"
+    where: "the band at compact width, inside the band's dark scope; a docked Sheet draws no scrim and traps nothing, so the grid behind it stays usable"
+  - component: Skeleton
+    props: { animated: true }
+    forwards: shape, role, lines
+    where: "the first load of a cell, before any data has arrived; `role` is the type role of the text the skeleton stands in for, so the cell does not change height when the data lands"
+
+behavior:
+  - "Every width in this file is the width of the pattern's own container, not the window's or the platform's: compact below 600 px, regular from 600 to 1023 px and desktop at 1024 px and above (visual-dna §6.3). While a `column` detail panel is open, the grid's container is what the column leaves."
+  - "The grid has `layout.columns` equal columns - 1, 2 or 4 - at space.4 gaps. `columns` lowers that count and never raises it. When a column would be narrower than size.card.min the count drops by one, and again, until every column holds it: a 1024 px container keeps four columns of (1024 - 2 × 24 - 3 × 12) / 4 = 235 px. Cards never shrink below size.card.min and grow only in height."
+  - "Four spacings separate the regions, and the root adds none of its own: the header's bottom margin is space.group-gap; the gutter between the grid and the tile slab under it is space.5; the band's top margin is space.section-gap; and the grid gap is space.4. The grid gap and the gutter stay the same in every density (visual-dna §6.3), while space.group-gap and space.section-gap follow it. An absent region takes its spacing with it."
+  - "The hero block sits at the grid's leading top corner. It spans `layout.heroSpan` columns - the one compact column, both regular columns, two of the four desktop columns - and `layout.heroRows` rows: one for `metric` and `vivid`, and two for `vividGrid`, where each vivid card is one grid position. Cells fill the remaining positions in reading order, so at desktop width the first cells sit in the two columns beside the hero, and at regular width they start below it. Each row is as tall as its tallest item."
+  - "At compact width `vividGrid` keeps its 2x2: two cards per row at space.4 inside the one column, sized by the pair - about 166 px each on a 393 pt phone - and size.card.min does not apply to them (visual-dna §4.4)."
+  - "An empty grid position keeps its full size and holds one EmptyState of `variant: slot`, which draws the outline and the action.add affordance with its label. The grid never closes a hole, because a closing grid moves every card whose position the reader had learned (visual-dna §11 anti-pattern 27)."
+  - "Content that outgrows the viewport does not compress. At compact width a viewport holds one hero card plus four tiles, or one hero numeral plus three action rows (visual-dna §6.5); a further group of cards goes in a carousel - one row running past the page margin to the container's edge, with a 40 px peek of the next card and a space.4 gap - behind a PillTabs tab in the header, or on a second screen. The pattern never adds a column or shrinks a card to make room."
+  - "The header sets its own height; this pattern forces none, so a header that grows with Dynamic Type is not clipped. A title lock-up is type.title.lg in color.text.primary; it wraps to two lines and then truncates with an ellipsis, and its trailing control cluster sits space.3 from it. Inside an AdaptiveShell the header holds no TopBar and no title the shell's TopBar shows; a header with nothing in it takes no space and no margin."
+  - "Card titles, hero values and captions truncate by Card's and StatTile's own rules; the grid sets each box and nothing about the text inside it."
+  - "The detail panel is open while the detailPanel slot holds a DetailScreen and closed while it is empty. At desktop width `column` adds a trailing column of `layout.detailPanel.column` beside the grid, and the grid recomputes its columns in what is left; `overlay` lays the DetailScreen's docked drawer over the trailing part of the grid without moving a card, with no scrim, because a change of material separates the layer (visual-dna §6.4, §11 anti-pattern 6). In both kinds the DetailScreen has `presentation: drawer` and, through Sheet, draws the panel's surface, width, inset, radius, elevation and z; this pattern gives it the region and nothing else. At compact and regular width either kind opens as the same DetailScreen with `presentation: sheet`, because the trailing panel of visual-dna §6.3 appears only at landscape tablet width, which is desktop width here."
+  - "The panel is not modal: it takes focus when it opens, leaves the grid reachable by pointer and by keyboard, and does not make it inert. Escape while focus is inside the panel fires the DetailScreen's `onDismiss`, and closing returns focus to the cell that opened it. A layer that must block the page is a Sheet with `isModal` or a Dialog, which draws its own scrim and traps focus itself."
+  - "Inside an AdaptiveShell the shell owns the detail region: the grid keeps `detailPanel: none`, and the app answers `onOpenDetail` by filling the shell's `detail` slot, so one screen never shows two trailing panels. The grid carries the page margin and the shell's content region adds none, so space.page-margin is applied once."
+  - "`band: true` adds a band under the grid and the slab. Its outer edges are the grid's outer column edges, so it spans every column, and it holds `layout.bandCharts` ChartContainers per row - two side by side at desktop width, one at regular - at space.4 inside space.card-padding; the band is as tall as its charts, and an app sizes them so the band takes about 22 % of the viewport height (visual-dna §6.4). At compact width the band becomes a docked Sheet at `detent: peek` with `detents: [peek, medium]`, `isModal: false` and `isDismissible: false`, titled by `bandTitle`, and the band's own radius, padding and gap do not apply there; the page reserves the Sheet's `peek` height plus the bottom safe-area inset as its bottom content inset, so the last card clears the docked Sheet. On macOS and web-desktop, where Sheet has no detents, the band stays a band at every width."
+  - "The band is the second material of visual-dna §4.10, a near-black band under a lighter page, and it is reached by scope rather than by a material of its own: the band region, and the compact Sheet that replaces it, declare the dark color scheme on their element in both schemes (`scope()` on the web, the DSCore modifier on Apple - color scheme and density nest per element, while contrast, transparency, modality and motion are read from the root alone, ADR-0019 §1 and §4). The band then paints that scope's color.bg.page at radius.sheet, which on a dark page is the page's own ground. Nothing reads the scheme to choose a material: every component in the band asks for its own material and the scope's tokens resolve it."
+  - "`tileGroup: true` adds a slab under the grid, at space.5 from it, spanning the grid's full width in `layout.tileColumns` equal columns - two at compact and regular width, four at desktop (visual-dna §4.5: a 2x2 slab, or four count tiles in a row) - at space.tile-gap. Every tile is a Surface of material solid at radius.tile with space.card-padding holding one StatTile at `size: sm`; the tile `litTile` names is that Surface at `material: accent`, so its fill is color.bg.fill.accent and the text on it resolves to color.text.on-accent and color.text.on-accent-secondary from the published material. There is at most one lit tile, and it is the screen's single accent."
+  - "The control swap of visual-dna §4.5 - a control on the lit tile taking color.bg.fill.neutral.subtle where it would take color.bg.surface.raised - is a cell of that control's own spec, keyed by the published `accent` material. This pattern overrides no composed component's cell; IconButton.yaml and Button.yaml declare no `accent` cell yet, so until they do, a control on the lit tile keeps its default fill."
+  - "`loading` holds the grid, the slab and the band at opacity.dimmed-row and keeps every card in place; the header and an open detail panel stay at full opacity. Only a cell that has never had data renders a Skeleton, so a refetch never reflows the page."
+  - "`error` replaces each failed cell with its component's own error state and leaves the grid geometry alone; a whole-page failure renders one EmptyState of `variant: page` in place of the grid, the slab and the band and keeps the header, so the reader can still retry or leave."
+  - Whitespace belongs to the page and to the hero region, not inside the cards; a grid that feels tight has too many cards, not too little card padding.
+  - "The pattern paints two backgrounds: color.bg.page on the root, and the band's color.bg.page read in the band's own scope. Every other surface is a Card, a Surface, a Sheet or a DetailScreen that resolves its own material, and no cell of a composed component is restated here."
+
+motion:
+  reflow: motion.spring.smooth
+  dim: motion.duration.base
+  dimEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: the root is the page's main landmark; the header, the grid, the tile slab and the band are labelled regions, the detail panel is a complementary region and never a dialog, and the cells carry no list or grid role because each card already has its own
+  label: the page title names the main region, `bandTitle` names the band, and a region with no visible title carries one in its accessible name
+  keyboard: "Tab order is the header, then the grid - the hero block first, then the cells row by row in reading order - then the tile slab, the band and the detail panel. The detail panel takes focus when it opens and does not trap it: Tab leaves the panel and reaches the grid, Escape while focus is inside it fires the DetailScreen's `onDismiss` and returns focus to the cell that opened it, and nothing behind the panel becomes inert, because no scrim blocks it. An empty slot is one Tab stop, which is EmptyState's own add control. Every focus ring is color.border.focus at border.focus width and belongs to the focused component, never to the grid"
+  dynamicType: "text size never changes the column count, which follows the container width alone; cards and tiles grow in height with their text, and each row grows to its tallest item. The header grows rather than truncating its first two lines. Nothing truncates to hold a row height."
+  contrast: "the pattern binds one text tone of its own, color.text.primary for the title on color.bg.page, a pair in tokens/contrast-pairs.json; inside the band's dark scope the same role is checked in the dark scheme. The lit tile's color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent are pairs as well, reached through the published `accent` material rather than bound here. Every other tone belongs to the card, tile or chart that draws it."
+  reduceTransparency: "the pattern paints opaque grounds only and declares no glass, so nothing here changes. The detail panel is never glass: a drawer over a page is not one of the three backdrops ADR-0022 §1.2 allows, so it is the opaque solid Sheet that DetailScreen composes, in every context. A vivid hero drops its bloom through its own Surface (ADR-0022 §1.7)."
+  reduceMotion: "a column-count change is in-place movement, so the cards move to their new positions with motion.spring.smooth, which has no bounce in the reduced context (ADR-0023 §8.4 item 3); nothing scales. The dim to opacity.dimmed-row while `loading` is an opacity change over motion.duration.base with motion.easing.out in both contexts. The detail panel's substitute is DetailScreen's, through Sheet: it appears and disappears by opacity only, with no slide and no scale"
+  voiceOver: "a column-count change is not announced and moves no focus. Opening the detail panel announces its title. A cell that gains data while `loading` announces nothing; the start and the end of a refetch, and a whole-page failure, are read once from one polite live region on the root."
+
+usage:
+  do:
+    - Give the screen exactly one hero, and let the grid around it be quiet.
+    - Put the KPI row in a tile slab and the trend in a chart band, so the screen reads top to bottom.
+    - Use a 2x2 of vivid cards when the screen has four equal KPIs, and one vivid card when it has one.
+    - Move the second half of a dense screen behind a tab instead of adding a column.
+  dont:
+    - Don't put two hero numerals on one screen, or a vivid card anywhere but the hero.
+    - Don't let a vivid card sit next to a glass card.
+    - Don't shrink cards below size.card.min to fit one more column.
+    - Don't dim the page with a scrim when the detail panel opens; the material already separates it.
+    - Don't hide the grid behind a full-page skeleton on a refetch; hold the cards at opacity.dimmed-row.
+
+examples:
+  - id: ops-dark
+    props: { title: "Fleet console", hero: metric, tileGroup: true, litTile: 0, band: true, bandTitle: "Throughput today", detailPanel: overlay }
+    schemes: [dark]
+    description: four columns at desktop width with an availability numeral in the hero block and two cards beside it, a slab of four count tiles with the first one lit, a band of two charts on the grid's outer edges, and an entity drawer over the trailing columns
+  - id: airy-light
+    props: { title: "Revenue", hero: vivid, detailPanel: column }
+    schemes: [light]
+    description: one vivid hero card over two columns with solid cards beside and below it, and a trailing detail column the grid gave up its width to
+  - id: vivid-pair-hero
+    props: { title: "Quarter at a glance", hero: vividGrid }
+    grid: ["1", "2", "2", "1"]
+    description: the hero block is a 2x2 of vivid cards, one slot pair on the diagonals, so the group is one temperature
+  - id: phone-stack
+    props: { title: "Today", hero: metric, tileGroup: true }
+    description: compact width - one card column, the hero numeral full width, the slab two tiles per row, and the second group of cards behind a tab
+  - id: lit-slab
+    props: { title: "Line status", tileGroup: true, litTile: 2 }
+    description: a slab of tiles at space.tile-gap in which the third tile in reading order is lit and carries the screen's single accent
+  - id: with-band
+    props: { title: "Throughput", hero: metric, band: true, bandTitle: "Last seven days" }
+    schemes: [light]
+    description: a near-black band under the light page, on the grid's outer column edges, holding two ChartContainers side by side
+  - id: detail-overlay
+    props: { title: "Fleet console", detailPanel: overlay, onOpenDetail: openUnit }
+    description: a DetailScreen drawer over the trailing columns, with Sheet's own drawer shadow and no scrim; the cards under it stay undimmed and reachable
+  - id: empty-slot
+    props: { title: "Sites", columns: 4 }
+    description: one grid position has no card; it keeps its size and shows the add affordance instead of letting the grid close up
+  - id: loading
+    props: { title: "Revenue", hero: vivid }
+    description: a refetch holds the grid at opacity.dimmed-row with the header at full opacity, and only the never-loaded cell shows a Skeleton
+  - id: title-ru
+    props: { title: "Сводка по автопарку за смену", hero: metric, tileGroup: true }
+    description: the Russian page title runs about a third longer than its English twin and wraps to a second line rather than truncating; the header grows and the grid moves down with it
+
+notes:
+  platform:
+    ios: "adapted — a phone is compact in portrait and regular in landscape, so it gets one or two columns and never the desktop width: the detail panel always opens as a sheet, and the band is the docked Sheet whenever the width is compact (docs/research/visual-dna.md §6.3, §6.5)."
+    ipados: "full — all three widths: compact in a narrow multitasking window, regular in portrait and desktop from 1024 px, which every iPad reaches in landscape and where the detail panel appears (visual-dna §6.3)."
+    macos: "full — compact density and pointer modality, hover on the cards through their own specs, and both detail-panel kinds at desktop width. Sheet has no detents on macOS, so the band stays a band at every width."
+    watchos: "none — ADR-0010 Tier 3 has no grid, no vivid, no glass, no Sheet and no ChartContainer, and a watch screen is a vertical stack of at most three glanceable tiles (spec/patterns/README.md; docs/research/visual-dna.md §6.3). A watch app shows StatTiles in a list, and the grid stays on the larger screens."
+    web-touch: "full — every width by the container, as on web-desktop; touch modality removes hover and raises size.hit through the tokens, and at compact width the band is the docked Sheet with its detents."
+    web-desktop: "full — every width by the container; Sheet's web-desktop form has no detents, so the band stays a band at every width."
+  design: >-
+    The column counts, the gaps, the card minimum and the hero span are docs/research/visual-dna.md §6.3,
+    which names these values as the DashboardGrid values; the two rows of a vivid 2x2 are §4.4, where each
+    vivid tile is one grid position. The desktop composition rules - the trailing column at 16-19 % of the
+    width, the bottom band at about 22 % of the height on the column edges of the area above it, the 460 px
+    drawer that overlaps instead of reflowing - are §6.4; the phone rules - the carousel with its 40 px
+    peek, the density cap - are §6.5. The hero sizes are §6.6: metric.xl for the one screen hero, metric.lg
+    on cards, metric.md on tiles. The tile slab with one lit tile, its 2x2 and four-in-a-row forms and its
+    control swap are §4.5; the vivid 2x2 with its diagonal slot pair is §4.4 as amended by ADR-0029 §2.5.
+    The counting rules are §1 principles 3, 4 and 5 and anti-patterns 24 and 25. §1 principle 5 and
+    anti-pattern 25 ask for even vivid counts, while §1 principle 5, §6.6 and Card.yaml also allow one vivid
+    card in six; this pattern reconciles them by allowing vivid only in the hero, as one card or one 2x2, so
+    no odd count of sibling vivid cards can occur. The empty slot that keeps its size is anti-pattern 27, and
+    splitting a screen instead of compressing it is anti-pattern 26. A leading rail of 20-29 % belongs to
+    AdaptiveShell's Sidebar, whose `content` slot can hold a tile slab. The page margin is one value in every
+    density after ADR-0029 §3.1, so the 32-36 light-dashboard margin of §6.4 is not an option Prism offers.
+    The detail panel is a solid Sheet rather than the smoked-glass drawer of §4.10, because ADR-0022 allows
+    glass only over an image, a map or vivid, and a drawer over a page is none of those. Example copy is
+    invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0009-materials-in-layers.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

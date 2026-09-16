@@ -1,0 +1,249 @@
+name: PillTabs
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The row that says where you are: a trackless line of pills with one inverse solid for the current
+  place and text-only siblings, or the same row drawn as section tabs with a 2 px rule under the
+  active label and a hairline rail under them all. It navigates - it changes the screen or the section
+  - which is what separates it from SegmentedControl, whose identical grammar changes a value.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row; no track, no fill and no border of its own
+  - part: tab
+  - part: label
+  - part: icon
+    optional: true
+    description: a leading registry glyph; a tab is never icon-only, because a place needs a name
+  - part: count
+    optional: true
+    slot: true
+    description: one Badge trailing the label
+  - part: indicator
+    optional: true
+    description: the 2 px rule under the active label, drawn only by the underline variant
+  - part: rail
+    optional: true
+    description: the hairline the underline variant's tabs sit on
+
+props:
+  - name: tabs
+    type: data
+    required: true
+    description: "[{ value, label, icon?, count?, isDisabled? }]; two to seven places, each with a name. `isDisabled` puts that one tab in the `disabled` state"
+  - name: value
+    type: string
+    required: true
+    description: the `value` of the place the reader is in, whose tab is in the `selected` state; the row is never empty and never has two
+  - name: variant
+    type: enum
+    values: [pill, underline]
+    default: pill
+    description: pill is the navigation row of a bar or a screen; underline is the section row inside a page, under a hairline rail
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    gap:
+      pill: space.3
+      underline: space.8
+    paddingBottom:
+      underline: space.3
+  tab:
+    radius:
+      pill: radius.control
+    height:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+    paddingX:
+      pill: space.5
+      underline: space.0
+    gap: space.2
+    hover:
+      overlay:
+        pill: color.bg.fill.neutral.subtle
+    pressed:
+      overlay:
+        pill: color.bg.fill.neutral.subtle
+    selected:
+      background:
+        pill:
+          default: comp.pill-tabs.active.bg
+          glass: color.bg.fill.inverse
+          accent: color.bg.fill.inverse
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+    disabled:
+      opacity: opacity.disabled
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+    selected:
+      color:
+        pill:
+          default: comp.pill-tabs.active.text
+          glass: color.text.on-inverse
+          accent: color.text.on-inverse
+        underline:
+          default: color.text.primary
+          inverse: color.text.on-inverse
+          accent: color.text.on-accent
+          glassLight: color.text.on-glass-light
+          glass: color.text.on-glass-fill
+  icon:
+    size: size.icon.sm
+    color:
+      default: color.icon.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    selected:
+      color:
+        pill:
+          default: comp.pill-tabs.active.text
+          glass: color.text.on-inverse
+          accent: color.text.on-inverse
+        underline:
+          default: color.icon.primary
+          inverse: color.text.on-inverse
+          accent: color.text.on-accent
+          glassLight: color.text.on-glass-light
+          glass: color.text.on-glass-fill
+  count:
+    gap: space.2
+  indicator:
+    color: comp.pill-tabs.underline
+    height: border.focus
+  rail:
+    color: color.border.hairline
+    height: border.hairline
+
+behavior:
+  - Exactly one tab is selected at all times; choosing another fires `onChange` once on release inside the tab and moves the reader, so the row is navigation and not a form control.
+  - "The row draws no track: no fill, no border and no shadow behind the tabs, only the gap between them (visual-dna §11 anti-pattern 24)."
+  - "`variant: pill` marks the current place with the one inverse solid in the group - comp.pill-tabs.active.bg with comp.pill-tabs.active.text - and leaves every other tab as text alone, with no ring and no fill. On the scheme's glass and on an accent surface that solid is color.bg.fill.inverse, which is already ink on light glass and white on smoked glass (ADR-0030 §3.1)."
+  - "`variant: underline` drops the pill, and with it the inverse solid: the tabs sit on a hairline rail of color.border.hairline at border.hairline width, the active label rises from color.text.secondary to color.text.primary - the ink tone of the ground it sits on, never comp.pill-tabs.active.text, which is the foreground of a fill this variant does not draw - and a rule of border.focus width in comp.pill-tabs.underline spans exactly the active label's width. Nothing else is filled. On the scheme's glass and on light glass, where the quiet and the loud text tones are one step apart at most, the rule is what carries the active tab."
+  - "A tab always has a name. A leading icon at size.icon.sm is optional and decorative; a count is an optional Badge trailing the label, whose number is read as part of the tab's accessibility value."
+  - "Overflow: the row scrolls along its own axis. Labels never wrap, never truncate and never shrink their role, because a place whose name is cut is not a place a reader can recognise (visual-dna §6.5). The first and last tabs stay reachable, the active tab is scrolled into view whenever it changes, and the row never becomes two rows."
+  - "Seven tabs is the practical ceiling the desktop navigation rows show; past it the least-used places move behind a Menu in the trailing cluster of the TopBar, not into a second row."
+  - "The hit region of each tab is the larger of its visual box and size.hit on each axis (28 pt under pointer, 44 pt under touch), and the invisible extension never overlaps a neighbour, so the row keeps its gaps. In the underline variant, where the tab has no padding of its own, that extension is the whole target."
+  - "Moving the selection slides nothing: the outgoing pill loses its fill and the incoming one gains it, and the underline's rule is replaced at the incoming label's width. Both changes use motion.spring.snappy."
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle inside the pill's shape; the selected pill does not change on hover, because it is already the solid, and the underline variant has no hover fill at all - its hover lifts the label to color.text.primary, the same tone the active label takes.
+  - "A disabled tab keeps its place at opacity.disabled and leaves the focus order; a place that does not exist yet is left out of the row rather than shown disabled."
+  - "The row declares no cell for vivid. Its labels are 12-15 px, and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block, so PillTabs is not drawn on a vivid surface at all: a navigation row over a gradient belongs in a bar above it, or on a glass Surface over it."
+
+motion:
+  select: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: tablist, with each tab a tab that owns a panel
+  label: the row's purpose, given by the caller ("Sections of the report"); each tab is named by its own label, and its count is part of its value
+  traits: [button, selected]
+  keyboard: the row is one Tab stop; Left and Right move focus between tabs and wrap at the ends, Home and End reach the first and last, and Enter or Space activates - focus moves without navigating, so a keyboard reader can pass a row without loading every screen in it. The focus ring is color.border.focus at border.focus width outside the tab's shape
+  dynamicType: labels scale with type.label.*; the tabs grow with them and the row scrolls further rather than truncating a name (ADR-0011), and past the accessibility3 size the row keeps one line and one scroller
+  contrast: "in the pill variant the active tab is comp.pill-tabs.active.text on comp.pill-tabs.active.bg, which are color.text.on-inverse on color.bg.fill.inverse, the checked functional pair. In the underline variant nothing is filled, so the active label is color.text.primary on whatever the enclosing Surface publishes - a checked functional pair on page, surface and raised - and never comp.pill-tabs.active.text, which is white in the light scheme and would vanish on a light ground. Inactive labels are color.text.secondary, functional on the same grounds, and on the scheme's glass they take the quieter tone of the published backdrop kind (ADR-0029 §1.4). The underline's rule is comp.pill-tabs.underline, which is color.text.primary and holds the 3:1 boundary tier on every solid ground; the rail is decorative, since the labels already carry the row"
+  reduceTransparency: no change of its own - PillTabs draws no material; when the enclosing Surface falls back from glass to raised, the material cells stop applying and the row renders its default cells
+  reduceMotion: the selection does not slide between tabs and the underline does not travel; the outgoing and incoming fills, and the rule at its two widths, crossfade by opacity over motion.duration.base with motion.easing.out
+  voiceOver: each tab announces its label, its count and whether it is selected; the row announces its own label once on entry
+
+usage:
+  do:
+    - Use PillTabs when the row changes where the reader is - a screen, a section, a tab of a page.
+    - Give every tab a noun name in sentence case, and put its count in a Badge rather than in the label.
+    - Use the underline variant for sections inside a page and the pill variant for the navigation of a whole screen.
+  dont:
+    - Don't use PillTabs to change a value; two to four mutually exclusive values are a SegmentedControl.
+    - Don't draw a track, a fill or a border behind the row.
+    - Don't use the accent for the current tab; the accent means attention, the solid means where you are.
+    - Don't truncate a tab's name to make the row fit; scroll the row or move the place behind a Menu.
+
+examples:
+  - id: pill-three
+    props: { tabs: [{ value: "map", label: "Live map" }, { value: "fleet", label: "Fleet" }, { value: "reports", label: "Reports" }], value: "map" }
+  - id: pill-with-icons
+    props: { tabs: [{ value: "map", label: "Live map", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "reports", label: "Reports", icon: object.chart }], value: "fleet" }
+  - id: pill-seven
+    props: { tabs: [{ value: "map", label: "Live map" }, { value: "fleet", label: "Fleet" }, { value: "routes", label: "Routes" }, { value: "depots", label: "Depots" }, { value: "alerts", label: "Alerts" }, { value: "reports", label: "Reports" }, { value: "settings", label: "Settings" }], value: "routes" }
+    description: the widest row before the least-used places move behind a Menu; on a narrow viewport it scrolls
+  - id: underline-with-counts
+    props: { variant: underline, tabs: [{ value: "open", label: "Open", count: 12 }, { value: "waiting", label: "Waiting", count: 24 }, { value: "closed", label: "Closed", count: 13 }], value: "open" }
+  - id: underline-plain
+    props: { variant: underline, tabs: [{ value: "details", label: "Details" }, { value: "timeline", label: "Timeline" }, { value: "updates", label: "Updates" }], value: "timeline" }
+  - id: size-lg
+    props: { tabs: [{ value: "day", label: "Today" }, { value: "week", label: "This week" }], value: "week", size: lg }
+  - id: disabled-tab
+    props: { tabs: [{ value: "map", label: "Live map" }, { value: "fleet", label: "Fleet" }, { value: "reports", label: "Reports", isDisabled: true }], value: "map" }
+  - id: on-glass-over-map
+    props: { tabs: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "depots" }
+    surface: glass
+    backdrop: map
+    description: on the scheme's glass the active pill is color.bg.fill.inverse, ink in light and white in dark
+  - id: labels-ru
+    props: { tabs: [{ value: "map", label: "Карта" }, { value: "fleet", label: "Автопарк" }, { value: "reports", label: "Отчёты и аналитика" }], value: "reports" }
+    description: the Russian names are longer than their English twins, so the row widens and, on a phone, scrolls - no label is cut
+
+notes:
+  platform:
+    ios: "full. On a phone the pill row is used for the sections of a screen; the screen's own destinations are the TabBar."
+    macos: "full. The default size follows compact density (32 pt); hover is required on inactive tabs, and the row is the navigation of a window that has no Sidebar."
+    watchos: "none. ADR-0010's Tier 3 list has no tabs; a watch screen is a vertical stack of at most three glanceable tiles, and a second section is a second screen (spec/patterns/README.md)."
+    web-desktop: "full. Built on React Aria Tabs with `keyboardActivation=\"manual\"`; `data-selected` drives the solid and the rule, and the row is its own scroll container."
+  design: >-
+    The four sightings in docs/research/component-inventory.md (4/11, desktop) give both variants: "solid
+    active pill (ink on light, one luminance step lighter on dark), inactive tabs text-only or hairline,
+    optional leading icons" and "underline section tabs with count badges over a hairline rail". Prism
+    takes the inverse solid for the active pill in both schemes rather than the dark set's raised step,
+    because docs/research/visual-dna.md §1 principle 9 is the system's rule and SegmentedControl.yaml
+    already implements it - a raised active pill would be indistinguishable from a raised inactive chip.
+    The trackless row is §1 principle 2 and §11 anti-pattern 24; the 32 px gap between desktop tabs is
+    §6.4's top row, which space.8 carries, and the 8 px pill gap is §6.1's chip gap (space.3). The split
+    from SegmentedControl is the inventory's own merging rule: "Groups that navigate are TabBar or
+    PillTabs". Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

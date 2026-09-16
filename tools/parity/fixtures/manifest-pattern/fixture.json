@@ -1,5 +1,5 @@
 {
-  "description": "a pattern declared in a component manifest",
+  "description": "a pattern declared in a component manifest: the repository's DashboardGrid is a recipe with no manifest entry (ADR-0012 rule 3)",
   "expect": [{ "code": "manifest/orphan", "file": "swift/Sources/DSComponents/Manifest.swift" }],
   "lags": []
 }

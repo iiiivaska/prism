@@ -1,0 +1,84 @@
+name: SamplePattern
+layer: pattern
+specVersion: 1
+status: draft
+summary: >-
+  A fixture pattern. It exists only so that tools/spec/fixtures can break one pattern rule at a time; it
+  is never assembled into a screen and has no implementation manifest entry.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: grid
+    slot: true
+  - part: detail
+    optional: true
+    slot: true
+
+props:
+  - name: title
+    type: string
+
+states: [default, loading]
+
+tokens:
+  root:
+    background: color.bg.page
+    padding: space.page-margin
+  grid:
+    gap: space.4
+    loading:
+      opacity: opacity.dimmed-row
+
+layout:
+  breakpoints:
+    compact: "< 600 px"
+    desktop: ">= 1024 px"
+  columns: { compact: 1, desktop: 4 }
+  gap: space.4
+  cardMinWidth: size.card.min
+
+rules:
+  - One hero figure per screen, at type.metric.xl.
+  - Cards never shrink below size.card.min.
+
+behavior:
+  - The grid has `layout.columns` equal columns at space.4 gaps and never shrinks a card.
+
+motion:
+  dim: motion.duration.base
+  reduceMotion: crossfade
+
+accessibility:
+  role: the root is the main landmark
+  label: the title names the main region
+  keyboard: Tab order is the grid in reading order, then the detail
+  dynamicType: text size never changes the column count
+  contrast: the pattern binds no text tone of its own
+  reduceTransparency: not applicable; the pattern paints opaque grounds only
+  reduceMotion: the dim to opacity.dimmed-row is an opacity change over motion.duration.base in both contexts
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't assemble a screen from the fixture.
+
+examples:
+  - id: four-columns
+    props: { title: "Sample" }
+
+notes:
+  platform:
+    ios: "adapted — a phone never reaches desktop width, so the detail opens as a sheet."

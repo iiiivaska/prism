@@ -1,0 +1,314 @@
+name: ListRow
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  The workhorse row: a leading slot, a title with an optional subtitle, a trailing value or control,
+  and one hairline below. It is the spec row with its dotted leader, the alert row with its leading
+  badge, the sub-item with its leading rule and the capsule row over a map. Rows are one of the few
+  places in Prism where a hairline is allowed, and a row grows with its text instead of truncating it.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: rule
+    optional: true
+    description: the leading vertical rule; it marks a sub-item and, in the selected state, the one active row
+  - part: leading
+    optional: true
+    slot: true
+    description: an Icon, a hairline icon ring, an Avatar or a Badge; the row owns the box and the gap, the component owns its look
+  - part: content
+    description: the column that holds the title, the subtitle and, when they wrap, everything below them
+  - part: title
+  - part: subtitle
+    optional: true
+  - part: leader
+    optional: true
+    description: the dotted leader that fills the space between the title and the value of a spec row; decoration only
+  - part: value
+    optional: true
+    description: the trailing datum, right-aligned to the row's padding
+  - part: meta
+    optional: true
+    description: a relative time or a second line under the value
+  - part: trailing
+    optional: true
+    slot: true
+    description: one control at the trailing end — an IconButton, a Toggle, a StatusPill or a Badge
+  - part: chevron
+    optional: true
+    description: the nav.forward disclosure glyph; it is not a control of its own, the row is
+  - part: separator
+    optional: true
+    description: "one Divider below the row, at `inset: content`; Divider owns the line"
+  - part: swipeAction
+    optional: true
+    description: an action revealed by a swipe under touch modality
+
+props:
+  - name: title
+    type: string
+    required: true
+  - name: subtitle
+    type: string
+  - name: leadingIcon
+    type: icon
+  - name: leading
+    type: slot
+    description: replaces `leadingIcon` with an Avatar, a Badge or a hairline icon ring
+  - name: value
+    type: string
+  - name: meta
+    type: string
+    description: the quieter second datum ("4 minutes ago"), under the value
+  - name: trailing
+    type: slot
+  - name: accessory
+    type: enum
+    values: [none, chevron]
+    default: none
+    description: chevron draws nav.forward at the trailing edge and says the row opens something
+  - name: leader
+    type: boolean
+    default: false
+    description: draws the dotted leader between the title and the value; only legal when both are present
+  - name: isSubItem
+    type: boolean
+    default: false
+    description: indents the row and draws the leading rule, for a list nested under another row
+  - name: separator
+    type: enum
+    values: [none, inset, full]
+    default: inset
+    description: which Divider the row draws below itself; the last row of a group draws none
+  - name: swipeActions
+    type: data
+    description: "[{ id, label, icon, side, isDestructive }] where `side` is `leading` or `trailing` and defaults to `trailing`; at most two per side, at most one `isDestructive` action and only on the trailing side, touch modality only"
+  - name: isSelected
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onPress
+    type: action
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    minHeight: size.row
+    paddingX: space.card-padding
+    paddingY: space.3
+    gap: space.4
+    radius: radius.inner
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      background: comp.list-row.bg.pressed
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  rule:
+    width: border.strong
+    gap: space.4
+    color: color.border.strong
+    selected:
+      color: comp.list-row.rule.selected
+  leading:
+    iconSize: size.icon.md
+    gap: space.3
+    ringSize: size.icon.ring
+    ringBorder: color.border.hairline
+    color:
+      default: color.icon.secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  content:
+    gap: space.1
+  title:
+    typography: type.body.md
+    color:
+      default: color.text.primary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  subtitle:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  leader:
+    style: stroke.leader
+    color: color.border.strong
+    gap: space.3
+  value:
+    typography: type.data
+    color:
+      default: color.text.primary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  meta:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  trailing:
+    gap: space.3
+  chevron:
+    size: size.icon.sm
+    color:
+      default: color.icon.secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  separator:
+    inset: space.card-padding
+  swipeAction:
+    minWidth: size.hit
+    gap: space.1
+    iconSize: size.icon.md
+    typography: type.label.sm
+    radius: radius.inner
+    background: color.bg.fill.inverse
+    color: color.text.on-inverse
+    criticalBackground: color.bg.fill.critical
+    criticalColor: color.text.on-badge
+
+behavior:
+  - "A row with `onPress` is one target: the whole row, its leading slot and its chevron activate it, and only a focusable control in the `trailing` slot is a target of its own. A row with no `onPress` is a static spec row: it takes no press, it is not a focus stop of its own, and it exposes the group of `accessibility.role`, so its title, value and meta are read as one string."
+  - The row's height is at least size.row (32 compact, 44 regular and watch, 52 comfortable) and grows with its content; the horizontal padding is space.card-padding, so a row inside a card starts where the card's content starts, and a full-bleed list on the page aligns to space.page-margin instead.
+  - "The hit region is the larger of the visual row and size.hit on each axis; a compact 32 pt row under touch therefore still answers a 44 pt target, and the visual row never grows with modality (ADR-0024 §7.3)."
+  - "Order along the row: rule, leading, title and subtitle, the leader, the value and meta, the trailing control, the chevron. A row never holds both a trailing control and a chevron, because two affordances at one end say two different things about one tap. A row given both is a defect: the chevron is dropped, the control is kept, and both stacks assert in debug builds."
+  - "A focusable control in the `trailing` slot takes the row's title as its accessible name and draws no label of its own: a Toggle beside \"Notify on threshold\" is named by the row, not by a second copy of the words. A non-focusable trailing mark — a Badge, a StatusPill — is folded into the row's own label instead."
+  - "The title wraps to a second line and then truncates with an ellipsis; the row grows in height rather than clipping it (ADR-0011). The subtitle wraps the same way. The value never wraps and never truncates: it keeps its width and the title's column yields, because the value is the datum the reader scans down the column."
+  - "An identifier in the title truncates with an ellipsis and carries its full text in the accessibility label, which is the identifier rule of docs/research/visual-dna.md §4.15; generated prose in a subtitle uses Text `truncation: fade` instead."
+  - "When the title and the value together outgrow one line, the row drops the leader first, then wraps the title, and last moves the value under the title as a second line. Nothing shrinks below its role's size."
+  - "`leader: true` draws the dotted leader of stroke.leader between the title and the value, in color.border.strong. It is ornament: the value carries the meaning, the leader is hidden from assistive technology, and it is not drawn when the row has no `value`, when the gap is under space.10 or when the title wraps."
+  - "`isSubItem` indents the row and draws the leading rule at border.strong width in color.border.strong, space.4 from the text. It is the nested station list of the alert rail, and it nests one level only."
+  - "`isSelected` draws the same rule in comp.list-row.rule.selected, the inverse solid, and sets the row's selected state for assistive technology. Selection changes no fill: the inverse mark is the one active element of its group (docs/research/visual-dna.md §1 principle 9), and the state is never carried by colour alone (ADR-0011 rule 4)."
+  - "`separator: inset` draws one Divider below the row at `inset: content`, so the line starts at space.card-padding and follows the density; `full` runs the line edge to edge; `none` is the last row of a group. Every row in one list uses the same value, and a list whose rows are cards separates by space.card-gap instead of by a line."
+  - "Hover is pointer modality only and adds color.bg.fill.neutral.subtle over the row; touch never shows it (ADR-0010 rule 2). Pressing fills the row with comp.list-row.bg.pressed and does not scale it, because a row is the width of the screen and a scaling row reads as a card."
+  - "`swipeActions` exist under touch modality only. A swipe reveals up to two actions per side, each at least size.hit wide, in color.bg.fill.inverse with color.text.on-inverse; a destructive action takes color.bg.fill.critical with color.text.on-badge and is the only one allowed at the trailing end, where a full swipe commits it."
+  - "Under pointer modality the same actions are reached from the row's ContextMenu, and on every platform they are also the row's accessibility actions, so a swipe is never the only way to an action (docs/research/visual-dna.md §11 anti-pattern 31)."
+  - "A ListRow paints no material of its own; it takes the tones of the material the enclosing Surface publishes. It declares no cell for vivid, because its text is 12 to 15 px and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block; and none for inverse or accent, which carry the one solid control and the one lit metric, not a list."
+  - "Over a map, imagery or the scheme's glass the row's quieter tones follow the published backdrop kind (ADR-0029 §1.4), and the row draws no fill of its own: the glass belongs to the Surface around it, never to the row."
+  - "`isDisabled` lowers the row to opacity.disabled and removes it and its trailing control from the focus order; a row that is unavailable is better explained in its subtitle than disabled."
+
+motion:
+  press: motion.duration.fast
+  swipe: motion.spring.interactive
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.button
+  swipe: haptic.impact.soft
+
+accessibility:
+  role: button when the row has `onPress`, option inside a selectable list, and group when it is a static spec row
+  label: title, then subtitle, value and meta as one string ("Pump 4 pressure, last checked 4 minutes ago, 2.1 bar"); a leading Badge's count and a trailing StatusPill's word are folded in rather than announced as separate elements
+  traits: [button, selected]
+  keyboard: Tab reaches the row and then the focusable control in its trailing slot; Enter and Space activate the row; the focus ring is color.border.focus at border.focus width outside the row, following radius.inner; every swipe action is also a keyboard-reachable action of the row
+  dynamicType: title, subtitle, value and meta all scale with their roles; size.row is a minimum, so the row grows, the title wraps and at the accessibility3 size the value moves under the title; the leader and the chevron never take space from the text
+  contrast: "the title and the value are color.text.primary and the subtitle and meta color.text.secondary, functional on color.bg.page, color.bg.surface and color.bg.surface.raised; on the scheme's glass they are color.text.on-glass-fill with the quieter tones keyed by the backdrop kind, and on light glass color.text.on-glass-light. The leading glyph and the chevron are color.icon.secondary and are decoration beside the title's words. The separator is a Divider, whose hairline carries no meaning, and the leader is ornament of the same kind. A swipe action's pairs are color.text.on-inverse on color.bg.fill.inverse and color.text.on-badge on color.bg.fill.critical, both functional and both checked in tokens/contrast-pairs.json"
+  reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass and every tone returns to the solid family; the row's own fills, rules and separators do not change
+  reduceMotion: the swipe still tracks the finger directly; the release settles with motion.spring.interactive, which has no bounce, and a revealed action does not slide back under a spring but crossfades over motion.duration.base with motion.easing.out. The press has no scale to substitute, so the pressed fill comp.list-row.bg.pressed is what a press shows in both motion contexts
+  voiceOver: the row is one element carrying title, subtitle, value and meta; the swipe actions are exposed as custom actions, and a selected row announces "selected" after its label
+
+usage:
+  do:
+    - Use one ListRow per fact, with the label on the left and the datum on the right.
+    - Give every row in one list the same separator, the same leading box and the same trailing kind, so the list reads as one instrument.
+    - Put the dotted leader on a spec row whose label and value are far apart, and nowhere else.
+    - Repeat every swipe action in the row's menu and in its accessibility actions.
+  dont:
+    - Don't put both a trailing control and a chevron on one row.
+    - Don't truncate a title to keep a row's height; let the row grow.
+    - Don't draw a ListRow on a vivid surface; its text is under 24 px and only a Card's header block is checked there.
+    - Don't use a Divider between rows of different cards; space.card-gap separates cards.
+    - Don't hide an action behind a swipe alone.
+
+examples:
+  - id: spec-row
+    props: { title: "Last sync", value: "11 days ago", leadingIcon: object.clock, leader: true }
+    description: the datasheet row — glyph, label, dotted leader, right-aligned value
+  - id: title-subtitle
+    props: { title: "North yard intake", subtitle: "Batch B-4417", value: "1 240", accessory: chevron }
+  - id: alert-row
+    props: { title: "Pressure above the safe band", meta: "4 minutes ago", accessory: chevron }
+    description: the leading slot holds a Badge with the alert's number
+  - id: sub-item
+    props: { title: "Pump 4", subtitle: "Line two", isSubItem: true, value: "2.1 bar" }
+  - id: with-toggle
+    props: { title: "Notify on threshold", subtitle: "Sends one message per breach", separator: inset }
+    description: the trailing slot holds a Toggle, which owns its own focus stop; its accessible name is the row's title and it draws no label of its own, so the row is never announced twice
+  - id: selected
+    props: { title: "Unit 4417", subtitle: "In service", isSelected: true, value: "63 %" }
+  - id: swipe-actions
+    props: { title: "Batch B-4417", value: "1 240", swipeActions: [{ id: "archive", label: "Archive", icon: "action.collapse" }, { id: "delete", label: "Delete", icon: "action.delete", isDestructive: true }] }
+    description: touch modality only; the same two actions are the row's accessibility actions
+  - id: no-separator
+    props: { title: "Totals", value: "4 417", separator: none }
+  - id: disabled
+    props: { title: "Archive batch", subtitle: "Available once the run closes", isDisabled: true }
+  - id: on-glass-over-map
+    props: { title: "Unit 4417", subtitle: "21.11.2026, 14:05:22", value: "63 %", accessory: chevron }
+    surface: glass
+    backdrop: map
+    description: inside a glass card over the map the quieter tones follow the backdrop kind
+  - id: on-glass-over-image
+    props: { title: "Bay 3 camera", subtitle: "Recording", accessory: chevron }
+    surface: glass
+    backdrop: image
+  - id: russian-row
+    props: { title: "Последняя синхронизация участка", subtitle: "Северный двор", value: "11 дней", leader: true }
+    description: the Russian title runs about a third longer, so it wraps to two lines, the row grows and the leader is dropped
+
+notes:
+  platform:
+    watchos: "`adapted`. ListRow is in ADR-0010's Tier 3 set. On the wrist the row is solid only, the whole row is one tap target, and it drops the trailing control, the leading Avatar, the leader and the separator: a watch screen is a vertical stack of at most three glanceable rows (spec/patterns/README.md), where spacing and the luminance ladder separate instead of a hairline, as Divider.yaml's watch note says. Swipe actions are not drawn either — a revealed action of size.hit (44 pt) would take most of the 198 pt face of ADR-0029 §3.2 — and the actions live on the row's detail screen. Row height comes from the watch density (44 pt) with a 16 px card padding."
+    macos: "compact density gives a 32 pt row; hover is required, and the same swipe actions appear in the row's ContextMenu, which is ADR-0012's desktop-only component."
+    web-desktop: "built on React Aria GridList when the rows are selectable and on a plain list otherwise; `data-selected`, `data-hovered` and `data-pressed` drive the cells, and the row's actions are exposed through its menu."
+  design: >-
+    Six of eleven shots carry a list row (docs/research/component-inventory.md): the spec row with a
+    dotted leader and a trailing value, the alert row with a leading numbered badge and a relative time,
+    the sub-item with a leading rule, the recommendation row with a sparkle glyph, and the translucent and
+    glass capsule rows with an icon ring, a trailing count and an open affordance. The geometry is
+    docs/research/visual-dna.md §4.12 (row size.row, glyph 20 with a space.3 gap, leader dots at
+    stroke.leader) and §6.7; the leading rule is the 2 px station rule of the alert rail, which Prism
+    draws at border.strong (1.5 px), the emphasized stroke of §7.6, because Prism's stroke scale has no
+    2 px value that is not the focus ring. The trailing value takes type.data, the tabular role of
+    ADR-0021 §5, so a column of rows keeps its digit column; the references set that value at the title's
+    own 15 px, and Prism drops it one step to keep the title the row's primary text. Hairlines on rows are
+    the one use §1 principle 1 allows, and the line itself is Divider's. Example strings are invented
+    (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0029-direction-board-sign-off.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

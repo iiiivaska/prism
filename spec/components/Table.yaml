@@ -1,0 +1,271 @@
+name: Table
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  Rows and columns of data on a pointer layout: tabular figures aligned on the decimal, a header that
+  sticks while the body scrolls, an optional leading identifier column that sticks with it, sorting,
+  selection and full keyboard movement. It is also the table twin every Prism chart ships with, so a
+  number in a plot is always reachable as text (ADR-0007 decision 6).
+since: 0.1.0
+
+platforms:
+  ios: none
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: adapted
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: scroller
+    description: the box the header sticks to and the body scrolls inside
+  - part: header
+  - part: headerCell
+  - part: sortIndicator
+    optional: true
+    description: nav.up or nav.down on the sorted column, and nothing on the others
+  - part: body
+  - part: row
+  - part: cell
+  - part: rowHeader
+    optional: true
+    description: the leading identifier column; it sticks horizontally with the header
+  - part: selectionCell
+    optional: true
+    slot: true
+    description: one Checkbox per row and one in the header for select-all
+  - part: columnRule
+    optional: true
+    description: the vertical hairline between columns
+  - part: rowRule
+    description: the horizontal hairline under a row
+  - part: footer
+    optional: true
+    description: one pinned totals row
+  - part: message
+    optional: true
+    slot: true
+    description: one EmptyState in place of the body when the query returned nothing
+
+props:
+  - name: label
+    type: string
+    required: true
+    description: the table's own name for assistive technology ("Timetable drift by route")
+  - name: columns
+    type: data
+    required: true
+    description: "[{ key, header, align?, numeric?, sortable?, width?, isRowHeader? }]; `align` is leading, trailing or center and defaults to trailing for a numeric column"
+  - name: rows
+    type: data
+    required: true
+    description: "[{ key, cells }]; a cell is text, or a slot holding one Badge, StatusPill, DeltaBadge or Sparkline"
+  - name: footer
+    type: data
+    description: "one totals row: [cell] in column order, one entry per column, a column with no total getting an empty string; unset, no footer is drawn"
+  - name: sort
+    type: data
+    description: "{ column, direction }; unset, the table is in the order the caller gave"
+  - name: onSortChange
+    type: action
+  - name: selection
+    type: enum
+    values: [none, single, multiple]
+    default: none
+  - name: selectedKeys
+    type: data
+    description: the keys of the rows in the `selected` state, written by the caller in answer to `onSelectionChange`
+  - name: onSelectionChange
+    type: action
+  - name: stickyHeader
+    type: boolean
+    default: true
+  - name: emptyMessage
+    type: string
+  - name: isLoading
+    type: boolean
+    default: false
+
+states: [default, hover, pressed, selected, focus-visible, loading]
+
+tokens:
+  root:
+    radius: radius.inner
+    loading:
+      opacity: opacity.dimmed-row
+  header:
+    height: size.row
+    background:
+      default: color.bg.surface.nested
+      page: color.bg.surface
+      nested: color.bg.surface.nested
+      raised: color.bg.surface.raised
+    z: z.raised
+  headerCell:
+    typography: type.caption
+    paddingX: space.3
+    gap: space.2
+    color: color.text.secondary
+    hover:
+      color: color.text.primary
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  sortIndicator:
+    size: size.icon.sm
+    color: color.icon.secondary
+  body:
+    gap: space.0
+  row:
+    height: size.row
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      overlay: color.bg.fill.neutral.subtle
+      rule: comp.table.row.selected.rule
+      ruleWidth: border.focus
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  cell:
+    typography: type.data
+    paddingX: space.3
+    gap: space.2
+    color: color.text.primary
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  rowHeader:
+    typography: type.data
+    paddingX: space.3
+    color: color.text.primary
+  selectionCell:
+    width: size.control.sm
+    paddingX: space.3
+  columnRule:
+    color: color.border.hairline
+    width: border.hairline
+  rowRule:
+    color: color.border.hairline
+    width: border.hairline
+  footer:
+    height: size.row
+    typography: type.data
+    background:
+      default: color.bg.surface.nested
+      page: color.bg.surface
+      nested: color.bg.surface.nested
+      raised: color.bg.surface.raised
+    color: color.text.primary
+    z: z.raised
+  message:
+    paddingY: space.8
+
+behavior:
+  - "Every numeric column is tabular and aligned on its trailing edge, so digits line up down the column whatever their count; `type.data` and `type.caption` are the two roles in the table, and `type.data` is tabular by definition (ADR-0021 §5). A text column is leading-aligned, and `align` overrides both."
+  - "A column's alignment is the same in its header cell and in its body cells, so the header of a number column sits over the last digit and not over the first."
+  - "`stickyHeader` pins the header inside the scroller while the body scrolls. The pinned header and the pinned footer are opaque: each takes the surface step the enclosing material publishes - color.bg.surface on a solid card, color.bg.surface.nested in a nested panel, color.bg.surface.raised on a raised one - so rows never show through them, and they sit at z.raised inside the table's own stacking context, never above the page's overlays."
+  - "The table itself paints no background, no border and no shadow: the ground is the card it sits in, and the scroller's height comes from the layout around it (a table with no bound height fills its parent and scrolls inside it)."
+  - "A column marked `isRowHeader` is the leading identifier column: it sticks horizontally with the header, keeps the primary tone and is what assistive technology reads as each row's name. There is at most one."
+  - "Sorting: a `sortable` header cell is a button. Pressing it sorts ascending, pressing it again reverses, and a third press returns the table to the caller's order. Only the sorted column draws an indicator - nav.up for ascending, nav.down for descending, at size.icon.sm - and the direction is also in the header cell's accessibility state, never carried by the glyph alone."
+  - "Selection: `single` and `multiple` add a leading Checkbox column, and `multiple` puts a select-all Checkbox in the header whose mixed state means \"some rows\". A selected row takes the neutral overlay and a leading rule of border.focus width in comp.table.row.selected.rule, the inverse solid that ListRow's selection rule also is, so selection survives on a hovered row, where the overlay alone would be ambiguous, and in a screenshot with no colour."
+  - "The footer is one totals row, at size.row, pinned to the bottom edge of the scroller the way the header is pinned to the top: it scrolls horizontally with the body and never vertically, it takes the same opaque surface step as the header, and each of its cells keeps its column's alignment and its column's width, so a total sits under the digits it totals. It holds one value per column and no control; there is exactly one footer, and it is announced as the table's last row rather than as a second header."
+  - "Rules: one hairline under each row at border.hairline width in color.border.hairline, and a vertical hairline between columns only where a column boundary must be read across a wide table. Both are decorative - the cells carry the data (visual-dna §7.5)."
+  - "A row is not a link and has no action of its own: `pressed` is the moment a pointer or a key is held on a row while `selection` is `single` or `multiple`, and its only outcome is the selection change that `onSelectionChange` reports. With `selection: none` no row is pressable, hoverable or focusable as a whole, and the arrow keys still move the focused cell. Opening the object a row stands for is a ContextMenu on the row under a pointer, or a control the screen puts beside the table - never a bare click on the row, which would collide with selection, and never a button inside a cell."
+  - "Overflow across: the table scrolls horizontally inside its own scroller while the header and the row-header column stay pinned; it never shrinks a column below its content and never hides a column silently. A table that needs more columns than the viewport can show is a table with too many columns, and the extra ones belong in a detail panel."
+  - "Overflow down: the body scrolls inside the scroller with the header pinned. The table does not paginate itself; a Pagination control above or below it belongs to the screen."
+  - "Truncation: a cell's text truncates with an ellipsis and never wraps, so every row keeps size.row and the columns keep one baseline grid; the full value stays in the cell's accessibility label, as an identifier does (visual-dna §4.15). A value that must be read in full belongs in a wider column or in a detail panel."
+  - "`isLoading` holds the previous rows at opacity.dimmed-row with the header, the sort and the scroll position in place; the table never swaps in skeleton rows, which would flash on every refetch (docs/research/dataviz-design.md §1)."
+  - "An empty result renders one EmptyState of variant `section` in place of the body, with `emptyMessage` as that state's `title` and no icon, no description and no action of its own, and keeps the header row and the footer, so the reader can see which query returned nothing."
+  - "The table paints no cell for vivid, inverse or accent. Its cells are 12-13 px, and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block; inverse and accent carry the one solid control and the one lit metric, not a grid of readouts, and a pinned opaque header inside either of them would put its own surface step under text keyed to that material. A table over media, over a gradient or inside an accent panel goes in a solid or nested Card, which is what its grounds are checked on."
+  - "A cell may hold one Badge, StatusPill, DeltaBadge or Sparkline instead of text; it holds no button rows and no editable field, because a table cell is a readout."
+  - "The table is the twin a ChartContainer names: one row per x, one column per series, with the same tabular figures at the same row height. In that use the container passes `label`, `columns` and `rows` and nothing else, and the twin is always in the accessibility tree even while it is visually collapsed (spec/components/ChartContainer.yaml)."
+  - "It paints no cell for the scheme's glass or for light glass either, for the second half of the same reason: a header and a footer that must stay opaque while rows pass under them cannot be built out of a translucent material."
+
+motion:
+  sort: motion.duration.base
+  sortEasing: motion.easing.out
+  reduceMotion: instant
+
+accessibility:
+  role: grid when rows are selectable or focusable cell by cell, table otherwise
+  label: "the `label` prop, always explicit; each row is named by its row-header cell, and each cell announces its column header with its value"
+  traits: [staticText]
+  keyboard: "the table is one Tab stop; arrow keys move the focused cell, Home and End reach the first and last cell of a row, Page Up and Page Down move by a viewport, Cmd or Ctrl with Home and End reaches the first and last cell of the table. Enter or Space on a header cell sorts it. While `selection` is `single` or `multiple`, Space toggles the focused row's selection; under `multiple` Shift with an arrow extends it and Cmd or Ctrl with A selects every row, and under `single` and `none` those two do nothing. Every focus ring is color.border.focus at border.focus width"
+  dynamicType: header and cell text scale with type.caption and type.data; the rows grow in height from size.row and the columns widen with them, and a cell truncates rather than wrapping so the grid keeps one baseline (ADR-0011). Past the accessibility3 size a narrow viewport scrolls horizontally instead of compressing a column
+  contrast: "cells and footer cells are color.text.primary and header cells color.text.secondary, both functional pairs in tokens/contrast-pairs.json over color.bg.surface and color.bg.surface.raised. The pinned header and footer may also take color.bg.surface.nested, the step a nested panel publishes, and both tones, the sort indicator's color.icon.secondary and the focus ring are paired on it over the page, a card and a raised panel - ChartContainer's table twin sits on the same step. Hover, pressed and selected rows keep their tones on color.bg.fill.neutral.subtle, which is paired the same way. The row and column hairlines are decorative, since the cells carry the data. The selected row's rule is comp.table.row.selected.rule, color.bg.fill.inverse on the selection overlay at the 3:1 boundary tier; color.border.strong falls below 3:1 there over a raised panel. Selection is never carried by the overlay alone: the Checkbox's state and the leading rule both say it"
+  reduceTransparency: no change of its own - the table's grounds are opaque surface steps, and if an app puts it inside a glass Surface that Surface falls back to raised and the background cells follow it
+  reduceMotion: sorting does not animate the rows between positions; the new order appears at motion.duration.instant, and the sort indicator is replaced rather than rotated
+  voiceOver: the table exposes its row and column counts, each cell is read with its column header, and the row-header column is the row's name; the sorted column announces its direction
+
+usage:
+  do:
+    - Right-align numbers, left-align words, and keep one alignment from header to footer.
+    - Give the table a name and one identifier column, so a row can be read out loud.
+    - Hold the previous rows dimmed while new ones load, instead of flashing skeletons.
+  dont:
+    - Don't put a table on a phone; the same rows are a list of ListRows there.
+    - Don't hide a column to make the table fit; scroll it, or move the column into a detail panel.
+    - Don't put buttons or inputs in a cell; a cell is a readout.
+    - Don't carry selection by a background alone; the Checkbox and the leading rule say it too.
+
+examples:
+  - id: basic
+    props: { label: "Routes by depot", columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "depot", header: "Depot" }, { key: "runs", header: "Runs", numeric: true }], rows: [{ key: "l1", cells: ["L1", "North yard", "24"] }, { key: "l2", cells: ["L2", "North yard", "18"] }, { key: "l7", cells: ["L7", "South yard", "31"] }] }
+  - id: numeric-aligned
+    props: { label: "Timetable drift by route", columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "offset", header: "Offset, minutes", numeric: true }, { key: "runs", header: "Runs", numeric: true }], rows: [{ key: "l1", cells: ["L1", "-2.5", "24"] }, { key: "l2", cells: ["L2", "+1.0", "18"] }, { key: "l24", cells: ["L24", "+11.5", "6"] }] }
+    description: the offsets align on the sign and the decimal, which is what the tabular role is for
+  - id: sorted
+    props: { label: "Routes by depot", sort: { column: "runs", direction: descending }, columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "runs", header: "Runs", numeric: true, sortable: true }], rows: [{ key: "l7", cells: ["L7", "31"] }, { key: "l1", cells: ["L1", "24"] }, { key: "l2", cells: ["L2", "18"] }] }
+  - id: selectable
+    props: { label: "Vehicles", selection: multiple, selectedKeys: ["4417"], columns: [{ key: "unit", header: "Unit", isRowHeader: true }, { key: "depot", header: "Depot" }, { key: "battery", header: "Battery, percent", numeric: true }], rows: [{ key: "4417", cells: ["4417", "North yard", "63"] }, { key: "4418", cells: ["4418", "North yard", "91"] }] }
+  - id: with-footer
+    props: { label: "Runs by route", columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "runs", header: "Runs", numeric: true }], rows: [{ key: "l1", cells: ["L1", "24"] }, { key: "l2", cells: ["L2", "18"] }], footer: ["Total", "42"] }
+  - id: chart-twin
+    props: { label: "Line output over 24 hours", columns: [{ key: "hour", header: "Hour", isRowHeader: true }, { key: "output", header: "Output, percent", numeric: true }], rows: [{ key: "00", cells: ["00:00", "61.0"] }, { key: "06", cells: ["06:00", "68.4"] }, { key: "12", cells: ["12:00", "80.1"] }, { key: "18", cells: ["18:00", "86.4"] }] }
+    description: the twin ChartContainer names - one row per x, one column per series
+  - id: loading
+    props: { label: "Routes by depot", isLoading: true, columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "runs", header: "Runs", numeric: true }], rows: [{ key: "l1", cells: ["L1", "24"] }, { key: "l2", cells: ["L2", "18"] }] }
+  - id: empty
+    props: { label: "Routes by depot", emptyMessage: "No routes match this filter", columns: [{ key: "route", header: "Route", isRowHeader: true }, { key: "runs", header: "Runs", numeric: true }], rows: [] }
+  - id: headers-ru
+    props: { label: "Отклонение от расписания по маршрутам", columns: [{ key: "route", header: "Маршрут", isRowHeader: true }, { key: "offset", header: "Отклонение, минут", numeric: true }, { key: "runs", header: "Рейсов", numeric: true }], rows: [{ key: "l1", cells: ["Л1", "-2,5", "24"] }, { key: "l2", cells: ["Л2", "+1,0", "18"] }] }
+    description: the Russian headers are about a third longer, so the columns widen; the header text wraps to two lines rather than truncating, because a column whose name is cut cannot be read
+
+notes:
+  platform:
+    ios: "none. ADR-0010 makes Table a Tier 2 component. A phone shows the same rows as a list of ListRows, where each row carries its own labels, because a horizontally scrolling grid on a 393 pt screen hides the column a value belongs to."
+    ipados: "adapted. Only in regular width, with touch hit areas from size.hit, no hover state and selection through the Checkbox column rather than through a click on the row; a connected trackpad restores hover through the modality dimension (ADR-0010)."
+    macos: "full. Compact density gives a 32 pt row, which is close to the references' 40; hover is required, and a secondary click on a row opens a ContextMenu."
+    watchos: "none. ADR-0010's Tier 3 list has no Table, and a table is not glanceable."
+    web-touch: "adapted. Tablet width only, as on iPadOS; at compact width the shell shows ListRows instead."
+    web-desktop: "full. Built on React Aria Table: `role=\"grid\"` with selection, sorting and cell navigation, and `position: sticky` for the header and the row-header column."
+  design: >-
+    Both sightings in docs/research/component-inventory.md (2/11, TD and ID, the same dashboard posted
+    twice) are one object: "matrix with identifier-chip row headers, tick-ruler cells, late values in
+    accent with a clock glyph, hairline rows and column separators". Prism keeps the identifier row
+    header, the hairline rows and the column separators; the tick rulers are the decorative ornament of
+    docs/research/visual-dna.md §4.12, which "is always decorative - the value text carries the meaning",
+    and an app draws them in a cell slot rather than this component. The 40 px reference row becomes
+    size.row (32 compact, 44 regular, §6.2), the 11-12 px header becomes type.caption at
+    color.text.secondary, which holds AA where the references' 50-55 % white did not
+    (docs/research/a11y-reconciliation.md §2) - and the 13 px tabular cell becomes type.data. Tabular figures in tables
+    are §2.4 and ADR-0021 §5; the table twin is ADR-0007 decision 6 and dataviz-design.md §3 rules H44 and
+    H45, and ChartContainer's macOS note already names this component for it. The refetch hold instead of
+    skeletons is dataviz-design.md §1 and §3 rule H46. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

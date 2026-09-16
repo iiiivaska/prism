@@ -1,5 +1,6 @@
 {
-  "description": "A pattern spec exists while spec/pattern.schema.json does not, so it is unchecked.",
+  "description": "A pattern spec exists while spec/pattern.schema.json does not, so it is unchecked. The repository's own patterns are removed, so the case reports only the sample.",
+  "remove": ["spec/pattern.schema.json", "spec/patterns"],
   "expect": [
     { "code": "spec/no-schema", "file": "spec/patterns/SamplePattern.yaml" }
   ]

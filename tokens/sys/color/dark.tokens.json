@@ -308,7 +308,13 @@
                   "color.bg.page",
                   "color.bg.surface",
                   "color.bg.surface.raised",
-                  "color.bg.tint.accent"
+                  "color.bg.tint.accent",
+                  "color.bg.tint.success",
+                  "color.bg.tint.warning",
+                  "color.bg.tint.critical",
+                  "color.bg.tint.info",
+                  "color.bg.fill.neutral.subtle",
+                  "color.bg.surface.nested"
                 ]
               },
               "figma": {
@@ -338,7 +344,13 @@
                 "pairsWith": [
                   "color.bg.page",
                   "color.bg.surface",
-                  "color.bg.surface.raised"
+                  "color.bg.surface.raised",
+                  "color.bg.tint.success",
+                  "color.bg.tint.warning",
+                  "color.bg.tint.critical",
+                  "color.bg.tint.info",
+                  "color.bg.fill.neutral.subtle",
+                  "color.bg.surface.nested"
                 ]
               },
               "figma": {
@@ -368,7 +380,8 @@
                 "pairsWith": [
                   "color.bg.page",
                   "color.bg.surface",
-                  "color.bg.surface.raised"
+                  "color.bg.surface.raised",
+                  "color.bg.fill.neutral.subtle"
                 ]
               },
               "figma": {

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "pill-tabs": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the pill of the place the reader is in: the one inverse solid of the row (visual-dna §1 principle 9, §4.7)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the label and the leading glyph of the active tab in the pill variant, on comp.pill-tabs.active.bg. The underline variant draws no fill, so it does not use this token: its active label is sys.color.text.primary, the ink of the ground it sits on. The pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "underline": {
+        "$type": "color",
+        "$value": "{sys.color.text.primary}",
+        "$description": "the 2 px rule under the active label of the underline variant; it is ink, not a border tone, because a boundary role at 3:1 would read as a divider rather than as the mark of where the reader is",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

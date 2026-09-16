@@ -45,7 +45,7 @@ props:
     required: true
   - name: value
     type: string
-    required: true
+    description: the formatted figure, sign included; unset or empty, the tile renders an em dash in the value role
   - name: unit
     type: string
   - name: size
@@ -71,6 +71,11 @@ props:
   - name: live
     type: boolean
     default: false
+    description: the value changes while visible; sets tabular figures and lets changed digits roll
+  - name: isLoading
+    type: boolean
+    default: false
+    description: enters `loading` while a new value is on its way; it stays false inside a container that is loading itself, because the container holds the whole block once
 
 states: [default, loading]
 
@@ -147,11 +152,13 @@ behavior:
   - The delta follows the value on its baseline and the trend sits below both, at the tile sparkline height and no wider than the value block.
   - Tiles in a group nearly touch — the gap between tiles is space.tile-gap, and whitespace goes to the page, not inside the tile.
   - A missing value renders an em dash in the value role; the label, the status glyph and the unit stay.
-  - "`loading` holds the previous render at opacity.dimmed-row; a tile grid never flashes skeletons row by row."
+  - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row; a tile grid never flashes skeletons row by row. A tile inside a container that is loading itself keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
+  - "A changed value rolls exactly as HeroNumber's does: only while `live` is true, only the digit positions that changed, and only when the new string keeps the old one's length and non-digit characters; over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out). Every other change replaces the value at once, and nothing counts up."
   - "At most three tiles stack in one column on the watch, where the tile is label, status glyph and value only."
 
 motion:
-  valueChange: motion.duration.slow
+  roll: motion.duration.base
+  rollEasing: motion.easing.out
   reduceMotion: instant
 
 accessibility:
@@ -162,7 +169,7 @@ accessibility:
   dynamicType: label, value and unit all scale; the value clamps at the accessibility3 size and the tile grows in height instead of truncating, and the trend drops out before any text does
   contrast: "the label and the unit are functional text at 4.5:1; the value is large text at 3:1 at `size: md` and `lg` (32 and 48 px) and functional text at 4.5:1 at `size: sm` (20 px), which color.text.primary holds on every material cell bound here; the status glyph is always paired with its word, which is what carries the state: color.icon.status.critical and color.icon.status.info hold the 3:1 boundary tier in both schemes, and color.icon.status.success and color.icon.status.warning hold it in dark and sit below it in light (2.77 and 1.77 on color.bg.surface, docs/research/a11y-reconciliation.md B4), which is why their pairs in tokens/contrast-pairs.json are dark-only and why the word is mandatory (ADR-0011 rule 4). On vivid the only color.text.on-vivid pairs are V1 (24 px or more) and V2 (the header block), which is why the label line carries every sub-24 px part there"
   reduceTransparency: no change of its own — the enclosing Surface publishes raised instead of glass and every tone follows it
-  reduceMotion: the count-up does not run; the value is replaced at motion.duration.instant, and the trend appears complete
+  reduceMotion: the numeric roll does not run; a changed value is replaced at motion.duration.instant, and the trend appears complete
 
 usage:
   do:

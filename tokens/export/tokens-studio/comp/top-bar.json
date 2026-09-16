@@ -1,0 +1,11 @@
+{
+  "comp": {
+    "top-bar": {
+      "height": {
+        "$type": "spacing",
+        "$value": "{space.11}",
+        "$description": "the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say"
+      }
+    }
+  }
+}

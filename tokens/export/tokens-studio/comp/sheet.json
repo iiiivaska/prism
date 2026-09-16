@@ -1,0 +1,11 @@
+{
+  "comp": {
+    "sheet": {
+      "shadow": {
+        "$type": "boxShadow",
+        "$value": "{shadow.drawer}",
+        "$description": "the panel's shadow; sys.shadow is not a spec-bindable category (ADR-0024 §5.3), so Sheet.yaml reaches the drawer level of docs/research/visual-dna.md §7.2 (\"drawers and modal sheets\", and §4.10's long soft shadow under the detail drawer) through this alias"
+      }
+    }
+  }
+}

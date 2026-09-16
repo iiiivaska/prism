@@ -7016,6 +7016,184 @@
         }
       }
     },
+    "list-row": {
+      "bg": {
+        "pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.06,
+            "hex": "#0d0e11"
+          },
+          "$description": "the pressed row: one step up the luminance ladder, never a scale, because a row is the width of its container",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-list-row-bg-pressed)",
+              "iOS": "tokens.components.listRow.bgPressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "rule": {
+        "selected": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the leading rule of the selected row: the one active element of a group is the inverse solid (visual-dna §1 principle 9); a sub-item's rule takes color.border.strong instead",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-list-row-rule-selected)",
+              "iOS": "tokens.components.listRow.ruleSelected"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "pagination": {
+      "current": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the current page in the expanded pointer layout: the one solid among plain numbers (visual-dna §1 principle 9); over media the spec binds color.bg.fill.inverse-media instead",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-pagination-current-bg)",
+              "iOS": "tokens.components.pagination.currentBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the current page's number on its solid fill",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-pagination-current-text)",
+              "iOS": "tokens.components.pagination.currentText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "pill-tabs": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the pill of the place the reader is in: the one inverse solid of the row (visual-dna §1 principle 9, §4.7)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-pill-tabs-active-bg)",
+              "iOS": "tokens.components.pillTabs.activeBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the label and the leading glyph of the active tab in the pill variant, on comp.pill-tabs.active.bg. The underline variant draws no fill, so it does not use this token: its active label is sys.color.text.primary, the ink of the ground it sits on. The pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-pill-tabs-active-text)",
+              "iOS": "tokens.components.pillTabs.activeText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "underline": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the 2 px rule under the active label of the underline variant; it is ink, not a border tone, because a boundary role at 3:1 would read as a divider rather than as the mark of where the reader is",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-pill-tabs-underline)",
+            "iOS": "tokens.components.pillTabs.underline"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      }
+    },
     "progress-bar": {
       "fill": {
         "$type": "color",
@@ -7411,6 +7589,76 @@
         }
       }
     },
+    "sidebar": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the destination the reader is in: the one inverse solid of the rail, against bare rows for every other item (visual-dna §1 principle 9)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-sidebar-active-bg)",
+              "iOS": "tokens.components.sidebar.activeBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the label and the glyph of the active destination; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-sidebar-active-text)",
+              "iOS": "tokens.components.sidebar.activeText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "rail": {
+        "width": {
+          "$type": "dimension",
+          "$value": {
+            "value": 64,
+            "unit": "px"
+          },
+          "$description": "the width of the icon rail; space.12 is the references' 64 px icon-rail gutter (visual-dna §6.1, §6.4), which the role's number does not say",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-sidebar-rail-width)",
+              "iOS": "tokens.components.sidebar.railWidth"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
     "skeleton": {
       "bg": {
         "$type": "color",
@@ -7677,6 +7925,35 @@
         }
       }
     },
+    "table": {
+      "row": {
+        "selected": {
+          "rule": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 1,
+              "hex": "#0d0e11"
+            },
+            "$description": "the leading rule of a selected row: the inverse solid, as ListRow's selection rule is (visual-dna §1 principle 9). It sits on the row's neutral selection overlay, where color.border.strong falls below 3:1 over a raised panel in both schemes; the pair color.bg.fill.inverse on color.bg.fill.neutral.subtle is checked in tokens/contrast-pairs.json",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-table-row-selected-rule)",
+                "iOS": "tokens.components.table.rowSelectedRule"
+              },
+              "com.figma.scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      }
+    },
     "text-area": {
       "border": {
         "error": {
@@ -7727,6 +8004,58 @@
             "com.figma.scopes": [
               "STROKE_COLOR"
             ]
+          }
+        }
+      }
+    },
+    "timeline": {
+      "marker": {
+        "current": {
+          "bg": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.051,
+                0.0549,
+                0.0667
+              ],
+              "alpha": 1,
+              "hex": "#0d0e11"
+            },
+            "$description": "the marker of the one entry that is \"now\": the single inverse solid of the list, against hairline rings for every other entry (visual-dna §1 principle 9, §4.13)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-timeline-marker-current-bg)",
+                "iOS": "tokens.components.timeline.markerCurrentBg"
+              },
+              "com.figma.scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "icon": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1,
+              "hex": "#ffffff"
+            },
+            "$description": "the glyph inside the current marker; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-timeline-marker-current-icon)",
+                "iOS": "tokens.components.timeline.markerCurrentIcon"
+              },
+              "com.figma.scopes": [
+                "TEXT_FILL"
+              ]
+            }
           }
         }
       }
@@ -7910,6 +8239,25 @@
           },
           "com.figma.scopes": [
             "TEXT_FILL"
+          ]
+        }
+      }
+    },
+    "top-bar": {
+      "height": {
+        "$type": "dimension",
+        "$value": {
+          "value": 48,
+          "unit": "px"
+        },
+        "$description": "the height of the top row; space.11 is the references' 48 px header row (visual-dna §6.1, §6.4), which the role's number does not say",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-top-bar-height)",
+            "iOS": "tokens.components.topBar.height"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
           ]
         }
       }

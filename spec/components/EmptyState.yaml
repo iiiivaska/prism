@@ -1,0 +1,219 @@
+name: EmptyState
+layer: composite
+specVersion: 1
+status: draft
+summary: >-
+  What a list, a grid, a table or a search result shows when it holds nothing: one registry glyph, a
+  sentence that says what is missing, an optional line that says why, and at most one action. Its
+  smallest form keeps an empty grid slot at full size with one add affordance, so a grid never
+  collapses when its slots are empty.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: icon
+    optional: true
+    description: one registry glyph; the slot form draws action.add and nothing else
+  - part: title
+  - part: description
+    optional: true
+  - part: action
+    optional: true
+    slot: true
+    description: exactly one Button; a second way out belongs in the screen, not here
+
+props:
+  - name: title
+    type: string
+    required: true
+    description: what is missing, as a sentence in sentence case ("No samples in this period")
+  - name: description
+    type: string
+    description: one line on why it is empty or what would fill it; never a paragraph
+  - name: icon
+    type: icon
+    description: a registry glyph; unset, the neutral tone draws none and the critical tone draws status.danger. The slot variant ignores it - its one glyph is the add affordance's
+  - name: variant
+    type: enum
+    values: [slot, section, page]
+    default: section
+    description: slot is one empty cell of a grid, section fills a card or a list region, page fills the content area of a screen
+  - name: tone
+    type: enum
+    values: [neutral, critical]
+    default: neutral
+    description: critical is the failed form - the same anatomy with the status.danger glyph and the critical title tone
+  - name: action
+    type: slot
+    description: one Button; on the slot variant it is one IconButton carrying action.add
+
+states: [default]
+
+tokens:
+  root:
+    gap: space.4
+    padding:
+      slot: space.5
+      section: space.8
+      page: space.10
+    radius:
+      slot: radius.tile
+    border:
+      slot:
+        default: color.border.strong
+        glass: color.border.on-glass-fill
+    borderWidth:
+      slot: border.strong
+    minHeight:
+      page: size.card.min
+  icon:
+    size:
+      slot: size.icon.md
+      section: size.icon.lg
+      page: size.icon.lg
+    color:
+      neutral:
+        default: color.icon.secondary
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+      critical:
+        default: color.icon.status.critical
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+  title:
+    typography:
+      slot: type.label.sm
+      section: type.body.md
+      page: type.title.sm
+    gap: space.2
+    color:
+      neutral:
+        default: color.text.primary
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+      critical:
+        default: color.text.critical
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+  description:
+    typography: type.body.sm
+    maxWidth: size.card.min
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  action:
+    gap: space.5
+
+behavior:
+  - "An EmptyState paints no background of its own in the `section` and `page` variants: it takes the tones of the material the enclosing Surface publishes, so the same component works inside a solid card, a nested table and the scheme's glass."
+  - "`variant: slot` is the empty cell of a grid. It keeps the cell's full size, draws a border.strong outline in color.border.strong at radius.tile, and holds one action.add affordance with its label. The grid therefore never collapses when its slots are empty (visual-dna §11 anti-pattern 27)."
+  - "`variant: section` fills a card, a list region or a table body: glyph, title, optional description and at most one Button, centred on the region's cross axis with space.8 of padding."
+  - "`variant: page` is the same anatomy in the screen's content area, with the larger title role and space.10 of padding; it is what a screen shows when it has nothing at all, and it is still not a dialog."
+  - "The title says what is missing, in one sentence and in sentence case: \"No samples in this period\", not \"Empty\" and not \"Nothing here yet\". The optional description says why, or what would fill it, in one line."
+  - "Exactly one action. A second way out - change the filter, and also import a file - means the screen needs a control row above the region, not two buttons inside the hole."
+  - "`tone: critical` is the failed form. It draws status.danger, puts the title in color.text.critical and keeps the same anatomy. On inverse, accent, light glass and the scheme's glass that tone has no pair, so the title takes the material's own foreground and the glyph alone carries the state, as Text does with every status tone (ADR-0022 §3.1, ADR-0011 rule 4)."
+  - "An unset `icon` draws no glyph in the neutral tone and status.danger in the critical one; a glyph is never the only thing shown, because a picture is not a sentence."
+  - "Overflow and truncation: nothing here truncates. The title wraps, the description wraps at size.card.min and wraps again, and the region grows to hold them (ADR-0011). In the `slot` variant, where the cell's size is fixed by the grid, the title is dropped before the glyph is - a slot that cannot show one line of type.label.sm shows the add affordance and its accessibility label alone."
+  - "An empty state replaces the content it stands in and nothing else: the region's own header, its filters and its table header stay, so the reader can see which query returned nothing."
+  - "A loading region is not an empty state: it holds the previous render at opacity.dimmed-row or a Skeleton, and only a finished, empty result reaches this component."
+  - "The component declares no cell for vivid, in any part and in any variant: its title and description are 12-15 px, and ADR-0030 rule 7 allows text that small on a gradient only inside a Card's header block, so an EmptyState is not drawn on a vivid surface at all. An empty vivid tile states it in its caption instead, and an empty slot in a vivid 2x2 is an outlined slot on the page beside the gradients, not a hole cut in one."
+
+motion:
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: status for the neutral tone, alert for the critical one; the slot variant is a button that adds
+  label: the title, then the description; the action keeps its own name and is not folded into them
+  traits: [staticText]
+  keyboard: the text is not focusable; the action is one Tab stop with a focus ring of color.border.focus at border.focus width, and in the slot variant the whole cell is that one stop
+  dynamicType: title and description scale with their roles and the region grows with them; nothing truncates to keep a height, and the slot variant drops its title before it clips a glyph
+  contrast: "the title is color.text.primary and the description color.text.secondary on the solid family, both functional pairs in tokens/contrast-pairs.json; the critical title is color.text.critical, also paired, and on inverse, accent and the glass materials both take that material's foreground. The slot's outline is color.border.strong at the 3:1 boundary tier on page, surface and raised, because in that variant the outline is what says the cell exists"
+  reduceTransparency: no change of its own - the enclosing Surface publishes raised instead of glass and every tone follows it
+  reduceMotion: the state does not fade up or scale in; it crossfades by opacity over motion.duration.base with motion.easing.out, and its glyph does not pulse or draw itself
+
+usage:
+  do:
+    - Say what is missing, in one sentence, in the reader's words.
+    - Keep the region's header, its filters and its table header visible, so the reader can see what returned nothing.
+    - Use the slot variant wherever a grid must keep its shape with an empty cell.
+  dont:
+    - Don't put two actions in an empty state; move the second one into the screen.
+    - Don't use an illustration where a glyph and a sentence do the work.
+    - Don't show an empty state while the region is still loading; hold the previous render or a Skeleton.
+    - Don't write "Nothing here yet"; say which list is empty and for which period.
+
+examples:
+  - id: section-no-results
+    props: { title: "No routes match this filter", description: "Clear the depot filter or widen the period.", icon: action.search }
+  - id: section-with-action
+    props: { title: "No depots yet", description: "A depot groups the vehicles that start their day in one yard.", icon: object.map-pin, action: { variant: primary, label: "Add a depot" } }
+  - id: section-plain
+    props: { title: "No alerts in the last 24 hours", icon: status.check }
+  - id: page
+    props: { variant: page, title: "No reports yet", description: "A report is built from one period and one depot.", icon: object.chart, action: { variant: primary, label: "Build the first report" } }
+  - id: slot
+    props: { variant: slot, title: "Empty bay", action: { glyph: action.add, label: "Assign a vehicle to bay 7" } }
+    description: the grid cell keeps its full size, so the grid never collapses; the one add glyph is the action's, and `icon` is left unset so the cell does not draw two
+  - id: critical
+    props: { tone: critical, title: "Couldn't load the samples", description: "The depot gateway did not answer.", action: { variant: secondary, label: "Try again" } }
+  - id: in-card
+    props: { title: "No samples in this period", icon: object.chart }
+    surface: solid
+  - id: on-glass-over-map
+    props: { title: "No vehicles in view", description: "Zoom out or clear the route filter.", icon: object.map }
+    surface: glass
+    backdrop: map
+  - id: title-ru
+    props: { title: "За выбранный период данных нет", description: "Измените период или снимите фильтр по депо.", icon: action.search }
+    description: the Russian title and description run about a third longer and wrap to a second line rather than truncating
+
+notes:
+  platform:
+    macos: "full. Compact density tightens the padding; the action follows the window's own button style, and hover applies to it alone."
+    watchos: "none. ADR-0010's Tier 3 list has no EmptyState, and a watch screen is a vertical stack of at most three glanceable tiles: an empty one is a single line of Text in the card that would have held a tile (spec/patterns/README.md)."
+    web-desktop: "full. The neutral tone is an `aria-live=\"polite\"` status region, so a filter that empties a list announces itself without moving focus."
+  design: >-
+    docs/research/component-inventory.md records no product-frame sighting of an EmptyState and lists it
+    under "Required by v1 but not observed", with two near neighbours: the empty container slot with an
+    add glyph (AR) and the clear-glass add tile (HA). The slot variant is exactly the first of those, and
+    its rule comes from docs/research/visual-dna.md §11 anti-pattern 27 ("grids that collapse when slots
+    are empty") and §4.14's "empty slots keep their full size and show an add affordance, so the grid
+    never collapses". Glyph plus word rather than colour alone is §1 principle 14 and ADR-0011 rule 4;
+    refusing an illustration follows §1 principle 7, which keeps colour in surfaces and in the world
+    rather than in elements. The one-action rule is §4.9's "one action per card" applied to the region
+    the empty state stands in. Example strings are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0022-materials-and-fallbacks.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

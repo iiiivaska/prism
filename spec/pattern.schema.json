@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/iiiivaska/prism/spec/pattern.schema.json",
+  "title": "Prism pattern spec",
+  "description": "Contract for one Prism pattern, a screen-level recipe (layer 4, ADR-0012). Applied to spec/patterns/*.yaml. A pattern is documented with anatomy and token bindings like a component (ADR-0012 rule 3), so every field it shares with one is spec/component.schema.json's own definition, referenced rather than copied: the token-path alternation of ADR-0024 §5.3 keeps its single copy. It adds the recipe - `layout`, `rules` and `composition` - and it has no implementation manifest entry. See spec/patterns/README.md for intent; tools/spec/validate.ts checks what JSON Schema cannot (token paths, the binding-matrix axes, prose, examples and the composed specs).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "layer", "specVersion", "status", "summary", "since", "platforms", "schemes", "anatomy", "states", "tokens", "layout", "rules", "composition", "behavior", "accessibility", "usage", "examples"],
+  "properties": {
+    "name": { "$ref": "component.schema.json#/properties/name" },
+    "layer": { "const": "pattern", "description": "Every file under spec/patterns/ is layer 4 (ADR-0012)." },
+    "specVersion": { "$ref": "component.schema.json#/properties/specVersion" },
+    "status": { "$ref": "component.schema.json#/properties/status" },
+    "replacedBy": { "$ref": "component.schema.json#/properties/replacedBy" },
+    "summary": { "$ref": "component.schema.json#/properties/summary" },
+    "since": { "$ref": "component.schema.json#/properties/since" },
+    "platforms": { "$ref": "component.schema.json#/properties/platforms" },
+    "density": { "$ref": "component.schema.json#/properties/density" },
+    "modality": { "$ref": "component.schema.json#/properties/modality" },
+    "schemes": { "$ref": "component.schema.json#/properties/schemes" },
+    "anatomy": { "$ref": "component.schema.json#/properties/anatomy" },
+    "props": { "$ref": "component.schema.json#/properties/props" },
+    "states": { "$ref": "component.schema.json#/properties/states" },
+    "tokens": { "$ref": "component.schema.json#/properties/tokens", "description": "What the pattern paints or places itself, in the component binding grammar. A pattern binds sys roles only: component tokens belong to components (ADR-0024 §5.2), and every value a composed component owns stays that component's cell." },
+    "layout": {
+      "type": "object",
+      "description": "The recipe's geometry: breakpoints, column counts, spans, gaps and region sizes. A value is a token path, a number, a sentence that names its research section, or a mapping of them keyed by width class or variant. Token paths here must resolve like prose.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/layoutValue" }
+    },
+    "rules": {
+      "type": "array",
+      "description": "The counting and placement rules an agent must keep when it assembles the screen (one hero, one accent, …); token paths here must resolve like prose.",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 10 }
+    },
+    "composition": {
+      "type": "array",
+      "description": "The specs the pattern composes, the props it fixes on each, what it forwards to them and where each goes. `component` names a spec under spec/components/ or spec/patterns/, and every prop it sets is a prop that spec declares, with a value its type allows.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component", "where"],
+        "properties": {
+          "component": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$" },
+          "props": { "type": "object", "description": "The props the pattern sets on the composed spec; the rest are the app's." },
+          "forwards": { "type": "string", "description": "The composed spec's props and slots the pattern passes through, and where their values come from." },
+          "where": { "type": "string", "minLength": 3, "description": "The part of this pattern's anatomy the composed spec fills, and under which condition." }
+        }
+      }
+    },
+    "behavior": { "$ref": "component.schema.json#/properties/behavior" },
+    "motion": { "$ref": "component.schema.json#/properties/motion" },
+    "haptics": { "$ref": "component.schema.json#/properties/haptics" },
+    "accessibility": { "$ref": "component.schema.json#/properties/accessibility" },
+    "usage": { "$ref": "component.schema.json#/properties/usage" },
+    "examples": { "$ref": "component.schema.json#/properties/examples" },
+    "notes": { "$ref": "component.schema.json#/properties/notes" }
+  },
+  "allOf": [
+    { "$ref": "#/$defs/explained-ios" },
+    { "$ref": "#/$defs/explained-ipados" },
+    { "$ref": "#/$defs/explained-macos" },
+    { "$ref": "#/$defs/explained-watchos" },
+    { "$ref": "#/$defs/explained-web-touch" },
+    { "$ref": "#/$defs/explained-web-desktop" }
+  ],
+  "$defs": {
+    "layoutValue": {
+      "anyOf": [
+        { "type": "string", "minLength": 1 },
+        { "type": "number" },
+        { "type": "array", "minItems": 1, "items": { "type": ["string", "number"] } },
+        { "type": "object", "minProperties": 1, "additionalProperties": { "$ref": "#/$defs/layoutValue" } }
+      ]
+    },
+    "explained-ios": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` ios is explained under `notes.platform.ios` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["ios"], "properties": { "ios": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["ios"], "properties": { "ios": { "type": "string" } } } } } } }
+    },
+    "explained-ipados": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` ipados is explained under `notes.platform.ipados` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["ipados"], "properties": { "ipados": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["ipados"], "properties": { "ipados": { "type": "string" } } } } } } }
+    },
+    "explained-macos": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` macos is explained under `notes.platform.macos` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["macos"], "properties": { "macos": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["macos"], "properties": { "macos": { "type": "string" } } } } } } }
+    },
+    "explained-watchos": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` watchos is explained under `notes.platform.watchos` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["watchos"], "properties": { "watchos": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["watchos"], "properties": { "watchos": { "type": "string" } } } } } } }
+    },
+    "explained-web-touch": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` web-touch is explained under `notes.platform.web-touch` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["web-touch"], "properties": { "web-touch": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["web-touch"], "properties": { "web-touch": { "type": "string" } } } } } } }
+    },
+    "explained-web-desktop": {
+      "description": "spec/SCHEMA.md, \"Platforms and modes\": an `adapted` or `none` web-desktop is explained under `notes.platform.web-desktop` (ADR-0010).",
+      "if": { "type": "object", "required": ["platforms"], "properties": { "platforms": { "type": "object", "required": ["web-desktop"], "properties": { "web-desktop": { "enum": ["adapted", "none"] } } } } },
+      "then": { "type": "object", "required": ["notes"], "properties": { "notes": { "type": "object", "required": ["platform"], "properties": { "platform": { "type": "object", "required": ["web-desktop"], "properties": { "web-desktop": { "type": "string" } } } } } } }
+    }
+  }
+}

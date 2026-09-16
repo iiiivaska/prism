@@ -1,0 +1,6 @@
+{
+  "description": "A rule names a size role that does not exist; a pattern's layout, rules and composition resolve like prose.",
+  "expect": [
+    { "code": "prose/unknown", "file": "spec/patterns/SamplePattern.yaml" }
+  ]
+}
