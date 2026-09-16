@@ -1,0 +1,7 @@
+{
+  "name": "@demo/fixture",
+  "version": "0.0.0",
+  "private": false,
+  "license": "MIT",
+  "description": "Fixture package for tools/licenses: published, so the gate checks its LICENSE copy."
+}
