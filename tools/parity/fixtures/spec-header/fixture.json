@@ -1,0 +1,5 @@
+{
+  "description": "a spec whose `specVersion` is not an integer, so no cell of its row has a number to compare",
+  "expect": [{ "code": "parity/header", "file": "spec/components/Sample.yaml" }],
+  "lags": []
+}

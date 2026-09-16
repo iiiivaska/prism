@@ -1,0 +1,12 @@
+# A header-only pattern: the parity report reads name, layer, specVersion and platforms, and
+# `spec:validate` owns everything else (it checks patterns once spec/pattern.schema.json exists).
+name: DashboardGrid
+layer: pattern
+specVersion: 1
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: adapted
+  web-desktop: full

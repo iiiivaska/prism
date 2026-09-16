@@ -1,0 +1,5 @@
+{
+  "description": "an entry no spec declares (ADR-0006 rule 2: no orphan entries)",
+  "expect": [{ "code": "manifest/orphan", "file": "swift/Sources/DSComponents/Manifest.swift" }],
+  "lags": []
+}

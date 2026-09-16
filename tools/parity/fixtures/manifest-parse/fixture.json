@@ -1,0 +1,5 @@
+{
+  "description": "a flat component-to-version table, the pre-G-21 shape, which is not the grammar",
+  "expect": [{ "code": "manifest/parse", "file": "swift/Sources/DSComponents/Manifest.swift" }],
+  "lags": []
+}

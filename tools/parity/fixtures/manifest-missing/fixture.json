@@ -1,0 +1,6 @@
+{
+  "description": "a manifest file that does not exist",
+  "expect": [{ "code": "manifest/missing", "file": "web/packages/charts/src/manifest.ts" }],
+  "lags": [],
+  "remove": ["web/packages/charts/src/manifest.ts"]
+}

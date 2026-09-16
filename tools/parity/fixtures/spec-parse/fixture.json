@@ -1,0 +1,5 @@
+{
+  "description": "a spec the P2-1 loader rejects (a duplicate key), reported with the same code spec:validate uses",
+  "expect": [{ "code": "spec/parse", "file": "spec/components/Sample.yaml" }],
+  "lags": []
+}

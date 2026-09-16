@@ -1,0 +1,12 @@
+# A header-only spec: the parity report reads name, layer, specVersion and platforms, and
+# `spec:validate` owns everything else.
+name: Sample
+layer: primitive
+specVersion: 1
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: none
+  web-desktop: none

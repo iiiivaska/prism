@@ -1,0 +1,7 @@
+{
+  "description": "an implementation of a spec version that does not exist yet",
+  "expect": [
+    { "code": "manifest/ahead", "file": "swift/Sources/DSComponents/Manifest.swift" }
+  ],
+  "lags": ["Button|web-touch", "Button|web-desktop"]
+}
