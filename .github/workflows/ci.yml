@@ -46,6 +46,7 @@ jobs:
       icons_apple: ${{ steps.gates.outputs.icons_apple }}
       parity: ${{ steps.gates.outputs.parity }}
       licenses: ${{ steps.gates.outputs.licenses }}
+      licenses_notices: ${{ steps.gates.outputs.licenses_notices }}
       gallery: ${{ steps.gates.outputs.gallery }}
       vrt: ${{ steps.gates.outputs.vrt }}
       snapshots: ${{ steps.gates.outputs.snapshots }}
@@ -84,6 +85,7 @@ jobs:
           gate icons_apple      P2-2 tools/icons-apple/Package.swift
           gate parity           P2-3 tools/parity/report.ts
           gate licenses         P2-4 tools/licenses/check.ts
+          gate licenses_notices P2-4 tools/licenses/notices.ts
           gate gallery          P3-4 web/apps/gallery/.storybook/main.ts
           gate vrt              P3-4 web/apps/vrt/playwright.config.ts
           # SwiftUI snapshot tests run once the first baselines are recorded next to them.
@@ -155,11 +157,32 @@ jobs:
         if: needs.plan.outputs.icons == 'true'
         run: pnpm --filter @iiiivaska/prism-tools icons:validate
       - name: License inventory gate # P2-4
+        # The ledger validates, no packaged item carries a license that forbids it, and the inventory
+        # matches the files the repository packages and the dependencies its packages declare.
         if: needs.plan.outputs.licenses == 'true'
         run: pnpm --filter @iiiivaska/prism-tools licenses:check
+      - name: Third-party notices are regenerated from the inventory # P2-4
+        if: needs.plan.outputs.licenses_notices == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools licenses:notices --check
       - name: Parity report # P2-3
+        # The writing mode, so the artifact below is this run's report, and then the stale guard of the
+        # tokens step above: `--check` after a write would always pass. tools/parity/report.test.ts
+        # ("the committed report is what this run renders") asserts the same thing in the `web` job.
         if: needs.plan.outputs.parity == 'true'
-        run: pnpm --filter @iiiivaska/prism-tools parity:report --fail-on-lag
+        run: |
+          # ADR-0006 rule 3: lag is an error on main; on branches the report is informational.
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            pnpm --filter @iiiivaska/prism-tools parity:report --fail-on-lag
+          else
+            pnpm --filter @iiiivaska/prism-tools parity:report
+          fi
+          # git status also catches a report that was never committed, which git diff would miss.
+          if [ -n "$(git status --porcelain -- tools/parity/report.md)" ]; then
+            git status --short -- tools/parity/report.md
+            git diff -- tools/parity/report.md
+            echo "::error::tools/parity/report.md is stale: run pnpm parity:report and commit the result."
+            exit 1
+          fi
       - name: Upload parity report # P2-3
         if: needs.plan.outputs.parity == 'true' && !cancelled()
         uses: actions/upload-artifact@v7

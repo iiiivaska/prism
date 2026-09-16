@@ -21,11 +21,13 @@
     "fonts:check": "node fonts/check.ts",
     "spec:validate": "node spec/validate.ts",
     "icons:validate": "node icons/validate.ts",
+    "icons:build": "node icons/validate.ts --write",
     "parity:report": "node parity/report.ts",
     "licenses:check": "node licenses/check.ts",
     "licenses:notices": "node licenses/notices.ts"
   },
   "devDependencies": {
+    "@phosphor-icons/core": "catalog:",
     "@tailwindcss/node": "catalog:",
     "@terrazzo/cli": "catalog:",
     "@terrazzo/parser": "catalog:",

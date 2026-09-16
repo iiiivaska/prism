@@ -12,6 +12,10 @@ catalog:
   react-dom: ^19.2.0
   react-aria-components: ^1.21.1
   "@phosphor-icons/react": ^2.1.10
+  # Icon catalog and the raw SVG assets (P2-2, ADR-0013): `icons` is the name catalog tools/icons
+  # validates spec/icons/registry.json against, and assets/<cut>/<name>.svg are the sources of the
+  # generated Apple asset catalog. Content frozen since 2024-03; a bump shows up as a generated diff.
+  "@phosphor-icons/core": ^2.1.1
   "@visx/shape": ^4.0.0
   "@visx/scale": ^4.0.0
   "@visx/axis": ^4.0.0
