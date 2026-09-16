@@ -1,0 +1,5 @@
+{
+  "description": "a layer the report cannot route to a manifest (ADR-0012 rule 2)",
+  "expect": [{ "code": "parity/layer", "file": "spec/components/Sample.yaml" }],
+  "lags": []
+}

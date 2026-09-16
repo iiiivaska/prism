@@ -1,0 +1,5 @@
+{
+  "description": "a web platform key in a Swift manifest, which declares Apple platforms only",
+  "expect": [{ "code": "manifest/platform", "file": "swift/Sources/DSComponents/Manifest.swift" }],
+  "lags": ["Button|ipados", "Button|macos", "Button|watchos", "Button|web-touch", "Button|web-desktop"]
+}

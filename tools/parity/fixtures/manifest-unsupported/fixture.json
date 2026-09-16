@@ -1,0 +1,5 @@
+{
+  "description": "an implementation on a platform the spec marks `none` (ADR-0006 rule 4)",
+  "expect": [{ "code": "manifest/unsupported", "file": "swift/Sources/DSComponents/Manifest.swift" }],
+  "lags": []
+}

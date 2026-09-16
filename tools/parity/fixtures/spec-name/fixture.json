@@ -1,0 +1,5 @@
+{
+  "description": "two specs with one name: one row and one manifest key cannot mean two contracts",
+  "expect": [{ "code": "parity/name", "file": "spec/patterns/Button.yaml" }],
+  "lags": []
+}

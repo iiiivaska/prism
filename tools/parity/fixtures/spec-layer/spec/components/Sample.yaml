@@ -1,0 +1,10 @@
+name: Sample
+layer: widget
+specVersion: 1
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full

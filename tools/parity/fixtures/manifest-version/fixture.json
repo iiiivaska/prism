@@ -1,0 +1,5 @@
+{
+  "description": "version 0, which means \"not implemented\" and is written by omitting the platform",
+  "expect": [{ "code": "manifest/version", "file": "swift/Sources/DSComponents/Manifest.swift" }],
+  "lags": []
+}

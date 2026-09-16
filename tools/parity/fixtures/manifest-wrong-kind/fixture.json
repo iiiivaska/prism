@@ -1,0 +1,5 @@
+{
+  "description": "a primitive declared in the data-viz manifest",
+  "expect": [{ "code": "manifest/orphan", "file": "swift/Sources/DSCharts/Manifest.swift" }],
+  "lags": []
+}
