@@ -1,0 +1,125 @@
+name: Tooltip
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  The name of an icon-only control, shown beside it while a pointer rests on it or the keyboard
+  focuses it. It is a small inverse-solid chip with one label, it never takes focus and it holds
+  nothing interactive. It exists only under pointer modality; on touch there is no tooltip at all,
+  and the name lives in the control's accessibility label and, where the affordance is not obvious,
+  in a visible label beside the glyph.
+since: 0.1.0
+
+platforms:
+  ios: none
+  ipados: adapted
+  macos: full
+  watchos: none
+  web-touch: none
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the chip; opaque in every context, so it never renders a material of its own
+  - part: label
+
+props:
+  - name: label
+    type: string
+    required: true
+    description: the name of the trigger, in sentence case, at most two lines
+  - name: placement
+    type: enum
+    values: [top, bottom, leading, trailing]
+    default: top
+    description: the preferred side; the tooltip flips to the opposite side when it would leave the viewport
+  - name: isOpen
+    type: boolean
+    description: "forces the open state for a test or a gallery snapshot; unset (the default) the component owns open and close, and `false` pins it closed"
+
+states: [default]
+
+tokens:
+  root:
+    background: comp.tooltip.bg
+    radius: radius.inner
+    paddingX: space.3
+    paddingY: space.2
+    offset: space.2
+    maxWidth: size.card.min
+    shadow: elevation.3
+    z: z.overlay
+  label:
+    typography: type.label.sm
+    color: comp.tooltip.text
+
+behavior:
+  - "A Tooltip is rendered only while the modality flag `interaction.tooltip` is 1, which is pointer modality. Under touch the component renders nothing at all, and neither stack ships a long-press substitute."
+  - "What replaces it on touch: the name is already the trigger's accessibility label, and a control whose glyph alone does not say what it does carries a visible label beside or under it. An affordance that only a hovering pointer can discover is an anti-pattern (visual-dna §11 anti-pattern 31), so no information may exist in a Tooltip and nowhere else."
+  - "It opens after a rest of `motion.duration.slower` on the trigger, and it opens at once on `focus-visible` of the trigger, with no delay, so the keyboard reaches the same information as the pointer. The rest is the bound token, not a literal, so it is 500 ms in the default motion context and 150 ms in the reduced one, where ADR-0023 §8.3 caps every duration at 150 ms; the Tooltip does not branch on the context to keep it longer."
+  - "`isOpen`, when set, replaces the whole open and close machinery: the chip renders in that state, the rest delay does not run and none of the dismissal triggers fire. It exists so a snapshot and a test can hold the chip open, and a product leaves it unset."
+  - The chip has no arrow, tail or beak; it is one rounded rectangle offset from the trigger, and the `placement` side is the only thing that says which control it names.
+  - "Once one Tooltip is open, a move to another trigger opens that one at once rather than waiting again; opening a second Tooltip closes the first, and at most one is on screen."
+  - "Dismissal: Escape closes it and leaves focus where it was; it also closes when the pointer leaves both the trigger and the tooltip, when the trigger loses focus, when the trigger is activated, when the page scrolls the trigger away, and when the window loses focus. It never closes on a timer while the pointer is still resting on the trigger."
+  - "Focus rules: the Tooltip is never focusable, is never in the tab order and holds nothing the user can click, copy or scroll. Anything the user must reach belongs in a Popover, which does take focus."
+  - It renders at `z.overlay`, offset `space.2` (6 px) from the trigger on the `placement` side, and it never covers the trigger or the control next to it.
+  - "Its material is the inverse solid in every context: `comp.tooltip.bg` over `comp.tooltip.text`. It publishes no material of its own and reads none, because it floats above the layer that publishes them, and it never renders glass, vivid or a tint."
+  - "The label is one short phrase in sentence case. It wraps and never truncates (ADR-0011); a name that needs more than two lines at the default text size is not a tooltip but help text or a Popover."
+  - A Tooltip never carries a status, an error, a shortcut list or a value that changes while it is open.
+
+motion:
+  openDelay: motion.duration.slower
+  appear: motion.duration.fast
+  appearEasing: motion.easing.out
+  reduceMotion: crossfade
+
+accessibility:
+  role: tooltip; the trigger points at it (`aria-describedby` on web, an accessibility hint on Apple)
+  label: "the visible string; when the trigger is icon-only the same string is the trigger's accessibility label, so the name is announced once and not twice"
+  keyboard: it opens on `focus-visible` of the trigger with no delay and closes on Escape without moving focus; it is not in the tab order and contains nothing focusable
+  dynamicType: the label scales with `type.label.sm` and the chip grows and wraps with it; nothing truncates to keep a height (ADR-0011), and a label that outgrows two lines is a sign the content belongs in a Popover
+  contrast: "`comp.tooltip.text` on `comp.tooltip.bg` is `color.text.on-inverse` on `color.bg.fill.inverse`, the checked functional pair in tokens/contrast-pairs.json (19.30:1 in both schemes); the chip is opaque, so no backdrop enters the calculation"
+  reduceTransparency: not applicable — the Tooltip is opaque in every context and never renders glass, so the ADR-0022 fallback does not change it
+  reduceMotion: "it does not scale, slide or blur on open; it crossfades by opacity over `motion.duration.base` with `motion.easing.out` and takes its final position at once. The rest before it opens is not a substitute but the bound `motion.duration.slower`, which the reduced context shortens from 500 ms to 150 ms with every other duration (ADR-0023 §8.3); the component adds no branch of its own"
+
+usage:
+  do:
+    - Use a Tooltip for the name of an icon-only control, and for nothing else.
+    - Keep the label to one short phrase in sentence case, the same words the accessibility label uses.
+    - Design the screen so it still works with every Tooltip removed, because on touch every Tooltip is removed.
+  dont:
+    - Don't put help text, a status, a keyboard shortcut list, a link or a value in a Tooltip; a Popover takes focus and can hold them.
+    - Don't attach a Tooltip to a control that already has a visible label; the repetition slows a screen reader and says nothing new.
+    - Don't let a Tooltip cover the trigger or the controls beside it, and don't stack one over another.
+    - Don't build a touch substitute out of a long press; on touch the name is visible or it is in the accessibility label.
+
+examples:
+  - id: top
+    props: { label: "Filter routes", placement: top }
+  - id: bottom
+    props: { label: "Refresh", placement: bottom }
+  - id: trailing
+    props: { label: "Open details", placement: trailing }
+  - id: two-lines
+    props: { label: "Download the last seven days", placement: top }
+    description: the longest label the chip takes before the content belongs in a Popover
+  - id: over-map
+    props: { label: "Centre on vehicle", placement: top }
+    surface: map
+    description: the chip stays the opaque inverse solid over the map; it never becomes glass
+  - id: ru-long-label
+    props: { label: "Показать историю изменений", placement: top }
+    description: a Russian label about half again as long as its English twin; the chip wraps to two lines at `size.card.min` instead of truncating
+
+notes:
+  platform:
+    ios: "`none`. iPhone has no pointer, and `interaction.tooltip` is 0 under touch (ADR-0010). The name lives in the control's accessibility label and in a visible label where the glyph alone is not obvious."
+    ipados: "`adapted`. The Tooltip exists only while a trackpad or mouse makes the modality `pointer`, which ADR-0010 makes a runtime property rather than a platform one; with no pointer attached iPadOS behaves exactly like iOS."
+    watchos: "`none`. ADR-0010's Tier 3 list excludes tooltips outright, along with hover and glass. This is a decision, not a gap."
+    web-touch: "`none`. Same reason as iOS; the modality flag decides, not the user agent."
+    macos: "`full`; with Increase Contrast the trigger's focus ring uses the system colour, as Button.yaml already states."
+  design: "The chip is the inverse solid of docs/research/visual-dna.md §1 principle 9 and §4.7 — the one highest-contrast element in a group — which is why it uses `color.bg.fill.inverse` rather than a surface step that would disappear over imagery. Its radius, padding and elevation come from §1 principle 2 (inner 8), §6.1 (`space.3` 8 and `space.2` 6) and §7.2 level 3 (popovers and floating readouts). The 150 ms fade with `motion.easing.out` is the tooltip cue of §9.2. The pointer-only rule is ADR-0010's modality dimension and its rule 2, and the ban on hover-only affordances is §11 anti-pattern 31. `size.card.min` (200 px) is reused as the chip's maximum width: Prism has no tooltip-width token, and a chip wider than the smallest card would stop being a label. docs/research/component-inventory.md records 0 of 11 sightings; the nearest is the desktop ChartTooltip, which is a different component. Example strings are invented (ADR-0015 rule 3)."
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md]

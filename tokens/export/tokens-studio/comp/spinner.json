@@ -1,0 +1,16 @@
+{
+  "comp": {
+    "spinner": {
+      "arc": {
+        "$type": "color",
+        "$value": "{color.icon.primary}",
+        "$description": "the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant)"
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": "{border.strong}",
+        "$description": "1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces"
+      }
+    }
+  }
+}

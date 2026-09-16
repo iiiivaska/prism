@@ -1,0 +1,22 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "area-chart": {
+      "fill": {
+        "$type": "color",
+        "$value": "{sys.color.chart.band}",
+        "$description": "the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,154 @@
+name: ReferenceLine
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  A dashed line at one value with an inline label: a target, a threshold or the start of a projection.
+  It is a part, not a chart — LineChart, AreaChart and Sparkline compose it, and it is the only way to
+  get a dash out of Prism, so solid keeps meaning "actual" everywhere.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: line
+  - part: label
+    optional: true
+    description: the inline label at the line's trailing end, outside the plot when it does not fit
+
+props:
+  - name: value
+    type: number
+    required: true
+  - name: axis
+    type: enum
+    values: [x, y]
+    default: y
+    description: y draws a horizontal rule at a value; x draws a vertical rule at a moment
+  - name: style
+    type: enum
+    values: [target, threshold, projection]
+    default: target
+  - name: tone
+    type: enum
+    values: [neutral, accent]
+    default: neutral
+    description: accent marks a line the screen wants looked at; a status hue is never used here
+  - name: label
+    type: string
+  - name: labelPosition
+    type: enum
+    values: [leading, trailing]
+    default: trailing
+
+states: [default]
+
+tokens:
+  line:
+    width:
+      target: chart.comparison-width
+      threshold: chart.comparison-width
+      projection: chart.line-width
+    dash: stroke.target
+    color:
+      default:
+        neutral: color.chart.target
+        accent: color.chart.now
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+  label:
+    typography: type.axis
+    gap: space.2
+    color:
+      default:
+        neutral: color.chart.axis
+        accent: color.chart.now
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+
+behavior:
+  - "Solid means actual and dashed means reference: a reference line is always dashed with stroke.target, and it is never drawn as a second series."
+  - "The dash is stroke.target (8/6, round caps), which is deliberately unlike stroke.grid (4/6, butt caps), so a reference and a gridline stay apart even though Prism dashes both."
+  - "`target` and `threshold` draw at chart.comparison-width; `projection` draws at chart.line-width, so the heavier dash marks where measurement ends and forecast begins."
+  - The line is drawn over the data and over the grid, and under the selection crosshair and any marker.
+  - "The line takes its family from the material the enclosing Surface publishes: color.chart.target on the solid family, color.chart.on-media.reference on vivid and color.chart.on-glass-fill.reference on the scheme's glass (ADR-0030 rule 3)."
+  - "`tone: accent` moves the line and its label to color.chart.now; on vivid and on the scheme's glass that family has one reference role, so the line's tone collapses to it and the label alone says what the line is."
+  - "The label is text, not a mark, so it never takes a chart role: it is color.chart.axis on the solid family and, on the scheme's glass, the quieter text tone of the published backdrop kind (ADR-0029 §1.4). On vivid the label is not drawn at all — color.text.on-vivid has no pair for 12 px text outside the header block (ADR-0030 rule 7), and the on-media family has no axis role — so a reference line on a gradient is told by its dash and named in the ChartContainer's header or caption."
+  - A reference line always carries a label or a value the reader can find elsewhere; a bare dash on a plot says nothing.
+  - "The label sits at the trailing end in type.axis with a space.2 gap; where it does not fit it moves outside the plot on the same row, and it is never clipped."
+  - "The line is not composed on light glass, inverse or accent; those materials hold no chart family (ADR-0030 rule 3)."
+  - Two reference lines per plot is the ceiling; more of them is a banded scale, which belongs to RangeBand or to a bullet form.
+  - The line never animates on its own; it enters and leaves with the chart that composes it.
+
+accessibility:
+  role: none
+  label: the line's own label and value, spoken as part of the chart's summary ("target 80 percent") and listed as a column or a footnote in the ChartContainer table twin
+  keyboard: not focusable; the value is reachable through the chart's scrubber readout and through the table twin
+  dynamicType: the label scales with type.axis and moves outside the plot before it shrinks; the line's geometry does not scale
+  contrast: the line carries meaning, so it is a boundary mark at 3:1 against its plot — color.chart.target is checked on color.chart.plot, and the on-media and on-glass-fill references are checked on the vivid gradients and on the glass plot (ADR-0030 §2.7). The label is functional text at 4.5:1 through color.chart.axis, and on the scheme's glass through the backdrop kind's quieter text tone; on vivid no label is drawn, so no sub-24 px pair is needed there (ADR-0011, ADR-0030 rule 7)
+  reduceTransparency: glass resolves to the opaque raised surface and the line falls back to color.chart.target on color.chart.plot
+  reduceMotion: nothing animates; the dash pattern never marches and the line never pulses, in either motion context
+
+usage:
+  do:
+    - Label every reference line with what it is, at its trailing end.
+    - Use the projection style where measured data stops and a forecast starts.
+    - Keep the accent for the one line the screen is about.
+  dont:
+    - Don't draw a target as a second series.
+    - Don't use a status hue for a threshold line; a status needs its glyph and its word.
+    - Don't stack more than two reference lines on one plot.
+    - Don't invent a dash pattern; stroke.target is the only one a reference line uses.
+    - Don't expect the inline label on a vivid plot; name the line in the container's caption there.
+
+examples:
+  - id: target-y
+    props: { value: 80, axis: y, style: target, label: "Target 80%" }
+  - id: threshold-accent
+    props: { value: 95, axis: y, style: threshold, tone: accent, label: "Capacity" }
+  - id: projection-x
+    props: { value: 1763596800, axis: x, style: projection, label: "Forecast from here" }
+    description: a vertical rule where measurement stops; the heavier dash marks the change
+  - id: leading-label
+    props: { value: 80, axis: y, style: target, label: "Target", labelPosition: leading }
+  - id: label-ru
+    props: { value: 80, axis: y, style: target, label: "Плановое значение" }
+    description: the Russian label is twice the width of "Target" and moves outside the plot rather than clipping
+  - id: on-vivid
+    props: { value: 80, axis: y, style: target, label: "Target 80%" }
+    surface: vivid
+    description: the line takes color.chart.on-media.reference and is told from the series only by its dash; the label is not drawn on the gradient and its words move to the container's caption
+  - id: on-glass-over-image
+    props: { value: 80, axis: y, style: target, label: "Target 80%" }
+    surface: glass
+    backdrop: image
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 carries no chart but the rings, so nothing on the watch composes this part."
+    macos: the label renders at the role size under compact density and has no hover state of its own.
+  design: >-
+    The solid-is-actual, dashed-is-reference convention, the label position and the projection weight come
+    from docs/research/dataviz-design.md §3 rule C16 and facts F18, F19 and F40; the 8/6 dash, the inline
+    label and "a target is never a second series" are docs/research/visual-dna.md §8.2, §4.6 and ADR-0007
+    rule 2 as ADR-0030 §2.2 amends it. Prism dashes its gridlines too (visual-dna §8.3 item 1), which is
+    why the two dash patterns are kept apart. Marching dashes under Reduce Motion are anti-pattern 33.
+    Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

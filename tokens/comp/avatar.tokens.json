@@ -1,0 +1,38 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "avatar": {
+      "bg": {
+        "$type": "color",
+        "$value": "{sys.color.bg.surface.raised}",
+        "$description": "the circle behind the initials and the fallback glyph; raised rather than nested because color.text.secondary is checked on color.bg.surface.raised and on no nested ground (ADR-0011 rule 1); over media the circle takes material.glass.chip instead",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "ring": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.inverse}",
+        "$description": "the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

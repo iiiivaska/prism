@@ -1,6 +1,20 @@
 {
-  "description": "The schema's token-path regex drops `chart`, which NON_BINDABLE does not list either.",
+  "description": "The schema's token-path regex drops `chart`, which NON_BINDABLE does not list either. The schema fault is the point of the fixture; the cascade below is its consequence, because the regex is also what every spec's bindings are validated against, so each spec that binds a bare `chart.*` path now fails too. Since P2-5 wave 1 that is the seven chart specs.",
   "expect": [
-    { "code": "category/unclassified", "file": "spec/component.schema.json" }
+    { "code": "category/unclassified", "file": "spec/component.schema.json" },
+    { "code": "binding/not-bindable", "file": "spec/components/AreaChart.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/LineChart.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/ProgressRing.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/RangeBand.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/ReferenceLine.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/RingGauge.yaml" },
+    { "code": "binding/not-bindable", "file": "spec/components/Sparkline.yaml" },
+    { "code": "spec/schema", "file": "spec/components/AreaChart.yaml" },
+    { "code": "spec/schema", "file": "spec/components/LineChart.yaml" },
+    { "code": "spec/schema", "file": "spec/components/ProgressRing.yaml" },
+    { "code": "spec/schema", "file": "spec/components/RangeBand.yaml" },
+    { "code": "spec/schema", "file": "spec/components/ReferenceLine.yaml" },
+    { "code": "spec/schema", "file": "spec/components/RingGauge.yaml" },
+    { "code": "spec/schema", "file": "spec/components/Sparkline.yaml" }
   ]
 }

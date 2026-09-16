@@ -5502,6 +5502,227 @@
     }
   },
   "comp": {
+    "area-chart": {
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06,
+          "hex": "#ffffff"
+        },
+        "$description": "the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-area-chart-fill)",
+            "iOS": "tokens.components.areaChart.fill"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
+    "avatar": {
+      "bg": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.09,
+          "hex": "#ffffff"
+        },
+        "$description": "the circle behind the initials and the fallback glyph; raised rather than nested because color.text.secondary is checked on color.bg.surface.raised and on no nested ground (ADR-0011 rule 1); over media the circle takes material.glass.chip instead",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-avatar-bg)",
+            "iOS": "tokens.components.avatar.bg"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "ring": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-avatar-ring)",
+            "iOS": "tokens.components.avatar.ring"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      }
+    },
+    "badge": {
+      "accent": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9529,
+              0.5804,
+              0.2665
+            ],
+            "alpha": 1,
+            "hex": "#f39444"
+          },
+          "$description": "the one attention fill per screen; the accent means look here, never an action",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-accent-bg)",
+              "iOS": "tokens.components.badge.accentBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-accent-text)",
+              "iOS": "tokens.components.badge.accentText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "critical": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.898,
+              0.1451,
+              0.1641
+            ],
+            "alpha": 1,
+            "hex": "#e5252a"
+          },
+          "$description": "the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-critical-bg)",
+              "iOS": "tokens.components.badge.criticalBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "11 px Medium digits on the badge red",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-critical-text)",
+              "iOS": "tokens.components.badge.criticalText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      },
+      "neutral": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-neutral-bg)",
+              "iOS": "tokens.components.badge.neutralBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-badge-neutral-text)",
+              "iOS": "tokens.components.badge.neutralText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      }
+    },
     "button": {
       "danger": {
         "bg": {
@@ -6200,6 +6421,1479 @@
               "TEXT_FILL"
             ]
           }
+        }
+      }
+    },
+    "checkbox": {
+      "bg": {
+        "selected": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-checkbox-bg-selected)",
+              "iOS": "tokens.components.checkbox.bgSelected"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "mark": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the check or the mixed dash on the filled box: the opposite-colored glyph",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-checkbox-mark)",
+            "iOS": "tokens.components.checkbox.mark"
+          },
+          "com.figma.scopes": [
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-checkbox-radius)",
+            "iOS": "tokens.components.checkbox.radius"
+          },
+          "com.figma.scopes": [
+            "CORNER_RADIUS"
+          ]
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-checkbox-size)",
+            "iOS": "tokens.components.checkbox.size"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      }
+    },
+    "chip": {
+      "bg": {
+        "pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.12,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-chip-bg-pressed)",
+              "iOS": "tokens.components.chip.bgPressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "rest": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.09,
+            "hex": "#ffffff"
+          },
+          "$description": "the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-chip-bg-rest)",
+              "iOS": "tokens.components.chip.bgRest"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "border": {
+        "rest": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.25,
+            "hex": "#ffffff"
+          },
+          "$description": "decorative: the fill step and the label identify the chip, so the stroke is not the boundary role",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-chip-border-rest)",
+              "iOS": "tokens.components.chip.borderRest"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "selected": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.6,
+            "hex": "#ffffff"
+          },
+          "$description": "selection is a full-strength stroke and label, never a solid fill",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-chip-border-selected)",
+              "iOS": "tokens.components.chip.borderSelected"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      }
+    },
+    "icon-button": {
+      "danger": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                0.2745,
+                0.2587
+              ],
+              "alpha": 0.1,
+              "hex": "#ff4642"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-danger-bg-rest)",
+                "iOS": "tokens.components.iconButton.dangerBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9999,
+              0.3531,
+              0.333
+            ],
+            "alpha": 1,
+            "hex": "#ff5a55"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-danger-border)",
+              "iOS": "tokens.components.iconButton.dangerBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "icon": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9999,
+              0.3531,
+              0.333
+            ],
+            "alpha": 1,
+            "hex": "#ff5a55"
+          },
+          "$description": "the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-danger-icon)",
+              "iOS": "tokens.components.iconButton.dangerIcon"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "ghost": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.06,
+              "hex": "#ffffff"
+            },
+            "$description": "the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-ghost-bg-pressed)",
+                "iOS": "tokens.components.iconButton.ghostBgPressed"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.6,
+            "hex": "#ffffff"
+          },
+          "$description": "the ring alone identifies the control, so it is the boundary tier (ADR-0011)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-ghost-border)",
+              "iOS": "tokens.components.iconButton.ghostBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "icon": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-ghost-icon)",
+              "iOS": "tokens.components.iconButton.ghostIcon"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "plain": {
+        "icon": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.64,
+            "hex": "#ffffff"
+          },
+          "$description": "the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-plain-icon)",
+              "iOS": "tokens.components.iconButton.plainIcon"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "primary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1,
+              "hex": "#ffffff"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-primary-bg-pressed)",
+                "iOS": "tokens.components.iconButton.primaryBgPressed"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 1,
+              "hex": "#ffffff"
+            },
+            "$description": "the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)",
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-primary-bg-rest)",
+                "iOS": "tokens.components.iconButton.primaryBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "icon": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the opposite-colored glyph on the solid circle",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-primary-icon)",
+              "iOS": "tokens.components.iconButton.primaryIcon"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "secondary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.12,
+              "hex": "#ffffff"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-secondary-bg-pressed)",
+                "iOS": "tokens.components.iconButton.secondaryBgPressed"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          },
+          "rest": {
+            "$type": "color",
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                1,
+                1,
+                1
+              ],
+              "alpha": 0.09,
+              "hex": "#ffffff"
+            },
+            "$extensions": {
+              "com.figma.codeSyntax": {
+                "WEB": "var(--ds-icon-button-secondary-bg-rest)",
+                "iOS": "tokens.components.iconButton.secondaryBgRest"
+              },
+              "com.figma.scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.25,
+            "hex": "#ffffff"
+          },
+          "$description": "the optional 1 px top edge of a raised puck; decorative, the fill carries the step",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-secondary-border)",
+              "iOS": "tokens.components.iconButton.secondaryBorder"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        },
+        "icon": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-secondary-icon)",
+              "iOS": "tokens.components.iconButton.secondaryIcon"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "size": {
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-size-lg)",
+              "iOS": "tokens.components.iconButton.sizeLg"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 32,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-size-md)",
+              "iOS": "tokens.components.iconButton.sizeMd"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 28,
+            "unit": "px"
+          },
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-icon-button-size-sm)",
+              "iOS": "tokens.components.iconButton.sizeSm"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "progress-bar": {
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-bar-fill)",
+            "iOS": "tokens.components.progressBar.fill"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "fill-secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.6,
+          "hex": "#ffffff"
+        },
+        "$description": "the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-bar-fill-secondary)",
+            "iOS": "tokens.components.progressBar.fillSecondary"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "4 px: the minimum gauge stroke of dataviz-design.md §3 E25, and one step of the 4 px rhythm (visual-dna §6.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-bar-height)",
+            "iOS": "tokens.components.progressBar.height"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "marker-height": {
+        "$type": "dimension",
+        "$value": {
+          "value": 8,
+          "unit": "px"
+        },
+        "$description": "8 px: the target tick is twice the track's thickness, the comparative marker of dataviz-design.md §3 E27, centred on the track's centreline",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-bar-marker-height)",
+            "iOS": "tokens.components.progressBar.markerHeight"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06,
+          "hex": "#ffffff"
+        },
+        "$description": "the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-bar-track)",
+            "iOS": "tokens.components.progressBar.track"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
+    "progress-ring": {
+      "arc": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the value arc is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-ring-arc)",
+            "iOS": "tokens.components.progressRing.arc"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "stroke-min": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "4 px: the floor under chart.gauge-stroke-ratio, from dataviz-design.md §3 E25's minimum ring stroke",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-ring-stroke-min)",
+            "iOS": "tokens.components.progressRing.strokeMin"
+          },
+          "com.figma.scopes": [
+            "STROKE_FLOAT"
+          ]
+        }
+      },
+      "track": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06,
+          "hex": "#ffffff"
+        },
+        "$description": "the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-progress-ring-track)",
+            "iOS": "tokens.components.progressRing.track"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
+    "radio": {
+      "bg": {
+        "selected": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-radio-bg-selected)",
+              "iOS": "tokens.components.radio.bgSelected"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "dot": {
+        "fill": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the opposite-colored dot on the solid circle",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-radio-dot-fill)",
+              "iOS": "tokens.components.radio.dotFill"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 8,
+            "unit": "px"
+          },
+          "$description": "8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-radio-dot-size)",
+              "iOS": "tokens.components.radio.dotSize"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-radio-size)",
+            "iOS": "tokens.components.radio.size"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      }
+    },
+    "ring-gauge": {
+      "size": {
+        "lg": {
+          "$type": "dimension",
+          "$value": {
+            "value": 104,
+            "unit": "px"
+          },
+          "$description": "ring as a card's hero instrument; the largest diameter on Prism's space rhythm (docs/research/visual-dna.md §6.1, §6.6)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-ring-gauge-size-lg)",
+              "iOS": "tokens.components.ringGauge.sizeLg"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": {
+            "value": 64,
+            "unit": "px"
+          },
+          "$description": "ring inside a card, the 64 px step of docs/research/dataviz-design.md §5",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-ring-gauge-size-md)",
+              "iOS": "tokens.components.ringGauge.sizeMd"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": {
+            "value": 44,
+            "unit": "px"
+          },
+          "$description": "glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-ring-gauge-size-sm)",
+              "iOS": "tokens.components.ringGauge.sizeSm"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "segmented-control": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-segmented-control-active-bg)",
+              "iOS": "tokens.components.segmentedControl.activeBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "text": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the label and glyph on the selected segment",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-segmented-control-active-text)",
+              "iOS": "tokens.components.segmentedControl.activeText"
+            },
+            "com.figma.scopes": [
+              "TEXT_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "select": {
+      "border": {
+        "error": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9999,
+              0.3531,
+              0.333
+            ],
+            "alpha": 1,
+            "hex": "#ff5a55"
+          },
+          "$description": "the invalid outline of the trigger; the critical stroke is the critical text role",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-select-border-error)",
+              "iOS": "tokens.components.select.borderError"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      }
+    },
+    "skeleton": {
+      "bg": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06,
+          "hex": "#ffffff"
+        },
+        "$description": "the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-skeleton-bg)",
+            "iOS": "tokens.components.skeleton.bg"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "shimmer": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.06,
+          "hex": "#ffffff"
+        },
+        "$description": "the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-skeleton-shimmer)",
+            "iOS": "tokens.components.skeleton.shimmer"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      }
+    },
+    "slider": {
+      "fill": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the filled part of the track is the one solid in the control (visual-dna §1 principle 9)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-slider-fill)",
+            "iOS": "tokens.components.slider.fill"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "thumb": {
+        "fill": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "the same ink as the fill; the thumb is told by its size, not by its color",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-slider-thumb-fill)",
+              "iOS": "tokens.components.slider.thumbFill"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": {
+            "value": 28,
+            "unit": "px"
+          },
+          "$description": "the small control circle, so the thumb sits in the one control family and never falls below the pointer hit area (ADR-0024 §7.1)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-slider-thumb-size)",
+              "iOS": "tokens.components.slider.thumbSize"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      },
+      "tick": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 0.6,
+          "hex": "#ffffff"
+        },
+        "$description": "the step marks under the track; the tick-ruler ornament of visual-dna §4.12, always decorative",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-slider-tick)",
+            "iOS": "tokens.components.slider.tick"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "track": {
+        "bg": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.6,
+            "hex": "#ffffff"
+          },
+          "$description": "the unfilled part of the meter: a lighter step of the same ink/white ramp as the fill (dataviz-design §3), and the boundary-tier token the contrast gate already checks",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-slider-track-bg)",
+              "iOS": "tokens.components.slider.trackBg"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": {
+            "value": 4,
+            "unit": "px"
+          },
+          "$description": "4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-slider-track-height)",
+              "iOS": "tokens.components.slider.trackHeight"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "sparkline": {
+      "height": {
+        "table": {
+          "$type": "dimension",
+          "$value": {
+            "value": 20,
+            "unit": "px"
+          },
+          "$description": "sparkline height in a table row: the row's text line box (docs/research/dataviz-design.md §3 rule D20, §6)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-sparkline-height-table)",
+              "iOS": "tokens.components.sparkline.heightTable"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        },
+        "tile": {
+          "$type": "dimension",
+          "$value": {
+            "value": 40,
+            "unit": "px"
+          },
+          "$description": "sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-sparkline-height-tile)",
+              "iOS": "tokens.components.sparkline.heightTile"
+            },
+            "com.figma.scopes": [
+              "WIDTH_HEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "spinner": {
+      "arc": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-spinner-arc)",
+            "iOS": "tokens.components.spinner.arc"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": {
+          "value": 1.5,
+          "unit": "px"
+        },
+        "$description": "1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-spinner-stroke)",
+            "iOS": "tokens.components.spinner.stroke"
+          },
+          "com.figma.scopes": [
+            "STROKE_FLOAT"
+          ]
+        }
+      }
+    },
+    "text-area": {
+      "border": {
+        "error": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9999,
+              0.3531,
+              0.333
+            ],
+            "alpha": 1,
+            "hex": "#ff5a55"
+          },
+          "$description": "the invalid outline of the multi-line box; the critical stroke is the critical text role",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-text-area-border-error)",
+              "iOS": "tokens.components.textArea.borderError"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      }
+    },
+    "text-field": {
+      "border": {
+        "error": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.9999,
+              0.3531,
+              0.333
+            ],
+            "alpha": 1,
+            "hex": "#ff5a55"
+          },
+          "$description": "the invalid outline; the critical stroke is the critical text role, as it is on the danger button",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-text-field-border-error)",
+              "iOS": "tokens.components.textField.borderError"
+            },
+            "com.figma.scopes": [
+              "STROKE_COLOR"
+            ]
+          }
+        }
+      }
+    },
+    "toggle": {
+      "height": {
+        "$type": "dimension",
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        },
+        "$description": "the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-toggle-height)",
+            "iOS": "tokens.components.toggle.height"
+          },
+          "com.figma.scopes": [
+            "WIDTH_HEIGHT"
+          ]
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": {
+          "value": 4,
+          "unit": "px"
+        },
+        "$description": "the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-toggle-inset)",
+            "iOS": "tokens.components.toggle.inset"
+          },
+          "com.figma.scopes": [
+            "GAP"
+          ]
+        }
+      },
+      "knob": {
+        "off": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.64,
+            "hex": "#ffffff"
+          },
+          "$description": "the quiet dot inside the outlined track; the color.text.secondary ramp step",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-toggle-knob-off)",
+              "iOS": "tokens.components.toggle.knobOff"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "on": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 1,
+            "hex": "#0d0e11"
+          },
+          "$description": "the opposite-colored element on the solid track",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-toggle-knob-on)",
+              "iOS": "tokens.components.toggle.knobOn"
+            },
+            "com.figma.scopes": [
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      },
+      "track": {
+        "off": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.06,
+            "hex": "#ffffff"
+          },
+          "$description": "off is an outlined track over a neutral subtle well; the outline is color.border.strong",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-toggle-track-off)",
+              "iOS": "tokens.components.toggle.trackOff"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "on": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 1,
+            "hex": "#ffffff"
+          },
+          "$description": "on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-toggle-track-on)",
+              "iOS": "tokens.components.toggle.trackOn"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        }
+      }
+    },
+    "tooltip": {
+      "bg": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-tooltip-bg)",
+            "iOS": "tokens.components.tooltip.bg"
+          },
+          "com.figma.scopes": [
+            "FRAME_FILL",
+            "SHAPE_FILL"
+          ]
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-tooltip-text)",
+            "iOS": "tokens.components.tooltip.text"
+          },
+          "com.figma.scopes": [
+            "TEXT_FILL"
+          ]
         }
       }
     }

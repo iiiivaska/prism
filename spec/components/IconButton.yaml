@@ -1,0 +1,229 @@
+name: IconButton
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A circular action carrying one glyph and no label. It follows Button's pill grammar - a circle is the
+  pill at its shortest - and the inverse-solid active rule: the single primary or selected circle in a
+  group is the inverse solid, its siblings are hairline rings, raised pucks or bare glyphs. Every
+  IconButton carries an explicit name, because the glyph is not one.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the circle; `plain` draws no chrome and the circle exists only as the hit region
+  - part: icon
+  - part: badge
+    optional: true
+    slot: true
+    description: a Badge anchored outside the top-trailing corner; Badge owns its own look
+
+props:
+  - name: variant
+    type: enum
+    values: [primary, secondary, ghost, plain, danger]
+    default: secondary
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: glyph
+    type: icon
+    required: true
+    description: a registry id, rendered by Icon
+  - name: label
+    type: string
+    required: true
+    description: the accessibility name and the pointer tooltip; never inferred from the glyph id
+  - name: badge
+    type: slot
+    description: an optional Badge anchored outside the top-trailing corner; Badge owns its own look
+  - name: isSelected
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onPress
+    type: action
+    required: true
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    background:
+      primary:
+        default: comp.icon-button.primary.bg.rest
+        vivid: color.bg.fill.inverse-media
+        glass: color.bg.fill.inverse-media
+      secondary: comp.icon-button.secondary.bg.rest
+      danger: comp.icon-button.danger.bg.rest
+    underlay:
+      danger:
+        vivid: color.bg.page
+        glass: color.bg.page
+    border:
+      secondary: comp.icon-button.secondary.border
+      ghost:
+        default: comp.icon-button.ghost.border
+        vivid: color.border.on-media
+        glass: color.border.on-glass-fill
+      danger: comp.icon-button.danger.border
+    borderWidth:
+      secondary: border.hairline
+      ghost: border.strong
+      danger: border.strong
+    radius: radius.control
+    size:
+      sm: comp.icon-button.size.sm
+      md: comp.icon-button.size.md
+      lg: comp.icon-button.size.lg
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      background:
+        primary: comp.icon-button.primary.bg.pressed
+        secondary: comp.icon-button.secondary.bg.pressed
+        ghost: comp.icon-button.ghost.bg.pressed
+        plain: comp.icon-button.ghost.bg.pressed
+      overlay:
+        primary: color.bg.fill.neutral.subtle
+        danger: color.bg.fill.neutral.subtle
+    selected:
+      background:
+        default: comp.icon-button.primary.bg.rest
+        vivid: color.bg.fill.inverse-media
+        glass: color.bg.fill.inverse-media
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  icon:
+    size:
+      sm: size.icon.sm
+      md: size.icon.md
+      lg: size.icon.lg
+    color:
+      primary:
+        default: comp.icon-button.primary.icon
+        vivid: color.text.on-inverse-media
+        glass: color.text.on-inverse-media
+      secondary: comp.icon-button.secondary.icon
+      ghost:
+        default: comp.icon-button.ghost.icon
+        vivid: color.text.on-vivid
+        glass: color.text.on-glass-fill
+      plain:
+        default: comp.icon-button.plain.icon
+        vivid: color.text.on-vivid
+        glass: color.text.on-glass-fill
+      danger: comp.icon-button.danger.icon
+    selected:
+      color:
+        default: comp.icon-button.primary.icon
+        vivid: color.text.on-inverse-media
+        glass: color.text.on-inverse-media
+
+behavior:
+  - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
+  - The hit region is the larger of the visual circle and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly around the circle, and the circle never grows with modality (ADR-0024 §7.3).
+  - "`variant: plain` is the bare glyph: no fill, no ring, nothing but the glyph and that invisible hit region, which is why the region is not optional. It is the affordance Card pins to its top-right corner and the collapse glyph of a rail."
+  - "`label` is required and is a real sentence, not the glyph's id: an icon-only control always carries a name (ADR-0011 rule 4). Under pointer modality, where interaction.tooltip is on, the same string is shown as a Tooltip on hover and on focus; touch shows no tooltip and the name reaches VoiceOver instead."
+  - "`isSelected` renders the circle as the inverse solid whatever its variant, and a group holds exactly one selected circle - the active tool, the active view, the send button (visual-dna §1 principle 9 and §4.7)."
+  - The circle is radius.control on a square box whose side is comp.icon-button.size.sm, .md or .lg; those follow density, so md is 32 pt on desktop, 40 pt on touch and 48 pt under the comfortable density (ADR-0024 §7.1).
+  - The glyph is an Icon at size.icon.sm, .md or .lg; a control glyph is the md box, and the sm box belongs to `plain` corner glyphs (visual-dna §1 principle 13).
+  - On a vivid surface, and on the scheme's glass, the primary and selected circles become the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media); a ghost circle outlines in color.border.on-media or color.border.on-glass-fill and its glyph takes that material's foreground.
+  - "`danger` is a critical-tint circle with a critical glyph and a critical outline; on vivid and on the scheme's glass it paints the `underlay` cell, color.bg.page, as an opaque disc under its tint, so the pair the contrast gate checks is the pair that renders (visual-dna §4.11 note P1-9, ADR-0030 §1.8). On every other material there is no underlay cell and the tint composites over the surface itself."
+  - The ghost and plain rings on media (color.border.on-media, color.border.on-glass-fill) are decorative (ADR-0030 §3.2); the glyph is what identifies the control, which is why every IconButton carries one.
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the circle; touch never shows a hover state (ADR-0010 rule 2). For `plain`, whose circle is otherwise invisible, the hover overlay and the pressed fill paint that circle at comp.icon-button.size.sm, .md or .lg - never the larger invisible hit region, which would make the wash jump with modality.
+  - Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9). Secondary, ghost and plain also take their pressed fill; primary and danger, whose pressed cell carries the same value as their rest cell, take the pressed overlay of color.bg.fill.neutral.subtle instead, so no variant's press is carried by the scale alone.
+  - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; an unavailable action is better explained than disabled."
+  - An optional Badge, passed in the `badge` slot, is anchored outside the top-trailing corner of the circle, overlapping it; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value.
+  - Buttons of one group share one size and one variant, apart from the single primary or selected circle (visual-dna §11 anti-pattern 24).
+
+motion:
+  press: motion.spring.snappy
+  select: motion.spring.smooth
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.button
+  select: haptic.selection
+
+accessibility:
+  role: button
+  label: the `label` prop, always explicit; a glyph id is never a name (ADR-0011 rule 4)
+  traits: [button]
+  keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the circle, following radius.control
+  dynamicType: the circle and the glyph box do not scale with Dynamic Type - density is their lever - and the tooltip text scales with type.label.md
+  contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and over media color.text.on-inverse-media on color.bg.fill.inverse-media; the ghost ring on a solid ground is color.border.strong at the boundary tier (3:1); danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, where the pair is checked with the page under it. Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
+  reduceTransparency: not applicable (IconButton draws no material of its own); when the enclosing Surface falls back from glass to raised, the glass cells stop applying and the button renders its default cells
+  reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, and the pressed overlay of color.bg.fill.neutral.subtle for primary and danger, whose pressed fill carries the same value as their rest fill. Every variant therefore still shows a press with no scale at all. Selection crossfades to the inverse solid instead of scaling
+
+usage:
+  do:
+    - Give every IconButton a verb-first name ("Refresh readings"), and let the pointer show it as a tooltip.
+    - Keep one solid among the rings - one primary or one selected circle per group (visual-dna §4.7).
+    - Use `plain` where the glyph sits on a card corner or inside a dense row, and give it the full hit region.
+  dont:
+    - Don't use an IconButton where the action needs a word; that is a Button.
+    - Don't put two filled circles in one toolbar, and don't fill a track behind a group of them.
+    - Don't rely on hover to reveal the button or its name; a hover-only affordance does not exist on touch (visual-dna §11 anti-pattern 31).
+
+examples:
+  - id: secondary-md
+    props: { variant: secondary, size: md, glyph: action.settings, label: "Open settings" }
+  - id: primary-md
+    props: { variant: primary, size: md, glyph: action.add, label: "Add a site" }
+  - id: ghost-md
+    props: { variant: ghost, size: md, glyph: action.filter, label: "Filter results" }
+  - id: plain-sm
+    props: { variant: plain, size: sm, glyph: nav.open, label: "Open details" }
+    description: the corner affordance of a Card, whose hit region is 44 pt under touch
+  - id: danger-md
+    props: { variant: danger, size: md, glyph: action.delete, label: "Delete route" }
+  - id: selected-in-group
+    props: { variant: ghost, size: md, glyph: object.map, label: "Map view", isSelected: true }
+    description: the one selected circle in a view switcher; its siblings stay hairline rings
+  - id: lg-touch
+    props: { variant: primary, size: lg, glyph: action.play, label: "Start the run" }
+  - id: disabled
+    props: { variant: secondary, size: md, glyph: action.refresh, label: "Refresh readings", isDisabled: true }
+  - id: on-vivid
+    props: { variant: ghost, size: md, glyph: nav.open, label: "Open the yield card" }
+    surface: vivid
+  - id: on-glass-over-map
+    props: { variant: primary, size: md, glyph: action.locate, label: "Center on the vehicle" }
+    surface: glass
+    backdrop: map
+  - id: label-ru
+    props: { variant: secondary, size: md, glyph: action.refresh, label: "Обновить показания линии" }
+    description: a long Russian name; the circle does not change, the tooltip wraps at two lines
+
+notes:
+  platform:
+    watchos: "none. ADR-0010's Tier 3 list has no IconButton: the watch acts through Button, whose sizes collapse to lg, and through system chrome. A nameless 44 pt circle in a one-column stack of at most three tiles would spend the whole width on a tap target without a word."
+    macos: Hover is required, the default size follows compact density (32 pt), and the tooltip is the system one; the focus ring uses the system color when Increase Contrast is on.
+    web-desktop: Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-selected` drive the CSS states (ADR-0019).
+  design: >-
+    The circle-and-ring grammar, the one solid among hairlines and the 0.97 press come from
+    docs/research/visual-dna.md §1 principles 2, 9 and 13 and §4.7; the bare glyph, the raised puck, the
+    glass circle over a map and the badge are the variants docs/research/component-inventory.md records
+    for IconButton (11 of 11 shots). The glyph prop is named `glyph`, not `icon`, because ADR-0022 rule 8
+    forbids a vivid example from setting `icon` - a ring drawn around a glyph on a gradient - and an
+    IconButton's glyph is exactly the element that rule is not about. Example strings are invented
+    (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

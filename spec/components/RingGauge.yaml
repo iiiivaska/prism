@@ -1,0 +1,237 @@
+name: RingGauge
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  One ratio against a limit, drawn as a ring: closed for a part of a whole, open across a 270° sweep
+  when the endpoints are arbitrary, segmented when the scale is banded. The value is written beside or
+  inside the ring, because an arc is a glance, not a reading.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: track
+    description: the unfilled path, the full sweep
+  - part: arc
+    description: the filled path from the minimum to the value
+  - part: thresholds
+    optional: true
+    description: qualitative ranges as a thin outer ring, intensities of one ink
+  - part: value
+    optional: true
+  - part: unit
+    optional: true
+  - part: caption
+    optional: true
+    description: what the ring measures, or its endpoints
+
+props:
+  - name: value
+    type: number
+    required: true
+  - name: min
+    type: number
+    default: 0
+  - name: max
+    type: number
+    default: 100
+  - name: style
+    type: enum
+    values: [closed, open, segmented]
+    default: closed
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: emphasis
+    type: enum
+    values: [primary, accent]
+    default: primary
+  - name: thresholds
+    type: data
+    description: "up to five { upTo, weight } ranges, ideally three; weight is strong, mid or subtle"
+  - name: valueLabel
+    type: string
+    description: the formatted figure written with the ring; a ring never stands without it, and it defaults to `value` formatted for the locale
+  - name: unit
+    type: string
+  - name: caption
+    type: string
+  - name: clampOverflow
+    type: boolean
+    default: true
+
+states: [default, loading]
+
+tokens:
+  root:
+    size:
+      sm: comp.ring-gauge.size.sm
+      md: comp.ring-gauge.size.md
+      lg: comp.ring-gauge.size.lg
+    strokeRatio: chart.gauge-stroke-ratio
+    strokeMin: chart.line-width
+    loading:
+      opacity: opacity.dimmed-row
+  track:
+    color:
+      default: color.chart.ghost
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+  arc:
+    color:
+      default:
+        primary: color.chart.series.1
+        accent: color.chart.now
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  thresholds:
+    width: chart.comparison-width
+    bandStrong: color.chart.comparison
+    bandMid: color.chart.comparison-2
+    bandSubtle: color.chart.ghost
+  value:
+    typography:
+      sm: type.metric.md
+      md: type.metric.md
+      lg: type.metric.lg
+    color:
+      default: color.text.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  unit:
+    typography: type.metric.unit
+    gap: space.2
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  caption:
+    typography: type.caption
+    gap: space.2
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+
+behavior:
+  - "`closed` sweeps the full circle and is for a part of a whole (a goal, a battery, a share); `open` sweeps 270° clockwise, starting at 225° and ending at −45°, and is for a scale whose endpoints are arbitrary; `segmented` splits the sweep into the declared ranges."
+  - "The stroke is chart.gauge-stroke-ratio of the ring's diameter, never less than chart.line-width (2 px, which is also the watch minimum): a 104 px ring gets a 5.2 px stroke. Caps are round on both the track and the arc."
+  - "The three `size` steps are comp.ring-gauge.size.sm, .md and .lg; any other diameter is legal, and the stroke follows the ratio rather than a step."
+  - "The track is the quiet step of the same family — color.chart.ghost on the solid family — and never a grey on raw glass: on the scheme's glass it takes color.chart.on-glass-fill.grid and on vivid color.chart.on-media.grid."
+  - "The value is always written, at type.metric.md inside an md ring and type.metric.lg inside an lg ring; inside a `sm` ring nothing fits, so the figure sits beside the ring."
+  - "A value label inside the ring stays at or under 45 % of the diameter, and the unit at 40-50 % of the value's size, which type.metric.unit against type.metric.lg already gives."
+  - "Thresholds are at most five ranges, ideally three, drawn as a thin outer ring in intensities of one ink — bandStrong, bandMid and bandSubtle — never as distinct hues; a status hue marks only the current state, and then with its glyph and word."
+  - "Thresholds are a solid-family form. ADR-0030 §2 gives the on-media and on-glass-fill chart families a line, a reference and a grid and no band inks, so on vivid and on the scheme's glass the ring is the track and the arc alone, and `style: segmented` degrades to `closed` there. The gauge is not placed on light glass, inverse or accent at all, which hold no chart family (ADR-0030 rule 3)."
+  - "On a vivid surface the ring's figure is the hero block and is drawn at 24 px or more, so only `size: lg` (type.metric.lg) is used there; the caption and the unit join the header block, the one place ADR-0030 rule 7 allows text under 24 px on a gradient. color.text.on-vivid has no pair for a 20 px figure outside that block."
+  - "A value outside [min, max] clamps the arc and draws an overflow tick at the end when `clampOverflow` is true; the written figure is never clamped."
+  - "An indeterminate ring draws the track alone with an em dash in the value slot; it never spins under Reduce Motion."
+  - "The arc animates from the minimum to the value on motion.spring.smooth when the ring first appears, and follows later changes with the same spring."
+  - "`loading` holds the previous arc at opacity.dimmed-row."
+  - "Prefer a bar over a ring when several ratios must be compared: an angle is a glance and length is the accurate encoding."
+
+motion:
+  sweep: motion.spring.smooth
+  reduceMotion: instant
+
+accessibility:
+  role: progressindicator
+  label: the caption, the value and its endpoints ("Charge, 68 percent of 100")
+  traits: [updatesFrequently]
+  keyboard: not focusable; the gauge is a readout, and a control that changes the value owns its own focus
+  dynamicType: the value, unit and caption scale with their roles; the ring keeps its token diameter, and when the scaled value no longer fits inside it the figure moves beside the ring
+  contrast: the arc is a boundary mark at 3:1 against its plot; the track is decorative; the written value is large text at 3:1 from 24 px and functional text at 4.5:1 below that, so the ring is never the only way to read the number (ADR-0011)
+  reduceTransparency: glass resolves to the opaque raised surface and both arc and track fall back to the solid family (color.chart.series.1 over color.chart.ghost)
+  reduceMotion: the sweep-in does not run; the arc appears at its value at motion.duration.instant, and an indeterminate ring shows its track without rotating. A later value change is in-place movement, so it keeps motion.spring.smooth, which carries no bounce in Prism's reduced-motion context (ADR-0023 §8.4)
+
+usage:
+  do:
+    - Use a ring for one ratio a person glances at, and write the number beside it.
+    - Use the closed style for a part of a whole and the open style when the endpoints are a choice.
+    - Keep thresholds to three intensities of one ink.
+  dont:
+    - Don't compare several rings against each other; that is a bar chart or a bullet bar.
+    - Don't use a ring to show a value with no limit.
+    - Don't give the ring a colored glow or a drop shadow as elevation.
+    - "Don't put a `size: sm` or `md` ring on a vivid surface; its figure is under 24 px and only the lg ring has a pair there."
+    - Don't let a status hue carry the reading; a status needs its glyph and its word.
+
+examples:
+  - id: closed-md
+    props: { value: 68, min: 0, max: 100, style: closed, size: md, caption: "Charge" }
+  - id: closed-accent
+    props: { value: 94, min: 0, max: 100, style: closed, size: md, emphasis: accent, caption: "Utilisation" }
+    description: the one ring on the screen that asks for attention
+  - id: open-270
+    props: { value: 74, min: 40, max: 120, style: open, size: lg, unit: "km/h", caption: "Ground speed" }
+  - id: segmented-thresholds
+    props: { value: 3.4, min: 0, max: 6, style: segmented, size: lg, unit: "bar", caption: "Line pressure", thresholds: [{ upTo: 2, weight: subtle }, { upTo: 4.5, weight: mid }, { upTo: 6, weight: strong }] }
+  - id: overflow
+    props: { value: 118, min: 0, max: 100, style: closed, size: md, caption: "Quota used" }
+    description: the arc clamps at the limit and the written figure stays 118
+  - id: small-beside-value
+    props: { value: 41, min: 0, max: 100, style: closed, size: sm, caption: "Filter life" }
+    description: at the sm diameter the figure sits beside the ring
+  - id: caption-ru
+    props: { value: 68, min: 0, max: 100, style: closed, size: md, caption: "Заряд батареи", unit: "%" }
+    description: the Russian caption wraps under the ring rather than shrinking it
+  - id: on-vivid
+    props: { value: 68, min: 0, max: 100, style: closed, size: lg, caption: "Charge, percent" }
+    surface: vivid
+    description: "the lg ring, whose figure is 32 px; the caption carries the unit, because the header block is the only sub-24 px zone on a gradient"
+  - id: on-glass-over-map
+    props: { value: 63, min: 0, max: 100, style: closed, size: md, caption: "Battery" }
+    surface: glass
+    backdrop: map
+  - id: watch-closed
+    props: { value: 68, min: 0, max: 100, style: closed, size: sm, caption: "Charge" }
+    description: the watch form — a system circular gauge with the value beside it
+
+notes:
+  platform:
+    watchos: "adapted — the closed and open styles map to the system circular gauge styles; there are no thresholds, no segmented style and no sweep animation, and the stroke floor of chart.line-width is the watch minimum. The watch density applies."
+    macos: no hover readout; the ring follows compact density and its figure renders at the role size.
+  design: >-
+    Ring geometry, the 270° open sweep, the stroke ratio, the track rule and the "prefer a bar" caveat
+    come from docs/research/dataviz-design.md §3 rules E24-E27 and facts F9, F10, F37, F51 and F54; the
+    stroke ratio itself is sys chart.gauge-stroke-ratio, which ADR-0030 §2.5 lowered from 0.1 to 0.05.
+    dataviz-design.md §3 rule E25 proposes a 4 px stroke floor; Prism's floor is chart.line-width, the
+    only 2 px stroke role it has and also HIG's watch minimum. The split ring with one side in the
+    attention tone is docs/research/visual-dna.md §8.4 and the RingGauge row of
+    docs/research/component-inventory.md; that row's split ring — two arcs opened at top and bottom
+    around an object, with chips at the arc ends — is not a v1 `style`. It needs a second sweep, an
+    anchor object and an arc-end slot that nothing else in v1 has, and its glow is anti-pattern 27, so
+    `emphasis: accent` carries the attention side alone. Threshold haptics when a scrubbed value crosses a range are
+    dataviz-design.md §8 open question 10 and are not bound here. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

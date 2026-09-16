@@ -1,0 +1,38 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "spinner": {
+      "arc": {
+        "$type": "color",
+        "$value": "{sys.color.icon.primary}",
+        "$description": "the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "STROKE_COLOR",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "stroke": {
+        "$type": "dimension",
+        "$value": "{sys.border.strong}",
+        "$description": "1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "STROKE_FLOAT"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

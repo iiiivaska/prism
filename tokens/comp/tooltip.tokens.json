@@ -1,0 +1,38 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "tooltip": {
+      "bg": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.inverse}",
+        "$description": "the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{sys.color.text.on-inverse}",
+        "$description": "the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,241 @@
+name: Avatar
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A circular portrait of a person, a vehicle or a site. It shows an image when one is available, the
+  initials of its name when one is not, and a neutral glyph when there is no name either. An optional
+  ring marks the one avatar that is active or selected, and over media that ring switches to the
+  on-media stroke so it stays visible on a photograph or a map.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the circle; it clips everything inside it
+  - part: image
+    optional: true
+  - part: initials
+    optional: true
+    description: one or two letters taken from `name`, shown when there is no image
+  - part: fallbackIcon
+    optional: true
+    description: object.user, shown when there is neither an image nor a name
+  - part: ring
+    optional: true
+    description: an emphasized stroke around the circle, flush with its edge
+
+props:
+  - name: name
+    type: string
+    description: the full name; the initials and the accessibility label both come from it
+  - name: image
+    type: string
+    description: the portrait's source; an image that fails to load falls back to the initials
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: hasRing
+    type: boolean
+    default: false
+  - name: isDecorative
+    type: boolean
+    default: false
+    description: true when the name is already written beside the avatar; the avatar is then hidden from assistive technology
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      default: comp.avatar.bg
+      page:
+        default: comp.avatar.bg
+        map: material.glass.chip
+        image: material.glass.chip
+        vivid: material.glass.chip
+      vivid: material.glass.chip
+      glass: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+        image: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+      vivid: material.glass.chip.blur
+      glass: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+        image: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+      vivid: material.glass.chip.saturate
+      glass: material.glass.chip.saturate
+    edgeColor: color.edge.highlight
+    edgeStartAlpha:
+      page:
+        map: material.glass.chip.edge.start
+        image: material.glass.chip.edge.start
+        vivid: material.glass.chip.edge.start
+      vivid: material.glass.chip.edge.start
+      glass: material.glass.chip.edge.start
+    edgeEndAlpha:
+      page:
+        map: material.glass.chip.edge.end
+        image: material.glass.chip.edge.end
+        vivid: material.glass.chip.edge.end
+      vivid: material.glass.chip.edge.end
+      glass: material.glass.chip.edge.end
+    radius: radius.control
+    size:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+  image:
+    radius: radius.control
+  initials:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.secondary
+      page:
+        default: color.text.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  fallbackIcon:
+    size:
+      sm: size.icon.sm
+      md: size.icon.md
+      lg: size.icon.md
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  ring:
+    color:
+      default: comp.avatar.ring
+      page:
+        default: comp.avatar.ring
+        map: color.border.on-glass-fill
+        image: color.border.on-glass-fill
+        vivid: color.border.on-media
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+    width: border.strong
+
+behavior:
+  - "The content falls back in one order: the image, then the initials of `name`, then object.user. A source that fails to load falls back the same way, so a broken portrait never leaves an empty circle."
+  - "The initials are the first letter of the first word and the first letter of the last word of `name` after trimming, upper-cased with the locale-aware transform of the app's own locale, so Turkish gives \"İ\" and not \"I\"; a one-word name gives one letter, and a `name` with no letter in it gives object.user. The rule is the same for Latin and Cyrillic, so \"Анна Петрова\" gives \"АП\"."
+  - Initials are the only upper-case text Prism sets outside the single eyebrow per card; they carry no extra tracking.
+  - "The circle takes the control height of its size, so an avatar in a row lines up with the buttons and chips beside it. Inside a Chip only the md chip has room: the sm chip and the sm avatar are both size.control.sm."
+  - "The circle is radius.control on a square footprint, which is the pill radius and therefore a full circle at every size; the image is clipped to the same shape."
+  - "`hasRing` draws an emphasized stroke flush with the circle's edge, inside the avatar's own footprint: the layout does not move when the ring appears."
+  - Over a map, imagery, a vivid surface or the scheme's glass the circle takes the glass chip instead of its solid fill, its initials take color.text.on-glass-fill, and the ring takes color.border.on-glass-fill (color.border.on-media on vivid), because an ink or a white ring would vanish on one of the two.
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the circle renders glass."
+  - "On an accent surface the circle has no fill of its own: it sits on color.bg.fill.accent with color.text.on-accent-secondary for its initials and its fallback glyph, which is the pair checked on that material."
+  - An Avatar is not a control. When it opens a profile it is wrapped in a Button or a ListRow, which owns the press, the hit region, the focus ring and the label.
+  - "`isDecorative` hides the avatar from assistive technology; use it whenever the name is written next to it, so the name is not announced twice."
+  - An image crossfades in over motion.duration.base once it has decoded, so the initials are never replaced with a flash.
+  - An avatar never carries a status dot of its own; a presence or status mark beside a name is a Badge or a StatusPill, placed by the row that holds them.
+
+motion:
+  imageLoad: motion.duration.base
+  reduceMotion: crossfade
+
+accessibility:
+  role: image, or none when `isDecorative`
+  label: the person's or object's name from `name`; an avatar with no `name` carries nothing to announce, so it is decorative by definition and is hidden
+  traits: [image]
+  keyboard: not focusable; a pressable avatar is a Button or a ListRow around it, which takes the focus ring
+  dynamicType: the initials scale with type.label.*; the circle grows with them up to the accessibility3 size and then clamps, and the initials never shrink below their role
+  contrast: the initials are color.text.secondary on comp.avatar.bg, which is color.bg.surface.raised, one of the three grounds that pair is checked on; over media they are color.text.on-glass-fill on material.glass.chip, and on an accent surface color.text.on-accent-secondary on color.bg.fill.accent; the ring is decorative, because the avatar is identified by its content, not by its edge
+  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback; the circle takes comp.avatar.bg back and the ring returns to comp.avatar.ring
+  reduceMotion: the image still crossfades in over motion.duration.base with motion.easing.out, which is shorter under Reduce Motion; the fade is an opacity change with nothing to substitute, and nothing scales, moves or blurs
+  voiceOver: announces the name and "image"; a decorative avatar is skipped entirely
+
+usage:
+  do:
+    - Give every avatar a name, even when you have an image; the initials are the fallback and the label.
+    - Use the ring for the one avatar that is active or selected in a rail, not for decoration.
+    - Mark an avatar decorative when the name is written beside it.
+  dont:
+    - Don't put a status dot or a count inside the avatar; those are Badge and StatusPill on the row.
+    - Don't square an avatar; a portrait is a circle, like every other control-height round element.
+    - Don't show more than one ringed avatar in a group; the ring is the one active mark.
+    - Don't derive initials from an email address or an id; without a name, show object.user.
+
+examples:
+  - id: image-md
+    props: { name: "Anna Petrova", image: "portrait", size: md }
+  - id: initials-md
+    props: { name: "Anna Petrova", size: md }
+    description: no image; the circle shows "AP"
+  - id: initials-one-word
+    props: { name: "Northgate", size: md }
+    description: a one-word name gives one letter
+  - id: fallback-icon
+    props: { size: md }
+    description: neither an image nor a name; the circle shows object.user
+  - id: ringed
+    props: { name: "Anna Petrova", image: "portrait", hasRing: true }
+    description: the one active avatar in a rail
+  - id: size-sm
+    props: { name: "Anna Petrova", size: sm }
+  - id: size-lg
+    props: { name: "Anna Petrova", image: "portrait", size: lg }
+  - id: decorative
+    props: { name: "Anna Petrova", image: "portrait", isDecorative: true }
+    description: the name is written beside the avatar, so the avatar is hidden from assistive technology
+  - id: ringed-over-map
+    props: { name: "Anna Petrova", image: "portrait", hasRing: true }
+    surface: map
+    description: over media the ring takes color.border.on-glass-fill so it stays visible on the ground
+  - id: on-glass-over-image
+    props: { name: "Anna Petrova", hasRing: true }
+    surface: glass
+    backdrop: image
+  - id: russian-initials
+    props: { name: "Анна Петрова", size: md }
+    description: the same rule on Cyrillic gives "АП", and the two letters keep the circle's width
+
+notes:
+  platform:
+    watchos: "`none`. Avatar is not in ADR-0010's Tier 3 set; a wrist screen holds at most three glanceable tiles, and a person is named there in Text rather than pictured."
+    macos: default size follows compact density (32 pt for md); an avatar in a nav rail is wrapped in a Button, which owns the hover and focus states.
+    web-desktop: the image element carries `alt` from `name`, or an empty `alt` when `isDecorative`; the initials are rendered as text so they scale with rem.
+  design: >-
+    All four sightings are desktop (docs/research/component-inventory.md, 4/11): a round photo of 36 to
+    44, one with a 2 px ink ring in a nav rail, and one in a name-and-role lock-up. The circle and the
+    control height are docs/research/visual-dna.md §1 principles 2 and 13; the 2 px reference ring maps
+    to the system's emphasized stroke, border.strong, because §7.6 fixes the three stroke widths at
+    hairline 1, strong 1.5 and focus 2 and the focus width belongs to the focus ring. The ink ring is
+    the inverse-solid mark of principle 9, and it switches to color.border.on-media over vivid and to
+    color.border.on-glass-fill over the scheme's glass (ADR-0030 §3.2). The circle's fill is
+    color.bg.surface.raised, the same step the secondary Button and the resting Chip take, rather than the
+    recessed nested step the look would suggest: color.text.secondary is checked on page, surface and
+    raised and on no nested ground, and ADR-0011 rule 1 allows no unchecked text pair. Upper-case initials are the one
+    exception to the sentence-case rule of §2.5, which otherwise allows caps only in the single eyebrow
+    per card. Example names are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

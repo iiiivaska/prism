@@ -1,0 +1,29 @@
+{
+  "comp": {
+    "chip": {
+      "bg": {
+        "pressed": {
+          "$type": "color",
+          "$value": "{color.bg.surface.nested}"
+        },
+        "rest": {
+          "$type": "color",
+          "$value": "{color.bg.surface.raised}",
+          "$description": "the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead"
+        }
+      },
+      "border": {
+        "rest": {
+          "$type": "color",
+          "$value": "{color.border.hairline}",
+          "$description": "decorative: the fill step and the label identify the chip, so the stroke is not the boundary role"
+        },
+        "selected": {
+          "$type": "color",
+          "$value": "{color.border.strong}",
+          "$description": "selection is a full-strength stroke and label, never a solid fill"
+        }
+      }
+    }
+  }
+}

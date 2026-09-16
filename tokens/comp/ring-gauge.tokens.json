@@ -1,0 +1,52 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "ring-gauge": {
+      "size": {
+        "$type": "dimension",
+        "sm": {
+          "$value": "{sys.size.icon.ring}",
+          "$description": "glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "md": {
+          "$value": "{sys.space.12}",
+          "$description": "ring inside a card, the 64 px step of docs/research/dataviz-design.md §5",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "lg": {
+          "$value": "{sys.space.13}",
+          "$description": "ring as a card's hero instrument; the largest diameter on Prism's space rhythm (docs/research/visual-dna.md §6.1, §6.6)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,272 @@
+name: ChartContainer
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  The frame every Prism chart ships inside: a title and caption, the value read as a hero above the
+  plot, the plot itself, and the table twin that makes every number reachable without hovering. It
+  owns the accessible description, the loading hold and the empty and error messages; it paints no
+  material of its own and takes its tones from the Surface around it.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: header
+  - part: title
+  - part: subtitle
+    optional: true
+  - part: hero
+    optional: true
+    slot: true
+    description: one HeroNumber, which also shows the scrubbed value while a selection is live
+  - part: action
+    optional: true
+    slot: true
+    description: one control in the header's trailing corner — a period pager, a range chip row
+  - part: plot
+    slot: true
+    description: the chart; it paints its own plot fill, this part only sets the box
+  - part: caption
+    optional: true
+    description: units, the domain, and any statement a chart must make about its scale
+  - part: tableToggle
+    optional: true
+    description: reveals the table twin; hidden only where the twin is always visible
+  - part: table
+    optional: true
+    description: the table twin — one row per x, one column per series
+  - part: message
+    optional: true
+    description: the empty or error text with its registry glyph, in place of the plot
+
+props:
+  - name: title
+    type: string
+    required: true
+  - name: subtitle
+    type: string
+  - name: summary
+    type: string
+    required: true
+    description: the accessible description of what the chart shows, written from the data
+  - name: hero
+    type: data
+    description: HeroNumber props; the value the chart is about
+  - name: caption
+    type: string
+  - name: tableView
+    type: enum
+    values: [auto, visible, hidden]
+    default: auto
+    description: auto keeps the twin collapsed behind the toggle and always in the accessibility tree
+  - name: height
+    type: number
+    description: the plot box in px, including the x-axis band
+  - name: emptyMessage
+    type: string
+  - name: errorMessage
+    type: string
+  - name: onRetry
+    type: action
+
+states: [default, focus-visible, loading, error, expanded]
+
+tokens:
+  root:
+    gap: space.4
+    loading:
+      opacity: opacity.dimmed-row
+  header:
+    gap: space.1
+    columnGap: space.3
+  title:
+    typography: type.headline
+    color:
+      default: color.text.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  subtitle:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  hero:
+    gap: space.3
+  action:
+    size: size.control.sm
+  plot:
+    radius: radius.inner
+    gap: space.4
+  caption:
+    typography: type.caption
+    gap: space.2
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  tableToggle:
+    typography: type.label.sm
+    height: size.control.sm
+    radius: radius.control
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  table:
+    typography: type.data
+    rowHeight: size.row
+    color: color.text.primary
+    headerColor: color.text.secondary
+    border: color.border.hairline
+    background: color.bg.surface.nested
+    radius: radius.inner
+  message:
+    typography: type.body.sm
+    gap: space.3
+    iconSize: size.icon.md
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+    error:
+      color:
+        default: color.text.critical
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+        glassLight: color.text.on-glass-light
+        glass: color.text.on-glass-fill
+
+behavior:
+  - "Every Prism chart ships inside a ChartContainer; a bare plot with no title, no summary and no table twin is not a shippable chart (ADR-0007 decision 6)."
+  - "The container paints no background, border or shadow of its own, with one exception: the table twin is a nested Surface, so its rows sit on color.bg.surface.nested and carry the solid family's text tones on every material. Everything else is laid out inside the enclosing Surface — usually a Card — and every tone follows the material that Surface publishes."
+  - "On a vivid surface the container keeps its header block and its plot and nothing else. Title, subtitle and caption sit together in the header block, which V2 covers at the functional tier, and the caption therefore moves above the plot instead of below it; the hero is 24 px or more, which V1 covers. The table toggle, the table twin and the empty and error messages are not drawn on a gradient, because their text is 12-14 px and ADR-0030 rule 7 allows sub-24 px text only in that block — a vivid tile is a glance, and the same chart is reached with its twin in a solid context. The table twin stays in the accessibility tree there."
+  - "Reading order is title, subtitle, hero, plot, caption, table twin; the hero sits above the plot, because chart values live outside the plot in Prism, not inside a tooltip. On vivid the caption joins the header block, so the order there is title, subtitle, caption, hero, plot."
+  - "While a selection is live, the hero shows the value at the selected x and its delta; when the selection clears, the hero returns to the series' last value. The plot draws only the crosshair and the now-dot."
+  - "`summary` is mandatory and is written from the data — what the series are, the period, the range and the shape (\"Throughput over 24 hours, 61 to 86 percent, rising after 06:00\"). It is the chart's accessible description on both stacks, and it avoids subjective words and spells dates out (\"June 6\", not \"6/6\")."
+  - "The table twin lists one row per x and one column per series, with tabular figures in type.data and rows at size.row. It is always present in the accessibility tree; `tableView: auto` collapses it visually behind the toggle, `visible` keeps it open below the plot, and `hidden` is legal only when the same numbers are already in the page as text."
+  - "A value is never reachable only by hovering: whatever the tooltip would say is in the hero, the direct labels or the table twin."
+  - "`height` sets the plot box and always includes the x-axis band, so a container never crops its own axis. Unset, the plot takes the height its parent gives it and the container computes none of its own; a container in a scrolling layout therefore states one, because a plot with no intrinsic height collapses there."
+  - "`loading` holds the previous render at opacity.dimmed-row and keeps the title, the hero and the axes in place; the container never swaps in a skeleton, which would flash on every refetch."
+  - "Empty renders `emptyMessage` with the status.info glyph in place of the plot, and keeps the title and the caption; error renders `errorMessage` in color.text.critical with the status.danger glyph and offers `onRetry`. Both keep the table twin's toggle hidden, because there is nothing to tabulate. On inverse, accent and the glass materials the critical tone is not available, so the message takes that material's foreground and the glyph alone carries the state, as Text does with every status tone (ADR-0022 §3.1, ADR-0011 rule 4); on vivid no message is drawn at all, and an empty or failed chart there is stated in the subtitle."
+  - "`expanded` is the table twin's open state: the toggle reads as expanded, the twin sits below the plot, and the container's height grows. It is the state `tableView: visible` starts in, and `tableView: hidden` never reaches."
+  - "The caption carries what the plot cannot: the unit, the domain, and any statement a chart owes its reader — that panels use independent scales, or that the visible window changed the y domain."
+  - "One `action` in the header's trailing corner at size.control.sm, and filters for a set of charts live in one row above them all, not per chart."
+  - "Axis text is hidden from assistive technology; the table twin carries the ticks."
+
+motion:
+  reveal: motion.duration.base
+  expand: motion.duration.fast
+  reduceMotion: instant
+
+accessibility:
+  role: figure
+  label: the title, then the summary; the subtitle and the caption follow, and the hero's value is spoken with them
+  traits: [image]
+  keyboard: the table toggle is focusable with a ring of color.border.focus at border.focus width; Space and Enter expand the twin; the plot inside owns its own focus and scrubbing keys
+  dynamicType: title, subtitle, caption and table text all scale; the plot keeps its given height and the table rows grow from size.row, wrapping cells rather than truncating them
+  contrast: "title, subtitle, caption, the table toggle and the messages follow the published material's text tones, and on the scheme's glass the quieter of them follow its backdrop kind (ADR-0029 §1.4); the table twin is a nested Surface, so its cells keep the solid family's pairs. The table's rules are color.border.hairline and are decorative, since the cells themselves carry the data. The error message is color.text.critical on the solid family, which is paired in tokens/contrast-pairs.json, and the material's own foreground elsewhere. On vivid the only color.text.on-vivid pairs are V1 (24 px or more) and V2 (the header block), which is why nothing under 24 px is drawn outside the header there"
+  reduceTransparency: no change of its own — the enclosing Surface publishes raised instead of glass, and the chart inside falls back to the solid chart family
+  reduceMotion: nothing reveals or grows; the chart appears complete at motion.duration.instant, the table twin opens without a height animation, and a refetch holds the previous render at opacity.dimmed-row instead of flashing
+  voiceOver: the container is one element carrying the title and the summary; Apple adds the charting framework's audio graph, and the web exposes the twin as a real table
+
+usage:
+  do:
+    - Write the summary from the data, every time; it is the chart for anyone not looking at it.
+    - Put the value in the hero above the plot and let the scrubber change it.
+    - Say the unit and the period in the caption.
+    - Keep the table twin one control away.
+  dont:
+    - Don't ship a plot without a title and a summary.
+    - Don't hide values behind hover; the twin and the hero carry them.
+    - Don't give the container its own card chrome; wrap it in a Card instead.
+    - Don't put a filter row inside each chart; one row above the set.
+    - Don't put a table twin, a toggle or a message on a vivid surface; a chart that needs them belongs in a solid card.
+
+examples:
+  - id: titled-line
+    props: { title: "Line output", subtitle: "Last 24 hours", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", caption: "Percent of rated capacity", height: 180 }
+  - id: with-hero
+    props: { title: "Ingest rate", subtitle: "Last hour", summary: "Ingest rate over the last hour, 980 to 1,284 requests per second, flat after 14:20", hero: { value: "1 284", unit: "req/s", size: lg, live: true }, height: 180 }
+  - id: scrubbed
+    props: { title: "Line output", subtitle: "Last 24 hours", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", hero: { value: "74", trailing: ".2", unit: "%", size: lg }, height: 180 }
+    description: the hero shows the value at the selected x while the plot shows only the crosshair
+  - id: table-visible
+    props: { title: "Line output", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", tableView: visible, height: 180 }
+  - id: with-action
+    props: { title: "Yield", subtitle: "Per batch", summary: "Yield per batch over 30 days, 2,180 to 2,640 roubles, steady", action: { kind: pager, label: "November" }, height: 180 }
+  - id: empty
+    props: { title: "Line output", summary: "No samples in the selected period", emptyMessage: "No samples in this period" }
+  - id: error
+    props: { title: "Line output", summary: "The samples could not be loaded", errorMessage: "Couldn't load samples" }
+  - id: title-ru
+    props: { title: "Выработка линии", subtitle: "За последние 24 часа", summary: "Выработка линии за 24 часа, от 61 до 86 процентов, рост после 06:00", caption: "Процент от номинальной мощности", height: 180 }
+    description: the Russian title and caption run about a third longer and wrap to two lines rather than truncating
+  - id: on-glass-over-map
+    props: { title: "Unit 4417 speed", subtitle: "Last 20 minutes", summary: "Speed over 20 minutes, 0 to 64 kilometres per hour, two stops", height: 140 }
+    surface: glass
+    backdrop: map
+  - id: on-vivid
+    props: { title: "Average yield", subtitle: "Roubles per batch", summary: "Average yield per batch over 30 days, 2,180 to 2,640 roubles, steady", caption: "Independent scale", height: 140 }
+    surface: vivid
+    description: the header block carries the title, the subtitle and the caption; the chart takes the on-media family, the plot has no fill of its own, and the toggle and the twin are not drawn on the gradient
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 has no chart but the rings, and neither a table twin nor a scrubbed readout is glanceable on the wrist; a watch face shows a StatTile or a RingGauge and the detail lives on the phone."
+    macos: the table twin renders with the desktop Table component and stays open by default on wide layouts; compact density gives the header and the plot their tighter gaps.
+    ios: the plot inside gets the charting framework's audio graph descriptor from this container's title and summary.
+  design: >-
+    The container, the mandatory summary and the table twin are docs/research/dataviz-design.md §5 Tier 0
+    and §3 rules H44 and H45 with facts F7 and F32, and ADR-0007 decision 6; "chart values live outside
+    the plot as heroes, with inline labels instead of legends" is docs/research/visual-dna.md §8.1, which
+    is why the hero sits in the header and there is no tooltip in v1 (ChartTooltip is v1.1, ADR-0007
+    decision 5). The refetch hold instead of a skeleton is dataviz-design.md §1 and §3 rule H46; Prism has
+    no refetch-opacity role, so the hold reuses opacity.dimmed-row and a dedicated role is left to the
+    token integrator. The title at type.headline rather than a semibold 17 follows visual-dna §1
+    principle 8 and §2.2 (quiet titles, nothing above weight 500). One filter row above a set of charts
+    is dataviz-design.md §3 rule H48. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

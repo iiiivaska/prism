@@ -23,12 +23,19 @@ describe('the repository', () => {
     const result = await runSpecValidate({ reader: fsReader(REPO_ROOT), collected });
     expect(result.diagnostics).toEqual([]);
     expect(passed(result)).toBe(true);
-    // The four slice specs of ADR-0012; P2-5 adds the rest.
+    // The ADR-0012 slice plus the P2-5 wave-1 specs: every file under spec/components/, sorted.
     expect(result.files).toEqual([
-      'spec/components/Button.yaml',
-      'spec/components/Card.yaml',
-      'spec/components/Surface.yaml',
-      'spec/components/Text.yaml',
+      'spec/components/AreaChart.yaml', 'spec/components/Avatar.yaml', 'spec/components/Badge.yaml',
+      'spec/components/Button.yaml', 'spec/components/Card.yaml', 'spec/components/ChartContainer.yaml',
+      'spec/components/Checkbox.yaml', 'spec/components/Chip.yaml', 'spec/components/DeltaBadge.yaml',
+      'spec/components/Divider.yaml', 'spec/components/HeroNumber.yaml', 'spec/components/Icon.yaml',
+      'spec/components/IconButton.yaml', 'spec/components/LineChart.yaml', 'spec/components/ProgressBar.yaml',
+      'spec/components/ProgressRing.yaml', 'spec/components/Radio.yaml', 'spec/components/RangeBand.yaml',
+      'spec/components/ReferenceLine.yaml', 'spec/components/RingGauge.yaml', 'spec/components/SegmentedControl.yaml',
+      'spec/components/Select.yaml', 'spec/components/Skeleton.yaml', 'spec/components/Slider.yaml',
+      'spec/components/Sparkline.yaml', 'spec/components/Spinner.yaml', 'spec/components/StatTile.yaml',
+      'spec/components/Surface.yaml', 'spec/components/Text.yaml', 'spec/components/TextArea.yaml',
+      'spec/components/TextField.yaml', 'spec/components/Toggle.yaml', 'spec/components/Tooltip.yaml',
     ]);
   }, 60_000);
 
@@ -59,7 +66,7 @@ describe('the repository', () => {
     } finally {
       console.log = log;
     }
-    expect(logged.join('\n')).toMatch(/^spec:validate: 4 specs, 0 diagnostic\(s\)/);
+    expect(logged.join('\n')).toMatch(/^spec:validate: 33 specs, 0 diagnostic\(s\)/);
   }, 120_000);
 
   test('the CLI rejects an unknown argument', async () => {

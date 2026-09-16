@@ -395,6 +395,22 @@ export interface TokenTable {
   readonly 'z.overlay': { readonly $type: 'number'; readonly $cssVar: '--ds-z-overlay'; readonly $value: number };
   readonly 'z.raised': { readonly $type: 'number'; readonly $cssVar: '--ds-z-raised'; readonly $value: number };
   readonly 'z.toast': { readonly $type: 'number'; readonly $cssVar: '--ds-z-toast'; readonly $value: number };
+  /** the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4) */
+  readonly 'comp.area-chart.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-area-chart-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the circle behind the initials and the fallback glyph; raised rather than nested because color.text.secondary is checked on color.bg.surface.raised and on no nested ground (ADR-0011 rule 1); over media the circle takes material.glass.chip instead */
+  readonly 'comp.avatar.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-avatar-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media */
+  readonly 'comp.avatar.ring': { readonly $type: 'color'; readonly $cssVar: '--ds-avatar-ring'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the one attention fill per screen; the accent means look here, never an action */
+  readonly 'comp.badge.accent.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-accent-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.badge.accent.text': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-accent-text'; readonly $value: ColorValue };
+  /** the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11) */
+  readonly 'comp.badge.critical.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-critical-bg'; readonly $value: ColorValue };
+  /** 11 px Medium digits on the badge red */
+  readonly 'comp.badge.critical.text': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-critical-text'; readonly $value: ColorValue };
+  /** the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9) */
+  readonly 'comp.badge.neutral.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-neutral-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.badge.neutral.text': { readonly $type: 'color'; readonly $cssVar: '--ds-badge-neutral-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.danger.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-button-danger-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.danger.border': { readonly $type: 'color'; readonly $cssVar: '--ds-button-danger-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.button.danger.text': { readonly $type: 'color'; readonly $cssVar: '--ds-button-danger-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -432,6 +448,125 @@ export interface TokenTable {
   readonly 'comp.card.solid.text': { readonly $type: 'color'; readonly $cssVar: '--ds-card-solid-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'comp.card.vivid.caption': { readonly $type: 'color'; readonly $cssVar: '--ds-card-vivid-caption'; readonly $value: ColorValue };
   readonly 'comp.card.vivid.text': { readonly $type: 'color'; readonly $cssVar: '--ds-card-vivid-text'; readonly $value: ColorValue };
+  /** a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3) */
+  readonly 'comp.checkbox.bg.selected': { readonly $type: 'color'; readonly $cssVar: '--ds-checkbox-bg-selected'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the check or the mixed dash on the filled box: the opposite-colored glyph */
+  readonly 'comp.checkbox.mark': { readonly $type: 'color'; readonly $cssVar: '--ds-checkbox-mark'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2) */
+  readonly 'comp.checkbox.radius': { readonly $type: 'dimension'; readonly $cssVar: '--ds-checkbox-radius'; readonly $value: number };
+  /** the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it */
+  readonly 'comp.checkbox.size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-checkbox-size'; readonly $value: number };
+  readonly 'comp.chip.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead */
+  readonly 'comp.chip.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** decorative: the fill step and the label identify the chip, so the stroke is not the boundary role */
+  readonly 'comp.chip.border.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-border-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** selection is a full-strength stroke and label, never a solid fill */
+  readonly 'comp.chip.border.selected': { readonly $type: 'color'; readonly $cssVar: '--ds-chip-border-selected'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.danger.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-danger-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.danger.border': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-danger-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint */
+  readonly 'comp.icon-button.danger.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-danger-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3) */
+  readonly 'comp.icon-button.ghost.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-ghost-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the ring alone identifies the control, so it is the boundary tier (ADR-0011) */
+  readonly 'comp.icon-button.ghost.border': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-ghost-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.ghost.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-ghost-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance */
+  readonly 'comp.icon-button.plain.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-plain-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.primary.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-primary-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9) */
+  readonly 'comp.icon-button.primary.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-primary-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the opposite-colored glyph on the solid circle */
+  readonly 'comp.icon-button.primary.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-primary-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.secondary.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-secondary-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.secondary.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-secondary-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the optional 1 px top edge of a raised puck; decorative, the fill carries the step */
+  readonly 'comp.icon-button.secondary.border': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-secondary-border'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.secondary.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-secondary-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  readonly 'comp.icon-button.size.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-lg'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'comp.icon-button.size.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-md'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  readonly 'comp.icon-button.size.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-icon-button-size-sm'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  /** the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9) */
+  readonly 'comp.progress-bar.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-bar-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26) */
+  readonly 'comp.progress-bar.fill-secondary': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-bar-fill-secondary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** 4 px: the minimum gauge stroke of dataviz-design.md §3 E25, and one step of the 4 px rhythm (visual-dna §6.1) */
+  readonly 'comp.progress-bar.height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-progress-bar-height'; readonly $value: number };
+  /** 8 px: the target tick is twice the track's thickness, the comparative marker of dataviz-design.md §3 E27, centred on the track's centreline */
+  readonly 'comp.progress-bar.marker-height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-progress-bar-marker-height'; readonly $value: number };
+  /** the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own */
+  readonly 'comp.progress-bar.track': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-bar-track'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the value arc is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9) */
+  readonly 'comp.progress-ring.arc': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-ring-arc'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** 4 px: the floor under chart.gauge-stroke-ratio, from dataviz-design.md §3 E25's minimum ring stroke */
+  readonly 'comp.progress-ring.stroke-min': { readonly $type: 'dimension'; readonly $cssVar: '--ds-progress-ring-stroke-min'; readonly $value: number };
+  /** the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25) */
+  readonly 'comp.progress-ring.track': { readonly $type: 'color'; readonly $cssVar: '--ds-progress-ring-track'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3) */
+  readonly 'comp.radio.bg.selected': { readonly $type: 'color'; readonly $cssVar: '--ds-radio-bg-selected'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the opposite-colored dot on the solid circle */
+  readonly 'comp.radio.dot.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-radio-dot-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** 8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph */
+  readonly 'comp.radio.dot.size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-radio-dot-size'; readonly $value: number };
+  /** the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it */
+  readonly 'comp.radio.size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-radio-size'; readonly $value: number };
+  /** ring as a card's hero instrument; the largest diameter on Prism's space rhythm (docs/research/visual-dna.md §6.1, §6.6) */
+  readonly 'comp.ring-gauge.size.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-ring-gauge-size-lg'; readonly $value: number };
+  /** ring inside a card, the 64 px step of docs/research/dataviz-design.md §5 */
+  readonly 'comp.ring-gauge.size.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-ring-gauge-size-md'; readonly $value: number };
+  /** glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5) */
+  readonly 'comp.ring-gauge.size.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-ring-gauge-size-sm'; readonly $value: number };
+  /** the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill */
+  readonly 'comp.segmented-control.active.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-segmented-control-active-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the label and glyph on the selected segment */
+  readonly 'comp.segmented-control.active.text': { readonly $type: 'color'; readonly $cssVar: '--ds-segmented-control-active-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the invalid outline of the trigger; the critical stroke is the critical text role */
+  readonly 'comp.select.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-select-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1) */
+  readonly 'comp.skeleton.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-skeleton-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4) */
+  readonly 'comp.skeleton.shimmer': { readonly $type: 'color'; readonly $cssVar: '--ds-skeleton-shimmer'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the filled part of the track is the one solid in the control (visual-dna §1 principle 9) */
+  readonly 'comp.slider.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-slider-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the same ink as the fill; the thumb is told by its size, not by its color */
+  readonly 'comp.slider.thumb.fill': { readonly $type: 'color'; readonly $cssVar: '--ds-slider-thumb-fill'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the small control circle, so the thumb sits in the one control family and never falls below the pointer hit area (ADR-0024 §7.1) */
+  readonly 'comp.slider.thumb.size': { readonly $type: 'dimension'; readonly $cssVar: '--ds-slider-thumb-size'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  /** the step marks under the track; the tick-ruler ornament of visual-dna §4.12, always decorative */
+  readonly 'comp.slider.tick': { readonly $type: 'color'; readonly $cssVar: '--ds-slider-tick'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the unfilled part of the meter: a lighter step of the same ink/white ramp as the fill (dataviz-design §3), and the boundary-tier token the contrast gate already checks */
+  readonly 'comp.slider.track.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-slider-track-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** 4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own */
+  readonly 'comp.slider.track.height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-slider-track-height'; readonly $value: number };
+  /** sparkline height in a table row: the row's text line box (docs/research/dataviz-design.md §3 rule D20, §6) */
+  readonly 'comp.sparkline.height.table': { readonly $type: 'dimension'; readonly $cssVar: '--ds-sparkline-height-table'; readonly $value: number };
+  /** sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20) */
+  readonly 'comp.sparkline.height.tile': { readonly $type: 'dimension'; readonly $cssVar: '--ds-sparkline-height-tile'; readonly $value: number };
+  /** the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant) */
+  readonly 'comp.spinner.arc': { readonly $type: 'color'; readonly $cssVar: '--ds-spinner-arc'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** 1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces */
+  readonly 'comp.spinner.stroke': { readonly $type: 'dimension'; readonly $cssVar: '--ds-spinner-stroke'; readonly $value: number };
+  /** the invalid outline of the multi-line box; the critical stroke is the critical text role */
+  readonly 'comp.text-area.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-text-area-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the invalid outline; the critical stroke is the critical text role, as it is on the danger button */
+  readonly 'comp.text-field.border.error': { readonly $type: 'color'; readonly $cssVar: '--ds-text-field-border-error'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1) */
+  readonly 'comp.toggle.height': { readonly $type: 'dimension'; readonly $cssVar: '--ds-toggle-height'; readonly $axis: 'density'; readonly $values: { readonly compact: number; readonly regular: number; readonly comfortable: number; readonly watch: number } };
+  /** the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1) */
+  readonly 'comp.toggle.inset': { readonly $type: 'dimension'; readonly $cssVar: '--ds-toggle-inset'; readonly $value: number };
+  /** the quiet dot inside the outlined track; the color.text.secondary ramp step */
+  readonly 'comp.toggle.knob.off': { readonly $type: 'color'; readonly $cssVar: '--ds-toggle-knob-off'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the opposite-colored element on the solid track */
+  readonly 'comp.toggle.knob.on': { readonly $type: 'color'; readonly $cssVar: '--ds-toggle-knob-on'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** off is an outlined track over a neutral subtle well; the outline is color.border.strong */
+  readonly 'comp.toggle.track.off': { readonly $type: 'color'; readonly $cssVar: '--ds-toggle-track-off'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9) */
+  readonly 'comp.toggle.track.on': { readonly $type: 'color'; readonly $cssVar: '--ds-toggle-track-on'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7) */
+  readonly 'comp.tooltip.bg': { readonly $type: 'color'; readonly $cssVar: '--ds-tooltip-bg'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json */
+  readonly 'comp.tooltip.text': { readonly $type: 'color'; readonly $cssVar: '--ds-tooltip-text'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
 }
 
 export const table: TokenTable = {
@@ -1991,6 +2126,60 @@ export const table: TokenTable = {
     $type: 'number', $cssVar: '--ds-z-toast',
     $value: 1000,
   },
+  'comp.area-chart.fill': {
+    $type: 'color', $cssVar: '--ds-area-chart-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.05)', cssP3: null, hex: '#0d0e11', alpha: 0.05 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.avatar.bg': {
+    $type: 'color', $cssVar: '--ds-avatar-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.9789 0.0029 264.5)', cssP3: null, hex: '#f7f8fa', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.09)', cssP3: null, hex: '#ffffff', alpha: 0.09 },
+    },
+  },
+  'comp.avatar.ring': {
+    $type: 'color', $cssVar: '--ds-avatar-ring', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.badge.accent.bg': {
+    $type: 'color', $cssVar: '--ds-badge-accent-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.8506 0.1133 68.21)', cssP3: 'oklch(0.8506 0.1133 68.2)', hex: '#ffc07a', alpha: 1 },
+      dark: { css: 'oklch(0.7517 0.1475 57.6)', cssP3: null, hex: '#f39444', alpha: 1 },
+    },
+  },
+  'comp.badge.accent.text': {
+    $type: 'color', $cssVar: '--ds-badge-accent-text',
+    $value: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+  },
+  'comp.badge.critical.bg': {
+    $type: 'color', $cssVar: '--ds-badge-critical-bg',
+    $value: { css: 'oklch(0.5932 0.2232 26.6)', cssP3: null, hex: '#e5252a', alpha: 1 },
+  },
+  'comp.badge.critical.text': {
+    $type: 'color', $cssVar: '--ds-badge-critical-text',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'comp.badge.neutral.bg': {
+    $type: 'color', $cssVar: '--ds-badge-neutral-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.badge.neutral.text': {
+    $type: 'color', $cssVar: '--ds-badge-neutral-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
   'comp.button.danger.bg.rest': {
     $type: 'color', $cssVar: '--ds-button-danger-bg-rest', $axis: 'colorScheme',
     $values: {
@@ -2222,6 +2411,454 @@ export const table: TokenTable = {
   'comp.card.vivid.text': {
     $type: 'color', $cssVar: '--ds-card-vivid-text',
     $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'comp.checkbox.bg.selected': {
+    $type: 'color', $cssVar: '--ds-checkbox-bg-selected', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.checkbox.mark': {
+    $type: 'color', $cssVar: '--ds-checkbox-mark', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.checkbox.radius': {
+    $type: 'dimension', $cssVar: '--ds-checkbox-radius',
+    $value: 4,
+  },
+  'comp.checkbox.size': {
+    $type: 'dimension', $cssVar: '--ds-checkbox-size',
+    $value: 20,
+  },
+  'comp.chip.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-chip-bg-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.12)', cssP3: null, hex: '#ffffff', alpha: 0.12 },
+    },
+  },
+  'comp.chip.bg.rest': {
+    $type: 'color', $cssVar: '--ds-chip-bg-rest', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.9789 0.0029 264.5)', cssP3: null, hex: '#f7f8fa', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.09)', cssP3: null, hex: '#ffffff', alpha: 0.09 },
+    },
+  },
+  'comp.chip.border.rest': {
+    $type: 'color', $cssVar: '--ds-chip-border-rest', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.1)', cssP3: null, hex: '#0d0e11', alpha: 0.1 },
+      dark: { css: 'rgb(255 255 255 / 0.08)', cssP3: null, hex: '#ffffff', alpha: 0.08 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.3)', cssP3: null, hex: '#0d0e11', alpha: 0.3 },
+      dark: { css: 'rgb(255 255 255 / 0.25)', cssP3: null, hex: '#ffffff', alpha: 0.25 },
+    },
+  },
+  'comp.chip.border.selected': {
+    $type: 'color', $cssVar: '--ds-chip-border-selected', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.35)', cssP3: null, hex: '#ffffff', alpha: 0.35 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'comp.icon-button.danger.bg.rest': {
+    $type: 'color', $cssVar: '--ds-icon-button-danger-bg-rest', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.6454 0.2026 26.6 / 0.12)', cssP3: null, hex: '#f04b45', alpha: 0.12 },
+      dark: { css: 'oklch(0.6651 0.2218 26.6 / 0.1)', cssP3: null, hex: '#ff4642', alpha: 0.1 },
+    },
+  },
+  'comp.icon-button.danger.border': {
+    $type: 'color', $cssVar: '--ds-icon-button-danger-border', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
+      dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.icon-button.danger.icon': {
+    $type: 'color', $cssVar: '--ds-icon-button-danger-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
+      dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.icon-button.ghost.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-icon-button-ghost-bg-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.icon-button.ghost.border': {
+    $type: 'color', $cssVar: '--ds-icon-button-ghost-border', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.35)', cssP3: null, hex: '#ffffff', alpha: 0.35 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'comp.icon-button.ghost.icon': {
+    $type: 'color', $cssVar: '--ds-icon-button-ghost-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.8)', cssP3: null, hex: '#0d0e11', alpha: 0.8 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.icon-button.plain.icon': {
+    $type: 'color', $cssVar: '--ds-icon-button-plain-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.64)', cssP3: null, hex: '#ffffff', alpha: 0.64 },
+    },
+  },
+  'comp.icon-button.primary.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-icon-button-primary-bg-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.icon-button.primary.bg.rest': {
+    $type: 'color', $cssVar: '--ds-icon-button-primary-bg-rest', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.icon-button.primary.icon': {
+    $type: 'color', $cssVar: '--ds-icon-button-primary-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.icon-button.secondary.bg.pressed': {
+    $type: 'color', $cssVar: '--ds-icon-button-secondary-bg-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.12)', cssP3: null, hex: '#ffffff', alpha: 0.12 },
+    },
+  },
+  'comp.icon-button.secondary.bg.rest': {
+    $type: 'color', $cssVar: '--ds-icon-button-secondary-bg-rest', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.9789 0.0029 264.5)', cssP3: null, hex: '#f7f8fa', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.09)', cssP3: null, hex: '#ffffff', alpha: 0.09 },
+    },
+  },
+  'comp.icon-button.secondary.border': {
+    $type: 'color', $cssVar: '--ds-icon-button-secondary-border', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.1)', cssP3: null, hex: '#0d0e11', alpha: 0.1 },
+      dark: { css: 'rgb(255 255 255 / 0.08)', cssP3: null, hex: '#ffffff', alpha: 0.08 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.3)', cssP3: null, hex: '#0d0e11', alpha: 0.3 },
+      dark: { css: 'rgb(255 255 255 / 0.25)', cssP3: null, hex: '#ffffff', alpha: 0.25 },
+    },
+  },
+  'comp.icon-button.secondary.icon': {
+    $type: 'color', $cssVar: '--ds-icon-button-secondary-icon', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.8)', cssP3: null, hex: '#0d0e11', alpha: 0.8 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.icon-button.size.lg': {
+    $type: 'dimension', $cssVar: '--ds-icon-button-size-lg', $axis: 'density',
+    $values: {
+      compact: 40,
+      regular: 44,
+      comfortable: 52,
+      watch: 44,
+    },
+  },
+  'comp.icon-button.size.md': {
+    $type: 'dimension', $cssVar: '--ds-icon-button-size-md', $axis: 'density',
+    $values: {
+      compact: 32,
+      regular: 40,
+      comfortable: 48,
+      watch: 40,
+    },
+  },
+  'comp.icon-button.size.sm': {
+    $type: 'dimension', $cssVar: '--ds-icon-button-size-sm', $axis: 'density',
+    $values: {
+      compact: 28,
+      regular: 32,
+      comfortable: 44,
+      watch: 32,
+    },
+  },
+  'comp.progress-bar.fill': {
+    $type: 'color', $cssVar: '--ds-progress-bar-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.progress-bar.fill-secondary': {
+    $type: 'color', $cssVar: '--ds-progress-bar-fill-secondary', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.4)', cssP3: null, hex: '#ffffff', alpha: 0.4 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'comp.progress-bar.height': {
+    $type: 'dimension', $cssVar: '--ds-progress-bar-height',
+    $value: 4,
+  },
+  'comp.progress-bar.marker-height': {
+    $type: 'dimension', $cssVar: '--ds-progress-bar-marker-height',
+    $value: 8,
+  },
+  'comp.progress-bar.track': {
+    $type: 'color', $cssVar: '--ds-progress-bar-track', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.progress-ring.arc': {
+    $type: 'color', $cssVar: '--ds-progress-ring-arc', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.progress-ring.stroke-min': {
+    $type: 'dimension', $cssVar: '--ds-progress-ring-stroke-min',
+    $value: 4,
+  },
+  'comp.progress-ring.track': {
+    $type: 'color', $cssVar: '--ds-progress-ring-track', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.radio.bg.selected': {
+    $type: 'color', $cssVar: '--ds-radio-bg-selected', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.radio.dot.fill': {
+    $type: 'color', $cssVar: '--ds-radio-dot-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.radio.dot.size': {
+    $type: 'dimension', $cssVar: '--ds-radio-dot-size',
+    $value: 8,
+  },
+  'comp.radio.size': {
+    $type: 'dimension', $cssVar: '--ds-radio-size',
+    $value: 20,
+  },
+  'comp.ring-gauge.size.lg': {
+    $type: 'dimension', $cssVar: '--ds-ring-gauge-size-lg',
+    $value: 104,
+  },
+  'comp.ring-gauge.size.md': {
+    $type: 'dimension', $cssVar: '--ds-ring-gauge-size-md',
+    $value: 64,
+  },
+  'comp.ring-gauge.size.sm': {
+    $type: 'dimension', $cssVar: '--ds-ring-gauge-size-sm',
+    $value: 44,
+  },
+  'comp.segmented-control.active.bg': {
+    $type: 'color', $cssVar: '--ds-segmented-control-active-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.segmented-control.active.text': {
+    $type: 'color', $cssVar: '--ds-segmented-control-active-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.select.border.error': {
+    $type: 'color', $cssVar: '--ds-select-border-error', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
+      dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.skeleton.bg': {
+    $type: 'color', $cssVar: '--ds-skeleton-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.skeleton.shimmer': {
+    $type: 'color', $cssVar: '--ds-skeleton-shimmer', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.slider.fill': {
+    $type: 'color', $cssVar: '--ds-slider-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.slider.thumb.fill': {
+    $type: 'color', $cssVar: '--ds-slider-thumb-fill', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.slider.thumb.size': {
+    $type: 'dimension', $cssVar: '--ds-slider-thumb-size', $axis: 'density',
+    $values: {
+      compact: 28,
+      regular: 32,
+      comfortable: 44,
+      watch: 32,
+    },
+  },
+  'comp.slider.tick': {
+    $type: 'color', $cssVar: '--ds-slider-tick', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.35)', cssP3: null, hex: '#ffffff', alpha: 0.35 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'comp.slider.track.bg': {
+    $type: 'color', $cssVar: '--ds-slider-track-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.45)', cssP3: null, hex: '#0d0e11', alpha: 0.45 },
+      dark: { css: 'rgb(255 255 255 / 0.35)', cssP3: null, hex: '#ffffff', alpha: 0.35 },
+    },
+    $increasedContrast: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.6)', cssP3: null, hex: '#0d0e11', alpha: 0.6 },
+      dark: { css: 'rgb(255 255 255 / 0.6)', cssP3: null, hex: '#ffffff', alpha: 0.6 },
+    },
+  },
+  'comp.slider.track.height': {
+    $type: 'dimension', $cssVar: '--ds-slider-track-height',
+    $value: 4,
+  },
+  'comp.sparkline.height.table': {
+    $type: 'dimension', $cssVar: '--ds-sparkline-height-table',
+    $value: 20,
+  },
+  'comp.sparkline.height.tile': {
+    $type: 'dimension', $cssVar: '--ds-sparkline-height-tile',
+    $value: 40,
+  },
+  'comp.spinner.arc': {
+    $type: 'color', $cssVar: '--ds-spinner-arc', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.8)', cssP3: null, hex: '#0d0e11', alpha: 0.8 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.spinner.stroke': {
+    $type: 'dimension', $cssVar: '--ds-spinner-stroke',
+    $value: 1.5,
+  },
+  'comp.text-area.border.error': {
+    $type: 'color', $cssVar: '--ds-text-area-border-error', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
+      dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.text-field.border.error': {
+    $type: 'color', $cssVar: '--ds-text-field-border-error', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.5209 0.1918 27.1)', cssP3: null, hex: '#bf2222', alpha: 1 },
+      dark: { css: 'oklch(0.6876 0.2015 25.7)', cssP3: null, hex: '#ff5a55', alpha: 1 },
+    },
+  },
+  'comp.toggle.height': {
+    $type: 'dimension', $cssVar: '--ds-toggle-height', $axis: 'density',
+    $values: {
+      compact: 28,
+      regular: 32,
+      comfortable: 44,
+      watch: 32,
+    },
+  },
+  'comp.toggle.inset': {
+    $type: 'dimension', $cssVar: '--ds-toggle-inset',
+    $value: 4,
+  },
+  'comp.toggle.knob.off': {
+    $type: 'color', $cssVar: '--ds-toggle-knob-off', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.4883 0.0137 264.4)', cssP3: null, hex: '#5c6068', alpha: 1 },
+      dark: { css: 'rgb(255 255 255 / 0.64)', cssP3: null, hex: '#ffffff', alpha: 0.64 },
+    },
+  },
+  'comp.toggle.knob.on': {
+    $type: 'color', $cssVar: '--ds-toggle-knob-on', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'comp.toggle.track.off': {
+    $type: 'color', $cssVar: '--ds-toggle-track-off', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'comp.toggle.track.on': {
+    $type: 'color', $cssVar: '--ds-toggle-track-on', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.tooltip.bg': {
+    $type: 'color', $cssVar: '--ds-tooltip-bg', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+    },
+  },
+  'comp.tooltip.text': {
+    $type: 'color', $cssVar: '--ds-tooltip-text', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
   },
 };
 

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "progress-bar": {
+      "track": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.neutral.subtle}",
+        "$description": "the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.inverse}",
+        "$description": "the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "fill-secondary": {
+        "$type": "color",
+        "$value": "{sys.color.chart.comparison}",
+        "$description": "the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "{sys.space.1}",
+        "$description": "4 px: the minimum gauge stroke of dataviz-design.md §3 E25, and one step of the 4 px rhythm (visual-dna §6.1)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "marker-height": {
+        "$type": "dimension",
+        "$value": "{sys.space.3}",
+        "$description": "8 px: the target tick is twice the track's thickness, the comparative marker of dataviz-design.md §3 E27, centred on the track's centreline",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

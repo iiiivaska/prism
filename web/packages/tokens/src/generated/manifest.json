@@ -10527,6 +10527,180 @@
       "deprecated": null
     },
     {
+      "path": "comp.area-chart.fill",
+      "id": "comp.area-chart.fill",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-area-chart-fill",
+      "cssVars": [
+        "--ds-area-chart-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.area-chart.fill",
+      "swift": "DSTokenSet.components.areaChart.fill",
+      "asset": null,
+      "description": "the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.avatar.bg",
+      "id": "comp.avatar.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-avatar-bg",
+      "cssVars": [
+        "--ds-avatar-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.avatar.bg",
+      "swift": "DSTokenSet.components.avatar.bg",
+      "asset": null,
+      "description": "the circle behind the initials and the fallback glyph; raised rather than nested because color.text.secondary is checked on color.bg.surface.raised and on no nested ground (ADR-0011 rule 1); over media the circle takes material.glass.chip instead",
+      "deprecated": null
+    },
+    {
+      "path": "comp.avatar.ring",
+      "id": "comp.avatar.ring",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-avatar-ring",
+      "cssVars": [
+        "--ds-avatar-ring"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.avatar.ring",
+      "swift": "DSTokenSet.components.avatar.ring",
+      "asset": null,
+      "description": "the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media",
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.accent.bg",
+      "id": "comp.badge.accent.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-badge-accent-bg",
+      "cssVars": [
+        "--ds-badge-accent-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.accent.bg",
+      "swift": "DSTokenSet.components.badge.accentBg",
+      "asset": null,
+      "description": "the one attention fill per screen; the accent means look here, never an action",
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.accent.text",
+      "id": "comp.badge.accent.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-badge-accent-text",
+      "cssVars": [
+        "--ds-badge-accent-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.accent.text",
+      "swift": "DSTokenSet.components.badge.accentText",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.critical.bg",
+      "id": "comp.badge.critical.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-badge-critical-bg",
+      "cssVars": [
+        "--ds-badge-critical-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.critical.bg",
+      "swift": "DSTokenSet.components.badge.criticalBg",
+      "asset": null,
+      "description": "the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.critical.text",
+      "id": "comp.badge.critical.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-badge-critical-text",
+      "cssVars": [
+        "--ds-badge-critical-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.critical.text",
+      "swift": "DSTokenSet.components.badge.criticalText",
+      "asset": null,
+      "description": "11 px Medium digits on the badge red",
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.neutral.bg",
+      "id": "comp.badge.neutral.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-badge-neutral-bg",
+      "cssVars": [
+        "--ds-badge-neutral-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.neutral.bg",
+      "swift": "DSTokenSet.components.badge.neutralBg",
+      "asset": null,
+      "description": "the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.badge.neutral.text",
+      "id": "comp.badge.neutral.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-badge-neutral-text",
+      "cssVars": [
+        "--ds-badge-neutral-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.badge.neutral.text",
+      "swift": "DSTokenSet.components.badge.neutralText",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
       "path": "comp.button.danger.bg.rest",
       "id": "comp.button.danger.bg.rest",
       "tier": "comp",
@@ -11205,6 +11379,1276 @@
       "swift": "DSTokenSet.components.card.vividText",
       "asset": null,
       "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.checkbox.bg.selected",
+      "id": "comp.checkbox.bg.selected",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-checkbox-bg-selected",
+      "cssVars": [
+        "--ds-checkbox-bg-selected"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.checkbox.bg.selected",
+      "swift": "DSTokenSet.components.checkbox.bgSelected",
+      "asset": null,
+      "description": "a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.checkbox.mark",
+      "id": "comp.checkbox.mark",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-checkbox-mark",
+      "cssVars": [
+        "--ds-checkbox-mark"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.checkbox.mark",
+      "swift": "DSTokenSet.components.checkbox.mark",
+      "asset": null,
+      "description": "the check or the mixed dash on the filled box: the opposite-colored glyph",
+      "deprecated": null
+    },
+    {
+      "path": "comp.checkbox.radius",
+      "id": "comp.checkbox.radius",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-checkbox-radius",
+      "cssVars": [
+        "--ds-checkbox-radius"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.checkbox.radius",
+      "swift": "DSTokenSet.components.checkbox.radius",
+      "asset": null,
+      "description": "the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.checkbox.size",
+      "id": "comp.checkbox.size",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-checkbox-size",
+      "cssVars": [
+        "--ds-checkbox-size"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.checkbox.size",
+      "swift": "DSTokenSet.components.checkbox.size",
+      "asset": null,
+      "description": "the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+      "deprecated": null
+    },
+    {
+      "path": "comp.chip.bg.pressed",
+      "id": "comp.chip.bg.pressed",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-chip-bg-pressed",
+      "cssVars": [
+        "--ds-chip-bg-pressed"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.chip.bg.pressed",
+      "swift": "DSTokenSet.components.chip.bgPressed",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.chip.bg.rest",
+      "id": "comp.chip.bg.rest",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-chip-bg-rest",
+      "cssVars": [
+        "--ds-chip-bg-rest"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.chip.bg.rest",
+      "swift": "DSTokenSet.components.chip.bgRest",
+      "asset": null,
+      "description": "the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead",
+      "deprecated": null
+    },
+    {
+      "path": "comp.chip.border.rest",
+      "id": "comp.chip.border.rest",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-chip-border-rest",
+      "cssVars": [
+        "--ds-chip-border-rest"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.chip.border.rest",
+      "swift": "DSTokenSet.components.chip.borderRest",
+      "asset": null,
+      "description": "decorative: the fill step and the label identify the chip, so the stroke is not the boundary role",
+      "deprecated": null
+    },
+    {
+      "path": "comp.chip.border.selected",
+      "id": "comp.chip.border.selected",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-chip-border-selected",
+      "cssVars": [
+        "--ds-chip-border-selected"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.chip.border.selected",
+      "swift": "DSTokenSet.components.chip.borderSelected",
+      "asset": null,
+      "description": "selection is a full-strength stroke and label, never a solid fill",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.danger.bg.rest",
+      "id": "comp.icon-button.danger.bg.rest",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-danger-bg-rest",
+      "cssVars": [
+        "--ds-icon-button-danger-bg-rest"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.danger.bg.rest",
+      "swift": "DSTokenSet.components.iconButton.dangerBgRest",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.danger.border",
+      "id": "comp.icon-button.danger.border",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-danger-border",
+      "cssVars": [
+        "--ds-icon-button-danger-border"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.danger.border",
+      "swift": "DSTokenSet.components.iconButton.dangerBorder",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.danger.icon",
+      "id": "comp.icon-button.danger.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-danger-icon",
+      "cssVars": [
+        "--ds-icon-button-danger-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.danger.icon",
+      "swift": "DSTokenSet.components.iconButton.dangerIcon",
+      "asset": null,
+      "description": "the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.ghost.bg.pressed",
+      "id": "comp.icon-button.ghost.bg.pressed",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-ghost-bg-pressed",
+      "cssVars": [
+        "--ds-icon-button-ghost-bg-pressed"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.ghost.bg.pressed",
+      "swift": "DSTokenSet.components.iconButton.ghostBgPressed",
+      "asset": null,
+      "description": "the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.ghost.border",
+      "id": "comp.icon-button.ghost.border",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-ghost-border",
+      "cssVars": [
+        "--ds-icon-button-ghost-border"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.ghost.border",
+      "swift": "DSTokenSet.components.iconButton.ghostBorder",
+      "asset": null,
+      "description": "the ring alone identifies the control, so it is the boundary tier (ADR-0011)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.ghost.icon",
+      "id": "comp.icon-button.ghost.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-ghost-icon",
+      "cssVars": [
+        "--ds-icon-button-ghost-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.ghost.icon",
+      "swift": "DSTokenSet.components.iconButton.ghostIcon",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.plain.icon",
+      "id": "comp.icon-button.plain.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-plain-icon",
+      "cssVars": [
+        "--ds-icon-button-plain-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.plain.icon",
+      "swift": "DSTokenSet.components.iconButton.plainIcon",
+      "asset": null,
+      "description": "the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.primary.bg.pressed",
+      "id": "comp.icon-button.primary.bg.pressed",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-primary-bg-pressed",
+      "cssVars": [
+        "--ds-icon-button-primary-bg-pressed"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.primary.bg.pressed",
+      "swift": "DSTokenSet.components.iconButton.primaryBgPressed",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.primary.bg.rest",
+      "id": "comp.icon-button.primary.bg.rest",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-primary-bg-rest",
+      "cssVars": [
+        "--ds-icon-button-primary-bg-rest"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.primary.bg.rest",
+      "swift": "DSTokenSet.components.iconButton.primaryBgRest",
+      "asset": null,
+      "description": "the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.primary.icon",
+      "id": "comp.icon-button.primary.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-primary-icon",
+      "cssVars": [
+        "--ds-icon-button-primary-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.primary.icon",
+      "swift": "DSTokenSet.components.iconButton.primaryIcon",
+      "asset": null,
+      "description": "the opposite-colored glyph on the solid circle",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.secondary.bg.pressed",
+      "id": "comp.icon-button.secondary.bg.pressed",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-secondary-bg-pressed",
+      "cssVars": [
+        "--ds-icon-button-secondary-bg-pressed"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.secondary.bg.pressed",
+      "swift": "DSTokenSet.components.iconButton.secondaryBgPressed",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.secondary.bg.rest",
+      "id": "comp.icon-button.secondary.bg.rest",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-secondary-bg-rest",
+      "cssVars": [
+        "--ds-icon-button-secondary-bg-rest"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.secondary.bg.rest",
+      "swift": "DSTokenSet.components.iconButton.secondaryBgRest",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.secondary.border",
+      "id": "comp.icon-button.secondary.border",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-secondary-border",
+      "cssVars": [
+        "--ds-icon-button-secondary-border"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.secondary.border",
+      "swift": "DSTokenSet.components.iconButton.secondaryBorder",
+      "asset": null,
+      "description": "the optional 1 px top edge of a raised puck; decorative, the fill carries the step",
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.secondary.icon",
+      "id": "comp.icon-button.secondary.icon",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-icon-button-secondary-icon",
+      "cssVars": [
+        "--ds-icon-button-secondary-icon"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.secondary.icon",
+      "swift": "DSTokenSet.components.iconButton.secondaryIcon",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.size.lg",
+      "id": "comp.icon-button.size.lg",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-icon-button-size-lg",
+      "cssVars": [
+        "--ds-icon-button-size-lg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.size.lg",
+      "swift": "DSTokenSet.components.iconButton.sizeLg",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.size.md",
+      "id": "comp.icon-button.size.md",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-icon-button-size-md",
+      "cssVars": [
+        "--ds-icon-button-size-md"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.size.md",
+      "swift": "DSTokenSet.components.iconButton.sizeMd",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.icon-button.size.sm",
+      "id": "comp.icon-button.size.sm",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-icon-button-size-sm",
+      "cssVars": [
+        "--ds-icon-button-size-sm"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.icon-button.size.sm",
+      "swift": "DSTokenSet.components.iconButton.sizeSm",
+      "asset": null,
+      "description": null,
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-bar.fill",
+      "id": "comp.progress-bar.fill",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-progress-bar-fill",
+      "cssVars": [
+        "--ds-progress-bar-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-bar.fill",
+      "swift": "DSTokenSet.components.progressBar.fill",
+      "asset": null,
+      "description": "the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-bar.fill-secondary",
+      "id": "comp.progress-bar.fill-secondary",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-progress-bar-fill-secondary",
+      "cssVars": [
+        "--ds-progress-bar-fill-secondary"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-bar.fill-secondary",
+      "swift": "DSTokenSet.components.progressBar.fillSecondary",
+      "asset": null,
+      "description": "the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-bar.height",
+      "id": "comp.progress-bar.height",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-progress-bar-height",
+      "cssVars": [
+        "--ds-progress-bar-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-bar.height",
+      "swift": "DSTokenSet.components.progressBar.height",
+      "asset": null,
+      "description": "4 px: the minimum gauge stroke of dataviz-design.md §3 E25, and one step of the 4 px rhythm (visual-dna §6.1)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-bar.marker-height",
+      "id": "comp.progress-bar.marker-height",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-progress-bar-marker-height",
+      "cssVars": [
+        "--ds-progress-bar-marker-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-bar.marker-height",
+      "swift": "DSTokenSet.components.progressBar.markerHeight",
+      "asset": null,
+      "description": "8 px: the target tick is twice the track's thickness, the comparative marker of dataviz-design.md §3 E27, centred on the track's centreline",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-bar.track",
+      "id": "comp.progress-bar.track",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-progress-bar-track",
+      "cssVars": [
+        "--ds-progress-bar-track"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-bar.track",
+      "swift": "DSTokenSet.components.progressBar.track",
+      "asset": null,
+      "description": "the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-ring.arc",
+      "id": "comp.progress-ring.arc",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-progress-ring-arc",
+      "cssVars": [
+        "--ds-progress-ring-arc"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-ring.arc",
+      "swift": "DSTokenSet.components.progressRing.arc",
+      "asset": null,
+      "description": "the value arc is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-ring.stroke-min",
+      "id": "comp.progress-ring.stroke-min",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-progress-ring-stroke-min",
+      "cssVars": [
+        "--ds-progress-ring-stroke-min"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-ring.stroke-min",
+      "swift": "DSTokenSet.components.progressRing.strokeMin",
+      "asset": null,
+      "description": "4 px: the floor under chart.gauge-stroke-ratio, from dataviz-design.md §3 E25's minimum ring stroke",
+      "deprecated": null
+    },
+    {
+      "path": "comp.progress-ring.track",
+      "id": "comp.progress-ring.track",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-progress-ring-track",
+      "cssVars": [
+        "--ds-progress-ring-track"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.progress-ring.track",
+      "swift": "DSTokenSet.components.progressRing.track",
+      "asset": null,
+      "description": "the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.radio.bg.selected",
+      "id": "comp.radio.bg.selected",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-radio-bg-selected",
+      "cssVars": [
+        "--ds-radio-bg-selected"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.radio.bg.selected",
+      "swift": "DSTokenSet.components.radio.bgSelected",
+      "asset": null,
+      "description": "the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.radio.dot.fill",
+      "id": "comp.radio.dot.fill",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-radio-dot-fill",
+      "cssVars": [
+        "--ds-radio-dot-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.radio.dot.fill",
+      "swift": "DSTokenSet.components.radio.dotFill",
+      "asset": null,
+      "description": "the opposite-colored dot on the solid circle",
+      "deprecated": null
+    },
+    {
+      "path": "comp.radio.dot.size",
+      "id": "comp.radio.dot.size",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-radio-dot-size",
+      "cssVars": [
+        "--ds-radio-dot-size"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.radio.dot.size",
+      "swift": "DSTokenSet.components.radio.dotSize",
+      "asset": null,
+      "description": "8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph",
+      "deprecated": null
+    },
+    {
+      "path": "comp.radio.size",
+      "id": "comp.radio.size",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-radio-size",
+      "cssVars": [
+        "--ds-radio-size"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.radio.size",
+      "swift": "DSTokenSet.components.radio.size",
+      "asset": null,
+      "description": "the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+      "deprecated": null
+    },
+    {
+      "path": "comp.ring-gauge.size.lg",
+      "id": "comp.ring-gauge.size.lg",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-ring-gauge-size-lg",
+      "cssVars": [
+        "--ds-ring-gauge-size-lg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.ring-gauge.size.lg",
+      "swift": "DSTokenSet.components.ringGauge.sizeLg",
+      "asset": null,
+      "description": "ring as a card's hero instrument; the largest diameter on Prism's space rhythm (docs/research/visual-dna.md §6.1, §6.6)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.ring-gauge.size.md",
+      "id": "comp.ring-gauge.size.md",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-ring-gauge-size-md",
+      "cssVars": [
+        "--ds-ring-gauge-size-md"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.ring-gauge.size.md",
+      "swift": "DSTokenSet.components.ringGauge.sizeMd",
+      "asset": null,
+      "description": "ring inside a card, the 64 px step of docs/research/dataviz-design.md §5",
+      "deprecated": null
+    },
+    {
+      "path": "comp.ring-gauge.size.sm",
+      "id": "comp.ring-gauge.size.sm",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-ring-gauge-size-sm",
+      "cssVars": [
+        "--ds-ring-gauge-size-sm"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.ring-gauge.size.sm",
+      "swift": "DSTokenSet.components.ringGauge.sizeSm",
+      "asset": null,
+      "description": "glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.segmented-control.active.bg",
+      "id": "comp.segmented-control.active.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-segmented-control-active-bg",
+      "cssVars": [
+        "--ds-segmented-control-active-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.segmented-control.active.bg",
+      "swift": "DSTokenSet.components.segmentedControl.activeBg",
+      "asset": null,
+      "description": "the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill",
+      "deprecated": null
+    },
+    {
+      "path": "comp.segmented-control.active.text",
+      "id": "comp.segmented-control.active.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-segmented-control-active-text",
+      "cssVars": [
+        "--ds-segmented-control-active-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.segmented-control.active.text",
+      "swift": "DSTokenSet.components.segmentedControl.activeText",
+      "asset": null,
+      "description": "the label and glyph on the selected segment",
+      "deprecated": null
+    },
+    {
+      "path": "comp.select.border.error",
+      "id": "comp.select.border.error",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-select-border-error",
+      "cssVars": [
+        "--ds-select-border-error"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.select.border.error",
+      "swift": "DSTokenSet.components.select.borderError",
+      "asset": null,
+      "description": "the invalid outline of the trigger; the critical stroke is the critical text role",
+      "deprecated": null
+    },
+    {
+      "path": "comp.skeleton.bg",
+      "id": "comp.skeleton.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-skeleton-bg",
+      "cssVars": [
+        "--ds-skeleton-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.skeleton.bg",
+      "swift": "DSTokenSet.components.skeleton.bg",
+      "asset": null,
+      "description": "the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.skeleton.shimmer",
+      "id": "comp.skeleton.shimmer",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-skeleton-shimmer",
+      "cssVars": [
+        "--ds-skeleton-shimmer"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.skeleton.shimmer",
+      "swift": "DSTokenSet.components.skeleton.shimmer",
+      "asset": null,
+      "description": "the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.fill",
+      "id": "comp.slider.fill",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-slider-fill",
+      "cssVars": [
+        "--ds-slider-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.fill",
+      "swift": "DSTokenSet.components.slider.fill",
+      "asset": null,
+      "description": "the filled part of the track is the one solid in the control (visual-dna §1 principle 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.thumb.fill",
+      "id": "comp.slider.thumb.fill",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-slider-thumb-fill",
+      "cssVars": [
+        "--ds-slider-thumb-fill"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.thumb.fill",
+      "swift": "DSTokenSet.components.slider.thumbFill",
+      "asset": null,
+      "description": "the same ink as the fill; the thumb is told by its size, not by its color",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.thumb.size",
+      "id": "comp.slider.thumb.size",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-slider-thumb-size",
+      "cssVars": [
+        "--ds-slider-thumb-size"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.thumb.size",
+      "swift": "DSTokenSet.components.slider.thumbSize",
+      "asset": null,
+      "description": "the small control circle, so the thumb sits in the one control family and never falls below the pointer hit area (ADR-0024 §7.1)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.tick",
+      "id": "comp.slider.tick",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-slider-tick",
+      "cssVars": [
+        "--ds-slider-tick"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.tick",
+      "swift": "DSTokenSet.components.slider.tick",
+      "asset": null,
+      "description": "the step marks under the track; the tick-ruler ornament of visual-dna §4.12, always decorative",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.track.bg",
+      "id": "comp.slider.track.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-slider-track-bg",
+      "cssVars": [
+        "--ds-slider-track-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.track.bg",
+      "swift": "DSTokenSet.components.slider.trackBg",
+      "asset": null,
+      "description": "the unfilled part of the meter: a lighter step of the same ink/white ramp as the fill (dataviz-design §3), and the boundary-tier token the contrast gate already checks",
+      "deprecated": null
+    },
+    {
+      "path": "comp.slider.track.height",
+      "id": "comp.slider.track.height",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-slider-track-height",
+      "cssVars": [
+        "--ds-slider-track-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.slider.track.height",
+      "swift": "DSTokenSet.components.slider.trackHeight",
+      "asset": null,
+      "description": "4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own",
+      "deprecated": null
+    },
+    {
+      "path": "comp.sparkline.height.table",
+      "id": "comp.sparkline.height.table",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-sparkline-height-table",
+      "cssVars": [
+        "--ds-sparkline-height-table"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sparkline.height.table",
+      "swift": "DSTokenSet.components.sparkline.heightTable",
+      "asset": null,
+      "description": "sparkline height in a table row: the row's text line box (docs/research/dataviz-design.md §3 rule D20, §6)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.sparkline.height.tile",
+      "id": "comp.sparkline.height.tile",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-sparkline-height-tile",
+      "cssVars": [
+        "--ds-sparkline-height-tile"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.sparkline.height.tile",
+      "swift": "DSTokenSet.components.sparkline.heightTile",
+      "asset": null,
+      "description": "sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.spinner.arc",
+      "id": "comp.spinner.arc",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-spinner-arc",
+      "cssVars": [
+        "--ds-spinner-arc"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.spinner.arc",
+      "swift": "DSTokenSet.components.spinner.arc",
+      "asset": null,
+      "description": "the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.spinner.stroke",
+      "id": "comp.spinner.stroke",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-spinner-stroke",
+      "cssVars": [
+        "--ds-spinner-stroke"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.spinner.stroke",
+      "swift": "DSTokenSet.components.spinner.stroke",
+      "asset": null,
+      "description": "1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces",
+      "deprecated": null
+    },
+    {
+      "path": "comp.text-area.border.error",
+      "id": "comp.text-area.border.error",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-text-area-border-error",
+      "cssVars": [
+        "--ds-text-area-border-error"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.text-area.border.error",
+      "swift": "DSTokenSet.components.textArea.borderError",
+      "asset": null,
+      "description": "the invalid outline of the multi-line box; the critical stroke is the critical text role",
+      "deprecated": null
+    },
+    {
+      "path": "comp.text-field.border.error",
+      "id": "comp.text-field.border.error",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-text-field-border-error",
+      "cssVars": [
+        "--ds-text-field-border-error"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.text-field.border.error",
+      "swift": "DSTokenSet.components.textField.borderError",
+      "asset": null,
+      "description": "the invalid outline; the critical stroke is the critical text role, as it is on the danger button",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.height",
+      "id": "comp.toggle.height",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [
+        "density"
+      ],
+      "css": "--ds-toggle-height",
+      "cssVars": [
+        "--ds-toggle-height"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.height",
+      "swift": "DSTokenSet.components.toggle.height",
+      "asset": null,
+      "description": "the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.inset",
+      "id": "comp.toggle.inset",
+      "tier": "comp",
+      "type": "dimension",
+      "dependsOn": [],
+      "css": "--ds-toggle-inset",
+      "cssVars": [
+        "--ds-toggle-inset"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.inset",
+      "swift": "DSTokenSet.components.toggle.inset",
+      "asset": null,
+      "description": "the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.knob.off",
+      "id": "comp.toggle.knob.off",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-toggle-knob-off",
+      "cssVars": [
+        "--ds-toggle-knob-off"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.knob.off",
+      "swift": "DSTokenSet.components.toggle.knobOff",
+      "asset": null,
+      "description": "the quiet dot inside the outlined track; the color.text.secondary ramp step",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.knob.on",
+      "id": "comp.toggle.knob.on",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-toggle-knob-on",
+      "cssVars": [
+        "--ds-toggle-knob-on"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.knob.on",
+      "swift": "DSTokenSet.components.toggle.knobOn",
+      "asset": null,
+      "description": "the opposite-colored element on the solid track",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.track.off",
+      "id": "comp.toggle.track.off",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-toggle-track-off",
+      "cssVars": [
+        "--ds-toggle-track-off"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.track.off",
+      "swift": "DSTokenSet.components.toggle.trackOff",
+      "asset": null,
+      "description": "off is an outlined track over a neutral subtle well; the outline is color.border.strong",
+      "deprecated": null
+    },
+    {
+      "path": "comp.toggle.track.on",
+      "id": "comp.toggle.track.on",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-toggle-track-on",
+      "cssVars": [
+        "--ds-toggle-track-on"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.toggle.track.on",
+      "swift": "DSTokenSet.components.toggle.trackOn",
+      "asset": null,
+      "description": "on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.tooltip.bg",
+      "id": "comp.tooltip.bg",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-tooltip-bg",
+      "cssVars": [
+        "--ds-tooltip-bg"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.tooltip.bg",
+      "swift": "DSTokenSet.components.tooltip.bg",
+      "asset": null,
+      "description": "the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7)",
+      "deprecated": null
+    },
+    {
+      "path": "comp.tooltip.text",
+      "id": "comp.tooltip.text",
+      "tier": "comp",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-tooltip-text",
+      "cssVars": [
+        "--ds-tooltip-text"
+      ],
+      "tailwind": [],
+      "tailwindTheme": [],
+      "ts": "comp.tooltip.text",
+      "swift": "DSTokenSet.components.tooltip.text",
+      "asset": null,
+      "description": "the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json",
       "deprecated": null
     }
   ]

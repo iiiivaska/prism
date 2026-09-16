@@ -1,0 +1,236 @@
+name: HeroNumber
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  The one number a screen leads with: a large thin numeral whose insignificant tail is dimmed at the
+  same size, with a unit hung on the baseline, an optional label and optional DeltaBadge and Sparkline
+  companions. Exactly one hero per view; every other number on the screen is a StatTile or a Text
+  metric role.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: value
+    description: the significant digits, in a metric role
+  - part: trailing
+    optional: true
+    description: the dimmed tail — decimals, the thousands remainder, or the compact name ("тыс.")
+  - part: unit
+    optional: true
+    description: unit hung on the baseline beside the numeral
+  - part: label
+    optional: true
+    description: what the number measures; it sits above the value, and on vivid it also carries the unit (V3)
+  - part: delta
+    optional: true
+    slot: true
+    description: one DeltaBadge, after the value on the same baseline
+  - part: trend
+    optional: true
+    slot: true
+    description: one Sparkline under the number, at the number's width or less
+
+props:
+  - name: value
+    type: string
+    required: true
+    description: the formatted significant part of the figure
+  - name: trailing
+    type: string
+    description: the dimmed tail, rendered at the same size as the value
+  - name: unit
+    type: string
+    description: not set on vivid, where the unit joins the label line (ADR-0030 §8)
+  - name: label
+    type: string
+  - name: size
+    type: enum
+    values: [xl, lg, md]
+    default: xl
+    description: type.metric.xl (screen hero), type.metric.lg (card hero), type.metric.md (inline)
+  - name: format
+    type: data
+    description: "how `value` and `trailing` were produced — { style: decimal|percent|currency|unit, compact: boolean, significantDigits: 1-3, locale }. The component does not reformat the strings; it reads this to build the spoken value and to reserve width. Unset, the strings are spoken as written"
+  - name: live
+    type: boolean
+    default: false
+    description: the value changes while visible; sets tabular figures and the numeric transition
+  - name: delta
+    type: data
+    description: DeltaBadge props; its `value` is the bare magnitude, because the badge writes the sign and the basis symbol itself
+  - name: trend
+    type: data
+    description: Sparkline props, `points` included; a trend without a series is not drawn, since the series is what a sparkline is
+
+states: [default, loading]
+
+tokens:
+  root:
+    gap: space.3
+    rowGap: space.2
+    loading:
+      opacity: opacity.dimmed-row
+  value:
+    typography:
+      xl: type.metric.xl
+      lg: type.metric.lg
+      md: type.metric.md
+    color:
+      default: color.text.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  trailing:
+    color:
+      default:
+        xl: color.text.dimmed
+        lg: color.text.dimmed
+        md: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map:
+          xl: color.text.on-glass-fill-dimmed
+          lg: color.text.on-glass-fill-dimmed
+          md: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-tertiary
+        vivid: color.text.on-glass-fill-media-tertiary
+  unit:
+    typography: type.metric.unit
+    gap: space.2
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  label:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  delta:
+    gap: space.3
+  trend:
+    gap: space.2
+
+behavior:
+  - One HeroNumber per view; a second headline figure is a StatTile, and a number inside a card is Text at metric-lg.
+  - "Layout is fixed so both stacks land on the same block. Three rows, separated by the root's `rowGap`: the label line, then the value line, then the trend. On the value line the value, its trailing group and the hung unit run together — the unit at the `unit` part's own gap, the trailing group with none — and the delta follows at the `delta` part's gap; the root's `gap` is the space between that line and anything a caller places beside it. The label row is the header block and the value row is the hero block, the two zones ADR-0030 §8 names."
+  - "The component writes no sign; `value` carries the string it is given, sign included, and a signed hero states its sign explicitly. A leading currency symbol is not a dimmed group in v1 — `trailing` is the tail only — so a prefixed symbol stays at the value's tone and a hung symbol goes in `unit`."
+  - "Figures follow ADR-0021 §5 as ADR-0030 §7.1 amends it: a static hero is proportional on every metric role, and `live: true` sets tabular figures on the role so the digits stop jittering while the value ticks."
+  - "The caller formats the figure and passes the pieces as strings; `format` describes what it did. Compact notation carries at most three significant digits, and the layout reserves width for Cyrillic compact names (\"12,9 тыс.\", \"4,2 млн\"), which run two to three glyphs longer than \"K\" and \"M\". The compact name is the dimmed tail, so it goes in `trailing`, not in `unit`."
+  - "The trailing group renders in color.text.dimmed at the same size as the value, and only on a role of 24 px or more; at `size: md` (type.metric.md, 20 px) it resolves to color.text.secondary instead, as Text does, because the dimmed pair is the decorative tier and ADR-0011 grants that tier only from 24 px. The same split applies on the scheme's glass over a map, where color.text.on-glass-fill-dimmed gives way to color.text.on-glass-fill-secondary; the -media tones are functional at every size and do not split."
+  - The unit hangs on the baseline in type.metric.unit with a space.2 gap; a product dims either the trailing group or the unit, never both.
+  - "On a vivid surface the hero block holds only the value and its trailing group, both 24 px or more; the unit joins the label line, where V2 guarantees the functional tier (ADR-0030 §8, V3). An implementation that is given `unit` on vivid moves it to the label."
+  - "On vivid the delta leaves the hero row too, for the same reason: its text is 12-13 px, and ADR-0030 rule 7 puts text below 24 px in the header block only. It renders at the end of the label line, or not at all; `size: md` is likewise not a hero on vivid, because a 20 px numeral is below V1's tier."
+  - The delta sits after the unit on the hero's baseline; the trend sits below the number and never exceeds its width.
+  - A value that counts up or rolls animates over motion.duration.slow; a value that only replaces another does not animate.
+  - An absent value renders an em dash in the same role and keeps the label; the delta and the trend are not drawn.
+  - "`loading` holds the previous render at opacity.dimmed-row; the hero never flashes a skeleton."
+  - Tones follow the material the enclosing Surface publishes, and on the scheme's glass also its backdrop kind; the hero never reads the color scheme itself.
+
+motion:
+  countUp: motion.duration.slow
+  reduceMotion: instant
+
+accessibility:
+  role: text
+  label: value, trailing group and unit as one spoken value ("86.4 percent"), preceded by the label ("Line output")
+  traits: [staticText]
+  keyboard: not focusable; the delta and the trend are decorative to the keyboard and are described by this label
+  dynamicType: the numeral scales along its role's Dynamic Type style and clamps at the accessibility3 size so the hero cannot push the layout; the label wraps instead of truncating
+  contrast: "at `size: xl` and `lg` the numeral is large text and holds 3:1 (ADR-0011); at `size: md` it is 20 px, so it is functional text at 4.5:1, which color.text.primary holds on every material cell bound here. The trailing group takes the decorative pair (color.text.dimmed, color.text.on-glass-fill-dimmed) only at 24 px or more and a functional pair below it. On vivid the only pairs color.text.on-vivid has are V1 (24 px or more, anywhere on the gradient) and V2 (the header block), which is why the label line carries every sub-24 px part there"
+  reduceTransparency: no change of its own — the enclosing Surface publishes raised instead of glass and every tone follows it
+  reduceMotion: the count-up and the numeric roll do not run; the value is replaced at motion.duration.instant and nothing scales, blurs or moves
+
+usage:
+  do:
+    - Exactly one hero per view, at the top of the reading order.
+    - "Dim the tail or the unit, not both: the hero reads as one instrument."
+    - "Set `live: true` on anything that ticks, so the numeral keeps tabular figures."
+    - Put the unit and the delta in the label line on vivid, and keep the hero block to the value.
+  dont:
+    - "Don't put a `size: md` hero, a unit or a delta on a vivid surface; below 24 px only the label line is a checked pair there."
+    - Don't set tabular figures on a static hero or proportional figures on a live one.
+    - Don't render the hero in a serif or display face of its own; it is the same family as the rest of the screen.
+    - Don't color the numeral for emphasis; hierarchy is size and tone.
+    - Don't put a second hero on the same screen to balance a layout.
+
+examples:
+  - id: hero-xl
+    props: { value: "86", trailing: ".4", unit: "%", label: "Line output, last 24 hours", size: xl }
+    description: the instrument numeral — significant digits, dimmed decimal, hung unit
+  - id: hero-live
+    props: { value: "1 284", unit: "req/s", label: "Ingest rate", size: xl, live: true }
+    description: a ticking value, so the role takes tabular figures
+  - id: hero-with-delta
+    props: { value: "12", trailing: ".9", unit: "%", label: "Conversion", size: xl, delta: { value: "0.8", basis: points, direction: up, polarity: upIsGood } }
+    description: the badge writes the sign and the "pp" itself, so the forwarded magnitude is bare
+  - id: hero-with-trend
+    props: { value: "42", trailing: ".1", unit: "°C", label: "Coolant", size: xl, trend: { points: [39.8, 40.1, 40.4, 40.2, 40.9, 41.3, 41.1, 41.6, 41.8, 42.0, 41.9, 42.1], kind: line, emphasis: primary } }
+    description: the trend carries the series Sparkline requires; the hero carries the figure
+  - id: hero-lg-card
+    props: { value: "2 450", unit: "₽", label: "Average yield", size: lg }
+  - id: hero-md-inline
+    props: { value: "37", unit: "queued", size: md }
+    description: at metric-md the tail is never dimmed; it resolves to the secondary tone
+  - id: hero-compact-ru
+    props: { value: "12,9", trailing: " тыс.", label: "Выручка за сутки", unit: "₽", size: xl, format: { compact: true, significantDigits: 3, locale: "ru-RU" } }
+    description: the Cyrillic compact name is the dimmed tail and needs two to three glyphs more width than "K"
+  - id: hero-on-vivid
+    props: { value: "86", trailing: ".4", label: "Line output, percent", size: xl }
+    surface: vivid
+    description: the unit sits in the label line, because the hero block on vivid holds only the value
+  - id: hero-on-glass-over-map
+    props: { value: "21", trailing: ".4", unit: "km", label: "Distance to depot", size: lg }
+    surface: glass
+    backdrop: map
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 lists Text, StatTile and the rings, not HeroNumber. A watch screen's one number is a StatTile, or Text at metric-xl, which the watch platform context renders at 40 px (ADR-0030 §7.2); the delta and trend companions are not glanceable at that size."
+    macos: no Dynamic Type; the numeral renders at the role size and the surrounding layout follows compact density.
+  design: >-
+    The instrument numeral is docs/research/visual-dna.md §4.2 with the roles and tones of §2.2 and §2.4
+    and the hero sizes of §6.6; the one-hero rule and the compact-notation rule are
+    docs/research/dataviz-design.md §3 rules A1, A2, F28 and F30. Cyrillic compact-name widths are that
+    document's §8 open question 4 and remain a verify item for P3. Two forms the inventory records are
+    deliberately out: the dot-matrix face is a MicroGlyphs candidate, and the leading dimmed currency
+    sign has no anatomy here, because `trailing` is the tail and a second dimmed group would need a
+    second decorative pair. "Explicit sign on signed values" is the caller's string, stated in behavior.
+    The two-zone layout (label line above, hero row below) is what keeps every sub-24 px part inside
+    ADR-0030 rule 7's header block on vivid. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

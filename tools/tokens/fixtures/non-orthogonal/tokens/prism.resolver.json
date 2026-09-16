@@ -22,8 +22,28 @@
     },
     "comp": {
       "sources": [
+        { "$ref": "../../../../../tokens/comp/area-chart.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/avatar.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/badge.tokens.json" },
         { "$ref": "../../../../../tokens/comp/button.tokens.json" },
-        { "$ref": "../../../../../tokens/comp/card.tokens.json" }
+        { "$ref": "../../../../../tokens/comp/card.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/checkbox.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/chip.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/icon-button.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/progress-bar.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/progress-ring.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/radio.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/ring-gauge.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/segmented-control.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/select.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/skeleton.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/slider.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/sparkline.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/spinner.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/text-area.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/text-field.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/toggle.tokens.json" },
+        { "$ref": "../../../../../tokens/comp/tooltip.tokens.json" }
       ]
     }
   },

@@ -1,0 +1,101 @@
+{
+  "comp": {
+    "icon-button": {
+      "danger": {
+        "bg": {
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.tint.critical}"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.text.critical}"
+        },
+        "icon": {
+          "$type": "color",
+          "$value": "{color.text.critical}",
+          "$description": "the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint"
+        }
+      },
+      "ghost": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": "{color.bg.fill.neutral.subtle}",
+            "$description": "the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.border.strong}",
+          "$description": "the ring alone identifies the control, so it is the boundary tier (ADR-0011)"
+        },
+        "icon": {
+          "$type": "color",
+          "$value": "{color.icon.primary}"
+        }
+      },
+      "plain": {
+        "icon": {
+          "$type": "color",
+          "$value": "{color.icon.secondary}",
+          "$description": "the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance"
+        }
+      },
+      "primary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": "{color.bg.fill.inverse}"
+          },
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.fill.inverse}",
+            "$description": "the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)"
+          }
+        },
+        "icon": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}",
+          "$description": "the opposite-colored glyph on the solid circle"
+        }
+      },
+      "secondary": {
+        "bg": {
+          "pressed": {
+            "$type": "color",
+            "$value": "{color.bg.surface.nested}"
+          },
+          "rest": {
+            "$type": "color",
+            "$value": "{color.bg.surface.raised}"
+          }
+        },
+        "border": {
+          "$type": "color",
+          "$value": "{color.border.hairline}",
+          "$description": "the optional 1 px top edge of a raised puck; decorative, the fill carries the step"
+        },
+        "icon": {
+          "$type": "color",
+          "$value": "{color.icon.primary}"
+        }
+      },
+      "size": {
+        "lg": {
+          "$type": "sizing",
+          "$value": "{size.control.lg}"
+        },
+        "md": {
+          "$type": "sizing",
+          "$value": "{size.control.md}"
+        },
+        "sm": {
+          "$type": "sizing",
+          "$value": "{size.control.sm}"
+        }
+      }
+    }
+  }
+}

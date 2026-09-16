@@ -1,0 +1,234 @@
+name: DeltaBadge
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  A signed change with a direction glyph and an optional period ("vs last 7 days"), as a bare mark or
+  a neutral chip. The sign and the glyph carry the meaning; color only says whether the change is on
+  target, and a change in the wanted direction stays neutral — never green.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: icon
+    optional: true
+    description: status.trend-up or status.trend-down from the registry; not drawn when direction is flat
+  - part: value
+    description: one text run — the explicit sign, the number and the basis symbol the component writes after it
+  - part: period
+    optional: true
+    description: what the change is measured against
+
+props:
+  - name: value
+    type: string
+    required: true
+    description: the formatted magnitude alone, with neither its sign nor its basis symbol; the component writes both. An unset or empty string is the no-data case
+  - name: direction
+    type: enum
+    values: [up, down, flat]
+    default: up
+    description: the sign of the change; flat is a measured zero, which is not the same as a missing value
+  - name: polarity
+    type: enum
+    values: [upIsGood, downIsGood, neutral]
+    default: upIsGood
+    description: which direction the product wants; neutral means neither direction is off target
+  - name: basis
+    type: enum
+    values: [percent, absolute, points]
+    default: percent
+    description: what the magnitude is measured in; the component writes its symbol after the number and speaks it as a word
+  - name: variant
+    type: enum
+    values: [bare, chip]
+    default: bare
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+  - name: period
+    type: string
+  - name: showIcon
+    type: boolean
+    default: true
+
+states: [default]
+
+tokens:
+  root:
+    gap: space.1
+    paddingX:
+      chip: space.2
+    paddingY:
+      chip: space.1
+    radius:
+      chip: radius.chip
+    background:
+      chip:
+        page: color.bg.fill.neutral.subtle
+        solid: color.bg.fill.neutral.subtle
+        raised: color.bg.fill.neutral.subtle
+        nested: color.bg.fill.neutral.subtle
+    border:
+      chip:
+        vivid: color.border.on-media
+        glass: color.border.on-glass-fill
+  icon:
+    size: size.icon.sm
+    color:
+      default:
+        up:
+          upIsGood: color.icon.primary
+          downIsGood: color.icon.accent
+          neutral: color.icon.primary
+        down:
+          upIsGood: color.icon.accent
+          downIsGood: color.icon.primary
+          neutral: color.icon.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  value:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      default:
+        up:
+          upIsGood: color.text.primary
+          downIsGood: color.text.accent
+          neutral: color.text.primary
+        down:
+          upIsGood: color.text.accent
+          downIsGood: color.text.primary
+          neutral: color.text.primary
+        flat: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  period:
+    typography: type.caption
+    gap: space.2
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+
+behavior:
+  - "The sign is explicit for every non-zero value (+, −). A measured zero is not a missing value and the two never render alike: `direction: flat` writes the formatted zero with its basis (\"0.0%\" in English, \"0,0 %\" in Russian) and no sign and no glyph, while an unset or empty `value` renders an em dash, which means no data here as it does in HeroNumber, StatTile and Sparkline. A flat badge reads \"unchanged\"; an em-dash badge reads \"no data\"."
+  - "The glyph is status.trend-up for `up` and status.trend-down for `down`, and `flat` and the no-data case draw none. `showIcon: false` is safe at any time, because the component always writes the sign and the direction therefore never rests on color alone (ADR-0011 rule 4); it exists for rows that already carry a direction column."
+  - "The badge's figures are tabular on every role: a delta changes while it is visible (ADR-0021 §5)."
+  - "Color says only whether the change is on target: a change in the wanted direction keeps color.text.primary, and an off-target change takes color.text.accent. Status hues never color a delta, and green never appears."
+  - "`polarity: neutral` keeps both directions in color.text.primary; the glyph and the sign still carry the direction."
+  - "The no-data em dash always renders in the flat cell (color.text.secondary on the solid family), whatever `direction` says: an absent value is never on or off target, so it never takes the accent. The dash stands alone: no sign, no glyph and no basis symbol, because there is no magnitude for a basis to measure. `flat` has no cell under the icon, which is how the glyph is dropped for both the zero and the no-data cases."
+  - "The basis symbol belongs to the badge, not to the caller's string: `value` is the bare magnitude, and the component closes it with the symbol its `basis` names — \"%\" for percent, \"pp\" in English and \"п.п.\" in Russian for points, and nothing at all for absolute. The symbol is part of the `value` run, at that part's role and tone, and it is never a part of its own, because it is never styled apart from the number: \"+0.8 pp\", \"−4.2%\", \"+12\". The separator is the one the locale asks for — none before \"%\" in English, a no-break space before it in Russian, a no-break space before \"pp\" and \"п.п.\" in both — and it never breaks across lines. The locale is the host's, the same one that formatted the magnitude; Prism publishes no locale of its own, so the badge reads the platform's locale and never the Prism context, whose axes ADR-0019 §1 fixes."
+  - Percent and points render with zero or one decimal; an absolute basis follows the formatting of the value it belongs to.
+  - "`variant: chip` draws a neutral capsule of color.bg.fill.neutral.subtle on the solid family (page, solid, raised, nested); on vivid and on the scheme's glass the chip is an outline in color.border.on-media or color.border.on-glass-fill instead, because no fill role exists there. On light glass, inverse and accent there is neither a fill nor an outline role, so the chip renders bare there and the badge is the mark alone."
+  - "The capsule has no height of its own and none is bound: its inset is space.2 across and space.1 down, and the value's line box between them is what sets the height, so the chip grows with Dynamic Type and with a taller `size` instead of clipping. The bare variant takes neither inset."
+  - On vivid, light glass, inverse and accent every tone is that material's foreground, so the off-target accent is carried by the glyph and the sign alone.
+  - "The badge's text is 12-13 px, so on a vivid surface it sits in the header block only — the label or caption line of the tile or card that owns it (ADR-0030 rule 7), never on the hero row. color.text.on-vivid has no pair for sub-24 px text outside that block."
+  - "The badge is not focusable and has no hit area of its own; a pressable delta belongs to the row or tile that holds it, which owns size.hit."
+  - The period never wraps; where it does not fit it is dropped from the badge and kept in the accessibility label.
+
+motion:
+  valueChange: motion.duration.quick
+  reduceMotion: instant
+
+accessibility:
+  role: text
+  label: direction, magnitude and basis, then the period ("up 0.8 percentage points versus last 7 days"); a flat badge reads "unchanged" and an em-dash badge reads "no data"
+  traits: [staticText]
+  keyboard: not focusable
+  dynamicType: the value and the period scale with their roles; the chip's insets (space.2 across, space.1 down) hold at every text size and the capsule grows in both directions with the value's line box, so nothing clips
+  contrast: "the value is functional text at 4.5:1 on every material; the neutral glyph is color.icon.primary, a boundary mark at 3:1 on color.bg.page, color.bg.surface and color.bg.surface.raised, and the direction is never carried by color alone (ADR-0011 rule 4) - the arrow's own shape and the signed value carry it. color.icon.accent, the tone the bad direction takes, is a mark and not text: it holds 3:1 in dark and reaches 2.3:1 on white, which is why its pairs in tokens/contrast-pairs.json are dark-only and why the glyph never appears without its value (the token's own description; visual-dna §1 principle 3)"
+  reduceTransparency: not applicable — the chip fill is opaque and the outline variants keep their tokens when the enclosing Surface publishes raised
+  reduceMotion: the crossfade between values does not run; the badge swaps at motion.duration.instant and no arrow rotates or slides
+
+usage:
+  do:
+    - Name the period the change is measured against, in the badge or in the sentence around it.
+    - Keep a positive delta neutral and spend the accent on the off-target one.
+    - Use the bare variant inside a card; keep the chip for a row of deltas that need a shape.
+  dont:
+    - Don't use green for a positive change or a status hue for any change.
+    - Don't drop the arrow and the sign together; that leaves color alone.
+    - Don't stack a delta on a second delta; one change per value.
+    - Don't put a chip on a vivid gradient's light end, where no outline reads.
+    - Don't render a measured zero as an em dash; the dash is reserved for no data.
+    - Don't put a delta on a vivid hero row; it belongs in the label or caption line there.
+
+examples:
+  - id: up-good
+    props: { value: "0.8", direction: up, polarity: upIsGood, basis: points, period: "vs last 7 days" }
+  - id: down-off-target
+    props: { value: "4.2", direction: down, polarity: upIsGood, basis: percent, period: "vs last 7 days" }
+    description: an off-target change, so the value and the glyph take the accent
+  - id: down-good
+    props: { value: "1.1", direction: down, polarity: downIsGood, basis: percent, period: "vs yesterday" }
+    description: lower is better here, so the fall stays neutral
+  - id: flat
+    props: { value: "0.0", direction: flat, polarity: neutral, basis: percent }
+    description: a measured zero — the figure with its basis, no sign and no glyph
+  - id: no-data
+    props: { value: "", direction: flat, polarity: neutral, period: "vs last 7 days" }
+    description: an unset value renders the em dash, which means no data and never a zero
+  - id: chip-sm
+    props: { value: "12", direction: up, polarity: upIsGood, basis: absolute, variant: chip, size: sm }
+  - id: chip-on-vivid
+    props: { value: "0.4", direction: up, polarity: upIsGood, basis: points, variant: chip }
+    surface: vivid
+    description: the chip is an outline in color.border.on-media and every tone is white
+  - id: chip-on-glass-over-image
+    props: { value: "2.6", direction: down, polarity: upIsGood, basis: percent, variant: chip }
+    surface: glass
+    backdrop: image
+  - id: period-ru
+    props: { value: "1,4", direction: up, polarity: upIsGood, basis: percent, period: "к прошлой неделе" }
+    description: the Russian period runs about half again as long as its English twin and must not push the value out of the row
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 lists Text, StatTile and the rings, and the watch StatTile is icon, label and one large number (docs/research/component-inventory.md, watch tier). A delta at watch size would sit below the 12 px floor for functional text."
+    macos: the chip follows compact density, so its padding comes from the compact space scale; no hover state.
+  design: >-
+    Neutral positives, the accent for off-target and no green come from docs/research/visual-dna.md §1
+    principle 3, §2.4, §8.3 item 6 and anti-patterns 9 and 11; the sign, glyph and tabular-figure rules are
+    docs/research/dataviz-design.md §3 rules F29 and F30 with that rule's ADR-0021 amendment, which sends
+    badge text to the label roles. The badge writes the sign and the basis symbol itself, where HeroNumber
+    and StatTile take a `unit` string from the caller: `basis` is a closed enum, so the printed symbol and
+    the spoken word are two renderings of one prop rather than a string the caller has to keep in step with
+    the label. The chip outline on media is ADR-0030 §3.2, and the bare chip on light
+    glass, inverse and accent is the absence of a fill and an outline role on those materials. The
+    inventory's icon-only direction disc is not a variant here: a badge that drops both the sign and the
+    value leaves the direction to the glyph alone, and it belongs to Badge or IconButton. Example copy is
+    invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0013-icon-registry.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0019-web-runtime-contract.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

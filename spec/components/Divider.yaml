@@ -1,0 +1,114 @@
+name: Divider
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  One hairline that separates rows inside a single container: table and list rows, the rule under a
+  tab rail, the edge between two columns of one panel. It draws `border.hairline` in
+  `color.border.hairline` and nothing else. Everywhere else in Prism the luminance ladder and the
+  spacing scale do the separating, so a Divider is the exception, not the default.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the 1 px line; the component draws no fill, no shadow and no second line
+
+props:
+  - name: orientation
+    type: enum
+    values: [horizontal, vertical]
+    default: horizontal
+  - name: inset
+    type: enum
+    values: [none, content]
+    default: none
+    description: "`content` pulls both ends in by the card padding, so the line starts where the content starts"
+  - name: decorative
+    type: boolean
+    default: true
+    description: a decorative Divider is hidden from assistive technology; set it false only where the line is the sole grouping cue
+
+states: [default]
+
+tokens:
+  root:
+    color:
+      default: color.border.hairline
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+    thickness: border.hairline
+    inset:
+      content: space.card-padding
+
+behavior:
+  - The Divider is one line of `border.hairline` (1 px) in `color.border.hairline`; it never draws a fill, a shadow, a second line or a gap of its own.
+  - "`orientation: horizontal` stretches to the width of its container; `vertical` stretches to the height and needs a parent with a definite cross size."
+  - "`inset: content` trims both ends by `space.card-padding`, so a rule inside a card starts at the content edge; `none` runs the full bleed of the container."
+  - The Divider owns no margin. The distance to the rows above and below comes from the layout's own spacing tokens, so one list can change density without touching the rule.
+  - On a surface that publishes `vivid` the line takes `color.border.on-media` (white 40 %) and on the scheme's glass `color.border.on-glass-fill`, because a hairline of `color.border.hairline` disappears on both.
+  - A hairline is never drawn over a vivid surface's bloom or over the lightest stop of its gradient; on a vivid tile the anatomy separates by position, not by a rule.
+  - "A Divider is not drawn on a surface that publishes `inverse` or `accent`, and the spec declares no cell for either: those materials carry the one solid control or the one lit tile (Surface.yaml), never a table or a list of rows, and Prism has no hairline role that survives them."
+  - Increase Contrast strengthens the line through the token alone (`color.border.hairline` steps to ink 30 % in light and white 25 % in dark); the component has no contrast branch.
+  - Under the glass fallback the enclosing Surface publishes `raised`, so the Divider takes the `default` cell; it needs no fallback of its own.
+
+accessibility:
+  role: none while `decorative` is true (the default); separator otherwise
+  label: none; a Divider carries no text and never replaces a group heading
+  keyboard: not focusable, and not a stop for rotor or landmark navigation
+  dynamicType: the line does not scale; `space.card-padding` does not scale either, so an inset rule keeps its alignment at every text size
+  contrast: "the hairline is decoration and carries no meaning, so it is outside ADR-0011's boundary tier; a line that must be seen is not a Divider but a control edge, which uses `color.border.boundary` (3.80:1 on white, a checked boundary pair)"
+  reduceTransparency: not applicable — the Divider renders no glass; when the enclosing Surface falls back from glass to `raised`, the line takes its `default` colour with it
+  reduceMotion: not applicable — the Divider never animates, so there is nothing to substitute
+
+usage:
+  do:
+    - "Use a hairline only where the references used one: table rows, list rows, input edges and the rule under a tab rail."
+    - Give every Divider in one list the same `inset`, so the rules line up like the other repeated affordances on a screen.
+    - "Prefer the `content` inset inside a card, so the rule respects `space.card-padding` instead of cutting the card in half."
+  dont:
+    - Don't separate cards, groups or sections with a Divider; `space.group-gap` and `space.section-gap` do that, and depth is a luminance ladder, not lines.
+    - Don't pair a Divider with a border or a shadow to show nesting; use the next step of the surface ladder.
+    - Don't draw a Divider across a vivid bloom or a gradient's lightest stop, and don't let one carry meaning a sighted user alone can read.
+    - Don't stack two Dividers or use one as a spacer with `space.0`; an empty rule is still a line.
+
+examples:
+  - id: horizontal
+    props: { orientation: horizontal, inset: none }
+  - id: horizontal-inset
+    props: { orientation: horizontal, inset: content }
+    surface: solid
+    description: a row rule inside a card, starting at the content edge
+  - id: vertical
+    props: { orientation: vertical, inset: none }
+    surface: solid
+    description: the edge between two columns of one panel
+  - id: semantic
+    props: { orientation: horizontal, decorative: false }
+    description: the one case where the rule is the grouping cue and is exposed as a separator
+  - id: on-vivid
+    props: { orientation: horizontal, inset: content }
+    surface: vivid
+    description: on vivid the line is `color.border.on-media`, kept out of the bloom
+  - id: on-glass-over-map
+    props: { orientation: horizontal, inset: content }
+    surface: glass
+    backdrop: map
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 list does not name Divider, and a watch screen is a vertical stack of at most three glanceable tiles (visual-dna §6.3), where spacing and the luminance ladder separate. A white-8 % hairline there would be structure for sighted users only (visual-dna §7.5). This is a decision, not a gap: the watch uses the gap tokens instead."
+    macos: identical to iOS; a Divider has no hover state, because it is not interactive.
+  design: "The hairline roles and where they are allowed come from docs/research/visual-dna.md §1 principle 1 (depth is a luminance ladder; borders are reserved for inputs and tables) and §7.5 (inputs, table rows and chip strokes use `color.border.hairline`; `color.border.strong` is for outline pills, `color.border.boundary` for control edges that must be seen). The `vivid` and `glass` cells follow §4.7 (rings on media go to white 40 %) and ADR-0030 §3.2. The count is docs/research/component-inventory.md, where Divider appears in 3 of 11 shots, all desktop, as table row hairlines and column separators."
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

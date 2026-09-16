@@ -1,0 +1,299 @@
+name: Chip
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A small interactive pill carrying one short label and, optionally, a leading glyph or a trailing
+  remove control. It filters, toggles, names a selection or identifies an entity. Selection is told by a
+  full-strength stroke and label, never by a solid fill: the one solid in a group belongs to the primary
+  action. A static count or status mark is a Badge, not a Chip.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+  - part: leadingIcon
+    optional: true
+    description: a glyph at the small icon size; on the md chip an Avatar of size sm may stand here instead, and status.check replaces it while a chip is selected over media
+  - part: trailingIcon
+    optional: true
+    description: nav.close while `isRemovable`, or action.copy on an identifier chip
+
+props:
+  - name: label
+    type: string
+    required: true
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: sm
+  - name: leadingIcon
+    type: icon
+  - name: trailingIcon
+    type: icon
+  - name: isSelected
+    type: boolean
+    default: false
+  - name: isRemovable
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onPress
+    type: action
+  - name: onRemove
+    type: action
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    background:
+      default: comp.chip.bg.rest
+      page:
+        default: comp.chip.bg.rest
+        map: material.glass.chip
+        image: material.glass.chip
+        vivid: material.glass.chip
+      vivid: material.glass.chip
+      glass: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+        image: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+      vivid: material.glass.chip.blur
+      glass: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+        image: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+      vivid: material.glass.chip.saturate
+      glass: material.glass.chip.saturate
+    edgeColor: color.edge.highlight
+    edgeStartAlpha:
+      page:
+        map: material.glass.chip.edge.start
+        image: material.glass.chip.edge.start
+        vivid: material.glass.chip.edge.start
+      vivid: material.glass.chip.edge.start
+      glass: material.glass.chip.edge.start
+    edgeEndAlpha:
+      page:
+        map: material.glass.chip.edge.end
+        image: material.glass.chip.edge.end
+        vivid: material.glass.chip.edge.end
+      vivid: material.glass.chip.edge.end
+      glass: material.glass.chip.edge.end
+    border:
+      default: comp.chip.border.rest
+      page:
+        default: comp.chip.border.rest
+        map: color.border.on-glass-fill
+        image: color.border.on-glass-fill
+        vivid: color.border.on-media
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+    borderWidth: border.hairline
+    radius: radius.chip
+    height:
+      sm: size.control.sm
+      md: size.control.md
+    paddingX:
+      sm: space.4
+      md: space.5
+    gap: space.2
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      background: comp.chip.bg.pressed
+    selected:
+      border:
+        default: comp.chip.border.selected
+        page:
+          default: comp.chip.border.selected
+          map: color.border.on-glass-fill
+          image: color.border.on-glass-fill
+          vivid: color.border.on-media
+        vivid: color.border.on-media
+        glass: color.border.on-glass-fill
+      borderWidth: border.strong
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+    disabled:
+      opacity: opacity.disabled
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      default: color.text.secondary
+      page:
+        default: color.text.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+    selected:
+      color:
+        default: color.text.primary
+        page:
+          default: color.text.primary
+          map: color.text.on-glass-fill
+          image: color.text.on-glass-fill
+          vivid: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+        glass: color.text.on-glass-fill
+        accent: color.text.on-accent
+  leadingIcon:
+    size: size.icon.sm
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+    selected:
+      color:
+        default: color.icon.primary
+        page:
+          default: color.icon.primary
+          map: color.text.on-glass-fill
+          image: color.text.on-glass-fill
+          vivid: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+        glass: color.text.on-glass-fill
+        accent: color.text.on-accent
+  trailingIcon:
+    size: size.icon.sm
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+
+behavior:
+  - "A Chip with `onPress` or `isRemovable` is a control: it is focusable, takes the pressed state and obeys the hit rule. A Chip with neither is a static label and exposes no role; a static count or status mark is a Badge."
+  - The hit region is the larger of the visual size and size.hit on each axis, so the sm chip stays 32 pt tall while its target is 44 pt under touch and 28 pt under pointer.
+  - "`isSelected` thickens the stroke to border.strong in comp.chip.border.selected and lifts the label to color.text.primary; the fill does not change, because the one solid element in a group is the primary control."
+  - "Selection is never carried by color alone: the stroke, the label tone and the accessibility state change together."
+  - "Over media that ladder collapses, because every tone on a glass chip is color.text.on-glass-fill and every stroke is color.border.on-glass-fill or color.border.on-media: the 1 px step from border.hairline to border.strong would be the only cue. So over a map, imagery, a vivid surface or the scheme's glass a selected chip also renders status.check in the leading position, replacing the leading glyph it had, and the stroke still thickens."
+  - Over a map, imagery, a vivid surface or the scheme's glass the chip renders the glass chip and carries color.text.on-glass-fill for its label and glyphs, because a chip is checked with its primary foreground only.
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
+  - "On an accent surface the chip has no fill of its own: it sits on color.bg.fill.accent with color.text.on-accent-secondary for its label and glyphs and color.text.on-accent when selected, which are the pairs checked on that material."
+  - The label never wraps and never truncates; a chip that cannot show its label is too long for a chip and belongs in a ListRow.
+  - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region and its own label, and pressing it fires `onRemove` without firing `onPress`."
+  - "An identifier chip may put an Avatar of size sm in the leading slot, and only on the md chip: the sm chip and the sm avatar are both size.control.sm, so the circle would run edge to edge, while the md chip leaves it a 4 pt inset at every density."
+  - A chip group leaves space.3 between chips, and chips wrap onto a second line rather than scrolling out of reach.
+  - Hover (pointer only) adds the neutral overlay; pressing takes comp.chip.bg.pressed and scales the pill to 0.97 under motion.spring.snappy.
+  - Chips that select one option out of a set are a SegmentedControl instead; chips are for multi-select filters, identifiers and removable selections.
+
+motion:
+  press: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.impact.light
+
+accessibility:
+  role: button, or checkbox when the chip is a filter the user can toggle on and off
+  label: the visible label; a chip whose glyph carries meaning names it in the label, and the remove control is labelled "Remove <label>"
+  traits: [button, selected]
+  keyboard: Space and Enter toggle or activate; Delete and Backspace remove a removable chip; Tab reaches the chip and then its remove control; the focus ring is color.border.focus at border.focus width outside the pill
+  dynamicType: the label scales with type.label.*; the chip grows with it, and a row of chips wraps to more lines instead of truncating
+  contrast: the rest label is color.text.secondary and the selected label color.text.primary, both functional on color.bg.page, color.bg.surface and color.bg.surface.raised; over media both are color.text.on-glass-fill on material.glass.chip, and on an accent surface they are color.text.on-accent-secondary and color.text.on-accent on color.bg.fill.accent; the rest stroke is comp.chip.border.rest and is decorative, because the fill step and the label already identify the chip; the selected stroke is comp.chip.border.selected, which holds the 3:1 boundary tier on the three solid grounds, and over media the status.check glyph carries selection instead of the stroke
+  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback; the chip takes comp.chip.bg.rest and its hairline stroke back, drops the status.check glyph because the tone ladder is available again, and every tone returns to the solid family
+  reduceMotion: the press scale is replaced by a fill change to comp.chip.bg.pressed over motion.duration.base with motion.easing.out, and selection crossfades the stroke and the check glyph instead of scaling
+  voiceOver: announces the label, then "selected" when it is, then its role; a removable chip announces its remove control as a separate element
+
+usage:
+  do:
+    - Use chips for filters the user can combine, for removable selections and for identifiers.
+    - Keep labels to one or two words; put the unit or the qualifier in the label, not in a second line.
+    - Group chips on one line and let them wrap; leave space.3 between them.
+  dont:
+    - Don't fill a selected chip with a solid or the accent; the stroke and the label carry selection.
+    - Don't use a Chip for a count or a status word; that is Badge and StatusPill.
+    - Don't use chips for one exclusive choice; that is SegmentedControl.
+    - Don't put a chip below 12 px of label text or shrink it below its 44 pt touch target.
+
+examples:
+  - id: default-sm
+    props: { label: "Last 24 hours", size: sm }
+  - id: selected
+    props: { label: "Last 24 hours", isSelected: true }
+  - id: with-leading-icon
+    props: { label: "Routes", leadingIcon: action.filter }
+  - id: removable
+    props: { label: "North yard", isRemovable: true }
+  - id: identifier-copy
+    props: { label: "B-4417", trailingIcon: action.copy }
+    description: an identifier chip; the full value goes into the accessibility label
+  - id: md-size
+    props: { label: "Depots", size: md, leadingIcon: object.map-pin }
+  - id: disabled
+    props: { label: "Last 24 hours", isDisabled: true }
+  - id: md-with-avatar
+    props: { label: "Anna Petrova", size: md }
+    description: an identifier chip whose leading slot holds an Avatar of size sm; only the md chip leaves it an inset
+  - id: on-map
+    props: { label: "Depots", leadingIcon: object.map-pin }
+    surface: map
+    description: over a map the chip renders the glass chip recipe and carries the primary glass foreground only
+  - id: selected-on-map
+    props: { label: "Depots", isSelected: true }
+    surface: map
+    description: over media selection adds status.check in the leading slot, because every tone on the chip is one glass foreground
+  - id: on-vivid
+    props: { label: "Yield" }
+    surface: vivid
+  - id: on-glass-over-image
+    props: { label: "In service" }
+    surface: glass
+    backdrop: image
+  - id: russian-label
+    props: { label: "Последние 24 часа", isSelected: true }
+    description: Russian labels widen the chip instead of truncating
+
+notes:
+  platform:
+    watchos: "`none`. Chip is not in ADR-0010's Tier 3 set; a 32 pt pill inside a 44 pt target does not fit a wrist screen of at most three glanceable tiles, and a watch filter is a list screen."
+    macos: default size follows compact density (28 pt for sm); hover state required; the remove control appears on hover only when the chip is also removable by the keyboard.
+    web-desktop: built on React Aria ToggleButton (filter chips) or Tag (removable chips); `data-selected` drives the stroke, and the remove control is a nested button.
+  design: >-
+    Eight of eleven shots carry a chip (docs/research/component-inventory.md): count tiles, identifiers
+    with a copy glyph, period filters whose selected state is a full-strength stroke and label, metric
+    chips on a glass-look fill and a filter chip with a leading icon over a map. The pill and the 32 pt
+    visual with a 44 pt hit area are docs/research/visual-dna.md §1 principle 2 and §6.7; the hairline
+    stroke on a filled chip is §7.5, and it stays decorative because the fill step and the label identify
+    the chip (ADR-0030 §3.2 keeps color.border.boundary for a control identified only by its edge). "No
+    second solid in a group" is principle 9 and anti-pattern 24. The status.check on a selected chip over
+    media is not in the references; it is what ADR-0011's "never color alone" leaves once ADR-0029 §1.2
+    collapses every tone on a glass chip to one foreground, which turns the stroke and label ladder of
+    the period-filter sighting into a 0.5 px width step. Example strings are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

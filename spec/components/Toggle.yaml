@@ -1,0 +1,171 @@
+name: Toggle
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A binary switch that takes effect the moment it is flipped. Off is an outlined pill with a quiet
+  knob; on is the inverse solid with the opposite-colored knob, the binary form of the one-solid-in-a-
+  group rule. It is the control of a settings row, where the label leads and the switch trails; a
+  choice a form submits later is a Checkbox, not a Toggle.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row - label leading, control trailing - and the focus and hit region around it
+  - part: track
+  - part: knob
+  - part: label
+    optional: true
+
+props:
+  - name: isOn
+    type: boolean
+    default: false
+  - name: label
+    type: string
+    description: the visible label; when it is absent the control carries an explicit accessibility name
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  track:
+    background:
+      default: comp.toggle.track.off
+    border:
+      default: color.border.strong
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+    borderWidth: border.strong
+    radius: radius.control
+    height: comp.toggle.height
+    padding: comp.toggle.inset
+    selected:
+      background:
+        default: comp.toggle.track.on
+        vivid: color.bg.fill.inverse-media
+        glass: color.bg.fill.inverse-media
+  knob:
+    background:
+      default: comp.toggle.knob.off
+      vivid: color.text.on-vivid
+      glass: color.text.on-glass-fill
+    radius: radius.control
+    selected:
+      background:
+        default: comp.toggle.knob.on
+        vivid: color.text.on-inverse-media
+        glass: color.text.on-inverse-media
+  label:
+    typography: type.body.md
+
+behavior:
+  - A tap anywhere in the row - label included - flips the value and fires `onChange` once; a horizontal drag that starts on the track carries the knob and commits on release.
+  - A drag commits to the half of the track the knob's centre is nearest when the finger or pointer lifts, so a drag that ends where it began leaves the value unchanged and fires nothing; a drag that crosses the middle and comes back also fires nothing.
+  - The track is a pill of comp.toggle.height, twice as wide as it is tall, inset by comp.toggle.inset on every side. The knob is a circle whose diameter is comp.toggle.height less twice comp.toggle.inset, and it travels the track's width less twice comp.toggle.inset and less its own diameter - so at regular density a 32 pt track is 64 wide, the knob is 24 and it travels 32.
+  - "Off is an outlined track: color.border.strong at border.strong width over comp.toggle.track.off, with the knob in comp.toggle.knob.off. On is the inverse solid: comp.toggle.track.on with no outline and the opposite-colored knob, comp.toggle.knob.on. Position and fill tell the state together, so it never rests on color alone (ADR-0011)."
+  - The hit region is the larger of the row and size.hit on each axis (28 pt under pointer, 44 pt under touch); the track's own box never grows with modality (ADR-0024 §7.3).
+  - The label leads and the control trails, with space.3 between them; the label is a Text of role body-md and tone primary, so it resolves its own foreground against the material the enclosing Surface publishes.
+  - A Toggle applies its change immediately. It never sits behind a Save button, and a change that cannot be applied at once is a Checkbox inside a form.
+  - On a vivid surface, and on the scheme's glass, the on track becomes the white solid (color.bg.fill.inverse-media) with the opposite-colored knob (color.text.on-inverse-media); the off track drops its neutral wash - it has no cell there, so it draws no fill at all, the ghost grammar of ADR-0029 §3.3 - and shows as an outline in color.border.on-media or color.border.on-glass-fill with the knob in that material's own foreground, color.text.on-vivid or color.text.on-glass-fill.
+  - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Toggle with no visible label therefore stays off vivid and off the scheme's glass, where nothing but the ring would say a control is there."
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities and replaces the hover overlay rather than stacking with it, so the row never tints twice.
+  - "`isDisabled` lowers opacity to opacity.disabled, removes the control from the focus order and ignores taps; a switch that cannot move is better replaced by a sentence saying why."
+  - There is no size prop. Every control in a Prism screen shares one family and one height (visual-dna §1 principle 13), and comp.toggle.height follows density.
+
+motion:
+  flip: motion.spring.snappy
+  trackFill: motion.duration.quick
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.toggle
+  on: haptic.selection.on
+  off: haptic.selection.off
+
+accessibility:
+  role: switch
+  label: the `label` prop, or an explicit name when no label is visible; the label says what the switch controls and never contains the word on or off, which the value carries
+  traits: [toggle]
+  keyboard: Space flips the switch; Enter does not activate it; the focus ring is color.border.focus at border.focus width around the row, following radius.control on the track when the row has no label
+  dynamicType: the label scales with type.body.md and wraps to as many lines as it needs, so the row grows while the track keeps comp.toggle.height
+  contrast: the on track is color.text.on-inverse on color.bg.fill.inverse and, over media, color.text.on-inverse-media on color.bg.fill.inverse-media; the off track's outline is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, and comp.toggle.knob.off aliases color.icon.secondary, the color.text.secondary ramp step, which passes on those three grounds. On vivid and on the scheme's glass the knob takes color.text.on-vivid or color.text.on-glass-fill, both checked against every backdrop those materials may meet; the rings there (color.border.on-media, color.border.on-glass-fill) are decorative and have no pair of their own, so the label carries the control (ADR-0030 §3.2)
+  reduceTransparency: not applicable (Toggle draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the switch renders its default cells
+  reduceMotion: the knob keeps its bound spring, which is in-place movement and does not overshoot under Reduce Motion; the track's fill change crossfades to comp.toggle.track.on over motion.duration.base with motion.easing.out, and nothing scales or blurs
+
+usage:
+  do:
+    - Label what the switch controls, not its current value ("Night shading", not "Night shading is on").
+    - Put one Toggle per settings row and let the whole row be the target.
+    - Apply the change at once, and show the result in the same screen.
+  dont:
+    - Don't use a Toggle for a choice a form submits later; that is a Checkbox.
+    - Don't tint the on track with the accent; the accent means attention, the solid means state (visual-dna §11 anti-pattern 7).
+    - Don't put a second control in the same row, and don't disable a switch instead of explaining why it cannot move.
+    - Don't put a label-less Toggle on vivid or on the scheme's glass; its ring is decorative there and nothing else says a control is present.
+
+examples:
+  - id: off
+    props: { isOn: false, label: "Night shading" }
+  - id: on
+    props: { isOn: true, label: "Night shading" }
+  - id: on-disabled
+    props: { isOn: true, label: "Night shading", isDisabled: true }
+  - id: bare
+    props: { isOn: false }
+    description: no visible label; the accessibility name comes from the row that hosts it
+  - id: on-vivid
+    props: { isOn: true, label: "Live readings" }
+    surface: vivid
+  - id: off-on-vivid
+    props: { isOn: false, label: "Live readings" }
+    surface: vivid
+    description: the off track on a gradient - no fill, a white ring and a white knob
+  - id: on-glass-over-map
+    props: { isOn: true, label: "Follow the vehicle" }
+    surface: glass
+    backdrop: map
+  - id: label-ru
+    props: { isOn: false, label: "Показывать ночное затенение маршрута" }
+    description: a long Russian label; it wraps and the row grows, while the track keeps its height
+
+notes:
+  platform:
+    watchos: "none. ADR-0010's Tier 3 list has no Toggle, and a watch screen is at most three glanceable tiles; a wrist setting belongs to the phone app or to system Settings, not to a row of switches."
+    macos: Hover is required; the default track height follows compact density (28 pt), and the switch keeps the same anatomy rather than becoming a checkbox.
+    web-desktop: Built on React Aria Switch; the input is visually hidden, `data-selected` and `data-pressed` drive the CSS states, and the label element is the row (ADR-0019).
+  design: >-
+    docs/research/component-inventory.md records no Toggle in any of the eleven shots and names the
+    inverse-solid active rule as the cue to reuse; that is exactly what the on state is
+    (docs/research/visual-dna.md §1 principle 9 and §4.7). The outlined off track is the ghost grammar of
+    ADR-0029 §3.3, the pill is §1 principle 2, the 4 px knob inset is the smallest step of the §6.1
+    rhythm, and the track height is size.control.sm so a switch sits in the one control family of §1
+    principle 13. Example strings are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]

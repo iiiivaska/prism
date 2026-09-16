@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "text-field": {
+      "border": {
+        "$type": "color",
+        "error": {
+          "$value": "{sys.color.text.critical}",
+          "$description": "the invalid outline; the critical stroke is the critical text role, as it is on the danger button",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

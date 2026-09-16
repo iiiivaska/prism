@@ -1,0 +1,267 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "icon-button": {
+      "primary": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$description": "the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "pressed": {
+            "$value": "{sys.color.bg.fill.inverse}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "icon": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the opposite-colored glyph on the solid circle",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.surface.raised}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "pressed": {
+            "$value": "{sys.color.bg.surface.nested}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "icon": {
+          "$value": "{sys.color.icon.primary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "border": {
+          "$value": "{sys.color.border.hairline}",
+          "$description": "the optional 1 px top edge of a raised puck; decorative, the fill carries the step",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "ghost": {
+        "$type": "color",
+        "bg": {
+          "pressed": {
+            "$value": "{sys.color.bg.fill.neutral.subtle}",
+            "$description": "the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "icon": {
+          "$value": "{sys.color.icon.primary}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "border": {
+          "$value": "{sys.color.border.strong}",
+          "$description": "the ring alone identifies the control, so it is the boundary tier (ADR-0011)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "plain": {
+        "$type": "color",
+        "icon": {
+          "$value": "{sys.color.icon.secondary}",
+          "$description": "the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "danger": {
+        "$type": "color",
+        "bg": {
+          "rest": {
+            "$value": "{sys.color.bg.tint.critical}",
+            "$extensions": {
+              "app.prism": {
+                "figma": {
+                  "collection": "component",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "icon": {
+          "$value": "{sys.color.text.critical}",
+          "$description": "the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "border": {
+          "$value": "{sys.color.text.critical}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "sm": {
+          "$value": "{sys.size.control.sm}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "md": {
+          "$value": "{sys.size.control.md}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        },
+        "lg": {
+          "$value": "{sys.size.control.lg}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

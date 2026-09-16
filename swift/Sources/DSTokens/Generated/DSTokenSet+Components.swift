@@ -5,12 +5,95 @@ extension DSTokenSet {
     /// The component tokens (ARCHITECTURE §9.7.4): each a whole-value alias of one `sys` token, initialized from that
     /// token's member for the same context, so components get no colorsets of their own.
     public struct Components: Hashable, Sendable {
+        public let areaChart: AreaChart
+        public let avatar: Avatar
+        public let badge: Badge
         public let button: Button
         public let card: Card
+        public let checkbox: Checkbox
+        public let chip: Chip
+        public let iconButton: IconButton
+        public let progressBar: ProgressBar
+        public let progressRing: ProgressRing
+        public let radio: Radio
+        public let ringGauge: RingGauge
+        public let segmentedControl: SegmentedControl
+        public let select: Select
+        public let skeleton: Skeleton
+        public let slider: Slider
+        public let sparkline: Sparkline
+        public let spinner: Spinner
+        public let textArea: TextArea
+        public let textField: TextField
+        public let toggle: Toggle
+        public let tooltip: Tooltip
 
-        init(_ c: DSTokenContext, color: DSColor, material: Material, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
-            self.button = Button(c, color: color, material: material, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
-            self.card = Card(c, color: color, material: material, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+        init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            self.areaChart = AreaChart(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.avatar = Avatar(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.badge = Badge(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.button = Button(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.card = Card(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.checkbox = Checkbox(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.chip = Chip(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.iconButton = IconButton(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.progressBar = ProgressBar(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.progressRing = ProgressRing(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.radio = Radio(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.ringGauge = RingGauge(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.segmentedControl = SegmentedControl(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.select = Select(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.skeleton = Skeleton(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.slider = Slider(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.sparkline = Sparkline(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.spinner = Spinner(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.textArea = TextArea(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.textField = TextField(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.toggle = Toggle(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+            self.tooltip = Tooltip(c, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+        }
+
+        public struct AreaChart: Hashable, Sendable {
+            /// the wash under a cumulative area or between a range pair; Prism's charts carry bands, not area gradients, so the area reuses the one chart wash (docs/research/visual-dna.md §8.2, §8.3 item 4)
+            public let fill: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.fill = color.chartBand
+            }
+        }
+
+        public struct Avatar: Hashable, Sendable {
+            /// the circle behind the initials and the fallback glyph; raised rather than nested because color.text.secondary is checked on color.bg.surface.raised and on no nested ground (ADR-0011 rule 1); over media the circle takes material.glass.chip instead
+            public let bg: Color
+            /// the active or selected avatar's stroke: the inverse solid as a ring (visual-dna principle 9); over media it becomes color.border.on-media
+            public let ring: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bg = color.bgSurfaceRaised
+                self.ring = color.bgFillInverse
+            }
+        }
+
+        public struct Badge: Hashable, Sendable {
+            /// the one attention fill per screen; the accent means look here, never an action
+            public let accentBg: Color
+            public let accentText: Color
+            /// the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11)
+            public let criticalBg: Color
+            /// 11 px Medium digits on the badge red
+            public let criticalText: Color
+            /// the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9)
+            public let neutralBg: Color
+            public let neutralText: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.accentBg = color.bgFillAccent
+                self.accentText = color.textOnAccent
+                self.criticalBg = color.bgFillCritical
+                self.criticalText = color.textOnBadge
+                self.neutralBg = color.bgFillInverse
+                self.neutralText = color.textOnInverse
+            }
         }
 
         public struct Button: Hashable, Sendable {
@@ -39,7 +122,7 @@ extension DSTokenSet {
             public let secondaryBorder: Color
             public let secondaryText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.dangerBgRest = color.bgTintCritical
                 self.dangerBorder = color.textCritical
                 self.dangerText = color.textCritical
@@ -80,7 +163,7 @@ extension DSTokenSet {
             public let vividCaption: Color
             public let vividText: Color
 
-            init(_ c: DSTokenContext, color: DSColor, material: Material, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
                 self.glassFill = material.glassFill
                 self.glassText = color.textOnGlassFill
                 self.padding = space.cardPadding
@@ -94,6 +177,292 @@ extension DSTokenSet {
                 self.solidText = color.textPrimary
                 self.vividCaption = color.textOnVivid
                 self.vividText = color.textOnVivid
+            }
+        }
+
+        public struct Checkbox: Hashable, Sendable {
+            /// a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3)
+            public let bgSelected: Color
+            /// the check or the mixed dash on the filled box: the opposite-colored glyph
+            public let mark: Color
+            /// the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2)
+            public let radius: CGFloat
+            /// the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it
+            public let size: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bgSelected = color.bgFillInverse
+                self.mark = color.textOnInverse
+                self.radius = radius.badge
+                self.size = size.iconMd
+            }
+        }
+
+        public struct Chip: Hashable, Sendable {
+            public let bgPressed: Color
+            /// the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead
+            public let bgRest: Color
+            /// decorative: the fill step and the label identify the chip, so the stroke is not the boundary role
+            public let borderRest: Color
+            /// selection is a full-strength stroke and label, never a solid fill
+            public let borderSelected: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bgPressed = color.bgSurfaceNested
+                self.bgRest = color.bgSurfaceRaised
+                self.borderRest = color.borderHairline
+                self.borderSelected = color.borderStrong
+            }
+        }
+
+        public struct IconButton: Hashable, Sendable {
+            public let dangerBgRest: Color
+            public let dangerBorder: Color
+            /// the critical text step, not the mark step: it is the pair the contrast gate checks on the critical tint
+            public let dangerIcon: Color
+            /// the hairline ring is transparent at rest; pressed takes the neutral subtle fill (ADR-0029 §3.3)
+            public let ghostBgPressed: Color
+            /// the ring alone identifies the control, so it is the boundary tier (ADR-0011)
+            public let ghostBorder: Color
+            public let ghostIcon: Color
+            /// the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance
+            public let plainIcon: Color
+            public let primaryBgPressed: Color
+            /// the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)
+            public let primaryBgRest: Color
+            /// the opposite-colored glyph on the solid circle
+            public let primaryIcon: Color
+            public let secondaryBgPressed: Color
+            public let secondaryBgRest: Color
+            /// the optional 1 px top edge of a raised puck; decorative, the fill carries the step
+            public let secondaryBorder: Color
+            public let secondaryIcon: Color
+            public let sizeLg: CGFloat
+            public let sizeMd: CGFloat
+            public let sizeSm: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.dangerBgRest = color.bgTintCritical
+                self.dangerBorder = color.textCritical
+                self.dangerIcon = color.textCritical
+                self.ghostBgPressed = color.bgFillNeutralSubtle
+                self.ghostBorder = color.borderStrong
+                self.ghostIcon = color.iconPrimary
+                self.plainIcon = color.iconSecondary
+                self.primaryBgPressed = color.bgFillInverse
+                self.primaryBgRest = color.bgFillInverse
+                self.primaryIcon = color.textOnInverse
+                self.secondaryBgPressed = color.bgSurfaceNested
+                self.secondaryBgRest = color.bgSurfaceRaised
+                self.secondaryBorder = color.borderHairline
+                self.secondaryIcon = color.iconPrimary
+                self.sizeLg = size.controlLg
+                self.sizeMd = size.controlMd
+                self.sizeSm = size.controlSm
+            }
+        }
+
+        public struct ProgressBar: Hashable, Sendable {
+            /// the filled length is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)
+            public let fill: Color
+            /// the second length of a split bar: the comparison weight, so the two parts differ by intensity of one ink and not by hue (dataviz-design.md §3 E26)
+            public let fillSecondary: Color
+            /// 4 px: the minimum gauge stroke of dataviz-design.md §3 E25, and one step of the 4 px rhythm (visual-dna §6.1)
+            public let height: CGFloat
+            /// 8 px: the target tick is twice the track's thickness, the comparative marker of dataviz-design.md §3 E27, centred on the track's centreline
+            public let markerHeight: CGFloat
+            /// the unfilled pill: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own
+            public let track: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.fill = color.bgFillInverse
+                self.fillSecondary = color.chartComparison
+                self.height = space.step1
+                self.markerHeight = space.step3
+                self.track = color.bgFillNeutralSubtle
+            }
+        }
+
+        public struct ProgressRing: Hashable, Sendable {
+            /// the value arc is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)
+            public let arc: Color
+            /// 4 px: the floor under chart.gauge-stroke-ratio, from dataviz-design.md §3 E25's minimum ring stroke
+            public let strokeMin: CGFloat
+            /// the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25)
+            public let track: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.arc = color.bgFillInverse
+                self.strokeMin = space.step1
+                self.track = color.bgFillNeutralSubtle
+            }
+        }
+
+        public struct Radio: Hashable, Sendable {
+            /// the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3)
+            public let bgSelected: Color
+            /// the opposite-colored dot on the solid circle
+            public let dotFill: Color
+            /// 8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph
+            public let dotSize: CGFloat
+            /// the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it
+            public let size: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bgSelected = color.bgFillInverse
+                self.dotFill = color.textOnInverse
+                self.dotSize = space.step3
+                self.size = size.iconMd
+            }
+        }
+
+        public struct RingGauge: Hashable, Sendable {
+            /// ring as a card's hero instrument; the largest diameter on Prism's space rhythm (docs/research/visual-dna.md §6.1, §6.6)
+            public let sizeLg: CGFloat
+            /// ring inside a card, the 64 px step of docs/research/dataviz-design.md §5
+            public let sizeMd: CGFloat
+            /// glanceable ring: the corner ring diameter of the card anatomy, and the watch complication size (docs/research/dataviz-design.md §5)
+            public let sizeSm: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.sizeLg = space.step13
+                self.sizeMd = space.step12
+                self.sizeSm = size.iconRing
+            }
+        }
+
+        public struct SegmentedControl: Hashable, Sendable {
+            /// the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill
+            public let activeBg: Color
+            /// the label and glyph on the selected segment
+            public let activeText: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.activeBg = color.bgFillInverse
+                self.activeText = color.textOnInverse
+            }
+        }
+
+        public struct Select: Hashable, Sendable {
+            /// the invalid outline of the trigger; the critical stroke is the critical text role
+            public let borderError: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.borderError = color.textCritical
+            }
+        }
+
+        public struct Skeleton: Hashable, Sendable {
+            /// the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1)
+            public let bg: Color
+            /// the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4)
+            public let shimmer: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bg = color.bgFillNeutralSubtle
+                self.shimmer = color.bgFillNeutralSubtle
+            }
+        }
+
+        public struct Slider: Hashable, Sendable {
+            /// the filled part of the track is the one solid in the control (visual-dna §1 principle 9)
+            public let fill: Color
+            /// the same ink as the fill; the thumb is told by its size, not by its color
+            public let thumbFill: Color
+            /// the small control circle, so the thumb sits in the one control family and never falls below the pointer hit area (ADR-0024 §7.1)
+            public let thumbSize: CGFloat
+            /// the step marks under the track; the tick-ruler ornament of visual-dna §4.12, always decorative
+            public let tick: Color
+            /// the unfilled part of the meter: a lighter step of the same ink/white ramp as the fill (dataviz-design §3), and the boundary-tier token the contrast gate already checks
+            public let trackBg: Color
+            /// 4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own
+            public let trackHeight: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.fill = color.bgFillInverse
+                self.thumbFill = color.bgFillInverse
+                self.thumbSize = size.controlSm
+                self.tick = color.borderStrong
+                self.trackBg = color.borderStrong
+                self.trackHeight = space.step1
+            }
+        }
+
+        public struct Sparkline: Hashable, Sendable {
+            /// sparkline height in a table row: the row's text line box (docs/research/dataviz-design.md §3 rule D20, §6)
+            public let heightTable: CGFloat
+            /// sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20)
+            public let heightTile: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.heightTable = space.step6
+                self.heightTile = space.step10
+            }
+        }
+
+        public struct Spinner: Hashable, Sendable {
+            /// the turning arc is a glyph, not a fill: it takes the primary icon colour unless the owning control binds the part itself (Button binds its own foreground per variant)
+            public let arc: Color
+            /// 1.5 px: the icon stroke of visual-dna §10, so the arc weighs the same as the glyph it replaces
+            public let stroke: CGFloat
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.arc = color.iconPrimary
+                self.stroke = border.strong
+            }
+        }
+
+        public struct TextArea: Hashable, Sendable {
+            /// the invalid outline of the multi-line box; the critical stroke is the critical text role
+            public let borderError: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.borderError = color.textCritical
+            }
+        }
+
+        public struct TextField: Hashable, Sendable {
+            /// the invalid outline; the critical stroke is the critical text role, as it is on the danger button
+            public let borderError: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.borderError = color.textCritical
+            }
+        }
+
+        public struct Toggle: Hashable, Sendable {
+            /// the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1)
+            public let height: CGFloat
+            /// the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1)
+            public let inset: CGFloat
+            /// the quiet dot inside the outlined track; the color.text.secondary ramp step
+            public let knobOff: Color
+            /// the opposite-colored element on the solid track
+            public let knobOn: Color
+            /// off is an outlined track over a neutral subtle well; the outline is color.border.strong
+            public let trackOff: Color
+            /// on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9)
+            public let trackOn: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.height = size.controlSm
+                self.inset = space.step1
+                self.knobOff = color.iconSecondary
+                self.knobOn = color.textOnInverse
+                self.trackOff = color.bgFillNeutralSubtle
+                self.trackOn = color.bgFillInverse
+            }
+        }
+
+        public struct Tooltip: Hashable, Sendable {
+            /// the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7)
+            public let bg: Color
+            /// the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json
+            public let text: Color
+
+            init(_ c: DSTokenContext, color: DSColor, material: Material, border: Border, elevation: Elevation, space: Space, size: Size, radius: Radius, motion: Motion) {
+                self.bg = color.bgFillInverse
+                self.text = color.textOnInverse
             }
         }
     }

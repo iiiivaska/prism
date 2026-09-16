@@ -1,0 +1,182 @@
+name: ProgressBar
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A determinate part-to-whole bar: a 4 px pill track with one filled length, optionally a second
+  length after it (the split bar the references show) and one target tick. The fill is the inverse
+  solid, never the accent, because in Prism the accent means attention and ink or white carries the
+  data. Work with no measurable progress uses Spinner or an indeterminate ProgressRing instead.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: track
+    description: the unfilled pill, full width at every value
+  - part: fill
+    description: the primary length, drawn from the leading end
+  - part: segment
+    optional: true
+    description: the second length of a split bar, drawn after the fill with a gap between them
+  - part: marker
+    optional: true
+    description: one perpendicular target tick, centred on the track's centreline and standing above and below it
+  - part: label
+    optional: true
+    description: what is being measured, above the bar; not drawn on vivid
+  - part: value
+    optional: true
+    description: the readout, trailing on the label's line; not drawn on vivid
+
+props:
+  - name: value
+    type: number
+    default: 0
+    description: the filled fraction, clamped to 0 through 1
+  - name: secondaryValue
+    type: number
+    description: an optional second fraction drawn after the fill against the same whole (the split bar); ignored on vivid and on the scheme's glass
+  - name: target
+    type: number
+    description: an optional target fraction, drawn as one tick
+  - name: label
+    type: string
+    description: what is being measured; required unless a neighbouring Text already names it
+  - name: showValue
+    type: boolean
+    default: false
+    description: renders the whole percent trailing on the label's line, in tabular figures; ignored on vivid
+
+states: [default]
+
+tokens:
+  root:
+    gap: space.3
+  track:
+    height: comp.progress-bar.height
+    radius: radius.control
+    color:
+      default: comp.progress-bar.track
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+  fill:
+    color:
+      default: comp.progress-bar.fill
+      vivid: color.bg.fill.inverse-media
+      glass: comp.progress-bar.fill
+    radius: radius.control
+  segment:
+    color:
+      default: comp.progress-bar.fill-secondary
+    gap: space.1
+    radius: radius.control
+  marker:
+    color:
+      default: color.chart.target
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+    width: border.strong
+    height: comp.progress-bar.marker-height
+  label:
+    typography: type.label.sm
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  value:
+    typography: type.data
+    color:
+      default: color.text.primary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+
+behavior:
+  - "`value` is a fraction clamped to 0 through 1; the track keeps its full length at every value and only the fill grows. The bar always takes the full width of the slot the layout gives it; it has no intrinsic width of its own."
+  - The track is a pill of `radius.control` and `comp.progress-bar.height` (4 px, the minimum gauge stroke of dataviz-design.md §3 E25); the root is the column that stacks the optional label row over it, and only the track carries that height. The fill's ends stay round at every value, so a value just above 0 shows a dot rather than a sliver.
+  - "`secondaryValue` draws a second length after the fill in `comp.progress-bar.fill-secondary`, separated from it by `space.1` (4 px). Both lengths are measured against the same whole, so a split bar still reads as one part-to-whole bar."
+  - "The split bar is drawn only on the solid family (page, solid, raised, nested), and the spec declares no `vivid` or `glass` cell for `segment`. Those families have no comparison weight (ADR-0030 §2.1 gives them `line`, `reference` and `grid` only), and white 40 % over a white 24 % track would not be a second length anyone could read. On vivid and on the scheme's glass `secondaryValue` is ignored and the bar shows one length."
+  - "`target` draws one perpendicular tick of `border.strong` (1.5 px) in `color.chart.target`, `comp.progress-bar.marker-height` (8 px, twice the track) tall and centred on the track's centreline, so it stands half above and half below the pill and the root's box grows to hold it (dataviz-design.md §3 E27). A target is never the only cue: `label` or `showValue` states it in words."
+  - "`showValue` renders `value` as a whole percent followed by `%` at the same size, one string in the `value` part (`62 %`) — not a hung unit, which belongs to the metric roles. `type.data` is tabular, because a progress value changes while it is visible (ADR-0021 §5). The readout replaces its value and never counts up (Text.yaml). A product that needs another unit puts it in a neighbouring Text and leaves `showValue` false."
+  - The bar has no intrinsic margin. Its distance from the label row is `space.3` (8 px); everything outside the component belongs to the layout.
+  - On a surface that publishes `vivid` the fill flips to the white solid `color.bg.fill.inverse-media` over a `color.chart.on-media.grid` track; on the scheme's glass it keeps `comp.progress-bar.fill`, which is the inverse solid ADR-0030 §3.1 already makes right there (ink on light glass, white on smoke), over the glass grid. A bar is never drawn on a vivid gradient's lightest stop or over its bloom.
+  - "On a surface that publishes `vivid` the component draws neither `label` nor the readout. Both sit below 24 px, where `color.text.on-vivid` is checked only inside the Card header block (ADR-0022 V2), and the large tier covers only 24 px and above (V1). The work is named by the enclosing Card's title and caption instead, the way the hero's unit is (ADR-0030 §8); `label` still supplies the accessibility name."
+  - Progress that completes plays no haptic. The haptics registry allows at most one haptic per user action and none on a programmatic state change, and a bar reaching 1 is programmatic.
+  - The component is never interactive. A bar the user can move is a Slider, and a bar that opens something is a row with a Button.
+  - A value that cannot be measured has no bar. Use Spinner inside a control, or ProgressRing with `variant` indeterminate, whose arc length is the 270 degree open-ring sweep of dataviz-design.md §3 E24.
+
+motion:
+  value: motion.spring.smooth
+  reduceMotion: crossfade
+
+accessibility:
+  role: progressbar
+  label: from `label`; required when no neighbouring Text names the work, and it states the work, not the percentage ("Uploading route file")
+  traits: [updatesFrequently]
+  keyboard: not focusable and not a tab stop; the bar is a readout, and the control that started the work keeps the focus
+  dynamicType: the track's height does not scale; `label` scales with `type.label.sm` and `value` with `type.data`, and the readout wraps below the label instead of shrinking the bar
+  contrast: "the filled length against the track is a mark that carries meaning, so it holds the 3:1 boundary tier of ADR-0011; `comp.progress-bar.fill` is `color.bg.fill.inverse` (ink in light, white in dark) over `comp.progress-bar.track`, which is `color.bg.fill.neutral.subtle` (6 % over the surface), 17.0:1 in light. On vivid the white solid `color.bg.fill.inverse-media` against every gradient sample is ADR-0022's V1. `label` and `value` are functional text below 24 px and follow the tones of Text on the published material, which is why neither is drawn on vivid: outside the Card header block `color.text.on-vivid` is checked only at 24 px and above"
+  voiceOver: "the role exposes the fraction as a percent from 0 to 100 (`aria-valuemin` 0, `aria-valuemax` 100, `aria-valuenow` the rounded percent on web; `accessibilityValue` on Apple). `secondaryValue` and `target` are not exposed as values: a split bar announces the primary length, and a target belongs in the label or in neighbouring text"
+  reduceTransparency: not applicable — the bar renders no glass of its own; when the enclosing Surface falls back from glass to `raised`, the bar takes its `default` cells with it
+  reduceMotion: the fill keeps `motion.spring.smooth` for in-place movement, which carries no bounce and settles in 440 ms under Reduce Motion (ADR-0023 §8.2); nothing scales, blurs or changes depth, the readout never counts up, and the bar carries no pulse, shimmer or marching dash to suppress
+
+usage:
+  do:
+    - Name the work above the bar, so the progress survives Reduce Motion, a screen reader and a screenshot.
+    - Keep the fill neutral. Ink and white carry the data; the accent means attention.
+    - "Use `secondaryValue` for a genuine second part of the same whole (done and pending), not for a second metric."
+  dont:
+    - Don't colour a ProgressBar with the accent or a status hue; a failed job is a Banner with an icon and a label, not a red bar.
+    - Don't give the bar a glow, a colored drop shadow or a gradient fill; light on vivid comes from the surface, never from a control.
+    - Don't use a ProgressBar for work of unknown length; a bar that pretends to measure is worse than a Spinner.
+    - Don't stack more than one ProgressBar in a card; a list of parallel jobs is a list of rows.
+
+examples:
+  - id: determinate
+    props: { value: 0.62, label: "Uploading route file", showValue: true }
+  - id: bare
+    props: { value: 0.18 }
+    description: a bar inside a row whose neighbouring Text already names the work
+  - id: split
+    props: { value: 0.45, secondaryValue: 0.2, label: "Storage used", showValue: true }
+    description: the two-segment split bar, both lengths against one whole
+  - id: with-target
+    props: { value: 0.72, target: 0.9, label: "Monthly target", showValue: true }
+  - id: complete
+    props: { value: 1, label: "Sync complete", showValue: true }
+  - id: on-vivid
+    props: { value: 0.5, label: "Batch progress" }
+    surface: vivid
+    description: the bar alone; on vivid the label row is not drawn and `label` is only the accessibility name, so the card's caption carries the words
+  - id: on-glass-over-map
+    props: { value: 0.35, label: "Route recalculated" }
+    surface: glass
+    backdrop: map
+  - id: ru-long-label
+    props: { value: 0.4, label: "Загрузка данных маршрута", showValue: true }
+    description: a Russian label about a third longer than its English twin; the label wraps to two lines and the bar keeps its height
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 list names ProgressRing and not ProgressBar, and dataviz-design.md §3 H47 makes the wrist glanceable only, with rings through SwiftUI's circular Gauge. A watch screen holding at most three tiles (visual-dna §6.3) has no room for a labelled bar, so progress there is a ring. This is a decision, not a gap."
+    macos: identical to iOS; the bar has no hover state, because it is not interactive.
+    ipados: identical to iOS; the bar does not change with the pointer.
+  design: "The bar's form is docs/research/component-inventory.md's two ProgressBar sightings, both segmented (a two-segment split bar and a split progress pill with a boundary marker), read through docs/research/visual-dna.md §1 principle 2 (pill grammar), principle 3 (the accent is attention, never an active state), principle 9 (the inverse solid carries the one active thing) and principle 10 (charts are hairline instruments). The 4 px thickness is dataviz-design.md §3 E25's minimum gauge stroke and the target tick is its E27. The references' glow on the split bar is dropped under visual-dna §11 anti-pattern 5. Example strings are invented (ADR-0015 rule 3)."
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

@@ -1,0 +1,125 @@
+name: Spinner
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  The indeterminate mark for work whose length cannot be measured: one hairline arc at icon size,
+  with no track and no value, turning at a constant rate. It sits where the thing it replaces will
+  appear, most often inside a Button while `isLoading`. It never carries the message on its own,
+  because under Reduce Motion the arc stops turning.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: arc
+    description: the 270 degree open sweep, round caps, turning clockwise; the Spinner draws no track
+
+props:
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+    description: "16, 20 and 24 px: the inline glyph, the glyph inside a control and the large glyph of visual-dna §10"
+  - name: label
+    type: string
+    description: what is being waited for; it becomes the accessibility label when the owning control does not already provide one
+  - name: delay
+    type: boolean
+    default: true
+    description: hold the Spinner hidden for one `motion.duration.slower` so a fast answer never flashes a spinner
+
+states: [default]
+
+tokens:
+  root:
+    size:
+      sm: size.icon.sm
+      md: size.icon.md
+      lg: size.icon.lg
+  arc:
+    color:
+      default: comp.spinner.arc
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glass: color.text.on-glass-fill
+      glassLight: color.text.on-glass-light
+    width: comp.spinner.stroke
+
+behavior:
+  - "The arc is the 270 degree open sweep of dataviz-design.md §3 E24 with round caps, drawn at `comp.spinner.stroke` (1.5 px, the icon stroke of visual-dna §10). It turns one revolution per `motion.duration.slower` with `motion.easing.linear`, which ADR-0023 §9 reserves for constant motion."
+  - The Spinner has no track and no value. A mark with a track is a ProgressRing, and a mark with a value is a ProgressBar.
+  - "The box is `size.icon.sm`, `.md` or `.lg`, so a Spinner occupies exactly the slot of the glyph or label it replaces and no layout shifts when it appears. `Button.isLoading` replaces the label with a Spinner of the label's height and keeps the button's width."
+  - "With `delay` true the Spinner stays hidden for `motion.duration.slower` and then fades in over `motion.duration.base` with `motion.easing.out`, so a request that answers quickly shows nothing at all. The delay is the bound token, not a literal, so it is 500 ms in the default motion context and 150 ms in the reduced one, where ADR-0023 §8.3 caps every duration at 150 ms; the Spinner does not branch on the context to keep it longer."
+  - "The arc takes `comp.spinner.arc` unless the owning control binds the `arc` part itself; Button binds its own foreground per variant, so a Spinner inside a primary pill is `color.text.on-inverse`."
+  - One Spinner per waiting region. A screen that is loading its whole content uses Skeleton placeholders or an EmptyState, not a field of spinners.
+  - A Spinner never carries the message alone. The control or region that owns it names the work in text, so the state survives Reduce Motion, where the arc does not turn.
+  - Starting or finishing work plays no haptic. The haptics registry allows at most one haptic per user action and none on a programmatic state change.
+
+motion:
+  rotation: motion.duration.slower
+  rotationEasing: motion.easing.linear
+  appear: motion.duration.base
+  appearEasing: motion.easing.out
+  reduceMotion: instant
+
+accessibility:
+  role: progressbar with no value (an indeterminate busy indicator)
+  label: from `label`, or the owning control's label plus its loading state; a Spinner with no name anywhere is a defect
+  traits: [updatesFrequently]
+  keyboard: not focusable and not a tab stop; the control that started the work keeps the focus, and a Spinner that replaces a Button's label leaves the Button focused and disabled
+  dynamicType: the arc does not scale with text, because it stands in a glyph slot; a Spinner replacing a label matches that label's height, which does scale
+  contrast: "while it turns, the arc is a mark that carries meaning and holds the 3:1 boundary tier of ADR-0011; `comp.spinner.arc` is `color.icon.primary` (ink 80 % in light, 10.7:1 on white; white in dark) and the material cells take that material's primary foreground, the same tones Text uses. The static ring it becomes under Reduce Motion is dimmed to `opacity.dimmed-row` and is decoration at that point: it carries no tier, which is why the owning control's text and the accessibility label, not the mark, carry the state there"
+  reduceTransparency: not applicable — the Spinner renders no glass of its own; when the enclosing Surface falls back from glass to `raised`, the arc takes its `default` colour with it
+  reduceMotion: "the rotation is an ambient loop and does not run (ADR-0023 §8.4, `instant`): the Spinner draws its complete circumference in `comp.spinner.arc` at `opacity.dimmed-row` and holds it. The entrance no longer scales; it crossfades by opacity over `motion.duration.base` with `motion.easing.out`. The `delay` still applies but shortens with its token to 150 ms, because ADR-0023 §8.3 caps every duration in the reduced context. Because the static mark says nothing on its own, the owning control's text and its accessibility label carry the state"
+
+usage:
+  do:
+    - Put the Spinner in the slot of the thing it replaces, at that thing's size, so nothing reflows when it appears or leaves.
+    - Name the work beside it or in the owning control ("Saving", "Checking connection").
+    - Keep `delay` on for anything that usually answers in well under half a second.
+  dont:
+    - Don't use a Spinner for work you can measure; that is a ProgressBar, and a bar that pretends to measure is worse than a Spinner.
+    - Don't fill a loading screen with Spinners; use Skeleton placeholders for a layout you already know.
+    - Don't colour a Spinner with the accent or a status hue; the accent means attention and a failure is an icon with a label.
+    - Don't add a pulse, a bounce, a trailing blur or a colour cycle; the arc turns at a constant rate and nothing else moves.
+
+examples:
+  - id: inline-sm
+    props: { size: sm, label: "Checking connection" }
+  - id: default-md
+    props: { size: md, label: "Saving" }
+  - id: large
+    props: { size: lg, label: "Loading report" }
+  - id: no-delay
+    props: { size: md, label: "Saving", delay: false }
+    description: a control that is known to be slow shows the Spinner at once
+  - id: on-vivid
+    props: { size: md, label: "Refreshing" }
+    surface: vivid
+  - id: on-glass-over-map
+    props: { size: md, label: "Locating" }
+    surface: glass
+    backdrop: map
+  - id: ru-in-button
+    props: { size: md, label: "Сохранение изменений" }
+    surface: solid
+    description: a Russian label about half again as long as "Saving"; the label lives in the Button, so the Spinner keeps its 20 px box
+
+notes:
+  platform:
+    watchos: "`adapted`. ADR-0010's Tier 3 list does not name Spinner, but Button ships on the watch and Button.yaml declares a `spinner` part for `isLoading`. On the watch the Spinner exists only inside a control and never stands alone on a screen; a waiting watch screen keeps its previous value or shows an EmptyState. There vivid resolves to solid and glass takes the opaque `raised` fallback (Surface.yaml), so only the `default`, `inverse` and `accent` cells apply."
+    macos: identical to iOS; the Spinner has no hover state, because it is not interactive.
+  design: "The arc geometry is dataviz-design.md §3 E24's open sweep and its round caps are E25; the 1.5 px stroke and the 16 / 20 / 24 sizes are docs/research/visual-dna.md §10 (line icons at a 1.5 px stroke; 20 inside controls, 16 inline, 24 large). The constant rate is ADR-0023 §9's `linear` role, and the stopped loop under Reduce Motion is ADR-0023 §8.4 with visual-dna §11 anti-pattern 33. docs/research/component-inventory.md records 0 of 11 sightings and names Button.yaml's `spinner` part as the reason the component exists. Example strings are invented (ADR-0015 rule 3)."
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md]

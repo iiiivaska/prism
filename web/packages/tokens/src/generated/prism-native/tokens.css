@@ -529,6 +529,9 @@
     --ds-z-overlay: 100;
     --ds-z-raised: 10;
     --ds-z-toast: 1000;
+    --ds-badge-accent-text: var(--ds-color-text-on-accent);
+    --ds-badge-critical-bg: var(--ds-color-bg-fill-critical);
+    --ds-badge-critical-text: var(--ds-color-text-on-badge);
     --ds-button-gap: var(--ds-space-3);
     --ds-button-padding-x-lg: var(--ds-space-6);
     --ds-button-padding-x-md: var(--ds-space-5);
@@ -540,6 +543,21 @@
     --ds-card-shadow-solid: var(--ds-elevation-0);
     --ds-card-vivid-caption: var(--ds-color-text-on-vivid);
     --ds-card-vivid-text: var(--ds-color-text-on-vivid);
+    --ds-checkbox-radius: var(--ds-radius-badge);
+    --ds-checkbox-size: var(--ds-size-icon-md);
+    --ds-progress-bar-height: var(--ds-space-1);
+    --ds-progress-bar-marker-height: var(--ds-space-3);
+    --ds-progress-ring-stroke-min: var(--ds-space-1);
+    --ds-radio-dot-size: var(--ds-space-3);
+    --ds-radio-size: var(--ds-size-icon-md);
+    --ds-ring-gauge-size-lg: var(--ds-space-13);
+    --ds-ring-gauge-size-md: var(--ds-space-12);
+    --ds-ring-gauge-size-sm: var(--ds-size-icon-ring);
+    --ds-slider-track-height: var(--ds-space-1);
+    --ds-sparkline-height-table: var(--ds-space-6);
+    --ds-sparkline-height-tile: var(--ds-space-10);
+    --ds-spinner-stroke: var(--ds-border-strong);
+    --ds-toggle-inset: var(--ds-space-1);
   }
   @media (color-gamut: p3) {
     :root {
@@ -995,6 +1013,12 @@
     --ds-type-display-xl-font-weight: var(--ds-ref-type-display-xl-font-weight);
     --ds-type-metric-lg-font-weight: var(--ds-ref-type-metric-lg-font-weight);
     --ds-type-metric-xl-font-weight: var(--ds-ref-type-metric-xl-font-weight);
+    --ds-area-chart-fill: var(--ds-color-chart-band);
+    --ds-avatar-bg: var(--ds-color-bg-surface-raised);
+    --ds-avatar-ring: var(--ds-color-bg-fill-inverse);
+    --ds-badge-accent-bg: var(--ds-color-bg-fill-accent);
+    --ds-badge-neutral-bg: var(--ds-color-bg-fill-inverse);
+    --ds-badge-neutral-text: var(--ds-color-text-on-inverse);
     --ds-button-danger-bg-rest: var(--ds-color-bg-tint-critical);
     --ds-button-danger-border: var(--ds-color-text-critical);
     --ds-button-danger-text: var(--ds-color-text-critical);
@@ -1014,6 +1038,51 @@
     --ds-card-solid-bg: var(--ds-color-bg-surface);
     --ds-card-solid-caption: var(--ds-color-text-secondary);
     --ds-card-solid-text: var(--ds-color-text-primary);
+    --ds-checkbox-bg-selected: var(--ds-color-bg-fill-inverse);
+    --ds-checkbox-mark: var(--ds-color-text-on-inverse);
+    --ds-chip-bg-pressed: var(--ds-color-bg-surface-nested);
+    --ds-chip-bg-rest: var(--ds-color-bg-surface-raised);
+    --ds-chip-border-rest: var(--ds-color-border-hairline);
+    --ds-chip-border-selected: var(--ds-color-border-strong);
+    --ds-icon-button-danger-bg-rest: var(--ds-color-bg-tint-critical);
+    --ds-icon-button-danger-border: var(--ds-color-text-critical);
+    --ds-icon-button-danger-icon: var(--ds-color-text-critical);
+    --ds-icon-button-ghost-bg-pressed: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-icon-button-ghost-border: var(--ds-color-border-strong);
+    --ds-icon-button-ghost-icon: var(--ds-color-icon-primary);
+    --ds-icon-button-plain-icon: var(--ds-color-icon-secondary);
+    --ds-icon-button-primary-bg-pressed: var(--ds-color-bg-fill-inverse);
+    --ds-icon-button-primary-bg-rest: var(--ds-color-bg-fill-inverse);
+    --ds-icon-button-primary-icon: var(--ds-color-text-on-inverse);
+    --ds-icon-button-secondary-bg-pressed: var(--ds-color-bg-surface-nested);
+    --ds-icon-button-secondary-bg-rest: var(--ds-color-bg-surface-raised);
+    --ds-icon-button-secondary-border: var(--ds-color-border-hairline);
+    --ds-icon-button-secondary-icon: var(--ds-color-icon-primary);
+    --ds-progress-bar-fill: var(--ds-color-bg-fill-inverse);
+    --ds-progress-bar-fill-secondary: var(--ds-color-chart-comparison);
+    --ds-progress-bar-track: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-progress-ring-arc: var(--ds-color-bg-fill-inverse);
+    --ds-progress-ring-track: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-radio-bg-selected: var(--ds-color-bg-fill-inverse);
+    --ds-radio-dot-fill: var(--ds-color-text-on-inverse);
+    --ds-segmented-control-active-bg: var(--ds-color-bg-fill-inverse);
+    --ds-segmented-control-active-text: var(--ds-color-text-on-inverse);
+    --ds-select-border-error: var(--ds-color-text-critical);
+    --ds-skeleton-bg: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-skeleton-shimmer: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-slider-fill: var(--ds-color-bg-fill-inverse);
+    --ds-slider-thumb-fill: var(--ds-color-bg-fill-inverse);
+    --ds-slider-tick: var(--ds-color-border-strong);
+    --ds-slider-track-bg: var(--ds-color-border-strong);
+    --ds-spinner-arc: var(--ds-color-icon-primary);
+    --ds-text-area-border-error: var(--ds-color-text-critical);
+    --ds-text-field-border-error: var(--ds-color-text-critical);
+    --ds-toggle-knob-off: var(--ds-color-icon-secondary);
+    --ds-toggle-knob-on: var(--ds-color-text-on-inverse);
+    --ds-toggle-track-off: var(--ds-color-bg-fill-neutral-subtle);
+    --ds-toggle-track-on: var(--ds-color-bg-fill-inverse);
+    --ds-tooltip-bg: var(--ds-color-bg-fill-inverse);
+    --ds-tooltip-text: var(--ds-color-text-on-inverse);
   }
   /* colorScheme variant: light-increased-contrast (delta over light) */
   :root[data-ds-contrast="more"][data-ds-color-scheme="light"],
@@ -1229,6 +1298,11 @@
     --ds-button-height-md: var(--ds-size-control-md);
     --ds-button-height-sm: var(--ds-size-control-sm);
     --ds-card-padding: var(--ds-space-card-padding);
+    --ds-icon-button-size-lg: var(--ds-size-control-lg);
+    --ds-icon-button-size-md: var(--ds-size-control-md);
+    --ds-icon-button-size-sm: var(--ds-size-control-sm);
+    --ds-slider-thumb-size: var(--ds-size-control-sm);
+    --ds-toggle-height: var(--ds-size-control-sm);
   }
   /* modality: pointer (default) */
   :root {

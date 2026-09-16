@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "select": {
+      "border": {
+        "$type": "color",
+        "error": {
+          "$value": "{sys.color.text.critical}",
+          "$description": "the invalid outline of the trigger; the critical stroke is the critical text role",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,270 @@
+name: AreaChart
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  A LineChart whose area carries meaning: one cumulative total against a zero baseline, or the
+  envelope between a low and a high series. Prism's charts are otherwise unfilled, so this component
+  exists to say when a fill is justified — and it refuses the cases where it is not.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: plot
+    description: the plot area; charts never sit on raw glass, so it carries its own fill
+  - part: grid
+    optional: true
+    description: horizontal gridlines only, dashed, behind the data
+  - part: axisX
+    optional: true
+  - part: axisY
+    optional: true
+    description: value labels on the trailing side, outside the plot, with no axis line
+  - part: area
+    description: the wash between the baseline and the series, or between the range pair
+  - part: series
+    description: the line that bounds the area, at the full chart stroke
+  - part: bound
+    optional: true
+    description: the second line of a range pair, at the comparison stroke
+  - part: endpoint
+    optional: true
+  - part: directLabel
+    optional: true
+  - part: crosshair
+    optional: true
+  - part: band
+    optional: true
+    slot: true
+    description: one or two RangeBands, behind everything
+  - part: reference
+    optional: true
+    slot: true
+    description: up to two ReferenceLines, over the data
+
+props:
+  - name: series
+    type: data
+    required: true
+    description: "{ id, name, points } for kind total; { id, name, points, low, high } for kind range"
+  - name: kind
+    type: enum
+    values: [total, range]
+    default: total
+  - name: xScale
+    type: enum
+    values: [time, linear]
+    default: time
+  - name: interpolation
+    type: enum
+    values: [monotone, linear, step]
+    default: monotone
+  - name: referenceLines
+    type: data
+    description: ReferenceLine props, at most two
+  - name: bands
+    type: data
+    description: RangeBand props, at most two
+  - name: directLabels
+    type: enum
+    values: [endpoint, none]
+    default: endpoint
+  - name: grid
+    type: boolean
+    default: true
+  - name: selection
+    type: data
+    description: the selected x, read and written by the caller; unset means no selection, and the crosshair and the now-dot are not drawn
+  - name: onSelectionChange
+    type: action
+
+states: [default, hover, focus-visible, selected, loading]
+
+tokens:
+  root:
+    gap: space.3
+    loading:
+      opacity: opacity.dimmed-row
+  plot:
+    background:
+      page: color.chart.plot
+      solid: color.chart.plot
+      raised: color.chart.plot
+      nested: color.chart.plot
+      glass: color.chart.on-glass-fill.plot
+    radius: radius.inner
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  grid:
+    width: chart.comparison-width
+    dash: stroke.grid
+    color:
+      default: color.chart.grid
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+  axisX:
+    typography: type.axis
+    gap: space.2
+    color:
+      default: color.chart.axis
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  axisY:
+    typography: type.axis
+    gap: space.2
+    color:
+      default: color.chart.axis
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  area:
+    color:
+      page: comp.area-chart.fill
+      solid: comp.area-chart.fill
+      raised: comp.area-chart.fill
+      nested: comp.area-chart.fill
+    gap: chart.line-width
+  series:
+    width: chart.line-width
+    curve: chart.curve
+    color:
+      default: color.chart.series.1
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  bound:
+    width: chart.comparison-width
+    curve: chart.curve
+    color:
+      default: color.chart.comparison
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+  endpoint:
+    size: chart.endpoint-size
+    color:
+      default: color.chart.now
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  directLabel:
+    typography: type.data
+    gap: space.2
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  crosshair:
+    width: chart.comparison-width
+    color:
+      default: color.chart.now
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+    hover:
+      hitSize: size.hit
+    selected:
+      markerSize: chart.endpoint-size
+
+behavior:
+  - "A fill is justified in exactly two cases: `kind: total`, one cumulative or part-of-a-whole measure read against a zero baseline, and `kind: range`, the envelope between a low and a high series. Every other series is a LineChart, because a fill that means nothing only hides the line behind it."
+  - "`kind: total` pins the baseline at zero, always; a total whose axis does not start at zero is a lie about area."
+  - "`kind: range` fills between `low` and `high` and draws the main series over the wash at chart.line-width, with the bounds at chart.comparison-width; the fill is the envelope, not a third measure."
+  - "The wash is comp.area-chart.fill, a whole-value alias of color.chart.band — Prism has one chart wash, and an area is not a second kind of it. The bounding line keeps its full stroke, so the edge, not the wash, carries the value."
+  - "Areas never stack in v1: a stacked or normalized composition needs a per-series fill role, which the token set does not have, and colored series on media are still open (ADR-0030 §2.3). Until then a composition is a set of panels or a table."
+  - "Two areas never overlap on one plot; where two totals must be compared, index both to 100 at the first point and draw them as lines."
+  - "Where segments do touch, they are separated by a gap of chart.line-width in the plot color rather than by a stroke around the mark."
+  - "The area renders only on the solid family (page, solid, raised, nested), where the plot is color.chart.plot. The `area` part has no cell for any other material, so on vivid and on the scheme's glass the wash is simply not drawn and the chart renders as a line: neither media family has a band or wash role (ADR-0030 §2), and a translucent fill over a gradient or over the glass lift has no contrast pair."
+  - "Every other part takes its family from the published material, exactly as LineChart does: the plot is color.chart.plot on the solid family and color.chart.on-glass-fill.plot on the scheme's glass and has no fill on vivid; the series, the bound, the endpoint, the grid and the crosshair take the on-media or on-glass-fill roles; and on vivid no axis text and no direct labels are drawn, because color.text.on-vivid has no sub-24 px pair outside the header block (ADR-0030 rule 3 and rule 7). The chart is not placed on light glass, inverse or accent, which hold no chart family."
+  - Interpolation, gridlines, the trailing y axis, the absence of axis lines and the inline endpoint labels follow LineChart, and the same ReferenceLine and RangeBand parts compose into it. Like LineChart, this spec carries the axis bindings a separate ChartAxis part would own.
+  - "Selection snaps to the nearest x over the whole plot area, draws the crosshair and a chart.endpoint-size now-dot in color.chart.now, and reads its values in the ChartContainer header; on touch it fires haptic.selection once per snapped index."
+  - "`loading` holds the previous render at opacity.dimmed-row; an empty or failed series is the ChartContainer's message."
+
+motion:
+  enter: motion.duration.base
+  select: motion.spring.interactive
+  reduceMotion: instant
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: image
+  label: the chart's summary, supplied by the enclosing ChartContainer, naming what the area totals or what the envelope bounds; axis labels are hidden from assistive technology because the table twin carries them
+  traits: [image, allowsDirectInteraction]
+  keyboard: the plot takes focus with a ring of color.border.focus at border.focus width; arrows move the selection, Home and End jump, PageUp and PageDown move ten points, Escape clears
+  dynamicType: axis and label text scale with their roles; the plot keeps its given height, which always includes the x-axis band
+  contrast: "the bounding line and the crosshair carry meaning and hold 3:1 against the plot of their published material — color.chart.plot, color.chart.on-glass-fill.plot, or the vivid gradient's stops for the on-media roles (ADR-0030 §2.7); the wash is decorative, so the chart stays readable with the fill removed, which is also what vivid, glass, Increase Contrast and Differentiate Without Color leave behind. Axis and direct-label text is functional at 4.5:1 through color.chart.axis, and on the scheme's glass through the quieter text tone of the published backdrop kind (ADR-0029 §1.4); on vivid none is drawn (ADR-0011)"
+  reduceTransparency: glass resolves to the opaque raised surface, so the whole chart falls back to the solid family — color.chart.plot, color.chart.series.1, color.chart.grid and color.chart.axis — and the wash, dropped on glass, is drawn again as comp.area-chart.fill
+  reduceMotion: no area grows in and no line draws on; the chart appears complete at motion.duration.instant, selection follows the finger directly, and a refetch holds the previous render at opacity.dimmed-row
+  voiceOver: one accessibility element per series on Apple with the framework's audio graph descriptor, plus the container's title and summary; on the web a figure with the summary and the table twin
+
+usage:
+  do:
+    - Fill only a running total against zero, or the envelope between two bounds.
+    - Keep the bounding line at full stroke so the value reads off the edge.
+    - Say in the caption what the area sums, and over what period.
+  dont:
+    - Don't fill under a rate, a ratio, a temperature or any measure whose area means nothing.
+    - Don't stack areas in v1, and don't overlap two washes.
+    - Don't start a total's axis anywhere but zero.
+    - Don't put an area on vivid or on glass; it renders as a line there, and on vivid it loses its axis text too.
+
+examples:
+  - id: cumulative-total
+    props: { series: { id: delivered, name: "Delivered", points: 96 }, kind: total, xScale: time }
+    description: a running total against a zero baseline — the case a fill is for
+  - id: total-with-target
+    props: { series: { id: delivered, name: "Delivered", points: 96 }, kind: total, referenceLines: [{ value: 4000, axis: y, style: target, label: "Monthly target" }] }
+  - id: range-envelope
+    props: { series: { id: latency, name: "Latency", points: 96, low: 96, high: 96 }, kind: range }
+    description: the wash is the envelope and the series is drawn over it
+  - id: range-with-window
+    props: { series: { id: latency, name: "Latency", points: 96, low: 96, high: 96 }, kind: range, bands: [{ from: 1763528400, to: 1763542800, axis: x, fill: accent, label: "Incident" }] }
+  - id: step-total
+    props: { series: { id: backlog, name: "Backlog", points: 24 }, kind: total, interpolation: step }
+  - id: selected
+    props: { series: { id: delivered, name: "Delivered", points: 96 }, kind: total, selection: 1763539200 }
+  - id: label-ru
+    props: { series: { id: otgruzheno, name: "Отгружено", points: 96 }, kind: total, directLabels: endpoint }
+    description: the Cyrillic endpoint label is longer than its Latin twin and reserves room at the plot's trailing edge
+  - id: on-glass-over-image
+    props: { series: { id: delivered, name: "Delivered", points: 96 }, kind: total }
+    surface: glass
+    backdrop: image
+    description: the fill is dropped and the chart renders as a line on the glass plot lift
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 has no chart but the rings, and a filled area at watch size is a shape with no readable edge."
+    macos: hover shows the crosshair without a tap, there are no haptics, and the chart follows compact density with one fewer gridline.
+  design: >-
+    Every line in the references is unfilled and most analyses say so outright
+    (docs/research/component-inventory.md, "Required by v1 but not observed"), which is why this spec's
+    job is to name the two cases a fill is justified. The zero-baseline rule for areas is
+    docs/research/dataviz-design.md §3 rule A7 (Carbon F50, HIG F2), the range form is its fact F17, the
+    surface-colored gap between touching fills is rule C14 with HIG F5, and "no area fills under lines"
+    is docs/research/visual-dna.md §8.3 item 4 and anti-pattern 21. dataviz-design.md §6 proposes a
+    separate area-fill alpha; Prism has one chart wash, so comp.area-chart.fill aliases color.chart.band
+    and names the choice (ADR-0024 §5.4). Example data are invented (ADR-0015 rule 3); `points` gives the
+    sample count a gallery renders.
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

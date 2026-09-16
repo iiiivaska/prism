@@ -1,0 +1,70 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "chip": {
+      "bg": {
+        "$type": "color",
+        "rest": {
+          "$value": "{sys.color.bg.surface.raised}",
+          "$description": "the chip is a raised pill on solid grounds; over media it takes material.glass.chip instead",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "pressed": {
+          "$value": "{sys.color.bg.surface.nested}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "border": {
+        "$type": "color",
+        "rest": {
+          "$value": "{sys.color.border.hairline}",
+          "$description": "decorative: the fill step and the label identify the chip, so the stroke is not the boundary role",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "selected": {
+          "$value": "{sys.color.border.strong}",
+          "$description": "selection is a full-strength stroke and label, never a solid fill",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

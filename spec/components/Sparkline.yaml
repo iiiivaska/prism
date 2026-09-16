@@ -1,0 +1,220 @@
+name: Sparkline
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  A word-sized trace with no axes, frame, ticks or gridlines: the shape of a series beside the number
+  it belongs to. Line or bar, with an optional endpoint bead, a dashed target and a normal-range band.
+  It carries no values of its own — the number beside it does.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: trace
+    description: the line, or the bar row
+  - part: band
+    optional: true
+    description: the normal range, drawn behind the trace
+  - part: target
+    optional: true
+    description: a dashed reference at one value, drawn over the trace
+  - part: endpoint
+    optional: true
+    description: the bead on the last point
+  - part: extreme
+    optional: true
+    description: dots on the minimum and the maximum
+  - part: ghost
+    optional: true
+    description: the same series in an earlier period, behind the trace
+
+props:
+  - name: points
+    type: data
+    required: true
+    description: an ordered array of numbers, two or more
+  - name: kind
+    type: enum
+    values: [line, bar]
+    default: line
+  - name: emphasis
+    type: enum
+    values: [primary, accent, ghost]
+    default: primary
+  - name: size
+    type: enum
+    values: [table, tile]
+    default: tile
+  - name: baseline
+    type: enum
+    values: [auto, zero]
+    default: auto
+  - name: target
+    type: number
+    description: one reference value, drawn dashed
+  - name: normalRange
+    type: data
+    description: "{ lo, hi } on the value axis"
+  - name: endpoint
+    type: enum
+    values: [dot, none]
+    default: dot
+  - name: extremes
+    type: boolean
+    default: false
+  - name: comparison
+    type: data
+    description: a second array of the same length, drawn as the ghost trace
+
+states: [default, loading]
+
+tokens:
+  root:
+    height:
+      table: comp.sparkline.height.table
+      tile: comp.sparkline.height.tile
+    loading:
+      opacity: opacity.dimmed-row
+  trace:
+    width:
+      line: chart.sparkline-width
+    maxThickness:
+      bar: chart.bar-max-thickness
+    radius:
+      bar: chart.bar-radius
+    color:
+      default:
+        primary: color.chart.series.1
+        accent: color.chart.now
+        ghost: color.chart.ghost
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  band:
+    color:
+      page: color.chart.band
+      solid: color.chart.band
+      raised: color.chart.band
+      nested: color.chart.band
+  target:
+    width: chart.comparison-width
+    dash: stroke.target
+    color:
+      default: color.chart.target
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+  endpoint:
+    size: chart.endpoint-size
+    color:
+      default: color.chart.now
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  extreme:
+    size: chart.marker-size
+    color:
+      default: color.chart.comparison
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+  ghost:
+    width: chart.comparison-width
+    color:
+      default: color.chart.ghost
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+
+behavior:
+  - No axes, axis lines, frame, ticks or gridlines are drawn; the sparkline is data ink only.
+  - "The plot box is `comp.sparkline.height.table` in a table row and `comp.sparkline.height.tile` in a tile or a card aside, and its width is four to six times its height, tuned so the median slope banks toward 45°."
+  - "Twelve points is the default sample; fewer than two points renders an em dash placeholder in the number's tone, never an empty box."
+  - "`kind: line` uses a dynamic domain unless `baseline: zero`; `kind: bar` always starts at zero, and every sparkline in one table column shares its domain."
+  - Interpolation is the system default, chart.curve (monotone); measured data never uses an overshooting curve.
+  - "The trace is chart.sparkline-width (1.5 px), thinner than a chart line; emphasis chooses the tone — color.chart.series.1 for the value, color.chart.now for the one series that needs attention, color.chart.ghost for context."
+  - A target is one dashed reference in color.chart.target with stroke.target, drawn over the trace; it is never a second series.
+  - "The normal range is a band of color.chart.band behind the trace, and it is drawn on the solid family only. A sparkline has no plot fill of its own, so on vivid and on the scheme's glass the band would be a wash on the raw gradient or on the raw glass, which is what a sparkline never does; ADR-0030 §2 gives neither media family a band role either. There the range is dropped and the trace stands alone. A flagged window belongs to RangeBand inside a full chart, not here."
+  - "A sparkline is placed on the solid family, on vivid or on the scheme's glass. It is not placed on light glass, inverse or accent, which hold no chart family at all (ADR-0030 rule 3); a number on one of those materials carries its trend in words."
+  - "The endpoint bead is chart.endpoint-size in color.chart.now and ties the trace to the number beside it; `extremes: true` adds chart.marker-size dots on the minimum and the maximum."
+  - "A sparkline never sits on raw glass: on the scheme's glass it takes color.chart.on-glass-fill.line and needs no plot fill, and on vivid it takes color.chart.on-media.line and stays out of the gradient's lightest end."
+  - The sparkline has no hover, no tooltip and no selection; a series that has to be inspected is a LineChart inside a ChartContainer.
+  - "`loading` holds the previous trace at opacity.dimmed-row rather than showing a skeleton."
+
+motion:
+  draw: motion.duration.base
+  reduceMotion: instant
+
+accessibility:
+  role: image
+  label: a one-sentence trend read from the data ("42 samples, rising from 61 to 86 with a dip at hour 14"); when the sparkline repeats a value that is already spoken, it is hidden from assistive technology instead
+  traits: [image]
+  keyboard: not focusable; the values live in the number beside it or in the ChartContainer table twin
+  dynamicType: the plot box does not scale with text; it keeps its token height and the text beside it grows, wrapping the row if needed
+  contrast: the trace is a boundary mark at 3:1 against its plot, which every chart series token holds on the solid family; on media it is color.chart.on-media.line and on the scheme's glass color.chart.on-glass-fill.line, both checked as boundary pairs (ADR-0030 §2.7)
+  reduceTransparency: glass resolves to the opaque raised surface, so every part falls back to its solid-family cell — the trace to the emphasis cell (color.chart.series.1, color.chart.now or color.chart.ghost), the target to color.chart.target — and the normal-range band, dropped on glass, is drawn again
+  reduceMotion: the draw-on does not run; the trace appears complete at motion.duration.instant, and the endpoint bead never pulses
+
+usage:
+  do:
+    - Put a sparkline where a number needs a shape, and keep the number.
+    - Share one domain across the sparklines of a table column.
+    - Use color.chart.ghost for the comparison period and keep the value in the primary tone.
+  dont:
+    - Don't fill under the trace; Prism's charts carry bands, not area washes.
+    - Don't add axis labels, ticks or a frame; that makes it a LineChart.
+    - Don't put a sparkline on a vivid gradient's light end or on raw glass.
+    - Don't ask for a normal range on vivid or on glass; there is no wash role there and the band is dropped.
+    - Don't make the sparkline the only place a value can be read.
+
+examples:
+  - id: line-tile
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, size: tile }
+  - id: line-table
+    props: { points: [12, 14, 13, 17, 16, 19, 22, 21, 24, 23, 26, 28], kind: line, size: table }
+  - id: line-with-target
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, target: 80 }
+  - id: line-with-range
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, normalRange: { lo: 65, hi: 80 } }
+  - id: accent-with-ghost
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, emphasis: accent, comparison: [58, 60, 61, 63, 64, 66, 68, 69, 71, 72, 74, 75] }
+  - id: bars-zero
+    props: { points: [3, 5, 4, 8, 6, 9, 7, 11, 10, 13, 12, 15], kind: bar, baseline: zero }
+  - id: extremes
+    props: { points: [61, 72, 58, 68, 91, 70, 74, 63, 77, 82, 55, 86], kind: line, extremes: true }
+  - id: insufficient-data
+    props: { points: [42], kind: line }
+    description: fewer than two points renders an em dash, not an empty box
+  - id: on-vivid
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, size: tile }
+    surface: vivid
+  - id: on-glass-over-map
+    props: { points: [61, 63, 62, 68, 71, 70, 74, 79, 77, 82, 84, 86], kind: line, size: tile }
+    surface: glass
+    backdrop: map
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 lists Text, StatTile and the rings. A watch face shows one glanceable value and its ring; a trace at that size cannot be read, and detail belongs on the phone."
+    macos: renders at the table height inside Table rows under compact density; no hover readout, because a sparkline has no interaction on any platform.
+  design: >-
+    Word-sized, frameless traces and the banking rule come from docs/research/dataviz-design.md §3 rules
+    D20-D23; the tones, the 1.5 px stroke, the 10 px endpoint and the dashed target are
+    docs/research/visual-dna.md §8.2 and §8.4 (the micro-glyph per metric), and the no-area-fill rule is
+    its §8.3 item 4 and anti-pattern 21. The chart family per published material is ADR-0030 rule 3.
+    Prism has no separate sparkline width token, so the plot width is stated as a ratio in behavior
+    rather than invented as a value; dataviz-design.md §8 open question 9 keeps these dimensions on the
+    verify list. Example series are invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0024-token-source-conventions.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md
