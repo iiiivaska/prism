@@ -1,0 +1,9 @@
+{
+  "description": "A vivid example draws an icon ring, which ADR-0022 rule 8 leaves off a gradient.",
+  "expect": [
+    {
+      "code": "example/vivid-icon",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

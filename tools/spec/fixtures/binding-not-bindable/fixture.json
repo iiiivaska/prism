@@ -1,0 +1,9 @@
+{
+  "description": "A vivid gradient is bound by its reference name, so the path reaches ref instead of a sys role.",
+  "expect": [
+    {
+      "code": "binding/not-bindable",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

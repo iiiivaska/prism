@@ -2,28 +2,52 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/iiiivaska/prism/spec/icons/registry.schema.json",
   "title": "Prism icon registry",
-  "description": "Semantic icon ids mapped to platform bindings. Agents use ids only; CI validates bindings against the Phosphor catalog and SF Symbols availability.",
+  "description": "Semantic icon ids mapped to platform bindings. Agents use ids only; CI validates bindings against the Phosphor catalog (tools/icons) and SF Symbols availability (tools/icons-apple).",
   "type": "object",
   "additionalProperties": false,
-  "required": ["version", "weights", "styles", "icons"],
+  "required": ["version", "sources", "weights", "styles", "sizes", "icons"],
   "properties": {
     "$schema": { "type": "string" },
     "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Equals the system version" },
-    "weights": {
+    "sources": {
       "type": "object",
-      "description": "ds icon weight token -> platform weight",
+      "description": "The one open set (ADR-0013 decision 2) and the SF Symbols floor (critic C-21). Both are checked against the machine: the installed @phosphor-icons/core, and name_availability.plist on the macOS runner.",
       "additionalProperties": false,
-      "required": ["thin", "light", "regular", "medium", "bold", "heavy"],
-      "patternProperties": {
-        "^(thin|light|regular|medium|bold|heavy)$": {
+      "required": ["phosphor", "sfSymbols"],
+      "properties": {
+        "phosphor": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["phosphor", "sf"],
+          "required": ["package", "version"],
           "properties": {
-            "phosphor": { "enum": ["thin", "light", "regular", "bold"] },
-            "sf": { "enum": ["ultralight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"] }
+            "package": { "const": "@phosphor-icons/core", "description": "The only open icon set Prism binds on the web; a second set needs an ADR" },
+            "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Must equal the installed version of the package" }
+          }
+        },
+        "sfSymbols": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["release", "maxYear", "osFloor"],
+          "properties": {
+            "release": { "type": "integer", "description": "SF Symbols release that ships with the floor OS (7 ships with OS 26)" },
+            "maxYear": { "type": "string", "pattern": "^\\d{4}(\\.\\d+)?$", "description": "The newest name_availability.plist year key allowed: 2025 maps to OS 26.0, 2025.1 to 26.1 (critic C-21)" },
+            "osFloor": { "type": "string", "pattern": "^\\d+\\.\\d+$", "description": "The deployment floor of Package.swift: every symbol must be available at this iOS, macOS and watchOS release" }
           }
         }
+      }
+    },
+    "weights": {
+      "type": "object",
+      "description": "ds icon weight token -> platform weight. `number` is the number-to-name table the numeric tokens sys.icon.weight* resolve through (critic C-23).",
+      "additionalProperties": false,
+      "required": ["thin", "light", "regular", "medium", "bold", "heavy"],
+      "properties": {
+        "thin": { "$ref": "#/$defs/weight" },
+        "light": { "$ref": "#/$defs/weight" },
+        "regular": { "$ref": "#/$defs/weight" },
+        "medium": { "$ref": "#/$defs/weight" },
+        "bold": { "$ref": "#/$defs/weight" },
+        "heavy": { "$ref": "#/$defs/weight" }
       }
     },
     "styles": {
@@ -36,6 +60,18 @@
         "duotone": { "$ref": "#/$defs/style" }
       }
     },
+    "sizes": {
+      "type": "object",
+      "description": "The px icon boxes of ref.size.icon mapped to a measured SF point size (critic C-23). The point size is the one whose rendered `circle` at that scale is the box height within 1 px, at the Large content size; Dynamic Type scales both sides from there.",
+      "additionalProperties": false,
+      "required": ["xs", "sm", "md", "lg"],
+      "properties": {
+        "xs": { "$ref": "#/$defs/size" },
+        "sm": { "$ref": "#/$defs/size" },
+        "md": { "$ref": "#/$defs/size" },
+        "lg": { "$ref": "#/$defs/size" }
+      }
+    },
     "icons": {
       "type": "object",
       "minProperties": 1,
@@ -44,6 +80,35 @@
     }
   },
   "$defs": {
+    "weight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["number", "phosphor", "sf", "boldText"],
+      "properties": {
+        "number": { "type": "integer", "minimum": 100, "maximum": 900, "description": "The font-weight number of the SF weight of the same name; the value a numeric icon-weight token carries" },
+        "phosphor": { "enum": ["thin", "light", "regular", "bold"] },
+        "sf": { "enum": ["ultralight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"] },
+        "boldText": { "enum": ["thin", "light", "regular", "medium", "bold", "heavy"], "description": "The weight this one steps to under Bold Text on iOS, iPadOS and watchOS; heavy steps to itself (ADR-0021 §3)" }
+      }
+    },
+    "size": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["token", "px", "sf"],
+      "properties": {
+        "token": { "type": "string", "pattern": "^ref\\.size\\.icon\\.[a-z]+$", "description": "The token whose value must equal `px`" },
+        "px": { "type": "number", "exclusiveMinimum": 0 },
+        "sf": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["pointSize", "scale"],
+          "properties": {
+            "pointSize": { "type": "number", "exclusiveMinimum": 0 },
+            "scale": { "enum": ["small", "medium", "large"] }
+          }
+        }
+      }
+    },
     "style": {
       "type": "object",
       "additionalProperties": false,
@@ -63,12 +128,12 @@
     "icon": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["label", "web", "apple"],
+      "required": ["label", "categories", "tags", "since", "web", "apple"],
       "properties": {
         "label": { "type": "string", "pattern": "^icon\\.[a-z]+(\\.[a-z0-9-]+)+$", "description": "i18n key for the accessibility label" },
-        "categories": { "type": "array", "items": { "type": "string" } },
-        "tags": { "type": "array", "items": { "type": "string" } },
-        "rtlMirror": { "type": "boolean", "default": false },
+        "categories": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" } },
+        "tags": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }, "description": "Search terms an agent looks an icon up by (critic C-22, C-24): synonyms and the vendor metaphors, never a vendor name to render" },
+        "rtlMirror": { "$ref": "#/$defs/rtlMirror" },
         "defaultStyle": { "enum": ["outline", "filled", "duotone"] },
         "since": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
         "deprecated": {
@@ -85,28 +150,47 @@
           "additionalProperties": false,
           "required": ["phosphor"],
           "properties": {
-            "phosphor": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Phosphor kebab-case name; must exist in @phosphor-icons/core icons[].name (alias resolution warns)" }
+            "phosphor": { "type": "string", "pattern": "^[a-z0-9-]+$", "description": "Phosphor kebab-case name; must exist in @phosphor-icons/core icons[].name (an alias warns and names the canonical)" }
           }
         },
         "apple": {
-          "type": "object",
-          "additionalProperties": false,
-          "oneOf": [
-            { "required": ["symbol"] },
-            { "required": ["custom"] }
-          ],
-          "properties": {
-            "symbol": { "type": "string", "pattern": "^[a-z0-9.]+$", "description": "SF Symbol name; must be available at iOS 26 / SF Symbols 7" },
-            "custom": { "type": "string", "pattern": "^ds\\.[a-z0-9.-]+$", "description": "Custom symbol set generated from Phosphor raw sources" },
-            "minOS": { "type": "string", "pattern": "^\\d+(\\.\\d+)?$" },
-            "fallback": { "type": "string", "description": "SF Symbol to use when the primary symbol needs a newer OS" }
-          }
+          "description": "Exactly one binding: an SF Symbol, or an image set generated from the Phosphor cuts (ADR-0013 decision 3)",
+          "oneOf": [{ "$ref": "#/$defs/appleSymbol" }, { "$ref": "#/$defs/appleCustom" }]
         },
         "figma": {
           "type": "object",
           "additionalProperties": false,
           "properties": { "component": { "type": "string" } }
         }
+      }
+    },
+    "appleSymbol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["symbol"],
+      "properties": {
+        "symbol": { "type": "string", "pattern": "^[a-z0-9.]+$", "description": "SF Symbol name; must be available at the osFloor of `sources` (SF Symbols 7 / OS 26)" },
+        "minOS": { "type": "string", "pattern": "^\\d+(\\.\\d+)?$", "description": "The OS the symbol needs when it is newer than the floor; `fallback` is then required (critic C-21)" },
+        "fallback": { "type": "string", "pattern": "^[a-z0-9.]+$", "description": "SF Symbol rendered below `minOS`; itself validated at the floor" }
+      },
+      "dependentRequired": { "minOS": ["fallback"], "fallback": ["minOS"] }
+    },
+    "appleCustom": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["custom"],
+      "properties": {
+        "custom": { "type": "string", "pattern": "^ds\\.[a-z0-9-]+$", "description": "Image set generated from the Phosphor cuts into the DSIcons asset catalog (critic G-09); the id is also the asset name stem" }
+      }
+    },
+    "rtlMirror": {
+      "type": "object",
+      "description": "Per platform (critic C-24): `web` flips the glyph under dir=rtl; `apple` flips it in a right-to-left layout and must stay false for a symbol the system already mirrors (a legacy flippable name, or a backward/forward/leading/trailing name), which tools/icons-apple checks against CoreGlyphs.",
+      "additionalProperties": false,
+      "required": ["web", "apple"],
+      "properties": {
+        "web": { "type": "boolean" },
+        "apple": { "type": "boolean" }
       }
     }
   }

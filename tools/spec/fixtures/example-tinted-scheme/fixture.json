@@ -1,0 +1,9 @@
+{
+  "description": "A tinted example does not declare the light scheme.",
+  "expect": [
+    {
+      "code": "example/tinted-scheme",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

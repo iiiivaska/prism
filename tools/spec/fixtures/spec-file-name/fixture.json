@@ -1,0 +1,9 @@
+{
+  "description": "The spec is named Sample but the file is Widget.yaml.",
+  "expect": [
+    {
+      "code": "spec/file-name",
+      "file": "spec/components/Widget.yaml"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "description": "The schema's token-path regex drops `chart`, which NON_BINDABLE does not list either.",
+  "expect": [
+    { "code": "category/unclassified", "file": "spec/component.schema.json" }
+  ]
+}

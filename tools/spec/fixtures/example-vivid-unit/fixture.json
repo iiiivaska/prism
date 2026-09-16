@@ -1,0 +1,9 @@
+{
+  "description": "A vivid example puts the metric unit in the hero instead of the caption (V3).",
+  "expect": [
+    {
+      "code": "example/vivid-unit",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

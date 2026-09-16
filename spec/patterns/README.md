@@ -2,7 +2,7 @@
 
 Patterns are screen-level recipes, not components (layer 4, ADR-0012). They have no implementation manifest entry and no snapshot pair; they exist so an agent assembling a screen composes components the way the references do, with the same rhythm.
 
-Each pattern is one YAML file validated by `pattern.schema.json` (to be added with the first pattern ticket). Fields:
+Each pattern is one YAML file validated by `pattern.schema.json` (to be added with the first pattern ticket). Until that schema exists, `spec:validate` reports every pattern file here as unchecked (`spec/no-schema`), so the first pattern lands together with its schema. Fields:
 
 ```yaml
 name: DashboardGrid

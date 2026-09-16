@@ -1,0 +1,9 @@
+{
+  "description": "The sample binds Card's component token.",
+  "expect": [
+    {
+      "code": "binding/foreign-comp",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

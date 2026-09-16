@@ -1,0 +1,7 @@
+{
+  "description": "Card.yaml is removed, so the comp.card group has no spec.",
+  "remove": ["spec/components/Card.yaml"],
+  "expect": [
+    { "code": "comp/no-spec", "file": "tokens/comp/card.tokens.json", "tokenId": "comp.card" }
+  ]
+}

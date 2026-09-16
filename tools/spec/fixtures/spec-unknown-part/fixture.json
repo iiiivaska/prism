@@ -1,0 +1,9 @@
+{
+  "description": "`tokens` binds a part that anatomy does not declare.",
+  "expect": [
+    {
+      "code": "spec/unknown-part",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

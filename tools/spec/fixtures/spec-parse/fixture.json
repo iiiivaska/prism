@@ -1,0 +1,9 @@
+{
+  "description": "The sample spec declares `layer` twice, so the file does not parse.",
+  "expect": [
+    {
+      "code": "spec/parse",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

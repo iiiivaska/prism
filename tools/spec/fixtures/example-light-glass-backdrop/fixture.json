@@ -1,0 +1,9 @@
+{
+  "description": "A light-glass example renders over no backdrop, so it cannot hold in both schemes.",
+  "expect": [
+    {
+      "code": "example/light-glass-backdrop",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

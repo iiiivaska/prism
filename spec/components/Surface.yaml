@@ -1,11 +1,12 @@
 name: Surface
 layer: primitive
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
-  The container primitive every other component sits on. Resolves one of three content materials
-  (solid, vivid, glass) plus the page ground, applies the glass rule (ADR-0009), and publishes its
-  material to descendants so text and charts can pick the right foreground tokens.
+  The container primitive every other component sits on. Resolves one of the content materials
+  (solid, raised, nested, inverse, vivid, glass, light glass, accent) plus the page ground, applies
+  the glass fallback (ADR-0022), and publishes its material and its backdrop kind to descendants so
+  text and charts pick the right foreground tokens.
 since: 0.1.0
 
 platforms:
@@ -15,7 +16,7 @@ platforms:
   watchos: adapted
   web-touch: full
   web-desktop: full
-density: [compact, regular, comfortable]
+density: [compact, regular, comfortable, watch]
 modality: [pointer, touch]
 schemes: [light, dark]
 
@@ -25,23 +26,23 @@ anatomy:
     slot: true
   - part: edge
     optional: true
-    description: 1 px inner light edge; mandatory on glass, permitted on tiles, never on solid cards
+    description: 1 px inner edge; mandatory on glass, drawn on vivid and on raised, never on solid cards
   - part: grain
     optional: true
-    description: monochrome noise overlay on vivid and glass surfaces
+    description: monochrome value noise over vivid and glass surfaces
   - part: bloom
     optional: true
-    description: blurred copy of the vivid top stop rendered behind the surface on the page
+    description: the vivid bloom behind the surface on the page, and the top-leading bloom inside light glass
 
 props:
   - name: material
     type: enum
-    values: [page, solid, raised, nested, inverse, vivid, glass, glassLight]
+    values: [page, solid, raised, nested, inverse, vivid, glass, glassLight, accent]
     default: solid
   - name: vivid
     type: enum
-    values: [orchid, olive, rose, sky, ember-night, plum-dusk, forest-moss, navy-cyan]
-    description: which brand gradient a vivid surface uses; ignored for other materials
+    values: ["1", "2", "3", "4"]
+    description: which gradient slot a vivid surface uses; unset it takes the default gradient, and it is ignored for other materials
   - name: radius
     type: enum
     values: [none, inner, tile, cardCompact, card, sheet, cardLarge, hero, pill]
@@ -58,7 +59,11 @@ props:
     type: enum
     values: [none, image, map, vivid]
     default: none
-    description: what the surface sits on; glass is only legal over image, map or vivid
+    description: what the surface sits on; glass is only legal over image, map or vivid, and the kind is published with the material
+  - name: selected
+    type: boolean
+    default: false
+    description: a selected glass surface renders and publishes inverse while the glass fallback is active
 
 states: [default]
 
@@ -70,10 +75,25 @@ tokens:
       raised: color.bg.surface.raised
       nested: color.bg.surface.nested
       inverse: color.bg.fill.inverse
-      glass: material.glass.dark.fill
+      accent: color.bg.fill.accent
+      glass: material.glass.fill
       glassLight: material.glass.light.fill
+    underlay:
+      solid: color.bg.page
+      raised: color.bg.page
+      nested: color.bg.page
     gradient:
-      vivid: gradient.vivid.orchid
+      default: gradient.vivid.default
+      "1": gradient.vivid.1
+      "2": gradient.vivid.2
+      "3": gradient.vivid.3
+      "4": gradient.vivid.4
+    blur:
+      glass: material.glass.fill.blur
+      glassLight: material.glass.light.fill.blur
+    saturate:
+      glass: material.glass.fill.saturate
+      glassLight: material.glass.light.fill.saturate
     radius:
       inner: radius.inner
       tile: radius.tile
@@ -91,17 +111,45 @@ tokens:
       floating: elevation.2
       overlay: elevation.3
   edge:
-    color: color.border.hairline
+    color:
+      raised: color.edge.raised
+      vivid: color.edge.highlight
+      glass: color.edge.highlight
+      glassLight: color.edge.highlight
+    startAlpha:
+      vivid: material.vivid.edge.start
+      glass: material.glass.fill.edge.start
+      glassLight: material.glass.light.fill.edge.start
+    endAlpha:
+      vivid: material.vivid.edge.end
+      glass: material.glass.fill.edge.end
+      glassLight: material.glass.light.fill.edge.end
   grain:
-    opacity: opacity.grain
+    opacity:
+      glass: material.glass.fill.grain
+      glassLight: material.glass.light.fill.grain
+  bloom:
+    color:
+      glass: color.edge.highlight
+      glassLight: color.edge.highlight
+    alpha:
+      glass: material.glass.fill.bloom
+      glassLight: material.glass.light.fill.bloom
 
 behavior:
-  - A glass material is rendered only when `backdrop` is image, map or vivid; otherwise it silently resolves to `raised` and logs at debug level.
-  - Under Reduce Transparency or Increase Contrast every glass material resolves to `raised` (opaque).
-  - On watchOS glass and vivid resolve to `solid`; the platform layer disables blur.
-  - The resolved material is published to descendants (`dsSurfaceContext` on Apple, a data attribute on web) so Text picks `on-vivid` / `on-glass` foregrounds automatically.
+  - A glass material is rendered only when `backdrop` is image, map or vivid; otherwise it silently falls back and logs at debug level.
+  - "Glass falls back to an opaque `raised` under any of four triggers: watchOS, Reduce Transparency, Increase Contrast, or a backdrop that is not image, map or vivid. The shape is filled with color.bg.page and color.bg.surface.raised is painted over it; blur, saturation, edge, grain and bloom are dropped, and the requested radius and elevation stay."
+  - "`selected` matters only under the fallback: a selected glass surface renders and publishes `inverse` instead of `raised`, because `raised` alone cannot show which one is selected."
+  - Surface reads Prism's token context for the contrast, transparency and platform triggers, never the operating system settings.
+  - The resolved material and the backdrop kind are published to descendants (`dsSurfaceContext` on Apple, data attributes on web) so Text and charts pick their foreground family automatically.
+  - Solid, raised and nested paint color.bg.page under themselves, so a white-alpha surface over imagery or vivid stays the color its contrast pairs check.
   - Nested surfaces compute their radius as parent radius minus parent padding (concentric rule), never larger than the parent.
-  - A vivid surface renders its bloom behind itself on the page layer at the token alpha and blur; blooms are skipped under Reduce Transparency.
+  - A vivid surface takes gradient.vivid.default unless `vivid` names a slot; a 2×2 of vivid tiles alternates one slot pair on its diagonals, so the grid is one temperature.
+  - The 1 px inner edge is a 135° gradient from the material's start alpha at 0 % to its end alpha at 75 %, drawn in color.edge.highlight on glass and vivid and in color.edge.raised on raised.
+  - A vivid surface renders its bloom behind itself on the page layer, in the gradient's brightest stop, at the gradient's own alpha and blur, placed 10 % of the surface height down and scaled to 0.92. Blooms are skipped under Reduce Transparency.
+  - "A glass surface renders its bloom inside itself, clipped to its own shape: a radial gradient in color.edge.highlight, from the material's bloom alpha at the center to alpha 0 at the edge, centered on the top-leading corner of the shape with a radius of 75 % of the surface's shorter side. It carries no blur of its own; the falloff is the gradient. A bloom alpha of 0 draws nothing, so only a material whose recipe carries a bloom shows one."
+  - Like the grain, the glass bloom is left out of the card header block, so it never lightens the fill under the text whose pair tools/contrast checks on the flat material.
+  - Grain is monochrome value noise, one value per point, blended with overlay at the bound opacity; a vivid surface takes the opacity from its gradient. Grain is never drawn under text below 13 px, so it is left out of the card header block.
   - Solid surfaces never draw a border or a shadow at `flat`; the luminance ladder carries depth.
 
 motion:
@@ -113,37 +161,48 @@ accessibility:
   label: none; the surface is a container
   keyboard: not focusable
   dynamicType: padding does not scale; content reflows
-  contrast: foreground tokens chosen by Text from the published material must pass ADR-0011 tiers; glass text over the lightest allowed backdrop is checked in tools/contrast
-  reduceTransparency: glass and glassLight resolve to raised; bloom is dropped
-  reduceMotion: material changes crossfade
+  contrast: foreground tokens chosen from the published material and backdrop kind must pass the ADR-0011 tiers; glass text over the lightest allowed backdrop is checked in tools/contrast
+  reduceTransparency: glass and glassLight resolve to raised, painted over color.bg.page; edge, grain and bloom are dropped, and a selected glass surface becomes inverse
+  reduceMotion: a material change crossfades over motion.duration.base with motion.easing.out; nothing blurs or moves
 
 usage:
   do:
     - Use `solid` for content; reserve `vivid` for at most one 2×2 grid or one card in six per screen.
     - Put glass only over media, a map or a vivid surface; the parent must declare the backdrop.
-    - Use `inverse` for the single solid control in a group (active pill, send button).
+    - "In light, the scheme's glass sits over the map, over vivid, and over imagery at OKLCH L 0.45 or lighter; in dark, over the map and over imagery at L 0.67 or darker. A dark photograph in a light screen is a dark scope, not a different material."
+    - Use `inverse` for the single solid control in a group, and `accent` for the one lit tile a dark screen leads with.
   dont:
     - Don't stack glass on glass or put glass on a flat page.
     - Don't add borders or shadows to solid cards; use the raised material for the next step up.
     - Don't tint glass with a color of its own; it takes the backdrop's hue.
+    - Don't put light glass anywhere but over an image or a map in a spec example; examples render in both schemes.
 
 examples:
   - id: solid-card
     props: { material: solid, radius: card }
-  - id: vivid-orchid
-    props: { material: vivid, vivid: orchid, radius: card }
+  - id: vivid-default
+    props: { material: vivid, radius: card }
+  - id: vivid-pair
+    props: { material: vivid, radius: tile }
+    grid: ["1", "2", "2", "1"]
+    description: a 2×2 of vivid tiles, one slot pair on the diagonals
   - id: glass-over-map
     props: { material: glass, backdrop: map, radius: card, elevation: overlay }
+    surface: map
+  - id: glass-light-over-image
+    props: { material: glassLight, backdrop: image, radius: card }
     surface: image
   - id: glass-selected
-    props: { material: glassLight, backdrop: image, radius: card }
+    props: { material: glass, backdrop: image, radius: card, selected: true }
     surface: image
   - id: inverse-pill
     props: { material: inverse, radius: pill, padding: none }
+  - id: accent-tile
+    props: { material: accent, radius: tile }
 
 notes:
   platform:
-    watchos: Only page, solid, raised, nested and inverse exist; vivid and glass resolve to solid.
+    watchos: Only page, solid, raised, nested, inverse and accent exist; vivid resolves to solid, and glass and glassLight take the raised fallback of the behavior bullet (watchOS is its first trigger).
     macos: Identical to iOS; hover does not change a surface.
-  design: The three-surface model and the glass rule come from the references (docs/research/visual-dna.md §1 principles 5-6).
-  references: [docs/adr/0009-materials-in-layers.md]
+  design: The surface ladder and the glass rule come from the references (docs/research/visual-dna.md §1 principles 5-6); the edge, bloom and grain geometry is ADR-0030 §4.
+  references: [docs/adr/0009-materials-in-layers.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

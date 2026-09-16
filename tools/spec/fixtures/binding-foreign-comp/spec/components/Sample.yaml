@@ -1,0 +1,85 @@
+name: Sample
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture component. It exists only so that tools/spec/fixtures can break one rule at a time; it is
+  never implemented and never appears in the parity report.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+
+props:
+  - name: variant
+    type: enum
+    values: [solid, glass]
+    default: solid
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+
+states: [default, pressed]
+
+tokens:
+  root:
+    background:
+      solid: color.bg.surface
+      glass: material.glass.fill
+    radius: radius.card
+    padding: comp.card.padding
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      solid: color.text.primary
+      glass: color.text.on-glass-fill
+
+behavior:
+  - The fixture draws one surface with one label and nothing else.
+  - The hit region is the larger of the visual size and size.hit on each axis.
+
+motion:
+  press: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.button
+
+accessibility:
+  role: group
+  label: none; the fixture is a container
+  keyboard: not focusable
+  dynamicType: the label scales with type.label.*
+  contrast: the label pair is checked by tools/contrast
+  reduceTransparency: glass resolves to an opaque raised surface over color.bg.page
+  reduceMotion: the press scale is replaced by a fill change to color.bg.fill.neutral.subtle
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: solid
+    props: { variant: solid, size: md }
+  - id: glass-over-map
+    props: { variant: glass }
+    surface: map

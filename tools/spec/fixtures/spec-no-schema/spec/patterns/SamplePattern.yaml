@@ -1,0 +1,5 @@
+name: SamplePattern
+specVersion: 1
+summary: A fixture pattern; it exists only so that spec:validate can report an unchecked pattern.
+rules:
+  - One hero metric per screen.
