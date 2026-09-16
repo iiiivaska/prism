@@ -80,16 +80,18 @@ describe("scanTree", () => {
 });
 
 describe.each([
-  ["motion", "ADR-0023 §12"],
-  ["typography", "ADR-0021 §12"],
-  ["runtime", "ADR-0019 rule 1"],
-] as const)("kind %s (%s)", (kind, reference) => {
+  ["motion", "ADR-0023 §12", 12],
+  ["typography", "ADR-0021 §12", 8],
+  ["runtime", "ADR-0019 rule 1", 6],
+  ["brand", "ADR-0020 rule 13", 5],
+  ["material", "ADR-0022 rule 2", 4],
+] as const)("kind %s (%s)", (kind, reference, patterns) => {
   const hit = join(fixtures, kind, "hit");
   const miss = join(fixtures, kind, "miss");
   const ids = RULE_IDS.filter((id) => id.startsWith(`${kind}/`));
 
   it("has a hit and a miss fixture line for every pattern", () => {
-    expect(ids.length).toBeGreaterThan(5);
+    expect(ids.length).toBeGreaterThanOrEqual(patterns);
     const hits = new Set(annotations(hit, "expect").map((a) => a.split(" ")[1]));
     const misses = new Set(annotations(miss, "miss").map((a) => a.split(" ")[1]));
     expect(ids.filter((id) => !hits.has(id))).toEqual([]);
@@ -208,6 +210,35 @@ describe("scanSource", () => {
     expect(scanSource(reduce, ".swift", "swift/Sources/DSCharts/Line.swift").map((f) => f.rule)).toEqual(["motion/reduce-motion-setting"]);
     const test = "#expect(Spring(duration: 0.35, bounce: 0.15).settlingDuration > 0); let c = Color(red: 1, green: 0, blue: 0)";
     expect(scanSource(test, ".swift", "swift/Tests/DSTokensTests/A.swift", "tests").map((f) => f.rule)).toEqual(["motion/settling-duration"]);
+  });
+
+  it("checks the brand kind in the two consumer packages only (ADR-0020 rule 13)", () => {
+    const table = 'import * as tokens from "@iiiivaska/prism-tokens/brands/prism-native/tokens";';
+    const css = 'import "@iiiivaska/prism-tokens/brands/prism/tokens.css";';
+    for (const file of ["web/packages/react/src/Surface.tsx", "web/packages/charts/src/LineChart.tsx"]) {
+      expect(scanSource(table, ".tsx", file).map((f) => f.rule), file).toEqual(["brand/token-module"]);
+      expect(scanSource(css, ".tsx", file).map((f) => f.rule), file).toEqual(["brand/stylesheet"]);
+    }
+    // The app and the tokens package itself import a brand's table and CSS; the rule is about the
+    // two component packages, which read brand values through brandTokens() (ADR-0020 §6).
+    for (const file of ["web/packages/tokens/src/index.ts", "web/packages/react/dist/index.js"]) {
+      expect(scanSource(table, ".ts", file), file).toEqual([]);
+      expect(scanSource(css, ".ts", file), file).toEqual([]);
+    }
+  });
+
+  it("leaves the brand-invariant subpaths and a component's own stylesheet alone", () => {
+    for (const source of [
+      'import { brandTokens, scope } from "@iiiivaska/prism-tokens";',
+      'import { useBrandTokens } from "@iiiivaska/prism-tokens/react";',
+      'import "@iiiivaska/prism-tokens/motion.css";',
+      'import "@iiiivaska/prism-tokens/tailwind.css";',
+      'import "./surface.css";',
+      'import "./surface-tokens.css";',
+      'import { table } from "./tokens.ts";',
+    ]) {
+      expect(scanSource(source, ".ts", "web/packages/react/src/Surface.tsx"), source).toEqual([]);
+    }
   });
 
   it("reports runtime-owned names once, under the runtime kind and never under motion (ADR-0023 §12)", () => {

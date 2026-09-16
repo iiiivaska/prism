@@ -10,6 +10,10 @@ catalog:
   # React stack (web/packages)
   react: ^19.2.0
   react-dom: ^19.2.0
+  # Types for the optional React peer of @iiiivaska/prism-tokens/react (P3-2): React ships none of
+  # its own, so `<Theme>` and `useTokenContext` cannot be written or type-checked without them.
+  "@types/react": ^19.3.0
+  "@types/react-dom": ^19.3.0
   react-aria-components: ^1.21.1
   "@phosphor-icons/react": ^2.1.10
   # Icon catalog and the raw SVG assets (P2-2, ADR-0013): `icons` is the name catalog tools/icons

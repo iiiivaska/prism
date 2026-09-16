@@ -1,0 +1,3 @@
+/* One line per brand pattern (ADR-0020 rule 13); `expect:` names the rule the line must trip. */
+@import "@iiiivaska/prism-tokens/brands/prism/tokens.css"; /* expect: brand/stylesheet */
+@import url("../../tokens/src/generated/prism-native/fonts/fonts.css"); /* expect: brand/stylesheet */

@@ -1,0 +1,5 @@
+/* The material kind's web half, `backdrop-filter` outside the Surface module, lands with P3-4. This
+   file keeps the tree's layout: `web/packages/*/src` is a scan directory. */
+.ds-surface {
+  background: var(--ds-material-glass-dark-fill);
+}
