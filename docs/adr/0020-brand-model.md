@@ -1,6 +1,6 @@
 # ADR-0020: Brand model: what a brand overrides and how brands reach each stack
 
-- Status: accepted
+- Status: accepted (§1's vivid gradient row and §3's alias targets amended by [ADR-0029](0029-direction-board-sign-off.md): `night-lagoon` is the ninth brand-overridable gradient, every gradient restates `temperature`, and a glass role recipe's `$root` may alias a glass appearance `$root`)
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #20
 - Amends: ADR-0002 (rule 2, the semantic whitelist; where consumer brand folders live), ADR-0003 (the `[data-ds-brand]` scope of `tokens.css`), ADR-0004 (decision 3, the `brand` and `platform` rows; rule 3), ADR-0007 (decision 4: series slots follow the brand, status does not), ADR-0008 (decision 2: Native faces per platform, Inter self-hosted on web), ADR-0024 (§4.1: `app.prism.alpha` is the one functional key an alias declares)

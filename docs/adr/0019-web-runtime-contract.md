@@ -1,6 +1,6 @@
 # ADR-0019: Web runtime contract: `data-ds-*` attributes, nesting and defaults
 
-- Status: accepted (§4 item 6, the "Motion" bullet and rule 9 amended by [ADR-0025](0025-web-component-css-and-root-axes.md))
+- Status: accepted (§4 item 6, the "Motion" bullet and rule 9 amended by [ADR-0025](0025-web-component-css-and-root-axes.md); §1's density values and permutation count and §2's watchOS default density amended by [ADR-0029](0029-direction-board-sign-off.md): `watch` joins the densities and is the watchOS default, and the product is 576 permutations)
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #19
 - Amends: ADR-0003 (web stack: the `tokens.css` scoping attributes, `data-slot`, and how `styles.css` is built), ADR-0004 (decision 5: the CSS mode selectors), ADR-0010 (color scheme and density nest; the per-platform default contexts; how the web picks the density default), ADR-0013 (decisions 2 and 5: the React wrapper is `Icon`, the TypeScript map is `iconRegistry`), ADR-0016 (rule 1 also covers data attributes, Tailwind names and other global CSS names; the example variable name)
