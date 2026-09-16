@@ -1,0 +1,13 @@
+{
+  "comp": {
+    "select": {
+      "border": {
+        "error": {
+          "$type": "color",
+          "$value": "{color.text.critical}",
+          "$description": "the invalid outline of the trigger; the critical stroke is the critical text role"
+        }
+      }
+    }
+  }
+}

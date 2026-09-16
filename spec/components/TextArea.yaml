@@ -1,0 +1,250 @@
+name: TextArea
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A multi-line text input: a label above the box, wrapped value or placeholder inside it, and one
+  helper, error or counter row below. Unlike TextField the box is a container, not a pill, so it takes
+  the inner container radius and grows downward with the value.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+    optional: true
+    description: the field's name, above the box; required unless an explicit accessibility label is given
+  - part: box
+    description: the outlined container that holds the value
+  - part: input
+    description: the editable, wrapping value
+  - part: placeholder
+    optional: true
+  - part: footer
+    optional: true
+    description: the row below the box that carries the helper or error message and, at its trailing end, the counter
+  - part: helper
+    optional: true
+  - part: errorMessage
+    optional: true
+    description: a status glyph plus the message, in place of the helper row
+  - part: counter
+    optional: true
+    description: remaining characters, trailing in the footer; shown only when `maxLength` is set
+
+props:
+  - name: label
+    type: string
+  - name: value
+    type: string
+  - name: placeholder
+    type: string
+  - name: helper
+    type: string
+  - name: errorText
+    type: string
+  - name: rows
+    type: number
+    default: 3
+    description: the box's height at rest, in line boxes of the input's role
+  - name: maxRows
+    type: number
+    description: the height `autoGrow` stops at; past it the value scrolls inside the box
+  - name: autoGrow
+    type: boolean
+    default: true
+  - name: maxLength
+    type: number
+    description: shows the counter and stops input at the limit; it never truncates pasted text silently
+  - name: isInvalid
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: isReadOnly
+    type: boolean
+    default: false
+  - name: isRequired
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, focus-visible, disabled, error, readonly]
+
+tokens:
+  root:
+    gap: space.2
+  label:
+    typography: type.label.md
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  box:
+    border:
+      default: color.border.boundary
+      glass: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
+    borderWidth: border.hairline
+    radius: radius.inner
+    minHeight: size.row
+    paddingX: space.4
+    paddingY: space.3
+    hover:
+      border: color.border.strong
+    focus-visible:
+      border: color.border.focus
+      ring: color.border.focus
+      ringWidth: border.focus
+    error:
+      border: comp.text-area.border.error
+      borderWidth: border.strong
+    readonly:
+      background: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+  input:
+    typography: type.body.md
+    color:
+      default: color.text.primary
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+  placeholder:
+    color:
+      default: color.text.tertiary
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  footer:
+    gap: space.3
+  helper:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  errorMessage:
+    typography: type.caption
+    gap: space.2
+    iconSize: size.icon.sm
+    color:
+      default: color.text.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+    iconColor:
+      default: color.icon.status.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+  counter:
+    typography: type.data
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+
+behavior:
+  - The label is programmatically tied to the input, and the placeholder never stands in for it; a box with no visible label carries an explicit accessibility label.
+  - "The box is a container, not a control: it takes radius.inner rather than radius.control, has no fill at rest and is identified by its 1 px color.border.boundary edge."
+  - At rest the box is `rows` line boxes of type.body.md tall and never shorter than size.row, so an empty area still reads as a target at the row height of its density.
+  - "`autoGrow` grows the box one line box at a time as the value wraps, up to `maxRows`; past that the value scrolls inside the box and the box stops growing. The rows below it never move under the caret."
+  - "The value wraps; it never truncates and it never ends in an ellipsis. Long generated prose that is only being displayed belongs in Text with `truncation: fade`, not in a read-only area."
+  - "`maxLength` shows the counter with tabular figures and stops input at the limit; pasted text over the limit is trimmed with the counter announced, never dropped silently."
+  - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
+  - The error row pairs the status.danger glyph with the message, so the state never rests on color alone.
+  - "`isReadOnly` keeps the value selectable and focusable and fills the box with color.bg.fill.neutral.subtle; `isDisabled` lowers the whole field to opacity.disabled and removes it from the focus order."
+  - "`isRequired` puts the word in the label (\"Shift notes (required)\"), never a lone asterisk or a color, and sets the required state for assistive technology."
+  - Hover (pointer only) lifts the edge to color.border.strong; focus replaces it with color.border.focus and draws the ring outside the box, following radius.inner.
+  - The area draws no glass chip of its own; a composer over media sits inside a glass Card or Sheet, and its tones then follow the material that Surface publishes.
+  - "A TextArea is never placed directly on a vivid surface, so it has no vivid cell: its value is body text and its helper, error and counter rows are caption text, and on vivid nothing below 24 px sits outside a card's header block (ADR-0030 §8). A composer over a vivid ground goes inside a glass or solid Card."
+  - "On an accent surface the box has no fill of its own: it sits on color.bg.fill.accent, takes color.text.on-accent for the value and color.text.on-accent-secondary for the quieter rows and its edge, which are the pairs checked on that material."
+
+motion:
+  focus: motion.duration.fast
+  grow: motion.duration.quick
+  reduceMotion: crossfade
+
+haptics:
+  error: haptic.error
+
+accessibility:
+  role: textbox
+  label: the visible label; the placeholder is never the label, and a required area says so in its label rather than with a lone glyph
+  traits: [textField]
+  keyboard: Tab moves in and out and never inserts a tab character; Enter inserts a line break and does not submit; the focus ring is color.border.focus at border.focus width outside the box
+  dynamicType: label, value, helper, error and counter scale with their roles; the box grows with the value, and at the accessibility3 size `rows` is honored as a minimum while the box is free to grow past `maxRows`
+  contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; on an accent surface the tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and the edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there
+  reduceTransparency: no glass of its own; an enclosing glass Surface resolves to the opaque raised fallback and every tone returns to the solid family
+  reduceMotion: the ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place. The box keeps growing over motion.duration.quick, which is an in-place size change and not a substituted one (ADR-0023 §8.4), and nothing scales, moves or blurs
+  voiceOver: announces label, value or placeholder, then "required" and the helper text; the counter is read as remaining characters, and on `isInvalid` the message is announced once as the field's description
+
+usage:
+  do:
+    - Give the area a label and say in the helper what the text is for.
+    - Size `rows` for the answer you expect; three lines is the default for a note.
+    - Show a counter only when there is a real limit.
+  dont:
+    - Don't use a TextArea for one-line input; use TextField, which is a pill.
+    - Don't let the box shrink below size.row or let the rows below it jump while typing.
+    - Don't put a submit action inside the box; Enter is a line break here.
+    - Don't draw it directly on a map, an image or a vivid surface; put a composer inside a glass or solid Card or Sheet.
+    - Don't mark a required area with a lone asterisk or a colored label; say it in words.
+
+examples:
+  - id: default-three-rows
+    props: { label: "Shift notes", placeholder: "What happened on this run?", rows: 3 }
+  - id: with-value
+    props: { label: "Shift notes", value: "Loader two idled for eleven minutes while the north gate was closed." }
+  - id: helper-row
+    props: { label: "Shift notes", placeholder: "What happened on this run?", helper: "Visible to the yard supervisor" }
+  - id: counter
+    props: { label: "Shift notes", value: "Loader two idled for eleven minutes.", maxLength: 280 }
+  - id: invalid
+    props: { label: "Shift notes", value: "ok", isInvalid: true, errorText: "Describe what happened in at least ten characters" }
+  - id: auto-grow-capped
+    props: { label: "Shift notes", rows: 3, maxRows: 8, autoGrow: true }
+  - id: readonly
+    props: { label: "Shift notes", value: "Loader two idled for eleven minutes.", isReadOnly: true }
+  - id: disabled
+    props: { label: "Shift notes", isDisabled: true }
+  - id: in-glass-card-over-image
+    props: { label: "Shift notes", placeholder: "What happened on this run?" }
+    surface: glass
+    backdrop: image
+    description: a composer inside a glass Card; the label follows the published backdrop kind
+  - id: russian-note
+    props: { label: "Комментарий к смене", placeholder: "Опишите, что произошло на маршруте", helper: "Видно только диспетчеру участка", maxLength: 280 }
+    description: Russian copy wraps to more lines than the English original, and the counter keeps tabular figures
+
+notes:
+  platform:
+    watchos: "`none`. Multi-line entry is not in ADR-0010's Tier 3 set and does not fit a glanceable screen; a watch app collects a note through the system dictation sheet and shows it with Text."
+    macos: default padding follows compact density; hover state required; a resize grip is a platform affordance and, when the host draws one, it changes the height only, never the width.
+    web-desktop: built on React Aria TextField with `inputElementType="textarea"`; the description, error and counter are wired through its slots.
+  design: >-
+    The only sighting is the assistant composer of docs/research/component-inventory.md (1/11, idle
+    only), so the anatomy is TextField's with a container radius. The container radius scale is
+    docs/research/visual-dna.md §1 principle 2 (inner 8 for the smallest container); the edge takes
+    color.border.boundary for ADR-0011's 3:1 boundary tier, as in TextField. Fade truncation belongs to
+    Text, not here (§4.15). Example strings are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0021-typography-rules.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

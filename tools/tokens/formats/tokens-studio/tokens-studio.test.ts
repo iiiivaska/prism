@@ -22,6 +22,14 @@ import { METADATA_FILE, setNameOf, setPath, studioSets, studioThemes, THEME_MODI
 import { placeNode, tokenNodes, type JsonObject } from './tree.ts';
 import { studioAlias, studioTypeOf, type TokenFacts } from './values.ts';
 
+/** The comp set of tokens/prism.resolver.json, in resolver order: it resolves last, so it is the tail of every set order. */
+const COMP_SETS = [
+  'comp/area-chart', 'comp/avatar', 'comp/badge', 'comp/button', 'comp/card', 'comp/checkbox', 'comp/chip',
+  'comp/icon-button', 'comp/progress-bar', 'comp/progress-ring', 'comp/radio', 'comp/ring-gauge',
+  'comp/segmented-control', 'comp/select', 'comp/skeleton', 'comp/slider', 'comp/sparkline', 'comp/spinner',
+  'comp/text-area', 'comp/text-field', 'comp/toggle', 'comp/tooltip',
+] as const;
+
 async function inputOf(reader: SourceReader, root: string): Promise<FormatInput> {
   const r = await collectBundle({ root, reader });
   if (r.bundle === null || r.model === null) throw new Error(r.diagnostics.map((d) => `${d.code} ${d.message}`).join('\n'));
@@ -259,7 +267,7 @@ describe('the repository flavor', () => {
     expect(at('brands/prism-native')).toBeLessThan(at('sys/base'));
     expect(at('sys/color/light')).toBeLessThan(at('sys/color/light-increased-contrast'));
     expect(at('sys/motion/default')).toBeLessThan(at('sys/motion/reduced'));
-    expect(order.slice(-2)).toEqual(['comp/button', 'comp/card']);
+    expect(order.slice(-COMP_SETS.length)).toEqual(COMP_SETS);
     const files = parsed(out.files);
     expect(files.get(`${TOKENS_STUDIO_ROOT}/${METADATA_FILE}`)).toEqual({ tokenSetOrder: order });
   }, 60_000);
@@ -287,7 +295,7 @@ describe('the repository flavor', () => {
     // The example of ARCHITECTURE §9.9.
     expect(byId.get('brand-prism')).toEqual([
       'ref/color.palette', 'ref/gradient', 'ref/dimension', 'ref/typography', 'ref/motion', 'ref/elevation', 'ref/opacity', 'brands/prism',
-      'sys/base', 'sys/platform/web', 'sys/modality/pointer', 'sys/motion/default', 'comp/button', 'comp/card',
+      'sys/base', 'sys/platform/web', 'sys/modality/pointer', 'sys/motion/default', ...COMP_SETS,
     ]);
     expect(byId.get('brand-prism-native')).toContain('brands/prism');
     expect(byId.get('brand-prism-native')).toContain('brands/prism-native');

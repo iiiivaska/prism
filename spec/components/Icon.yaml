@@ -1,0 +1,211 @@
+name: Icon
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  One glyph from the icon registry, named by its semantic id. The spec owns the box, the stroke weight,
+  the style and the tone; which vendor cut draws it — a Phosphor cut on the web, an SF Symbol or a
+  generated image set on Apple — is the registry's business and never a component's or a call site's.
+  A glyph is not a control: everything that acts is an IconButton or a row around one.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: full
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the square glyph box; the glyph is centered in it and never drawn outside it
+
+props:
+  - name: name
+    type: icon
+    required: true
+    description: a registry id such as nav.back, action.filter or status.warning
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: weight
+    type: enum
+    values: [control, display]
+    default: control
+    description: the two cuts the token layer publishes; the registry's six are reached through them
+  - name: style
+    type: enum
+    values: [outline, filled, duotone]
+    default: outline
+  - name: tone
+    type: enum
+    values: [primary, secondary, accent, success, warning, critical, info, inherit]
+    default: primary
+  - name: isDecorative
+    type: boolean
+    default: false
+    description: hides the glyph from assistive technology; the meaning is then carried by text beside it
+
+states: [default]
+
+tokens:
+  root:
+    size:
+      sm: size.icon.sm
+      md: size.icon.md
+      lg: size.icon.lg
+    weight:
+      control: icon.weight
+      display: icon.weight-display
+    color:
+      default:
+        primary: color.icon.primary
+        secondary: color.icon.secondary
+        accent: color.icon.accent
+        success: color.icon.status.success
+        warning: color.icon.status.warning
+        critical: color.icon.status.critical
+        info: color.icon.status.info
+      vivid:
+        primary: color.text.on-vivid
+        secondary: color.text.on-vivid
+        accent: color.text.on-vivid
+        success: color.text.on-vivid
+        warning: color.text.on-vivid
+        critical: color.text.on-vivid
+        info: color.text.on-vivid
+      inverse:
+        primary: color.text.on-inverse
+        secondary: color.text.on-inverse
+        accent: color.text.on-inverse
+        success: color.text.on-inverse
+        warning: color.text.on-inverse
+        critical: color.text.on-inverse
+        info: color.text.on-inverse
+      accent:
+        primary: color.text.on-accent
+        secondary: color.text.on-accent-secondary
+        accent: color.text.on-accent
+        success: color.text.on-accent
+        warning: color.text.on-accent
+        critical: color.text.on-accent
+        info: color.text.on-accent
+      glassLight:
+        primary: color.text.on-glass-light
+        secondary: color.text.on-glass-light
+        accent: color.text.on-glass-light
+        success: color.text.on-glass-light
+        warning: color.text.on-glass-light
+        critical: color.text.on-glass-light
+        info: color.text.on-glass-light
+      glass:
+        map:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-secondary
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
+        image:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-media-secondary
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
+        vivid:
+          primary: color.text.on-glass-fill
+          secondary: color.text.on-glass-fill-media-secondary
+          accent: color.text.on-glass-fill
+          success: color.text.on-glass-fill
+          warning: color.text.on-glass-fill
+          critical: color.text.on-glass-fill
+          info: color.text.on-glass-fill
+
+behavior:
+  - No glyph without a registry entry - `name` is a registry id, an unknown id fails the build, and neither a spec nor a call site ever writes a vendor glyph name (ADR-0013 rule 1).
+  - The web draws the Phosphor cut of the requested weight and style; Apple draws the entry's SF Symbol, or the generated image set when the entry binds `apple.custom` instead. The split is the registry's, so props, anatomy and gallery ids are identical on both stacks (ADR-0013 decisions 2 and 3).
+  - "`weight: control` binds icon.weight, the regular cut every control, row and inline glyph uses; `weight: display` binds icon.weight-display and is allowed only at size.icon.lg, for a decorative or illustrative glyph (the registry's weight table). Asked for at `size: sm` or `md`, `display` resolves to `control` and renders the regular cut - a thin 16 px glyph is below the stroke the boundary tier needs, so the size wins over the weight and neither stack fails the call."
+  - Under Bold Text on iOS, iPadOS and watchOS the registry steps the cut one rung up its ladder; macOS and the web have no such setting, so the glyph keeps its weight there (ADR-0021 §3).
+  - "`style: filled` is reserved for status glyphs and for the selected item of a tab bar; everything else is `outline`, and `duotone` renders hierarchically on Apple."
+  - "A filled or duotone glyph has one cut on the web: the registry maps `filled` to Phosphor's `fill` and `duotone` to Phosphor's `duotone`, neither of which has per-weight variants, so `weight` changes nothing there. On Apple the fill and hierarchical variants still take the requested weight, and the Bold Text ladder still steps it. Both stacks therefore agree on the glyph and may differ by one stroke rung on a filled glyph under Bold Text; nothing keyed to weight is ever load-bearing on a filled glyph."
+  - A tone resolves against the material the enclosing Surface publishes, and on the scheme's glass also against the backdrop kind published with it; the component never reads the color scheme itself.
+  - On vivid, inverse, accent, light glass and the scheme's glass every tone takes that material's own foreground - a status is carried there by the glyph's shape and the label beside it, never by color (ADR-0011 rule 4; visual-dna §11 anti-pattern 11).
+  - "`tone: inherit` sets no color: the glyph takes the foreground of the text around it, which is how a glyph inside a Button, a ListRow or a Chip follows its label."
+  - The box is square and does not change with density, so a glyph keeps its size while the control around it grows from size.control.sm to size.control.lg (ADR-0024 §7.1). Controls carry the md box (20 px) and inline or corner glyphs the sm box (16 px), per visual-dna §1 principle 13.
+  - "`rtlMirror` is the registry's and is per platform: the web flips a mirrored glyph under a right-to-left direction, and Apple flips one only where the system does not already (ADR-0013 rule 4)."
+  - A glyph that acts is wrapped by IconButton or by a pressable row, whose hit region is size.hit; Icon itself is never focusable and never carries a gesture.
+
+motion:
+  symbolChange: motion.duration.quick
+  reduceMotion: instant
+
+accessibility:
+  role: image, or none when `isDecorative`
+  label: the registry entry's label key, or an explicit string that overrides it; an icon-only control takes its label from here (ADR-0011 rule 4)
+  traits: [image]
+  keyboard: not focusable; the control around the glyph takes focus and the focus ring is drawn by that control
+  dynamicType: an inline glyph scales with the text role beside it on Apple; a glyph inside a control keeps size.icon.* and grows only when the control does
+  contrast: "a glyph that carries meaning is a boundary-tier mark at 3:1 against its surface (ADR-0011); color.icon.primary (the ink ramp at 80 %, not color.text.primary), color.icon.secondary, color.icon.status.critical and color.icon.status.info each have that boundary pair on color.bg.page, color.bg.surface and color.bg.surface.raised in tokens/contrast-pairs.json. color.icon.accent, color.icon.status.success and color.icon.status.warning are marks that never carry meaning alone - the accent is a mark and never accent text (visual-dna §1 principle 3), and a status is always its glyph's shape plus its word (ADR-0011 rule 4) - so their pairs are checked in dark, where they clear 3:1, and the light values documented in docs/research/a11y-reconciliation.md B4 are redeemed by that pairing rather than by the mark"
+  reduceTransparency: not applicable (Icon draws no material); when the enclosing Surface falls back from glass to raised the tone follows the published material
+  reduceMotion: symbol effects (Draw On, Draw Off, Magic Replace) do not run; the glyph is replaced at motion.duration.instant and nothing rotates, pulses or bounces (ADR-0023 §8.4)
+
+usage:
+  do:
+    - Name the metaphor, not the picture - pick an id by its tags, and add a registry entry when none fits.
+    - Pair every status glyph with a text label; the glyph and the word carry the status together.
+    - Use the sm box for corner and inline glyphs and the md box inside controls.
+  dont:
+    - Don't put a gesture on an Icon; wrap it in an IconButton so it gets a name and a hit area.
+    - "Don't use `weight: display` below size.icon.lg, and don't use a filled glyph for anything but status or a selected tab."
+    - Don't color a glyph to mean something on vivid, inverse, accent or glass; those materials take one foreground.
+
+examples:
+  - id: control-md
+    props: { name: action.settings, size: md, tone: primary }
+  - id: corner-sm
+    props: { name: nav.open, size: sm, tone: secondary }
+    description: the open affordance a Card pins to its top-right corner
+  - id: display-lg
+    props: { name: object.sparkle, size: lg, weight: display, tone: secondary }
+  - id: status-filled
+    props: { name: status.warning, size: sm, style: filled, tone: warning }
+  - id: accent-mark
+    props: { name: object.gps, size: sm, tone: accent }
+  - id: inherit-in-row
+    props: { name: status.online, size: sm, tone: inherit }
+    description: inside a ListRow, where the glyph takes the row's own foreground
+  - id: decorative
+    props: { name: object.chart, size: md, isDecorative: true }
+  - id: on-vivid
+    props: { name: nav.open, size: sm, tone: primary }
+    surface: vivid
+  - id: on-glass-over-map
+    props: { name: object.map-pin, size: md, tone: secondary }
+    surface: glass
+    backdrop: map
+  - id: on-glass-light-over-image
+    props: { name: action.play, size: md, tone: primary }
+    surface: glassLight
+    backdrop: image
+
+notes:
+  platform:
+    watchos: "full, and the only reason this note exists is the Tier 3 list: Icon is one of the nine components ADR-0010 puts on the wrist, and every prop works there because the registry's Apple binding carries the wrist as it carries the phone (ADR-0013 rule 3). Guidance only: the watch's glanceable stack reaches for the sm and md boxes, and `weight: display` rarely earns its place on a 45 mm screen."
+    macos: No Bold Text setting, so the weight ladder never steps (ADR-0021 §3); density is the lever that changes the control around the glyph, not the glyph.
+    web-desktop: Phosphor cuts are bundled as SVG from the generated registry map; no SF Symbol name ever reaches the web package, the gallery or the token export (ADR-0013 rule 5).
+  design: >-
+    The two published weights follow the references' habit of thin or light for large decorative glyphs
+    and regular for controls (visual-dna §1 principle 13 and the registry's weight table); the 20 px box
+    inside controls and the 16 px box for inline and corner glyphs are the same principle. Filled glyphs
+    are reserved for status and for one tab bar, as docs/research/component-inventory.md records for the
+    Icon row. Tones follow the material table of ADR-0022 §3.1 as ADR-0029 §1.4 and ADR-0030 §3.4 amend
+    it, so Icon and Text pick foregrounds the same way. Example ids are invented (ADR-0015 rule 3).
+  references: [docs/adr/0013-icon-registry.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

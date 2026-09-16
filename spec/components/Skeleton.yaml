@@ -1,0 +1,158 @@
+name: Skeleton
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A placeholder in the exact box of content whose layout is already known: text lines, a media or
+  chart block, an avatar circle. It is one neutral fill from the surface ladder with a single quiet
+  sweep across it, and it exists only for a first load. Under Reduce Motion it holds absolutely
+  still, and on a refetch it does not appear at all.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: one placeholder box
+  - part: line
+    optional: true
+    description: one bar of a multi-line text placeholder
+  - part: shimmer
+    optional: true
+    description: the single pass travelling along the long axis; absent under Reduce Motion
+
+props:
+  - name: shape
+    type: enum
+    values: [text, block, circle]
+    default: text
+  - name: lines
+    type: number
+    default: 1
+    description: "how many bars a text placeholder draws; ignored unless `shape` is text"
+  - name: role
+    type: enum
+    values: [display-xl, display-lg, display-md, title-lg, title-md, title-sm, headline, body-lg, body-md, body-sm, label-lg, label-md, label-sm, caption, micro, eyebrow, metric-xl, metric-lg, metric-md, data]
+    default: body-md
+    description: "the Text role the placeholder stands in for; every bar is that role's line box tall. The vocabulary is Text's, so the caller names the role it is about to render. Ignored unless `shape` is text; a block or a circle takes the box of the content it replaces"
+  - name: animated
+    type: boolean
+    default: true
+    description: false holds the placeholder still even when Reduce Motion is off, for a dense list where many sweeps would flicker
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      block: comp.skeleton.bg
+      circle: comp.skeleton.bg
+    radius:
+      block: radius.inner
+      circle: radius.control
+  line:
+    background: comp.skeleton.bg
+    radius: radius.badge
+    gap: space.2
+    typography:
+      display-xl: type.display.xl
+      display-lg: type.display.lg
+      display-md: type.display.md
+      title-lg: type.title.lg
+      title-md: type.title.md
+      title-sm: type.title.sm
+      headline: type.headline
+      body-lg: type.body.lg
+      body-md: type.body.md
+      body-sm: type.body.sm
+      label-lg: type.label.lg
+      label-md: type.label.md
+      label-sm: type.label.sm
+      caption: type.caption
+      micro: type.micro
+      eyebrow: type.eyebrow
+      metric-xl: type.metric.xl
+      metric-lg: type.metric.lg
+      metric-md: type.metric.md
+      data: type.data
+  shimmer:
+    color: comp.skeleton.shimmer
+
+behavior:
+  - A Skeleton takes the exact box of the content that will replace it, so nothing reflows when the data lands. A shape you would have to guess is an EmptyState, not a Skeleton.
+  - "Which part carries the fill follows the shape, and the bindings say so: for `shape` text the root is a transparent column and every `line` draws `comp.skeleton.bg` with `radius.badge`; for block and circle the root itself is the box and no `line` is rendered. The root has no `text` cell for `background` or `radius`, so it paints nothing in that shape."
+  - "`shape` text draws one bar per `lines` at the line height of `role`, `space.2` (6 px) apart, with `radius.badge` (4 px) ends. The bar height is not guessed and it is not read from an ambient font: the `line` part binds one `type.*` role per value of `role`, in Text's own vocabulary, and the bar is the line box that role resolves to under the current platform and Dynamic Type setting. The role gives a metric and nothing else: no glyph, no face and no text is drawn, and the `line` part has no text tone. Every bar but the last is the full width; where `lines` is two or more the last bar is 60 % of it, like the short final line of the prose it replaces. `lines` is ignored for the other shapes, which draw one box."
+  - "`shape` block uses `radius.inner` (8 px), the concentric inner radius of a card, for a media, chart or tile placeholder; `shape` circle uses `radius.control` for an avatar or a round button."
+  - "The fill is `comp.skeleton.bg`, which is `color.bg.fill.neutral.subtle` (ink or white 6 %): one step of the surface ladder, never a grey of its own."
+  - "The sweep is one pass per `motion.duration.slower` with `motion.easing.linear`: a linear gradient along the long axis, transparent at both ends and `comp.skeleton.shimmer` at its midpoint, one third of that axis wide, travelling from one edge to the other and restarting at the first. Because the shimmer token aliases the same neutral subtle fill as the body, the brightest point of the pass is two 6 % layers and never reaches the next step of the ladder."
+  - "One container runs one sweep, so a loading card reads as one object rather than as a field of flickering bars: the travelling gradient is measured across the nearest enclosing Surface and each placeholder shows the part of it that crosses its own box, with one shared start time. Placeholders that share no Surface do not share a sweep."
+  - "With `animated` false, and in Prism's reduced motion context, the `shimmer` part is not rendered at all — it is left out, not paused at opacity 0 — and the placeholder is one static fill from first paint."
+  - "A Skeleton is drawn only on the solid surface ladder. On vivid it would land in a gradient's no-text zone and on glass it would be a grey on glass, which the chart rules forbid (dataviz-design.md §3 E25 and G39; visual-dna §11 anti-pattern 23), so the component declares no vivid or glass cell."
+  - The content replaces the Skeleton with an opacity crossfade over `motion.duration.base` with `motion.easing.out`. The placeholder never grows, shrinks, slides or morphs into its content, and it has no minimum display time.
+  - "A refetch of content that is already on screen shows no Skeleton: the previous render is held at `opacity.dimmed-row` until the new data lands (dataviz-design.md §3 H46). Skeletons belong to a first load only."
+  - Every Skeleton is hidden from assistive technology and the loading region announces its busy state once, so a screen reader hears the region and not twelve placeholders.
+
+motion:
+  shimmer: motion.duration.slower
+  shimmerEasing: motion.easing.linear
+  replace: motion.duration.base
+  replaceEasing: motion.easing.out
+  reduceMotion: instant
+
+accessibility:
+  role: none; the placeholder is decorative and is hidden from assistive technology
+  label: none; the busy state and the name of what is loading belong to the region, not to each placeholder
+  keyboard: not focusable and not a tab stop; focus stays where it was before the load, and it moves into the content only if it was inside the region that reloaded
+  dynamicType: a text placeholder's bar height is the line box of its `role`, so it grows with Dynamic Type exactly as the copy will and the placeholder and the text it becomes occupy the same height at every size; a block or circle keeps the box of its content
+  contrast: "the placeholder is decoration and carries no meaning, so it sits outside ADR-0011's tiers; it is drawn in `comp.skeleton.bg` and never in a text tone, so it cannot be mistaken for content that failed to load"
+  reduceTransparency: not applicable — the Skeleton renders no glass, and it is never placed on glass in the first place
+  reduceMotion: "the sweep does not run (ADR-0023 §8.4, `instant`). Under Reduce Motion a Skeleton must never shimmer, pulse, breathe, wipe, blink, fade in and out, slide, rotate, or change its size, radius or opacity: it holds one static fill of `comp.skeleton.bg` from first paint until its content arrives, and the content replaces it with an opacity crossfade over `motion.duration.base` with `motion.easing.out`. A refetch shows no Skeleton at all and holds the previous render at `opacity.dimmed-row` instead"
+
+usage:
+  do:
+    - Use a Skeleton only where the layout is already known, and give it the exact box of the content it stands for.
+    - Name the `role` a text placeholder stands in for, so the bars and the copy that replaces them are the same height.
+    - Let one container run one sweep, so a loading card reads as one object.
+    - Name what is loading on the region, not on the placeholders.
+  dont:
+    - Don't put a Skeleton on vivid, glass, an image or a map; loading content sits on the solid ladder.
+    - Don't show a Skeleton on a refetch; hold the previous render at `opacity.dimmed-row`.
+    - Don't make the sweep faster, brighter or coloured, and don't give a placeholder a border, a shadow or a gradient.
+    - Don't fill a screen with Skeletons for content whose shape varies; that is an EmptyState or a Spinner with a name.
+
+examples:
+  - id: text-line
+    props: { shape: text, lines: 1, role: title-md }
+    description: one bar at the title-md line box, for a heading that has not arrived
+  - id: text-paragraph
+    props: { shape: text, lines: 3, role: body-md }
+    description: three bars at the body-md line box, the last stopping short of the full width
+  - id: block
+    props: { shape: block }
+    description: a chart or media placeholder at the concentric inner radius
+  - id: circle
+    props: { shape: circle }
+    description: an avatar or round-button placeholder
+  - id: still
+    props: { shape: text, lines: 2, role: body-sm, animated: false }
+    description: a dense list where many sweeps would flicker, held still with Reduce Motion off
+  - id: card-placeholder
+    props: { shape: block }
+    surface: solid
+    description: a loading Card, whose title, caption and hero placeholders share one sweep across the card
+
+notes:
+  platform:
+    watchos: "`none`. ADR-0010's Tier 3 list does not name Skeleton, and a watch screen is a vertical stack of at most three glanceable tiles (visual-dna §6.3), where a field of grey bars would be more chrome than content. A waiting watch screen keeps its previous value at `opacity.dimmed-row` or shows an EmptyState, which is what dataviz-design.md §3 H46 already asks for on a refetch everywhere. This is a decision, not a gap."
+    macos: identical to iOS; a Skeleton has no hover state, because it is not interactive.
+  design: "A text placeholder is told which Text role it stands in for, rather than reading one from its surroundings: ADR-0019 §1 fixes the axes the context carries — brand, platform, colorScheme, density, modality, motion and the contrast and transparency overrides — and a type role is not one of them, so an ambient-font rule would leave the bar height to whatever each stack happens to inherit. `role` takes Text's own vocabulary, which is what keeps the placeholder and the copy that replaces it the same height. The placeholder's fill is one step of the luminance ladder (docs/research/visual-dna.md §1 principle 1), its radii come from the container scale of §1 principle 2 (badge 4, inner 8, pill for a circle), and the ban on drawing it over media follows §5's no-text zones and §11 anti-pattern 23. The still behaviour under Reduce Motion is ADR-0023 §8.4's `instant`, which names shimmer among the decorative animations that do not run, together with §11 anti-pattern 33 and dataviz-design.md §3 H46, which also supplies the refetch rule. docs/research/component-inventory.md records 0 of 11 sightings and names Card, StatTile and ChartContainer as the placeholders it is required for. Example strings are invented (ADR-0015 rule 3)."
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0019-web-runtime-contract.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md]

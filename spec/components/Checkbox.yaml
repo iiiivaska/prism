@@ -1,0 +1,166 @@
+name: Checkbox
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  One independent value in a multi-select list or a form. Unchecked is an outlined square with nothing
+  inside; checked fills it with the inverse solid and draws the check glyph in the opposite color;
+  mixed draws the minus glyph in the same filled box. The square is what tells a multi-select box from
+  a single-choice circle before any mark is drawn.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row - box leading, label trailing - and the focus and hit region around it
+  - part: box
+  - part: mark
+    optional: true
+    description: the check or the mixed minus; drawn only when the value is on or mixed
+  - part: label
+    optional: true
+
+props:
+  - name: value
+    type: enum
+    values: ["off", "on", "mixed"]
+    default: "off"
+  - name: label
+    type: string
+    description: the visible label; when it is absent the control carries an explicit accessibility name
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  box:
+    border:
+      default: color.border.strong
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+    borderWidth: border.strong
+    radius: comp.checkbox.radius
+    size: comp.checkbox.size
+    selected:
+      background:
+        default: comp.checkbox.bg.selected
+        vivid: color.bg.fill.inverse-media
+        glass: color.bg.fill.inverse-media
+  mark:
+    size: size.icon.sm
+    color:
+      default: comp.checkbox.mark
+      vivid: color.text.on-inverse-media
+      glass: color.text.on-inverse-media
+  label:
+    typography: type.body.md
+
+behavior:
+  - A tap on the box or on its label changes the value and fires `onChange` once with the new value.
+  - The box is a comp.checkbox.size square at comp.checkbox.radius, the smallest container radius; the square is the shape that separates a multi-select box from a single-choice circle, and it carries no pill radius (visual-dna §1 principle 2).
+  - "Off draws the outline only - color.border.strong at border.strong width, no fill. On fills the box with comp.checkbox.bg.selected and draws the status.check glyph in comp.checkbox.mark at size.icon.sm. Mixed fills it the same way and draws action.remove instead, so the two filled states differ by glyph, not by color (ADR-0011)."
+  - A tap from `mixed` goes to `on`; only the caller sets `mixed`, which reports that some of the values it summarises are on.
+  - The hit region is the larger of the row and size.hit on each axis (28 pt under pointer, 44 pt under touch); the 20 px box never grows with modality, the region around it does (ADR-0024 §7.3).
+  - The box leads and the label trails, with space.3 between them; the label is a Text of role body-md and tone primary, so it resolves its own foreground against the material the enclosing Surface publishes. The box stays aligned to the label's first line when the label wraps.
+  - On a vivid surface, and on the scheme's glass, the outline takes color.border.on-media or color.border.on-glass-fill and the filled box becomes the white solid (color.bg.fill.inverse-media) with an ink glyph (color.text.on-inverse-media).
+  - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Checkbox with no visible label therefore stays off vivid and off the scheme's glass, where an unchecked box would be nothing but a decorative ring."
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities, and replaces the hover overlay rather than stacking with it.
+  - "Pressed never touches the box's own fill, whatever the value: an on or mixed box keeps comp.checkbox.bg.selected while the finger is down, so a checked box never reads as empty mid-press."
+  - "`isDisabled` lowers opacity to opacity.disabled, removes the control from the focus order and ignores taps."
+  - A Checkbox carries its own label and nothing else. The help line, the error line and the required mark around it are FormField's, and a group of checkboxes is a list of independent values - a single choice is Radio or SegmentedControl.
+  - A Checkbox changes a value the form submits later. A setting that applies the moment it is flipped is a Toggle.
+
+motion:
+  mark: motion.duration.quick
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.toggle
+  on: haptic.selection.on
+  off: haptic.selection.off
+
+accessibility:
+  role: checkbox
+  label: the `label` prop, or an explicit name when no label is visible; the label names what is being chosen and never spells out the value, which the control reports as checked, unchecked or mixed
+  traits: [toggle]
+  keyboard: Space changes the value; Enter does not; the focus ring is color.border.focus at border.focus width around the row, and around the box at comp.checkbox.radius when there is no label
+  dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the box keeps comp.checkbox.size and the row grows with the label
+  contrast: the filled box is color.text.on-inverse on color.bg.fill.inverse and, over media, color.text.on-inverse-media on color.bg.fill.inverse-media; the outline of an unchecked box is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid and on the scheme's glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the box is what identifies the control there, which is why a label-less Checkbox is not placed on those materials
+  reduceTransparency: not applicable (Checkbox draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the box renders its default cells
+  reduceMotion: the mark does not scale in; it crossfades to comp.checkbox.mark over motion.duration.base with motion.easing.out while the box's fill crossfades to comp.checkbox.bg.selected in the same time, and nothing bounces
+
+usage:
+  do:
+    - Write the label as the thing being chosen ("Include archived sites"), so the checked state reads as a sentence.
+    - Use `mixed` on a parent box that summarises children, and let a tap on it check them all.
+    - Keep a group of checkboxes in one column, each row its own target.
+  dont:
+    - Don't use a Checkbox for a setting that applies at once; that is a Toggle.
+    - Don't use a Checkbox for a single choice among several; that is Radio or SegmentedControl.
+    - Don't put the help or error text inside the Checkbox; FormField owns it.
+    - Don't put a label-less Checkbox on vivid or on the scheme's glass; an unchecked box is only a decorative ring there.
+
+examples:
+  - id: off
+    props: { value: "off", label: "Include archived sites" }
+  - id: on
+    props: { value: "on", label: "Include archived sites" }
+  - id: mixed
+    props: { value: "mixed", label: "All four lines" }
+    description: the parent box of a group where some children are on
+  - id: on-disabled
+    props: { value: "on", label: "Include archived sites", isDisabled: true }
+  - id: bare
+    props: { value: "off" }
+    description: no visible label; the name comes from the row or the table header that hosts it
+  - id: on-vivid
+    props: { value: "on", label: "Compare with last week" }
+    surface: vivid
+  - id: on-glass-over-map
+    props: { value: "on", label: "Show closed roads" }
+    surface: glass
+    backdrop: map
+  - id: label-ru
+    props: { value: "off", label: "Включать архивные площадки в отчёт" }
+    description: a long Russian label; it wraps and the box stays on its first line
+
+notes:
+  platform:
+    watchos: "none. ADR-0010's Tier 3 list has no Checkbox, and a watch screen is at most three glanceable tiles; multi-select belongs to the phone or the desktop, where a list can be read before it is answered."
+    macos: Hover is required, and the row follows compact density; the box keeps its 20 px size, so a dense form does not shrink the target below the pointer hit area.
+    web-desktop: Built on React Aria Checkbox; the input is visually hidden, `data-selected` and `data-indeterminate` drive the CSS states, and the label element wraps the row (ADR-0019).
+  design: >-
+    docs/research/component-inventory.md records no Checkbox in any of the eleven shots, so the look is
+    derived: the outlined rest state is the ghost grammar of ADR-0029 §3.3, the filled state is the
+    inverse-solid rule of docs/research/visual-dna.md §1 principle 9, and the square at radius.badge is
+    the smallest step of the container radius scale in §1 principle 2 - the one deviation from "every
+    control is a pill or a circle", made so that a checkbox and a radio are not the same silhouette. The
+    glyphs are registry ids (ADR-0013): status.check and action.remove. Example strings are invented
+    (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]

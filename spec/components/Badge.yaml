@@ -1,0 +1,177 @@
+name: Badge
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A static mark that carries a count or an unread state: a filled or outlined pill of digits, or a bare
+  dot. It is never pressable and never the target of a gesture; the thing it marks is. A Badge sits on
+  the corner of an icon button, leads an alert row, trails a list row or counts the items behind a tab.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+    optional: true
+    description: the digits; absent on the dot variant
+
+props:
+  - name: variant
+    type: enum
+    values: [count, dot]
+    default: count
+  - name: tone
+    type: enum
+    values: [neutral, accent, critical]
+    default: neutral
+  - name: emphasis
+    type: enum
+    values: [filled, outline]
+    default: filled
+  - name: count
+    type: number
+    description: "the value shown; required when `variant: count`, and 0 hides the badge"
+  - name: max
+    type: number
+    default: 99
+    description: counts above it render as "<max>+"
+  - name: label
+    type: string
+    description: what the count means, for assistive technology ("unread alerts"); required when the badge stands alone
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      filled:
+        neutral: comp.badge.neutral.bg
+        accent: comp.badge.accent.bg
+        critical: comp.badge.critical.bg
+    border:
+      outline:
+        neutral: color.border.strong
+        accent: color.accent
+        critical: color.text.critical
+    borderWidth: border.hairline
+    radius: radius.control
+    height:
+      count: size.icon.md
+      dot: space.3
+    minWidth:
+      count: size.icon.md
+      dot: space.3
+    paddingX:
+      count: space.1
+    offset: space.1
+  label:
+    typography: type.micro
+    color:
+      filled:
+        neutral: comp.badge.neutral.text
+        accent: comp.badge.accent.text
+        critical: comp.badge.critical.text
+      outline:
+        neutral: color.text.secondary
+        accent: color.text.accent
+        critical: color.text.critical
+
+behavior:
+  - A Badge is not interactive. It has no press, hover or focus state and is never a tap target; the control it marks carries the action and the accessibility label.
+  - "`variant: count` renders a pill at least size.icon.md tall and wide, so a one-digit and a two-digit badge share one silhouette; `dot` renders a space.3 circle with no digits."
+  - A count above `max` renders as "<max>+"; the digits are type.micro, which is the only role allowed below 12 px and only for badge digits.
+  - The digits are tabular, because a count changes while it is on screen and ADR-0021 §5 makes every live value tabular; a badge whose count goes from 8 to 9 therefore keeps its digit column.
+  - "`count: 0` hides the badge, because an empty mark reads as a broken one; a state that must stay visible uses the dot variant instead. A `count` badge with no `count` at all renders nothing: the mark is the number, and there is no empty form of it."
+  - "`emphasis: filled` is the solid mark: the neutral tone is the inverse solid (ink on light, white on dark), accent is the one attention fill and critical is the solid danger disc. `outline` has no fill at all and is the resting form beside a filled sibling, the way an inactive tab's count sits beside the active tab's."
+  - "Over a map, an image, a vivid surface or glass only the filled emphasis is used. Its three fills are opaque, so the checked pair reaches the digits whatever the ground is, and no underlay is needed. An outline badge is not placed over media: its stroke and its digits would sit straight on the backdrop, where no pair checks them."
+  - The badge is offset space.1 outside the corner of the element it marks and overlaps it; it never changes that element's layout or its hit region.
+  - "A critical badge is never the only cue for a problem: the row, the tab or the button it marks also names the state in words."
+  - The badge never animates its arrival with a pulse or a bounce; a changed count replaces the old one over motion.duration.quick.
+  - A badge that carries a status word instead of a count is a StatusPill; a pressable pill with a label is a Chip.
+
+motion:
+  count: motion.duration.quick
+  reduceMotion: instant
+
+accessibility:
+  role: none by itself; the count is part of the accessibility label of the element the badge marks
+  label: the count plus what it counts ("3 unread alerts"); a badge that stands alone carries its own `label`, and a dot announces the state in words ("unread")
+  traits: []
+  keyboard: not focusable; the badge is never in the focus order, and its meaning reaches the keyboard through the control it marks
+  dynamicType: the digits scale with type.micro and the pill grows with them; the dot does not scale, because it carries no text
+  contrast: the filled pairs are color.text.on-badge on color.bg.fill.critical, color.text.on-accent on color.bg.fill.accent and color.text.on-inverse on color.bg.fill.inverse, all functional, and all three fills are opaque, so they hold on every ground including media; the outline digits are color.text.secondary, color.text.accent and color.text.critical, functional on color.bg.page, color.bg.surface and color.bg.surface.raised, which is where an outline badge is used; its stroke is color.border.strong, color.accent or color.text.critical, decorative beside those digits, and the one that carries the boundary tier is color.border.strong
+  reduceTransparency: no glass of its own; an enclosing glass Surface resolves to the opaque raised fallback and the badge is unchanged
+  reduceMotion: a changed count does not roll or count up; it is replaced at motion.duration.instant, and the badge never pulses
+  voiceOver: read as part of its host ("Alerts, 3 unread"), never as a separate element, unless the badge stands alone and carries its own label
+
+usage:
+  do:
+    - Use a count for a number the user can act on, and a dot for "there is something new".
+    - Put the count in the label of the control the badge marks, so it is not lost for assistive technology.
+    - Use the outline emphasis for resting siblings and the filled one for the active or urgent mark.
+  dont:
+    - Don't make a Badge pressable; give the action to the control it marks.
+    - Don't show a zero, and don't show four digits; cap with `max`.
+    - Don't use a status hue for anything but a real status; a neutral count stays achromatic.
+    - Don't let a critical badge be the only sign of a problem, and don't fill a large area with a status color.
+    - Don't put an outline badge over a map, an image, a vivid surface or glass; only the filled mark has a checked pair there.
+
+examples:
+  - id: count-neutral
+    props: { variant: count, tone: neutral, count: 3, label: "unread alerts" }
+  - id: count-critical
+    props: { variant: count, tone: critical, count: 12, label: "open incidents" }
+  - id: count-accent
+    props: { variant: count, tone: accent, count: 7, label: "items needing attention" }
+  - id: count-overflow
+    props: { variant: count, tone: critical, count: 128, max: 99, label: "open incidents" }
+    description: renders "99+" and keeps the two-digit silhouette
+  - id: outline-neutral
+    props: { variant: count, tone: neutral, emphasis: outline, count: 4, label: "queued runs" }
+    description: the resting count beside an active tab's filled badge
+  - id: outline-critical
+    props: { variant: count, tone: critical, emphasis: outline, count: 2, label: "open incidents" }
+  - id: dot-critical
+    props: { variant: dot, tone: critical, label: "unread" }
+  - id: dot-accent
+    props: { variant: dot, tone: accent, label: "new" }
+  - id: on-vivid
+    props: { variant: count, tone: neutral, count: 3, label: "unread alerts", emphasis: filled }
+    surface: vivid
+    description: only the filled emphasis goes over media; its fill is opaque, so the checked pair reaches the digits over the gradient
+  - id: on-glass-over-map
+    props: { variant: count, tone: critical, count: 2, label: "open incidents" }
+    surface: glass
+    backdrop: map
+
+notes:
+  platform:
+    watchos: "`none`. Badge is not in ADR-0010's Tier 3 set. A watch alert row shows its count with Text at the micro role instead, so the wrist keeps one text element rather than a mark plus a mark."
+    macos: identical to iOS; the badge never reacts to hover, because it is not a control.
+    web-desktop: rendered as a decorative element with `aria-hidden` when its count is already in the host control's accessible name.
+  design: >-
+    Seven of eleven shots carry a badge (docs/research/component-inventory.md): a numbered danger disc
+    offset outside an icon button's corner, a numbered badge leading an alert row, count badges on tabs
+    (ink for the active tab, outlined for the rest), an accent count disc trailing a list row and a small
+    unread dot. The seventh shape in that row, the rounded-triangle alert mark overlapping an icon ring,
+    is not a Badge: it carries no count and the inventory notes that its silhouette is deliberately
+    unlike any control's. It is the status.danger glyph drawn with Icon, and the row or button it marks
+    names the state in words. The solid danger disc with white type.micro digits is
+    docs/research/visual-dna.md §4.11 and §1 principle 14 ("status is a material, never a block, never
+    color alone"); the ink-for-active badge is principle 9; type.micro at 11/500 is §2.2's "badge digits
+    only", and §2.3 makes the live count tabular. The mark is a disc or a pill, so it takes
+    radius.control; radius.badge (4 px) is the smallest step of §1 principle 2's container scale, not
+    this mark's radius. ADR-0030 §6.2's page underlay is for a mark on a status or accent *tint*; these
+    three fills are opaque, so the badge needs none. The badge carries digits, so it has no Cyrillic
+    length case and no Russian example. Example labels are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

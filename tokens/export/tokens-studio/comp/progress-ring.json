@@ -1,0 +1,21 @@
+{
+  "comp": {
+    "progress-ring": {
+      "arc": {
+        "$type": "color",
+        "$value": "{color.bg.fill.inverse}",
+        "$description": "the value arc is the inverse solid (ink in light, white in dark); the accent means attention, never progress (visual-dna §1 principles 3 and 9)"
+      },
+      "stroke-min": {
+        "$type": "spacing",
+        "$value": "{space.1}",
+        "$description": "4 px: the floor under chart.gauge-stroke-ratio, from dataviz-design.md §3 E25's minimum ring stroke"
+      },
+      "track": {
+        "$type": "color",
+        "$value": "{color.bg.fill.neutral.subtle}",
+        "$description": "the unfilled circumference: the neutral subtle fill, one quiet step over the surface ladder rather than a grey of its own (dataviz-design.md §3 E25)"
+      }
+    }
+  }
+}

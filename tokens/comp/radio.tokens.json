@@ -1,0 +1,72 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "radio": {
+      "bg": {
+        "$type": "color",
+        "selected": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "dot": {
+        "fill": {
+          "$type": "color",
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the opposite-colored dot on the solid circle",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": "{sys.space.3}",
+          "$description": "8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{sys.size.icon.md}",
+        "$description": "the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,260 @@
+name: SegmentedControl
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A short, mutually exclusive choice shown in full: a trackless row of pills where exactly one is the
+  inverse solid and its siblings are hairline outlines. It is the pill grammar plus the inverse-solid
+  active rule, so a group never gets a filled track behind it and never uses the accent to say "active".
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+    description: the row of segments; no track, no fill, no border of its own
+  - part: segment
+  - part: label
+    optional: true
+    description: absent only when the segment is icon-only, and then the segment carries an accessibility label
+  - part: icon
+    optional: true
+
+props:
+  - name: segments
+    type: data
+    required: true
+    description: "[{ value, label?, icon? }]; two to four segments, each with a label, an icon, or both"
+  - name: value
+    type: string
+    required: true
+    description: the `value` of the one selected segment; a SegmentedControl is never empty
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: isFullWidth
+    type: boolean
+    default: false
+    description: stretches the row and gives every segment the same width
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, selected, focus-visible, disabled]
+
+tokens:
+  root:
+    gap: space.1
+  segment:
+    background:
+      page:
+        map: material.glass.chip
+        image: material.glass.chip
+        vivid: material.glass.chip
+      vivid: material.glass.chip
+      glass: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+        image: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+      vivid: material.glass.chip.blur
+      glass: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+        image: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+      vivid: material.glass.chip.saturate
+      glass: material.glass.chip.saturate
+    edgeColor: color.edge.highlight
+    edgeStartAlpha:
+      page:
+        map: material.glass.chip.edge.start
+        image: material.glass.chip.edge.start
+        vivid: material.glass.chip.edge.start
+      vivid: material.glass.chip.edge.start
+      glass: material.glass.chip.edge.start
+    edgeEndAlpha:
+      page:
+        map: material.glass.chip.edge.end
+        image: material.glass.chip.edge.end
+        vivid: material.glass.chip.edge.end
+      vivid: material.glass.chip.edge.end
+      glass: material.glass.chip.edge.end
+    border:
+      default: color.border.hairline
+      page:
+        default: color.border.hairline
+        map: color.border.on-glass-fill
+        image: color.border.on-glass-fill
+        vivid: color.border.on-media
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+    borderWidth: border.hairline
+    radius: radius.control
+    height:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+    paddingX:
+      sm: space.4
+      md: space.5
+      lg: space.6
+    gap: space.2
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    selected:
+      background:
+        default: comp.segmented-control.active.bg
+        vivid: color.bg.fill.inverse-media
+        glass: color.bg.fill.inverse
+        accent: color.bg.fill.inverse
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+    disabled:
+      opacity: opacity.disabled
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.secondary
+      page:
+        default: color.text.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+    selected:
+      color:
+        default: comp.segmented-control.active.text
+        vivid: color.text.on-inverse-media
+        glass: color.text.on-inverse
+        accent: color.text.on-inverse
+  icon:
+    size: size.icon.md
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+    selected:
+      color:
+        default: comp.segmented-control.active.text
+        vivid: color.text.on-inverse-media
+        glass: color.text.on-inverse
+        accent: color.text.on-inverse
+
+behavior:
+  - Exactly one segment is selected at all times; pressing another moves the selection and fires `onChange` once on release inside the segment.
+  - "The group draws no track: the row has no fill, no border and no shadow, and its segments are separated by a space.1 gap only."
+  - The selected segment is the one inverse solid in the group (ink on light, white on dark) and carries the opposite-colored label and glyph; every other segment is a hairline outline with a secondary label.
+  - On a vivid surface the selected segment becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media) and the unselected outlines take color.border.on-media; on the scheme's glass the solid is color.bg.fill.inverse, which is already ink on light glass and white on smoked glass.
+  - Over a map, imagery, a vivid surface or the scheme's glass the unselected segments render the glass chip and carry color.text.on-glass-fill, so the row reads as glass chips with one solid among them; the selected segment keeps its solid fill and never takes the chip.
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where a segment renders glass."
+  - The hit region of each segment is the larger of its visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); the invisible extension never overlaps a neighbor, so a row keeps its gaps.
+  - "Labels never wrap and never truncate: a segment that cannot show its whole label means the choice belongs in a Select. At most four segments."
+  - "`isFullWidth` gives every segment the width of the widest, so the row keeps one rhythm; otherwise each segment is as wide as its content plus its padding."
+  - An icon-only segment keeps the same height and takes a square footprint; it carries an accessibility label from the registry id's meaning, never from the glyph alone.
+  - "Moving the selection slides nothing: the outgoing segment loses its fill and the incoming one gains it, and the incoming segment scales to 0.97 and back under motion.spring.snappy."
+  - Hover (pointer only) adds the neutral overlay to an unselected segment; the selected segment does not change on hover, because it is already the solid.
+
+motion:
+  select: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: radiogroup, with each segment a radio
+  label: the group's purpose, given by the caller; each segment's label is its own text, or an explicit label when it is icon-only
+  traits: [button, selected]
+  keyboard: arrow keys move the selection inside the group and wrap at its ends, Home and End move to the first and last segment, Tab enters and leaves the group as one stop, and the focus ring is color.border.focus at border.focus width outside the segment's pill
+  dynamicType: labels scale with type.label.*; the segments grow with them up to the accessibility3 size and then the row wraps to a vertical stack rather than truncating a label
+  contrast: the selected pair is color.text.on-inverse on color.bg.fill.inverse, and color.text.on-inverse-media on color.bg.fill.inverse-media on vivid; unselected labels are color.text.secondary, functional on page, surface and raised, and color.text.on-glass-fill on material.glass.chip over media; on an accent surface the unselected label is color.text.on-accent-secondary on color.bg.fill.accent; the hairline outline is decorative, because the label already identifies the segment
+  reduceTransparency: a glass parent resolves to the opaque raised fallback and the selected segment takes its default cell, comp.segmented-control.active.bg, which is what a raised surface publishes for it
+  reduceMotion: the incoming segment does not scale; the fill change crossfades to comp.segmented-control.active.bg over motion.duration.base with motion.easing.out, and nothing slides between segments
+  voiceOver: each segment announces its label and whether it is selected; the group announces its own label once on entry
+
+usage:
+  do:
+    - Use two to four segments for a choice the user changes often (a period, a view, a mode).
+    - Keep labels to one or two words, in sentence case.
+    - Let the selected segment be the only solid element in its group.
+  dont:
+    - Don't draw a track behind the segments, and don't fill the row.
+    - Don't use the accent for the active segment; the accent means attention, the solid means active.
+    - Don't put more than four segments in a row or let a label truncate; use a Select instead.
+    - Don't mix an icon-only segment with a labelled one in the same group.
+
+examples:
+  - id: two-segments
+    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day" }
+  - id: three-segments
+    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "week" }
+  - id: label-and-icon
+    props: { segments: [{ value: "list", label: "List", icon: "nav.menu" }, { value: "map", label: "Map", icon: "object.map" }], value: "map" }
+  - id: icon-only
+    props: { segments: [{ value: "list", icon: "nav.menu" }, { value: "map", icon: "object.map" }], value: "list", size: md }
+  - id: full-width
+    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "day", isFullWidth: true }
+  - id: disabled
+    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day", isDisabled: true }
+  - id: on-vivid
+    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "week" }
+    surface: vivid
+    description: the selected segment becomes the white solid with an ink label
+  - id: on-glass-over-map
+    props: { segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "depots" }
+    surface: glass
+    backdrop: map
+    description: the unselected segments are glass chips and the selected one stays the solid
+  - id: over-map
+    props: { segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "traffic" }
+    surface: map
+  - id: russian-segments
+    props: { segments: [{ value: "day", label: "День" }, { value: "week", label: "Неделя" }, { value: "month", label: "Месяц" }], value: "week" }
+    description: Russian labels are longer than the English ones, so the row widens instead of truncating
+
+notes:
+  platform:
+    watchos: "`none`. SegmentedControl is not in ADR-0010's Tier 3 set; a watch screen holds at most three glanceable tiles, and a mode change there is a list screen or the crown."
+    macos: default size follows compact density (32 pt); hover state required on unselected segments.
+    web-desktop: built on React Aria RadioGroup with `orientation=\"horizontal\"`; `data-selected` drives the solid, and arrow keys are the group's own roving focus.
+  design: >-
+    The trackless row and the inverse-solid active element are docs/research/visual-dna.md §1 principles
+    2 and 9 and §4.7 ("one solid among hairlines"), whose 4 px gaps inside a control group give
+    space.1. All five sightings in docs/research/component-inventory.md (5/11) are trackless chip groups
+    with one active element; two of them mark that element with a solid and one with a stroke, and Prism
+    takes the solid, because a stroke-marked active pill is a selected Chip and the two must not look
+    alike. The folder-tab and image-chip variants are app compositions, not this primitive, and the
+    truncated label of one sighting is refused here: a segment that cannot show its label belongs in a
+    Select. Anti-pattern 24 forbids a filled track and a second solid in one group. Example strings
+    are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

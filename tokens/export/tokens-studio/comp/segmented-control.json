@@ -1,0 +1,18 @@
+{
+  "comp": {
+    "segmented-control": {
+      "active": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.fill.inverse}",
+          "$description": "the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}",
+          "$description": "the label and glyph on the selected segment"
+        }
+      }
+    }
+  }
+}

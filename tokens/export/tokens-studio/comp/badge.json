@@ -1,0 +1,40 @@
+{
+  "comp": {
+    "badge": {
+      "accent": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.fill.accent}",
+          "$description": "the one attention fill per screen; the accent means look here, never an action"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-accent}"
+        }
+      },
+      "critical": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.fill.critical}",
+          "$description": "the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11)"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-badge}",
+          "$description": "11 px Medium digits on the badge red"
+        }
+      },
+      "neutral": {
+        "bg": {
+          "$type": "color",
+          "$value": "{color.bg.fill.inverse}",
+          "$description": "the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9)"
+        },
+        "text": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}"
+        }
+      }
+    }
+  }
+}

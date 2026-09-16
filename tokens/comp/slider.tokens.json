@@ -1,0 +1,104 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "slider": {
+      "track": {
+        "bg": {
+          "$type": "color",
+          "$value": "{sys.color.border.strong}",
+          "$description": "the unfilled part of the meter: a lighter step of the same ink/white ramp as the fill (dataviz-design §3), and the boundary-tier token the contrast gate already checks",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "height": {
+          "$type": "dimension",
+          "$value": "{sys.space.1}",
+          "$description": "4 px, the smallest step of the 4 px rhythm (visual-dna §6.1); the references give no track thickness of their own",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.inverse}",
+        "$description": "the filled part of the track is the one solid in the control (visual-dna §1 principle 9)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "thumb": {
+        "fill": {
+          "$type": "color",
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the same ink as the fill; the thumb is told by its size, not by its color",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": "{sys.size.control.sm}",
+          "$description": "the small control circle, so the thumb sits in the one control family and never falls below the pointer hit area (ADR-0024 §7.1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "WIDTH_HEIGHT"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "tick": {
+        "$type": "color",
+        "$value": "{sys.color.border.strong}",
+        "$description": "the step marks under the track; the tick-ruler ornament of visual-dna §4.12, always decorative",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

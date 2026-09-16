@@ -1,0 +1,39 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "segmented-control": {
+      "active": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the selected segment is the one inverse solid in the group (visual-dna principle 9); unselected segments have no fill",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the label and glyph on the selected segment",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

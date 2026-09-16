@@ -1,0 +1,225 @@
+name: StatTile
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  The bare metric unit: a label, one value with its unit, and optionally a status glyph, a DeltaBadge
+  and a Sparkline. It carries no chrome of its own — a tile with a title row or an action is a
+  StatCard — so it takes its tones from the Surface it sits in and packs into tile grids and watch
+  faces.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: adapted
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+  - part: statusIcon
+    optional: true
+    description: a registry status glyph before the label; a status is never carried by color alone
+  - part: value
+  - part: unit
+    optional: true
+    description: hung on the value's baseline; on vivid it joins the label line instead
+  - part: delta
+    optional: true
+    slot: true
+    description: one DeltaBadge
+  - part: trend
+    optional: true
+    slot: true
+    description: one Sparkline at the tile height
+
+props:
+  - name: label
+    type: string
+    required: true
+  - name: value
+    type: string
+    required: true
+  - name: unit
+    type: string
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+    description: type.metric.md, type.metric.lg or type.metric.xl for the value
+  - name: layout
+    type: enum
+    values: [stacked, inline]
+    default: stacked
+    description: stacked puts the label above the value; inline puts it before the value on one row
+  - name: status
+    type: enum
+    values: [none, success, warning, critical, info]
+    default: none
+  - name: delta
+    type: data
+    description: DeltaBadge props; its `value` is the bare magnitude, because the badge writes the sign and the basis symbol itself
+  - name: trend
+    type: data
+    description: Sparkline props, `points` included; a trend without a series is not drawn, since the series is what a sparkline is
+  - name: live
+    type: boolean
+    default: false
+
+states: [default, loading]
+
+tokens:
+  root:
+    gap: space.1
+    columnGap: space.3
+    loading:
+      opacity: opacity.dimmed-row
+  label:
+    typography: type.caption
+    gap: space.1
+    color:
+      default: color.text.secondary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  statusIcon:
+    size: size.icon.sm
+    color:
+      default:
+        success: color.icon.status.success
+        warning: color.icon.status.warning
+        critical: color.icon.status.critical
+        info: color.icon.status.info
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  value:
+    typography:
+      sm: type.metric.md
+      md: type.metric.lg
+      lg: type.metric.xl
+    color:
+      default: color.text.primary
+      vivid: color.text.on-vivid
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
+      glassLight: color.text.on-glass-light
+      glass: color.text.on-glass-fill
+  unit:
+    typography: type.metric.unit
+    gap: space.2
+    color:
+      default: color.text.secondary
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
+      glassLight: color.text.on-glass-light
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  delta:
+    gap: space.2
+  trend:
+    gap: space.2
+
+behavior:
+  - A StatTile paints no background, border or shadow; it takes the tones of the material the enclosing Surface publishes, so the same tile works on a solid card, a vivid tile and the scheme's glass.
+  - "The label sits above the value in `layout: stacked` and before it in `layout: inline`; the label is sentence case and never an uppercase eyebrow."
+  - "A status draws its registry glyph before the label together with the label's words, so the state is never carried by color alone (ADR-0011 rule 4). The map is fixed: success → status.success, warning → status.warning, critical → status.danger, info → status.info."
+  - "On vivid, light glass, inverse and accent the status glyph takes that material's foreground, and the state is read from the glyph's shape and the label."
+  - "The value is proportional by default; `live: true` sets tabular figures on the role, as every value that changes while visible must (ADR-0021 §5)."
+  - "The unit hangs on the value's baseline in type.metric.unit; on a vivid surface the hero block holds only the value, so the unit moves to the label line (ADR-0030 §8, V3)."
+  - "On vivid the tile is `layout: stacked`, and its label line is the header block ADR-0030 rule 7 allows sub-24 px text in: the label, the status glyph, the unit and the delta all live there, and the value row below holds the value alone at 24 px or more. `size: sm` (20 px) and the inline layout are therefore not used on vivid, where color.text.on-vivid has no pair below 24 px outside that block."
+  - "The dimmed trailing group of a value exists only at 24 px or more, so `size: sm` (type.metric.md, 20 px) never dims its tail."
+  - The delta follows the value on its baseline and the trend sits below both, at the tile sparkline height and no wider than the value block.
+  - Tiles in a group nearly touch — the gap between tiles is space.tile-gap, and whitespace goes to the page, not inside the tile.
+  - A missing value renders an em dash in the value role; the label, the status glyph and the unit stay.
+  - "`loading` holds the previous render at opacity.dimmed-row; a tile grid never flashes skeletons row by row."
+  - "At most three tiles stack in one column on the watch, where the tile is label, status glyph and value only."
+
+motion:
+  valueChange: motion.duration.slow
+  reduceMotion: instant
+
+accessibility:
+  role: group
+  label: label, status word, value and unit as one string ("Line output, degraded, 86.4 percent"); the delta and the trend are folded into it rather than exposed separately
+  traits: [staticText]
+  keyboard: not focusable; a pressable tile is a StatCard, which owns the role, the focus ring and size.hit
+  dynamicType: label, value and unit all scale; the value clamps at the accessibility3 size and the tile grows in height instead of truncating, and the trend drops out before any text does
+  contrast: "the label and the unit are functional text at 4.5:1; the value is large text at 3:1 at `size: md` and `lg` (32 and 48 px) and functional text at 4.5:1 at `size: sm` (20 px), which color.text.primary holds on every material cell bound here; the status glyph is always paired with its word, which is what carries the state: color.icon.status.critical and color.icon.status.info hold the 3:1 boundary tier in both schemes, and color.icon.status.success and color.icon.status.warning hold it in dark and sit below it in light (2.77 and 1.77 on color.bg.surface, docs/research/a11y-reconciliation.md B4), which is why their pairs in tokens/contrast-pairs.json are dark-only and why the word is mandatory (ADR-0011 rule 4). On vivid the only color.text.on-vivid pairs are V1 (24 px or more) and V2 (the header block), which is why the label line carries every sub-24 px part there"
+  reduceTransparency: no change of its own — the enclosing Surface publishes raised instead of glass and every tone follows it
+  reduceMotion: the count-up does not run; the value is replaced at motion.duration.instant, and the trend appears complete
+
+usage:
+  do:
+    - Keep one number per tile, with the label that names it.
+    - Use a tile grid for a KPI row and one StatTile at hero size for the screen's lead figure.
+    - Pair every status with its glyph and its word.
+  dont:
+    - Don't add a title row, an icon ring or an action; that is a StatCard.
+    - Don't put a second value in the same tile to save a slot.
+    - "Don't set the unit, the delta, `size: sm` or the inline layout on a vivid tile; the label line is the only checked place for text under 24 px there."
+    - Don't color the value for emphasis, and don't use a status hue as the value's tone.
+
+examples:
+  - id: stacked-md
+    props: { label: "Line output", value: "86.4", unit: "%", size: md }
+  - id: stacked-with-delta
+    props: { label: "Conversion", value: "12.9", unit: "%", size: md, delta: { value: "0.8", direction: up, polarity: upIsGood, basis: points } }
+  - id: with-trend
+    props: { label: "Ingest rate", value: "1 284", unit: "req/s", size: md, live: true, trend: { points: [1180, 1204, 1192, 1231, 1218, 1246, 1260, 1249, 1272, 1265, 1279, 1284], kind: line, size: tile, emphasis: primary } }
+    description: the trend carries the series Sparkline requires, ending on the value the tile shows
+  - id: status-critical
+    props: { label: "Pump 4 pressure", value: "2.1", unit: "bar", size: md, status: critical }
+  - id: inline-sm
+    props: { label: "Queued", value: "37", size: sm, layout: inline }
+  - id: hero-lg
+    props: { label: "Fleet availability", value: "94.2", unit: "%", size: lg }
+  - id: label-ru
+    props: { label: "Доступность автопарка", value: "94,2", unit: "%", size: md }
+    description: the Russian label is about a third longer and wraps to two lines rather than truncating
+  - id: on-vivid
+    props: { label: "Average yield, roubles per batch", value: "2 450", size: md }
+    surface: vivid
+    description: the unit sits in the label line, because the hero block on vivid holds only the value
+  - id: on-glass-over-image
+    props: { label: "Unit 4417 battery", value: "63", unit: "%", size: md }
+    surface: glass
+    backdrop: image
+  - id: watch-status
+    props: { label: "Heart rate", value: "126", unit: "bpm", size: md, status: warning }
+    description: the watch form — glyph, label and one number, with no delta and no trend
+
+notes:
+  platform:
+    watchos: "adapted — label, status glyph and value only; no delta, no trend and no inline layout. The watch density gives the surrounding card 16 px of padding (ADR-0029 §3.2), and at most three tiles stack in one column."
+    macos: compact density shrinks the gaps; there is no hover state, because the tile is not interactive.
+  design: >-
+    The bare tile (label, value, unit, delta, sparkline, status) is docs/research/dataviz-design.md §5
+    Tier 1 and its stat-tile contract in §1; the split from StatCard is
+    docs/research/component-inventory.md ("Tiles with card chrome count as StatCard"), which also records
+    the watch form. The instrument numeral, the hung unit and the dense-tile spacing are
+    docs/research/visual-dna.md §4.2, §1 principle 11 and §6.7; status as glyph plus word is §1 principle 14
+    and ADR-0011. Example copy is invented (ADR-0015 rule 3).
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0012-layers-and-v1-scope.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0021-typography-rules.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md

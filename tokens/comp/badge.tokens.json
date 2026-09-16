@@ -1,0 +1,101 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "badge": {
+      "neutral": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "the neutral count is the inverse solid: ink on light, white on dark (visual-dna principle 9)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "accent": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.fill.accent}",
+          "$description": "the one attention fill per screen; the accent means look here, never an action",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-accent}",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "critical": {
+        "$type": "color",
+        "bg": {
+          "$value": "{sys.color.bg.fill.critical}",
+          "$description": "the solid danger disc; solid red exists only in the badge and the alert glyph (visual-dna 4.11)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "text": {
+          "$value": "{sys.color.text.on-badge}",
+          "$description": "11 px Medium digits on the badge red",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "TEXT_FILL"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

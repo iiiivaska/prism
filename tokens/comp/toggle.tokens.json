@@ -1,0 +1,101 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "toggle": {
+      "track": {
+        "$type": "color",
+        "on": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "on is the inverse solid: the binary form of the one-solid-per-group rule (visual-dna §1 principle 9)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "off": {
+          "$value": "{sys.color.bg.fill.neutral.subtle}",
+          "$description": "off is an outlined track over a neutral subtle well; the outline is color.border.strong",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "knob": {
+        "$type": "color",
+        "on": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the opposite-colored element on the solid track",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        },
+        "off": {
+          "$value": "{sys.color.icon.secondary}",
+          "$description": "the quiet dot inside the outlined track; the color.text.secondary ramp step",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "{sys.size.control.sm}",
+        "$description": "the track is the small control height, so a toggle sits in the one control family (ADR-0024 §7.1)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "inset": {
+        "$type": "dimension",
+        "$value": "{sys.space.1}",
+        "$description": "the gap between the knob and the track edge; the smallest step of the 4 px rhythm (visual-dna §6.1)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "GAP"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

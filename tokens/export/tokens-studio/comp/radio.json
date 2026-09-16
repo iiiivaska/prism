@@ -1,0 +1,30 @@
+{
+  "comp": {
+    "radio": {
+      "bg": {
+        "selected": {
+          "$type": "color",
+          "$value": "{color.bg.fill.inverse}",
+          "$description": "the chosen circle is the inverse solid; the others have no fill at all (ADR-0029 §3.3)"
+        }
+      },
+      "dot": {
+        "fill": {
+          "$type": "color",
+          "$value": "{color.text.on-inverse}",
+          "$description": "the opposite-colored dot on the solid circle"
+        },
+        "size": {
+          "$type": "spacing",
+          "$value": "{space.3}",
+          "$description": "8 px, the button-icon-gap step of the 4 px rhythm (visual-dna §6.1); a dot, not a glyph"
+        }
+      },
+      "size": {
+        "$type": "sizing",
+        "$value": "{size.icon.md}",
+        "$description": "the circle is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it"
+      }
+    }
+  }
+}

@@ -24,6 +24,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         prismColorsPart4()
         prismColorsPart5()
         prismColorsPart6()
+        prismColorsPart7()
+        prismColorsPart8()
     }
 
     private func prismColorsPart1() {
@@ -137,6 +139,15 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassLightChip, Color("prism/material-glass-light-chip", bundle: DSTokensBundle.bundle), "prism: material.glassLightChip")
         check(t.material.glassLightFill, Color("prism/material-glass-light-fill", bundle: DSTokensBundle.bundle), "prism: material.glassLightFill")
         check(t.material.glassScrim, Color("prism/material-glass-scrim", bundle: DSTokensBundle.bundle), "prism: material.glassScrim")
+        check(t.components.areaChart.fill, Color("prism/color-chart-band", bundle: DSTokensBundle.bundle), "prism: components.areaChart.fill")
+        check(t.components.avatar.bg, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism: components.avatar.bg")
+        check(t.components.avatar.ring, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.avatar.ring")
+        check(t.components.badge.accentBg, Color("prism/color-bg-fill-accent", bundle: DSTokensBundle.bundle), "prism: components.badge.accentBg")
+        check(t.components.badge.accentText, Color("prism/color-text-on-accent", bundle: DSTokensBundle.bundle), "prism: components.badge.accentText")
+        check(t.components.badge.criticalBg, Color("prism/color-bg-fill-critical", bundle: DSTokensBundle.bundle), "prism: components.badge.criticalBg")
+        check(t.components.badge.criticalText, Color("prism/color-text-on-badge", bundle: DSTokensBundle.bundle), "prism: components.badge.criticalText")
+        check(t.components.badge.neutralBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.badge.neutralBg")
+        check(t.components.badge.neutralText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.badge.neutralText")
         check(t.components.button.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism: components.button.dangerBgRest")
         check(t.components.button.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.button.dangerBorder")
         check(t.components.button.dangerText, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.button.dangerText")
@@ -157,9 +168,58 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.solidText, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism: components.card.solidText")
         check(t.components.card.vividCaption, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism: components.card.vividCaption")
         check(t.components.card.vividText, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism: components.card.vividText")
+        check(t.components.checkbox.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.checkbox.bgSelected")
+        check(t.components.checkbox.mark, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.checkbox.mark")
+        check(t.components.chip.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism: components.chip.bgPressed")
+        check(t.components.chip.bgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism: components.chip.bgRest")
+        check(t.components.chip.borderRest, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism: components.chip.borderRest")
+        check(t.components.chip.borderSelected, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.chip.borderSelected")
+        check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerBgRest")
+        check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerBorder")
+        check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerIcon")
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBorder")
+        check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostIcon")
+        check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.plainIcon")
     }
 
     private func prismColorsPart4() {
+        let t = DSTokenSet(DSTokenContext(brand: .prism))
+        check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.iconButton.primaryBgPressed")
+        check(t.components.iconButton.primaryBgRest, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.iconButton.primaryBgRest")
+        check(t.components.iconButton.primaryIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.iconButton.primaryIcon")
+        check(t.components.iconButton.secondaryBgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryBgPressed")
+        check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryBgRest")
+        check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryBorder")
+        check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.secondaryIcon")
+        check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.progressBar.fill")
+        check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism: components.progressBar.fillSecondary")
+        check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.progressBar.track")
+        check(t.components.progressRing.arc, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.progressRing.arc")
+        check(t.components.progressRing.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.progressRing.track")
+        check(t.components.radio.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.radio.bgSelected")
+        check(t.components.radio.dotFill, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.radio.dotFill")
+        check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.segmentedControl.activeBg")
+        check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.segmentedControl.activeText")
+        check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.select.borderError")
+        check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.skeleton.bg")
+        check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.skeleton.shimmer")
+        check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.slider.fill")
+        check(t.components.slider.thumbFill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.slider.thumbFill")
+        check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.slider.tick")
+        check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.slider.trackBg")
+        check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.spinner.arc")
+        check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.textArea.borderError")
+        check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.textField.borderError")
+        check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism: components.toggle.knobOff")
+        check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.toggle.knobOn")
+        check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.toggle.trackOff")
+        check(t.components.toggle.trackOn, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.toggle.trackOn")
+        check(t.components.tooltip.bg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism: components.tooltip.bg")
+        check(t.components.tooltip.text, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism: components.tooltip.text")
+    }
+
+    private func prismColorsPart5() {
         check(DSColor(brand: .prism, transparency: .reduced).accent, Color("prism/color-accent", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.accent")
         check(DSColor(brand: .prism, transparency: .reduced).accentGlow, Color("prism/color-accent-glow", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.accentGlow")
         check(DSColor(brand: .prism, transparency: .reduced).accentPressed, Color("prism/color-accent-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.accentPressed")
@@ -210,7 +270,7 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .reduced).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartTarget")
     }
 
-    private func prismColorsPart5() {
+    private func prismColorsPart6() {
         let t = DSTokenSet(DSTokenContext(brand: .prism, transparency: .reduced))
         check(DSColor(brand: .prism, transparency: .reduced).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.edgeHighlight")
         check(DSColor(brand: .prism, transparency: .reduced).edgeRaised, Color("prism/color-edge-raised", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.edgeRaised")
@@ -262,7 +322,7 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassChip")
     }
 
-    private func prismColorsPart6() {
+    private func prismColorsPart7() {
         let t = DSTokenSet(DSTokenContext(brand: .prism, transparency: .reduced))
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassDarkChip")
         check(t.material.glassDarkFill, Color("prism/material-glass-dark-fill", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassDarkFill")
@@ -270,6 +330,15 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassLightChip, Color("prism/material-glass-light-chip", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassLightChip")
         check(t.material.glassLightFill, Color("prism/material-glass-light-fill", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassLightFill")
         check(t.material.glassScrim, Color("prism/material-glass-scrim", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassScrim")
+        check(t.components.areaChart.fill, Color("prism/color-chart-band", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.areaChart.fill")
+        check(t.components.avatar.bg, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.avatar.bg")
+        check(t.components.avatar.ring, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.avatar.ring")
+        check(t.components.badge.accentBg, Color("prism/color-bg-fill-accent", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.accentBg")
+        check(t.components.badge.accentText, Color("prism/color-text-on-accent", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.accentText")
+        check(t.components.badge.criticalBg, Color("prism/color-bg-fill-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.criticalBg")
+        check(t.components.badge.criticalText, Color("prism/color-text-on-badge", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.criticalText")
+        check(t.components.badge.neutralBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.neutralBg")
+        check(t.components.badge.neutralText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.badge.neutralText")
         check(t.components.button.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.button.dangerBgRest")
         check(t.components.button.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.button.dangerBorder")
         check(t.components.button.dangerText, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.button.dangerText")
@@ -290,6 +359,55 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.solidText, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.card.solidText")
         check(t.components.card.vividCaption, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.card.vividCaption")
         check(t.components.card.vividText, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.card.vividText")
+        check(t.components.checkbox.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.checkbox.bgSelected")
+        check(t.components.checkbox.mark, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.checkbox.mark")
+        check(t.components.chip.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.chip.bgPressed")
+        check(t.components.chip.bgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.chip.bgRest")
+        check(t.components.chip.borderRest, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.chip.borderRest")
+        check(t.components.chip.borderSelected, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.chip.borderSelected")
+        check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerBgRest")
+        check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerBorder")
+        check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerIcon")
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBorder")
+        check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostIcon")
+        check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.plainIcon")
+    }
+
+    private func prismColorsPart8() {
+        let t = DSTokenSet(DSTokenContext(brand: .prism, transparency: .reduced))
+        check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.primaryBgPressed")
+        check(t.components.iconButton.primaryBgRest, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.primaryBgRest")
+        check(t.components.iconButton.primaryIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.primaryIcon")
+        check(t.components.iconButton.secondaryBgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryBgPressed")
+        check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryBgRest")
+        check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryBorder")
+        check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.secondaryIcon")
+        check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.fill")
+        check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.fillSecondary")
+        check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressBar.track")
+        check(t.components.progressRing.arc, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressRing.arc")
+        check(t.components.progressRing.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.progressRing.track")
+        check(t.components.radio.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.radio.bgSelected")
+        check(t.components.radio.dotFill, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.radio.dotFill")
+        check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.segmentedControl.activeBg")
+        check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.segmentedControl.activeText")
+        check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.select.borderError")
+        check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.skeleton.bg")
+        check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.skeleton.shimmer")
+        check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.fill")
+        check(t.components.slider.thumbFill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.thumbFill")
+        check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.tick")
+        check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.slider.trackBg")
+        check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.spinner.arc")
+        check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.textArea.borderError")
+        check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.textField.borderError")
+        check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.knobOff")
+        check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.knobOn")
+        check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.trackOff")
+        check(t.components.toggle.trackOn, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.toggle.trackOn")
+        check(t.components.tooltip.bg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.tooltip.bg")
+        check(t.components.tooltip.text, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.tooltip.text")
     }
 
     @Test func prismConstants() {
@@ -421,6 +539,21 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.radiusLarge, 32, "prism: components.card.radiusLarge")
         check(t.components.card.radiusRegular, 24, "prism: components.card.radiusRegular")
         check(t.components.card.shadowSolid, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0), x: 0, y: 0, blur: 0, spread: 0, inset: false)]), "prism: components.card.shadowSolid")
+        check(t.components.checkbox.radius, 4, "prism: components.checkbox.radius")
+        check(t.components.checkbox.size, 20, "prism: components.checkbox.size")
+        check(t.components.progressBar.height, 4, "prism: components.progressBar.height")
+        check(t.components.progressBar.markerHeight, 8, "prism: components.progressBar.markerHeight")
+        check(t.components.progressRing.strokeMin, 4, "prism: components.progressRing.strokeMin")
+        check(t.components.radio.dotSize, 8, "prism: components.radio.dotSize")
+        check(t.components.radio.size, 20, "prism: components.radio.size")
+        check(t.components.ringGauge.sizeLg, 104, "prism: components.ringGauge.sizeLg")
+        check(t.components.ringGauge.sizeMd, 64, "prism: components.ringGauge.sizeMd")
+        check(t.components.ringGauge.sizeSm, 44, "prism: components.ringGauge.sizeSm")
+        check(t.components.slider.trackHeight, 4, "prism: components.slider.trackHeight")
+        check(t.components.sparkline.heightTable, 20, "prism: components.sparkline.heightTable")
+        check(t.components.sparkline.heightTile, 40, "prism: components.sparkline.heightTile")
+        check(t.components.spinner.stroke, 1.5, "prism: components.spinner.stroke")
+        check(t.components.toggle.inset, 4, "prism: components.toggle.inset")
     }
 
     @Test func prismColorScheme() {
@@ -800,6 +933,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 32, "prism: components.button.heightMd")
         check(t.components.button.heightSm, 28, "prism: components.button.heightSm")
         check(t.components.card.padding, 16, "prism: components.card.padding")
+        check(t.components.iconButton.sizeLg, 40, "prism: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 32, "prism: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 28, "prism: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 28, "prism: components.slider.thumbSize")
+        check(t.components.toggle.height, 28, "prism: components.toggle.height")
     }
 
     private func prismDensityPart2() {
@@ -817,6 +955,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 40, "prism density=regular: components.button.heightMd")
         check(t.components.button.heightSm, 32, "prism density=regular: components.button.heightSm")
         check(t.components.card.padding, 24, "prism density=regular: components.card.padding")
+        check(t.components.iconButton.sizeLg, 44, "prism density=regular: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 40, "prism density=regular: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 32, "prism density=regular: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 32, "prism density=regular: components.slider.thumbSize")
+        check(t.components.toggle.height, 32, "prism density=regular: components.toggle.height")
     }
 
     private func prismDensityPart3() {
@@ -834,6 +977,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 48, "prism density=comfortable: components.button.heightMd")
         check(t.components.button.heightSm, 44, "prism density=comfortable: components.button.heightSm")
         check(t.components.card.padding, 24, "prism density=comfortable: components.card.padding")
+        check(t.components.iconButton.sizeLg, 52, "prism density=comfortable: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 48, "prism density=comfortable: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 44, "prism density=comfortable: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 44, "prism density=comfortable: components.slider.thumbSize")
+        check(t.components.toggle.height, 44, "prism density=comfortable: components.toggle.height")
     }
 
     private func prismDensityPart4() {
@@ -851,6 +999,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 40, "prism density=watch: components.button.heightMd")
         check(t.components.button.heightSm, 32, "prism density=watch: components.button.heightSm")
         check(t.components.card.padding, 16, "prism density=watch: components.card.padding")
+        check(t.components.iconButton.sizeLg, 44, "prism density=watch: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 40, "prism density=watch: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 32, "prism density=watch: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 32, "prism density=watch: components.slider.thumbSize")
+        check(t.components.toggle.height, 32, "prism density=watch: components.toggle.height")
     }
 
     @Test func prismModality() {
@@ -1537,6 +1690,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         prismNativeColorsPart4()
         prismNativeColorsPart5()
         prismNativeColorsPart6()
+        prismNativeColorsPart7()
+        prismNativeColorsPart8()
     }
 
     private func prismNativeColorsPart1() {
@@ -1650,6 +1805,15 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassLightChip, Color("prism/material-glass-light-chip", bundle: DSTokensBundle.bundle), "prism-native: material.glassLightChip")
         check(t.material.glassLightFill, Color("prism/material-glass-light-fill", bundle: DSTokensBundle.bundle), "prism-native: material.glassLightFill")
         check(t.material.glassScrim, Color("prism/material-glass-scrim", bundle: DSTokensBundle.bundle), "prism-native: material.glassScrim")
+        check(t.components.areaChart.fill, Color("prism/color-chart-band", bundle: DSTokensBundle.bundle), "prism-native: components.areaChart.fill")
+        check(t.components.avatar.bg, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native: components.avatar.bg")
+        check(t.components.avatar.ring, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.avatar.ring")
+        check(t.components.badge.accentBg, Color("prism/color-bg-fill-accent", bundle: DSTokensBundle.bundle), "prism-native: components.badge.accentBg")
+        check(t.components.badge.accentText, Color("prism/color-text-on-accent", bundle: DSTokensBundle.bundle), "prism-native: components.badge.accentText")
+        check(t.components.badge.criticalBg, Color("prism/color-bg-fill-critical", bundle: DSTokensBundle.bundle), "prism-native: components.badge.criticalBg")
+        check(t.components.badge.criticalText, Color("prism/color-text-on-badge", bundle: DSTokensBundle.bundle), "prism-native: components.badge.criticalText")
+        check(t.components.badge.neutralBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.badge.neutralBg")
+        check(t.components.badge.neutralText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.badge.neutralText")
         check(t.components.button.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native: components.button.dangerBgRest")
         check(t.components.button.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.button.dangerBorder")
         check(t.components.button.dangerText, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.button.dangerText")
@@ -1670,9 +1834,58 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.solidText, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native: components.card.solidText")
         check(t.components.card.vividCaption, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism-native: components.card.vividCaption")
         check(t.components.card.vividText, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism-native: components.card.vividText")
+        check(t.components.checkbox.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.checkbox.bgSelected")
+        check(t.components.checkbox.mark, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.checkbox.mark")
+        check(t.components.chip.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native: components.chip.bgPressed")
+        check(t.components.chip.bgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native: components.chip.bgRest")
+        check(t.components.chip.borderRest, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native: components.chip.borderRest")
+        check(t.components.chip.borderSelected, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.chip.borderSelected")
+        check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerBgRest")
+        check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerBorder")
+        check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerIcon")
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBorder")
+        check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostIcon")
+        check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.plainIcon")
     }
 
     private func prismNativeColorsPart4() {
+        let t = DSTokenSet(DSTokenContext(brand: .prismNative))
+        check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.primaryBgPressed")
+        check(t.components.iconButton.primaryBgRest, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.primaryBgRest")
+        check(t.components.iconButton.primaryIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.primaryIcon")
+        check(t.components.iconButton.secondaryBgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryBgPressed")
+        check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryBgRest")
+        check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryBorder")
+        check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.secondaryIcon")
+        check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.fill")
+        check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.fillSecondary")
+        check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.progressBar.track")
+        check(t.components.progressRing.arc, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.progressRing.arc")
+        check(t.components.progressRing.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.progressRing.track")
+        check(t.components.radio.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.radio.bgSelected")
+        check(t.components.radio.dotFill, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.radio.dotFill")
+        check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.segmentedControl.activeBg")
+        check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.segmentedControl.activeText")
+        check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.select.borderError")
+        check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.skeleton.bg")
+        check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.skeleton.shimmer")
+        check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.slider.fill")
+        check(t.components.slider.thumbFill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.slider.thumbFill")
+        check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.slider.tick")
+        check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.slider.trackBg")
+        check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.spinner.arc")
+        check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.textArea.borderError")
+        check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.textField.borderError")
+        check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.knobOff")
+        check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.knobOn")
+        check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.trackOff")
+        check(t.components.toggle.trackOn, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.toggle.trackOn")
+        check(t.components.tooltip.bg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.tooltip.bg")
+        check(t.components.tooltip.text, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native: components.tooltip.text")
+    }
+
+    private func prismNativeColorsPart5() {
         check(DSColor(brand: .prismNative, transparency: .reduced).accent, Color("prism/color-accent", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.accent")
         check(DSColor(brand: .prismNative, transparency: .reduced).accentGlow, Color("prism/color-accent-glow", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.accentGlow")
         check(DSColor(brand: .prismNative, transparency: .reduced).accentPressed, Color("prism/color-accent-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.accentPressed")
@@ -1723,7 +1936,7 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .reduced).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartTarget")
     }
 
-    private func prismNativeColorsPart5() {
+    private func prismNativeColorsPart6() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative, transparency: .reduced))
         check(DSColor(brand: .prismNative, transparency: .reduced).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.edgeHighlight")
         check(DSColor(brand: .prismNative, transparency: .reduced).edgeRaised, Color("prism/color-edge-raised", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.edgeRaised")
@@ -1775,7 +1988,7 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassChip")
     }
 
-    private func prismNativeColorsPart6() {
+    private func prismNativeColorsPart7() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative, transparency: .reduced))
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassDarkChip")
         check(t.material.glassDarkFill, Color("prism/material-glass-dark-fill", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassDarkFill")
@@ -1783,6 +1996,15 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.material.glassLightChip, Color("prism/material-glass-light-chip", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassLightChip")
         check(t.material.glassLightFill, Color("prism/material-glass-light-fill", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassLightFill")
         check(t.material.glassScrim, Color("prism/material-glass-scrim", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassScrim")
+        check(t.components.areaChart.fill, Color("prism/color-chart-band", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.areaChart.fill")
+        check(t.components.avatar.bg, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.avatar.bg")
+        check(t.components.avatar.ring, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.avatar.ring")
+        check(t.components.badge.accentBg, Color("prism/color-bg-fill-accent", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.accentBg")
+        check(t.components.badge.accentText, Color("prism/color-text-on-accent", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.accentText")
+        check(t.components.badge.criticalBg, Color("prism/color-bg-fill-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.criticalBg")
+        check(t.components.badge.criticalText, Color("prism/color-text-on-badge", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.criticalText")
+        check(t.components.badge.neutralBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.neutralBg")
+        check(t.components.badge.neutralText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.badge.neutralText")
         check(t.components.button.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.button.dangerBgRest")
         check(t.components.button.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.button.dangerBorder")
         check(t.components.button.dangerText, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.button.dangerText")
@@ -1803,6 +2025,55 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.solidText, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.card.solidText")
         check(t.components.card.vividCaption, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.card.vividCaption")
         check(t.components.card.vividText, Color("prism/color-text-on-vivid", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.card.vividText")
+        check(t.components.checkbox.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.checkbox.bgSelected")
+        check(t.components.checkbox.mark, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.checkbox.mark")
+        check(t.components.chip.bgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.chip.bgPressed")
+        check(t.components.chip.bgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.chip.bgRest")
+        check(t.components.chip.borderRest, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.chip.borderRest")
+        check(t.components.chip.borderSelected, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.chip.borderSelected")
+        check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerBgRest")
+        check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerBorder")
+        check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerIcon")
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBorder")
+        check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostIcon")
+        check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.plainIcon")
+    }
+
+    private func prismNativeColorsPart8() {
+        let t = DSTokenSet(DSTokenContext(brand: .prismNative, transparency: .reduced))
+        check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.primaryBgPressed")
+        check(t.components.iconButton.primaryBgRest, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.primaryBgRest")
+        check(t.components.iconButton.primaryIcon, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.primaryIcon")
+        check(t.components.iconButton.secondaryBgPressed, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryBgPressed")
+        check(t.components.iconButton.secondaryBgRest, Color("prism/color-bg-surface-raised", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryBgRest")
+        check(t.components.iconButton.secondaryBorder, Color("prism/color-border-hairline", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryBorder")
+        check(t.components.iconButton.secondaryIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.secondaryIcon")
+        check(t.components.progressBar.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.fill")
+        check(t.components.progressBar.fillSecondary, Color("prism/color-chart-comparison", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.fillSecondary")
+        check(t.components.progressBar.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressBar.track")
+        check(t.components.progressRing.arc, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressRing.arc")
+        check(t.components.progressRing.track, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.progressRing.track")
+        check(t.components.radio.bgSelected, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.radio.bgSelected")
+        check(t.components.radio.dotFill, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.radio.dotFill")
+        check(t.components.segmentedControl.activeBg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.segmentedControl.activeBg")
+        check(t.components.segmentedControl.activeText, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.segmentedControl.activeText")
+        check(t.components.select.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.select.borderError")
+        check(t.components.skeleton.bg, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.skeleton.bg")
+        check(t.components.skeleton.shimmer, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.skeleton.shimmer")
+        check(t.components.slider.fill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.fill")
+        check(t.components.slider.thumbFill, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.thumbFill")
+        check(t.components.slider.tick, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.tick")
+        check(t.components.slider.trackBg, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.slider.trackBg")
+        check(t.components.spinner.arc, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.spinner.arc")
+        check(t.components.textArea.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.textArea.borderError")
+        check(t.components.textField.borderError, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.textField.borderError")
+        check(t.components.toggle.knobOff, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.knobOff")
+        check(t.components.toggle.knobOn, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.knobOn")
+        check(t.components.toggle.trackOff, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.trackOff")
+        check(t.components.toggle.trackOn, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.toggle.trackOn")
+        check(t.components.tooltip.bg, Color("prism/color-bg-fill-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.tooltip.bg")
+        check(t.components.tooltip.text, Color("prism/color-text-on-inverse", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.tooltip.text")
     }
 
     @Test func prismNativeConstants() {
@@ -1934,6 +2205,21 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.card.radiusLarge, 32, "prism-native: components.card.radiusLarge")
         check(t.components.card.radiusRegular, 24, "prism-native: components.card.radiusRegular")
         check(t.components.card.shadowSolid, DSShadowToken(layers: [DSShadowLayer(color: DSRGBA(.sRGB, 0, 0, 0, 0), x: 0, y: 0, blur: 0, spread: 0, inset: false)]), "prism-native: components.card.shadowSolid")
+        check(t.components.checkbox.radius, 4, "prism-native: components.checkbox.radius")
+        check(t.components.checkbox.size, 20, "prism-native: components.checkbox.size")
+        check(t.components.progressBar.height, 4, "prism-native: components.progressBar.height")
+        check(t.components.progressBar.markerHeight, 8, "prism-native: components.progressBar.markerHeight")
+        check(t.components.progressRing.strokeMin, 4, "prism-native: components.progressRing.strokeMin")
+        check(t.components.radio.dotSize, 8, "prism-native: components.radio.dotSize")
+        check(t.components.radio.size, 20, "prism-native: components.radio.size")
+        check(t.components.ringGauge.sizeLg, 104, "prism-native: components.ringGauge.sizeLg")
+        check(t.components.ringGauge.sizeMd, 64, "prism-native: components.ringGauge.sizeMd")
+        check(t.components.ringGauge.sizeSm, 44, "prism-native: components.ringGauge.sizeSm")
+        check(t.components.slider.trackHeight, 4, "prism-native: components.slider.trackHeight")
+        check(t.components.sparkline.heightTable, 20, "prism-native: components.sparkline.heightTable")
+        check(t.components.sparkline.heightTile, 40, "prism-native: components.sparkline.heightTile")
+        check(t.components.spinner.stroke, 1.5, "prism-native: components.spinner.stroke")
+        check(t.components.toggle.inset, 4, "prism-native: components.toggle.inset")
     }
 
     @Test func prismNativeColorScheme() {
@@ -2313,6 +2599,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 32, "prism-native: components.button.heightMd")
         check(t.components.button.heightSm, 28, "prism-native: components.button.heightSm")
         check(t.components.card.padding, 16, "prism-native: components.card.padding")
+        check(t.components.iconButton.sizeLg, 40, "prism-native: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 32, "prism-native: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 28, "prism-native: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 28, "prism-native: components.slider.thumbSize")
+        check(t.components.toggle.height, 28, "prism-native: components.toggle.height")
     }
 
     private func prismNativeDensityPart2() {
@@ -2330,6 +2621,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 40, "prism-native density=regular: components.button.heightMd")
         check(t.components.button.heightSm, 32, "prism-native density=regular: components.button.heightSm")
         check(t.components.card.padding, 24, "prism-native density=regular: components.card.padding")
+        check(t.components.iconButton.sizeLg, 44, "prism-native density=regular: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 40, "prism-native density=regular: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 32, "prism-native density=regular: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 32, "prism-native density=regular: components.slider.thumbSize")
+        check(t.components.toggle.height, 32, "prism-native density=regular: components.toggle.height")
     }
 
     private func prismNativeDensityPart3() {
@@ -2347,6 +2643,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 48, "prism-native density=comfortable: components.button.heightMd")
         check(t.components.button.heightSm, 44, "prism-native density=comfortable: components.button.heightSm")
         check(t.components.card.padding, 24, "prism-native density=comfortable: components.card.padding")
+        check(t.components.iconButton.sizeLg, 52, "prism-native density=comfortable: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 48, "prism-native density=comfortable: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 44, "prism-native density=comfortable: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 44, "prism-native density=comfortable: components.slider.thumbSize")
+        check(t.components.toggle.height, 44, "prism-native density=comfortable: components.toggle.height")
     }
 
     private func prismNativeDensityPart4() {
@@ -2364,6 +2665,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.button.heightMd, 40, "prism-native density=watch: components.button.heightMd")
         check(t.components.button.heightSm, 32, "prism-native density=watch: components.button.heightSm")
         check(t.components.card.padding, 16, "prism-native density=watch: components.card.padding")
+        check(t.components.iconButton.sizeLg, 44, "prism-native density=watch: components.iconButton.sizeLg")
+        check(t.components.iconButton.sizeMd, 40, "prism-native density=watch: components.iconButton.sizeMd")
+        check(t.components.iconButton.sizeSm, 32, "prism-native density=watch: components.iconButton.sizeSm")
+        check(t.components.slider.thumbSize, 32, "prism-native density=watch: components.slider.thumbSize")
+        check(t.components.toggle.height, 32, "prism-native density=watch: components.toggle.height")
     }
 
     @Test func prismNativeModality() {

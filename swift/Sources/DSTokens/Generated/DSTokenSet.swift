@@ -61,6 +61,6 @@ public struct DSTokenSet: Hashable, Sendable {
         self.chart = chart
         self.stroke = stroke
         self.interaction = interaction
-        self.components = Components(context, color: color, material: material, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
+        self.components = Components(context, color: color, material: material, border: border, elevation: elevation, space: space, size: size, radius: radius, motion: motion)
     }
 }

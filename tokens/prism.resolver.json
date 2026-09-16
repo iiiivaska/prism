@@ -22,8 +22,28 @@
     },
     "comp": {
       "sources": [
+        { "$ref": "comp/area-chart.tokens.json" },
+        { "$ref": "comp/avatar.tokens.json" },
+        { "$ref": "comp/badge.tokens.json" },
         { "$ref": "comp/button.tokens.json" },
-        { "$ref": "comp/card.tokens.json" }
+        { "$ref": "comp/card.tokens.json" },
+        { "$ref": "comp/checkbox.tokens.json" },
+        { "$ref": "comp/chip.tokens.json" },
+        { "$ref": "comp/icon-button.tokens.json" },
+        { "$ref": "comp/progress-bar.tokens.json" },
+        { "$ref": "comp/progress-ring.tokens.json" },
+        { "$ref": "comp/radio.tokens.json" },
+        { "$ref": "comp/ring-gauge.tokens.json" },
+        { "$ref": "comp/segmented-control.tokens.json" },
+        { "$ref": "comp/select.tokens.json" },
+        { "$ref": "comp/skeleton.tokens.json" },
+        { "$ref": "comp/slider.tokens.json" },
+        { "$ref": "comp/sparkline.tokens.json" },
+        { "$ref": "comp/spinner.tokens.json" },
+        { "$ref": "comp/text-area.tokens.json" },
+        { "$ref": "comp/text-field.tokens.json" },
+        { "$ref": "comp/toggle.tokens.json" },
+        { "$ref": "comp/tooltip.tokens.json" }
       ]
     }
   },

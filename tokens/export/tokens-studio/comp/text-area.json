@@ -1,0 +1,13 @@
+{
+  "comp": {
+    "text-area": {
+      "border": {
+        "error": {
+          "$type": "color",
+          "$value": "{color.text.critical}",
+          "$description": "the invalid outline of the multi-line box; the critical stroke is the critical text role"
+        }
+      }
+    }
+  }
+}

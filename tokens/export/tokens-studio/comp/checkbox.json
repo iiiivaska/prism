@@ -1,0 +1,28 @@
+{
+  "comp": {
+    "checkbox": {
+      "bg": {
+        "selected": {
+          "$type": "color",
+          "$value": "{color.bg.fill.inverse}",
+          "$description": "a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3)"
+        }
+      },
+      "mark": {
+        "$type": "color",
+        "$value": "{color.text.on-inverse}",
+        "$description": "the check or the mixed dash on the filled box: the opposite-colored glyph"
+      },
+      "radius": {
+        "$type": "borderRadius",
+        "$value": "{radius.badge}",
+        "$description": "the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2)"
+      },
+      "size": {
+        "$type": "sizing",
+        "$value": "{size.icon.md}",
+        "$description": "the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it"
+      }
+    }
+  }
+}

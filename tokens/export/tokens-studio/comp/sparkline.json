@@ -1,0 +1,18 @@
+{
+  "comp": {
+    "sparkline": {
+      "height": {
+        "table": {
+          "$type": "spacing",
+          "$value": "{space.6}",
+          "$description": "sparkline height in a table row: the row's text line box (docs/research/dataviz-design.md §3 rule D20, §6)"
+        },
+        "tile": {
+          "$type": "spacing",
+          "$value": "{space.10}",
+          "$description": "sparkline height in a stat tile or a card aside: twice the table height (docs/research/visual-dna.md §8.4, dataviz-design.md §3 rule D20)"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "comp": {
+    "tooltip": {
+      "bg": {
+        "$type": "color",
+        "$value": "{color.bg.fill.inverse}",
+        "$description": "the chip is the inverse solid, so one transient label reads at full contrast over any layer it floats above, including imagery and vivid (visual-dna §1 principle 9, §4.7)"
+      },
+      "text": {
+        "$type": "color",
+        "$value": "{color.text.on-inverse}",
+        "$description": "the label on the inverse chip; the pair color.text.on-inverse on color.bg.fill.inverse is checked in tokens/contrast-pairs.json"
+      }
+    }
+  }
+}

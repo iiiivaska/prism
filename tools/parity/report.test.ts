@@ -34,14 +34,19 @@ describe('the repository', () => {
     expect(result.diagnostics).toEqual([]);
     expect(result.lags).toEqual([]);
     expect(passed(result)).toBe(true);
-    // The four slice specs of ADR-0012, by layer then name; P2-5 adds the rest.
-    expect(result.rows.map((r) => r.spec.name)).toEqual(['Button', 'Surface', 'Text', 'Card']);
-    expect(result.files).toEqual([
-      'spec/components/Button.yaml',
-      'spec/components/Card.yaml',
-      'spec/components/Surface.yaml',
-      'spec/components/Text.yaml',
+    // Every v1 spec, by layer then name: the ADR-0012 slice plus the P2-5 wave-1 primitives,
+    // composites and chart parts. Rows are ordered primitive, composite, chart (ADR-0012 layers).
+    expect(result.rows.map((r) => r.spec.name)).toEqual([
+      'Avatar', 'Badge', 'Button', 'Checkbox', 'Chip', 'Divider', 'Icon', 'IconButton', 'ProgressBar',
+      'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton', 'Slider', 'Spinner', 'Surface',
+      'Text', 'TextArea', 'TextField', 'Toggle', 'Tooltip',
+      'Card',
+      'AreaChart', 'ChartContainer', 'DeltaBadge', 'HeroNumber', 'LineChart', 'RangeBand',
+      'ReferenceLine', 'RingGauge', 'Sparkline', 'StatTile',
     ]);
+    // result.files is the read order: every spec file, sorted.
+    expect(result.files).toEqual(result.rows.map((r) => r.spec.file).sort());
+    expect(result.files).toHaveLength(33);
   });
 
   test('every row has one cell per platform, and every cell names the manifest behind it', () => {
@@ -58,7 +63,7 @@ describe('the repository', () => {
   test('nothing is implemented yet, so every row is pending rather than lagging (P2-5)', () => {
     expect([...new Set(result.rows.map((r) => r.state))]).toEqual(['pending']);
     expect(result.rows.every((r) => r.cells.every((c) => c.implemented === 0))).toBe(true);
-    expect(summaryLine(result)).toContain('24 cell(s): 0 lagging, 0 in parity, 24 pending');
+    expect(summaryLine(result)).toContain('198 cell(s): 0 lagging, 0 in parity, 172 pending, 26 satisfied by `none`');
   });
 
   test('the four manifests exist and are empty', () => {
@@ -146,7 +151,10 @@ describe('fixtures', () => {
     expect(lagging).toBeDefined();
     const result = runParity({ reader: caseReader(lagging!) });
     expect(result.rows.filter((r) => r.state === 'lag').map((r) => r.spec.name)).toEqual(['Button']);
-    expect(result.rows.filter((r) => r.state === 'pending').map((r) => r.spec.name)).toEqual(['Surface', 'Text', 'Card']);
+    // Everything the fixture's manifest does not name stays pending: lag is per row, not per run.
+    expect(result.rows.filter((r) => r.state === 'pending').map((r) => r.spec.name)).toEqual(
+      result.rows.map((r) => r.spec.name).filter((n) => n !== 'Button'),
+    );
     expect(renderReport(result)).toContain('full v2 **LAG**');
   });
 
@@ -213,7 +221,7 @@ describe('the CLI', () => {
   test('--check passes on the committed report and exits 0', () => {
     const { value, out } = capture(() => main(['--check']));
     expect(value).toBe(0);
-    expect(out).toContain('4 component spec(s)');
+    expect(out).toContain('33 component spec(s)');
   });
 
   test('--check fails when the report is written somewhere that has none', () => {

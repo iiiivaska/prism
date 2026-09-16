@@ -1,0 +1,328 @@
+name: Select
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  The trigger for a single choice from a short list: an outlined pill carrying the current value, an
+  optional leading icon and a trailing chevron that points down while closed and up while open. Over a
+  map, imagery or a vivid surface the same trigger renders as one glass chip. The list itself is the
+  platform's own menu in v1; Prism's Menu is a later composite.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+    optional: true
+    description: the control's name, above the trigger
+  - part: trigger
+    description: the outlined pill the user presses
+  - part: value
+    description: the chosen option, or the placeholder while nothing is chosen
+  - part: leadingIcon
+    optional: true
+  - part: chevron
+    description: nav.down while closed, nav.up while open
+  - part: helper
+    optional: true
+  - part: errorMessage
+    optional: true
+    description: a status glyph plus the message, in place of the helper row
+
+props:
+  - name: label
+    type: string
+  - name: value
+    type: string
+    description: the chosen option's visible text; empty shows the placeholder
+  - name: placeholder
+    type: string
+  - name: options
+    type: data
+    required: true
+    description: "[{ value, label, icon? }]; the list is rendered by the platform's menu, not by this spec"
+  - name: helper
+    type: string
+  - name: errorText
+    type: string
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: leadingIcon
+    type: icon
+  - name: isOpen
+    type: boolean
+    default: false
+  - name: isInvalid
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: isRequired
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, pressed, focus-visible, expanded, disabled, error]
+
+tokens:
+  root:
+    gap: space.2
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  trigger:
+    background:
+      page:
+        map: material.glass.chip
+        image: material.glass.chip
+        vivid: material.glass.chip
+      vivid: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+        image: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+      vivid: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+        image: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+      vivid: material.glass.chip.saturate
+    edgeColor: color.edge.highlight
+    edgeStartAlpha:
+      page:
+        map: material.glass.chip.edge.start
+        image: material.glass.chip.edge.start
+        vivid: material.glass.chip.edge.start
+      vivid: material.glass.chip.edge.start
+    edgeEndAlpha:
+      page:
+        map: material.glass.chip.edge.end
+        image: material.glass.chip.edge.end
+        vivid: material.glass.chip.edge.end
+      vivid: material.glass.chip.edge.end
+    border:
+      default: color.border.boundary
+      page:
+        default: color.border.boundary
+        map: color.border.on-glass-fill
+        image: color.border.on-glass-fill
+        vivid: color.border.on-media
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
+    borderWidth: border.hairline
+    radius: radius.control
+    height:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+    paddingX:
+      sm: space.4
+      md: space.5
+      lg: space.6
+    gap: space.3
+    hover:
+      overlay: color.bg.fill.neutral.subtle
+      border: color.border.strong
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+    expanded:
+      border: color.border.strong
+    focus-visible:
+      border: color.border.focus
+      ring: color.border.focus
+      ringWidth: border.focus
+    error:
+      border: comp.select.border.error
+      borderWidth: border.strong
+    disabled:
+      opacity: opacity.disabled
+  value:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.primary
+      page:
+        default: color.text.primary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+    placeholderColor:
+      default: color.text.tertiary
+      page:
+        default: color.text.tertiary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  leadingIcon:
+    size: size.icon.md
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  chevron:
+    size: size.icon.sm
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  helper:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  errorMessage:
+    typography: type.caption
+    gap: space.2
+    iconSize: size.icon.sm
+    color:
+      default: color.text.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+    iconColor:
+      default: color.icon.status.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+
+behavior:
+  - Pressing the trigger opens the platform's own list; choosing an option closes it, fires `onChange` and returns focus to the trigger.
+  - The chevron is nav.down while closed and nav.up while open; it is the only direction cue, and it never rotates into a third position.
+  - The trigger has no fill at rest on the page and on solid, raised and nested surfaces; it is identified by its 1 px color.border.boundary edge, the role for a control edge that must pass 3:1.
+  - The hit region is the larger of the visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); the whole pill is the target, not the chevron alone.
+  - Over a map, imagery or a vivid surface the trigger renders as one glass chip and carries color.text.on-glass-fill for every tone, because a chip is checked with its primary foreground only; the label, helper and error rows are not drawn there.
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
+  - "A trigger that needs a label over media or on a vivid surface goes inside a glass or solid Card. A label, helper or error row is never drawn on vivid: color.text.on-vivid is checked at 24 px and above, and these rows are caption and label sizes (ADR-0030 §8)."
+  - "On an accent surface the trigger has no fill of its own: it sits on color.bg.fill.accent, takes color.text.on-accent for the value and color.text.on-accent-secondary for the quieter parts and its edge, which are the pairs checked on that material."
+  - "`isRequired` puts the word in the label (\"Depot (required)\"), never a lone asterisk or a color, and sets the required state for assistive technology."
+  - A long value truncates with an ellipsis and never wraps; the chevron keeps its place at the trailing padding edge, so a row of triggers keeps one alignment line.
+  - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the trigger's description; the message is announced once, politely."
+  - "`isDisabled` lowers the whole control to opacity.disabled and removes it from the focus order; a choice with one option is shown as text, not as a disabled trigger."
+  - "A Select never carries a filled track or a solid fill of its own: the solid in a group is the one primary control (the inverse-solid rule), and a trigger is not it."
+  - Hover (pointer only) adds the neutral overlay and lifts the edge to color.border.strong; the expanded trigger keeps that stronger edge while the list is open.
+
+motion:
+  chevron: motion.duration.fast
+  reduceMotion: crossfade
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: button that opens a listbox (web `aria-haspopup="listbox"` with `aria-expanded`; `combobox` is reserved for an editable ComboBox, which this is not)
+  label: the visible label; a trigger without one (a filter pill over a map) carries an explicit accessibility label, and the value is exposed separately from it
+  traits: [button, hasPopup]
+  keyboard: Space, Enter and Down open the list; typing jumps to a matching option; Escape closes it and keeps the value; the focus ring is color.border.focus at border.focus width outside the pill
+  dynamicType: label, value, helper and error scale with their roles; the pill grows with the value up to the accessibility3 size and then clamps, and the value truncates rather than pushing the chevron out
+  contrast: the placeholder is color.text.tertiary, functional below 24 px and 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and the edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control
+  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback; the trigger takes its color.border.boundary edge back and every tone returns to the solid family
+  reduceMotion: the chevron does not rotate; it is replaced at motion.duration.instant, and the ring, the stronger edge and the error row crossfade over motion.duration.base with motion.easing.out
+  voiceOver: announces label, then the chosen value or "none chosen", then "pop-up button"; the open list is the platform's, with its own announcements
+
+usage:
+  do:
+    - Use Select for one choice out of five or more options; below that a SegmentedControl shows them all.
+    - Put the current value in the trigger, not a category word.
+    - Over a map, give the trigger a leading icon so it reads without a label.
+  dont:
+    - Don't give a Select a solid fill; the one solid control in a group is the primary action.
+    - Don't stack two triggers that answer the same question; merge them into one list.
+    - Don't use a Select as a navigation control; a choice changes a value, not the screen.
+    - Don't draw a label, helper or error row directly on a map, an image or a vivid surface; only the chip's own fill has a checked pair, and on vivid nothing below 24 px sits outside a card's header block.
+    - Don't mark a required choice with a lone asterisk or a colored label; say it in words.
+
+examples:
+  - id: default-md
+    props: { label: "Period", value: "Last 24 hours", size: md }
+  - id: placeholder
+    props: { label: "Period", placeholder: "Choose a period" }
+  - id: expanded
+    props: { label: "Period", value: "Last 24 hours", isOpen: true }
+  - id: with-leading-icon
+    props: { label: "Depot", value: "North yard", leadingIcon: object.map-pin }
+  - id: invalid
+    props: { label: "Depot", placeholder: "Choose a depot", isInvalid: true, errorText: "Choose a depot to continue" }
+  - id: disabled
+    props: { label: "Period", value: "Last 24 hours", isDisabled: true }
+  - id: chip-over-map
+    props: { value: "All routes", leadingIcon: action.filter }
+    surface: map
+    description: the trigger renders as one glass chip and drops its label and helper rows
+  - id: in-glass-card-over-map
+    props: { label: "Period", value: "Last 24 hours" }
+    surface: glass
+    backdrop: map
+    description: inside a glass Card the label follows the published backdrop kind
+  - id: on-vivid
+    props: { value: "Last 24 hours" }
+    surface: vivid
+  - id: russian-value
+    props: { label: "Период", value: "Последние двадцать четыре часа", helper: "Влияет на все карточки экрана" }
+    description: Russian values run past the pill, so the value truncates with an ellipsis and the chevron keeps its inset
+
+notes:
+  platform:
+    watchos: "`none`. Select is not in ADR-0010's Tier 3 set; a watch app presents a choice as a list screen with the system picker instead."
+    macos: renders as the platform pop-up button's behavior with Prism's pill; default size follows compact density (32 pt); hover state required.
+    ios: the list is a system menu anchored to the trigger; on touch it may present as an action sheet, which is a platform decision, not a spec one.
+    web-desktop: built on React Aria Select; the listbox is the platform's popover until Prism's Menu ships, and `data-open` drives the expanded state.
+  design: >-
+    The trigger's two looks are exactly the two sightings of docs/research/component-inventory.md (5/11):
+    a glass pill over a map with a leading icon and a trailing chevron, and an outlined pill on the page.
+    No shot shows an open list, so v1 specifies the trigger only and leaves the list to the platform.
+    Pill grammar is docs/research/visual-dna.md §1 principle 2; "no solid fill on a trigger" is principle
+    9, the inverse-solid active rule. The edge takes color.border.boundary for ADR-0011's 3:1 boundary
+    tier (ADR-0030 §3.2); on the accent fill that role reaches only 2.4:1, so the edge there is
+    color.text.on-accent-secondary, the pair ADR-0030 §3.4 checks on that material. The role is a button
+    with a listbox popup, not a combobox: the value is not editable, so the trigger is a pop-up button
+    and the platform owns the list. Example strings are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

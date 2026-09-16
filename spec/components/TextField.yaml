@@ -1,0 +1,353 @@
+name: TextField
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A single-line text input: an optional label above the box, the value or placeholder inside it, and
+  one helper or error row below. The box is an outlined pill with no fill at rest, because the edge is
+  what identifies it; over a map, imagery or a vivid surface the same field renders as one glass chip,
+  which is the search pill of the ops screens.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+    optional: true
+    description: the field's name, above the box; required unless an explicit accessibility label is given
+  - part: box
+    description: the outlined control that holds the value and the affordances
+  - part: input
+    description: the editable value
+  - part: placeholder
+    optional: true
+    description: the hint shown while the value is empty; never a substitute for the label
+  - part: leadingIcon
+    optional: true
+  - part: trailingAction
+    optional: true
+    description: the clear or the reveal control; one circular control inset inside the box
+  - part: helper
+    optional: true
+    description: the row below the box while the field is valid
+  - part: errorMessage
+    optional: true
+    description: the row below the box while the field is invalid; a status glyph plus the message
+
+props:
+  - name: label
+    type: string
+    description: required unless the caller supplies an accessibility label (a search field inside a chip)
+  - name: value
+    type: string
+  - name: placeholder
+    type: string
+  - name: helper
+    type: string
+  - name: errorText
+    type: string
+    description: shown in place of `helper` while `isInvalid`; it names what to do, not what failed
+  - name: size
+    type: enum
+    values: [sm, md, lg]
+    default: md
+  - name: contentType
+    type: enum
+    values: [text, email, number, password, search, tel, url]
+    default: text
+    description: selects the platform keyboard, the autofill hint and the figure style of the value
+  - name: leadingIcon
+    type: icon
+  - name: isClearable
+    type: boolean
+    default: false
+  - name: isRevealable
+    type: boolean
+    default: false
+    description: shows the reveal control on a password field; ignored for every other `contentType`
+  - name: isInvalid
+    type: boolean
+    default: false
+  - name: isDisabled
+    type: boolean
+    default: false
+  - name: isReadOnly
+    type: boolean
+    default: false
+  - name: isRequired
+    type: boolean
+    default: false
+  - name: onChange
+    type: action
+    required: true
+
+states: [default, hover, focus-visible, disabled, error, readonly]
+
+tokens:
+  root:
+    gap: space.2
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+      lg: type.label.lg
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  box:
+    background:
+      page:
+        map: material.glass.chip
+        image: material.glass.chip
+        vivid: material.glass.chip
+      vivid: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+        image: material.glass.chip.blur
+        vivid: material.glass.chip.blur
+      vivid: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+        image: material.glass.chip.saturate
+        vivid: material.glass.chip.saturate
+      vivid: material.glass.chip.saturate
+    edgeColor: color.edge.highlight
+    edgeStartAlpha:
+      page:
+        map: material.glass.chip.edge.start
+        image: material.glass.chip.edge.start
+        vivid: material.glass.chip.edge.start
+      vivid: material.glass.chip.edge.start
+    edgeEndAlpha:
+      page:
+        map: material.glass.chip.edge.end
+        image: material.glass.chip.edge.end
+        vivid: material.glass.chip.edge.end
+      vivid: material.glass.chip.edge.end
+    border:
+      default: color.border.boundary
+      page:
+        default: color.border.boundary
+        map: color.border.on-glass-fill
+        image: color.border.on-glass-fill
+        vivid: color.border.on-media
+      vivid: color.border.on-media
+      glass: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
+    borderWidth: border.hairline
+    radius: radius.control
+    height:
+      sm: size.control.sm
+      md: size.control.md
+      lg: size.control.lg
+    paddingX:
+      sm: space.4
+      md: space.5
+      lg: space.6
+    gap: space.3
+    hover:
+      border: color.border.strong
+    focus-visible:
+      border: color.border.focus
+      ring: color.border.focus
+      ringWidth: border.focus
+    error:
+      border: comp.text-field.border.error
+      borderWidth: border.strong
+    readonly:
+      background: color.bg.fill.neutral.subtle
+    disabled:
+      opacity: opacity.disabled
+  input:
+    typography:
+      sm: type.body.sm
+      md: type.body.md
+      lg: type.body.lg
+    color:
+      default: color.text.primary
+      page:
+        default: color.text.primary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+  placeholder:
+    color:
+      default: color.text.tertiary
+      page:
+        default: color.text.tertiary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  leadingIcon:
+    size: size.icon.md
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  trailingAction:
+    size: size.icon.lg
+    radius: radius.control
+    iconSize: size.icon.sm
+    color:
+      default: color.icon.secondary
+      page:
+        default: color.icon.secondary
+        map: color.text.on-glass-fill
+        image: color.text.on-glass-fill
+        vivid: color.text.on-glass-fill
+      vivid: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent-secondary
+  helper:
+    typography: type.caption
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+      accent: color.text.on-accent-secondary
+  errorMessage:
+    typography: type.caption
+    gap: space.2
+    iconSize: size.icon.sm
+    color:
+      default: color.text.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+    iconColor:
+      default: color.icon.status.critical
+      glass: color.text.on-glass-fill
+      accent: color.text.on-accent
+
+behavior:
+  - The label is programmatically tied to the input (`for`/`id` on web, an accessibility label on Apple); a field with no visible label carries an explicit one, and the placeholder never stands in for it.
+  - The box has no fill at rest on the page and on solid, raised and nested surfaces; it is identified by its 1 px color.border.boundary edge, which is the role for a control edge that must pass 3:1.
+  - The hit region is the larger of the visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly beyond a smaller box, and the visual box never grows with modality.
+  - Over a map, imagery or a vivid surface the field renders as one glass chip and carries color.text.on-glass-fill for every tone, because a chip is checked with its primary foreground only; the label, helper and error rows are not drawn there.
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
+  - "A field that needs a label over media or on a vivid surface goes inside a glass or solid Card, where the enclosing Surface publishes its material and the quieter tones follow it. A label, helper or error row is never drawn on vivid: color.text.on-vivid is checked at 24 px and above, and these rows are caption and label sizes (ADR-0030 §8)."
+  - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
+  - The error row pairs the status.danger glyph with the message, so the state never rests on color alone; the caret takes the input's own color.
+  - "`isReadOnly` keeps the value selectable and focusable and draws color.bg.fill.neutral.subtle over whatever fill the box already has, so over media the veil sits on the glass chip rather than replacing it; `isDisabled` lowers the whole field to opacity.disabled and removes it from the focus order."
+  - "`isRequired` puts the word in the label (\"Batch id (required)\"), never a lone asterisk or a color, and sets the field's required state for assistive technology; an optional field in a form of required ones is marked the same way, in words."
+  - "`contentType: number` and `tel` render the value with tabular figures, so digits keep their column while the caret moves; every other content type keeps the role's proportional figures. The placeholder uses the input's own typography and differs from the value in color only."
+  - The value never truncates while the field has focus; it scrolls horizontally inside the box, and the label, helper and error rows wrap instead of truncating.
+  - "`isClearable` shows the nav.close glyph in the trailing action once the value is non-empty; pressing it empties the field, keeps focus and fires `onChange`."
+  - "`contentType: password` masks the value; `isRevealable` then shows object.eye in the trailing action while the value is masked and object.eye-off while it is shown, and pressing it toggles the masking without changing the value or the focus. Only one trailing action is ever drawn: on a revealable password field the reveal wins and `isClearable` is ignored."
+  - "The trailing action is a circular control of size.icon.lg at radius.control, inset inside the box at every size, with a size.icon.sm glyph; its own hit region follows the hit rule, and it is a separate focus stop from the input."
+  - Hover (pointer only) lifts the edge to color.border.strong; focus replaces it with color.border.focus and draws the ring outside the pill.
+
+motion:
+  focus: motion.duration.fast
+  reduceMotion: crossfade
+
+haptics:
+  error: haptic.error
+
+accessibility:
+  role: textbox
+  label: the visible label; a field without one (a search pill over a map) carries an explicit accessibility label, and the placeholder is never the label
+  traits: [textField]
+  keyboard: Tab moves in and out and then onto the trailing action; Escape clears the value when `isClearable`; the focus ring is color.border.focus at border.focus width outside the pill, following radius.control
+  dynamicType: label, value, helper and error scale with their roles; the box grows with the value up to the accessibility3 size and then wraps the rows below it, and nothing is clipped to keep the height
+  contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the field has no fill of its own, its tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and its edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control
+  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback, the field takes its color.border.boundary edge back and every tone returns to the solid family
+  reduceMotion: the focus ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place
+  voiceOver: announces label, value or placeholder, then "required" and the helper text; on `isInvalid` the error message is announced once as the field's description
+
+usage:
+  do:
+    - Always give a field a label; use the placeholder for an example of the value, not for its name.
+    - Write an error that says what to do ("Enter six characters"), not what broke.
+    - Use one field per line on touch; a two-column form is a pointer layout.
+    - Put the search field over a map as a glass chip with a leading action.search glyph.
+  dont:
+    - Don't use a filled box on solid surfaces; depth is the luminance ladder and the input's edge is its boundary.
+    - Don't color the edge or the label for emphasis; the critical stroke means invalid and nothing else.
+    - Don't draw a label, helper or error row directly on a map, an image or a vivid surface; only the chip's own fill has a checked pair, and on vivid nothing below 24 px sits outside a card's header block.
+    - Don't put functional text below 12 px, and don't shrink the helper row to fit.
+    - Don't mark a required field with a lone asterisk or a colored label; say it in words.
+
+examples:
+  - id: default-md
+    props: { label: "Site name", placeholder: "North yard", size: md }
+  - id: with-value
+    props: { label: "Site name", value: "North yard" }
+  - id: helper-row
+    props: { label: "Batch id", value: "B-4417", helper: "Six characters: one letter, a dash and four digits" }
+  - id: invalid
+    props: { label: "Batch id", value: "B-44", isInvalid: true, errorText: "Enter six characters" }
+  - id: numeric-tabular
+    props: { label: "Batch size", value: "1 240", contentType: number, helper: "Units per batch" }
+    description: a typed number keeps tabular figures so the digits do not shift under the caret
+  - id: search-clearable
+    props: { label: "Search sites", placeholder: "Name or id", leadingIcon: action.search, isClearable: true, contentType: search }
+  - id: password-revealable
+    props: { label: "Access code", value: "••••••", contentType: password, isRevealable: true }
+    description: the trailing action holds object.eye while the value is masked
+  - id: required
+    props: { label: "Batch id (required)", placeholder: "B-4417", isRequired: true }
+    description: the requirement is in the label's words, not a glyph or a color
+  - id: readonly
+    props: { label: "Unit", value: "4417", isReadOnly: true }
+  - id: disabled
+    props: { label: "Site name", value: "North yard", isDisabled: true }
+  - id: chip-over-map
+    props: { placeholder: "Search this area", leadingIcon: action.search, contentType: search }
+    surface: map
+    description: the field renders as one glass chip and drops its label, helper and error rows
+  - id: in-glass-card-over-map
+    props: { label: "Unit", value: "4417" }
+    surface: glass
+    backdrop: map
+    description: inside a glass Card the label follows the published backdrop kind
+  - id: russian-label
+    props: { label: "Наименование участка", placeholder: "Северный двор", helper: "Не длиннее шестидесяти знаков" }
+    description: Russian copy runs longer than English, so the label and helper wrap and the box keeps its height
+
+notes:
+  platform:
+    watchos: "`none`. Text entry is not in ADR-0010's Tier 3 set, and the watch has no on-screen keyboard of Prism's: a watch app collects text through the system dictation and scribble sheets and shows the result with Text."
+    macos: default size follows compact density (32 pt); hover state required; the system focus ring color replaces color.border.focus when Increase Contrast is on.
+    web-desktop: built on React Aria TextField; the label, description and error are wired through its slots, and the error row is a live region announced once.
+  design: >-
+    The outlined pill and the glass search chip come from docs/research/visual-dna.md §1 principle 2 and
+    the SearchField sightings of docs/research/component-inventory.md (4/11, input only). Those shots put
+    the magnifier at the trailing end; Prism puts it in the leading slot and keeps the trailing slot for
+    the one control that changes the value (clear or reveal), so a field has exactly one trailing target.
+    The keyboard-shortcut hint of the same shots belongs to SearchField, not to this primitive. The edge
+    takes color.border.boundary rather than §7.5's border.hairline: a hairline is 1.26:1 and ADR-0011 puts
+    input borders in the 3:1 boundary tier, which ADR-0030 §3.2 assigns to a control identified only by
+    its edge; on the accent fill that role reaches only 2.4:1, so the edge there is
+    color.text.on-accent-secondary, the pair ADR-0030 §3.4 checks on that material. Tabular figures on a
+    typed number are ADR-0021 §5 and §2.4 of the visual DNA. Example strings are invented (ADR-0015 rule 3).
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

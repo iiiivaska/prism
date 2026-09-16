@@ -1,0 +1,39 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "skeleton": {
+      "bg": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.neutral.subtle}",
+        "$description": "the placeholder body: the neutral subtle fill, one step of the luminance ladder and never a grey of its own (visual-dna §1 principle 1)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "shimmer": {
+        "$type": "color",
+        "$value": "{sys.color.bg.fill.neutral.subtle}",
+        "$description": "the travelling pass: a second neutral subtle layer over the body, so the sweep never brightens past the next step of the ladder; it is not drawn under Reduce Motion (ADR-0023 §8.4)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

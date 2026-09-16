@@ -1,0 +1,70 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "comp": {
+    "checkbox": {
+      "bg": {
+        "$type": "color",
+        "selected": {
+          "$value": "{sys.color.bg.fill.inverse}",
+          "$description": "a checked box is the inverse solid; unchecked has no fill at all (ADR-0029 §3.3)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "component",
+                "scopes": [
+                  "FRAME_FILL",
+                  "SHAPE_FILL"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "mark": {
+        "$type": "color",
+        "$value": "{sys.color.text.on-inverse}",
+        "$description": "the check or the mixed dash on the filled box: the opposite-colored glyph",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "size": {
+        "$type": "dimension",
+        "$value": "{sys.size.icon.md}",
+        "$description": "the box is the glyph box a control carries, 20 px (visual-dna §1 principle 13); the hit region is size.hit around it",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "WIDTH_HEIGHT"
+              ]
+            }
+          }
+        }
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "{sys.radius.badge}",
+        "$description": "the smallest container radius, so the square reads as a square beside a radio's circle (visual-dna §1 principle 2)",
+        "$extensions": {
+          "app.prism": {
+            "figma": {
+              "collection": "component",
+              "scopes": [
+                "CORNER_RADIUS"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

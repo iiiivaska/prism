@@ -25,7 +25,27 @@
     "sys/modality/touch",
     "sys/motion/default",
     "sys/motion/reduced",
+    "comp/area-chart",
+    "comp/avatar",
+    "comp/badge",
     "comp/button",
-    "comp/card"
+    "comp/card",
+    "comp/checkbox",
+    "comp/chip",
+    "comp/icon-button",
+    "comp/progress-bar",
+    "comp/progress-ring",
+    "comp/radio",
+    "comp/ring-gauge",
+    "comp/segmented-control",
+    "comp/select",
+    "comp/skeleton",
+    "comp/slider",
+    "comp/sparkline",
+    "comp/spinner",
+    "comp/text-area",
+    "comp/text-field",
+    "comp/toggle",
+    "comp/tooltip"
   ]
 }

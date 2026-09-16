@@ -1,0 +1,309 @@
+name: LineChart
+layer: dataviz
+specVersion: 1
+status: draft
+summary: >-
+  The hairline instrument trace: one to six series over time or a linear scale, with dashed
+  ReferenceLines, translucent RangeBands, a trailing Y axis and no fills, boxes or axis lines. A
+  scrubber moves a now-marker through the plot and the value is read outside it, as a hero.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: plot
+    description: the plot area; charts never sit on raw glass, so it carries its own fill
+  - part: grid
+    optional: true
+    description: horizontal gridlines only, dashed, behind the data
+  - part: axisX
+    optional: true
+    description: time or category labels under the plot, with no axis line
+  - part: axisY
+    optional: true
+    description: value labels on the trailing side, outside the plot, with no axis line
+  - part: series
+    description: the trace of one series
+  - part: comparison
+    optional: true
+    description: a fainter second reading of the same measure behind the series
+  - part: ghost
+    optional: true
+    description: the same series in an earlier period, the faintest layer
+  - part: marker
+    optional: true
+    description: point markers on the series
+  - part: endpoint
+    optional: true
+    description: the bead on the last point of the emphasised series
+  - part: directLabel
+    optional: true
+    description: the series name at its endpoint, in place of a legend
+  - part: crosshair
+    optional: true
+    description: the vertical rule and now-dot at the selected x
+  - part: band
+    optional: true
+    slot: true
+    description: one or two RangeBands, behind everything
+  - part: reference
+    optional: true
+    slot: true
+    description: up to two ReferenceLines, over the data
+
+props:
+  - name: series
+    type: data
+    required: true
+    description: "an ordered list of { id, name, points, emphasis? }; slot order fixes the colors. Every series is a line — bars are a Sparkline kind in v1 and a BarChart in v1.1"
+  - name: xScale
+    type: enum
+    values: [time, linear, band]
+    default: time
+  - name: yDomain
+    type: enum
+    values: [auto, zero, fixed]
+    default: auto
+  - name: interpolation
+    type: enum
+    values: [monotone, linear, step]
+    default: monotone
+  - name: referenceLines
+    type: data
+    description: ReferenceLine props, at most two
+  - name: bands
+    type: data
+    description: RangeBand props, at most two
+  - name: directLabels
+    type: enum
+    values: [endpoint, none]
+    default: endpoint
+  - name: markers
+    type: enum
+    values: [auto, always, never]
+    default: auto
+  - name: grid
+    type: boolean
+    default: true
+  - name: selection
+    type: data
+    description: the selected x, read and written by the caller; unset means no selection, and the crosshair and the now-dot are not drawn
+  - name: onSelectionChange
+    type: action
+  - name: scrollable
+    type: boolean
+    default: false
+  - name: visibleDomain
+    type: data
+
+states: [default, hover, focus-visible, selected, loading]
+
+tokens:
+  root:
+    gap: space.3
+    loading:
+      opacity: opacity.dimmed-row
+  plot:
+    background:
+      page: color.chart.plot
+      solid: color.chart.plot
+      raised: color.chart.plot
+      nested: color.chart.plot
+      glass: color.chart.on-glass-fill.plot
+    radius: radius.inner
+    focus-visible:
+      ring: color.border.focus
+      ringWidth: border.focus
+  grid:
+    width: chart.comparison-width
+    dash: stroke.grid
+    color:
+      default: color.chart.grid
+      vivid: color.chart.on-media.grid
+      glass: color.chart.on-glass-fill.grid
+  axisX:
+    typography: type.axis
+    gap: space.2
+    color:
+      default: color.chart.axis
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  axisY:
+    typography: type.axis
+    gap: space.2
+    color:
+      default: color.chart.axis
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  series:
+    width: chart.line-width
+    curve: chart.curve
+    color:
+      default: color.chart.series.1
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  comparison:
+    width: chart.comparison-width
+    color: color.chart.comparison
+  ghost:
+    width: chart.comparison-width
+    color: color.chart.ghost
+  marker:
+    size: chart.marker-size
+    ring:
+      page: color.chart.plot
+      solid: color.chart.plot
+      raised: color.chart.plot
+      nested: color.chart.plot
+      glass: color.chart.on-glass-fill.plot
+    color:
+      default: color.chart.series.1
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  endpoint:
+    size: chart.endpoint-size
+    color:
+      default: color.chart.now
+      vivid: color.chart.on-media.line
+      glass: color.chart.on-glass-fill.line
+  directLabel:
+    typography: type.data
+    gap: space.2
+    color:
+      default: color.text.secondary
+      glass:
+        map: color.text.on-glass-fill-secondary
+        image: color.text.on-glass-fill-media-secondary
+        vivid: color.text.on-glass-fill-media-secondary
+  crosshair:
+    width: chart.comparison-width
+    color:
+      default: color.chart.now
+      vivid: color.chart.on-media.reference
+      glass: color.chart.on-glass-fill.reference
+    hover:
+      hitSize: size.hit
+    selected:
+      markerSize: chart.endpoint-size
+
+behavior:
+  - "The chart has no fills under its lines, no axis lines, no frame and no vertical gridlines; horizontal gridlines are dashed with stroke.grid and sit behind the data."
+  - "Three to five horizontal gridlines at familiar tick values; fewer when the plot is scrubbable, and none when the chart is smaller than a card aside."
+  - "Y labels sit outside the plot on the trailing side in type.axis over color.chart.axis, so the plot's leading edge lines up with the card's content edge; X labels sit under the plot and there is no axis line on either side."
+  - "Interpolation is chart.curve (monotone) by default; `linear` for sparse data and `step` for level charts, and never an overshooting curve on measured data."
+  - "`yDomain: auto` may leave zero out, but includes it once the data comes within a fifth of it and extends to the whole range for shares; `zero` pins the baseline and `fixed` takes the caller's bounds."
+  - "Slot order fixes the colors: the nth series takes the nth slot of color.chart.series.1…6, and a series keeps its color when the data is filtered. At most three colored series run without direct labels, because the light slots share one lightness band; a seventh series folds into color.chart.ghost."
+  - "On vivid and on the scheme's glass the chart family holds one line role, so exactly one series is drawn there — color.chart.on-media.line or color.chart.on-glass-fill.line. The comparison and ghost layers are not drawn there either, for the same reason. A multi-series chart needs the solid family, and colored series on media stay open until a later data-viz wave (ADR-0030 §2.3)."
+  - "On vivid the chart is marks only: no axis labels, no direct labels and no markers. ADR-0030 §2 gives the on-media family a line, a reference and a grid and no axis, no plot and no marker ring, and rule 7 puts text under 24 px on a gradient in the header block alone — so the axis text, the series names and the scale statement move to the enclosing ChartContainer's header and caption, which sit in that block. A chart that cannot say its scale from the header does not go on a vivid surface."
+  - "A chart is never placed on light glass, inverse or accent; those materials hold no chart family at all (ADR-0030 rule 3)."
+  - "Emphasis is a mode: the emphasised series keeps color.chart.series.1 and the rest drop to color.chart.comparison, with an earlier period in color.chart.ghost."
+  - "Series are labelled inline at their endpoint in type.data, never in the series color; a legend is a v1.1 component, so a v1 chart that cannot label inline splits into panels instead."
+  - "Markers are drawn when `markers: always`, or automatically when the x values are irregular or fewer than eight; each is chart.marker-size with a ring in the plot fill of the published material — color.chart.plot on the solid family and color.chart.on-glass-fill.plot on the scheme's glass — so touching marks stay apart. On vivid there is no plot fill and so no ring, and no markers."
+  - A ReferenceLine is the only dashed line over the data and a RangeBand the only wash under it; the chart composes them and never draws its own.
+  - "Selection snaps to the nearest x over the whole plot area, which is the hit target — never the marks themselves — and the hit region is at least size.hit on each axis."
+  - "The selected x draws the crosshair rule and a chart.endpoint-size now-dot in color.chart.now; the values live outside the plot, in the ChartContainer's header, where the hero and its delta update together."
+  - "Selection fires haptic.selection once per snapped index on touch, and never on pointer platforms."
+  - "Keyboard and Switch Control: the plot is focusable; arrow keys move the selection one point, Home and End jump to the ends, PageUp and PageDown move ten points, and Escape clears it. Focus shows the same readout as hover."
+  - "`scrollable` lets the x axis scroll inside `visibleDomain`; the y domain is computed over the visible window and stated in the chart's caption when it changes."
+  - "`loading` holds the previous render at opacity.dimmed-row and never flashes a skeleton; an empty or failed series is the ChartContainer's message, not the plot's."
+  - "The plot fill is color.chart.plot on the solid family and the white lift color.chart.on-glass-fill.plot on the scheme's glass; a chart never sits on raw glass. On vivid the plot has no fill at all — the on-media family carries no plot role, and a grey plot box would flatten the gradient — so the marks are drawn straight on it, inside its large zone and away from its lightest end."
+
+motion:
+  enter: motion.duration.base
+  select: motion.spring.interactive
+  reduceMotion: instant
+
+haptics:
+  select: haptic.selection
+
+accessibility:
+  role: image
+  label: the chart's summary, supplied by the enclosing ChartContainer — what the series are, their range and their shape; axis labels are hidden from assistive technology because the table twin carries them
+  traits: [image, allowsDirectInteraction]
+  keyboard: the plot takes focus with a ring of color.border.focus at border.focus width; arrows move the selection, Home and End jump, PageUp and PageDown move ten points, Escape clears
+  dynamicType: axis and label text scale with their roles; the plot keeps its given height, which always includes the x-axis band, and axis ticks thin out rather than overlap
+  contrast: "series, reference lines and the crosshair carry meaning and hold 3:1 against the plot they sit on — color.chart.series.* on color.chart.plot, color.chart.on-media.line on every stop of the vivid gradients, color.chart.on-glass-fill.line on color.chart.on-glass-fill.plot over every backdrop the glass may meet (ADR-0030 §2.7); gridlines are decorative. Axis and direct-label text is functional text at 4.5:1 — color.chart.axis on the plot, and on the scheme's glass the quieter text tone of the published backdrop kind (ADR-0029 §1.4); on vivid no axis or label text is drawn, because color.text.on-vivid has no sub-24 px pair outside the header block (ADR-0011, ADR-0030 rule 7)"
+  reduceTransparency: glass resolves to the opaque raised surface and the whole chart falls back to the solid family — color.chart.plot, color.chart.series.1, color.chart.grid and color.chart.target
+  reduceMotion: no line draws on, no enter animation runs and the plot never parallaxes; the chart appears complete at motion.duration.instant, selection follows the finger directly, and a refetch holds the previous render at opacity.dimmed-row
+  voiceOver: one accessibility element per series on Apple with the framework's audio graph descriptor, plus the container's title and summary; on the web a figure with the summary and the table twin
+
+usage:
+  do:
+    - Label series inline at their endpoints and keep the value outside the plot.
+    - Use one emphasised series and drop the rest to the comparison tone.
+    - Give the plot a height that already includes the x-axis band.
+  dont:
+    - Don't fill under a line, add an axis line, a box, or vertical gridlines.
+    - Don't put two y scales on one plot; use two panels or index both series to 100.
+    - Don't thicken a stroke for emphasis; use the accent or the comparison tone.
+    - Don't make a value reachable only by hovering; the table twin and the header carry every value.
+    - Don't put axis labels, direct labels or markers on a vivid chart; state the scale in the container's header instead.
+
+examples:
+  - id: single-series
+    props: { series: [{ id: throughput, name: "Throughput", points: 96 }], xScale: time, interpolation: monotone }
+    description: one trace, a trailing y axis and three dashed gridlines
+  - id: with-target
+    props: { series: [{ id: yield, name: "Yield", points: 96 }], referenceLines: [{ value: 80, axis: y, style: target, label: "Target 80%" }] }
+  - id: with-window
+    props: { series: [{ id: load, name: "Load", points: 96 }], bands: [{ from: 1763528400, to: 1763542800, axis: x, label: "Maintenance" }] }
+  - id: comparison-pair
+    props: { series: [{ id: today, name: "Today", points: 96, emphasis: true }, { id: yesterday, name: "Yesterday", points: 96 }] }
+    description: the emphasised trace keeps the series tone and its twin drops to the comparison tone
+  - id: three-series
+    props: { series: [{ id: north, name: "North", points: 48 }, { id: south, name: "South", points: 48 }, { id: west, name: "West", points: 48 }], directLabels: endpoint }
+  - id: step-levels
+    props: { series: [{ id: tariff, name: "Tariff", points: 24 }], interpolation: step, yDomain: zero }
+  - id: selected
+    props: { series: [{ id: throughput, name: "Throughput", points: 96 }], selection: 1763539200 }
+    description: the crosshair and the now-dot; the value is read in the container header
+  - id: labels-ru
+    props: { series: [{ id: vyruchka, name: "Выручка", points: 48 }, { id: plan, name: "План", points: 48 }], directLabels: endpoint }
+    description: the Cyrillic endpoint labels are longer than their Latin twins and reserve room at the plot's trailing edge
+  - id: on-glass-over-map
+    props: { series: [{ id: speed, name: "Speed", points: 60 }] }
+    surface: glass
+    backdrop: map
+    description: the plot is the white lift of color.chart.on-glass-fill.plot and a single series takes the glass foreground
+  - id: on-vivid
+    props: { series: [{ id: yield, name: "Yield", points: 60 }], grid: true, directLabels: none, markers: never }
+    surface: vivid
+    description: marks only — one white series and the dashed grid straight on the gradient, with no plot fill, no axis text and no direct label; the scale is stated in the container's header
+
+notes:
+  platform:
+    watchos: "none — ADR-0010 Tier 3 has no chart but the rings, and HIG asks the watch for glanceable information with no complex chart interaction; a trend belongs on the phone."
+    macos: hover shows the crosshair without a tap, there are no haptics, and the chart follows compact density with one fewer gridline.
+    ios: scrubbing uses the framework's x-selection with the whole plot as the hit target; the audio graph descriptor comes from the charting framework.
+  design: >-
+    The hairline instrument chart — thin series, a fainter comparison, a dashed target, full-height
+    windows with bookend dots, trailing y labels, no fills and no legends — is
+    docs/research/visual-dna.md §4.6, §8.1 and §8.2, with its overrides of
+    docs/research/dataviz-design.md in §8.3 (dashed gridlines, the 8/6 target dash, six series, no area
+    fills, inline labels). The grid count, tick values, interpolation, zero-baseline, emphasis, marker,
+    hit-target, keyboard and audio-graph rules are dataviz-design.md §3 rules B8-B11, C14-C19 and
+    H40-H45. The chart family per published material is ADR-0030 rule 3, and colored series on media are
+    that ADR's §2.3 open item. This spec also carries the axis bindings that a separate ChartAxis part
+    would own; docs/research/component-inventory.md notes that the roadmap does not name one yet.
+    Example data are invented (ADR-0015 rule 3); `points` gives the sample count a gallery renders.
+  references:
+    - docs/adr/0007-dataviz-first-class.md
+    - docs/adr/0010-platform-tiers-density-modality.md
+    - docs/adr/0011-accessibility-tiers-ci.md
+    - docs/adr/0015-references-inspiration-only.md
+    - docs/adr/0023-motion-tokens.md
+    - docs/adr/0030-semantic-roles-from-the-direction-board.md
