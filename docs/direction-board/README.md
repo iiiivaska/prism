@@ -213,6 +213,8 @@ ADR-0015 decision 3 asks that no direction-board screen be recognizably the same
 
 ## Sign-off checklist
 
+**Signed off 2026-09-16.** The owner approved the re-rendered board as published (label "P1-9 sign-off round"). Gate P3-0 is closed; later changes to the look go through the token source and a re-render, not through component code.
+
 The owner approves or rejects each item. A rejection becomes a token change through P1-1 or P1-2 before P3-3 and P3-4 start. The board section and the decision behind each item are given in brackets.
 
 ### Answered on 2026-09-15
