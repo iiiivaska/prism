@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../spec/icons/registry.schema.json",
+  "version": "0.1.0",
+  "sources": {
+    "phosphor": {
+      "package": "@phosphor-icons/core",
+      "version": "2.1.1"
+    },
+    "sfSymbols": {
+      "release": 7,
+      "maxYear": "2025",
+      "osFloor": "26.0"
+    }
+  },
+  "weights": {
+    "thin": {
+      "number": 200,
+      "phosphor": "thin",
+      "sf": "thin",
+      "boldText": "light"
+    },
+    "light": {
+      "number": 300,
+      "phosphor": "light",
+      "sf": "light",
+      "boldText": "regular"
+    },
+    "regular": {
+      "number": 400,
+      "phosphor": "regular",
+      "sf": "regular",
+      "boldText": "medium"
+    },
+    "medium": {
+      "number": 500,
+      "phosphor": "bold",
+      "sf": "medium",
+      "boldText": "bold"
+    },
+    "bold": {
+      "number": 700,
+      "phosphor": "bold",
+      "sf": "bold",
+      "boldText": "heavy"
+    },
+    "heavy": {
+      "number": 800,
+      "phosphor": "bold",
+      "sf": "heavy",
+      "boldText": "heavy"
+    }
+  },
+  "styles": {
+    "outline": {
+      "phosphor": "$weight",
+      "sf": {
+        "variant": "none"
+      }
+    },
+    "filled": {
+      "phosphor": "fill",
+      "sf": {
+        "variant": "fill"
+      }
+    },
+    "duotone": {
+      "phosphor": "duotone",
+      "sf": {
+        "renderingMode": "hierarchical"
+      }
+    }
+  },
+  "sizes": {
+    "xs": {
+      "token": "ref.size.icon.xs",
+      "px": 12,
+      "sf": {
+        "pointSize": 10,
+        "scale": "medium"
+      }
+    },
+    "sm": {
+      "token": "ref.size.icon.sm",
+      "px": 16,
+      "sf": {
+        "pointSize": 14,
+        "scale": "medium"
+      }
+    },
+    "md": {
+      "token": "ref.size.icon.md",
+      "px": 20,
+      "sf": {
+        "pointSize": 18,
+        "scale": "medium"
+      }
+    },
+    "lg": {
+      "token": "ref.size.icon.lg",
+      "px": 24,
+      "sf": {
+        "pointSize": 21,
+        "scale": "medium"
+      }
+    }
+  },
+  "icons": {
+    "nav.back": {
+      "label": "icon.nav.back",
+      "categories": [
+        "nav"
+      ],
+      "tags": [
+        "back",
+        "previous"
+      ],
+      "rtlMirror": {
+        "web": true,
+        "apple": false
+      },
+      "since": "0.1.0",
+      "web": {
+        "phosphor": "caret-left"
+      },
+      "apple": {
+        "symbol": "chevron.backward"
+      }
+    },
+    "status.success": {
+      "label": "icon.status.success",
+      "categories": [
+        "status"
+      ],
+      "tags": [
+        "success",
+        "ok"
+      ],
+      "rtlMirror": {
+        "web": false,
+        "apple": false
+      },
+      "defaultStyle": "filled",
+      "since": "0.1.0",
+      "web": {
+        "phosphor": "check-circle"
+      },
+      "apple": {
+        "symbol": "checkmark.circle"
+      }
+    },
+    "status.trend-up": {
+      "label": "icon.status.trend-up",
+      "categories": [
+        "status",
+        "data"
+      ],
+      "tags": [
+        "trend-up",
+        "increase"
+      ],
+      "rtlMirror": {
+        "web": false,
+        "apple": false
+      },
+      "since": "0.1.0",
+      "web": {
+        "phosphor": "trend-up"
+      },
+      "apple": {
+        "custom": "ds.trend-up"
+      }
+    }
+  }
+}
