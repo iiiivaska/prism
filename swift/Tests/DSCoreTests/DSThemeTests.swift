@@ -270,6 +270,13 @@ private struct DSContextReader: View {
     let probe: DSContextProbe
     private var theme = DSThemeValues()
 
+    // Written out: the memberwise initializer of a type with a private stored property is itself
+    // private, which Swift 6.3 (Xcode 26.6, the CI pin) rejects at these call sites.
+    init(id: String, probe: DSContextProbe) {
+        self.id = id
+        self.probe = probe
+    }
+
     var body: some View {
         probe.record(id, context: theme.context, policy: theme.policy)
         return Rectangle().frame(width: 8, height: 8)
