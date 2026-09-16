@@ -1,0 +1,36 @@
+# tools/icons-apple
+
+The macOS half of the icon gate (roadmap P2-2, ADR-0013 decision 5). A separate SwiftPM package, not a target of the root `Prism` package: it links AppKit and reads `/System`, and nothing a consumer ships depends on it.
+
+```
+swift run --package-path tools/icons-apple icons-validate spec/icons/registry.json
+```
+
+Flags: `--catalog <dir>` reads the SF Symbols catalog from another `CoreGlyphs.bundle/Contents/Resources`, `--repo-root <dir>` names the tree that holds the generated `DSIconName.swift`, `--no-self-test` skips the fixture round, `--json` prints the issues as JSON. Exit codes: 0 clean, 1 an issue, 2 usage.
+
+## What it checks
+
+| Code | Rule |
+|---|---|
+| `sf/unknown` | the name is not in this system's SF Symbols catalog: a misspelling, or a symbol added after the release that ships with the floor OS |
+| `sf/newer-than-floor` | the name exists but its availability year maps above the floor (year `2025.1` is OS 26.1, while the floor is 26.0) |
+| `sf/unverifiable` | a warning: a symbol declared `minOS` above the floor that this catalog cannot see; its validated fallback carries the render until the floor moves (critic C-21) |
+| `sf/min-os-below-floor`, `sf/min-os-on-custom`, `sf/fallback-equals-symbol` | the `minOS` / `fallback` pair itself |
+| `sf/fill-missing` | a filled-by-default icon whose `.fill` variant does not exist |
+| `sf/smoke` | `NSImage(systemSymbolName:)` is nil for a name the catalog lists |
+| `rtl/double-mirror` | `rtlMirror.apple` on a symbol the system already mirrors (`legacy_flippable.plist`, or a `backward` / `forward` / `leading` / `trailing` name) |
+| `rtl/missing-mirror` | the web flips the glyph and Apple neither flips it nor auto-mirrors it |
+| `size/measured` | the registry's SF point size no longer fills its px box (critic C-23) |
+| `enum/stale` | the committed `DSIconName` does not cover exactly the registry's ids |
+
+The Phosphor catalog, the schema and the codegen are the Node half (`pnpm icons:validate`, `pnpm icons:build`), which runs on every platform and owns every generated file — including `DSIconName.swift`, as the token build owns the generated Swift of `DSTokens`.
+
+## Fixtures
+
+`Fixtures/` holds one legal registry per rule, each with a single deliberate fault, and `expectations.json` names the code each must trip. The tool runs that round **before** it validates the registry it was given, so the availability gate proves itself on every CI run: a fixture that stops failing fails the job. `valid.json` must pass, and `sf8-with-fallback.json` must pass with the `sf/unverifiable` warning.
+
+`newer-than-floor.json` and `sf8-bad-fallback.json` use `air.conditioner`, a real symbol whose year is `2025.1` (OS 26.1). `sf8-only-symbol.json` and `sf8-with-fallback.json` use `person.badge.sparkles`, a name SF Symbols 7 does not carry: from a floor runner every post-floor symbol looks exactly like this, which is what makes the SF Symbols 8 policy checkable before OS 27 ships.
+
+## macOS version
+
+The tool reads whatever catalog the host has and reports its newest year key in the run line. On a host newer than the floor it can still verify everything at the floor, because availability is a property of the year key, not of the host. A host **older** than the floor would report symbols as unknown; CI runs `macos-26`.
