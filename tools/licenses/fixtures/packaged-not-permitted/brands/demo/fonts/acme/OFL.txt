@@ -1,0 +1,4 @@
+Copyright 2026 Acme Type Foundry
+
+Fixture license text for tools/licenses. Acme Sans is invented: this file only
+has to exist beside the font file so the gate can see a license next to it.

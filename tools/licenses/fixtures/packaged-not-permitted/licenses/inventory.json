@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../../../licenses/inventory.schema.json",
+  "updated": "2026-09-16",
+  "permitted_use_values": ["own", "adapt-with-attribution", "dependency", "sdk-runtime", "inventory-only", "apple-mockups-only", "read-only", "principles-only"],
+  "items": [
+    { "id": "demo", "kind": "code", "name": "Demo (fixture repository)", "version": "0.0.0", "spdx": "MIT", "source": "https://example.invalid/demo", "license_url": "https://example.invalid/demo/LICENSE", "attribution": "Copyright (c) 2026 Demo", "permitted_use": "own", "packaged": true, "packaged_as": ["LICENSE", "web/packages/*/LICENSE"], "notes": "The fixture's own work, to mirror the `prism` item of the real ledger." },
+    { "id": "acme-sans", "kind": "font", "name": "Acme Sans", "version": "1.000", "spdx": "LicenseRef-Acme-Inventory", "source": "https://example.invalid/acme-sans", "license_url": "https://example.invalid/acme-sans/license", "attribution": "Acme Type Foundry", "permitted_use": "inventory-only", "packaged": true, "packaged_as": ["brands/*/fonts/acme/**"], "notes": "The deliberate failure this fixture exists for (roadmap P2-4): its license permits reading the family for inventory breadth, and the tree ships it anyway." }
+  ]
+}
