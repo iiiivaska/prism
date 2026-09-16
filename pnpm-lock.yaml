@@ -167,6 +167,9 @@ catalogs:
     '@eslint/js':
       specifier: ^10.0.1
       version: 10.0.1
+    '@phosphor-icons/core':
+      specifier: ^2.1.1
+      version: 2.1.1
     '@tailwindcss/node':
       specifier: ^4.3.3
       version: 4.3.3
@@ -253,6 +256,9 @@ importers:
 
   tools:
     devDependencies:
+      '@phosphor-icons/core':
+        specifier: 'catalog:'
+        version: 2.1.1
       '@tailwindcss/node':
         specifier: 'catalog:'
         version: 4.3.3
@@ -601,6 +607,9 @@ packages:
 
   '@oxc-project/types@0.149.0':
     resolution: {integrity: sha512-Efcc+iF0j3Bf67YjEqIqWXbX5XddXoK/Mw4K1/JuXwRCZ8N16VR7iT23nlCc9XrveFVh/E5Rqs2StT0V8v9LdA==}
+
+  '@phosphor-icons/core@2.1.1':
+    resolution: {integrity: sha512-v4ARvrip4qBCImOE5rmPUylOEK4iiED9ZyKjcvzuezqMaiRASCHKcRIuvvxL/twvLpkfnEODCOJp5dM4eZilxQ==}
 
   '@quansync/fs@1.0.0':
     resolution: {integrity: sha512-4TJ3DFtlf1L5LDMaM6CanJ/0lckGNtJcMjQ1NAV6zDmA0tEHKZtxNKin8EgPaVX1YzljbxckyT2tJrpQKAtngQ==}
@@ -2461,6 +2470,8 @@ snapshots:
   '@keyv/serialize@1.1.1': {}
 
   '@oxc-project/types@0.149.0': {}
+
+  '@phosphor-icons/core@2.1.1': {}
 
   '@quansync/fs@1.0.0':
     dependencies:

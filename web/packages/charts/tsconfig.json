@@ -6,6 +6,9 @@
     "moduleResolution": "bundler",
     "lib": ["es2024", "dom"],
     "jsx": "react-jsx",
+    // `src/manifest.ts` (roadmap P2-3) is imported with its explicit `.ts` extension, as the
+    // generated and hand-edited modules of the other packages are.
+    "allowImportingTsExtensions": true,
     "types": []
   },
   "include": ["src", "tsdown.config.ts"]
