@@ -9,14 +9,21 @@
 // contents are scanned. Node 24 runs it from source (native type stripping); it has no dependencies.
 //
 // One pattern table serves every kind, so no name is reported twice: `color`, `dimension` and `font`
-// (literal values), `motion` (ADR-0023 §12), `typography` (ADR-0021 §12) and `runtime` (ADR-0019
-// rule 1, P1-5). `runtime` owns the six data-ds-* axis attributes, the preference and pointer media
-// features (`prefers-reduced-motion` included) and Tailwind's media-only variants (`dark:`,
-// `contrast-more:`, `contrast-less:`, `motion-safe:`, `motion-reduce:`, `pointer-*:`,
-// `any-pointer-*:`) in class strings and `@variant` rules (ADR-0023 §12, rule 8); `motion` and
-// `typography` do not repeat them. It checks TypeScript, JavaScript and CSS only and skips `*.test.*`
-// files, which spell the names on purpose to check the contract. `material` (ADR-0022) and `brand`
-// (ADR-0020) join the table in P3.
+// (literal values), `motion` (ADR-0023 §12), `typography` (ADR-0021 §12), `runtime` (ADR-0019
+// rule 1, P1-5), `brand` (ADR-0020 rule 13, P3-2 web half, P3-1 Swift half) and `material`
+// (ADR-0022 rule 2, P3-1 Swift half, P3-4 `backdrop-filter`). `runtime` owns the six data-ds-* axis
+// attributes, the preference and pointer media features (`prefers-reduced-motion` included) and
+// Tailwind's media-only variants (`dark:`, `contrast-more:`, `contrast-less:`, `motion-safe:`,
+// `motion-reduce:`, `pointer-*:`, `any-pointer-*:`) in class strings and `@variant` rules
+// (ADR-0023 §12, rule 8); `motion` and `typography` do not repeat them. It checks TypeScript,
+// JavaScript and CSS only and skips `*.test.*` files, which spell the names on purpose to check the
+// contract. `brand` owns the brand-table and brand-stylesheet imports under
+// `web/packages/react/src` and `web/packages/charts/src`, the two packages that read brand values
+// through `brandTokens()` (ADR-0020 §6), plus the Swift half of rule 13 (`DSBrand.allCases` and
+// switching over a brand) under DSCore, DSComponents and DSCharts. `material` (ADR-0022 rule 2)
+// owns the Swift symbols outside `swift/Sources/DSCore/`: `glassEffect`, SwiftUI's `Material`,
+// `accessibilityReduceTransparency` and `colorSchemeContrast`. Its web half, `backdrop-filter`
+// outside the Surface module, joins the table in P3-4.
 //
 //   node lint/literals.ts               scan this repository
 //   node lint/literals.ts --root <dir>  scan another tree with the same layout (tests)
@@ -25,7 +32,7 @@ import type { Dirent } from "node:fs";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, extname, join, resolve } from "node:path";
 
-export type LiteralKind = "color" | "dimension" | "font" | "motion" | "typography" | "runtime";
+export type LiteralKind = "color" | "dimension" | "font" | "motion" | "typography" | "runtime" | "brand" | "material";
 
 export interface Finding {
   /** Path relative to the scanned root, with forward slashes. */
@@ -57,6 +64,24 @@ export const EXCLUDED_DIRS: readonly string[] = [
 
 /** DSCore alone reads the OS settings and builds fonts (ADR-0021 §9, ADR-0023 §8.5). */
 const DSCORE = "swift/Sources/DSCore/";
+
+/**
+ * The two consumer packages of ADR-0020 rule 13: no file under them imports a `<brand>/tokens`
+ * module or a brand's CSS. The app imports the brand its document loads and hands the table over
+ * (`setBrandTokens`, `<Theme tokens>`); components call `brandTokens()`.
+ */
+const BRAND_CONSUMERS: readonly string[] = ["web/packages/react/src/", "web/packages/charts/src/"];
+
+/**
+ * The three Swift targets of ADR-0020 rule 13: they never switch over `DSBrand` and never use
+ * `DSBrand.allCases`, so that route 2 (ADR-0020 §8) can turn `DSBrand` into a struct with static
+ * members without touching them. Brand values come from `DSTokenSet` and `DSBrand.faces`.
+ */
+const SWIFT_BRAND_TARGETS: readonly string[] = [
+  "swift/Sources/DSCore/",
+  "swift/Sources/DSComponents/",
+  "swift/Sources/DSCharts/",
+];
 
 type Language = "swift" | "css" | "script";
 type Scope = "sources" | "tests";
@@ -153,6 +178,8 @@ interface Rule {
   readonly tests?: boolean;
   /** Root-relative directory prefixes where the rule does not apply. */
   readonly exempt?: readonly string[];
+  /** Root-relative directory prefixes the rule is limited to; by default it applies everywhere. */
+  readonly only?: readonly string[];
   /** Skips test files (`*.test.*`), which spell the checked names on purpose (ADR-0019 rule 1). */
   readonly skipTestFiles?: boolean;
 }
@@ -171,6 +198,14 @@ const RUNTIME_ATTRIBUTES = String.raw`(?:color-scheme|contrast|transparency|dens
 
 /** Tailwind's media-only variants (ADR-0019 Consequences, ADR-0023 §12): `pointer-*` is fine, coarse or none. */
 const MEDIA_VARIANTS = String.raw`(?:dark|contrast-more|contrast-less|motion-safe|motion-reduce|(?:any-)?pointer-(?:fine|coarse|none))`;
+
+/**
+ * The tokens package inside an import specifier: by package name (`@iiiivaska/prism-tokens`) or as a
+ * relative path to it inside the monorepo (`../../tokens`). The brand-invariant root export, `./react`,
+ * `motion.css` and `tailwind.css` hang off the same prefix and carry no brand, so the brand rules ask
+ * for a brand subpath after it rather than for the package alone.
+ */
+const TOKENS_PACKAGE = String.raw`(?:@[\w.-]+\/prism-tokens|\.{1,2}\/[\w./-]*?tokens)`;
 
 const RULES: readonly Rule[] = [
   // ---- color, dimension, font: literal values (tokens/README.md, Rules 1) ----
@@ -403,6 +438,100 @@ const RULES: readonly Rule[] = [
     skipTestFiles: true,
     pattern: new RegExp(String.raw`@variant\s+(?<hit>${MEDIA_VARIANTS})(?![\w-])`, "dg"),
   },
+
+  // ---- brand (ADR-0020 rule 13): web/packages/react/src and web/packages/charts/src only ----
+  // A brand's token module: `@iiiivaska/prism-tokens/tokens` (the default brand),
+  // `@iiiivaska/prism-tokens/brands/<brand>/tokens` and the generated file behind either. Components
+  // take brand values from `brandTokens()` / `useBrandTokens()`, which the app fills once per
+  // document; importing one brand's table would disagree with the stylesheet another document loads.
+  {
+    id: "brand/token-module",
+    kind: "brand",
+    languages: ["script", "css"],
+    scriptStrings: true,
+    only: BRAND_CONSUMERS,
+    pattern: new RegExp(
+      String.raw`(?<![\w-])(?<hit>${TOKENS_PACKAGE}(?:\/(?:dist|src\/generated))?(?:\/brands)?\/(?:[\w.-]+\/)?tokens(?:\.[cm]?[jt]s)?)(?![\w./-])`,
+      "dg",
+    ),
+  },
+  // A brand's stylesheet: `tokens.css` and `fonts.css` are per brand, in an `import` or an `@import`.
+  // The brand-invariant `motion.css` and `tailwind.css` stay allowed, and so does a component's own
+  // stylesheet; the app loads exactly one brand's CSS (ADR-0020 §6).
+  {
+    id: "brand/stylesheet",
+    kind: "brand",
+    languages: ["script", "css"],
+    scriptStrings: true,
+    only: BRAND_CONSUMERS,
+    pattern: /(?<![\w-])(?<hit>(?:[\w@.-]+(?:\/[\w@.-]+)*\/)?(?:tokens|fonts)\.css)(?![\w-])/dg,
+  },
+  // ---- brand, the Swift half (ADR-0020 rule 13): DSCore, DSComponents and DSCharts ----
+  // `DSBrand.allCases`: enumerating the brands is what route 2 (ADR-0020 §8) would break, since a
+  // struct with static members has no `allCases`. The token build and its tests may enumerate them.
+  {
+    id: "brand/swift-all-cases",
+    kind: "brand",
+    languages: ["swift"],
+    only: SWIFT_BRAND_TARGETS,
+    pattern: /(?<![\w.])DSBrand\s*\.\s*(?<hit>allCases)(?![\w$])/dg,
+  },
+  // Switching over a brand: `switch brand {`, `switch context.brand {`, `switch DSBrand.default {`.
+  // The subject has to name a brand on the same line, which is how a `case .<brand>` pattern is
+  // spelled in Swift; the `case` arms themselves carry no type and cannot be matched on their own.
+  {
+    id: "brand/swift-switch",
+    kind: "brand",
+    languages: ["swift"],
+    only: SWIFT_BRAND_TARGETS,
+    pattern: /\bswitch\b(?<hit>[^{\n;]*?(?<![\w.])(?:DSBrand|[A-Za-z_]*[Bb]rand)\b[^{\n;]*)\{/g,
+  },
+  // The other two spellings of the same test: `if case .prism = brand` and `brand == .prism`.
+  {
+    id: "brand/swift-case-pattern",
+    kind: "brand",
+    languages: ["swift"],
+    only: SWIFT_BRAND_TARGETS,
+    pattern:
+      /(?<hit>\bcase\s+\.\w+\s*=\s*[\w.]*(?<![\w.])(?:DSBrand|[A-Za-z_]*[Bb]rand)\b|(?<![\w.])(?:DSBrand|[A-Za-z_]*[Bb]rand)\s*[!=]=\s*\.\w+)/dg,
+  },
+
+  // ---- material (ADR-0022 rule 2): Swift outside DSCore ----
+  // Apple's own Liquid Glass. Prism draws its content glass from the recipe instead, and DSCore
+  // decides the fallback before a recipe exists (ADR-0022 §2.4); native chrome keeps `DS_GLASS`.
+  // `GlassEffectContainer` is tuned beyond rule 2's list: it is the same material by another name.
+  {
+    id: "material/swift-glass-effect",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE],
+    pattern: /(?<![\w$])(?:glassEffect|GlassEffectContainer)(?![\w$])/g,
+  },
+  // SwiftUI's `Material`: the bare type and the five system materials. `DSSurfaceMaterial` and
+  // `DSTokenSet.Material` are Prism's own names and are not reported.
+  {
+    id: "material/swift-material",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE],
+    pattern: /(?<![\w$])\.(?:ultraThin|thin|regular|thick|ultraThick)Material(?![\w$])|(?<![\w$.])Material(?![\w$])/g,
+  },
+  // The two OS settings only Surface resolution may read (ADR-0022 §1.3): components take them from
+  // `DSTokenContext`, which previews and snapshots can force.
+  {
+    id: "material/swift-reduce-transparency",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE],
+    pattern: /(?<![\w$])accessibilityReduceTransparency(?![\w$])/g,
+  },
+  {
+    id: "material/swift-contrast-setting",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE],
+    pattern: /(?<![\w$])colorSchemeContrast(?![\w$])/g,
+  },
 ];
 
 /** Every rule id, for tests that require one hit and one miss per pattern. */
@@ -416,6 +545,8 @@ const GUIDANCE: Readonly<Record<LiteralKind, string>> = {
   motion: "take durations, easings and springs from the motion tokens and read Reduce Motion from Prism's context (ADR-0023 §12)",
   typography: "take weights and type from the type roles; only DSCore builds fonts (ADR-0021 §12)",
   runtime: "take attribute names and media queries from the generated runtime.ts (webRuntime) and switch CSS with the generated ds-* variants (ADR-0019 rule 1)",
+  brand: "read brand values through brandTokens() or useBrandTokens(), and on Apple through DSTokenSet and DSBrand.faces; no Prism target switches over DSBrand (ADR-0020 rule 13)",
+  material: "only Surface resolves materials: DSCore draws Prism's glass from the recipe and reads the accessibility settings, and components take the material from the published context (ADR-0022 rule 2)",
 };
 
 /**
@@ -519,6 +650,7 @@ function applies(rule: Rule, language: Language, file: string, scope: Scope): bo
   if (scope === "tests" && rule.tests !== true) return false;
   if (rule.languages !== undefined && !rule.languages.includes(language)) return false;
   if (rule.skipTestFiles === true && TEST_FILE.test(basename(file))) return false;
+  if (rule.only !== undefined && !rule.only.some((dir) => file.startsWith(dir))) return false;
   return !(rule.exempt ?? []).some((dir) => file.startsWith(dir));
 }
 

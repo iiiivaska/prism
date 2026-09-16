@@ -37,6 +37,8 @@ jobs:
       xcassets: ${{ steps.gates.outputs.xcassets }}
       catalog_tests: ${{ steps.gates.outputs.catalog_tests }}
       dstokens_scheme: ${{ steps.gates.outputs.dstokens_scheme }}
+      dscore_tests: ${{ steps.gates.outputs.dscore_tests }}
+      dscore_scheme: ${{ steps.gates.outputs.dscore_scheme }}
       contrast: ${{ steps.gates.outputs.contrast }}
       tokens_diff: ${{ steps.gates.outputs.tokens_diff }}
       font_root: ${{ steps.gates.outputs.font_root }}
@@ -76,6 +78,8 @@ jobs:
           gate xcassets         P1-5 tools/tokens/scripts/verify-xcassets.sh
           gate catalog_tests    P1-5 swift/Tests/DSTokensTests/ColorCatalogTests.swift
           gate dstokens_scheme  P1-5 .swiftpm/xcode/xcshareddata/xcschemes/DSTokensTests.xcscheme
+          gate dscore_tests     P3-1 swift/Tests/DSCoreTests/DSFontRegistrationTests.swift
+          gate dscore_scheme    P3-1 .swiftpm/xcode/xcshareddata/xcschemes/DSCoreTests.xcscheme
           gate contrast         P1-6 tools/contrast/check.ts
           gate tokens_diff      P1-7 tools/tokens/diff.ts
           gate font_root        P1-8 tools/tokens/formats/fonts.ts
@@ -293,6 +297,21 @@ jobs:
         # (.swiftpm/xcode/xcshareddata/xcschemes/DSTokensTests.xcscheme), which builds DSTokens and tests only DSTokensTests.
         if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.catalog_tests == 'true' && needs.plan.outputs.dstokens_scheme == 'true'
         run: xcodebuild test -scheme DSTokensTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
+      - name: DSCore tests on the iOS Simulator # P3-1
+        # ADR-0021 rule 7 asks for the font registration and the rendering checks on the iOS and watchOS
+        # simulators as well as the host, and ADR-0019 rule 12 for the mapping over the iOS `platformDefault`
+        # (regular, touch).
+        if: needs.plan.outputs.dscore_tests == 'true'
+        run: xcodebuild test -scheme Prism-Package -only-testing:DSCoreTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+      - name: DSCore tests on the watchOS Simulator # P3-1
+        # ADR-0021 rule 7: the same suite on watchOS, which is also the only place `DSPlatform.isWatch` and
+        # `fixesColorSchemeToDark` are true in a real build, so the watch rows of the surface table and the
+        # watch hero role are exercised for real and not only through the injected parameters. It runs the
+        # shared scheme DSCoreTests (.swiftpm/xcode/xcshareddata/xcschemes/DSCoreTests.xcscheme) for the reason
+        # the DSTokens watchOS step above gives: Prism-Package's test action also builds DSSnapshotTests, whose
+        # SnapshotTesting does not compile for watchOS (ARCHITECTURE V1).
+        if: needs.plan.outputs.dscore_tests == 'true' && needs.plan.outputs.dscore_scheme == 'true'
+        run: xcodebuild test -scheme DSCoreTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
       - name: Gallery snapshots (SwiftUI) # P3-3
         if: needs.plan.outputs.snapshots == 'true'
         run: xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'

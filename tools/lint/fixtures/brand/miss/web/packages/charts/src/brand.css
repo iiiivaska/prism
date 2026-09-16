@@ -1,0 +1,4 @@
+/* The brand-invariant counterpart of each brand pattern (ADR-0020 rule 13); `miss:` names the rule it must not trip. */
+@import "@iiiivaska/prism-tokens/motion.css"; /* miss: brand/stylesheet */
+@import "./chart.css"; /* miss: brand/stylesheet */
+.ds-chart { color: var(--ds-color-chart-series-1); } /* miss: brand/token-module */
