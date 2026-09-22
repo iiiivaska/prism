@@ -14,7 +14,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0008](0008-typography-slots-and-presets.md) | Three font slots, Native and Signature presets, Cyrillic mandatory | accepted (amended by 0020, 0021) |
 | [0009](0009-materials-in-layers.md) | Materials in layers: native chrome, solid / vivid / glass content | accepted (amended by 0022) |
 | [0010](0010-platform-tiers-density-modality.md) | Platform tiers; density and modality as token dimensions | accepted (amended by 0019, 0021, 0022, 0024, 0029) |
-| [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023) |
+| [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023, 0032) |
 | [0012](0012-layers-and-v1-scope.md) | Five layers and the v1 scope | accepted |
 | [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019) |
 | [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028, 0031) |
@@ -35,6 +35,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0029](0029-direction-board-sign-off.md) | Direction board sign-off (2026-09-15): glass follows the scheme, one-temperature vivid pairs, compact margin, watch density, ghost button (amends 0010, 0019, 0020, 0022, 0024) | accepted |
 | [0030](0030-semantic-roles-from-the-direction-board.md) | Semantic roles found by the direction board: map, charts and solids on media, edges and bloom, tints, axis and watch type (amends 0007, 0021, 0022, 0024) | accepted |
 | [0031](0031-license-proprietary.md) | Prism is proprietary, all rights reserved; the license carries the requirement, not the visibility (supersedes 0028; amends 0014, 0018) | accepted |
+| [0032](0032-component-owned-strings.md) | Component-owned strings: Prism speaks the caller's words, and the icon registry's label is never a name (amends 0011) | accepted |
 
 ## Template
 

@@ -1,6 +1,6 @@
 # ADR-0011: Accessibility in tiers, enforced in CI
 
-- Status: accepted (the thin-weight bullet amended by [ADR-0021](0021-typography-rules.md); the glass bullet, rule 3's fallback token path and the Increase Contrast consequence amended by [ADR-0022](0022-materials-and-fallbacks.md): glass renders the opaque `raised` surface under Reduce Transparency and Increase Contrast, chosen inside Surface, and glass text is checked over each material's backdrop set; the Reduce Motion bullet amended by [ADR-0023](0023-motion-tokens.md))
+- Status: accepted (the thin-weight bullet amended by [ADR-0021](0021-typography-rules.md); the glass bullet, rule 3's fallback token path and the Increase Contrast consequence amended by [ADR-0022](0022-materials-and-fallbacks.md): glass renders the opaque `raised` surface under Reduce Transparency and Increase Contrast, chosen inside Surface, and glass text is checked over each material's backdrop set; the Reduce Motion bullet amended by [ADR-0023](0023-motion-tokens.md); rule 4 amended by [ADR-0032](0032-component-owned-strings.md): an icon-only control is named by the `label` its caller passes, and the icon registry's `label` field is never an accessible name)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #11
 

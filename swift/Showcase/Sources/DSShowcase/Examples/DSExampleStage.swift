@@ -3,7 +3,7 @@ import DSCore
 import DSComponents
 import DSTokens
 
-/// What an example sits on: the `surface` an `examples[]` entry declares when the component does not draw its own.
+/// What the whole stage is painted on, under the example and under any surface around it.
 public enum DSExampleGround: Hashable {
     /// `color.bg.page`.
     case page
@@ -11,14 +11,90 @@ public enum DSExampleGround: Hashable {
     case map
     /// The synthetic image: washes of the map grounds, blurred.
     case image
+}
 
-    /// The ground an example declares, from `surface` and, for a glass example, from `backdrop`.
-    public static func of(_ example: DSSpecExample) -> DSExampleGround {
-        switch example.surface {
-        case "map": .map
-        case "image": .image
-        case "glass": example.backdrop == "map" ? .map : .image
-        default: .page
+/// How one `examples[]` entry asks to be staged: the surface the component is drawn *inside*, and the ground the
+/// whole thing is drawn *on*.
+///
+/// **The vocabulary is the schema's, read rather than guessed.** `spec/component.schema.json` writes
+/// `examples[].surface` as one of `page`, `solid`, `raised`, `vivid`, `glass`, `glassLight`, `image` and `map`:
+/// `page`, `image` and `map` name a ground the component sits straight on, and the five materials name a Surface
+/// it sits inside. A glass material then names what that Surface sits on in `examples[].backdrop` — `image`,
+/// `map` or `vivid` — because the tones of the scheme's glass key off it (ADR-0029 §1.4). The specs use six of
+/// the eight words today; `Divider` declares `solid` twice and `Icon` declares `glassLight` once.
+///
+/// **Why this is one reading and not two switches.** The ground and the enclosing surface used to be decided in
+/// two places — here and in `DSExampleView`'s own `switch` — and both ended in a `default`, so they could
+/// disagree and neither could fail. They did: an example declaring `solid`, `glassLight`, `map` or `image` as the
+/// material around it was drawn on a bare page, and `glassLight` over an image got neither its material nor its
+/// backdrop. No build failed; the picture was simply wrong, in the app this repository points people at. One
+/// exhaustive reading is what stops that, and a word it cannot stage stops the example and names itself rather
+/// than falling through to the page.
+public enum DSExampleStaging: Hashable {
+    /// The component is drawn straight on this ground.
+    case ground(DSExampleGround)
+    /// The component is drawn inside a Surface of `material`, which declares `backdrop`, on `ground`.
+    case surface(material: DSSurfaceMaterial, backdrop: DSBackdropKind, ground: DSExampleGround)
+    /// The example declares a word this build cannot stage. The sentence names the word and says why, and the
+    /// page prints it in the example's own place.
+    case unstageable(String)
+
+    /// The staging an example declares. An entry with no `surface` is the page, which is what the schema's
+    /// `page` names too.
+    public static func of(_ example: DSSpecExample) -> DSExampleStaging {
+        let surface = example.surface ?? "page"
+        switch surface {
+        case "page": return .ground(.page)
+        case "map": return .ground(.map)
+        case "image": return .ground(.image)
+        case "solid": return .surface(material: .solid, backdrop: .none, ground: .page)
+        case "raised": return .surface(material: .raised, backdrop: .none, ground: .page)
+        case "vivid": return .surface(material: .vivid, backdrop: .none, ground: .page)
+        case "glass": return glass(.glass, example)
+        case "glassLight": return glass(.glassLight, example)
+        default:
+            return .unstageable(
+                """
+                declares `surface: \(surface)`, which is not one of page, solid, raised, vivid, glass, glassLight, \
+                image or map (spec/component.schema.json, `examples[].surface`). Nothing is drawn, because drawing \
+                it on the page would be a picture the spec does not mean.
+                """
+            )
+        }
+    }
+
+    /// A glass material sits on what `backdrop` names, and the stage paints those pixels for it to blur. Glass
+    /// renders only over an image, a map or a vivid surface (ADR-0022 §1.2 trigger 4), so a glass example with no
+    /// backdrop is a defect in the spec rather than a surface to draw: without one the Surface takes the glass
+    /// fallback, which is a different material from the one the example is about.
+    private static func glass(_ material: DSSurfaceMaterial, _ example: DSSpecExample) -> DSExampleStaging {
+        guard let backdrop = example.backdrop else {
+            return .unstageable(
+                """
+                declares `surface: \(material.rawValue)` and no `backdrop`, and glass renders only over an image, a \
+                map or a vivid surface (ADR-0022 §1.2 trigger 4). Staged as it is written, the example would show \
+                the glass fallback rather than the material it is about.
+                """
+            )
+        }
+        switch backdrop {
+        case "map": return .surface(material: material, backdrop: .map, ground: .map)
+        case "image": return .surface(material: material, backdrop: .image, ground: .image)
+        case "vivid":
+            return .unstageable(
+                """
+                declares `surface: \(material.rawValue)` over `backdrop: vivid`, which is glass inside a vivid \
+                Surface rather than glass on a ground this stage paints. The schema allows it and no spec writes it \
+                yet; the first example that does is the one that builds it, on both stacks at once.
+                """
+            )
+        default:
+            return .unstageable(
+                """
+                declares `backdrop: \(backdrop)`, which is not one of image, map or vivid \
+                (spec/component.schema.json, `examples[].backdrop`).
+                """
+            )
         }
     }
 }

@@ -73,7 +73,11 @@ density × the standard state and Increase Contrast, plus:
 | | **28** | **268** |
 
 `DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 268, so adding an example is a deliberate
-change to this file and not a silent one.
+change to this file and not a silent one. `theMatrixCoversEveryComponentTheManifestImplementsOnIOS` holds the
+hand-written `DSSnapshotMatrix.components` to the components `DSComponentsManifest` implements on iOS, so a component
+cannot land in the manifest without being snapshotted. Both tests run in the host `swift test`, which CI runs before
+the simulator step. If either one fails, the snapshot step and the hand-back after it are skipped. So move the count
+and the list in the commit that adds the component.
 
 Every accessibility state is forced through DSCore's `dsAccessibilityPolicy` override **and** through SwiftUI's own
 environment values, so a run reads nothing from the simulator's Settings and one machine's Settings cannot change
@@ -171,10 +175,23 @@ pixel diffs for a reason that is not the code.
 **Record the baselines with the Xcode `XCODE_VERSION` pins in `.github/workflows/ci.yml` (26.6).** Since 2026-09-15 the
 owner's Mac has only Xcode 27.0 while CI pins 26.6 (docs/roadmap.md, "Xcode 27 lane"), so a set recorded locally today
 is not the set CI can compare against: locally recorded baselines stamp `iphonesimulator27.0`. Until that lane lands,
-the committed set is the one CI records — the `snapshots` gate in `ci.yml` is closed while `__Snapshots__` holds no
-PNG, and the apple job then records the set, uploads it as `snapshot-baselines-apple` and fails so that someone reviews
-the images and commits them. The run after that compares. To keep a set of your own in the meantime, use
-`DS_SNAPSHOT_DIR` (below); it carries its own stamp and does not touch `__Snapshots__`.
+the committed set is the one CI records — and that holds for every baseline, not only for the first set. While
+`__Snapshots__` holds no PNG the `snapshots` gate in `ci.yml` is closed and the apple job records the whole set; once a
+set is committed the gate is open and the job compares, and an example whose baseline is **missing** — a new
+component's, a new example's, a new variant's — is recorded by the `!exists` branch of `verify` and fails on its own.
+Either way the job stages exactly the files that were in no commit, uploads them as `snapshot-baselines-apple` and
+fails, so that someone reviews the images and commits them; the run after that compares. A baseline that *exists* and
+differs is never written over by a comparing run, so it can never reach that artifact: it fails as a regression, and the
+reference, failure and difference images of every failed comparison come back as `snapshot-diffs-apple`. Deleting the
+baseline does not get a changed render into that artifact either. `.github/scripts/baseline-handback.sh` looks every
+recorded path up in the commit the change is measured against, and it refuses the hand-back when a path is there. That
+commit bounds what it sees: a baseline deleted by an earlier push, and a baseline renamed with its example, still reach
+the artifact labelled as new, with the run red and the deletion in review, and the script's header ("Two known
+limits") gives the two `git log` commands that catch both before a hand-back is committed. To
+accept a render that changed on purpose, commit the comparison's `failure.png` from `snapshot-diffs-apple` over the
+baseline. Those are the bytes a recording would have written, and review then sees a changed baseline and not a
+deletion. To keep a set
+of your own in the meantime, use `DS_SNAPSHOT_DIR` (below); it carries its own stamp and does not touch `__Snapshots__`.
 
 ## Running
 
@@ -186,7 +203,7 @@ tests never see).
 |----------|--------|
 | `DS_SNAPSHOT_RECORD=1` | Rewrite every baseline and pass. Without it the run compares; a missing baseline is recorded *and* fails, so a new example is reviewed before it becomes a baseline. |
 | `DS_SNAPSHOT_DIR` | Read and write the baselines somewhere other than `__Snapshots__`. |
-| `DS_SNAPSHOT_ARTIFACTS` | Where a failing comparison leaves its reference, failure and difference images. |
+| `DS_SNAPSHOT_ARTIFACTS` | Where a failing comparison leaves its reference, failure and difference images. CI points it at a directory on the runner and uploads that as `snapshot-diffs-apple`; the default is the simulator's temporary directory, which a runner discards with itself. |
 
 Compare against the committed baselines:
 

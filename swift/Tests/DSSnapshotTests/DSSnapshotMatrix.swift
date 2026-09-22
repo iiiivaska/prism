@@ -100,6 +100,20 @@ struct DSSnapshotMatrixTests {
         }
     }
 
+    /// `components` is written by hand, so it is held to the manifest: the matrix snapshots exactly the components
+    /// `DSComponentsManifest` says iOS implements. If a component entered the manifest and not this list, it would
+    /// never be rendered, and nothing else would notice. `expectedCount` would still be right, the gallery would list
+    /// its iOS images as missing, which is not an error, and the CI hand-back would have nothing to hand back.
+    @Test func theMatrixCoversEveryComponentTheManifestImplementsOnIOS() {
+        let implemented = Set(DSComponentsManifest.implemented.filter { $0.value[DSSnapshotMatrix.platform] != nil }.keys)
+        let listed = Set(DSSnapshotMatrix.components)
+        #expect(listed.count == DSSnapshotMatrix.components.count, "DSSnapshotMatrix.components names a component twice")
+        #expect(
+            listed == implemented,
+            "implemented on iOS and not snapshotted: \(implemented.subtracting(listed).sorted()); snapshotted and not implemented on iOS: \(listed.subtracting(implemented).sorted())"
+        )
+    }
+
     @Test func namesFollowTheGalleryTemplate() throws {
         let example = try #require(DSExamples.named("Surface/glass-over-map"))
         let names = DSSnapshotMatrix.variants(of: example).map { $0.fileName(example: example.name) }

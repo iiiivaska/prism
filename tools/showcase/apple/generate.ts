@@ -1,16 +1,17 @@
-// Writes the three generated sources of the Apple showcase (docs/showcase.md §1).
+// Writes the generated sources of the Apple showcase and the key-path table of its binding tests
+// (docs/showcase.md §1).
 //
-//   node showcase/apple/generate.ts            write swift/Showcase/Sources/DSShowcase/Generated
+//   node showcase/apple/generate.ts            write the roots of `GENERATED_ROOTS`
 //   node showcase/apple/generate.ts --check    compare only; exit 1 on any difference
 //
-// The writer owns `GENERATED_ROOT` and nothing else: it writes changed bytes, deletes files it no
-// longer produces inside that root, and never touches anything outside it. `catalog.test.ts` runs the
-// same comparison under `pnpm -r test`, so a spec, a manifest or a token that moves without a
+// The writer owns `GENERATED_ROOTS` and nothing else: it writes changed bytes, deletes files it no
+// longer produces inside those roots, and never touches anything outside them. `catalog.test.ts` runs
+// the same comparison under `pnpm -r test`, so a spec, a manifest or a token that moves without a
 // regenerate fails on ubuntu, with no simulator and no Xcode.
 import { REPO_ROOT } from '../../tokens/ir/bundle.ts';
 import { fsReader } from '../../tokens/source/reader.ts';
 import { writeOutputs } from '../../tokens/output/write.ts';
-import { GENERATED_ROOT, renderCatalogs } from './catalog.ts';
+import { GENERATED_ROOTS, renderCatalogs } from './catalog.ts';
 
 export const USAGE = 'usage: node showcase/apple/generate.ts [--check] [--root <dir>]';
 
@@ -48,7 +49,7 @@ export function main(argv: readonly string[], io: Io = defaultIo): number {
     return 1;
   }
 
-  const report = writeOutputs(files, { root, owned: [GENERATED_ROOT], check });
+  const report = writeOutputs(files, { root, owned: GENERATED_ROOTS, check });
   const changed = report.added.length + report.changed.length + report.removed.length;
   if (check) {
     if (changed === 0) {
@@ -61,7 +62,7 @@ export function main(argv: readonly string[], io: Io = defaultIo): number {
     io.err('showcase: run `pnpm showcase:apple --generate`');
     return 1;
   }
-  io.out(`showcase: wrote ${changed} file(s), ${report.unchanged} unchanged, under ${GENERATED_ROOT}`);
+  io.out(`showcase: wrote ${changed} file(s), ${report.unchanged} unchanged, under ${GENERATED_ROOTS.join(' and ')}`);
   return 0;
 }
 

@@ -45,7 +45,7 @@ props:
   - name: label
     type: string
     required: true
-    description: the accessibility name and the pointer tooltip; never inferred from the glyph id
+    description: the accessible name on every platform and under every modality; never inferred from the glyph id, and shown on hover or on focus nowhere until Prism has a Tooltip of its own
   - name: badge
     type: slot
     description: an optional Badge anchored outside the top-trailing corner; Badge owns its own look
@@ -141,7 +141,8 @@ behavior:
   - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
   - The hit region is the larger of the visual circle and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly around the circle, and the circle never grows with modality (ADR-0024 §7.3).
   - "`variant: plain` is the bare glyph: no fill, no ring, nothing but the glyph and that invisible hit region, which is why the region is not optional. It is the affordance Card pins to its top-right corner and the collapse glyph of a rail."
-  - "`label` is required and is a real sentence, not the glyph's id: an icon-only control always carries a name (ADR-0011 rule 4). Under pointer modality, where interaction.tooltip is on, the same string is shown as a Tooltip on hover and on focus; touch shows no tooltip and the name reaches VoiceOver instead."
+  - "`label` is required and is a real sentence, not the glyph's id: an icon-only control always carries a name, and that name is this string - never the glyph's registry entry, which nothing resolves (ADR-0011 rule 4 as ADR-0032 rule 6 reads it). It is the control's accessible name on every platform, under every modality and in every one of the cases below; nothing in the next clause reduces it."
+  - "Prism has no Tooltip yet. Tooltip.yaml is a contract no stack implements, and it is not in this wave, so no behavior, token or state of this spec depends on one, and until it ships an IconButton shows no hint on hover or on focus on any platform, macOS included. Each hint a platform offers in a Tooltip's place also puts the name into the accessibility tree a second time. SwiftUI's `help` modifier sets the accessibility hint as well as the macOS help tag, and VoiceOver reads that hint after the name; the iPadOS pointer route writes the same hint; and on the web a `title` beside an accessible name is read twice by some screen readers. A hint equal to the name is the same sentence twice, and a hover-only hint is not an affordance in the first place (visual-dna §11 anti-pattern 31). Touch never had one. The name itself is not at risk anywhere: `label` reaches assistive technology on every platform and under every modality. What is lost is the name drawn on screen, and the cost is accepted for two users on macOS and web-desktop, where the old clause showed it on hover and on focus: a sighted pointer user gets no name on hover, and a sighted keyboard user, who saw it when focus reached the control, gets none on focus. Until Tooltip ships, the glyph alone identifies the control to both. When it ships, it is gated by interaction.tooltip, which will be bound here; it owes both users their name - on pointer rest and at once on `focus-visible`, as Tooltip.yaml already specifies - and this clause is replaced."
   - "`isSelected` renders the circle as the inverse solid whatever its variant, and a group holds exactly one selected circle - the active tool, the active view, the send button (visual-dna §1 principle 9 and §4.7)."
   - The circle is radius.control on a square box whose side is comp.icon-button.size.sm, .md or .lg; those follow density, so md is 32 pt on desktop, 40 pt on touch and 48 pt under the comfortable density (ADR-0024 §7.1).
   - The glyph is an Icon at size.icon.sm, .md or .lg; a control glyph is the md box, and the sm box belongs to `plain` corner glyphs (visual-dna §1 principle 13).
@@ -151,7 +152,7 @@ behavior:
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the circle; touch never shows a hover state (ADR-0010 rule 2). For `plain`, whose circle is otherwise invisible, the hover overlay and the pressed fill paint that circle at comp.icon-button.size.sm, .md or .lg - never the larger invisible hit region, which would make the wash jump with modality.
   - Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9). Secondary, ghost and plain also take their pressed fill; primary and danger, whose pressed cell carries the same value as their rest cell, take the pressed overlay of color.bg.fill.neutral.subtle instead, so no variant's press is carried by the scale alone.
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; an unavailable action is better explained than disabled."
-  - An optional Badge, passed in the `badge` slot, is anchored outside the top-trailing corner of the circle, overlapping it; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value.
+  - "An optional Badge, passed in the `badge` slot, is anchored outside the top-trailing corner of the circle, overlapping it; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value, in the words Badge.yaml gives it: the `strings.Badge.count` sentence when the badge carries a `label`, and the locale-formatted count alone when it does not."
   - Buttons of one group share one size and one variant, apart from the single primary or selected circle (visual-dna §11 anti-pattern 24).
 
 motion:
@@ -168,14 +169,14 @@ accessibility:
   label: the `label` prop, always explicit; a glyph id is never a name (ADR-0011 rule 4)
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the circle, following radius.control
-  dynamicType: the circle and the glyph box do not scale with Dynamic Type - density is their lever - and the tooltip text scales with type.label.md
+  dynamicType: the circle and the glyph box do not scale with Dynamic Type - density is their lever - and the name is spoken rather than drawn, so nothing of it scales; a Tooltip, when Prism ships one, will scale with type.label.md
   contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and over media color.text.on-inverse-media on color.bg.fill.inverse-media; the ghost ring on a solid ground is color.border.strong at the boundary tier (3:1); danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, where the pair is checked with the page under it. Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
   reduceTransparency: not applicable (IconButton draws no material of its own); when the enclosing Surface falls back from glass to raised, the glass cells stop applying and the button renders its default cells
   reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, and the pressed overlay of color.bg.fill.neutral.subtle for primary and danger, whose pressed fill carries the same value as their rest fill. Every variant therefore still shows a press with no scale at all. Selection crossfades to the inverse solid instead of scaling
 
 usage:
   do:
-    - Give every IconButton a verb-first name ("Refresh readings"), and let the pointer show it as a tooltip.
+    - Give every IconButton a verb-first name ("Refresh readings"); it is the accessible name everywhere.
     - Keep one solid among the rings - one primary or one selected circle per group (visual-dna §4.7).
     - Use `plain` where the glyph sits on a card corner or inside a dense row, and give it the full hit region.
   dont:
@@ -211,12 +212,12 @@ examples:
     backdrop: map
   - id: label-ru
     props: { variant: secondary, size: md, glyph: action.refresh, label: "Обновить показания линии" }
-    description: a long Russian name; the circle does not change, the tooltip wraps at two lines
+    description: a long Russian name, which is spoken and never drawn, so the circle does not change
 
 notes:
   platform:
     watchos: "none. ADR-0010's Tier 3 list has no IconButton: the watch acts through Button, whose sizes collapse to lg, and through system chrome. A nameless 44 pt circle in a one-column stack of at most three tiles would spend the whole width on a tap target without a word."
-    macos: Hover is required, the default size follows compact density (32 pt), and the tooltip is the system one; the focus ring uses the system color when Increase Contrast is on.
+    macos: Hover is required and the default size follows compact density (32 pt); no system help tag is attached until Prism has a Tooltip (behavior), and the focus ring uses the system color when Increase Contrast is on.
     web-desktop: Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-selected` drive the CSS states (ADR-0019).
   design: >-
     The circle-and-ring grammar, the one solid among hairlines and the 0.97 press come from
@@ -226,4 +227,4 @@ notes:
     forbids a vivid example from setting `icon` - a ring drawn around a glyph on a gradient - and an
     IconButton's glyph is exactly the element that rule is not about. Example strings are invented
     (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md]

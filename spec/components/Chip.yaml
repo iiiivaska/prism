@@ -207,7 +207,8 @@ behavior:
   - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
   - "On an accent surface the chip has no fill of its own: it sits on color.bg.fill.accent with color.text.on-accent-secondary for its label and glyphs and color.text.on-accent when selected, which are the pairs checked on that material."
   - The label never wraps and never truncates; a chip that cannot show its label is too long for a chip and belongs in a ListRow.
-  - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region and its own label, and pressing it fires `onRemove` without firing `onPress`."
+  - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region and its own name, and pressing it fires `onRemove` without firing `onPress`."
+  - "That name is the `strings.Chip.remove` template, \"Remove {label}\" in Prism's English defaults, filled with the chip's own `label`; Chip invents no word of its own and the app replaces the template once at the root (ADR-0032 rules 1 and 2). The web sets the name explicitly, so React Aria's own remove string never supplies it and the two stacks say one word (ADR-0032 rule 7)."
   - "An identifier chip may put an Avatar of size sm in the leading slot, and only on the md chip: the sm chip and the sm avatar are both size.control.sm, so the circle would run edge to edge, while the md chip leaves it a 4 pt inset at every density."
   - A chip group leaves space.3 between chips, and chips wrap onto a second line rather than scrolling out of reach.
   - Hover (pointer only) adds the neutral overlay; pressing takes comp.chip.bg.pressed and scales the pill to 0.97 under motion.spring.snappy.
@@ -222,7 +223,7 @@ haptics:
 
 accessibility:
   role: button, or checkbox when the chip is a filter the user can toggle on and off
-  label: the visible label; a chip whose glyph carries meaning names it in the label, and the remove control is labelled "Remove <label>"
+  label: the visible label; a chip whose glyph carries meaning names it in the label, and the remove control is named by the `strings.Chip.remove` template, "Remove Last 24 hours" under the English defaults (ADR-0032 rules 1 and 2)
   traits: [button, selected]
   keyboard: Space and Enter toggle or activate; Delete and Backspace remove a removable chip; Tab reaches the chip and then its remove control; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: the label scales with type.label.*; the chip grows with it, and a row of chips wraps to more lines instead of truncating
@@ -296,4 +297,4 @@ notes:
     media is not in the references; it is what ADR-0011's "never color alone" leaves once ADR-0029 §1.2
     collapses every tone on a glass chip to one foreground, which turns the stroke and label ladder of
     the period-filter sighting into a 0.5 px width step. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md]

@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { REPO_ROOT } from "../../tokens/ir/bundle.ts";
 import { fsReader, memoryReader, overlayReader } from "../../tokens/source/reader.ts";
-import { appleImplemented, GENERATED_ROOT, renderCatalogs } from "./catalog.ts";
+import { appleImplemented, GENERATED_ROOT, renderCatalogs, TESTS_GENERATED_ROOT } from "./catalog.ts";
 
 const reader = fsReader(REPO_ROOT);
 
@@ -19,11 +19,15 @@ describe("the Apple showcase catalogues", () => {
     expect(problems).toEqual([]);
   });
 
-  it("writes exactly the three files the target expects", () => {
+  it("writes exactly the four files the two targets expect", () => {
+    // Three for the showcase app, and one for `DSComponentsTests`: a generator that starts writing somewhere
+    // else is a generator that can drop a file into the tree nobody reads, so the list is exact and not a
+    // `toContain`.
     expect(files.map((f) => f.path)).toEqual([
       `${GENERATED_ROOT}/DSShowcaseBindings.swift`,
       `${GENERATED_ROOT}/DSShowcaseCatalog.swift`,
       `${GENERATED_ROOT}/DSTokenCatalog.swift`,
+      `${TESTS_GENERATED_ROOT}/DSTokenKeyPaths.swift`,
     ]);
   });
 
@@ -34,6 +38,40 @@ describe("the Apple showcase catalogues", () => {
       expect(readFileSync(path, "utf8"), `${file.path} is stale: run \`pnpm showcase:apple --generate\``).toBe(file.contents);
     });
   }
+
+  it("gives the binding tests every `sys` and `comp` token, which is what a spec may bind", () => {
+    // The table is what turns a cell of `spec/components/<Name>.yaml` into the key path the Apple implementation
+    // must return (`swift/Tests/DSComponentsTests/DSSpecBindings.swift`). A token missing from it is a cell the
+    // binding test cannot check, and it would go missing quietly, so the list is compared with the manifest.
+    const manifest = JSON.parse(reader.readText("web/packages/tokens/src/generated/manifest.json")) as {
+      tokens: { readonly path: string; readonly tier: string; readonly swift: string | null }[];
+    };
+    const table = files.find((f) => f.path.endsWith("DSTokenKeyPaths.swift"))?.contents ?? "";
+    const listed = [...table.matchAll(/^ {8}"([^"]+)": \\\./gm)].map((m) => m[1] ?? "").sort();
+    // `ref` primitives have no Swift API, and the three font faces are not a key path into the token set.
+    const bindable = manifest.tokens
+      .filter((t) => t.tier !== "ref" && t.swift !== null && !t.swift.startsWith("DSBrand.faces"))
+      .map((t) => t.path)
+      .sort();
+    expect(bindable.length).toBeGreaterThan(300);
+    expect(listed).toEqual(bindable);
+    // A `comp` token, a `sys` colour (which hangs off `DSColor` in the manifest and off the token set here), and a
+    // type role, rooted where `DSTextRole.keyPath` is rooted so the two compare directly.
+    expect(table).toContain('"comp.button.primary.bg.rest": \\.components.button.primaryBgRest,');
+    expect(table).toContain('"color.bg.fill.inverse-media": \\.color.bgFillInverseMedia,');
+    expect(table).toContain("static let typography: [String: KeyPath<DSTokenSet.Typography, DSTypeRole>]");
+    expect(table).toContain('"type.label.md": \\.labelMd,');
+  });
+
+  it("reports a token whose Swift member moved instead of leaving it out of the table", () => {
+    // The failure mode this closes: a renamed member drops its token from the table, and the binding test that
+    // reads the cell then says "the catalogue binds no such token" about a token that has one. The generator
+    // refuses to write anything instead (`generate.ts` exits 1 on any problem).
+    const path = "swift/Sources/DSTokens/Generated/DSTokenSet+Space.swift";
+    const doctored = reader.readText(path).replace("public let step3: CGFloat", "public let step3Renamed: CGFloat");
+    const { problems } = renderCatalogs(overlayReader(reader, memoryReader({ [path]: doctored })));
+    expect(problems).toContain("space.3: no Swift member type for DSTokenSet.space.step3 — the key-path table is stale");
+  });
 
   it("carries every spec, implemented or not, so the app can never silently omit one", () => {
     const catalog = files.find((f) => f.path.endsWith("DSShowcaseCatalog.swift"))?.contents ?? "";
@@ -82,20 +120,36 @@ describe("the Apple showcase catalogues", () => {
   });
 
   it("names a renderer that does not exist yet when a component lands, which is what stops the app going stale", () => {
-    // The manifest with one more component in it: the file the build would write then names `DSBadgeRenderer`,
-    // and `DSShowcase` does not compile until somebody writes it.
+    // The manifest with one more component in it: the file the build would write then names
+    // `DSSkeletonRenderer`, and `DSShowcase` does not compile until somebody writes it.
+    //
+    // **The name this fakes has to be one nobody is about to implement.** The fake was `Badge` until Phase 4
+    // wave 1 put Badge in the next four components to land: the day it lands, the fake stops being a fake —
+    // `DSBadgeRenderer` exists, every assertion here passes for the wrong reason, and the gate this test is the
+    // only test of goes unguarded. `Skeleton` is in the unobserved tail of the primitive list
+    // (docs/roadmap.md P2-5), with nothing queued behind it. When that stops being true, move the fake to
+    // another such name; do not delete the test, and do not reach for whatever is being implemented that week.
     const manifest = reader.readText("swift/Sources/DSComponents/Manifest.swift");
     const faked = manifest.replace(
-      '"Button": ["ios": 3',
-      '"Badge": ["ios": 1, "ipados": 1, "macos": 1],\n        "Button": ["ios": 3',
+      '"Surface": ["ios": 3',
+      '"Skeleton": ["ios": 1, "ipados": 1, "macos": 1],\n        "Surface": ["ios": 3',
     );
     expect(faked).not.toBe(manifest);
     const landed = renderCatalogs(
       overlayReader(reader, memoryReader({ "swift/Sources/DSComponents/Manifest.swift": faked })),
     );
     const bindings = landed.files.find((f) => f.path.endsWith("DSShowcaseBindings.swift"))?.contents ?? "";
-    expect(bindings).toContain('"Badge": DSBadgeRenderer()');
+    expect(bindings).toContain('"Skeleton": DSSkeletonRenderer()');
     const catalog = landed.files.find((f) => f.path.endsWith("DSShowcaseCatalog.swift"))?.contents ?? "";
     expect(catalog).toContain('implemented: [("ios", 1), ("ipados", 1), ("macos", 1)]');
+  });
+
+  it("fakes a component this build does not implement, so the gate above is testing something", () => {
+    // The guard on the paragraph above: the moment `Skeleton` acquires a real `DSSkeletonRenderer`, this fails
+    // and says to move the fake, rather than letting the staleness gate quietly test nothing.
+    const implemented = [...appleImplemented(reader, []).keys()];
+    expect(implemented, "Skeleton is implemented now; pick another unimplemented component to fake").not.toContain("Skeleton");
+    const renderers = reader.readText("swift/Showcase/Sources/DSShowcase/Examples/DSComponentRenderers.swift");
+    expect(renderers).not.toContain("DSSkeletonRenderer");
   });
 });

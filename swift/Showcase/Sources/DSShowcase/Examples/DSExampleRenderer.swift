@@ -27,6 +27,11 @@ public enum DSShowcaseRenderers {
 
 /// One example, staged the way the gallery stages it: the ground the spec declares, the surface it sits inside,
 /// and the component itself, inside a `DSTheme` per scheme when a page asks for both.
+///
+/// Both halves of the staging come from `DSExampleStaging.of(_:)`, which reads the schema's whole vocabulary or
+/// says it cannot. This view used to decide the surface for itself, with a `default: content` that quietly drew
+/// an example declaring `solid`, `glassLight`, `map` or `image` on a bare page. Nothing here reads `surface` or
+/// `backdrop` any more, so there is no second reading to drift from the first.
 public struct DSExampleView: View {
     private let component: String
     private let example: DSSpecExample
@@ -38,33 +43,48 @@ public struct DSExampleView: View {
     }
 
     public var body: some View {
-        if let renderer = DSShowcaseRenderers.renderer(for: component), let content = renderer.content(for: example) {
-            DSExampleStage(DSExampleGround.of(example)) {
-                wrapped(content)
-            }
-        } else {
-            DSExampleStage(.page) {
-                DSText(
-                    verbatim: "`\(example.id)` is not staged here. The example is in the spec; this build cannot draw it.",
-                    role: .caption,
-                    tone: .secondary
-                )
-            }
+        switch DSExampleStaging.of(example) {
+        case .ground(let ground):
+            staged(on: ground, inside: nil, backdrop: .none)
+        case .surface(let material, let backdrop, let ground):
+            staged(on: ground, inside: material, backdrop: backdrop)
+        case .unstageable(let problem):
+            // A ground this build cannot draw is a defect in the repository's own text, and the page is where it
+            // is seen: the alternative — the fallback this switch used to have — is a picture that looks finished
+            // and is wrong, which nobody has any reason to look twice at.
+            note("`\(component)/\(example.id)` \(problem)", tone: .critical)
         }
     }
 
-    /// The surface the example declares around its content. `map` and `image` are grounds, not surfaces, and
-    /// `vivid` and `glass` are the two the spec puts the component *inside*.
+    /// The example on the ground it declares, inside the surface it declares, when a renderer can build its props;
+    /// the page says so in the example's own place when none can.
     @ViewBuilder
-    private func wrapped(_ content: AnyView) -> some View {
-        switch example.surface {
-        case "vivid":
-            DSSurfaceView(material: .vivid, radius: .card) { content }
-        case "glass":
-            DSSurfaceView(material: .glass, radius: .card, backdrop: example.backdrop == "map" ? .map : .image) { content }
-        default:
-            content
+    private func staged(on ground: DSExampleGround, inside material: DSSurfaceMaterial?, backdrop: DSBackdropKind) -> some View {
+        if let renderer = DSShowcaseRenderers.renderer(for: component), let content = renderer.content(for: example) {
+            DSExampleStage(ground) {
+                if let material {
+                    DSSurfaceView(material: material, radius: .card, backdrop: backdrop) { content }
+                } else {
+                    content
+                }
+            }
+        } else {
+            note("`\(example.id)` is not staged here. The example is in the spec; this build cannot draw it.", tone: .secondary)
         }
+    }
+
+    /// What the page prints in an example's own place when there is no example to print.
+    ///
+    /// It is deliberately not a `DSExampleStage`. That stage is fit-content inside a horizontal `ScrollView`,
+    /// which is right for an example staged at the width its spec means and wrong for a sentence: the sentence
+    /// would take its one-line ideal width and run off the side of the phone, where a failure nobody can read is
+    /// no better than the silent fallback it replaced. A note takes the width the page gives it, and wraps.
+    private func note(_ sentence: String, tone: DSTextTone) -> some View {
+        let tokens = ds.tokens
+        return DSText(verbatim: sentence, role: .caption, tone: tone)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(tokens.space.pageMargin)
+            .background(tokens.color.bgPage)
     }
 }
 

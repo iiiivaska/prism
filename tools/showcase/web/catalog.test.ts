@@ -76,11 +76,25 @@ describe('the web showcase catalogue', () => {
   });
 
   it('names a renderer that does not exist yet when a component lands, which is what stops the app going stale', () => {
-    const landed = { ...mergeImplemented(WEB_MANIFESTS.map(tableOf)), Divider: { 'web-touch': 1, 'web-desktop': 1 } };
+    // **The name this fakes has to be one nobody is about to implement.** The fake was `Divider` until Phase 4
+    // wave 1 put Divider first in the next four components to land: the day it lands, the fake stops being a
+    // fake — `renderDividerExample` exists, `assertRenderers` does not throw, and this test fails. Worse, the
+    // obvious repair is to delete it, and the gate would then be guarded by nothing but a full `vite build`.
+    // `ProgressRing` is in the unobserved tail of the primitive list (docs/roadmap.md P2-5), with nothing queued
+    // behind it. When that stops being true, move the fake to another such name rather than removing the test.
+    const landed = { ...mergeImplemented(WEB_MANIFESTS.map(tableOf)), ProgressRing: { 'web-touch': 1, 'web-desktop': 1 } };
     expect(() => {
       assertRenderers(landed, reader.readText(HARNESS), HARNESS);
-    }).toThrowError(/The showcase has no way to stage Divider[\s\S]*renderDividerExample\(props, example\)/);
-    expect(rendererName('Divider')).toBe('renderDividerExample');
+    }).toThrowError(/The showcase has no way to stage ProgressRing[\s\S]*renderProgressRingExample\(props, example\)/);
+    expect(rendererName('ProgressRing')).toBe('renderProgressRingExample');
+  });
+
+  it('fakes a component this build does not implement, so the gate above is testing something', () => {
+    // The guard on the paragraph above: the moment `ProgressRing` ships, this fails and says to move the fake,
+    // instead of letting the staleness gate quietly pass on a component that is already staged.
+    const merged = mergeImplemented(WEB_MANIFESTS.map(tableOf));
+    expect(Object.keys(merged), 'ProgressRing is implemented now; pick another unimplemented component to fake').not.toContain('ProgressRing');
+    expect(reader.readText(HARNESS)).not.toContain(`export function ${rendererName('ProgressRing')}`);
   });
 
   it('gates a data-viz component the same way, which is where the next components land', () => {
@@ -100,7 +114,7 @@ describe('the web showcase catalogue', () => {
 
   it('says which manifests it read when it fails, so the sentence names where the component came from', () => {
     try {
-      assertRenderers({ Divider: { 'web-desktop': 1 } }, '', HARNESS);
+      assertRenderers({ ProgressRing: { 'web-desktop': 1 } }, '', HARNESS);
       expect.unreachable('the gate did not fire');
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

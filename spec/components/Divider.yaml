@@ -34,10 +34,14 @@ props:
     values: [none, content]
     default: none
     description: "`content` pulls both ends in by the card padding, so the line starts where the content starts"
-  - name: decorative
+  - name: isDecorative
     type: boolean
     default: true
-    description: a decorative Divider is hidden from assistive technology; set it false only where the line is the sole grouping cue
+    description: >-
+      true hides the line from assistive technology, which is what a hairline is for; set it false only where
+      the line is the sole grouping cue. The name and the polarity are the ones Icon and Avatar carry - one
+      meaning, one name, one polarity - and only the default differs, because a Divider genuinely carries
+      nothing while a glyph and a portrait genuinely can (spec/SCHEMA.md, "One meaning, one name, one polarity")
 
 states: [default]
 
@@ -62,9 +66,10 @@ behavior:
   - "A Divider is not drawn on a surface that publishes `inverse` or `accent`, and the spec declares no cell for either: those materials carry the one solid control or the one lit tile (Surface.yaml), never a table or a list of rows, and Prism has no hairline role that survives them."
   - Increase Contrast strengthens the line through the token alone (`color.border.hairline` steps to ink 30 % in light and white 25 % in dark); the component has no contrast branch.
   - Under the glass fallback the enclosing Surface publishes `raised`, so the Divider takes the `default` cell; it needs no fallback of its own.
+  - "`isDecorative` is the one accessibility flag Prism gives this meaning, under one name and one polarity on Icon, Avatar and Divider alike: true hides the part from assistive technology. It defaults true here and false there, because that is the one thing the three components really differ about (spec/SCHEMA.md)."
 
 accessibility:
-  role: none while `decorative` is true (the default); separator otherwise
+  role: none while `isDecorative` is true (the default); separator otherwise
   label: none; a Divider carries no text and never replaces a group heading
   keyboard: not focusable, and not a stop for rotor or landmark navigation
   dynamicType: the line does not scale; `space.card-padding` does not scale either, so an inset rule keeps its alignment at every text size
@@ -95,7 +100,7 @@ examples:
     surface: solid
     description: the edge between two columns of one panel
   - id: semantic
-    props: { orientation: horizontal, decorative: false }
+    props: { orientation: horizontal, isDecorative: false }
     description: the one case where the rule is the grouping cue and is exposed as a separator
   - id: on-vivid
     props: { orientation: horizontal, inset: content }

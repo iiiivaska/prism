@@ -1902,7 +1902,7 @@
             "light",
             "dark"
           ],
-          "props": "orientation: horizontal, decorative: false",
+          "props": "orientation: horizontal, isDecorative: false",
           "cells": []
         },
         {
@@ -2007,6 +2007,15 @@
             "dark"
           ],
           "props": "name: object.chart, size: md, isDecorative: true",
+          "cells": []
+        },
+        {
+          "id": "named-standalone",
+          "schemes": [
+            "light",
+            "dark"
+          ],
+          "props": "name: object.lock, size: sm, tone: secondary, label: Locked for editing, isDecorative: false",
           "cells": []
         },
         {

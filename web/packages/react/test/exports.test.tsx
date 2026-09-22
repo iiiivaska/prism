@@ -25,8 +25,44 @@ import { implemented } from "../src/manifest.ts";
 
 const exportNames = Object.keys(prism);
 
-/** Components of this package that render no DOM element of their own. */
+/**
+ * Components of this package that render no DOM element of their own, whatever props they are given.
+ *
+ * Rule 8 cannot be checked against a name in here, so a name only belongs in it when the component renders no
+ * element *by design* — `Theme` is a context provider and returns its children. A component that draws nothing
+ * only because this suite gave it nothing belongs in `MINIMUM_PROPS` instead: putting it here would stop
+ * checking it, silently, for as long as the entry lives.
+ */
 const RENDERS_NO_ELEMENT = new Set(["Theme"]);
+
+/**
+ * The fewest props a component needs before it renders anything at all — the rest of this suite gives every
+ * component two scope attributes and the string `content` as children, and nothing else.
+ *
+ * Most components draw their root element from that alone, which is why this map is short. Some cannot: Badge
+ * renders nothing without a `count` (`variant: count` is its default and 0 hides the badge), and Icon,
+ * IconButton and Chip have props their specs mark `required: true`. Without an entry such a component renders
+ * no element, the assertion below fails, and the tempting repair is to drop the name into
+ * `RENDERS_NO_ELEMENT` — which passes, and quietly stops checking ADR-0019 rule 8 for a component that does
+ * render an element. So: an entry here, not a name there.
+ *
+ * Every value is the spec's own prop, written the way `spec/components/<Name>.yaml` writes it, and an entry may
+ * be in place before the component is: a name that this package does not export yet is simply not reached, and
+ * applies itself on the day the export lands. The icon ids are registry ids (`iconRegistry`, ADR-0013).
+ */
+const MINIMUM_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>> = {
+  // Badge.yaml `count`: "required when `variant: count`", which is the default, "and 0 hides the badge".
+  Badge: { count: 3 },
+  // Icon.yaml `name`, required: a registry id.
+  Icon: { name: "nav.back" },
+  // IconButton.yaml `glyph`, `label` and `onPress`, all required; the label is never inferred from the glyph.
+  IconButton: { glyph: "nav.back", label: "Back", onPress: () => {} },
+  // Chip.yaml `label`, required.
+  Chip: { label: "Route L24" },
+};
+
+/** Where this package reads the specs from: the repository's own `spec/components`. */
+const SPEC_COMPONENTS = join(packageRoot, "..", "..", "..", "spec", "components");
 
 describe("names (ADR-0019 rule 11)", () => {
   it("carry no DS or ds prefix", () => {
@@ -43,7 +79,7 @@ describe("names (ADR-0019 rule 11)", () => {
 
   it("declare every web platform at a spec version, never a platform the spec rules out", () => {
     for (const [component, platforms] of Object.entries(implemented)) {
-      const specText = readFileSync(join(packageRoot, "..", "..", "..", "spec", "components", `${component}.yaml`), "utf8");
+      const specText = readFileSync(join(SPEC_COMPONENTS, `${component}.yaml`), "utf8");
       const specVersion = Number(/^specVersion: (\d+)$/m.exec(specText)?.[1]);
       for (const platform of ["web-touch", "web-desktop"] as const) {
         const support = new RegExp(`^  ${platform}: (\\w+)$`, "m").exec(specText)?.[1];
@@ -61,14 +97,33 @@ describe("ScopeAttributes (ADR-0019 rule 8)", () => {
     expect(components).toEqual(expect.arrayContaining(Object.keys(implemented)));
   });
 
+  it("gives the two escape hatches one job each", () => {
+    // A component is checked here unless it is in `RENDERS_NO_ELEMENT`, and a component that needs props to draw
+    // anything is in `MINIMUM_PROPS`. A name in both would be a component excused from the check *and* carrying
+    // the props for it, which is how the excuse survives long after the reason for it is gone.
+    for (const name of Object.keys(MINIMUM_PROPS)) {
+      expect(RENDERS_NO_ELEMENT.has(name), `${name} is in MINIMUM_PROPS and in RENDERS_NO_ELEMENT`).toBe(false);
+      // Entries may run ahead of the implementation, but only for a component the repository has a spec for:
+      // this is what catches a misspelt name, which would otherwise be a silently unused entry.
+      expect(existsSync(join(SPEC_COMPONENTS, `${name}.yaml`)), `MINIMUM_PROPS names ${name}, which is no spec`).toBe(true);
+      const exported = (prism as Record<string, unknown>)[name];
+      if (exported !== undefined) expect(typeof exported, name).toBe("function");
+    }
+  });
+
   it.each(components.map((name) => [name] as const))("%s forwards data-ds-color-scheme and data-ds-density to its root element", (name) => {
     const Component = (prism as unknown as Record<string, ComponentType<Record<string, unknown>>>)[name];
     expect(Component).toBeDefined();
-    const element = createElement(Component as ComponentType<Record<string, unknown>>, { "data-ds-color-scheme": "dark", "data-ds-density": "regular" }, "content");
+    const props = { ...(MINIMUM_PROPS[name] ?? {}), "data-ds-color-scheme": "dark", "data-ds-density": "regular" };
+    const element = createElement(Component as ComponentType<Record<string, unknown>>, props, "content");
     expect(isValidElement(element)).toBe(true);
     // Inside <Theme tokens>, which renders no element: glyphs take their cut from the brand table.
     const html = renderToStaticMarkup(createElement(prism.Theme, { tokens }, element));
-    const root = /^<[a-z0-9]+([^>]*)>/.exec(html)?.[1] ?? "";
+    const root = /^<[a-z0-9]+([^>]*)>/.exec(html)?.[1];
+    expect(
+      root,
+      `${name} rendered no element from ${JSON.stringify(props)}. If it draws nothing until it is given a prop — Badge needs a count, Icon a name — add that prop to MINIMUM_PROPS in this file. Add the name to RENDERS_NO_ELEMENT only if it renders no element by design, whatever it is given: that list is not checked against rule 8 at all.`,
+    ).toBeDefined();
     expect(root).toContain('data-ds-color-scheme="dark"');
     expect(root).toContain('data-ds-density="regular"');
   });

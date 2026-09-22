@@ -1,18 +1,27 @@
-// The two catalogues the Apple showcase app reads (docs/showcase.md §1).
+// The two catalogues the Apple showcase app reads (docs/showcase.md §1), and the key-path table the
+// Apple binding tests read.
 //
 // Nothing in the app holds a list of tokens or of components. This module composes the readers the
 // repository already has — the token manifest (`web/packages/tokens/src/generated/manifest.json`),
 // the spec loader (`tools/spec/load.ts` through `tools/parity/specs.ts`) and the implementation
-// manifest parser (`tools/parity/manifest.ts`) — and renders three Swift files:
+// manifest parser (`tools/parity/manifest.ts`) — and renders four Swift files:
 //
 //   Generated/DSTokenCatalog.swift      every token, with a `KeyPath<DSTokenSet, …>` per value kind
 //   Generated/DSShowcaseCatalog.swift   every spec, its support row, its implemented version and its
 //                                       examples with the props the spec writes
 //   Generated/DSShowcaseBindings.swift  one renderer per component this build implements on Apple
+//   DSComponentsTests/Generated/DSTokenKeyPaths.swift
+//                                       every `sys` and `comp` token path → its `KeyPath<DSTokenSet, …>`,
+//                                       so a binding test resolves the cell the spec writes
 //
-// The last one is the anti-staleness mechanism: it names `DS<Name>Renderer`, so the moment a
+// The third is the anti-staleness mechanism of the app: it names `DS<Name>Renderer`, so the moment a
 // component enters `DSComponentsManifest.implemented` the showcase target stops compiling until
 // somebody writes that renderer. The app shell never changes.
+//
+// The fourth is the same idea one layer down, for the tests: the showcase app resolves a token path to a
+// key path so it can print the value the running scene resolves, and a binding test needs exactly that
+// lookup to ask whether the implementation returns the token its spec names. One table, two readers
+// (`swift/Tests/DSComponentsTests/DSSpecBindings.swift`).
 import { posix } from 'node:path';
 import { parseManifest } from '../../parity/manifest.ts';
 import { LAYER_MANIFEST, MANIFESTS, PLATFORMS, type Platform } from '../../parity/config.ts';
@@ -23,8 +32,12 @@ import type { SourceReader } from '../../tokens/source/reader.ts';
 import { swiftString } from '../../tokens/formats/swift/syntax.ts';
 import { memberType, readTypeTable, type TypeTable } from './swift-types.ts';
 
-/** Where the generated sources go; the showcase generator owns this root and nothing else. */
+/** Where the generated sources of the app go. */
 export const GENERATED_ROOT = 'swift/Showcase/Sources/DSShowcase/Generated';
+/** Where the generated key-path table goes: a source directory of the `DSComponentsTests` target. */
+export const TESTS_GENERATED_ROOT = 'swift/Tests/DSComponentsTests/Generated';
+/** The roots this generator owns, and nothing else; `generate.ts` hands them to the writer. */
+export const GENERATED_ROOTS: readonly string[] = [GENERATED_ROOT, TESTS_GENERATED_ROOT];
 /** The published token manifest, the one artefact that carries every token's Swift member. */
 export const TOKEN_MANIFEST = 'web/packages/tokens/src/generated/manifest.json';
 /** The component tier's own documents, read for the system token each `comp` token aliases. */
@@ -312,6 +325,176 @@ export function renderTokenCatalog(reader: SourceReader, problems: string[]): Ou
 }
 
 // ---------------------------------------------------------------------------------------------
+// Token key paths (the Apple binding tests)
+// ---------------------------------------------------------------------------------------------
+
+/** One dictionary of the generated key-path file. */
+interface KeyPathTable {
+  /** The dictionary's name in `DSTokenKeyPaths`. */
+  readonly name: string;
+  /** The key path's root type, as Swift writes it. */
+  readonly root: string;
+  /** The key path's value type, as Swift writes it. */
+  readonly value: string;
+  /** The member chain the key path is rooted at, and therefore drops: `['typography']` for the roles. */
+  readonly under?: readonly string[];
+  /** The line above the table. */
+  readonly doc: string;
+  /** How a failure names this kind: "…, which the catalogue binds as a dimension". */
+  readonly noun: string;
+}
+
+/** The tables, in the order the file writes them, which is the order a failure searches them in. */
+const KEY_PATH_TABLES: readonly KeyPathTable[] = [
+  { name: 'color', root: 'DSTokenSet', value: 'Color', noun: 'a colour', doc: 'Every colour: `color.bg.page` is `\\DSTokenSet.color.bgPage`.' },
+  { name: 'dimension', root: 'DSTokenSet', value: 'CGFloat', noun: 'a dimension', doc: 'Every dimension, in points.' },
+  { name: 'number', root: 'DSTokenSet', value: 'Double', noun: 'a number', doc: 'Every unitless number, and every duration in seconds.' },
+  {
+    name: 'typography',
+    root: 'DSTokenSet.Typography',
+    value: 'DSTypeRole',
+    under: ['typography'],
+    noun: 'a type role',
+    doc: 'Every type role, rooted where `DSTextRole.keyPath` is rooted, so the two compare directly.',
+  },
+  { name: 'shadow', root: 'DSTokenSet', value: 'DSShadowToken', noun: 'a shadow', doc: 'Every shadow (the elevation levels).' },
+  { name: 'gradient', root: 'DSTokenSet', value: 'DSGradientToken', noun: 'a gradient', doc: 'Every gradient.' },
+  { name: 'spring', root: 'DSTokenSet', value: 'DSSpringToken', noun: 'a spring', doc: 'Every spring, which is what a `motion` block binds.' },
+  { name: 'easing', root: 'DSTokenSet', value: 'DSCubicBezier', noun: 'an easing curve', doc: 'Every easing curve.' },
+  { name: 'stroke', root: 'DSTokenSet', value: 'DSStrokeStyle', noun: 'a stroke style', doc: 'Every stroke style (the dash grammar of the chart tier).' },
+  { name: 'flag', root: 'DSTokenSet', value: 'Bool', noun: 'a flag', doc: 'Every flag (the interaction axes components read).' },
+];
+
+/**
+ * The Swift member type of a token → the table its key path goes in. A `sys` or `comp` token whose type
+ * is not here is reported, not skipped: the table would otherwise silently stop covering a token a spec
+ * may bind, and the binding test would then say "not a token the catalogue binds" about a token that is.
+ *
+ * `TimeInterval` is `Double`, so durations share the number table; the seconds are in the token's name.
+ */
+const KEY_PATH_KINDS: Readonly<Record<string, string>> = {
+  Color: 'color',
+  CGFloat: 'dimension',
+  Double: 'number',
+  TimeInterval: 'number',
+  DSTypeRole: 'typography',
+  DSShadowToken: 'shadow',
+  DSGradientToken: 'gradient',
+  DSSpringToken: 'spring',
+  DSCubicBezier: 'easing',
+  DSStrokeStyle: 'stroke',
+  Bool: 'flag',
+};
+
+/** A font face (`DSBrand.faces[.body]`) is not a key path into the token set, and no spec binds one. */
+const FONT_FACE = /^DSBrand\.faces\[\./;
+
+interface KeyPathRow {
+  readonly path: string;
+  readonly keyPath: string;
+}
+
+/**
+ * Every `sys` and `comp` token as the key path that reads its value out of a `DSTokenSet`, grouped by
+ * the table it belongs to and sorted by token path.
+ *
+ * `ref` primitives are left out: they have no Swift API (`DSTokenCatalog` renders them `.unavailable`)
+ * and a spec never binds one (ADR-0024 §5).
+ */
+function keyPathRows(reader: SourceReader, problems: string[]): Map<string, KeyPathRow[]> {
+  const manifest = JSON.parse(reader.readText(TOKEN_MANIFEST)) as { tokens: ManifestToken[] };
+  const table = readTypeTable(reader);
+  const rows = new Map<string, KeyPathRow[]>();
+  const owners = new Map<string, string>();
+  for (const token of manifest.tokens) {
+    if (token.tier === 'ref') continue;
+    const member = token.swift;
+    if (member === null || FONT_FACE.test(member)) continue;
+    const parts = member.split('.');
+    const root = parts[0] ?? '';
+    const chain = parts.slice(1);
+    if (chain.length === 0) continue;
+    const lookup = memberType(table, root === 'DSColor' ? 'DSColor' : 'DSTokenSet', chain);
+    if (lookup === null) {
+      problems.push(`${token.path}: no Swift member type for ${member} — the key-path table is stale`);
+      continue;
+    }
+    const name = KEY_PATH_KINDS[lookup.type];
+    const kind = KEY_PATH_TABLES.find((t) => t.name === name);
+    if (kind === undefined) {
+      problems.push(`${token.path}: ${lookup.type} is not a value kind the key-path table carries`);
+      continue;
+    }
+    // `DSColor.accent` is `DSTokenSet.color.accent`: the brand's colors hang off the token set.
+    const full = root === 'DSColor' ? ['color', ...chain] : chain;
+    const under = kind.under ?? [];
+    const steps = full.slice(under.length);
+    // A rooted table (`typography`) takes only members that live under that root; a `DSTypeRole` reached
+    // any other way would be a key path this table's type cannot hold.
+    if (steps.length === 0 || under.some((step, i) => full[i] !== step)) {
+      problems.push(`${token.path}: ${member} is not under the ${kind.root} the ${kind.name} table is rooted at`);
+      continue;
+    }
+    const owner = owners.get(member);
+    if (owner !== undefined) {
+      problems.push(`${token.path}: shares the Swift member ${member} with ${owner}, so one key path names two tokens`);
+      continue;
+    }
+    owners.set(member, token.path);
+    const list = rows.get(kind.name);
+    const entry = { path: token.path, keyPath: `\\.${steps.join('.')}` };
+    if (list === undefined) rows.set(kind.name, [entry]);
+    else list.push(entry);
+  }
+  for (const list of rows.values()) list.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+  return rows;
+}
+
+export function renderTokenKeyPaths(reader: SourceReader, problems: string[]): OutputFile {
+  const rows = keyPathRows(reader, problems);
+  const lines: string[] = [
+    header(`${TOKEN_MANIFEST} and swift/Sources/DSTokens/Generated`),
+    '//',
+    '// One entry per `sys` and `comp` token: the path a spec binds → the key path that reads its value out of a',
+    '// `DSTokenSet`. `DSSpecBindings` turns the cell of `spec/components/<Name>.yaml` into the key path the',
+    '// implementation must return, so the binding matrix is written down once, in the spec, and the Apple',
+    '// assertion is the sentence the web one already says (`web/packages/react/test/button.test.tsx`).',
+    '//',
+    '// `ref` primitives are not here: they have no Swift API and no spec binds one (ADR-0024 §5). Neither are',
+    '// the font faces, which reach a component through `type.*` and are not a key path into the token set.',
+    '//',
+    '// The tables are `nonisolated(unsafe)` because the standard library does not conform `KeyPath` to',
+    '// `Sendable` (`DSTextRoles` says the same). They are immutable `let`s, initialized once; the annotation',
+    '// is what keeps them readable from a parameterized `@Test`, whose arguments are evaluated off the main',
+    '// actor while this target is `MainActor` by default.',
+    'import SwiftUI',
+    'import DSTokens',
+    '',
+    'nonisolated enum DSTokenKeyPaths {',
+  ];
+  for (const kind of KEY_PATH_TABLES) {
+    const list = rows.get(kind.name) ?? [];
+    if (list.length === 0) {
+      problems.push(`${kind.name}: no token resolves to this table — the key-path table is stale`);
+      continue;
+    }
+    lines.push(`    /// ${kind.doc} (${list.length} tokens.)`);
+    lines.push(`    nonisolated(unsafe) static let ${kind.name}: [String: KeyPath<${kind.root}, ${kind.value}>] = [`);
+    for (const row of list) lines.push(`        ${swiftString(row.path)}: ${row.keyPath},`);
+    lines.push('    ]', '');
+  }
+  lines.push(
+    '    /// What the catalogue binds a token path as, for the failure that says a cell is of another kind.',
+    '    static func kind(of path: String) -> String? {',
+    ...KEY_PATH_TABLES.map((kind) => `        if ${kind.name}[path] != nil { return ${swiftString(kind.noun)} }`),
+    '        return nil',
+    '    }',
+    '}',
+  );
+  return { path: posix.join(TESTS_GENERATED_ROOT, 'DSTokenKeyPaths.swift'), contents: file(lines) };
+}
+
+// ---------------------------------------------------------------------------------------------
 // Components
 // ---------------------------------------------------------------------------------------------
 
@@ -518,11 +701,12 @@ export function renderComponentCatalog(reader: SourceReader, problems: string[])
   };
 }
 
-/** Both catalogues and the renderer bindings, as the files a build would write. */
+/** Both catalogues, the renderer bindings and the key-path table, as the files a build would write. */
 export function renderCatalogs(reader: SourceReader): CatalogResult {
   const problems: string[] = [];
   const tokens = renderTokenCatalog(reader, problems);
+  const keyPaths = renderTokenKeyPaths(reader, problems);
   const components = renderComponentCatalog(reader, problems);
-  const files = [tokens, components.catalog, components.bindings].sort((a, b) => (a.path < b.path ? -1 : 1));
+  const files = [tokens, keyPaths, components.catalog, components.bindings].sort((a, b) => (a.path < b.path ? -1 : 1));
   return { files, problems };
 }

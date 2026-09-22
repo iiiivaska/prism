@@ -52,7 +52,11 @@ props:
   - name: isDecorative
     type: boolean
     default: false
-    description: true when the name is already written beside the avatar; the avatar is then hidden from assistive technology
+    description: >-
+      true hides the avatar from assistive technology, and is what you set when the name is already written
+      beside it. One name and one polarity across Icon, Avatar and Divider; only the default differs, and a
+      portrait genuinely can carry meaning, so it defaults false (spec/SCHEMA.md, "One meaning, one name,
+      one polarity")
 
 states: [default]
 
@@ -156,7 +160,8 @@ behavior:
   - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the circle renders glass."
   - "On an accent surface the circle has no fill of its own: it sits on color.bg.fill.accent with color.text.on-accent-secondary for its initials and its fallback glyph, which is the pair checked on that material."
   - An Avatar is not a control. When it opens a profile it is wrapped in a Button or a ListRow, which owns the press, the hit region, the focus ring and the label.
-  - "`isDecorative` hides the avatar from assistive technology; use it whenever the name is written next to it, so the name is not announced twice."
+  - "`isDecorative` hides the avatar from assistive technology: true is hidden. Use it whenever the name is written next to the avatar, so the name is not announced twice."
+  - "Avatar emits no string of its own, and object.user is the reason the rule is worth writing down: an avatar with no `name` has nothing to announce, so it is hidden whatever `isDecorative` says, and neither stack invents a word for the glyph - no \"User\", no registry label, nothing (ADR-0032 rules 1 and 5). The initials and the label both come from `name`, which the caller wrote."
   - An image crossfades in over motion.duration.base once it has decoded, so the initials are never replaced with a flash.
   - An avatar never carries a status dot of its own; a presence or status mark beside a name is a Badge or a StatusPill, placed by the row that holds them.
 
@@ -166,7 +171,7 @@ motion:
 
 accessibility:
   role: image, or none when `isDecorative`
-  label: the person's or object's name from `name`; an avatar with no `name` carries nothing to announce, so it is decorative by definition and is hidden
+  label: the person's or object's name from `name`, and nothing else; an avatar with no `name` carries nothing to announce, so it is hidden whatever `isDecorative` says, and no word is invented for the object.user fallback (ADR-0032 rules 1 and 5)
   traits: [image]
   keyboard: not focusable; a pressable avatar is a Button or a ListRow around it, which takes the focus ring
   dynamicType: the initials scale with type.label.*; the circle grows with them up to the accessibility3 size and then clamps, and the initials never shrink below their role
@@ -224,7 +229,7 @@ notes:
   platform:
     watchos: "`none`. Avatar is not in ADR-0010's Tier 3 set; a wrist screen holds at most three glanceable tiles, and a person is named there in Text rather than pictured."
     macos: default size follows compact density (32 pt for md); an avatar in a nav rail is wrapped in a Button, which owns the hover and focus states.
-    web-desktop: the image element carries `alt` from `name`, or an empty `alt` when `isDecorative`; the initials are rendered as text so they scale with rem.
+    web-desktop: the image element carries `alt` from `name`, and an empty `alt` when `isDecorative` or when there is no `name` to carry; the initials are rendered as text so they scale with rem.
   design: >-
     All four sightings are desktop (docs/research/component-inventory.md, 4/11): a round photo of 36 to
     44, one with a 2 px ink ring in a nav rail, and one in a name-and-role lock-up. The circle and the
@@ -238,4 +243,4 @@ notes:
     raised and on no nested ground, and ADR-0011 rule 1 allows no unchecked text pair. Upper-case initials are the one
     exception to the sentence-case rule of §2.5, which otherwise allows caps only in the single eyebrow
     per card. Example names are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md]

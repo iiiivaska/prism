@@ -310,6 +310,14 @@ jobs:
           REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.update-vrt-baselines }}
         run: |
           set -euo pipefail
+          # `requested` tells the two recordings apart: the whole-folder re-record a person asked for, which writes
+          # over committed baselines by design, and the one this step falls back to because the folder holds none,
+          # which the hand-back below checks against BASE like any other.
+          if [ "$REQUESTED" = true ]; then
+            echo "requested=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "requested=false" >> "$GITHUB_OUTPUT"
+          fi
           # Baselines are Linux renders of this image (web/apps/vrt/playwright.config.ts); .gitkeep is not one.
           if [ "$REQUESTED" = true ]; then
             echo "record=true" >> "$GITHUB_OUTPUT"
@@ -330,30 +338,77 @@ jobs:
         id: vrt-record
         if: steps.vrt-mode.outputs.record == 'true'
         run: pnpm --filter @iiiivaska/prism-vrt run test:update
+      - name: A missing baseline is a recording, a changed one is a regression # P3-4
+        # The hand-back, in both modes, bar the one recording a person asked for. It is the script the apple job runs
+        # over its SwiftUI baselines, because the two halves of a component land together and hand back the same
+        # way; .github/scripts/baseline-handback.sh has the rules and the two known limits, and the apple job's step
+        # of the same name sums them up. Playwright makes the distinction the SwiftUI suite makes. In compare mode,
+        # with `updateSnapshots` at its default `missing`, a screenshot with no baseline is written to the baseline
+        # path and the test fails (`handleMissing`), and a screenshot that *differs* is written to test-results only,
+        # never over the baseline (`handleDifferent`). The branches that rewrite a baseline need --update-snapshots=all
+        # or =changed, which only the record step above passes, and it runs in two cases:
+        #
+        #   - `vrt-mode` found no PNG under `baselines/linux`. Then nothing is committed there for =all to write
+        #     over, so this mode too can only add files that are in no commit, and the script looks each one up in
+        #     BASE like any other. That is what stops a change that deletes *every* Linux baseline: it flips this job
+        #     into record mode, the whole set is rendered afresh, and the script refuses it as re-recorded deletions,
+        #     exactly as it would refuse one. Only a folder that BASE has no baselines in either hands back whole.
+        #   - `workflow_dispatch` with `update-vrt-baselines` (`requested`), the sanctioned whole-folder re-record.
+        #     It writes over committed baselines on purpose, so this step, which would refuse every one of them, is
+        #     skipped, and the folder goes out whole through the recording upload below.
+        #
+        # Like the apple job's hand-back, this step is reached only through a green `contracts`: this job needs `web`,
+        # which needs `contracts`, and the apple job's step of the same name says what that asks of a landing commit.
+        id: vrt-handback
+        if: always() && steps.vrt-mode.outputs.requested == 'false'
+        shell: bash
+        env:
+          BASELINES: web/apps/vrt/baselines/linux
+          STAGING: ${{ runner.temp }}/vrt-baselines
+          ARTIFACT: vrt-baselines
+          DIFFS: vrt-diffs
+          # Empty on workflow_dispatch; the script then measures against the default branch's tip.
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash .github/scripts/baseline-handback.sh
+      - name: Upload the Linux baselines this run recorded
+        # The same artifact name as the recording upload below, and never in the same run: that one hands back the
+        # requested re-record's whole folder, this one exactly the files the script staged, and `requested` picks
+        # exactly one of them.
+        if: always() && steps.vrt-handback.outputs.recorded == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: vrt-baselines
+          path: ${{ runner.temp }}/vrt-baselines
+          if-no-files-found: error
       - name: Upload the recorded baselines
         # `always()`: a recording run that stopped part-way — a runtime-contract regression in this
         # container, a screenshot timeout, a crashed worker — still hands back the images it did write.
         # A bare `record == 'true'` is ANDed with success(), so that run would go red with no artifact and
         # no diagnostics, and the operator would have nothing to act on. `warn` rather than `error` for
         # the same reason: the step that failed has already said why, and a second red X over an empty
-        # folder would only bury it.
-        if: always() && steps.vrt-mode.outputs.record == 'true'
+        # folder would only bury it. Only the requested re-record uploads the folder unchecked; a recording
+        # `vrt-mode` fell back to leaves through the hand-back above, after the script has checked it.
+        if: always() && steps.vrt-mode.outputs.requested == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: vrt-baselines
           path: web/apps/vrt/baselines/linux
           if-no-files-found: warn
       - name: Ask for the recorded baselines to be committed
-        # Only after a complete recording: a failed one has already failed the job with its own message.
-        if: steps.vrt-record.outcome == 'success'
+        # Only after a complete requested re-record: a failed one has already failed the job with its own message,
+        # and a recording `vrt-mode` fell back to is the hand-back's to report, which says what it staged or why it
+        # refused.
+        if: steps.vrt-record.outcome == 'success' && steps.vrt-mode.outputs.requested == 'true'
         shell: bash
         run: |
           echo "::error title=VRT baselines recorded, not compared::This run recorded new Linux baselines instead of comparing against committed ones. Download the 'vrt-baselines' artifact of this run, unpack it into web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>.png, the platform being web-desktop or web-touch), review the images, commit them, and push; the next run compares against them."
           exit 1
       - uses: actions/upload-artifact@v7
         # Either mode: a compare run's diffs and traces, or what a recording run left behind when it
-        # stopped. After a complete recording the step above fails the job by design and this folder is
-        # empty, which `ignore` passes over in silence.
+        # stopped. After a complete recording the job fails by design — the step above for a requested
+        # re-record, the hand-back for any other — and this folder is empty, which `ignore` passes over in
+        # silence.
         if: failure()
         with:
           name: vrt-diffs
@@ -429,17 +484,23 @@ jobs:
         run: xcodebuild test -scheme DSCoreTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
       - name: Gallery snapshots (SwiftUI) # P3-3
         # Every spec example (swift/Tests/DSSnapshotTests) against the baselines under its __Snapshots__, which compare
-        # only with the Xcode they were recorded with (XCODE_VERSION). Until the first set is committed (the plan's
-        # `snapshots` gate is false) the step records them instead and fails, the next step uploads them as the
-        # `snapshot-baselines-apple` artifact, and someone reviews and commits them. xcodebuild hands TEST_RUNNER_*
-        # variables to the tests without the prefix. The P3-5 gallery is built from these baselines
-        # themselves, in the `contracts` job, so nothing here writes a second copy of an image.
+        # only with the Xcode they were recorded with (XCODE_VERSION). Two modes, and the suite decides per image:
+        # while `__Snapshots__` holds none (the plan's `snapshots` gate is false) this records the whole set and fails;
+        # once a set is committed the gate is open, the run compares, and an example whose baseline is **missing** — a
+        # new component's, a new example's, a new variant's — is recorded and fails on its own
+        # (`DSExampleSnapshotTests.verify`: in compare mode the one write is the `!exists` branch). Either way the step
+        # after this one hands back what was written, so a baseline is reviewed and committed before it becomes the
+        # reference. xcodebuild hands TEST_RUNNER_* variables to the tests without the prefix. The P3-5 gallery is
+        # built from these baselines themselves, in the `contracts` job, so nothing here writes a second copy of an image.
         # The destination is pinned to the runtime the baselines are recorded on, not `latest`: a newer simulator
         # runtime rasterizes differently, and the suite would then fail for the runtime and not for the code
         # (swift/Tests/DSSnapshotTests/README.md, "Provenance"). Move this pin and the baselines together.
         id: swiftui-snapshots
         env:
           RECORD: ${{ needs.plan.outputs.snapshots != 'true' }}
+          # Where a failing comparison leaves its reference, failure and difference images. Without this they go to
+          # the simulator's temporary directory, and the failure message then names a path that dies with the runner.
+          TEST_RUNNER_DS_SNAPSHOT_ARTIFACTS: ${{ runner.temp }}/snapshot-diffs-apple
         shell: bash
         run: |
           set -euo pipefail
@@ -449,10 +510,77 @@ jobs:
             echo "::error title=SwiftUI baselines recorded, not compared::This run recorded the SwiftUI snapshot baselines with Xcode $XCODE_VERSION instead of comparing, because swift/Tests/DSSnapshotTests/__Snapshots__ holds none. Download the 'snapshot-baselines-apple' artifact of this run, unpack it into swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.ios.<scheme>.<density>[.<variant>].png, beside the provenance.json that says what recorded them), review the images, commit them, and push; the next run compares against them."
             exit 1
           fi
-      - name: Upload the recorded SwiftUI baselines # P3-3
-        if: failure() && needs.plan.outputs.snapshots != 'true' && steps.swiftui-snapshots.outcome == 'failure'
+      - name: A missing baseline is a recording, a changed one is a regression # P3-3
+        # The hand-back. The suite writes into the runner's checkout, and the runner is then discarded, so whatever a
+        # run records has to leave as an artifact or it is lost. CI is also the only machine that can record a set
+        # the next run can compare against (XCODE_VERSION is 26.6; the owner's Mac is on 27, docs/roadmap.md "Xcode
+        # 27 lane"). The suite's exit code does not decide what may leave. Git and the commit the change is measured
+        # against decide it, and .github/scripts/baseline-handback.sh has the table; the web job runs the same script.
+        # In short:
+        #
+        #   - A file in no commit is a recording. It is handed back, and the run stays red so that someone looks at
+        #     it first.
+        #   - A committed baseline written over (` M`) is refused. A comparing run has no code path that does this:
+        #     the only wholesale rewrite is DS_SNAPSHOT_RECORD, which only `RECORD` above sets, and only while no
+        #     baseline is committed.
+        #   - A baseline this change deleted and the run recorded again is refused too.
+        #
+        # The last rule is the one that stops a component whose render changed from passing itself off as new. Its
+        # baseline is still in the commit, so the suite compares, fails on the pixels and writes nothing into
+        # __Snapshots__. Deleting that baseline would make the suite record it, and nothing in the suite notices:
+        # `everyCommittedBaselineBelongsToTheMatrix` only finds PNGs the matrix no longer renders, never a missing
+        # one. So the script looks every new path up in BASE and refuses the ones it finds there. To accept a render
+        # that changed on purpose, commit the new image over its baseline. The `snapshot-diffs-apple` upload below
+        # holds it as `failure.png`, which has the same bytes a recording would write.
+        #
+        # Two known limits, both in the script's header with the commands that expose them. Each still lets a
+        # changed render reach the artifact labelled as a recording; each needs a deletion that review sees, and
+        # neither turns the run green, because a run that stages anything fails. So the reviewer of a hand-back is
+        # the check on both:
+        #
+        #   - A deletion older than BASE. The script sees only what changed between BASE and this checkout. On a push
+        #     BASE is `github.event.before`, one push back, so a baseline deleted by an earlier push (whose own run
+        #     refused the re-recording and went red) is not in the commit the next run looks it up in, and that
+        #     run stages the path again as new. A push lands on the default branch, so every later run measured against
+        #     it — the next push, a pull request, workflow_dispatch — does the same.
+        #   - A rename. A change that renames an example, a component or a forced-state variant deletes the old
+        #     baseline and records the new path. The new path is in no commit, so it is staged as new, and the
+        #     script does not pair it with the deletion beside it.
+        #
+        # This step, like the whole job, runs only when `contracts` is green (`needs: [plan, contracts]`; `web-vrt`
+        # sits behind it too, through `web`): a fresh gallery index, a fresh parity report and, on main, no parity
+        # lag. A commit that leaves gallery/index.json or tools/parity/report.md stale skips this job, and then no
+        # baseline is recorded at all, so the commit that lands a component and the commit that adds its baselines
+        # must each carry a regenerated parity report and gallery index (`pnpm parity:report`, `pnpm gallery:build`).
+        id: apple-baselines
+        if: always() && steps.swiftui-snapshots.outcome != 'skipped'
+        shell: bash
+        env:
+          BASELINES: swift/Tests/DSSnapshotTests/__Snapshots__
+          STAGING: ${{ runner.temp }}/snapshot-baselines-apple
+          ARTIFACT: snapshot-baselines-apple
+          DIFFS: snapshot-diffs-apple
+          # Empty on workflow_dispatch; the script then measures against the default branch's tip.
+          BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: bash .github/scripts/baseline-handback.sh
+      - name: Upload the baselines this run recorded # P3-3
+        # `always()`: the run is red by then — the suite fails on every baseline it had to record — and a hand-back
+        # that only ran on success would never run at all. Exactly the staged files, at the paths they belong at, so
+        # the artifact unzips over __Snapshots__/ without a second thought.
+        if: always() && steps.apple-baselines.outputs.recorded == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: snapshot-baselines-apple
-          path: swift/Tests/DSSnapshotTests/__Snapshots__
+          path: ${{ runner.temp }}/snapshot-baselines-apple
           if-no-files-found: error
+      - name: Upload what a failing comparison rendered # P3-3
+        # The apple job's `vrt-diffs`: the reference, the failure and the difference image the suite writes for every
+        # comparison that failed (TEST_RUNNER_DS_SNAPSHOT_ARTIFACTS above). Empty on a run that recorded instead of
+        # comparing, which `ignore` passes over in silence.
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-diffs-apple
+          path: ${{ runner.temp }}/snapshot-diffs-apple
+          if-no-files-found: ignore
