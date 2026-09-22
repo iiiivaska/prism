@@ -25,10 +25,13 @@ import DSTokens
 /// "the disc matches the inverse fill" passes on two empty images (`DSRenderCapability`). `xcodebuild` compiles the
 /// catalog, so this runs with the snapshots on the pinned iPhone 17 and each test asks the probe first. Which cell
 /// each part takes is `DSCardBindingTests` on the host, in value space — including the hover path of behavior 4,
-/// which an `ImageRenderer` has no pointer to drive.
+/// which an `ImageRenderer` has no pointer to drive — and what a Card publishes to its parts is
+/// `DSCardPublishedContextHostTests`, which drives a render only to read an environment value back out of it. The
+/// name says which is which: this suite reads pixels and runs on the simulator, that one reads a value and runs on
+/// the host.
 @MainActor
-@Suite("Card renders (Card.yaml v5)", .serialized)
-struct DSCardRenderTests {
+@Suite("Card pixels on the simulator (Card.yaml v5)", .serialized)
+struct DSCardSimulatorPixelTests {
     /// `size.card.min`, the frame the galleries give a card.
     static let side: CGFloat = 200
 

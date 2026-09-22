@@ -12,7 +12,7 @@ component's pixels back** — because this is the target that runs where a Prism
 | `DSSurfaceRenderTests.swift` | What a Surface draws: the glass fallback, selection, and the whole bloom. iOS only. |
 | `DSButtonRenderTests.swift` | What a Button draws: the ghost pill's missing rest fill, the disabled dim. iOS only. |
 | `DSButtonReduceMotionTests.swift` | That the Reduce Motion press substitute is visible (ADR-0023 §8.4). iOS only. |
-| `DSCardRenderTests.swift` | What a Card draws for the Card.yaml v5 readings: the open glyph of a card with no handler, that glyph centred in the `action.size` box at the padding corner (behavior 14), the tint over the page, the custom disc's fill per published material. iOS only. |
+| `DSCardSimulatorPixelTests.swift` | What a Card draws for the Card.yaml v5 readings, read back as pixels: the open glyph of a card with no handler, that glyph centred in the `action.size` box at the padding corner (behavior 14), the tint over the page, the custom disc's fill per published material. iOS only. |
 | `DSTextFiguresRenderTests.swift` | That `numeric: tabular` renders at the role's own weight (ADR-0021 §5). iOS only. |
 | `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
 | `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
@@ -41,7 +41,12 @@ what the probe saw, instead of being scored as a passing comparison.
 What stayed in DSComponentsTests is everything that needs no rasterizer and is faster without one: the bindings (which
 token cell a variant takes), the geometry maths, the contracts against the specs, and the two suites that drive an
 `ImageRenderer` only to read an environment value back out of it (`descendantsReadThePublishedMaterial`,
-`DSCardRenderTests`) — they read no pixels, so a blank raster cannot fool them.
+`DSCardPublishedContextHostTests`) — they read no pixels, so a blank raster cannot fool them. Card therefore has two
+render-driven suites, and each name says where it runs and what it reads: `DSCardSimulatorPixelTests` here reads
+pixels on the simulator, and `DSCardPublishedContextHostTests` in DSComponentsTests reads the `DSSurfaceContext` a
+card publishes, on the host. (Both were called `DSCardRenderTests` until the P3-4 review round, one in each target,
+and this page described the two of them under that one name, with the table's line and this paragraph's line
+contradicting each other.)
 
 `DSTextEqualWidthTests.boldTextReachesTheTextRoute` is the one pixel read that could not move: on macOS, which has no
 Dynamic Type, its ink measurement is the only evidence that a forced condition reaches the text route at all. It runs

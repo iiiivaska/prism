@@ -8,9 +8,11 @@
  *   published material and taken from Card's cells rather than from comp.icon-button.*; the icon ring,
  *   the action and the aside.
  * - The two choices Card makes in React: the Surface material of a variant and the radius cell.
- * - Server renders: one button labelled by title, caption and hero when `action: open` carries a
- *   handler, a group otherwise, and a custom action's circle with its own glyph and its own name; V3 on
- *   vivid; the glass fallback and selection through Surface; ScopeAttributes.
+ * - Server renders: one button when `action: open` carries a handler, a group otherwise, and a custom
+ *   action's circle with its own glyph and its own name; V3 on vivid; the glass fallback and selection
+ *   through Surface; ScopeAttributes.
+ * - `accessibility.label` as one string per spec example, the table the Apple suite carries for the
+ *   same ids (`accessibleName` in swift/Tests/DSComponentsTests/DSCardBindingTests.swift).
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -21,7 +23,20 @@ import * as tokens from "@iiiivaska/prism-tokens/tokens";
 import { Theme, type Density } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
 import { Card, cardActions, cardSizes, cardVariants, type CardProps, type IconName } from "../src/index.ts";
-import { cardActionKind, cardCaptionLines, cardTitleLines, cardUnitSeparator, isCardPressable, radiusCellOf, surfaceMaterialOf, surfaceRadiusOf } from "../src/card/parts.ts";
+import {
+  cardAccessibleName,
+  cardActionKind,
+  cardCaptionLine,
+  cardCaptionLines,
+  cardNameSeparator,
+  cardSpokenHero,
+  cardTitleLines,
+  cardUnitSeparator,
+  isCardPressable,
+  radiusCellOf,
+  surfaceMaterialOf,
+  surfaceRadiusOf,
+} from "../src/card/parts.ts";
 import { Cascade, declarationsOf } from "./cascade.ts";
 import { flattenRules, parseCss } from "./css.ts";
 import { cell, cssVariable, loadSpec, propValues, type Binding } from "./spec.ts";
@@ -350,19 +365,21 @@ describe("Card.css binds what Card.yaml binds", () => {
 });
 
 describe("Card renders", () => {
-  it("action open: one button labelled by title, caption and hero value", () => {
+  it("action open: one button named by its title, caption line and hero", () => {
     const out = html(<Card {...metric} onAction={noop} />);
     const tag = rootTag(out);
     expect(tag).toContain('role="button"');
     expect(tag).toContain('tabindex="0"');
     expect(tag).toContain('class="ds-surface ds-card"');
     expect(tag).toContain('data-ds-material="solid"');
-    const ids = /aria-labelledby="([^"]+)"/.exec(tag)?.[1]?.split(" ") ?? [];
-    expect(ids).toHaveLength(3);
-    const text = (id: string): string => new RegExp(`id="${id}"[^>]*>(.*?)</span>`).exec(out)?.[1] ?? "";
-    expect(text(ids[0] ?? "")).toBe("Line output");
-    expect(text(ids[1] ?? "")).toBe("Last 24 hours");
-    expect(out).toMatch(new RegExp(`id="${ids[2] ?? ""}"[^>]*><span data-ds-slot="text-label">86.4 %</span>`));
+    // The name is the composed string, not a list of ids: `aria-labelledby` concatenates what it
+    // references with a space, and the rule joins with a comma (Card.yaml `accessibility.label`).
+    expect(tag).toContain('aria-label="Line output, Last 24 hours, 86.4 %"');
+    expect(tag).not.toContain("aria-labelledby");
+    // Every part of the name is on screen, in the elements the card draws.
+    expect(out).toContain(">Line output</span>");
+    expect(out).toContain(">Last 24 hours</span>");
+    expect(out).toContain('<span data-ds-slot="text-label">86.4 %</span>');
     expect(out).toContain('data-ds-icon="nav.open"');
     expect(out).not.toContain("<button");
   });
@@ -402,8 +419,7 @@ describe("Card renders", () => {
     expect(html(<Card {...metric} action="none" />).replaceAll(/ data-ds-action="[a-z]+"/gu, "")).toBe(open.replaceAll(/ data-ds-action="[a-z]+"/gu, ""));
     // The group is named by its title alone; only the pressable card takes the title, caption and hero
     // line, and the caption and hero are then read as the elements they are (accessibility.label).
-    const titleId = /id="([^"]+)"[^>]*>Line output</.exec(open)?.[1] ?? "";
-    expect(rootTag(open)).toContain(`aria-labelledby="${titleId}"`);
+    expect(rootTag(open)).toContain('aria-label="Line output"');
     // The custom circle is the same rule one level down: with nothing to press it keeps its look and
     // its name and stops being a button (`DSCardActionCircle` draws the bare disc when its action is nil).
     const custom = html(<Card title="Queued" action={pause} />);
@@ -453,14 +469,14 @@ describe("Card renders", () => {
   it("V3 on vivid: the unit joins the caption line with the separator, the hero holds the value, no icon ring", () => {
     // Behavior 9: one separator, the same string Apple writes (`DSCardAppearance.unitSeparator`), inside the
     // caption's own text — so the caption reads "Per batch · USD" and not "Per batchUSD", which is what a
-    // margin-only gap announced and what `aria-labelledby` then pulled into a pressable card's single name.
+    // margin-only gap announced and what a pressable card's single name then carried.
     expect(cardUnitSeparator).toBe(" · ");
     expect((spec.behavior ?? []).join("\n")).toContain("a space, a middle dot and a space");
     expect((spec.behavior ?? []).join("\n")).toContain("`Dollars per batch · kg`");
     const out = html(<Card variant="vivid" title="Average yield" caption="Per batch" icon="object.gps" hero={{ value: "2,450", unit: "USD" }} />);
     expect(out).toContain(`Per batch<span data-ds-slot="card-caption-unit">${cardUnitSeparator}USD</span>`);
     // What the caption element reads as text, which is what a screen reader announces and what
-    // `aria-labelledby` puts into a pressable card's name.
+    // `cardCaptionLine` puts into a pressable card's name.
     const captionMarkup = /ds-card-caption[^>]*>(.*?)<\/span><\/span>/u.exec(out)?.[1] ?? "";
     expect(captionMarkup.replaceAll(/<[^>]*>/gu, "")).toBe(`Per batch${cardUnitSeparator}USD`);
     // With no caption of its own the unit stands alone, with no leading separator.
@@ -525,5 +541,72 @@ describe("Card renders", () => {
     const tag = rootTag(html(<Card title="A" data-ds-color-scheme="dark" data-ds-density="regular" />));
     expect(tag).toContain('data-ds-color-scheme="dark"');
     expect(tag).toContain('data-ds-density="regular"');
+  });
+});
+
+/**
+ * Card.yaml `accessibility.label`, the one composition both stacks write: the title, the caption line and
+ * the hero, in reading order, joined by `cardNameSeparator`, with a part the card does not draw left out
+ * along with its separator. The Apple twin is `DSCardName.spoken(title:caption:)`, pinned over the same
+ * examples by `accessibleName` in `swift/Tests/DSComponentsTests/DSCardBindingTests.swift`; the strings
+ * below are the ones that suite expects, so a change on one stack fails on both.
+ */
+describe("the accessible name (Card.yaml accessibility.label)", () => {
+  /** Every `examples[]` entry of the spec, by id. Each one is pressable: SCHEMA.md gives it its handler. */
+  const names: Readonly<Record<string, string>> = {
+    "solid-metric": "Line output, Last 24 hours, 86.4 %",
+    "vivid-default-kpi": "Average yield, Dollars per batch, $2,450",
+    "vivid-pair": "Average yield",
+    "glass-vehicle": "Unit 4417, 21.11.2026, 14:05:22",
+    "glass-selected": "Unit 4417",
+    "tinted-focus": "Sensor, Active",
+    compact: "Queued, 37",
+  };
+
+  it("is composed, and the spec says how", () => {
+    expect(cardNameSeparator).toBe(", ");
+    const label = spec.accessibility?.label ?? "";
+    expect(label).toContain("joined by a comma and a space");
+    // The rule's own worked examples, so the sentence and this table cannot drift apart.
+    for (const id of ["solid-metric", "vivid-default-kpi", "glass-vehicle", "compact"]) expect(label).toContain(names[id]);
+    expect(label).toContain("Average yield, Per batch · kg, 2,450");
+  });
+
+  it("names every spec example the way the rule composes it, and says it in the DOM", () => {
+    expect(spec.examples.map((example) => example.id).sort()).toEqual(Object.keys(names).sort());
+    for (const example of spec.examples) {
+      // The spec's props are YAML, so their shape is the spec's word; the render below is the check.
+      const props = example.props as unknown as CardProps;
+      const expected = names[example.id];
+      expect(cardAccessibleName({ ...props, variant: props.variant ?? "solid", pressable: true }), example.id).toBe(expected);
+      expect(rootTag(html(<Card {...props} onAction={noop} />)), example.id).toContain(`aria-label="${expected}"`);
+    }
+  });
+
+  it("puts the vivid unit on the caption line and not after the hero (behavior 9), with or without a caption", () => {
+    // The reading the two stacks had split over: the unit is drawn on the caption line, so that is where
+    // the name says it, once. `DSCardParts.spokenHero` drops it from the hero on vivid for the same reason.
+    const withCaption: CardProps = { variant: "vivid", title: "Average yield", caption: "Per batch", hero: { value: "2,450", unit: "kg" } };
+    const withoutCaption: CardProps = { variant: "vivid", title: "Average yield", hero: { value: "2,450", unit: "kg" } };
+    const name = (props: CardProps): string => /aria-label="([^"]*)"/u.exec(rootTag(html(<Card {...props} onAction={noop} />)))?.[1] ?? "";
+    expect(name(withCaption)).toBe("Average yield, Per batch · kg, 2,450");
+    expect(name(withoutCaption)).toBe("Average yield, kg, 2,450");
+    // Off vivid the same hero hangs its own unit, so the name reads it there instead (Text's "86.4 %").
+    expect(name({ ...withCaption, variant: "solid" })).toBe("Average yield, Per batch, 2,450 kg");
+    expect(cardCaptionLine("Per batch", "kg", true)).toBe(`Per batch${cardUnitSeparator}kg`);
+    expect(cardCaptionLine(undefined, "kg", true)).toBe("kg");
+    expect(cardCaptionLine("Per batch", "kg", false)).toBe("Per batch");
+    expect(cardSpokenHero({ value: "86", trailing: ".4", unit: "%" }, false)).toBe("86.4 %");
+    expect(cardSpokenHero({ value: "86", trailing: ".4", unit: "%" }, true)).toBe("86.4");
+  });
+
+  it("names a card that is not pressable by its title alone", () => {
+    // Its caption and hero are elements of their own inside the group, so the group's name does not say
+    // them a second time (`accessibility.label`, and `DSCardParts.accessibilityName` on Apple).
+    for (const action of ["none", pause] as const) {
+      expect(rootTag(html(<Card {...metric} action={action} onAction={noop} />)), cardActionKind(action)).toContain('aria-label="Line output"');
+    }
+    expect(rootTag(html(<Card {...metric} />))).toContain('aria-label="Line output"');
+    expect(cardAccessibleName({ ...metric, variant: "solid", pressable: false })).toBe("Line output");
   });
 });

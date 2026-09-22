@@ -20,6 +20,11 @@ export interface ComponentSpec {
   readonly tokens: { readonly [part: string]: { readonly [property: string]: Binding } };
   readonly motion?: Readonly<Record<string, string>>;
   readonly behavior?: readonly string[];
+  /**
+   * The `accessibility` block. Its rules are prose, one entry per rule, except `traits`, which is a list;
+   * the named ones are typed as the strings they are and the rest stay `unknown`.
+   */
+  readonly accessibility?: { readonly role?: string; readonly label?: string; readonly [rule: string]: unknown };
   readonly examples: readonly { readonly id: string; readonly props: Readonly<Record<string, unknown>> }[];
 }
 

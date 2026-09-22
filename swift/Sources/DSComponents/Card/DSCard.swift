@@ -48,9 +48,12 @@ import DSTokens
 ///    so the hero stays pinned to the bottom.
 ///  - `isSelected` passes `selected` to the Surface, lifts the card to `comp.card.shadow.floating` and draws the
 ///    selection outline for the published material, on `motion.spring.smooth` (a crossfade under Reduce Motion).
-///  - A pressable card is one accessibility element, named by its title, caption and hero value. A card that is not
-///    pressable is a group named by its title alone, and its caption, hero and aside are read as the elements they
-///    are.
+///  - A pressable card is one accessibility element, named by what it draws, in reading order and joined by
+///    `DSCardName.separator`: the title, the caption line — the hero's unit included on vivid, where behavior 9 puts
+///    it — and then the hero, its value and trailing group with the unit after a space off vivid
+///    ("Line output, Last 24 hours, 86.4 %"). A part the card does not draw is left out with its separator. A card
+///    that is not pressable is a group named by its title alone, and its caption, hero and aside are read as the
+///    elements they are. The React Card writes the same string (`cardAccessibleName`).
 ///  - The focus ring follows the card radius outside the card.
 ///  - The aside wraps below the hero when both do not fit; the hero clamps at accessibility3.
 ///  - On watchOS the card is solid, compact and has no aside.
@@ -249,37 +252,123 @@ struct DSCardParts {
     /// The form this card renders, published to whatever renders it (`DSCardFormKey`).
     var form: DSCardForm { DSCardForm(action: action.kind, hasAction: hasAction) }
 
-    /// `accessibility.label`. A pressable card is one element, so its name has to carry what it holds: title, caption
-    /// and hero value, joined ("Line output, Last 24 hours, 86.4 %"). A card that is not pressable is a group whose
-    /// caption and hero are elements of their own, so the group is named by its title alone and nothing is read twice.
+    /// The hero's unit, with an empty string counted as none, so `DSCardHero("37", unit: "")` hangs nothing and
+    /// names nothing — the `unit !== ""` the React Card applies to the same prop.
+    var heroUnit: String? {
+        guard let unit = hero?.unit, !unit.isEmpty else { return nil }
+        return unit
+    }
+
+    /// The caption line the header draws: the caption, and on vivid the hero's unit joined to it by
+    /// `DSCardAppearance.unitSeparator` (V3, behavior 9), or that unit alone when the card has no caption.
+    ///
+    /// One value for the line that is drawn and the line that is read, so the two cannot drift. It is keyed by the
+    /// material the variant asks for, which for this rule is the material the card publishes: only `vivid` moves the
+    /// unit, a vivid card never falls back to another material, and on the watch the variant is already `solid`
+    /// (`DSCardVariant.rendered()`), so the unit stays in the hero there — on the screen and in the name alike.
+    var captionLine: DSCardCaptionLine? {
+        let unit = DSCardAppearance.unitJoinsCaption(on: variant.material) ? heroUnit : nil
+        guard caption != nil || unit != nil else { return nil }
+        return DSCardCaptionLine(caption: caption, unit: unit)
+    }
+
+    /// The hero as Text speaks a metric: the value with its trailing group straight after it, and off vivid a space
+    /// and the unit ("86.4 %"), which is the string `DSText` gives the same metric element. On vivid the unit is on
+    /// the caption line instead, so it is not said here a second time.
+    var spokenHero: String? {
+        guard let hero else { return nil }
+        let value = hero.value + (hero.trailing ?? "")
+        guard !DSCardAppearance.unitJoinsCaption(on: variant.material), let unit = heroUnit else { return value }
+        return "\(value) \(unit)"
+    }
+
+    /// `accessibility.label`. A pressable card is one element, so its name has to carry what it draws: the title, the
+    /// caption line and the hero, in that reading order ("Line output, Last 24 hours, 86.4 %"). A card that is not
+    /// pressable is a group whose caption and hero are elements of their own, so the group is named by its title
+    /// alone and nothing is read twice.
     var accessibilityName: DSCardName {
         guard isPressable else { return DSCardName(title: title, caption: nil, hero: nil) }
-        let spoken = hero.map { hero -> String in
-            let value = hero.value + (hero.trailing ?? "")
-            return hero.unit.map { "\(value) \($0)" } ?? value
-        }
-        return DSCardName(title: title, caption: caption, hero: spoken)
+        return DSCardName(title: title, caption: captionLine, hero: spokenHero)
     }
 
     /// `accessibilityName` as the label SwiftUI takes.
     var accessibilityLabel: Text { accessibilityName.text }
 }
 
+/// The caption line of a Card: the caption it was given and, on vivid, the hero's unit that joins it (Card.yaml
+/// behavior 9). The header draws this line and a pressable card's name reads it, so the separator lands in both.
+struct DSCardCaptionLine: Equatable {
+    let caption: LocalizedStringKey?
+    /// The hero's unit when it joins the caption, which is vivid only; nil everywhere else.
+    let unit: String?
+
+    /// The line as the header draws it. A line with neither a caption nor a unit is never drawn —
+    /// `DSCardParts.captionLine` is nil there and no `DSText` is made — and reads as the empty string.
+    var content: DSTextContent {
+        switch (caption, unit) {
+        case let (caption?, unit?):
+            .joined(Text("\(Text(caption))\(Text(verbatim: DSCardAppearance.unitSeparator))\(Text(verbatim: unit))"))
+        case let (caption?, nil):
+            .localized(caption, tableName: nil, bundle: nil)
+        case let (nil, unit?):
+            .verbatim(unit)
+        case (nil, nil):
+            .verbatim("")
+        }
+    }
+
+    /// The line as a name reads it.
+    var text: Text { content.text }
+
+    /// The same line over strings, given what the caption localizes to: the one step a `LocalizedStringKey` cannot
+    /// take on its own (`DSCardName.spoken(title:caption:)`).
+    func spoken(_ caption: String?) -> String? {
+        switch (caption, unit) {
+        case let (caption?, unit?): "\(caption)\(DSCardAppearance.unitSeparator)\(unit)"
+        case let (caption?, nil): caption
+        case let (nil, unit?): unit
+        case (nil, nil): nil
+        }
+    }
+}
+
 /// What names a Card, part by part, so the rule is a value a test can compare and not a `Text` nobody can read back
 /// (Card.yaml `accessibility.label`).
+///
+/// The parts are the ones the card draws, in reading order — header before footer — and a part the card does not draw
+/// is left out with its separator. `text` joins them for SwiftUI and `spoken(title:caption:)` joins the same parts,
+/// in the same order, with the same separator, for a test and for anything that has to read the name back; both go
+/// through `joined(title:caption:hero:by:)`, so the two cannot compose differently.
 struct DSCardName: Equatable {
+    /// What joins the parts: a comma and a space, the pause an assistive technology reads between them. The React
+    /// Card writes the same string into its `aria-label` (`cardNameSeparator`, `web/packages/react/src/card/parts.ts`).
+    static let separator = ", "
+
     let title: LocalizedStringKey
-    /// The caption, on the name of a pressable card only.
-    let caption: LocalizedStringKey?
-    /// The hero's value, trailing group and unit as one spoken string, on the name of a pressable card only.
+    /// The caption line, on the name of a pressable card only.
+    let caption: DSCardCaptionLine?
+    /// The hero's value, trailing group and (off vivid) unit as one spoken string, on the name of a pressable card
+    /// only.
     let hero: String?
 
-    /// The parts joined by ", ", the way an assistive technology reads one element's name.
+    /// The parts in reading order, with the ones the card does not draw left out, joined by `separator`.
+    private static func joined<Part>(title: Part, caption: Part?, hero: Part?, by join: (Part, Part) -> Part) -> Part {
+        [caption, hero].compactMap { $0 }.reduce(title, join)
+    }
+
+    /// The name SwiftUI takes.
     var text: Text {
-        var parts = [Text(title)]
-        if let caption { parts.append(Text(caption)) }
-        if let hero { parts.append(Text(verbatim: hero)) }
-        return parts.dropFirst().reduce(parts[0]) { Text("\($0), \($1)") }
+        Self.joined(title: Text(title), caption: caption?.text, hero: hero.map { Text(verbatim: $0) }) {
+            Text("\($0)\(Text(verbatim: Self.separator))\($1)")
+        }
+    }
+
+    /// The name as a string, given the strings its localized parts resolve to — the title and, when there is one, the
+    /// caption. Localization is the one step a `LocalizedStringKey` cannot take here; the order, the separators, the
+    /// unit's place and the dropped parts are all this type's, the same ones `text` composes, so a test can read the
+    /// name back and compare it with what `cardAccessibleName` returns on the web.
+    func spoken(title: String, caption: String? = nil) -> String {
+        Self.joined(title: title, caption: self.caption?.spoken(caption), hero: hero) { $0 + Self.separator + $1 }
     }
 }
 
@@ -467,9 +556,9 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
                     truncation: .ellipsis, maxLines: DSCardAppearance.titleLines
                 )
                 .modifier(DSForeground(color: DSCardAppearance.title(on: surface).map { tokens[keyPath: $0] }))
-                if let line = captionLine(on: surface.material) {
+                if let line = parts.captionLine {
                     DSText(
-                        content: line,
+                        content: line.content,
                         role: .caption,
                         tone: DSCardAppearance.caption(on: surface) == nil ? .secondary : nil,
                         trailing: nil, unit: nil, numeric: .auto,
@@ -478,21 +567,6 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
                     .modifier(DSForeground(color: DSCardAppearance.caption(on: surface).map { tokens[keyPath: $0] }))
                 }
             }
-        }
-    }
-
-    /// The caption, and on vivid the hero's unit joined to it (V3).
-    private func captionLine(on material: DSSurfaceMaterial) -> DSTextContent? {
-        let unit = DSCardAppearance.unitJoinsCaption(on: material) ? parts.hero?.unit : nil
-        switch (parts.caption, unit) {
-        case let (caption?, unit?):
-            return .joined(Text("\(Text(caption))\(Text(verbatim: DSCardAppearance.unitSeparator))\(Text(verbatim: unit))"))
-        case let (caption?, nil):
-            return .localized(caption, tableName: nil, bundle: nil)
-        case let (nil, unit?):
-            return .verbatim(unit)
-        case (nil, nil):
-            return nil
         }
     }
 
@@ -555,7 +629,7 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
                 role: .metricLg,
                 tone: hero.tone ?? .primary,
                 trailing: hero.trailing,
-                unit: DSCardAppearance.unitJoinsCaption(on: surface.material) ? nil : hero.unit
+                unit: DSCardAppearance.unitJoinsCaption(on: surface.material) ? nil : parts.heroUnit
             )
             .dynamicTypeSize(...DSCardAppearance.heroLargestTypeSize)
         }
