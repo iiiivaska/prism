@@ -19,7 +19,16 @@
 ///         "Button": ["ios": 1, "ipados": 1, "macos": 1, "watchos": 1],
 ///     ]
 ///
-/// The first components arrive with P3-1; until then the table is empty.
+/// P3-3 implements Surface (`DSSurfaceView`), Text (`DSText`), Button (`DSButton`) and Card (`DSCard`) on all four
+/// Apple platforms; the four specs mark watchOS `adapted`, and the watch adaptations are part of the implementation:
+/// vivid → solid and glass → the raised fallback (Surface), display and title roles collapsed (Text), every size `lg`,
+/// ghost → secondary and no trailing icon (Button), solid, compact and no aside (Card). `DSComponentsTests` checks every
+/// cell against the spec's `specVersion` and `platforms`.
 public enum DSComponentsManifest {
-    public static let implemented: [String: [String: Int]] = [:]
+    public static let implemented: [String: [String: Int]] = [
+        "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
+        "Card": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+        "Surface": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+        "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+    ]
 }

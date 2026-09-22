@@ -12,9 +12,9 @@ import DSTokens
 ///    backdrop kind that text tones read (ADR-0022, ADR-0029, ADR-0030). `DSGradient` draws a vivid gradient on
 ///    the CSS gradient line, interpolated in OKLab, `DSBlur` turns a CSS blur into a SwiftUI radius, and
 ///    `DSGrain` is the tile both stacks generate (ADR-0022 §4.1, ADR-0030 §4.3, §4.4).
-///  * `dsText(_:)` is the one route text renders through: the scaled role size, the weight Bold Text chooses,
-///    the brand's face, figures, tracking, the CSS line height and the first-baseline correction (ADR-0021 §8,
-///    §9).
+///  * `dsText(_:figures:)` is the one route text renders through: the scaled role size, the weight Bold Text
+///    chooses, the brand's face, the role's figures or the override ADR-0021 §5 allows, tracking, the CSS line
+///    height and the first-baseline correction (ADR-0021 §5, §8, §9).
 ///  * `DSMotion` and `DSHaptics` carry the motion values and the semantic haptics registry (ADR-0023).
 ///
 /// DSCore is therefore the only Prism target that names `accessibilityReduceTransparency`, `colorSchemeContrast`,

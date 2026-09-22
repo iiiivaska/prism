@@ -1,0 +1,182 @@
+# DSSnapshotTests
+
+The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button and Card
+across the accessibility matrix, and the equal-width figures of ADR-0021 §5 as assertions.
+
+| File | What it holds |
+|------|---------------|
+| `DSSnapshotMatrix.swift` | The matrix, the file names it produces, and the check that no baseline is stale. Runs on the host too. |
+| `DSExampleSnapshotTests.swift` | The renders, the comparison, the forced conditions and the check that they reach a render. iOS only (`#if os(iOS)`). |
+| `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
+| `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
+
+The examples themselves are `DSExamples` in `DSComponents` (`Sources/DSComponents/Examples`), the same values the
+`#Preview` blocks show, so a preview and its baseline cannot drift apart.
+
+## The matrix
+
+Every example renders in the schemes its spec declares (both unless it declares `schemes`) × `regular` and `compact`
+density × the standard state and Increase Contrast, plus:
+
+- forced **Reduce Transparency** for every example that renders glass, and
+- forced **Bold Text** for every Text example.
+
+| Component | Examples | Baselines |
+|-----------|---------:|----------:|
+| Surface | 8 (3 glass) | 8×8 + 3×4 = **76** |
+| Text | 6 (1 glass) | 6×8 + 1×4 + 6×4 = **76** |
+| Button | 7 | 7×8 = **56** |
+| Card | 7 (2 glass, 1 light-only) | 6×8 + 1×4 + 2×4 = **60** |
+| | **28** | **268** |
+
+`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 268, so adding an example is a deliberate
+change to this file and not a silent one.
+
+Every accessibility state is forced through DSCore's `dsAccessibilityPolicy` override **and** through SwiftUI's own
+environment values, so a run reads nothing from the simulator's Settings and one machine's Settings cannot change
+another's baselines. `DSSnapshotConditions` is the one place both channels are written.
+
+Writing SwiftUI's own values needs three underscored environment keys — `_colorSchemeContrast`,
+`_accessibilityReduceTransparency` and `_accessibilityReduceMotion` — because the public keys are get-only. They are
+SPI: they work on Xcode 27 and on the iOS 26.5 runtime, and a toolchain may rename one or change what it means. That
+is exactly the axis the baselines are pinned on, so `theForcedConditionsReachTheRender` renders a probe under
+`DSSnapshotConditions` and reads the **public** values back out of it, for all sixteen scheme × density ×
+accessibility combinations, together with the `DSTokenContext` DSCore derives at the same point. A toolchain that
+drops one of the keys fails there — before an image is written — instead of quietly recording 268 standard-state
+images under accessibility names.
+
+## Naming
+
+```
+__Snapshots__/<Component>/<exampleId>.apple.<scheme>.<density>[.<variant>].png
+```
+
+`<variant>` is `increased-contrast`, `reduce-transparency` or `bold-text`, and is absent in the standard state. This is
+the template of `spec/SCHEMA.md` ("Examples and snapshots") extended with the density and the accessibility axis, as
+critic C-25 asks; the web side names its baselines on the same axes
+(`<example-id>.<viewport>.<scheme>.<density>.png`).
+
+The pairing name P3-5 puts side by side is the unextended one. A run with `DS_GALLERY_DIR` set also writes, for each
+example, the platform-default density in the standard state to:
+
+```
+<DS_GALLERY_DIR>/<Component>/<exampleId>.apple.<scheme>.png
+```
+
+55 files — one per example per scheme. CI writes them on every green run and uploads them as `snapshots-apple`.
+
+## Rendering
+
+Everything that reaches a pixel is pinned here, not taken from the machine:
+
+| Pin | Value | Why |
+|-----|-------|-----|
+| Device | iPhone 17, iOS 26.5 | The one destination CI and this repository record on. |
+| Width | 402 pt | iPhone 17's portrait width: an example lays out inside the phone's width and no wider. |
+| Height | the example's own | Snapshots are tight, so a height change is a diff and not a band of empty page. |
+| Scale | 1 | What the web baselines are captured at (`deviceScaleFactor: 1`), so a P3-5 pair compares like for like. |
+| Dynamic Type | Large | The reference size; the accessibility sizes are the equal-width suite's job, not 268 more images. |
+| Locale, time zone, calendar | `en_US`, UTC, Gregorian | No example of these four specs declares a locale. The one date on screen (Card `glass-vehicle`) is literal text from the spec, not a formatted date, so it does not move with the locale. |
+| Layout direction | left-to-right | |
+
+A render is repeated until two passes in a row are identical (up to four): a Surface sizes its backdrop copy and its
+blur from geometry it measures on the first pass. Every example of this matrix settles after one.
+
+## Tolerance
+
+`precision: 1`, `perceptualPrecision: 0.97` — every pixel is compared, and each may differ by at most a CIE ΔE of 3.
+
+Measured on this matrix by shifting every channel of one baseline by a fixed number of 8-bit code values:
+
+| Ground | Absorbed | Fails from |
+|--------|---------:|-----------:|
+| near-black ink (Button `primary-md`) | 2/255 | 3/255 (ΔE 3.90) |
+| light page (Text `title-two-tone`) | 3/255 | 4/255 (ΔE 3.90) |
+
+A code value costs more ΔE the darker the ground: one value on near-black already measures ΔE 2.03, which is why the
+tighter `0.98` this started at rejected a one-value difference on more than a third of the matrix. 0.97 absorbs one
+code value everywhere and fails from about three.
+
+Why not tighter, and why `precision` stays at 1:
+
+- The renders are a pure function of the view and the pins above. Two runs, and two different simulator devices on the
+  same runtime, produce **byte-identical** images (checked: iPhone 17 and iPhone 17 Pro, 268 for 268). The tolerance is
+  not covering up flakiness here; it is head-room for a different host GPU rasterizing the same blur.
+- Lowering `precision` instead would let a *share* of pixels differ by any amount, which is exactly how a moved edge or
+  a dropped layer hides. Keeping it at 1 and spending the head-room per pixel means every pixel is still checked.
+- What 0.97 gives up is a uniform shift of one or two code values — a token color changing in its last digit. That is
+  not what pixels are good at catching anyway: token values are checked in value space, exactly, by `DSTokensTests`
+  (generated token parity, the color catalog, gradient samples within 1/255) and by `tools/contrast`.
+
+A failing comparison writes the reference, the failure and the difference image to `DS_SNAPSHOT_ARTIFACTS` (default:
+the simulator's temporary directory) and names the path in the failure message.
+
+## Provenance
+
+A SwiftUI render is reproducible inside one toolchain and one simulator runtime, not across them. `__Snapshots__` is
+therefore stamped with what recorded it:
+
+```json
+{ "device": "iPhone 17", "os": "26.5", "xcode": "26H…", "sdk": "iphonesimulator26.…",
+  "scale": "1.0", "width": "402.0", "locale": "en_US", "timeZone": "GMT" }
+```
+
+`xcode` and `sdk` come from the test bundle's `Info.plist` (`DTXcodeBuild`, `DTSDKName`), which xcodebuild fills in. A
+run whose stamp differs from the recorded one fails **once**, naming the fields that differ, instead of reporting 268
+pixel diffs for a reason that is not the code.
+
+**Record the baselines with the Xcode `XCODE_VERSION` pins in `.github/workflows/ci.yml` (26.6).** Since 2026-09-15 the
+owner's Mac has only Xcode 27.0 while CI pins 26.6 (docs/roadmap.md, "Xcode 27 lane"), so a set recorded locally today
+is not the set CI can compare against: locally recorded baselines stamp `iphonesimulator27.0`. Until that lane lands,
+the committed set is the one CI records — the `snapshots` gate in `ci.yml` is closed while `__Snapshots__` holds no
+PNG, and the apple job then records the set, uploads it as `snapshot-baselines-apple` and fails so that someone reviews
+the images and commits them. The run after that compares. To keep a set of your own in the meantime, use
+`DS_SNAPSHOT_DIR` (below); it carries its own stamp and does not touch `__Snapshots__`.
+
+## Running
+
+Every variable is read from the test process, so through `xcodebuild` each one is set in the **environment** with a
+`TEST_RUNNER_` prefix, which xcodebuild strips (passing `DS_…=1` on the command line sets a build setting, which the
+tests never see).
+
+| Variable | Effect |
+|----------|--------|
+| `DS_SNAPSHOT_RECORD=1` | Rewrite every baseline and pass. Without it the run compares; a missing baseline is recorded *and* fails, so a new example is reviewed before it becomes a baseline. |
+| `DS_SNAPSHOT_DIR` | Read and write the baselines somewhere other than `__Snapshots__`. |
+| `DS_SNAPSHOT_ARTIFACTS` | Where a failing comparison leaves its reference, failure and difference images. |
+| `DS_GALLERY_DIR` | Also write the P3-5 gallery pairs there. |
+
+Compare against the committed baselines:
+
+```sh
+xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+```
+
+Record a set of your own and then compare against it (what to do on a machine whose Xcode is not the pinned one):
+
+```sh
+export TEST_RUNNER_DS_SNAPSHOT_DIR=/tmp/prism-baselines
+TEST_RUNNER_DS_SNAPSHOT_RECORD=1 xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+```
+
+In this repository, build with `-derivedDataPath` outside the working tree: the folder is iCloud-synced and an in-tree
+codesign fails on the provenance attribute (`tools/tokens/ARCHITECTURE.md` F44).
+
+`swift test` on the macOS host runs what does not need a simulator: the matrix, its names, the stale-baseline check and
+the equal-width suite.
+
+## The equal-width tests (ADR-0021 §5)
+
+`DSTextEqualWidthTests` measures what SwiftUI lays the text out at — the advance width, read by a geometry probe inside
+an `ImageRenderer` pass — rather than comparing images, so the rule is checked as a number and reported as one.
+
+"1111" and "0000" must lay out within **0.5 pt** (ADR-0021 rule 5) in every tabular role — `data`, `axis` through
+DSCore's text route, and `metric-xl`, `metric-lg`, `metric-md` set to `numeric: tabular` — at **Large**, at
+**accessibility3** and under **Bold Text**, for both brands. The suite also holds the negative cases (the default
+proportional metrics lay "1111" out narrower, so a role that quietly stopped being tabular fails) and a check that the
+three conditions really reach the text route, since macOS has no Dynamic Type and would otherwise pass three copies of
+the same render.

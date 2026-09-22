@@ -58,9 +58,10 @@ let package = Package(
             path: "swift/Sources/DSCore",
             swiftSettings: uiSettings
         ),
+        // Surface, Text, Button and Card (P3-3); DSTokens directly, since components name `DSTokenSet` members.
         .target(
             name: "DSComponents",
-            dependencies: ["DSCore", "DSIcons"],
+            dependencies: ["DSTokens", "DSCore", "DSIcons"],
             path: "swift/Sources/DSComponents",
             swiftSettings: uiSettings
         ),
@@ -83,16 +84,28 @@ let package = Package(
             path: "swift/Tests/DSCoreTests",
             swiftSettings: uiSettings
         ),
-        // Simulator-only (`xcodebuild test`): SwiftUI snapshots paired with the web gallery by example id.
+        // Host-runnable (`swift test` on macOS): the manifest and examples against the specs, component bindings,
+        // geometry rules, the count-up rule and the Surface renders (P3-3).
+        .testTarget(
+            name: "DSComponentsTests",
+            dependencies: ["DSTokens", "DSCore", "DSComponents"],
+            path: "swift/Tests/DSComponentsTests",
+            swiftSettings: uiSettings
+        ),
+        // The P3-3 snapshots of every spec example, compared on the iPhone 17 simulator on iOS 26.5 (`xcodebuild test
+        // -only-testing:DSSnapshotTests`) against the baselines in __Snapshots__, named for the gallery pairing (P3-5);
+        // the equal-width figures of ADR-0021 §5 and the matrix checks also run on the macOS host. README.md explains.
         .testTarget(
             name: "DSSnapshotTests",
             dependencies: [
+                "DSTokens",
+                "DSCore",
                 "DSComponents",
                 "DSCharts",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ],
             path: "swift/Tests/DSSnapshotTests",
-            exclude: ["__Snapshots__"],
+            exclude: ["__Snapshots__", "README.md"],
             swiftSettings: uiSettings
         ),
     ]

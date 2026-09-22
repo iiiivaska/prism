@@ -83,6 +83,26 @@ nonisolated public enum DSTypography: Sendable {
     public static func tracking(trackingEm: Double, size: CGFloat) -> CGFloat {
         size * CGFloat(trackingEm)
     }
+
+    /// The role `dsText(_:figures:)` renders: the token role, with its figures replaced when the caller overrides
+    /// them (ADR-0021 §5). Every other field — size, weight, Bold Text weight, line height, tracking, text style
+    /// and slot — stays the role's own, and `nil` or the figures the role already carries return it untouched.
+    ///
+    /// The metric identity the thin floor of ADR-0021 §2 reads is the role's key path, which the route keeps
+    /// beside this value, so a `metric-xl` set to `tabular` renders at the weight `metric-xl` renders at.
+    public static func role(_ role: DSTypeRole, figures: DSNumericSpacing?) -> DSTypeRole {
+        guard let figures, figures != role.numeric else { return role }
+        return DSTypeRole(
+            slot: role.slot,
+            size: role.size,
+            weight: role.weight,
+            boldWeight: role.boldWeight,
+            lineHeight: role.lineHeight,
+            trackingEm: role.trackingEm,
+            numeric: figures,
+            textStyle: role.textStyle
+        )
+    }
 }
 
 extension View {
@@ -94,9 +114,18 @@ extension View {
     /// system one, over a size `@ScaledMetric(relativeTo: role.textStyle)` has already scaled. `Font.system(size:)`
     /// does not scale by itself (ADR-0021 T6), and tracking and the baseline shift need the scaled size anyway.
     ///
+    /// `figures` overrides the figures the role carries, for the callers ADR-0021 §5 names — "a `metric.xl` set to
+    /// `numeric: tabular`", a counter that must not jitter while it updates. It changes the figures and nothing
+    /// else: the role key path is still the role's own, so the metric identity ADR-0021 §2's thin floor reads
+    /// travels with it and an override never moves the weight.
+    ///
     ///     Text(verbatim: "12,9").dsText(\.metricXl)
-    public func dsText(_ role: KeyPath<DSTokenSet.Typography, DSTypeRole>) -> some View {
-        modifier(DSTextModifier(role: role))
+    ///     Text(verbatim: "12,9").dsText(\.metricXl, figures: .tabular)
+    public func dsText(
+        _ role: KeyPath<DSTokenSet.Typography, DSTypeRole>,
+        figures: DSNumericSpacing? = nil
+    ) -> some View {
+        modifier(DSTextModifier(role: role, figures: figures))
     }
 }
 
@@ -104,18 +133,22 @@ extension View {
 /// `@ScaledMetric` is built from the resolved role's own size and text style.
 private struct DSTextModifier: ViewModifier {
     let role: KeyPath<DSTokenSet.Typography, DSTypeRole>
+    let figures: DSNumericSpacing?
     private var ds = DSThemeValues()
 
-    init(role: KeyPath<DSTokenSet.Typography, DSTypeRole>) {
+    init(role: KeyPath<DSTokenSet.Typography, DSTypeRole>, figures: DSNumericSpacing?) {
         self.role = role
+        self.figures = figures
     }
 
     func body(content: Content) -> some View {
-        content.modifier(
+        let resolved = DSTypography.role(ds.tokens.typography[keyPath: role], figures: figures)
+        return content.modifier(
             DSScaledTextModifier(
-                role: ds.tokens.typography[keyPath: role],
+                role: resolved,
+                // The identity is the key path, not the value: a figures override keeps the metric floor.
                 isMetricRole: DSTextRoles.isMetric(role),
-                face: ds.brand.faces[ds.tokens.typography[keyPath: role].slot],
+                face: ds.brand.faces[resolved.slot],
                 policy: ds.policy
             )
         )
