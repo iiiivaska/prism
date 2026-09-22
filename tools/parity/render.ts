@@ -5,6 +5,9 @@
 // function of the specs and the manifests, so it regenerates byte-identically until one of them
 // changes, and `parity:report --check` fails on a stale copy.
 import { formatDiagnostics } from '../tokens/api.ts';
+// The gallery's index path, so the two halves of ADR-0006 rule 4 — this table and the pairs — are wired
+// with one constant and cannot drift apart (P3-5).
+import { INDEX_HTML } from '../gallery/config.ts';
 import { PLATFORM_LABELS, PLATFORMS } from './config.ts';
 import type { Cell, ManifestReport, ParityResult, Row, RowState } from './types.ts';
 
@@ -27,8 +30,8 @@ const STATE_TEXT: Readonly<Record<RowState, string>> = {
 };
 
 function componentTable(rows: readonly Row[]): string[] {
-  const head = ['Component', 'Layer', 'Spec', 'Parity', ...PLATFORMS.map((p) => PLATFORM_LABELS[p])];
-  const align = ['---', '---', '--:', '---', ...PLATFORMS.map(() => '---')];
+  const head = ['Component', 'Layer', 'Spec', 'Parity', 'Gallery', ...PLATFORMS.map((p) => PLATFORM_LABELS[p])];
+  const align = ['---', '---', '--:', '---', '---', ...PLATFORMS.map(() => '---')];
   const lines = [`| ${head.join(' | ')} |`, `| ${align.join(' | ')} |`];
   for (const row of rows) {
     const cells = [
@@ -36,6 +39,9 @@ function componentTable(rows: readonly Row[]): string[] {
       row.spec.layer,
       `v${row.spec.specVersion}`,
       STATE_TEXT[row.state],
+      // Every row links, whether or not it has snapshots yet: the gallery carries an anchor for every
+      // component spec, so a pending row lands on the line that says it is waiting for a first one.
+      link('pairs', `${INDEX_HTML}#${row.spec.name}`),
       ...row.cells.map(cellText),
     ];
     lines.push(`| ${cells.join(' | ')} |`);
@@ -86,7 +92,8 @@ const LEGEND: readonly string[] = [
   '- `–` is no implementation yet. `none` is a design decision, satisfied by definition (ADR-0006 rule 3, ADR-0010).',
   '- **LAG** marks an implementation behind its spec on a `full` or `adapted` platform. `parity:report --fail-on-lag` exits non-zero on it; ADR-0006 rule 3 asks for that on `main`, and for a warning on branches.',
   '- A component no stack has started anywhere is `pending`, not lag: it is backlog, not drift. From its first implemented cell on, every `full` and `adapted` cell of that row is expected to keep up.',
-  '- Patterns are `contract only`: they declare platform support but have no implementation manifest entry (ADR-0012 rule 3).',
+  '- Patterns are `contract only`: they declare platform support but have no implementation manifest entry (ADR-0012 rule 3), and their example screens are Phase 4, so the gallery holds no pairs for them yet.',
+  `- **Gallery** opens this component's section of [\`${INDEX_HTML}\`](../../${INDEX_HTML}): every example of the row, both stacks side by side, per scheme and density, with missing images called out as missing (ADR-0005, ADR-0006 rule 4). Regenerate it with \`pnpm gallery:build\`; each section links back to the spec and to this report.`,
 ];
 
 export function renderReport(r: ParityResult): string {

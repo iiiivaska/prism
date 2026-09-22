@@ -17,7 +17,12 @@ export type Density = (typeof densities)[number];
 export type Modality = "pointer" | "touch";
 
 export interface Viewport {
-  readonly name: string;
+  /**
+   * The **spec platform key** this viewport stands for (`spec/SCHEMA.md`, "Platforms and modes"), which is also the
+   * Playwright project name and the `<platform>` segment of every baseline this project records (P3-5). One
+   * vocabulary: the gallery pairs by file name, and the parity report's column for this key links to that pair.
+   */
+  readonly name: "web-desktop" | "web-touch";
   readonly width: number;
   readonly height: number;
   readonly isMobile: boolean;
@@ -31,8 +36,8 @@ export interface Viewport {
  * grid), and a baseline must not flip between the touch and pointer looks with the size of its stage.
  */
 export const viewports: readonly Viewport[] = [
-  { name: "desktop", width: 1280, height: 800, isMobile: false, modality: "pointer" },
-  { name: "mobile", width: 390, height: 844, isMobile: true, modality: "touch" },
+  { name: "web-desktop", width: 1280, height: 800, isMobile: false, modality: "pointer" },
+  { name: "web-touch", width: 390, height: 844, isMobile: true, modality: "touch" },
 ];
 
 /**

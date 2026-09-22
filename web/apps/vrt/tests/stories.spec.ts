@@ -3,8 +3,11 @@
  * One screenshot per story tagged `vrt` × scheme × density, in each viewport project. Stories come from
  * storybook-static/index.json, so a new spec example is covered as soon as the gallery generates it.
  *
- * A baseline is `baselines/<platform>/<Component>/<example-id>.<viewport>.<scheme>.<density>.png`: the
- * story's title is the spec name and its name the example id (web/apps/gallery/scripts/stories.ts).
+ * A baseline is `baselines/<os>/<Component>/<example-id>.<platform>.<scheme>.<density>.png`, the one gallery name
+ * both stacks write (spec/SCHEMA.md, "Examples and snapshots"): the story's title is the spec name and its name the
+ * example id (web/apps/gallery/scripts/stories.ts), and `<platform>` is the project's spec platform key —
+ * `web-desktop` or `web-touch` — so `tools/gallery` finds the Apple render of the same cell by name alone. `<os>` is
+ * the folder the renders of one operating system live in (`linux` is CI's committed set), not part of the name.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -43,6 +46,7 @@ for (const story of stories) {
         await page.evaluate(async () => {
           await document.fonts.ready;
         });
+        // `testInfo.project.name` is the viewport's spec platform key (matrix.ts), which is the name's `<platform>`.
         await expect(stage).toHaveScreenshot([story.title, `${story.name}.${testInfo.project.name}.${scheme}.${density}.png`], {
           maxDiffPixelRatio: maxDiffPixelRatio[family] ?? 0,
         });

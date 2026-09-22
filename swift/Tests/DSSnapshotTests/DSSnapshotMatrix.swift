@@ -24,7 +24,9 @@ nonisolated struct DSSnapshotVariant: Hashable, Sendable, CustomStringConvertibl
         [schemeName, density.rawValue, accessibility?.rawValue].compactMap(\.self).joined(separator: " ")
     }
 
-    /// `<exampleId>.apple.<scheme>.<density>[.<variant>].png` (README.md, "Naming").
+    /// `<exampleId>.<platform>.<scheme>.<density>[.<variant>].png` (README.md, "Naming"; spec/SCHEMA.md,
+    /// "Examples and snapshots"). The gallery pairs by this name alone, so the segments and their order are the
+    /// web side's too.
     func fileName(example id: String) -> String {
         ([id, DSSnapshotMatrix.platform, schemeName, density.rawValue] + [accessibility?.rawValue].compactMap(\.self))
             .joined(separator: ".") + ".png"
@@ -35,8 +37,12 @@ nonisolated struct DSSnapshotVariant: Hashable, Sendable, CustomStringConvertibl
 /// checks the names and the committed baselines without a simulator.
 @MainActor
 enum DSSnapshotMatrix {
-    /// The platform segment of the gallery name (spec/SCHEMA.md "Examples and snapshots", P3-5).
-    nonisolated static let platform = "apple"
+    /// The platform segment of the gallery name (spec/SCHEMA.md "Examples and snapshots", P3-5): the **spec
+    /// platform key** of the target that rasterized the image, never a stack name. These baselines are iPhone 17
+    /// renders, so they are `ios` — a macOS or watchOS set would be `macos` or `watchos` beside them, and the
+    /// gallery column then links to that platform's cell of the parity report (critic C-25: `apple` is not a
+    /// platform key).
+    nonisolated static let platform = "ios"
     /// The components P3-3 implements, in roadmap order.
     nonisolated static let components = ["Surface", "Text", "Button", "Card"]
     /// Both densities of the acceptance line: iOS's default and the pointer default.
@@ -97,12 +103,12 @@ struct DSSnapshotMatrixTests {
     @Test func namesFollowTheGalleryTemplate() throws {
         let example = try #require(DSExamples.named("Surface/glass-over-map"))
         let names = DSSnapshotMatrix.variants(of: example).map { $0.fileName(example: example.name) }
-        #expect(names.contains("glass-over-map.apple.light.regular.png"))
-        #expect(names.contains("glass-over-map.apple.dark.compact.increased-contrast.png"))
-        #expect(names.contains("glass-over-map.apple.dark.regular.reduce-transparency.png"))
+        #expect(names.contains("glass-over-map.ios.light.regular.png"))
+        #expect(names.contains("glass-over-map.ios.dark.compact.increased-contrast.png"))
+        #expect(names.contains("glass-over-map.ios.dark.regular.reduce-transparency.png"))
         #expect(!names.contains { $0.contains("bold-text") })
         let text = try #require(DSExamples.named("Text/data-tabular"))
-        #expect(DSSnapshotMatrix.variants(of: text).map { $0.fileName(example: text.name) }.contains("data-tabular.apple.light.compact.bold-text.png"))
+        #expect(DSSnapshotMatrix.variants(of: text).map { $0.fileName(example: text.name) }.contains("data-tabular.ios.light.compact.bold-text.png"))
         let tinted = try #require(DSExamples.named("Card/tinted-focus"))
         #expect(DSSnapshotMatrix.variants(of: tinted).allSatisfy { $0.scheme == .light })
     }

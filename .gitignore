@@ -11,6 +11,9 @@ dist/
 .turbo/
 web/apps/gallery/storybook-static/
 web/apps/vrt/test-results/
+# The gallery's collected copies (P3-5): the canon is each harness's own baselines, and gallery/index.html
+# and gallery/index.json are committed. `pnpm gallery:build` fills this folder in seconds.
+gallery/snapshots/
 web/apps/vrt/playwright-report/
 # Generated outputs are committed on purpose (see ADR-004); never ignore them.
 # Local

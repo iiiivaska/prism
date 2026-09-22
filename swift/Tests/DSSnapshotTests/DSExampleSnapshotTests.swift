@@ -17,9 +17,11 @@ import DSTokens
 /// **Modes.** Compare by default: a baseline that differs fails, one that is missing is recorded and fails, and a set
 /// recorded by another toolchain or device fails once with that, not once per image (`provenance.json`).
 /// `DS_SNAPSHOT_RECORD=1` (`TEST_RUNNER_DS_SNAPSHOT_RECORD=1` through `xcodebuild`) rewrites every baseline and passes.
-/// `DS_SNAPSHOT_DIR` reads and writes the baselines somewhere other than `__Snapshots__`; `DS_SNAPSHOT_ARTIFACTS` is
-/// where a failing comparison leaves its reference, failure and difference images; `DS_GALLERY_DIR` also writes each
-/// example's gallery pair, `<Component>/<id>.apple.<scheme>.png` at the platform's density in the standard state (P3-5).
+/// `DS_SNAPSHOT_DIR` reads and writes the baselines somewhere other than `__Snapshots__`, and `DS_SNAPSHOT_ARTIFACTS`
+/// is where a failing comparison leaves its reference, failure and difference images.
+///
+/// These baselines *are* the Apple half of the P3-5 gallery: `tools/gallery` collects them by name out of
+/// `__Snapshots__` and never asks this suite to write a second copy (gallery/README.md).
 @MainActor
 @Suite("SwiftUI snapshots of every spec example (P3-3)", .serialized)
 struct DSExampleSnapshotTests {
@@ -62,9 +64,6 @@ struct DSExampleSnapshotTests {
             for variant in DSSnapshotMatrix.variants(of: example) {
                 let image = try #require(DSSnapshotRendering.render(example, variant), "\(example.id) \(variant) did not render")
                 try verify(image, component: component, file: variant.fileName(example: example.name))
-                if variant.density == DSTokenContext.platformDefault.density, variant.accessibility == nil {
-                    try Self.writeGalleryPair(image, example: example, variant: variant)
-                }
             }
         }
     }
@@ -183,15 +182,6 @@ struct DSExampleSnapshotTests {
             comparison would only report that difference: \(differences.joined(separator: "; ")). \
             Run on what recorded them, or record a set of your own with DS_SNAPSHOT_RECORD=1 and DS_SNAPSHOT_DIR.
             """
-    }
-
-    /// `<DS_GALLERY_DIR>/<Component>/<id>.apple.<scheme>.png`, the pairing name of spec/SCHEMA.md (P3-5).
-    static func writeGalleryPair(_ image: UIImage, example: DSExample, variant: DSSnapshotVariant) throws {
-        guard let root = environment["DS_GALLERY_DIR"], let data = image.pngData() else { return }
-        let directory = URL(fileURLWithPath: root).appendingPathComponent(example.component)
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let name = [example.name, DSSnapshotMatrix.platform, variant.schemeName, "png"].joined(separator: ".")
-        try data.write(to: directory.appendingPathComponent(name))
     }
 }
 
