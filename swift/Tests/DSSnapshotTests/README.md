@@ -91,22 +91,22 @@ images under accessibility names.
 ## Naming
 
 ```
-__Snapshots__/<Component>/<exampleId>.apple.<scheme>.<density>[.<variant>].png
+__Snapshots__/<Component>/<exampleId>.<platform>.<scheme>.<density>[.<variant>].png
 ```
 
-`<variant>` is `increased-contrast`, `reduce-transparency` or `bold-text`, and is absent in the standard state. This is
-the template of `spec/SCHEMA.md` ("Examples and snapshots") extended with the density and the accessibility axis, as
-critic C-25 asks; the web side names its baselines on the same axes
-(`<example-id>.<viewport>.<scheme>.<density>.png`).
+One rule, both stacks (`spec/SCHEMA.md`, "Examples and snapshots"; P3-5, critic C-25). `<platform>` is the **spec
+platform key of the target that rasterized the image**: these baselines are iPhone 17 renders, so every one of them is
+`ios`, and the web records the same examples as `web-desktop` and `web-touch`. `<scheme>` is `light` or `dark`,
+`<density>` `regular` or `compact`, and `<variant>` — `increased-contrast`, `reduce-transparency` or `bold-text` — is
+absent in the standard state.
 
-The pairing name P3-5 puts side by side is the unextended one. A run with `DS_GALLERY_DIR` set also writes, for each
-example, the platform-default density in the standard state to:
+So a pair is found by name alone: `Button/primary-md.ios.light.regular.png` beside
+`Button/primary-md.web-desktop.light.regular.png`. `tools/gallery` collects both sets by that name and builds
+`gallery/index.html`; nothing here writes a second copy of an image for the gallery, and the platform key is the one
+the parity report's column carries, so a gallery column links to its cell.
 
-```
-<DS_GALLERY_DIR>/<Component>/<exampleId>.apple.<scheme>.png
-```
-
-55 files — one per example per scheme. CI writes them on every green run and uploads them as `snapshots-apple`.
+A future macOS or watchOS snapshot set is `macos` or `watchos` beside these, and needs no rename: that is why the
+segment is a platform key and not the stack name `apple`, which claimed four platforms for one iPhone render.
 
 ## Rendering
 
@@ -187,7 +187,6 @@ tests never see).
 | `DS_SNAPSHOT_RECORD=1` | Rewrite every baseline and pass. Without it the run compares; a missing baseline is recorded *and* fails, so a new example is reviewed before it becomes a baseline. |
 | `DS_SNAPSHOT_DIR` | Read and write the baselines somewhere other than `__Snapshots__`. |
 | `DS_SNAPSHOT_ARTIFACTS` | Where a failing comparison leaves its reference, failure and difference images. |
-| `DS_GALLERY_DIR` | Also write the P3-5 gallery pairs there. |
 
 Compare against the committed baselines:
 

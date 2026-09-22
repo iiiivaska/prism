@@ -6,7 +6,9 @@ import { runtimeProjects, viewports } from "./matrix.ts";
  * Two suites over the pages `serve.ts` hosts (roadmap P3-4, ADR-0003 web stack), split by project:
  *
  * - `tests/stories.spec.ts`: visual regression over the static Storybook, one Chromium project per
- *   viewport, because a baseline is only comparable with a render of the same image;
+ *   viewport, because a baseline is only comparable with a render of the same image. A project is named
+ *   for the spec platform key it stands for — `web-desktop`, `web-touch` — which is the `<platform>`
+ *   segment of every baseline it records and the name the P3-5 gallery pairs by (matrix.ts);
  * - `tests/runtime-contract.spec.ts`: the web runtime contract, in Chromium, WebKit and Firefox, with
  *   no screenshot (ADR-0019 rule 5, ADR-0025). Its `--update-snapshots` runs are harmless: it records
  *   nothing.

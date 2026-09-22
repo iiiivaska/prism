@@ -237,7 +237,26 @@ examples:
     grid: ["1", "2", "2", "1"]   # a 2x2 of vivid tiles, row-major
 ```
 
-Every example is rendered by both stacks into `gallery/snapshots/<Name>/<id>.<platform>.<scheme>.png`. The gallery shows them side by side; that is how drift becomes visible to a human.
+### The snapshot name
+
+Every example is rendered by both stacks under one name, so a pair is found by name alone (ADR-0006 rule 4, P3-5, critic C-25):
+
+```
+<Component>/<exampleId>.<platform>.<scheme>.<density>[.<variant>].png
+```
+
+| Segment | Values | Who writes it |
+|---------|--------|---------------|
+| `<Component>` | the spec `name` | the directory, on both sides |
+| `<exampleId>` | the `examples[].id` | both |
+| `<platform>` | a **platform key of this file's `platforms` block** — the target that rasterized the image: `ios`, `ipados`, `macos`, `watchos`, `web-desktop`, `web-touch` | Apple: `DSSnapshotMatrix.platform`; web: the Playwright project name (`web/apps/vrt/matrix.ts`) |
+| `<scheme>` | `light`, `dark`; only the schemes the example declares | both |
+| `<density>` | `regular`, `compact` (ADR-0010) | both |
+| `<variant>` | one forced accessibility state, absent in the standard state: `increased-contrast`, `reduce-transparency`, `bold-text` | Apple only today; the web matrix records no variant |
+
+The platform segment is a platform key and never a stack name, so a column of the gallery is a column of the parity report and a second Apple target (a macOS render beside the iOS one) needs no rename. Today Apple records `ios` (iPhone 17, `swift/Tests/DSSnapshotTests/README.md`) and the web records `web-desktop` and `web-touch` (`web/apps/vrt/playwright.config.ts`); a cell missing on one side is a *missing pair*, and a variant the other stack's matrix does not record is not.
+
+Each stack keeps its images where its harness compares them — `swift/Tests/DSSnapshotTests/__Snapshots__/` and `web/apps/vrt/baselines/<os>/` — and `pnpm gallery:build` (`tools/gallery`) collects them by name into `gallery/snapshots/` and writes `gallery/index.html` and `gallery/index.json`, the living canon of ADR-0005: both stacks side by side per example, scheme and density. The gallery shows them side by side; that is how drift becomes visible to a human.
 
 **Every example gets its handlers.** Both galleries pass a no-op handler for each prop of type `action` the spec declares, whether or not the example's `props` name it, so an example renders the component's interactive form in both stacks: a Card example that keeps `action: open` is a pressable card with its glyph on Apple and on the web alike. Where a component behaves differently without a handler — a Card with nothing to open is a group and draws no glyph (`Card.yaml`) — that form is a gallery probe, not a spec example, so the two stacks never disagree about an example by accident.
 
