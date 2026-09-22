@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Surface: the container primitive every other component sits on (`spec/components/Surface.yaml`, specVersion 2).
+/// Surface: the container primitive every other component sits on (`spec/components/Surface.yaml`, specVersion 3).
 ///
 /// It resolves one content material through DSCore's `DSSurface` — including the single glass fallback of ADR-0022
 /// §1, decided from Prism's token context and never from the OS settings — draws that material from its tokens, and
@@ -44,6 +44,9 @@ public struct DSSurfaceView<Content: View>: View {
 
     /// Set by `DSCard`, the one component that pins a header to its Surface; see `cardHeaderBlock()`.
     private var hasCardHeaderBlock = false
+
+    /// Set by `DSCard` for its `tinted` variant; see `surfaceFill(_:)`.
+    private var fillOverride: DSColorToken?
 
     private var ds = DSThemeValues()
     @Environment(\.dsSurfaceGeometry) private var parentGeometry
@@ -96,6 +99,7 @@ public struct DSSurfaceView<Content: View>: View {
             brand: ds.brand,
             gradient: gradient,
             elevation: DSSurfaceAppearance.elevation(declared: elevation, requested: material),
+            fillOverride: fillOverride,
             cornerRadius: cornerRadius,
             backdrop: resolution.glass == nil ? nil : backdropSource,
             hasCardHeaderBlock: hasCardHeaderBlock
@@ -123,6 +127,21 @@ public struct DSSurfaceView<Content: View>: View {
     func cardHeaderBlock() -> Self {
         var copy = self
         copy.hasCardHeaderBlock = true
+        return copy
+    }
+
+    /// Replaces the material's own fill with another token, leaving everything else — the underlay, the elevation,
+    /// the edge and the material this Surface publishes — as the material it was asked for.
+    ///
+    /// The one caller is `DSCard`'s `tinted` variant, which is a solid surface filled with `color.bg.tint.accent`
+    /// over the `color.bg.page` a solid surface paints under itself (Card.yaml behavior 7, ADR-0030 §5.1). This is
+    /// the Apple half of the web's `--ds--surface-fill` override, so the two stacks paint the same two layers in the
+    /// same order. Passing nil keeps the material's own fill.
+    ///
+    /// Internal: a component may retune the fill of the material it asked for, an app may not — it picks a material.
+    func surfaceFill(_ token: DSColorToken?) -> Self {
+        var copy = self
+        copy.fillOverride = token
         return copy
     }
 }

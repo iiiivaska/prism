@@ -48,7 +48,7 @@ export {
  */
 export { implemented, type ImplementedVersions, type WebPlatform } from "./manifest.ts";
 
-/** Surface (spec/components/Surface.yaml, specVersion 2). */
+/** Surface (spec/components/Surface.yaml, specVersion 3). */
 export { Surface, type SurfaceProps } from "./surface/Surface.tsx";
 /**
  * What the nearest Surface publishes. Only Surface resolves and publishes a material (ADR-0022 rule 1),
@@ -87,9 +87,20 @@ export {
 export { Button, type ButtonProps } from "./button/Button.tsx";
 export { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from "./button/variants.ts";
 
-/** Card (spec/components/Card.yaml, specVersion 2): the corner-pinned card on a Surface. */
+/** Card (spec/components/Card.yaml, specVersion 5): the corner-pinned card on a Surface. */
 export { Card, type CardProps } from "./card/Card.tsx";
-export { cardActions, cardSizes, cardVariants, type CardAction, type CardHero, type CardSize, type CardVariant } from "./card/parts.ts";
+export {
+  cardActions,
+  cardSizes,
+  cardUnitSeparator,
+  cardVariants,
+  type CardAction,
+  type CardActionKind,
+  type CardCustomAction,
+  type CardHero,
+  type CardSize,
+  type CardVariant,
+} from "./card/parts.ts";
 
 /**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component

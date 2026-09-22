@@ -85,7 +85,8 @@ let package = Package(
             swiftSettings: uiSettings
         ),
         // Host-runnable (`swift test` on macOS): the manifest and examples against the specs, component bindings,
-        // geometry rules, the count-up rule and the Surface renders (P3-3).
+        // geometry rules and the count-up rule (P3-3). No test here reads pixels: `swift test` copies
+        // Colors.xcassets uncompiled, so every token color resolves to nothing and renders clear.
         .testTarget(
             name: "DSComponentsTests",
             dependencies: ["DSTokens", "DSCore", "DSComponents"],
@@ -93,7 +94,9 @@ let package = Package(
             swiftSettings: uiSettings
         ),
         // The P3-3 snapshots of every spec example, compared on the iPhone 17 simulator on iOS 26.5 (`xcodebuild test
-        // -only-testing:DSSnapshotTests`) against the baselines in __Snapshots__, named for the gallery pairing (P3-5);
+        // -only-testing:DSSnapshotTests`) against the baselines in __Snapshots__, named for the gallery pairing (P3-5).
+        // Every pixel-reading suite lives here too (Surface, Button, the Reduce Motion press, the figures
+        // override), `#if os(iOS)`, because only a simulator run compiles the color catalog;
         // the equal-width figures of ADR-0021 §5 and the matrix checks also run on the macOS host. README.md explains.
         .testTarget(
             name: "DSSnapshotTests",

@@ -1,3 +1,4 @@
+#if os(iOS)
 import CoreGraphics
 import SwiftUI
 import Testing
@@ -6,10 +7,17 @@ import DSTokens
 @testable import DSComponents
 
 /// What `DSSurfaceView` draws, read back from renders: the glass fallback paints exactly the raised surface over the
-/// page (or inverse when selected), glass itself does not, and the published context reaches descendants.
+/// page (or inverse when selected), glass itself does not, and the bloom of a Surface without a card header is whole.
 ///
-/// Each comparison renders two surfaces through the same pipeline and compares their centre pixels, so no colour
-/// value is restated here: the tokens decide both sides.
+/// Each comparison renders two surfaces through the same pipeline and compares their pixels, so no colour value is
+/// restated here: the tokens decide both sides.
+///
+/// **Why this is a simulator suite.** Every colour a Surface paints is a `Colors.xcassets` entry, and `swift test`
+/// copies that catalog uncompiled, so on the macOS host the whole render comes back transparent and every
+/// comparison of two surfaces compares nothing with nothing (`DSRenderCapability`). `xcodebuild` compiles the
+/// catalog, so these run with the snapshots on the pinned iPhone 17 and each one asks the probe before it reads a
+/// pixel. The bindings behind them — which material resolves, which cell it takes — stay on the host in
+/// `DSSurfaceBindingTests`, where they are value comparisons and fast.
 @MainActor
 @Suite("Surface renders (ADR-0022 §1)", .serialized)
 struct DSSurfaceRenderTests {
@@ -85,7 +93,8 @@ struct DSSurfaceRenderTests {
     }
 
     @Test(arguments: [ColorScheme.light, .dark])
-    func reduceTransparencyPaintsRaisedOverThePage(_ scheme: ColorScheme) {
+    func reduceTransparencyPaintsRaisedOverThePage(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
         let raised = Self.centre(Self.surface(.raised), scheme: scheme)
         for material in [DSSurfaceMaterial.glass, .glassLight] {
             let fallback = Self.centre(Self.surface(material).dsAccessibilityPolicy(reduceTransparency: true), scheme: scheme)
@@ -94,14 +103,16 @@ struct DSSurfaceRenderTests {
     }
 
     @Test(arguments: [ColorScheme.light, .dark])
-    func anInvalidBackdropPaintsRaised(_ scheme: ColorScheme) {
+    func anInvalidBackdropPaintsRaised(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
         let raised = Self.centre(Self.surface(.raised), scheme: scheme)
         let fallback = Self.centre(Self.surface(.glass, backdrop: .none), scheme: scheme)
         #expect(Self.close(fallback, raised), "\(scheme)")
     }
 
     @Test(arguments: [ColorScheme.light, .dark])
-    func aSelectedGlassSurfacePaintsInverseUnderTheFallback(_ scheme: ColorScheme) {
+    func aSelectedGlassSurfacePaintsInverseUnderTheFallback(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
         let inverse = Self.centre(Self.surface(.inverse), scheme: scheme)
         let selected = Self.centre(Self.surface(.glass, selected: true).dsAccessibilityPolicy(reduceTransparency: true), scheme: scheme)
         #expect(Self.close(selected, inverse), "\(scheme)")
@@ -112,7 +123,8 @@ struct DSSurfaceRenderTests {
     }
 
     @Test(arguments: [ColorScheme.light, .dark])
-    func glassDoesNotPaintRaised(_ scheme: ColorScheme) {
+    func glassDoesNotPaintRaised(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
         let raised = Self.centre(Self.surface(.raised), scheme: scheme)
         let glass = Self.centre(Self.surface(.glass), scheme: scheme)
         #expect(glass != nil && !Self.close(glass, raised, within: 0), "\(scheme)")
@@ -136,6 +148,7 @@ struct DSSurfaceRenderTests {
     /// The same surface with a card header keeps the cut, and its jump is what makes this test sensitive: were the
     /// bloom missing altogether, both columns would be smooth and the first assertion would pass for the wrong reason.
     @Test func theGlassBloomIsWholeWithoutACardHeader() throws {
+        try DSRenderCapability.requireRasterizing()
         let side: CGFloat = 200
         let x = 60
         let whole = try #require(Self.column(Self.bloomingSurface(cardHeader: false), side: side, x: x, scheme: .dark))
@@ -147,40 +160,5 @@ struct DSSurfaceRenderTests {
         #expect(wholeStep <= 4, "the bloom of a Surface without a card header jumps by \(wholeStep)")
         #expect(cutStep >= 12, "the card header block no longer cuts the bloom (largest jump \(cutStep))")
     }
-
-    /// The context a Surface publishes reaches the views inside it: the material it renders.
-    @Test func descendantsReadThePublishedMaterial() {
-        var published: [DSSurfaceMaterial: DSSurfaceContext] = [:]
-        for material in [DSSurfaceMaterial.solid, .vivid, .inverse] {
-            let probe = ContextProbe()
-            let view = DSTheme {
-                DSSurfaceView(material: material) { ContextReader(probe: probe) }
-            }
-            _ = ImageRenderer(content: view).cgImage
-            published[material] = probe.value
-        }
-        #expect(published[.solid] == DSSurfaceContext(material: .solid))
-        #expect(published[.vivid]?.material == (DSPlatform.isWatch ? .solid : .vivid))
-        #expect(published[.inverse] == DSSurfaceContext(material: .inverse))
-    }
 }
-
-final class ContextProbe {
-    var value: DSSurfaceContext?
-}
-
-struct ContextReader: View {
-    let probe: ContextProbe
-    @Environment(\.dsSurfaceContext) private var context
-
-    // Written out: a private stored property makes the synthesized memberwise initializer private, which Swift 6.3
-    // (Xcode 26.6, the CI pin) rejects at the call site.
-    init(probe: ContextProbe) {
-        self.probe = probe
-    }
-
-    var body: some View {
-        probe.value = context
-        return Color.clear.frame(width: 1, height: 1)
-    }
-}
+#endif

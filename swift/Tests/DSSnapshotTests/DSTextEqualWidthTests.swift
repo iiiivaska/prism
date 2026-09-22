@@ -12,8 +12,12 @@ import DSTokens
 /// the default `metric-xl` and `metric-md`, and `data` set to `numeric: proportional`, lay "1111" out narrower.
 ///
 /// A width is the width SwiftUI lays the text out at, read by a geometry probe inside an `ImageRenderer` pass; it is
-/// the advance width the figures take in a line, not the ink of the glyphs. The suite runs on the macOS host
-/// (`swift test`) and on the pinned iPhone 17 simulator with the snapshots (`xcodebuild test -only-testing:DSSnapshotTests`).
+/// the advance width the figures take in a line, not the ink of the glyphs. That is why the suite runs on the macOS
+/// host (`swift test`) as well as on the pinned iPhone 17 simulator with the snapshots (`xcodebuild test
+/// -only-testing:DSSnapshotTests`): a layout probe needs no rasterizer, and the widths are the same number on both.
+///
+/// The one assertion here that does read pixels — `boldTextReachesTheTextRoute` — asks `DSRenderCapability` first and
+/// skips on a host that cannot rasterize, rather than measuring an ink of 0 on either side and calling them equal.
 @MainActor
 @Suite("Figures: the equal-width test (ADR-0021 §5)", .serialized)
 struct DSTextEqualWidthTests {
@@ -143,24 +147,39 @@ struct DSTextEqualWidthTests {
         return Double(sum) / 255
     }
 
-    /// The conditions are really different renders, so an override that stopped reaching the text route fails here
-    /// instead of passing the tests above on three copies of the Large render. Bold Text puts more ink on the same
-    /// figures (Onest's tabular figures keep their advance across weights, so width alone cannot show it), and
-    /// accessibility3 lays them out wider on iOS. macOS has no Dynamic Type (Text.yaml `notes.platform.macos`), so on
-    /// the host accessibility3 lays out exactly as Large and only the simulator run exercises it.
+    /// The size condition is really a different render, so an override that stopped reaching the text route fails here
+    /// instead of passing the tests above on three copies of the Large render. accessibility3 lays the figures out
+    /// wider on iOS; macOS has no Dynamic Type (Text.yaml `notes.platform.macos`), so on the host accessibility3 lays
+    /// out exactly as Large and only the simulator run exercises the widening.
     @Test(arguments: brands)
     func theConditionsReachTheTextRoute(_ brand: DSBrand) throws {
         for sample in [Sample.text(.data, .auto), .axis] {
             let regular = try #require(Self.width("0000", sample, in: Self.large, brand: brand))
             let scaled = try #require(Self.width("0000", sample, in: Self.accessibility3, brand: brand))
+            print("DSEqualWidth \(brand.rawValue) | \(sample) | accessibility3 \(scaled) pt vs Large \(regular) pt")
             #if os(macOS)
             #expect(scaled == regular, "\(brand) \(sample): accessibility3 \(scaled) pt, Large \(regular) pt")
             #else
             #expect(scaled > regular + Self.tolerance, "\(brand) \(sample): accessibility3 \(scaled) pt, Large \(regular) pt")
             #endif
+        }
+    }
+
+    /// The Bold Text condition, the other half of the same rule: it puts more ink on the same figures. Onest's tabular
+    /// figures keep their advance across weights, so a width cannot show this one and only the ink can — which makes
+    /// this the single assertion of the suite that reads pixels, and on macOS, which has no Dynamic Type, the only
+    /// evidence that a forced condition reaches the text route at all.
+    ///
+    /// It therefore stays on the host rather than moving to the simulator with the other pixel suites, and asks
+    /// `DSRenderCapability` first: a `swift test` run whose Colors.xcassets is uncompiled renders both runs
+    /// transparent, and `0 > 0 * 1.1` is a failure that says nothing about the weight. Such a run skips here, naming
+    /// where the check really runs, instead of failing for the environment or passing on two empty images.
+    @Test(.enabled(DSRenderCapability.unavailableComment, { await DSRenderCapability.rasterizes }), arguments: brands)
+    func boldTextReachesTheTextRoute(_ brand: DSBrand) throws {
+        for sample in [Sample.text(.data, .auto), .axis] {
             let regularInk = try #require(Self.ink("0000", sample, in: Self.large, brand: brand))
             let boldInk = try #require(Self.ink("0000", sample, in: Self.boldText, brand: brand))
-            print("DSEqualWidth \(brand.rawValue) | \(sample) | accessibility3 \(scaled) pt vs Large \(regular) pt | ink Bold Text \(boldInk) vs Large \(regularInk)")
+            print("DSEqualWidth \(brand.rawValue) | \(sample) | ink Bold Text \(boldInk) vs Large \(regularInk)")
             #expect(boldInk > regularInk * 1.1, "\(brand) \(sample): Bold Text ink \(boldInk), Large ink \(regularInk)")
         }
     }

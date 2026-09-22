@@ -4,10 +4,15 @@
  *
  * - Button.yaml behaviors 2, 3, 5 and 6: the hit region per modality with an unchanged visual box, the
  *   width kept while loading, labels on one line, hover only under pointer, the press scale.
- * - Card.yaml behaviors 2, 4, 8 and 10 and the action affordance: the glyph hidden until hover under
- *   pointer and always shown under touch, the hover overlay on a pressable card and on no other (the
- *   one place both stacks read behavior 8 more narrowly than it is written), the pressed overlay and
- *   scale, the radius cell per density, the selected lift and outline.
+ * - Card.yaml behaviors 2, 4, 7, 9, 11, 13, 14, 15, 16 and 17 and the action affordance: the glyph hidden
+ *   until hover under pointer and always shown under touch on a pressable card, drawn at all on no other,
+ *   the hover overlay on a pressable card and on no other, the pressed overlay and the 0.97 scale, the
+ *   radius cell per density, the selected lift and outline, the custom action's disc, which looks the same
+ *   whether it is a button or, with no handler, a labelled span, the header block each affordance leaves
+ *   (and the one vivid leaves for none), the two-line title with its one-line caption, the separator that
+ *   joins the vivid unit to the caption in the text and in the name, and the row gap of a content-sized
+ *   card — the one layout a snapshot pair cannot see, because at the gallery's frame both stacks
+ *   bottom-align.
  * - ADR-0023 rule 9 under a forced reduced context: no press scale on either component, Button's danger
  *   substitute fill, Card's selection crossfading over motion.duration.base.
  * - ADR-0021 rule 8: Button computes `font-synthesis: none`.
@@ -25,7 +30,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Button, Card, Theme, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
+import { Button, Card, Theme, cardUnitSeparator, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -85,6 +90,16 @@ function find(element: HTMLElement, selector: string): HTMLElement {
   const found = element.querySelector<HTMLElement>(selector);
   if (found === null) throw new Error(`no ${selector}`);
   return found;
+}
+
+/** A custom property's value as a color, resolved on an element through a probe declaration. */
+function tokenColor(element: HTMLElement, variable: string): string {
+  const probe = document.createElement("div");
+  probe.style.backgroundColor = `var(${variable})`;
+  element.append(probe);
+  const color = getComputedStyle(probe).backgroundColor;
+  probe.remove();
+  return color;
 }
 
 /** A custom property's value in px, resolved on an element through a probe declaration. */
@@ -216,7 +231,10 @@ describe("Button", () => {
 });
 
 describe("Card", () => {
-  const metric = { title: "Line output", caption: "Last 24 hours", hero: { value: "86", trailing: ".4", unit: "%" } } as const;
+  // The handler is part of the fixture: `action: open` makes the card pressable only with one
+  // (Card.yaml accessibility.role, `DSCardAppearance.isPressable(_:hasAction:)`), and hover, press and
+  // the open affordance all belong to the pressable card.
+  const metric = { title: "Line output", caption: "Last 24 hours", hero: { value: "86", trailing: ".4", unit: "%" }, onAction: (): void => undefined } as const;
   const opacity = (element: HTMLElement): string => getComputedStyle(find(element, "[data-ds-slot='card-action']")).opacity;
 
   it("shows the open glyph on hover under pointer, and always under touch", async () => {
@@ -245,7 +263,30 @@ describe("Card", () => {
     expect(opacity(touch)).toBe("1");
   });
 
-  it("is one button: pressing fires onAction, with the overlay and the scale outside Reduce Motion", async () => {
+  it("draws no open glyph at all on a card with no handler, under pointer and under touch (behavior 4)", async () => {
+    // The glyph is the cue that the card opens, so a card with nothing to open draws no glyph and no
+    // control. A zero-opacity slot would not do: under touch the same slot is fully opaque, which is
+    // how this used to promise an open the card could not perform. `DSCardAppearance.showsOpenGlyph`
+    // takes pressability the same way on Apple.
+    for (const modality of ["pointer", "touch"] as const) {
+      const element = await mount(<Card {...metric} onAction={undefined} />, { modality });
+      const card = find(element, ".ds-card");
+      expect(card.querySelector("[data-ds-slot='card-action']"), modality).toBeNull();
+      // The header is then laid out as `action: none` lays it out: one heading, nothing beside it.
+      const header = find(card, "[data-ds-slot='card-header']");
+      expect(header.children, modality).toHaveLength(1);
+      expect(header.children[0]?.getAttribute("data-ds-slot"), modality).toBe("card-heading");
+      await unmount();
+    }
+    // With a handler the slot is there again, and under touch it is visible.
+    const touch = await mount(<Card {...metric} />, { modality: "touch" });
+    expect(opacity(touch)).toBe("1");
+  });
+
+  it("is one button: pressing fires onAction, with the overlay and the 0.97 scale outside Reduce Motion", async () => {
+    // Behavior 16: the press magnitude is the one every Prism control shares, so this is the 0.97 the
+    // Button case above measures and the 0.97 `DSControlAppearance.pressedScale` gives the Apple card.
+    // Before specVersion 5 the web shrank a card to 0.98 and Apple to 0.97.
     for (const motion of ["standard", "reduce"] as const) {
       const onAction = vi.fn();
       const element = await mount(<Card {...metric} onAction={onAction} />, { motion });
@@ -254,7 +295,7 @@ describe("Card", () => {
       const release = await pressWithKeyboard(card);
       expect(card.hasAttribute("data-pressed"), motion).toBe(true);
       await settles(() => getComputedStyle(find(card, "[data-ds-slot='card-overlay']")).backgroundColor, /^(?!rgba\(0, 0, 0, 0\)$)/);
-      if (motion === "standard") await settles(() => getComputedStyle(card).scale, "0.98");
+      if (motion === "standard") await settles(() => getComputedStyle(card).scale, "0.97");
       else expect(getComputedStyle(card).scale).toBe("1");
       await release();
       expect(onAction, motion).toHaveBeenCalledTimes(1);
@@ -262,27 +303,32 @@ describe("Card", () => {
     }
   });
 
-  it("gives a card with nothing to press no hover overlay (behavior 8 against both stacks)", async () => {
-    // A deliberate pin, not a mirror of the code. Card.yaml behavior 8 and notes.platform.macos state the
-    // hover overlay with no pressability condition, but both implementations gate it on one: the Apple
-    // side through the shared rule of `DSControlAppearance.showsHover` ("hover exists only under pointer
-    // modality, and only on a control that takes input"), this one through `pressable && isHovered`. A
-    // card whose `action` is `custom` (only its button is pressable) or `none` (a group) would otherwise
-    // light up whole for a press it does not have. Two implementations against one spec sentence is a
-    // spec wording fix; this test says which behaviour ships until that lands, so the next reader finds a
-    // decision rather than an omission.
-    for (const action of ["custom", "none"] as const) {
-      const element = await mount(<Card {...metric} action={action} />, { modality: "pointer" });
+  it("gives a card with nothing to press no hover overlay (behavior 11)", async () => {
+    // Card.yaml behavior 11: "a card with nothing to press takes no hover cue". A card whose `action`
+    // is `custom` (only its disc is pressable) or `none` (a group) would otherwise light up whole for a
+    // press it does not have; the Apple side reaches the same rule through
+    // `DSControlAppearance.showsHover` ("hover exists only under pointer modality, and only on a
+    // control that takes input").
+    //
+    // An `open` card with no `onAction` is the same case: nothing to press, so it is a group too
+    // (Card.yaml accessibility.role; `DSCardAppearance.isPressable(_:hasAction:)`).
+    const cases = [
+      ["custom", { ...metric, action: { kind: "custom", icon: "action.pause", label: "Pause line 4" } }],
+      ["none", { ...metric, action: "none" }],
+      ["open without a handler", { ...metric, onAction: undefined }],
+    ] as const satisfies readonly (readonly [string, CardProps])[];
+    for (const [name, props] of cases) {
+      const element = await mount(<Card {...props} />, { modality: "pointer" });
       const card = find(element, ".ds-card");
-      expect(card.getAttribute("role"), action).toBe("group");
+      expect(card.getAttribute("role"), name).toBe("group");
       const overlay = (): string => getComputedStyle(find(card, "[data-ds-slot='card-overlay']")).backgroundColor;
       await act(async () => {
         await userEvent.hover(card);
       });
       await sleep(400);
-      expect(card.hasAttribute("data-hovered"), action).toBe(false);
-      expect(card.hasAttribute("data-pressed"), action).toBe(false);
-      expect(overlay(), action).toMatch(TRANSPARENT);
+      expect(card.hasAttribute("data-hovered"), name).toBe(false);
+      expect(card.hasAttribute("data-pressed"), name).toBe(false);
+      expect(overlay(), name).toMatch(TRANSPARENT);
       await act(async () => {
         await userEvent.unhover(card);
       });
@@ -301,7 +347,200 @@ describe("Card", () => {
     await settles(() => getComputedStyle(find(card, "[data-ds-slot='card-overlay']")).backgroundColor, /^(?!rgba\(0, 0, 0, 0\)$)/);
   });
 
-  it("takes comp.card.radius.compact at compact density and comp.card.radius.regular at regular (behavior 10)", async () => {
+  it("keys the custom disc to the published material: the media pair on vivid, the scheme's inverse everywhere else (behavior 6)", async () => {
+    // Only a browser resolves these: `color.bg.fill.inverse` is ink in light and white in dark, and the
+    // white media pair is white in both. The scheme's glass is light glass in light (ADR-0029 §1), so a
+    // white disc would disappear on it over the bright imagery §1.6 allows — glass takes the scheme's
+    // own inverse, exactly as solid does, and only vivid takes the media pair (ADR-0030 §3.1).
+    const pause = { kind: "custom", icon: "action.pause", label: "Pause line 4" } as const;
+    const read = async (props: CardProps): Promise<{ material: string; fill: string; glyph: string; inverse: string; media: string }> => {
+      const element = await mount(<Card {...props} action={pause} onAction={(): void => undefined} />);
+      const card = find(element, ".ds-card");
+      const disc = find(card, ".ds-card-action-button");
+      const style = getComputedStyle(disc);
+      return {
+        material: card.getAttribute("data-ds-material") ?? "",
+        fill: style.backgroundColor,
+        glyph: style.color,
+        inverse: tokenColor(card, "--ds-color-bg-fill-inverse"),
+        media: tokenColor(card, "--ds-color-bg-fill-inverse-media"),
+      };
+    };
+    const solid = await read({ title: "Line 4" });
+    await unmount();
+    const vivid = await read({ title: "Line 4", variant: "vivid" });
+    await unmount();
+    const glass = await read({ title: "Line 4", variant: "glass", backdrop: "image" });
+    expect(glass.material).toBe("glass");
+    expect(solid.inverse).not.toBe(solid.media);
+    expect(solid.fill).toBe(solid.inverse);
+    expect(glass.fill).toBe(glass.inverse);
+    expect(glass.fill).toBe(solid.fill);
+    expect(vivid.fill).toBe(vivid.media);
+    expect(vivid.fill).not.toBe(vivid.inverse);
+    expect(glass.glyph).toBe(solid.glyph);
+    expect(vivid.glyph).not.toBe(solid.glyph);
+  });
+
+  it("draws the custom action's disc whether or not it is a button, and names it by the operation", async () => {
+    // The disc's chrome is `.ds-card-action-button` and nothing else, so the element may be a button or,
+    // with no handler, a labelled span, and it looks the same either way — the one thing only a browser
+    // can say. `DSCardActionCircle` makes the same swap around one `DSCardActionDisc`.
+    const pause = { kind: "custom", icon: "action.pause", label: "Pause line 4" } as const;
+    interface Disc {
+      readonly tag: string;
+      readonly name: string;
+      readonly look: { readonly icon: string; readonly background: string; readonly radius: string; readonly width: number };
+    }
+    const read = (element: HTMLElement): Disc => {
+      const disc = find(element, ".ds-card-action-button");
+      const style = getComputedStyle(disc);
+      return {
+        tag: disc.tagName,
+        name: disc.getAttribute("aria-label") ?? "",
+        look: {
+          icon: find(disc, "[data-ds-slot='card-action-glyph']").getAttribute("data-ds-icon") ?? "",
+          background: style.backgroundColor,
+          radius: style.borderTopLeftRadius,
+          width: Math.round(disc.getBoundingClientRect().width),
+        },
+      };
+    };
+    const withHandler = read(await mount(<Card {...metric} action={pause} />));
+    await unmount();
+    const withoutHandler = read(await mount(<Card {...metric} action={pause} onAction={undefined} />));
+    expect(withHandler.tag).toBe("BUTTON");
+    expect(withoutHandler.tag).toBe("SPAN");
+    expect(withHandler.name).toBe("Pause line 4");
+    expect(withoutHandler.name).toBe("Pause line 4");
+    expect(withHandler.look.icon).toBe("action.pause");
+    expect(withHandler.look.width).toBeGreaterThan(0);
+    expect(withoutHandler.look).toEqual(withHandler.look);
+  });
+
+  it("leaves one header block for either affordance, and on vivid for none as well (behavior 14)", async () => {
+    // Measured on the elements, because this is where the two stacks had drifted: the web gave the open
+    // glyph a `size.control.md` slot with a `space.5` gap and the Apple side a bare `size.icon.sm` box
+    // with `space.3`, and each suite asserted its own number. Behavior 14 settles one geometry, and
+    // `DSCardAppearance.headerTrailingSpace(on:actionWidth:_:)` returns exactly this on Apple.
+    //
+    // On vivid the block is reserved whatever the action, because it is the rectangle Surface cuts the
+    // grain and the bloom out of (ADR-0022 §4.1, ADR-0030 §4.4): a caption running past it would sit on
+    // grain, which is never drawn under text below 13 px.
+    const measure = async (props: CardProps): Promise<{ reserve: number; block: number }> => {
+      const element = await mount(
+        <div style={{ inlineSize: "var(--ds-size-card-min)", display: "grid" }}>
+          <Card {...props} />
+        </div>,
+      );
+      const card = find(element, ".ds-card");
+      const heading = find(card, "[data-ds-slot='card-heading']");
+      const padding = tokenPx(card, "--ds-card-padding");
+      const block = tokenPx(card, "--ds-size-control-md") + tokenPx(card, "--ds-space-5");
+      const contentEnd = heading.getBoundingClientRect().right - Number.parseFloat(getComputedStyle(heading).paddingInlineEnd);
+      return { reserve: card.getBoundingClientRect().right - padding - contentEnd, block };
+    };
+
+    const cases = [
+      ["solid, pressable", { ...metric }, true],
+      ["solid, custom disc", { ...metric, action: { kind: "custom", icon: "action.pause", label: "Pause line 4" } }, true],
+      ["solid, none", { ...metric, action: "none" }, false],
+      ["solid, open without a handler", { ...metric, onAction: undefined }, false],
+      ["vivid, pressable", { ...metric, variant: "vivid" }, true],
+      ["vivid, none", { ...metric, variant: "vivid", action: "none" }, true],
+      ["vivid, open without a handler", { ...metric, variant: "vivid", onAction: undefined }, true],
+    ] as const satisfies readonly (readonly [string, CardProps, boolean])[];
+    for (const [name, props, reserved] of cases) {
+      const { reserve, block } = await measure(props);
+      expect(block, name).toBeGreaterThan(0);
+      expect(reserve, name).toBeCloseTo(reserved ? block : 0, 1);
+      await unmount();
+    }
+  });
+
+  it("clamps the title to two lines and the caption to one, with an ellipsis (behavior 15)", async () => {
+    // The header block's budget, the same two numbers the Apple side clamps to
+    // (`DSCardAppearance.titleLines`, `.captionLines`). Without it a long title grew the header and
+    // pushed the hero out of a card whose size the grid sets.
+    const element = await mount(
+      <div style={{ inlineSize: "var(--ds-size-card-min)", display: "grid" }}>
+        <Card
+          {...metric}
+          title="Line output across the northern assembly hall and the yard beyond it"
+          caption="Last 24 hours of the northern assembly hall and the yard beyond it"
+        />
+      </div>,
+    );
+    const card = find(element, ".ds-card");
+    for (const [part, lines] of [
+      [".ds-card-title", 2],
+      [".ds-card-caption", 1],
+    ] as const) {
+      const text = find(card, part);
+      const style = getComputedStyle(text);
+      expect(style.webkitLineClamp, part).toBe(String(lines));
+      expect(style.overflow, part).toBe("hidden");
+      const lineHeight = Number.parseFloat(style.lineHeight);
+      expect(lineHeight, part).toBeGreaterThan(0);
+      expect(text.getBoundingClientRect().height, part).toBeLessThanOrEqual(lines * lineHeight + 1);
+      expect(text.scrollWidth, part).toBeGreaterThan(0);
+    }
+  });
+
+  it("keeps root.gap between the rows of a card that shrinks to its content (behavior 17)", async () => {
+    // Only a real layout shows this one: at the gallery's `size.card.min` frame the body absorbs the
+    // slack and both stacks bottom-align, so a snapshot pair cannot see it. A content-sized card is
+    // where the gap has to be there — Apple pads the body and the footer by `space.4` each, and before
+    // specVersion 5 `.ds-card` was a plain column with no gap, so the hero touched the header.
+    const gapOf = async (props: CardProps, children?: ReactNode): Promise<{ gap: number; expected: number }> => {
+      const element = await mount(
+        <div style={{ inlineSize: "var(--ds-size-card-min)", display: "grid", justifyItems: "start", alignItems: "start" }}>
+          <Card {...props}>{children}</Card>
+        </div>,
+      );
+      const card = find(element, ".ds-card");
+      const header = find(card, "[data-ds-slot='card-header']").getBoundingClientRect();
+      const next = find(card, children === undefined ? "[data-ds-slot='card-footer']" : "[data-ds-slot='card-body']").getBoundingClientRect();
+      return { gap: next.top - header.bottom, expected: tokenPx(card, "--ds-space-4") };
+    };
+
+    // No body: one gap between the header and the footer, the way `Spacer(minLength: 0)` leaves one
+    // above `DSCardAnatomy`'s footer — not two around a box of nothing, which is why Card renders no
+    // body slot at all when it was given no children.
+    const bare = await gapOf(metric);
+    expect(bare.expected).toBeGreaterThan(0);
+    expect(bare.gap).toBeCloseTo(bare.expected, 1);
+    expect(find(host as HTMLElement, ".ds-card").querySelector("[data-ds-slot='card-body']")).toBeNull();
+    await unmount();
+
+    // With a body: the same gap above it, and the footer keeps its own below.
+    const withBody = await gapOf(metric, <span>Updated two minutes ago</span>);
+    expect(withBody.gap).toBeCloseTo(withBody.expected, 1);
+    const card = find(host as HTMLElement, ".ds-card");
+    const body = find(card, "[data-ds-slot='card-body']").getBoundingClientRect();
+    const footer = find(card, "[data-ds-slot='card-footer']").getBoundingClientRect();
+    expect(footer.top - body.bottom).toBeCloseTo(withBody.expected, 1);
+  });
+
+  it("joins the vivid unit to the caption with one separator, in the text and in the name (behavior 9)", async () => {
+    // The separator is text inside the caption, not a margin, so the caption's own `textContent` carries
+    // the break — and so does the single accessible name `aria-labelledby` builds for a pressable card.
+    // With the margin it announced "Per batchkg"; `DSCardAppearance.unitSeparator` is the same string.
+    const element = await mount(
+      <Card variant="vivid" title="Average yield" caption="Per batch" hero={{ value: "2,450", unit: "kg" }} onAction={(): void => undefined} />,
+    );
+    const card = find(element, ".ds-card");
+    const caption = find(card, ".ds-card-caption");
+    expect(caption.textContent).toBe(`Per batch${cardUnitSeparator}kg`);
+    const named = (card.getAttribute("aria-labelledby") ?? "")
+      .split(" ")
+      .map((id) => document.getElementById(id)?.textContent ?? "")
+      .join(", ");
+    expect(named).toContain(`Per batch${cardUnitSeparator}kg`);
+    expect(named).not.toContain("Per batchkg");
+  });
+
+  it("takes comp.card.radius.compact at compact density and comp.card.radius.regular at regular (behavior 13)", async () => {
     for (const density of ["compact", "regular"] as const) {
       const element = await mount(<Card title="Queued" />, { density });
       const card = find(element, ".ds-card");
@@ -312,7 +551,7 @@ describe("Card", () => {
     }
   });
 
-  it("lifts and outlines a selected card, crossfading both under Reduce Motion (behavior 4)", async () => {
+  it("lifts and outlines a selected card, crossfading both under Reduce Motion (behavior 7)", async () => {
     for (const motion of ["standard", "reduce"] as const) {
       const element = await mount(<Card title="Unit 4417" isSelected />, { motion });
       const card = find(element, ".ds-card");

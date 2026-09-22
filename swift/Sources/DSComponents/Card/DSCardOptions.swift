@@ -15,14 +15,27 @@ nonisolated public enum DSCardVariant: String, CaseIterable, Hashable, Sendable 
     /// material `accent` instead.
     case tinted
 
-    /// The Surface material the card asks for. `tinted` is the page, with the accent tint laid over it inside the shape.
+    /// The Surface material the card asks for.
+    ///
+    /// `tinted` asks for `solid` and publishes it (Card.yaml behavior 7, specVersion 3): the tint is
+    /// `color.bg.tint.accent` over the `color.bg.page` every opaque surface paints under itself (ADR-0030 §5.1), so it
+    /// replaces the solid fill rather than covering it — `DSCard` passes `surfaceFill(.bgTintAccent)`, which is the
+    /// `--ds--surface-fill` override the web writes, and the pixels are the page under the tint either way. It never
+    /// asks for `page`: that names the screen's ground, the key a Chip or a control over media turns its glass cells
+    /// on, and a card is never that. Publishing `solid` is also what gives a selected tinted card the solid outline
+    /// `color.border.strong`.
     public var material: DSSurfaceMaterial {
         switch self {
         case .solid: .solid
         case .vivid: .vivid
         case .glass: .glass
-        case .tinted: .page
+        case .tinted: .solid
         }
+    }
+
+    /// The fill that replaces the material's own, or nil to keep it: only `tinted` has one.
+    public var fill: DSColorToken? {
+        self == .tinted ? .bgTintAccent : nil
     }
 
     /// The variant that renders on this platform: the watch card is solid only (Card.yaml `notes.platform.watchos`).
@@ -44,14 +57,21 @@ nonisolated public enum DSCardSize: String, CaseIterable, Hashable, Sendable {
     }
 }
 
-/// The top-right affordance of a Card: `props.action`.
+/// The top-right affordance of a Card: `props.action`, with `actionIcon` and `actionLabel` bundled into the `custom`
+/// case.
+///
+/// Card.yaml (specVersion 5) declares `action`, `actionIcon` and `actionLabel` as three props and licenses a stack to
+/// carry them as one value, as long as `custom` cannot be written without the other two — which is exactly what an
+/// enum payload gives: `.custom(glyph:label:)` does not compile without both.
 public enum DSCardAction: Equatable {
     /// No affordance; the card is a group.
     case none
-    /// The `nav.open` glyph at the padding corner; with `onAction` the whole card is pressable.
+    /// The `nav.open` glyph at the padding corner, drawn only when the card has an `onAction` to fire: the glyph is
+    /// the cue that the card opens, so a card with nothing to open draws none of it (Card.yaml behavior 4).
     case open
-    /// One solid circular action at the padding corner, and only that circle is pressable. The circle carries a
-    /// registry glyph and an explicit name, because the glyph is not one (ADR-0011 rule 4).
+    /// One solid circular action at the padding corner, and only that circle is pressable. `glyph` is `actionIcon`
+    /// and `label` is `actionLabel`: a registry glyph and the name of the operation, never inferred from the glyph id
+    /// and never the card's title (ADR-0011 rule 4).
     case custom(glyph: DSIconName, label: LocalizedStringKey)
 
     /// The kind, for the rules that do not need the glyph or the name.

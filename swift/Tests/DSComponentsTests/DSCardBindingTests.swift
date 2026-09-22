@@ -5,10 +5,11 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Card.yaml` specVersion 2: the material, radius and shadow cells, the title, caption and action
-/// cells keyed by the published context, the selection cue, V3 on vivid, the header and the V2 block, the action
-/// affordances per modality, the motion and the watch adaptations.
-@Suite("Card bindings (Card.yaml v2)")
+/// `spec/components/Card.yaml` specVersion 5: the material, radius and shadow cells, the title, caption and action
+/// cells keyed by the published context, the selection cue, V3 on vivid with the separator that joins the unit to
+/// the caption, the header and the V2 block, the row gap of the anatomy, the action affordances per modality and per
+/// handler, the accessible name, the motion — press magnitude included — and the watch adaptations.
+@Suite("Card bindings (Card.yaml v5)")
 struct DSCardBindingTests {
     static func tokens(
         scheme: DSColorScheme = .light,
@@ -23,17 +24,23 @@ struct DSCardBindingTests {
 
     /// `tokens.root.background`: solid is the Surface's solid (`comp.card.solid.bg` → `color.bg.surface`), glass the
     /// scheme's glass (`comp.card.glass.fill` → `material.glass.fill`), vivid the gradient, and tinted the accent tint
-    /// over the page.
+    /// in place of the solid fill, over the page that solid surface paints under itself (behavior 7).
     @Test func materialCells() {
         #expect(DSCardVariant.solid.material == .solid)
         #expect(DSCardVariant.vivid.material == .vivid)
         #expect(DSCardVariant.glass.material == .glass)
-        #expect(DSCardVariant.tinted.material == .page)
+        // Behavior 7: a tinted card asks for and publishes `solid`, never `page`.
+        #expect(DSCardVariant.tinted.material == .solid)
+        #expect(!DSCardVariant.allCases.contains { $0.material == .page })
         #expect(DSSurfaceAppearance.background(.solid) == .bgSurface)
         #expect(DSSurfaceAppearance.background(.glass) == .materialGlassFill)
-        #expect(DSCardAppearance.tint(.tinted) == \.color.bgTintAccent)
+        #expect(DSCardAppearance.tint(.tinted) == .bgTintAccent)
+        #expect(DSCardVariant.tinted.fill == .bgTintAccent)
+        // The underlay stays the material's, so the tint lies on color.bg.page (ADR-0030 §5.1).
+        #expect(DSSurfaceAppearance.underlay(DSSurface.resolve(material: .solid, backdrop: .none, selected: false, tokens: Self.tokens())) == .bgPage)
         for variant in [DSCardVariant.solid, .vivid, .glass] {
             #expect(DSCardAppearance.tint(variant) == nil, "\(variant)")
+            #expect(variant.fill == nil, "\(variant)")
         }
         for density in DSDensity.allCases {
             let tokens = Self.tokens(density: density)
@@ -94,6 +101,10 @@ struct DSCardBindingTests {
         }
         let border = Self.tokens().border
         #expect(DSCardAppearance.selectedBorderWidth(border) == border.strong)
+        // Behavior 7: the outline is the cell of the material the card publishes, so a tinted card takes the solid
+        // one. With `page` it resolved to no cell and a selected tinted card drew no outline at all.
+        #expect(DSCardAppearance.selectedBorder(on: DSCardVariant.tinted.material) == \.color.borderStrong)
+        #expect(DSCardAppearance.selectedBorder(on: .page) == nil)
     }
 
     // MARK: - title, caption
@@ -138,30 +149,77 @@ struct DSCardBindingTests {
             #expect(DSCardAppearance.unitJoinsCaption(on: material) == (material == .vivid), "\(material)")
             #expect(DSCardAppearance.drawsIconRing(on: material) == (material != .vivid), "\(material)")
         }
-        #expect(DSCardAppearance.unitSeparator == " · ")
         #expect(DSCardAppearance.heroLargestTypeSize == .accessibility3)
     }
 
-    /// On vivid the header ends where the V2 header block does, at every density and whatever the action: a card W wide
-    /// leaves the header `W − 2p − (size.control.md + space.5)`, the width `DSSurfaceAppearance.headerBlock` keeps the
-    /// grain out of. Off vivid the header stops `space.3` before the action.
-    @Test func headerEndsAtTheV2Block() {
+    /// Behavior 9's separator: the one string both stacks join the vivid caption and unit with, read out of
+    /// `Card.yaml` so neither side can pick its own. The web writes the same one (`cardUnitSeparator`,
+    /// `web/packages/react/src/card/parts.ts`), as text inside the caption rather than as a margin, so the words
+    /// stay apart in the caption's own string and in the single name a pressable card builds from it.
+    @Test func theUnitJoinsTheCaptionWithOneSeparator() throws {
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("a space, a middle dot and a space"), "Card.yaml behavior 9 states the separator")
+        #expect(yaml.contains("`Dollars per batch · kg`"), "Card.yaml behavior 9 shows the joined line")
+        #expect(DSCardAppearance.unitSeparator == " · ")
+        // The spec's own example line, composed out of the separator: caption, separator, unit.
+        #expect("Dollars per batch" + DSCardAppearance.unitSeparator + "kg" == "Dollars per batch · kg")
+    }
+
+    /// `tokens.root.gap` (behavior 17): the minimum between the header, the body slot and the footer, `space.4` on
+    /// both stacks. The cell is read out of `Card.yaml` here and pinned against `.ds-card`'s `row-gap` on the web
+    /// (`web/packages/react/test/card.test.tsx`), so a content-sized card lays out the same way on both.
+    @Test func theAnatomyRowsAreOneGapApart() throws {
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("    padding: comp.card.padding\n    gap: space.4\n"), "Card.yaml binds root.gap")
         for density in DSDensity.allCases {
             let tokens = Self.tokens(density: density)
+            #expect(DSCardAppearance.rowGap(tokens) == tokens.space.step4, "\(density)")
+        }
+    }
+
+    /// Behavior 14, the geometry both stacks draw the same way: the affordance takes one `action.size` box whichever
+    /// it is, the header leaves that box and `header.gap` after it wherever one is drawn, and on vivid it leaves the
+    /// V2 header block whatever the action — a card W wide leaves the header `W − 2p − (size.control.md + space.5)`,
+    /// the width `DSSurfaceAppearance.headerBlock` keeps the grain and the bloom out of. Off vivid a card that draws
+    /// no affordance leaves nothing.
+    ///
+    /// The two cells are read out of `Card.yaml` here, so this side cannot drift from the spec on its own; the web
+    /// pins the same two cells against `Card.css` (`web/packages/react/test/card.test.tsx`, "the action box and the
+    /// header gap"), which is what keeps the pair together.
+    @Test func headerEndsAtTheV2Block() throws {
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("  header:\n    gap: space.5\n"), "Card.yaml binds header.gap")
+        #expect(yaml.contains("  action:\n    size: size.control.md\n"), "Card.yaml binds action.size")
+        for density in DSDensity.allCases {
+            let tokens = Self.tokens(density: density)
+            let box = tokens.size.controlMd // tokens.action.size
+            let gap = tokens.space.step5 // tokens.header.gap
+            #expect(DSCardAppearance.headerGap(tokens) == gap, "\(density)")
+            #expect(DSCardAppearance.actionWidth(.none, tokens) == 0, "\(density)")
+            #expect(DSCardAppearance.actionWidth(.open, tokens) == box, "\(density)")
+            #expect(DSCardAppearance.actionWidth(.custom, tokens) == box, "\(density)")
             let size = CGSize(width: 240, height: 240)
             let block = DSSurfaceAppearance.headerBlock(size: size, tokens)
             for action in [DSCardActionKind.none, .open, .custom] {
                 let width = DSCardAppearance.actionWidth(action, tokens)
-                let trailing = DSCardAppearance.headerTrailingSpace(on: .vivid, actionWidth: width, tokens)
-                #expect(size.width - 2 * tokens.space.cardPadding - trailing == block.width, "\(density) \(action)")
-                #expect(trailing >= width, "\(density) \(action)")
+                let vivid = DSCardAppearance.headerTrailingSpace(on: .vivid, actionWidth: width, tokens)
+                #expect(vivid == box + gap, "\(density) \(action)")
+                #expect(size.width - 2 * tokens.space.cardPadding - vivid == block.width, "\(density) \(action)")
+                #expect(vivid >= width, "\(density) \(action)")
+                let solid = DSCardAppearance.headerTrailingSpace(on: .solid, actionWidth: width, tokens)
+                #expect(solid == (action == .none ? 0 : box + gap), "\(density) \(action)")
             }
-            #expect(DSCardAppearance.headerTrailingSpace(on: .solid, actionWidth: 0, tokens) == 0)
-            let open = DSCardAppearance.actionWidth(.open, tokens)
-            #expect(open == tokens.size.iconSm)
-            #expect(DSCardAppearance.headerTrailingSpace(on: .solid, actionWidth: open, tokens) == open + tokens.space.step3)
-            #expect(DSCardAppearance.actionWidth(.custom, tokens) == tokens.size.controlMd)
         }
+    }
+
+    /// Behavior 15: the title takes two lines at most and the caption one, both with an ellipsis, so a long string
+    /// truncates instead of growing the header past the block. The web Card clamps to the same two numbers
+    /// (`web/packages/react/src/card/parts.ts`, `cardTitleLines` and `cardCaptionLines`).
+    @Test func titleAndCaptionLineBudget() throws {
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("The title takes two lines at most and the caption one, both truncating with an ellipsis"))
+        #expect(DSCardAppearance.titleLines == 2)
+        #expect(DSCardAppearance.captionLines == 1)
     }
 
     // MARK: - action
@@ -184,10 +242,26 @@ struct DSCardBindingTests {
             default: nil
             }
             #expect(DSCardAppearance.actionBorder(on: material) == border, "\(material)")
-            let solid = DSCardAppearance.actionSolid(on: material)
-            #expect(solid.fill == (material == .vivid ? \DSTokenSet.color.bgFillInverseMedia : \DSTokenSet.color.bgFillInverse), "\(material)")
-            #expect(solid.glyph == (material == .vivid ? \DSTokenSet.color.textOnInverseMedia : \DSTokenSet.color.textOnInverse), "\(material)")
         }
+        #expect(DSCardAppearance.actionBorderWidth(Self.tokens().border) == Self.tokens().border.hairline)
+    }
+
+    /// `tokens.action.fill` and `tokens.action.glyphColor`, cell for cell: only `vivid` takes the media pair, and
+    /// every other published material — the scheme's glass included — takes the scheme's own inverse pair
+    /// (Card.yaml behavior 6, ADR-0029 §1 and §1.6, ADR-0030 §3.1-3.2).
+    @Test func actionDiscCells() {
+        let media: (fill: DSColorPath, glyph: DSColorPath) = (\.color.bgFillInverseMedia, \.color.textOnInverseMedia)
+        let scheme: (fill: DSColorPath, glyph: DSColorPath) = (\.color.bgFillInverse, \.color.textOnInverse)
+        #expect(DSCardAppearance.actionSolid(on: .vivid) == media)
+        #expect(DSCardAppearance.actionSolid(on: .glass) == scheme)
+        for material in DSSurfaceMaterial.allCases where material != .vivid {
+            let cells = DSCardAppearance.actionSolid(on: material)
+            #expect(cells == scheme, "\(material)")
+        }
+        // The disc binds Card's own cells, never IconButton's (ADR-0024 §5.2). `comp.icon-button.primary.bg.rest`
+        // aliases the same sys token today, so only the key path says which one was bound: these are the sys cells.
+        #expect(DSCardAppearance.actionSolid(on: .solid).fill != \DSTokenSet.components.iconButton.primaryBgRest)
+        #expect(DSCardAppearance.actionSolid(on: .solid).glyph != \DSTokenSet.components.iconButton.primaryIcon)
     }
 
     /// `open` with an action makes the whole card pressable; `custom` makes only its circle pressable; `none` is a
@@ -202,14 +276,68 @@ struct DSCardBindingTests {
         #expect(DSCardAction.custom(glyph: .actionPause, label: "Pause").kind == .custom)
     }
 
-    /// The open glyph under touch is always visible; under pointer it shows on hover and on keyboard focus.
-    @Test func openGlyphPerModality() {
+    /// Behavior 4: an `open` card with no handler draws the affordance `none` draws, and is laid out as `none` lays
+    /// out. A `custom` disc keeps its place either way (behavior 5).
+    @Test func aHandlerlessOpenCardRendersAsNone() {
+        #expect(DSCardAppearance.renderedAction(.open, hasAction: false) == .none)
+        #expect(DSCardAppearance.renderedAction(.open, hasAction: true) == .open)
+        for kind in [DSCardActionKind.none, .custom] {
+            for hasAction in [true, false] {
+                #expect(DSCardAppearance.renderedAction(kind, hasAction: hasAction) == kind, "\(kind) \(hasAction)")
+            }
+        }
+        let tokens = Self.tokens()
+        #expect(DSCardAppearance.actionWidth(DSCardAppearance.renderedAction(.open, hasAction: false), tokens) == 0)
+        #expect(
+            DSCardAppearance.headerTrailingSpace(
+                on: .solid, actionWidth: DSCardAppearance.actionWidth(DSCardAppearance.renderedAction(.open, hasAction: false), tokens), tokens
+            ) == DSCardAppearance.headerTrailingSpace(on: .solid, actionWidth: DSCardAppearance.actionWidth(.none, tokens), tokens)
+        )
+    }
+
+    /// The open glyph is the pressability cue: with no handler it is drawn in neither modality (behavior 4). On a
+    /// pressable card, touch shows it always and pointer reveals it on hover and on keyboard focus.
+    @Test func openGlyphPerModalityAndHandler() {
         let touch = Self.tokens(modality: .touch).interaction
         let pointer = Self.tokens(modality: .pointer).interaction
-        #expect(DSCardAppearance.showsOpenGlyph(interaction: touch, isHovered: false, isFocused: false))
-        #expect(!DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: false, isFocused: false))
-        #expect(DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: true, isFocused: false))
-        #expect(DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: false, isFocused: true))
+        #expect(DSCardAppearance.showsOpenGlyph(interaction: touch, isHovered: false, isFocused: false, isPressable: true))
+        #expect(!DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: false, isFocused: false, isPressable: true))
+        #expect(DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: true, isFocused: false, isPressable: true))
+        #expect(DSCardAppearance.showsOpenGlyph(interaction: pointer, isHovered: false, isFocused: true, isPressable: true))
+        for interaction in [touch, pointer] {
+            for hovered in [true, false] {
+                for focused in [true, false] {
+                    #expect(
+                        !DSCardAppearance.showsOpenGlyph(interaction: interaction, isHovered: hovered, isFocused: focused, isPressable: false),
+                        "hover \(hovered), focus \(focused)"
+                    )
+                }
+            }
+        }
+    }
+
+    /// `accessibility.role` and `accessibility.label`: a pressable card is one element named by its title, caption
+    /// and hero value; a card that is not pressable is a group named by its title alone, so its caption and hero are
+    /// read once, as the elements they are.
+    @Test @MainActor func accessibleName() {
+        func parts(action: DSCardAction, hasAction: Bool) -> DSCardParts {
+            DSCardParts(
+                title: "Line output", caption: "Last 24 hours", variant: .solid, vivid: .default, icon: nil,
+                action: action, hasAction: hasAction, hero: DSCardHero("86", trailing: ".4", unit: "%"),
+                size: .regular, backdrop: .none, isSelected: false, hasContent: false, hasAside: false
+            )
+        }
+        let pressable = parts(action: .open, hasAction: true)
+        #expect(pressable.isPressable)
+        #expect(pressable.accessibilityName == DSCardName(title: "Line output", caption: "Last 24 hours", hero: "86.4 %"))
+        for group in [
+            parts(action: .open, hasAction: false),
+            parts(action: .none, hasAction: true),
+            parts(action: .custom(glyph: .actionPause, label: "Pause line 4"), hasAction: true),
+        ] {
+            #expect(!group.isPressable, "\(group.action)")
+            #expect(group.accessibilityName == DSCardName(title: "Line output", caption: nil, hero: nil), "\(group.action)")
+        }
     }
 
     /// The icon ring and the action use their bound sizes.
@@ -233,6 +361,19 @@ struct DSCardBindingTests {
         #expect(DSCardAppearance.pressAnimation(reduced) == crossfade)
         #expect(DSCardAppearance.selectAnimation(reduced) == crossfade)
         #expect(DSControlAppearance.scale(isPressed: true, motion: reduced) == 1)
+    }
+
+    /// Behavior 16: the whole card presses at the magnitude every Prism control shares, so the card, the `custom`
+    /// disc inside it and Button's pill shrink by the same amount. The web pins the same number in
+    /// `--ds--card-press-scale` (`web/packages/react/test/card.test.tsx`), which is what keeps the pair together —
+    /// before specVersion 5 the web shrank a card to 0.98 and this side to 0.97, and no test could see it.
+    @Test @MainActor func thePressMagnitudeIsTheOneEveryControlShares() throws {
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("A press scales the whole card to 0.97"), "Card.yaml behavior 16 states the magnitude")
+        let standard = DSMotion(Self.tokens().motion)
+        #expect(DSCardAppearance.pressedScale == 0.97)
+        #expect(DSCardAppearance.pressedScale == DSControlAppearance.pressedScale)
+        #expect(abs(DSControlAppearance.scale(isPressed: true, motion: standard) - DSCardAppearance.pressedScale) < 0.000_1)
     }
 
     // MARK: - watchOS
@@ -296,9 +437,14 @@ struct DSCardRenderTests {
         #expect(DSCardAppearance.caption(on: selected) == \.color.textOnInverse)
     }
 
-    @Test func tintedPublishesThePageAndVividItsGradient() throws {
+    /// Behavior 7: a tinted card publishes `solid`, so its parts take the solid cells and a selected one takes the
+    /// solid outline. It never publishes `page`, the key a Chip turns its glass cells on.
+    @Test func tintedPublishesSolidAndVividItsGradient() throws {
         let tinted = try #require(Self.published { reader in DSCard("Sensor", variant: .tinted) { reader } })
-        #expect(tinted.material == (DSPlatform.isWatch ? .solid : .page))
+        #expect(tinted.material == .solid)
+        #expect(DSCardAppearance.title(on: tinted) == \.components.card.solidText)
+        #expect(DSCardAppearance.caption(on: tinted) == \.components.card.solidCaption)
+        #expect(DSCardAppearance.selectedBorder(on: tinted.material) == \.color.borderStrong)
         let vivid = try #require(Self.published { reader in DSCard("Average yield", variant: .vivid) { reader } })
         #expect(vivid.material == (DSPlatform.isWatch ? .solid : .vivid))
     }

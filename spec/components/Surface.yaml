@@ -1,6 +1,6 @@
 name: Surface
 layer: primitive
-specVersion: 2
+specVersion: 3
 status: draft
 summary: >-
   The container primitive every other component sits on. Resolves one of the content materials
@@ -51,6 +51,10 @@ props:
     type: enum
     values: [flat, raised, floating, overlay]
     default: flat
+    description: >-
+      unset, it is the default of the material the caller requested: `raised` for material raised
+      (elevation.1 is that material's own step, ADR-0030 §5.2) and `flat` for every other material,
+      solid included
   - name: padding
     type: enum
     values: [none, card]
@@ -139,6 +143,7 @@ tokens:
 behavior:
   - A glass material is rendered only when `backdrop` is image, map or vivid; otherwise it silently falls back and logs at debug level.
   - "Glass falls back to an opaque `raised` under any of four triggers: watchOS, Reduce Transparency, Increase Contrast, or a backdrop that is not image, map or vivid. The shape is filled with color.bg.page and color.bg.surface.raised is painted over it; blur, saturation, edge, grain and bloom are dropped, and the requested radius and elevation stay."
+  - "Unset, `elevation` takes the default of the material the caller requested: material raised draws elevation.1, its own step (ADR-0030 §5.2), and every other material draws elevation.0. A declared elevation always wins, and under the glass fallback the surface keeps the elevation it requested, so a glass surface that asked for none stays flat: the fallback changes what is drawn, not what was asked for."
   - "`selected` matters only under the fallback: a selected glass surface renders and publishes `inverse` instead of `raised`, because `raised` alone cannot show which one is selected."
   - Surface reads Prism's token context for the contrast, transparency and platform triggers, never the operating system settings.
   - The resolved material and the backdrop kind are published to descendants (`dsSurfaceContext` on Apple, data attributes on web) so Text and charts pick their foreground family automatically.
@@ -204,5 +209,8 @@ notes:
   platform:
     watchos: Only page, solid, raised, nested, inverse and accent exist; vivid resolves to solid, and glass and glassLight take the raised fallback of the behavior bullet (watchOS is its first trigger).
     macos: Identical to iOS; hover does not change a surface.
-  design: The surface ladder and the glass rule come from the references (docs/research/visual-dna.md §1 principles 5-6); the edge, bloom and grain geometry is ADR-0030 §4.
+  design: >-
+    The surface ladder and the glass rule come from the references (docs/research/visual-dna.md §1
+    principles 5-6); the edge, bloom and grain geometry is ADR-0030 §4. specVersion 3 writes down the
+    per-material default of `elevation`, which both stacks implement and no sentence stated.
   references: [docs/adr/0009-materials-in-layers.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

@@ -1,5 +1,5 @@
 /*
- * Card (spec/components/Card.yaml, specVersion 2). Compiled into styles.css by scripts/build-styles.ts
+ * Card (spec/components/Card.yaml, specVersion 5). Compiled into styles.css by scripts/build-styles.ts
  * (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * A Card's root is a Surface, so this sheet follows Surface.css in the build and refines the Surface's own
@@ -18,8 +18,13 @@
 @layer ds.components {
   .ds-card {
     --ds--card-outline: transparent;
-    /* The press scale on motion.spring.snappy; 1 under Reduce Motion, where the overlay alone shows the press. */
-    --ds--card-press-scale: calc(1 - 0.02 * (1 - var(--ds-motion-presentation-crossfade)));
+    /*
+     * Behavior 16: a press scales the whole card to 0.97 on motion.spring.snappy, the magnitude every Prism control
+     * shares (docs/research/visual-dna.md §1 principle 9) — the same number the disc below takes and the same number
+     * Button's pill takes, so a card and the disc inside it shrink alike. 1 under Reduce Motion, where the overlay
+     * alone shows the press (ADR-0023 §8.4 item 2). Apple takes it from DSControlAppearance.pressedScale.
+     */
+    --ds--card-press-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
     /* motion.select on motion.spring.smooth; under Reduce Motion a crossfade over motion.duration.base. */
     --ds--card-select-duration: calc(
       var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
@@ -31,6 +36,13 @@
 
     display: flex;
     flex-direction: column;
+    /*
+     * root.gap (behavior 17): the minimum between the three rows of the anatomy — the header, the body slot and the
+     * footer. Card.tsx renders no body slot when the card has no children, exactly as `DSCardAnatomy` draws none
+     * when `hasContent` is false, so a card without a body keeps the one gap between its header and its footer
+     * rather than two around an empty box, and a card that shrinks to its content lays out as the Apple one does.
+     */
+    row-gap: var(--ds-space-4);
     min-inline-size: 0;
     outline: none;
     -webkit-tap-highlight-color: transparent;
@@ -42,7 +54,7 @@
     --ds--surface-fill: var(--ds-card-solid-bg);
   }
 
-  /* Behavior 7: the lit focus sheet, color.bg.tint.accent over the page the solid surface paints. */
+  /* Behavior 10: the lit focus sheet, color.bg.tint.accent over the page the solid surface paints. */
   .ds-card[data-ds-variant="tinted"][data-ds-material="solid"] {
     --ds--surface-fill: var(--ds-color-bg-tint-accent);
   }
@@ -71,7 +83,7 @@
     --ds--surface-gradient: var(--ds-gradient-vivid-4);
   }
 
-  /* ---- root.radius (behavior 10), root.padding and root.shadow ---- */
+  /* ---- root.radius (behavior 13), root.padding and root.shadow ---- */
 
   .ds-card[data-ds-card-radius="compact"] {
     --ds--surface-radius-own: var(--ds-card-radius-compact);
@@ -97,7 +109,7 @@
     --ds--surface-shadow: var(--ds-card-shadow-floating);
   }
 
-  /* ---- selected (behavior 4): the lift and the outline, by published material ---- */
+  /* ---- selected (behavior 7): the lift and the outline, by published material ---- */
 
   .ds-card[data-ds-selected] {
     --ds--surface-shadow: var(--ds-card-shadow-floating);
@@ -138,7 +150,9 @@
     transition: background-color var(--ds-motion-duration-base) var(--ds-motion-easing-out);
   }
 
-  /* Behavior 8: hover adds the neutral overlay on solid and tinted, pointer only; vivid and glass do not change. */
+  /* Behavior 11: hover adds the neutral overlay on a pressable solid or tinted card, pointer only; a card with
+   * nothing to press takes no hover cue, and vivid and glass do not change. The React Card writes
+   * data-hovered only on a pressable card, so `pressable && isHovered` is the condition these rules read. */
   .ds-card:is([data-ds-variant="solid"], [data-ds-variant="tinted"]) {
     @variant ds-pointer {
       &[data-hovered] > [data-ds-slot="card-overlay"] {
@@ -182,8 +196,9 @@
     mask-composite: exclude;
   }
 
-  /* ---- layout (behavior 2) ---- */
+  /* ---- layout (behavior 2), with the header geometry of behavior 14 ---- */
 
+  /* header.gap: the space between the heading and the affordance at the padding corner. */
   .ds-card > [data-ds-slot="card-header"] {
     display: flex;
     align-items: flex-start;
@@ -199,16 +214,35 @@
     min-inline-size: 0;
   }
 
+  /*
+   * Behavior 14: on vivid the header ends at the V2 header block whatever the action, because that block
+   * is the region the grain and the bloom are cut out of (ADR-0022 §4.1; the mask above and the one in
+   * Surface.css measure the same `size.control.md + space.5`). A card with no affordance — `action: none`,
+   * or `open` with no handler — renders no action slot, so the heading is the header's only child; it
+   * then reserves the block as padding instead of as a sibling and a gap, and the caption stops where the
+   * cut-out stops rather than running on over the grain. `DSCardAppearance.headerTrailingSpace(on: .vivid,
+   * …)` reserves the same room on Apple, where it is a trailing padding on the header for every action.
+   */
+  .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"]:only-child {
+    padding-inline-end: calc(var(--ds-size-control-md) + var(--ds-space-5));
+  }
+
   .ds-card > [data-ds-slot="card-body"] {
     flex: 1 1 auto;
     min-block-size: 0;
   }
 
+  /*
+   * The footer keeps the bottom of the card: the body absorbs the slack when there is one (`flex: 1 1 auto`), and
+   * with no body the auto margin does, the way `Spacer(minLength: 0)` does above `DSCardAnatomy`'s footer. The
+   * margin resolves to 0 on a card that is only as tall as its content, which leaves the row gap above.
+   */
   .ds-card > [data-ds-slot="card-footer"] {
     display: flex;
     flex-wrap: wrap;
     align-items: last baseline;
     justify-content: space-between;
+    margin-block-start: auto;
     gap: var(--ds-space-3);
   }
 
@@ -233,12 +267,19 @@
     block-size: var(--ds-size-icon-md);
   }
 
-  /* V3: on vivid the unit joins the caption line, space.2 after the caption. */
-  .ds-card-caption > [data-ds-slot="card-caption-unit"][data-ds-after-caption] {
-    margin-inline-start: var(--ds-space-2);
-  }
+  /*
+   * V3: on vivid the unit joins the caption line. What separates it from the caption is text — the space, middle dot
+   * and space of behavior 9, written by Card.tsx into the caption's own string (`cardUnitSeparator`, the string
+   * `DSCardAppearance.unitSeparator` holds on Apple) — and not a margin, so the words stay apart in the caption's
+   * text content and therefore in the single accessible name a pressable card builds from it through
+   * `aria-labelledby`. There is no rule here: the unit slot is a styling hook, not a gap.
+   */
 
-  /* action: a size.control.md box at the top-right padding corner, the glyph at size.icon.sm. */
+  /*
+   * action.size: one box at the top-right padding corner for either affordance (behavior 14) — the custom
+   * disc fills it, the open glyph is centred in it at action.iconSize — so the two sit in one place and
+   * the header reserves one width for either. `DSCardAppearance.actionWidth(_:_:)` gives both the same box.
+   */
   .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
     box-sizing: border-box;
     display: grid;
@@ -254,7 +295,12 @@
     block-size: var(--ds-size-icon-sm);
   }
 
-  /* The open glyph shows on hover, press and keyboard focus under pointer, and always under touch. */
+  /*
+   * The open glyph shows on hover, press and keyboard focus under pointer, and always under touch.
+   * It is drawn only on a pressable card, so these rules only ever meet a slot the React Card
+   * rendered: an `open` card with no `onAction` draws no glyph and no control at all, and its header
+   * is laid out as `action: none` lays it out (Card.yaml behavior 4).
+   */
   .ds-card[data-ds-action="open"] {
     @variant ds-pointer {
       & > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
@@ -267,7 +313,7 @@
     }
   }
 
-  /* ---- title.color, caption.color and action.color by published material (behavior 9) ---- */
+  /* ---- title.color, caption.color and action.color by published material (behavior 12) ---- */
 
   .ds-card[data-ds-material="solid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
     color: var(--ds-card-solid-text);
@@ -335,12 +381,12 @@
   }
 
   /*
-   * action: custom, the one solid circular IconButton (IconButton.yaml primary: the inverse solid, the
-   * white inverse-media solid on vivid and glass), ringed in action.border on vivid and glass, where a
-   * white disc needs an edge.
+   * action: custom, the one inverse solid on the card. It follows IconButton's grammar but binds Card's
+   * own cells, never comp.icon-button.* (Card.yaml behavior 5, ADR-0024 §5.2): action.fill under
+   * action.glyphColor, keyed by the material the Surface publishes, at action.borderWidth.
    */
   .ds-card-action-button {
-    --ds--card-disc-fill: var(--ds-icon-button-primary-bg-rest);
+    --ds--card-disc-fill: var(--ds-color-bg-fill-inverse);
     --ds--card-disc-overlay: transparent;
     --ds--card-disc-ring: transparent;
     --ds--card-disc-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
@@ -359,7 +405,7 @@
     background-color: var(--ds--card-disc-fill);
     background-image: linear-gradient(var(--ds--card-disc-overlay), var(--ds--card-disc-overlay));
     box-shadow: inset 0 0 0 var(--ds-border-hairline) var(--ds--card-disc-ring);
-    color: var(--ds-icon-button-primary-icon);
+    color: var(--ds-color-text-on-inverse);
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     transition: scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
@@ -373,13 +419,17 @@
     inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
   }
 
-  .ds-card:is([data-ds-material="vivid"], [data-ds-material="glass"]) > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {
-    --ds--card-disc-fill: var(--ds-color-bg-fill-inverse-media);
-    color: var(--ds-color-text-on-inverse-media);
-  }
-
+  /*
+   * Only vivid takes the white media pair. The scheme's glass keeps the scheme's own inverse: since
+   * ADR-0029 §1 that glass is light glass in light and smoke in dark, so color.bg.fill.inverse is
+   * already ink on the one and white on the other, and a white disc would disappear on light glass over
+   * the bright imagery ADR-0029 §1.6 allows under it — the same reason its ring is
+   * color.border.on-glass-fill and not the white color.border.on-media (ADR-0030 §3.1-3.2).
+   */
   .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {
+    --ds--card-disc-fill: var(--ds-color-bg-fill-inverse-media);
     --ds--card-disc-ring: var(--ds-color-border-on-media);
+    color: var(--ds-color-text-on-inverse-media);
   }
 
   .ds-card[data-ds-material="glass"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {

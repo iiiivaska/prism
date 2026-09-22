@@ -1,9 +1,11 @@
 /**
- * The enums of spec/components/Card.yaml (specVersion 2) and the two choices Card makes in React: which
- * Surface material a variant renders, and which `root.radius` cell a card takes. test/card.test.tsx
- * reads the spec and checks both.
+ * The enums of spec/components/Card.yaml (specVersion 5) and the choices Card makes in React: which
+ * Surface material a variant renders, which `root.radius` cell a card takes, the line budget of the
+ * header block, and the separator that joins the vivid unit to the caption. test/card.test.tsx reads
+ * the spec and checks them.
  */
 import type { Density } from "@iiiivaska/prism-tokens";
+import type { IconName } from "../generated/icons.ts";
 import type { SurfaceMaterial, SurfaceRadius } from "../surface/resolve.ts";
 import type { TextTone } from "../text/tones.ts";
 
@@ -11,9 +13,75 @@ import type { TextTone } from "../text/tones.ts";
 export const cardVariants = ["solid", "vivid", "glass", "tinted"] as const;
 export type CardVariant = (typeof cardVariants)[number];
 
-/** Card.yaml `action`. */
+/** Card.yaml `action`, the three kinds; `CardAction` is the value a card is given. */
 export const cardActions = ["none", "open", "custom"] as const;
-export type CardAction = (typeof cardActions)[number];
+export type CardActionKind = (typeof cardActions)[number];
+
+/**
+ * The `custom` action: Card.yaml's one solid circular disc, with the two things the spec makes required
+ * of it — `actionIcon`, "a registry id, required with `action: custom` and never inferred from the
+ * card", and `actionLabel`, what the operation does, "never inferred from the glyph id, and never the
+ * title" (ADR-0011 rule 4: every icon-only control has a registry label). A pause, a delete and an open
+ * are three different operations behind one shape, so neither can be defaulted.
+ *
+ * Card.yaml `action` licenses a stack to bundle the three props into one value "as long as `custom`
+ * cannot be written without them", which is what this object is; the web twin of
+ * `DSCardAction.custom(glyph:label:)` (swift/Sources/DSComponents/Card/DSCardOptions.swift).
+ */
+export interface CardCustomAction {
+  readonly kind: "custom";
+  /** A registry id of spec/icons/registry.json, drawn at `action.iconSize`. */
+  readonly icon: IconName;
+  /** The button's accessibility name and its pointer tooltip: the operation ("Pause line 4"). */
+  readonly label: string;
+}
+
+/**
+ * Card.yaml `action`, `actionIcon` and `actionLabel` in one value: `none`, `open`, or one custom action
+ * with its glyph and its name. The bare string `"custom"` is not a value of this prop — the payload is
+ * part of the case, as it is on the Apple side, so a custom action cannot be written without the two
+ * things it needs (Card.yaml `action`, `usage.dont`).
+ */
+export type CardAction = "none" | "open" | CardCustomAction;
+
+/** The kind of an action, for the rules that do not need the glyph or the name (`DSCardActionKind`). */
+export function cardActionKind(action: CardAction): CardActionKind {
+  return typeof action === "string" ? action : action.kind;
+}
+
+/**
+ * Whether the whole card is the button (Card.yaml behavior 3 with `accessibility.role`): "A card is
+ * pressable when `action: open` and `onAction` is set". A card that is announced and focused as a
+ * button but activates nothing is a dead control, as `DSCardAppearance.isPressable(_:hasAction:)` has
+ * it on the Apple side. `custom` puts the press on its disc alone, and `none` is a group.
+ *
+ * It is also the test for the open glyph and for the hover cue: behavior 4 draws no glyph on an `open`
+ * card with no handler, and behavior 11 gives a card with nothing to press no hover cue.
+ */
+export function isCardPressable(action: CardAction, hasAction: boolean): boolean {
+  return action === "open" && hasAction;
+}
+
+/**
+ * Card.yaml behavior 15: "The title takes two lines at most and the caption one, both truncating with an
+ * ellipsis". The header block (ADR-0022 §4.1) is that budget, so a long title truncates instead of
+ * growing the header, pushing the hero down and overflowing a card whose size the grid sets. The Apple
+ * side clamps to the same two numbers (`DSCardAppearance.titleLines`, `.captionLines`).
+ */
+export const cardTitleLines = 2;
+export const cardCaptionLines = 1;
+
+/**
+ * Card.yaml behavior 9: what joins the hero's unit to the caption line on vivid — a space, a middle dot and a
+ * space, so a caption of `Dollars per batch` with a unit of `kg` is the one line `Dollars per batch · kg`.
+ *
+ * It is text inside the caption element, never a margin between two boxes: the caption's own text content carries
+ * the break, and so does the single accessible name a pressable card builds out of title, caption and hero
+ * (`aria-labelledby`). Without it the caption read "Dollars per batchkg" to a screen reader while the pixels looked
+ * right. Apple writes the same string as `DSCardAppearance.unitSeparator`; a card with no caption shows the unit
+ * alone, with no leading separator.
+ */
+export const cardUnitSeparator = " · ";
 
 /** Card.yaml `size`. */
 export const cardSizes = ["compact", "regular", "large"] as const;
@@ -31,9 +99,10 @@ export interface CardHero {
 }
 
 /**
- * The Surface material a variant asks for (Card.yaml behavior 1). `tinted` is a solid surface whose fill
- * is color.bg.tint.accent over the page (behavior 7), so it publishes `solid` and its text takes the
- * standard tones. Glass may still fall back inside Surface.
+ * The Surface material a variant asks for (Card.yaml behavior 1). `tinted` publishes `solid`, never
+ * `page`: its fill is color.bg.tint.accent over the color.bg.page every opaque surface paints under
+ * itself (behavior 10, ADR-0030 §5.1), so its text takes the standard tones and its selection cue is the
+ * solid outline color.border.strong. Glass may still fall back inside Surface.
  */
 export function surfaceMaterialOf(variant: CardVariant): SurfaceMaterial {
   switch (variant) {
@@ -48,7 +117,7 @@ export function surfaceMaterialOf(variant: CardVariant): SurfaceMaterial {
 }
 
 /**
- * The `root.radius` cell (behavior 10): `size: large` takes comp.card.radius.large, `size: compact` and
+ * The `root.radius` cell (behavior 13): `size: large` takes comp.card.radius.large, `size: compact` and
  * compact density take comp.card.radius.compact, and everything else comp.card.radius.regular.
  */
 export function radiusCellOf(size: CardSize, density: Density): CardSize {

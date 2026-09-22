@@ -1,5 +1,5 @@
 /**
- * `Surface` (spec/components/Surface.yaml, specVersion 2): the container primitive every other
+ * `Surface` (spec/components/Surface.yaml, specVersion 3): the container primitive every other
  * component sits on.
  *
  * - It resolves the material with `resolveSurface` from `useTokenContext()` (ADR-0022 §1.3, ADR-0025
@@ -20,6 +20,7 @@ import { isDevelopment } from "../env.ts";
 import { SurfaceContext, useSurfaceContext, type SurfaceContextValue } from "./context.ts";
 import {
   resolveSurface,
+  surfaceElevation,
   type BackdropKind,
   type SurfaceElevation,
   type SurfaceMaterial,
@@ -36,8 +37,11 @@ export interface SurfaceProps extends ScopeAttributes, Omit<HTMLAttributes<HTMLD
   /** Default `card`. Nested surfaces never exceed their parent's radius minus its padding. */
   readonly radius?: SurfaceRadius;
   /**
-   * Default `flat`, except on a surface that renders `raised`, whose own default is `raised`
-   * (`elevation.1`, ADR-0030 §5.2); so the glass fallback keeps the elevation the glass surface declares.
+   * Default `flat`, except on a surface that asks for `raised`, whose own default is `raised`
+   * (`elevation.1`, ADR-0030 §5.2). The default follows the requested material, so the glass fallback
+   * keeps the elevation the glass surface declares — undeclared, that is `flat` (ADR-0022 §1.1).
+   * Surface.yaml specVersion 3 writes this per-material default down, in the `elevation` prop and in
+   * the behavior bullet beside the fallback; nothing here changes.
    */
   readonly elevation?: SurfaceElevation;
   /** Default `card` (`space.card-padding`). */
@@ -96,7 +100,7 @@ export function Surface(props: SurfaceProps): ReactNode {
       data-ds-backdrop={backdrop}
       data-ds-radius={radius}
       data-ds-padding={padding}
-      data-ds-elevation={elevation ?? (material === "raised" ? "raised" : "flat")}
+      data-ds-elevation={surfaceElevation(elevation, requested)}
       data-ds-vivid={isVivid ? (vivid ?? "default") : undefined}
       data-ds-selected={selected ? "" : undefined}
       data-ds-fallback={resolution.isGlassFallback ? "" : undefined}

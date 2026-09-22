@@ -5,10 +5,11 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Surface.yaml` specVersion 2: the binding matrix, the fallback's drawing, and the geometry rules the
-/// behavior block states in words. Resolution itself (which material renders) is DSCore's and is covered by
-/// `DSSurfaceResolutionTests`; these tests check what `DSSurfaceView` draws for each resolution.
-@Suite("Surface bindings and geometry (Surface.yaml v2)")
+/// `spec/components/Surface.yaml` specVersion 3: the binding matrix, the per-material default of `elevation`, the
+/// fallback's drawing, and the geometry rules the behavior block states in words. Resolution itself (which material
+/// renders) is DSCore's and is covered by `DSSurfaceResolutionTests`; these tests check what `DSSurfaceView` draws for
+/// each resolution.
+@Suite("Surface bindings and geometry (Surface.yaml v3)")
 struct DSSurfaceBindingTests {
     static func tokens(
         scheme: DSColorScheme = .light,
@@ -97,7 +98,11 @@ struct DSSurfaceBindingTests {
         }
     }
 
-    /// `tokens.root.shadow`, and the level a Surface draws when none is declared.
+    /// `tokens.root.shadow`, and the level a Surface draws when none is declared: specVersion 3 states it in the
+    /// `elevation` prop and in behavior — the default of the material the caller **requested**, `raised` for material
+    /// raised (`elevation.1`, ADR-0030 §5.2) and `flat` for every other material, with a declared elevation always
+    /// winning. The requested material is what counts, so a glass surface that asked for nothing stays flat under the
+    /// fallback.
     @Test func elevationCells() {
         for scheme in DSColorScheme.allCases {
             let elevation = Self.tokens(scheme: scheme).elevation
@@ -110,7 +115,11 @@ struct DSSurfaceBindingTests {
             let expected: DSSurfaceElevation = material == .raised ? .raised : .flat
             #expect(DSSurfaceAppearance.elevation(declared: nil, requested: material) == expected, "\(material)")
             #expect(DSSurfaceAppearance.elevation(declared: .overlay, requested: material) == .overlay, "\(material)")
+            #expect(DSSurfaceElevation.materialDefault(for: material) == expected, "\(material)")
         }
+        // The fallback changes what is drawn, not what was asked for: glass that declared nothing stays flat.
+        #expect(DSSurfaceAppearance.elevation(declared: nil, requested: .glass) == .flat)
+        #expect(DSSurfaceAppearance.elevation(declared: .floating, requested: .glass) == .floating)
     }
 
     /// "Solid surfaces never draw a border or a shadow at `flat`": `elevation.0` carries nothing to draw.
@@ -259,5 +268,45 @@ struct DSSurfaceBindingTests {
         let reduced = DSMotion(Self.tokens(motion: .reduced).motion)
         #expect(DSSurfaceAppearance.materialChange(standard) == standard.tokens.springSmooth.animation)
         #expect(DSSurfaceAppearance.materialChange(reduced) == reduced.tokens.easingOut.animation(duration: reduced.tokens.durationBase))
+    }
+
+    // MARK: - The published context
+
+    /// The context a Surface publishes reaches the views inside it: the material it renders. The render is only the
+    /// vehicle — nothing here reads a pixel, so it stays on the host, where `DSSurfaceRenderTests` (DSSnapshotTests,
+    /// the simulator) cannot.
+    @Test @MainActor func descendantsReadThePublishedMaterial() {
+        var published: [DSSurfaceMaterial: DSSurfaceContext] = [:]
+        for material in [DSSurfaceMaterial.solid, .vivid, .inverse] {
+            let probe = ContextProbe()
+            let view = DSTheme {
+                DSSurfaceView(material: material) { ContextReader(probe: probe) }
+            }
+            _ = ImageRenderer(content: view).cgImage
+            published[material] = probe.value
+        }
+        #expect(published[.solid] == DSSurfaceContext(material: .solid))
+        #expect(published[.vivid]?.material == (DSPlatform.isWatch ? .solid : .vivid))
+        #expect(published[.inverse] == DSSurfaceContext(material: .inverse))
+    }
+}
+
+final class ContextProbe {
+    var value: DSSurfaceContext?
+}
+
+struct ContextReader: View {
+    let probe: ContextProbe
+    @Environment(\.dsSurfaceContext) private var context
+
+    // Written out: a private stored property makes the synthesized memberwise initializer private, which Swift 6.3
+    // (Xcode 26.6, the CI pin) rejects at the call site.
+    init(probe: ContextProbe) {
+        self.probe = probe
+    }
+
+    var body: some View {
+        probe.value = context
+        return Color.clear.frame(width: 1, height: 1)
     }
 }

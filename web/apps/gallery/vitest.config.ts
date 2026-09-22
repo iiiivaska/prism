@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
 import type { Plugin } from "vite";
@@ -15,8 +16,44 @@ import { defineConfig } from "vitest/config";
  *   `font-synthesis` and the equal-width figures (ADR-0021 rules 5 and 8);
  * - `node`: the generated stories against the specs.
  *
+ * Every project renders `@iiiivaska/prism-react` from its source, not from its last build
+ * (`prismReactSource` below), so a suite can only be green about code that is in the tree.
+ *
  * Browsers come from Playwright's own cache or PLAYWRIGHT_BROWSERS_PATH; CI installs Chromium first.
  */
+
+const reactPackage = join(import.meta.dirname, "..", "..", "packages", "react");
+const reactEntry = join(reactPackage, "src", "index.ts");
+const reactStyles = join(reactPackage, "src", "styles.css");
+
+/**
+ * The gallery's runtime dependency is the published package, which resolves to `dist/` — what ships,
+ * and what `storybook build` renders (.storybook/main.ts). For a test run that is the wrong thing to
+ * read: a suite over `dist/` is green about the last build, so a change reverted in `src` leaves it
+ * green and the suite stops being evidence about the code under review.
+ *
+ * So the tests resolve the package to its source: `@iiiivaska/prism-react` to `src/index.ts` (the
+ * alias below, anchored so the subpath exports are untouched) and `@iiiivaska/prism-react/styles.css`
+ * to `src/styles.css` compiled here exactly as `scripts/build-styles.ts` compiles it for `dist`, since
+ * the source entry is a Tailwind entry (`@variant ds-pointer`) that a browser cannot read. Nothing in
+ * the gallery's own sources changes, and no build has to run first.
+ */
+function prismReactSource(): Plugin {
+  let styles: Promise<string> | null = null;
+  return {
+    name: "prism:react-source",
+    enforce: "pre",
+    resolveId(id) {
+      return id === "@iiiivaska/prism-react/styles.css" ? reactStyles : null;
+    },
+    load(id) {
+      if (id !== reactStyles) return null;
+      styles ??= import(pathToFileURL(join(reactPackage, "scripts", "build-styles.ts")).href).then((module: { buildStyles: () => Promise<string> }) => module.buildStyles());
+      return styles;
+    },
+  };
+}
+
 /**
  * Storybook 10.6's story-test guard asks whether `import.meta.url` includes Vitest's file path, but the URL
  * is percent-encoded and the path is not, so in a checkout under a non-ASCII directory (the owner's is)
@@ -45,11 +82,13 @@ function chromium() {
 }
 
 export default defineConfig({
+  plugins: [prismReactSource()],
+  resolve: { alias: [{ find: /^@iiiivaska\/prism-react$/u, replacement: reactEntry }] },
   test: {
     projects: [
       {
         extends: true,
-        plugins: [storybookTest({ configDir: join(import.meta.dirname, ".storybook") }), decodeStoryTestGuard()],
+        plugins: [storybookTest({ configDir: join(import.meta.dirname, ".storybook") }), decodeStoryTestGuard(), prismReactSource()],
         test: { name: "storybook", browser: chromium() },
       },
       {

@@ -45,11 +45,19 @@ interface Spec {
 }
 
 /**
- * A required `action` prop (Button's `onPress`) is never part of an example's props, so the story file
- * gives it a spy from `storybook/test` once, in the meta; Storybook's actions panel then shows the call.
+ * An `action` prop (Button's `onPress`, Card's `onAction`) is a handler, and spec/SCHEMA.md's example
+ * grammar carries prop values only — never a callback. So the story file gives every action prop a spy
+ * from `storybook/test` once, in the meta, and Storybook's actions panel shows the call.
+ *
+ * That is spec/SCHEMA.md's rule, not this generator's convenience: "Both galleries pass a no-op handler
+ * for each prop of type `action` the spec declares, whether or not the example's `props` name it", so
+ * an example renders the component's interactive form in both stacks. Card.yaml's `action: open`
+ * "makes the whole card pressable" only with one, and without a handler the card is deliberately not a
+ * control and draws no open glyph (behaviors 3 and 4) — a different picture, which belongs in a probe
+ * (src/probes/CardAction.stories.tsx), never in an example.
  */
 function actionArgs(spec: Spec): string[] {
-  return (spec.props ?? []).filter((prop) => prop.type === "action" && prop.required === true).map((prop) => prop.name);
+  return (spec.props ?? []).filter((prop) => prop.type === "action").map((prop) => prop.name);
 }
 
 /** The component names `implemented` declares, read as text like `pnpm parity:report` reads it. */

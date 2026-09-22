@@ -46,6 +46,23 @@ struct DSComponentsContractTests {
         return rest[..<end].matches(of: /(?m)^  - id:\s*([\w-]+)\s*$/).map { String($0.1) }
     }
 
+    /// The names of the `props` entries of type `action`, in order: the handlers spec/SCHEMA.md gives every example.
+    static func actionProps(_ yaml: String) -> [String] {
+        guard let start = yaml.range(of: "\nprops:\n") else { return [] }
+        let rest = yaml[start.upperBound...]
+        let end = rest.firstMatch(of: /(?m)^\w/)?.range.lowerBound ?? rest.endIndex
+        var out: [String] = []
+        var current: String?
+        for line in rest[..<end].split(separator: "\n") {
+            if let name = line.firstMatch(of: /^  - name:\s*(\w+)\s*$/) {
+                current = String(name.1)
+            } else if let current, line.firstMatch(of: /^    type:\s*action\s*$/) != nil {
+                out.append(current)
+            }
+        }
+        return out
+    }
+
     /// The `schemes` an example declares, by id; an example that declares none renders in both.
     static func exampleSchemes(_ yaml: String) -> [String: [String]] {
         guard let start = yaml.range(of: "\nexamples:\n") else { return [:] }
@@ -109,8 +126,85 @@ struct DSComponentsContractTests {
     }
 }
 
+/// "Every example gets its handlers" (spec/SCHEMA.md, "Examples and snapshots") on the side that cannot generate
+/// its examples.
+///
+/// Both galleries pass a no-op handler for each prop of type `action` a spec declares, so one example id is the same
+/// thing on both stacks. The web enforces it mechanically — `scripts/stories.ts` spies every `action` prop and
+/// `test/stories.test.ts` fails on any drift from the generated file — while this example set is written by hand, so
+/// a new Card example without `onAction: {}` would silently be a group on Apple and a button on the web, which is
+/// exactly the defect the second review round found.
+///
+/// The rule is read off the rendered examples, not off the source: every Card publishes the form it renders
+/// (`DSCardFormKey`), so this asks each example what it actually built. Nothing here reads a pixel, so it runs on the
+/// host as well as on the simulators.
+@MainActor
+@Suite("Every example gets its handlers (spec/SCHEMA.md)", .serialized)
+struct DSExampleHandlerTests {
+    final class FormProbe {
+        var value: [DSCardForm] = []
+    }
+
+    /// The forms of every Card an example renders, read out of the preference the cards publish.
+    static func cardForms(_ example: DSExample) -> [DSCardForm] {
+        let probe = FormProbe()
+        let view = DSTheme { example.content() }
+            .backgroundPreferenceValue(DSCardFormKey.self) { forms in
+                probe.value = forms
+                return Color.clear
+            }
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 1
+        _ = renderer.cgImage
+        return probe.value
+    }
+
+    /// Card is the one implemented spec whose `action` prop is optional in the Swift API, so it is the one whose
+    /// examples could lose their handler: `DSButton`'s `action` is a required parameter, which makes a Button example
+    /// without one a compile error rather than a different picture.
+    @Test func cardIsTheSpecWhoseHandlerCanBeForgotten() throws {
+        var withActions: [String: [String]] = [:]
+        for name in DSComponentsContractTests.implemented {
+            let props = DSComponentsContractTests.actionProps(try DSComponentsContractTests.spec(name))
+            if !props.isEmpty { withActions[name] = props }
+        }
+        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"]])
+    }
+
+    /// Every Card example renders a card that was given its `onAction`, so an `open` example is the pressable card
+    /// with its glyph — the same form the web story renders — and a `custom` one is the disc that presses.
+    @Test func everyCardExampleCarriesItsHandler() throws {
+        let examples = DSExamples.all.filter { $0.component == "Card" }
+        #expect(!examples.isEmpty)
+        for example in examples {
+            let forms = Self.cardForms(example)
+            #expect(!forms.isEmpty, "\(example.id): no Card published a form; did the example stop rendering one?")
+            for form in forms {
+                #expect(form.hasAction, "\(example.id): a Card with no `onAction: {}` — the web story has one (spec/SCHEMA.md)")
+                #expect(form.isPressable == (form.action == .open), "\(example.id): \(form)")
+            }
+        }
+    }
+
+    /// The probe itself: a card without a handler is read back as one, so the test above can fail.
+    @Test func theFormOfAHandlerlessCardIsReadBack() {
+        let handlerless = DSExample("Card", "probe") {
+            DSExampleStage { DSExampleCardFrame { DSCard("Batch 91", caption: "Queued") } }
+        }
+        let forms = Self.cardForms(handlerless)
+        #expect(forms == [DSCardForm(action: .open, hasAction: false)])
+        #expect(!(forms.first?.isPressable ?? true))
+    }
+}
+
 /// Every example renders, in each scheme it declares, and every glass example also under forced Reduce Transparency
 /// (roadmap P3-3).
+///
+/// This asks for an image of the right size, not for what is in it: an example whose body traps, or that lays out to
+/// nothing, fails here on any host. What it paints is the snapshot matrix's job, on the simulator — `swift test`
+/// copies Colors.xcassets uncompiled, so on the host every token colour resolves to nothing and the raster that comes
+/// back is correctly sized and empty (`DSSnapshotTests/DSRenderCapability`). Nothing here reads a pixel, so nothing
+/// here can be fooled by that.
 @MainActor
 @Suite("Every example renders", .serialized)
 struct DSExampleRenderTests {

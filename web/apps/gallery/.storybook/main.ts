@@ -11,7 +11,9 @@ import type { StorybookConfig } from "@storybook/react-vite";
  * owns and `test/stories.test.ts` holds to the specs.
  *
  * The stories import the built packages (`@iiiivaska/prism-react` → dist/), so the gallery renders what
- * ships: build the workspace before `storybook dev`, `storybook build` or `vitest`.
+ * ships: build the workspace before `storybook dev` or `storybook build`. `vitest` is the exception —
+ * it resolves the package to its source instead (vitest.config.ts `prismReactSource`), because a suite
+ * over the last build cannot say anything about the code under review.
  */
 const config: StorybookConfig = {
   framework: { name: "@storybook/react-vite", options: {} },
