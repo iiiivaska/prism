@@ -1,0 +1,17 @@
+<!doctype html>
+<!--
+  A Vite consumer of Prism (roadmap P3-6). `<html>` carries no `data-ds-*` attribute: the app hands
+  its choices to `<Theme>` and everything it does not choose follows the OS through the stylesheet's
+  own media queries (ADR-0019 §4 item 1).
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prism consumer fixture</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

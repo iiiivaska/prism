@@ -1,0 +1,30 @@
+/*
+  The stylesheet block agent/SKILL.md gives a consuming app, without Tailwind — four package subpaths
+  and nothing else. Every one of them is resolved by Vite through the packed package's `exports` map,
+  so a subpath the tarball leaves out fails the build here (critic C-14).
+*/
+@import "@iiiivaska/prism-tokens/brands/prism/tokens.css";
+@import "@iiiivaska/prism-tokens/brands/prism/fonts.css";
+@import "@iiiivaska/prism-tokens/motion.css";
+@import "@iiiivaska/prism-react/styles.css" layer(components);
+
+/* The app's own layout, in tokens: no hex, no px, no font name (SKILL rule 1). */
+body {
+  margin: 0;
+  padding: var(--ds-space-page-margin);
+  background-color: var(--ds-color-bg-page);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-ui);
+}
+
+.fixture-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-4);
+}
+
+.fixture-row {
+  display: flex;
+  gap: var(--ds-space-3);
+  align-items: center;
+}

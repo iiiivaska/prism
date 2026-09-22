@@ -58,6 +58,7 @@ jobs:
       licenses: ${{ steps.gates.outputs.licenses }}
       licenses_notices: ${{ steps.gates.outputs.licenses_notices }}
       gallery: ${{ steps.gates.outputs.gallery }}
+      gallery_pairs: ${{ steps.gates.outputs.gallery_pairs }}
       vrt: ${{ steps.gates.outputs.vrt }}
       snapshots: ${{ steps.gates.outputs.snapshots }}
     steps:
@@ -99,6 +100,7 @@ jobs:
           gate licenses         P2-4 tools/licenses/check.ts
           gate licenses_notices P2-4 tools/licenses/notices.ts
           gate gallery          P3-4 web/apps/gallery/.storybook/main.ts
+          gate gallery_pairs    P3-5 tools/gallery/build.ts
           gate vrt              P3-4 web/apps/vrt/playwright.config.ts
           # SwiftUI snapshot tests run once the first baselines are recorded next to them.
           if [ -n "$(find swift/Tests/DSSnapshotTests/__Snapshots__ -type f ! -name .gitkeep -print -quit 2>/dev/null)" ]; then
@@ -201,6 +203,31 @@ jobs:
         with:
           name: parity-report
           path: tools/parity/report.md
+      - name: Gallery pairs # P3-5
+        # Pairs both stacks' committed snapshots by name into gallery/, so this needs neither Xcode nor a
+        # browser: the Apple baselines (swift/Tests/DSSnapshotTests/__Snapshots__) and the Linux web
+        # baselines (web/apps/vrt/baselines/linux) are in the checkout. The writing mode first, so the
+        # artifact below is this run's page, and then the stale guard the tokens and parity steps use.
+        # The collected copies are gitignored; gallery/index.html and gallery/index.json are committed.
+        if: needs.plan.outputs.gallery_pairs == 'true'
+        run: |
+          pnpm --filter @iiiivaska/prism-tools gallery:build
+          # git status also catches an index that was never committed, which git diff would miss.
+          if [ -n "$(git status --porcelain -- gallery)" ]; then
+            git status --short -- gallery
+            git diff -- gallery
+            echo "::error::The gallery index is stale: run pnpm gallery:build and commit gallery/index.html and gallery/index.json."
+            exit 1
+          fi
+      - name: Upload the gallery # P3-5
+        # The whole page in one artifact: index.html, index.json and both stacks' images beside it, so a
+        # reviewer downloads it and opens index.html (ADR-0005: the gallery is the living canon).
+        if: needs.plan.outputs.gallery_pairs == 'true' && !cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: gallery
+          path: gallery
+          if-no-files-found: error
 
   web:
     name: Web and tools (lint, typecheck, build, test)
@@ -312,7 +339,7 @@ jobs:
         if: steps.vrt-record.outcome == 'success'
         shell: bash
         run: |
-          echo "::error title=VRT baselines recorded, not compared::This run recorded new Linux baselines instead of comparing against committed ones. Download the 'vrt-baselines' artifact of this run, unpack it into web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<viewport>.<scheme>.<density>.png), review the images, commit them, and push; the next run compares against them."
+          echo "::error title=VRT baselines recorded, not compared::This run recorded new Linux baselines instead of comparing against committed ones. Download the 'vrt-baselines' artifact of this run, unpack it into web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>.png, the platform being web-desktop or web-touch), review the images, commit them, and push; the next run compares against them."
           exit 1
       - uses: actions/upload-artifact@v7
         # Either mode: a compare run's diffs and traces, or what a recording run left behind when it
@@ -386,21 +413,21 @@ jobs:
         # only with the Xcode they were recorded with (XCODE_VERSION). Until the first set is committed (the plan's
         # `snapshots` gate is false) the step records them instead and fails, the next step uploads them as the
         # `snapshot-baselines-apple` artifact, and someone reviews and commits them. xcodebuild hands TEST_RUNNER_*
-        # variables to the tests without the prefix; the gallery pairs (P3-5) are written on every run.
+        # variables to the tests without the prefix. The P3-5 gallery is built from these baselines
+        # themselves, in the `contracts` job, so nothing here writes a second copy of an image.
         # The destination is pinned to the runtime the baselines are recorded on, not `latest`: a newer simulator
         # runtime rasterizes differently, and the suite would then fail for the runtime and not for the code
         # (swift/Tests/DSSnapshotTests/README.md, "Provenance"). Move this pin and the baselines together.
         id: swiftui-snapshots
         env:
           RECORD: ${{ needs.plan.outputs.snapshots != 'true' }}
-          TEST_RUNNER_DS_GALLERY_DIR: ${{ github.workspace }}/gallery/snapshots
         shell: bash
         run: |
           set -euo pipefail
           if [ "$RECORD" = true ]; then export TEST_RUNNER_DS_SNAPSHOT_RECORD=1; fi
           xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
           if [ "$RECORD" = true ]; then
-            echo "::error title=SwiftUI baselines recorded, not compared::This run recorded the SwiftUI snapshot baselines with Xcode $XCODE_VERSION instead of comparing, because swift/Tests/DSSnapshotTests/__Snapshots__ holds none. Download the 'snapshot-baselines-apple' artifact of this run, unpack it into swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.apple.<scheme>.<density>[.<variant>].png, beside the provenance.json that says what recorded them), review the images, commit them, and push; the next run compares against them."
+            echo "::error title=SwiftUI baselines recorded, not compared::This run recorded the SwiftUI snapshot baselines with Xcode $XCODE_VERSION instead of comparing, because swift/Tests/DSSnapshotTests/__Snapshots__ holds none. Download the 'snapshot-baselines-apple' artifact of this run, unpack it into swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.ios.<scheme>.<density>[.<variant>].png, beside the provenance.json that says what recorded them), review the images, commit them, and push; the next run compares against them."
             exit 1
           fi
       - name: Upload the recorded SwiftUI baselines # P3-3
@@ -410,9 +437,3 @@ jobs:
           name: snapshot-baselines-apple
           path: swift/Tests/DSSnapshotTests/__Snapshots__
           if-no-files-found: error
-      - name: Upload SwiftUI snapshots # P3-5
-        if: needs.plan.outputs.snapshots == 'true' && !cancelled()
-        uses: actions/upload-artifact@v7
-        with:
-          name: snapshots-apple
-          path: gallery/snapshots/**/*.apple.*.png

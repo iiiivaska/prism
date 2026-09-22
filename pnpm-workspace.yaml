@@ -40,6 +40,10 @@ catalog:
   globals: ^17.12.0
   # Vitest 4: @storybook/addon-vitest 10.6 peers `vitest ^3 || ^4` (docs/roadmap.md, verified 2026-09-14).
   vitest: ^4.1.11
+  # The release toolchain (roadmap P3-6, critic C-15): `changeset version` computes the one version of
+  # the fixed group, and `tools/release/stamp.ts` writes VERSION and every derived copy from it.
+  # Checked 2026-09-22: 3.0.3, MIT. The release workflow runs the version the lockfile pins.
+  "@changesets/cli": ^3.0.3
 
   # Token pipeline and checks (tools; roadmap Phase 1, tools/tokens/ARCHITECTURE.md §3 and §16.3).
   # The lockfile resolves style-dictionary 5.5.3, colorjs.io 0.5.2 and motion 13.2.0, the versions
