@@ -10,6 +10,12 @@
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
  * (src/harness/content.ts); Button and Card examples carry their strings in their props.
+ *
+ * An example's props reach the component untouched, including the no-op handler the generated story adds
+ * for every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
+ * renders the component's interactive form). The one exception is a component whose API bundles several
+ * of the spec's props into one value, which the renderer assembles rather than spreads: Card's `action`,
+ * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`).
  */
 import type { ReactElement, ReactNode } from "react";
 import {
@@ -17,9 +23,12 @@ import {
   Card,
   Surface,
   Text,
+  iconRegistry,
   type BackdropKind,
   type ButtonProps,
+  type CardActionKind,
   type CardProps,
+  type IconName,
   type SurfaceMaterial,
   type SurfaceProps,
   type TextProps,
@@ -144,7 +153,54 @@ export function renderButtonExample(args: ButtonProps, example: ExampleFields): 
   return <Stage>{onExampleSurface(example, <Button {...args} />)}</Stage>;
 }
 
-export function renderCardExample(args: CardProps, example: ExampleFields): ReactElement {
+/**
+ * Card.yaml's own props, which are not Card's props: the spec writes `action`, `actionIcon` and
+ * `actionLabel` as three, and React carries them as one `CardAction`. A generated story's args are the
+ * example's props verbatim (scripts/stories.ts), so they are the spec's three, and `cardArgs` assembles
+ * them; `Card` itself is never handed this shape.
+ */
+export type CardExampleArgs = Omit<CardProps, "action"> & {
+  readonly action?: CardActionKind;
+  readonly actionIcon?: IconName;
+  readonly actionLabel?: string;
+};
+
+/**
+ * The one prop of Card that is not the spec's own prop.
+ *
+ * Card.yaml writes `action`, `actionIcon` and `actionLabel`; React carries them as the single `CardAction` the
+ * spec licenses a stack to bundle them into, so `custom` cannot be written without its glyph and its name (the
+ * twin of `DSCardAction.custom(glyph:label:)`). Spread untouched, the example's props would hand `Card` the bare
+ * string `"custom"` — which is not a value of the prop, so the card would draw no disc at all — and leak
+ * `actionIcon` and `actionLabel` onto the DOM node the rest of the props spread onto.
+ *
+ * null is "these props cannot be staged": an `action` this build does not know, or a `custom` one missing its
+ * registry glyph or the name of its operation. Neither is ever inferred — not from the glyph id, and not from the
+ * card's title (Card.yaml `actionIcon`, `actionLabel`; ADR-0011 rule 4) — so there is nothing to draw in its place.
+ *
+ * It reads the props exactly as `cardArgs` in web/apps/showcase/src/harness/renderers.tsx reads them, so one
+ * example is the same card in both web apps. What the two do with a null differs, because their jobs do: the
+ * showcase is a page and says so in the example's own place, while the gallery is the canon and the gate, so it
+ * throws the way `contentFor` throws — a story that cannot be staged is a defect to fix, not a picture to record.
+ */
+function cardArgs(props: Readonly<Record<string, unknown>>): CardProps | null {
+  const { action, actionIcon, actionLabel, ...rest } = props;
+  const args = rest as unknown as CardProps;
+  if (action === undefined || action === "open") return { ...args, action: "open" };
+  if (action === "none") return { ...args, action: "none" };
+  if (action !== "custom") return null;
+  if (typeof actionIcon !== "string" || !(actionIcon in iconRegistry)) return null;
+  if (typeof actionLabel !== "string" || actionLabel.trim() === "") return null;
+  return { ...args, action: { kind: "custom", icon: actionIcon as IconName, label: actionLabel } };
+}
+
+export function renderCardExample(props: Readonly<Record<string, unknown>>, example: ExampleFields): ReactElement {
+  const args = cardArgs(props);
+  if (args === null) {
+    throw new Error(
+      `Card example ${example.id} cannot be staged: \`action\` is none, open or custom, and a custom action carries an \`actionIcon\` of the icon registry and a non-blank \`actionLabel\` naming the operation, neither of them inferred (Card.yaml \`actionIcon\`, \`actionLabel\`; ADR-0011 rule 4).`,
+    );
+  }
   if (example.grid !== undefined) {
     return (
       <Stage>

@@ -178,6 +178,10 @@ function Unstageable(props: { readonly example: CatalogExample }): ReactElement 
  * build does not know, or a `custom` one missing its registry glyph or the name of its operation. Neither is ever
  * inferred — not from the glyph id, and not from the card's title (Card.yaml `actionIcon`, `actionLabel`;
  * ADR-0011 rule 4) — so there is nothing to draw in its place.
+ *
+ * The gallery reads the three props the same way, character for character (`cardArgs`,
+ * `web/apps/gallery/src/harness/examples.tsx`), so one example is one card in both web apps; it throws on a null
+ * instead of drawing this note, because it is the gate rather than a page.
  */
 function cardArgs(props: Readonly<Record<string, unknown>>): CardProps | null {
   const { action, actionIcon, actionLabel, ...rest } = props;

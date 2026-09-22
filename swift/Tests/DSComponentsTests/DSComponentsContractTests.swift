@@ -63,6 +63,27 @@ struct DSComponentsContractTests {
         return out
     }
 
+    /// The `action` an example's `props` declare, by id; an example that declares none takes the prop's default.
+    ///
+    /// The examples write their props as one flow mapping, so the value is read out of the entry's own lines rather
+    /// than parsed as YAML: in that style `action` follows the mapping's `{` or a `,`, and in block style the line's
+    /// indent. `actionIcon` and `actionLabel` do not match it, and neither would an `onAction`.
+    static func exampleActions(_ yaml: String) -> [String: String] {
+        guard let start = yaml.range(of: "\nexamples:\n") else { return [:] }
+        let rest = yaml[start.upperBound...]
+        let end = rest.firstMatch(of: /(?m)^\w/)?.range.lowerBound ?? rest.endIndex
+        var out: [String: String] = [:]
+        var current: String?
+        for line in rest[..<end].split(separator: "\n") {
+            if let id = line.firstMatch(of: /^  - id:\s*([\w-]+)\s*$/) {
+                current = String(id.1)
+            } else if let current, let action = line.firstMatch(of: /(?:[{,]|^\s{4,})\s*action:\s*(none|open|custom)\b/) {
+                out[current] = String(action.1)
+            }
+        }
+        return out
+    }
+
     /// The `schemes` an example declares, by id; an example that declares none renders in both.
     static func exampleSchemes(_ yaml: String) -> [String: [String]] {
         guard let start = yaml.range(of: "\nexamples:\n") else { return [:] }
@@ -126,8 +147,8 @@ struct DSComponentsContractTests {
     }
 }
 
-/// "Every example gets its handlers" (spec/SCHEMA.md, "Examples and snapshots") on the side that cannot generate
-/// its examples.
+/// What a hand-written example carries that the spec declares: its handlers ("Every example gets its handlers",
+/// spec/SCHEMA.md, "Examples and snapshots") and, for Card, the affordance its `props` ask for.
 ///
 /// Both galleries pass a no-op handler for each prop of type `action` a spec declares, so one example id is the same
 /// thing on both stacks. The web enforces it mechanically — `scripts/stories.ts` spies every `action` prop and
@@ -135,11 +156,17 @@ struct DSComponentsContractTests {
 /// a new Card example without `onAction: {}` would silently be a group on Apple and a button on the web, which is
 /// exactly the defect the second review round found.
 ///
-/// The rule is read off the rendered examples, not off the source: every Card publishes the form it renders
+/// `props.action` is the same shape of drift one prop over. The web builds Card's `DSCardAction` twin out of
+/// `action`, `actionIcon` and `actionLabel` in the gallery harness (`cardArgs`,
+/// `web/apps/gallery/src/harness/examples.tsx`), so a generated story cannot disagree with the spec about it; here the
+/// case is typed out by hand, and `everySpecExampleHasAnExample` pairs the ids only, so a `custom` example left at the
+/// default `.open` would pass every other check while drawing a different card from the web's.
+///
+/// The rules are read off the rendered examples, not off the source: every Card publishes the form it renders
 /// (`DSCardFormKey`), so this asks each example what it actually built. Nothing here reads a pixel, so it runs on the
 /// host as well as on the simulators.
 @MainActor
-@Suite("Every example gets its handlers (spec/SCHEMA.md)", .serialized)
+@Suite("Every example gets its handlers and, for Card, the spec's action (spec/SCHEMA.md)", .serialized)
 struct DSExampleHandlerTests {
     final class FormProbe {
         var value: [DSCardForm] = []
@@ -184,6 +211,52 @@ struct DSExampleHandlerTests {
                 #expect(form.isPressable == (form.action == .open), "\(example.id): \(form)")
             }
         }
+    }
+
+    /// Every Card example renders the affordance its spec entry declares (`props.action`, default `open`): the three
+    /// are three different pictures and three different accessibility trees, so an example that draws another one is
+    /// the same card in name only.
+    @Test func everyCardExampleRendersTheActionItsSpecDeclares() throws {
+        let declared = DSComponentsContractTests.exampleActions(try DSComponentsContractTests.spec("Card"))
+        let examples = DSExamples.all.filter { $0.component == "Card" }
+        #expect(!examples.isEmpty)
+        for example in examples {
+            let want = declared[example.name] ?? "open"
+            let forms = Self.cardForms(example)
+            #expect(!forms.isEmpty, "\(example.id): no Card published a form; did the example stop rendering one?")
+            for form in forms {
+                #expect(Self.name(of: form.action) == want, "\(example.id): renders \(Self.name(of: form.action)), spec \(want)")
+            }
+        }
+    }
+
+    /// The spec's spelling of an action kind, which is the enum's own case name.
+    static func name(of action: DSCardActionKind) -> String {
+        switch action {
+        case .none: "none"
+        case .open: "open"
+        case .custom: "custom"
+        }
+    }
+
+    /// The reader itself: `exampleActions` finds the prop where an example declares it, in either YAML style, and
+    /// never reads `actionIcon` or `actionLabel` in its place. No Card example declares an `action` today, so
+    /// without this the reader could return nothing at all and the test above would still pass.
+    @Test func theDeclaredActionsAreReadBackFromTheSpec() {
+        let sample = """
+
+        examples:
+          - id: a
+            props: { variant: solid, title: "T", action: custom, actionIcon: action.pause, actionLabel: "Pause" }
+          - id: b
+            props: { variant: solid, title: "T" }
+          - id: c
+            props:
+              title: "T"
+              action: none
+        notes:
+        """
+        #expect(DSComponentsContractTests.exampleActions(sample) == ["a": "custom", "c": "none"])
     }
 
     /// The probe itself: a card without a handler is read back as one, so the test above can fail.

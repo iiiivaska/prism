@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
 import { Card } from "@iiiivaska/prism-react";
-import { renderCardExample, type ExampleFields } from "../harness/examples.tsx";
+import { renderCardExample, type CardExampleArgs, type ExampleFields } from "../harness/examples.tsx";
 
 const meta = {
   title: "Card",
@@ -15,7 +15,7 @@ const meta = {
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<CardExampleArgs>;
 
 function example(fields: ExampleFields): Pick<Story, "parameters" | "render"> {
   return { parameters: { prism: { example: fields } }, render: (args) => renderCardExample(args, fields) };

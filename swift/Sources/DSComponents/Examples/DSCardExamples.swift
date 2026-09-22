@@ -12,6 +12,13 @@ import DSTokens
 /// here Card's `onAction` — whether or not the example names it. An example that keeps `action: open` is therefore a
 /// pressable card with its glyph on Apple and on the web alike, and the same example id is the same thing on both
 /// stacks. The handler-less forms, which Card.yaml makes a group with no glyph, are the probe below, not examples.
+///
+/// **And the action its entry declares.** `props.action` is typed out here by hand — `.custom(glyph:label:)` carries
+/// `actionIcon` and `actionLabel` with it — while the web story hands the spec's three props to a harness that
+/// assembles the same value (`cardArgs`, `web/apps/gallery/src/harness/examples.tsx`). Nothing pairs the two but
+/// `DSExampleHandlerTests.everyCardExampleRendersTheActionItsSpecDeclares`: the id check below it compares ids only,
+/// so an example left at the default `.open` would otherwise draw a different card from the web's under one id. No
+/// example declares an `action` today; one that does needs its case written here.
 enum DSCardExamples {
     static let all: [DSExample] = [
         DSExample("Card", "solid-metric") {
