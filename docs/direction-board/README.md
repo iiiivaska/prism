@@ -153,6 +153,20 @@ Set `PLAYWRIGHT_BROWSERS_PATH` for both commands if you install the browser some
 
 ADR-0015 decision 3 asks that no direction-board screen be recognizably the same composition as a reference shot. ADR-0029 rule 10 makes this review a manual gate before the owner signs. Reviewed on 2026-09-16 against `docs/research/references.json` and the analyses in `docs/research/refs-*.md`. Visual-dna §6.4 asks every desktop composition to mix moves from at least two families.
 
+### The other two reviews, and what the three of them now cover
+
+ADR-0015 decision 3 asks for this review **before every release**, and by 2026-09-22 the board's three screens were no longer the only screens that would be public. Two companion reviews were written that day, in the same format the owner signed off on here — per screen: what it is, the nearest reference, the families mixed, what differs, and a verdict:
+
+| Review | Subject | Screens | Verdict | Findings |
+|---|---|---|---|---|
+| **This section**, reviewed 2026-09-16 | the three board screens | live ride, ride report, glance | own compositions | D4 forced the ride report to be recomposed (ADR-0029 §4) |
+| [**reference-distance-gallery.md**](reference-distance-gallery.md), reviewed 2026-09-22 (roadmap P5-2) | `gallery/index.html` and its 488 committed PNGs | 10 groups, 28 spec examples, 4 components | no screen is a copy | RD-1 (the clearance covers components, not compositions, and expires on a named event), RD-2 (the metric cards are borderline on *anatomy*; and `glass-vehicle` keeps the reference's own *genre*), RD-3 (the two stacks' copy does not match — different invented strings on Text, and none at all on the 76 Apple Surface images), RD-4 (the `danger` pill paints the references' own critical wash; recorded because the first draft claimed the opposite) |
+| [**reference-distance-showcase.md**](reference-distance-showcase.md), reviewed 2026-09-22 (roadmap P5-3) | `web/apps/showcase` and `swift/Showcase`, built and run | 7 web and 11 Apple screen shapes | no screen is a copy | SD-1 (Icons is the closest call), SD-2 (the web axis bar), SD-3 (the clearance rests on the chrome not being Prism, and Phase 5 removes that), SD-4 (a dark-scheme chrome defect, not a distance matter), SD-5 (`lint:reference-copy` did not scan `swift/Showcase`, so half of that review's subject had no gate) |
+
+Together the three cover **every screen that would be public at a release made from this branch**, which is what [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2 outstanding item 1 (finding **F-7**) asked for. Neither companion re-opens anything signed here: both inherit the ↗ affordance as grammar knowingly taken from shot 27220417, exactly as item 4 below recorded it.
+
+**Both companion clearances are dated and expire.** The gallery's goes stale when a pattern example screen lands, when P5-1 rebuilds the board screens into the gallery, or when an example composes more than one part; the showcase's when Phase 5 rebuilds the chrome from real components, when Icons gains a browser affordance, when the axis bar gains a viewport control or a docs tab, or when a staged example composes more than one component. Each document's last section states its own conditions. Rule 3 asks for the review before **every** release, so those conditions are read again each time, not once.
+
 ### Live ride (phone)
 
 - **Nearest references:** traffic console 27289370 and incident console 27571204, which put a glass readout over a map with pill controls.
@@ -214,6 +228,8 @@ ADR-0015 decision 3 asks that no direction-board screen be recognizably the same
 ## Sign-off checklist
 
 **Signed off 2026-09-16.** The owner approved the re-rendered board as published (label "P1-9 sign-off round"). Gate P3-0 is closed; later changes to the look go through the token source and a re-render, not through component code.
+
+**How to read the boxes below.** The declaration above is the record. On 2026-09-16 the owner approved the re-rendered board *as published*, in one act; the roadmap's P3-0 row records the same date, and P3-3 through P3-6 were all built on it. The boxes under "Sign now" were never filled in one by one — there was no item-by-item ballot — so they sit unticked 39–58 lines below a line that says the gate is closed. `docs/legal-checkpoint.md` finding **F-7** reported that as an inconsistency inside this file rather than as a second, still-open gate, and that is where it stands: **reported, not ticked.** Ticking a box here would be a sign-off, and a sign-off is the owner's act, not an agent's — so the boxes are left as the owner left them and the declaration above remains the record. Two of them are why this is not a formality: item 2's second box carries a sub-bullet that is an open question to the owner ("Confirm 'cool', or call it warm and the dark pairing changes"), which no tick could answer; and item 4.2 — the reference-distance review — is the item finding F-7 is about, and the two companion reviews that now sit beside it were written on 2026-09-22 and have not been put to the owner. If the ticks are wanted, the fourteen items go to the owner, the slot-4 question with them, and each is ticked on their answer.
 
 The owner approves or rejects each item. A rejection becomes a token change through P1-1 or P1-2 before P3-3 and P3-4 start. The board section and the decision behind each item are given in brackets.
 

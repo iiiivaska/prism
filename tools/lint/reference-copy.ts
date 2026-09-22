@@ -63,6 +63,13 @@ export const SCAN_TARGETS: readonly ScanTarget[] = [
   { dir: "web/apps/*", required: false },
   { dir: "swift/Sources", required: true },
   { dir: "swift/Tests", required: true },
+  // The Apple showcase: its app, its SwiftUI sources and the examples it stages are samples like any
+  // other, and it is the most-seen Apple surface of the system. Added 2026-09-22 for finding SD-5 of
+  // docs/direction-board/reference-distance-showcase.md, which found `web/apps/*` gating the web
+  // showcase while its Apple twin had no gate at all. `required: false` because a checkout that
+  // predates the showcase has no such directory; the generated `PrismShowcase.xcodeproj` beside the
+  // sources is build output and is skipped below.
+  { dir: "swift/Showcase", required: false },
   // Holds only rendered snapshots (P3-5); a fresh checkout has no gallery/ until the first one lands.
   { dir: "gallery", required: false },
   // The font harnesses, their renders (binary, skipped) and the font metadata beside them.
@@ -88,9 +95,26 @@ const SKIPPED_DIRS: ReadonlySet<string> = new Set([
   "storybook-static",
   "test-results",
   "playwright-report",
+  // web/apps/vrt/.fixture: the packed-consumer fixture serve.ts rebuilds on every run. Its source,
+  // web/apps/vrt/fixture/, is scanned through web/apps/*, so nothing goes ungated by skipping it.
+  ".fixture",
   ".build",
   "DerivedData",
 ]);
+
+/**
+ * Generated Xcode bundles, skipped by suffix because their name carries the app's: `pnpm
+ * showcase:apple` writes `swift/Showcase/PrismShowcase.xcodeproj/` on every run and that app's own
+ * .gitignore ignores it. Skipping them by name rather than by that one path keeps the count in the
+ * summary line the same on a machine that has built the app and on the fresh checkout CI scans, so
+ * the number this guard prints is a fact about the tracked tree.
+ */
+const SKIPPED_DIR_SUFFIXES: readonly string[] = [".xcodeproj", ".xcworkspace"];
+
+/** Dependency, build-output or generated-project directory, by exact name or by Xcode suffix. */
+function isSkippedDir(name: string): boolean {
+  return SKIPPED_DIRS.has(name) || SKIPPED_DIR_SUFFIXES.some((suffix) => name.endsWith(suffix));
+}
 
 /** Markup whose text is also scanned with tags removed and entities decoded. */
 const MARKUP_EXTENSIONS: ReadonlySet<string> = new Set([".html", ".htm", ".svg"]);
@@ -271,7 +295,7 @@ export function scanTree(root: string, entries: readonly Entry[]): ScanResult {
     for (const entry of sortedEntries(join(root, dir))) {
       const path = `${dir}/${entry.name}`;
       if (entry.isDirectory()) {
-        if (!SKIPPED_DIRS.has(entry.name)) walk(path);
+        if (!isSkippedDir(entry.name)) walk(path);
       } else if (entry.isFile()) {
         scanFile(path);
       }

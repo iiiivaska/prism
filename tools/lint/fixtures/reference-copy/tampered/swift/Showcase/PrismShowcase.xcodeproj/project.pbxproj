@@ -1,0 +1,3 @@
+// !$*UTF8*$!
+// Still not scanned, even in a tampered tree: Orbitak, Keeper's Log, $4,321.
+{ archiveVersion = 1; objects = { }; rootObject = ""; }

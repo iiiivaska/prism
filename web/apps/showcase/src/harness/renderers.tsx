@@ -17,7 +17,9 @@
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
- * renders the component's interactive form).
+ * renders the component's interactive form). The one exception is a component whose API bundles several
+ * of the spec's props into one value, which an entry here assembles rather than spreads: Card's
+ * `action`, `actionIcon` and `actionLabel` are the only such props today (`cardArgs`).
  */
 import type { ReactElement, ReactNode } from "react";
 import {
@@ -25,9 +27,11 @@ import {
   Card,
   Surface,
   Text,
+  iconRegistry,
   type BackdropKind,
   type ButtonProps,
   type CardProps,
+  type IconName,
   type SurfaceMaterial,
   type SurfaceProps,
   type TextProps,
@@ -146,8 +150,49 @@ export function renderButtonExample(props: Readonly<Record<string, unknown>>, ex
   return <Stage>{onExampleSurface(example, <Button {...(props as unknown as ButtonProps)} />)}</Stage>;
 }
 
+/**
+ * The web twin of an Apple renderer returning nil (`DSExampleRenderer.content(for:)`): the example is in the
+ * spec and this build cannot draw it, which the page says in the example's own place rather than staging
+ * something else there. The sentence is the one the Apple showcase prints.
+ */
+function Unstageable(props: { readonly example: CatalogExample }): ReactElement {
+  return (
+    <Stage>
+      <Text role="caption" tone="secondary">
+        `{props.example.id}` is not staged here. The example is in the spec; this build cannot draw it.
+      </Text>
+    </Stage>
+  );
+}
+
+/**
+ * The one prop of Card that is not the spec's own prop.
+ *
+ * Card.yaml writes `action`, `actionIcon` and `actionLabel`; React carries them as the single `CardAction` the
+ * spec licenses a stack to bundle them into, so `custom` cannot be written without its glyph and its name (the
+ * twin of `DSCardAction.custom(glyph:label:)`). Spread untouched, the example's props would hand `Card` the bare
+ * string `"custom"` — which is not a value of the prop, so the card would draw no disc at all — and leak
+ * `actionIcon` and `actionLabel` onto the DOM node the rest of the props spread onto.
+ *
+ * null is "this build cannot stage these props", the web's reading of the Apple renderer's nil: an `action` this
+ * build does not know, or a `custom` one missing its registry glyph or the name of its operation. Neither is ever
+ * inferred — not from the glyph id, and not from the card's title (Card.yaml `actionIcon`, `actionLabel`;
+ * ADR-0011 rule 4) — so there is nothing to draw in its place.
+ */
+function cardArgs(props: Readonly<Record<string, unknown>>): CardProps | null {
+  const { action, actionIcon, actionLabel, ...rest } = props;
+  const args = rest as unknown as CardProps;
+  if (action === undefined || action === "open") return { ...args, action: "open" };
+  if (action === "none") return { ...args, action: "none" };
+  if (action !== "custom") return null;
+  if (typeof actionIcon !== "string" || !(actionIcon in iconRegistry)) return null;
+  if (typeof actionLabel !== "string" || actionLabel.trim() === "") return null;
+  return { ...args, action: { kind: "custom", icon: actionIcon as IconName, label: actionLabel } };
+}
+
 export function renderCardExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
-  const args = props as unknown as CardProps;
+  const args = cardArgs(props);
+  if (args === null) return <Unstageable example={example} />;
   if (example.grid !== undefined) {
     return (
       <Stage>

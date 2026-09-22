@@ -10,6 +10,10 @@ export default defineConfig(
   globalIgnores([
     "**/dist/",
     "**/src/generated/",
+    // Agent worktrees: a full second copy of this repository inside it. Linting them lints the
+    // workspace twice, from files whose tsconfig is not this one, and a leftover one fails `pnpm lint`
+    // for a reason that has nothing to do with the tree being reviewed.
+    ".claude/worktrees/",
     ".build/",
     ".swiftpm/",
     "tools/lint/fixtures/",
