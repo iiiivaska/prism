@@ -3,10 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Living canon: Storybook 10 with a11y tests, Vitest browser mode and the Storybook MCP for agents",
+  "description": "Living canon: Storybook 10 with one story per spec example, a11y tests and Vitest browser mode",
   "scripts": {
-    "dev": "echo 'prism-gallery: not implemented until P3-4 (Storybook 10 dev server)'",
-    "build": "echo 'prism-gallery: not implemented until P3-4 (storybook build into storybook-static/)'",
-    "test": "echo 'prism-gallery: not implemented until P3-4 (stories as Vitest browser-mode and a11y tests)'"
+    "dev": "storybook dev --port 6006 --no-open",
+    "build": "storybook build --output-dir storybook-static --quiet",
+    "stories": "node scripts/stories.ts",
+    "stories:check": "node scripts/stories.ts --check",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@iiiivaska/prism-react": "workspace:*",
+    "@iiiivaska/prism-tokens": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "catalog:",
+    "@storybook/addon-vitest": "catalog:",
+    "@storybook/react-vite": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitest/browser-playwright": "catalog:",
+    "playwright": "catalog:",
+    "storybook": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:",
+    "yaml": "catalog:"
   }
 }

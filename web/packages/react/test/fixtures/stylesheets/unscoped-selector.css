@@ -1,0 +1,10 @@
+/* Fails rule 9 once compiled: the rightmost compound is a bare element and a foreign class. */
+@layer ds.components {
+  .ds-fixture span {
+    color: var(--ds-color-text-secondary);
+  }
+
+  .card-title {
+    color: var(--ds-color-text-primary);
+  }
+}

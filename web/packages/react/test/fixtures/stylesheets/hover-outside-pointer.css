@@ -1,0 +1,6 @@
+/* Fails rule 9: a hover style that touch would also get. */
+@layer ds.components {
+  .ds-fixture[data-hovered] {
+    color: var(--ds-color-text-secondary);
+  }
+}

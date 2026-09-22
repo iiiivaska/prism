@@ -9,7 +9,9 @@
     // `src/manifest.ts` (roadmap P2-3) is imported with its explicit `.ts` extension, as the
     // generated and hand-edited modules of the other packages are.
     "allowImportingTsExtensions": true,
+    // test/ runs under Node 24 type stripping and pulls Node's types in with a reference directive,
+    // the way the sibling packages do.
     "types": []
   },
-  "include": ["src", "tsdown.config.ts"]
+  "include": ["src", "test", "tsdown.config.ts", "vitest.config.ts"]
 }

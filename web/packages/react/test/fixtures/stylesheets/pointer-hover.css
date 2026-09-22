@@ -1,0 +1,20 @@
+/* Passes: hover inside ds-pointer, an interaction-only rule inside ds-touch, scoped selectors. */
+@layer ds.components {
+  .ds-fixture {
+    color: var(--ds-color-text-primary);
+
+    @variant ds-pointer {
+      &[data-hovered] {
+        color: var(--ds-color-text-secondary);
+      }
+    }
+
+    @variant ds-touch {
+      touch-action: manipulation;
+    }
+  }
+
+  .ds-fixture > [data-ds-slot="fixture-label"] {
+    color: inherit;
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  // Type-checks the Storybook config, the harness, the generated stories, the generator and the tests;
+  // Vite builds the gallery and Vitest runs it, so `tsc` only checks.
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["es2024", "dom", "dom.iterable"],
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "types": []
+  },
+  "include": [".storybook/*.ts", ".storybook/*.tsx", "src", "scripts", "test", "vitest.config.ts"]
+}

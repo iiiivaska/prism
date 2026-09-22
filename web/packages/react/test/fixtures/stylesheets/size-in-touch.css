@@ -1,0 +1,8 @@
+/* Fails rule 9: a size switched by modality instead of a size.* token. */
+@layer ds.components {
+  .ds-fixture {
+    @variant ds-touch {
+      min-height: var(--ds-size-hit);
+    }
+  }
+}

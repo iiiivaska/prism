@@ -1,0 +1,76 @@
+/// <reference types="node" />
+import { defineConfig, devices } from "@playwright/test";
+import { runtimeProjects, viewports } from "./matrix.ts";
+
+/**
+ * Two suites over the pages `serve.ts` hosts (roadmap P3-4, ADR-0003 web stack), split by project:
+ *
+ * - `tests/stories.spec.ts`: visual regression over the static Storybook, one Chromium project per
+ *   viewport, because a baseline is only comparable with a render of the same image;
+ * - `tests/runtime-contract.spec.ts`: the web runtime contract, in Chromium, WebKit and Firefox, with
+ *   no screenshot (ADR-0019 rule 5, ADR-0025). Its `--update-snapshots` runs are harmless: it records
+ *   nothing.
+ *
+ * Baselines are renders of the CI container image `mcr.microsoft.com/playwright:v1.63.0-noble`
+ * (keep equal to `@playwright/test` in the catalog) and live in `baselines/linux/`, committed. Rendering
+ * differs by OS and GPU, so any other platform compares against its own `baselines/local-<platform>/`,
+ * which .gitignore keeps out of the repository: on a Mac, `pnpm --filter @iiiivaska/prism-vrt test:update`
+ * records a local set to develop against, and only CI records the Linux set (`.github/workflows/ci.yml`,
+ * job `web-vrt`, which uploads it as the `vrt-baselines` artifact when the folder is empty or when asked).
+ *
+ *   pnpm --filter @iiiivaska/prism-vrt test          compare
+ *   pnpm --filter @iiiivaska/prism-vrt test:update   record (--update-snapshots=all)
+ *
+ * The recording script is `test:update`, not `update`: `pnpm update` is pnpm's own dependency update.
+ */
+const platformFolder = process.platform === "linux" ? "linux" : `local-${process.platform}`;
+const port = 6007;
+
+export default defineConfig({
+  testDir: "tests",
+  outputDir: "test-results",
+  snapshotPathTemplate: `baselines/${platformFolder}/{arg}{ext}`,
+  fullyParallel: true,
+  forbidOnly: process.env["CI"] !== undefined,
+  retries: 0,
+  reporter: process.env["CI"] === undefined ? "list" : [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]],
+  expect: {
+    toHaveScreenshot: { animations: "disabled", caret: "hide", scale: "css" },
+  },
+  use: {
+    baseURL: `http://127.0.0.1:${port}`,
+    colorScheme: "light",
+    reducedMotion: "no-preference",
+    contrast: "no-preference",
+    forcedColors: "none",
+    locale: "en-US",
+    timezoneId: "UTC",
+  },
+  projects: [
+    // The screenshots: one Chromium project per viewport, because a baseline is a render of the CI image.
+    ...viewports.map((viewport) => ({
+      name: viewport.name,
+      testMatch: /stories\.spec\.ts$/u,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: viewport.width, height: viewport.height },
+        deviceScaleFactor: 1,
+        isMobile: viewport.isMobile,
+        hasTouch: viewport.isMobile,
+      },
+    })),
+    // The runtime contract: no screenshot, but every engine, because the cascade is what is under test
+    // (ADR-0019 rule 5, ARCHITECTURE V9 "the selector forms in WebKit and Firefox").
+    ...runtimeProjects.map((project) => ({
+      name: project.name,
+      testMatch: /runtime-contract\.spec\.ts$/u,
+      use: { ...devices[project.device], hasTouch: project.hasTouch, isMobile: project.isMobile },
+    })),
+  ],
+  webServer: {
+    command: `node serve.ts ${port}`,
+    url: `http://127.0.0.1:${port}/index.json`,
+    reuseExistingServer: process.env["CI"] === undefined,
+    timeout: 30_000,
+  },
+});
