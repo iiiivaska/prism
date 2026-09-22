@@ -246,6 +246,11 @@ jobs:
     container:
       # Keep the tag equal to the @playwright/test version in pnpm-lock.yaml.
       image: mcr.microsoft.com/playwright:v1.63.0-noble
+    env:
+      # A container job runs as root with HOME=/github/home, which root does not own, and Firefox
+      # refuses to launch there ("Running Nightly as root in a regular user's session is not
+      # supported"). Playwright's own message names this workaround; Chromium and WebKit do not care.
+      HOME: /root
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
