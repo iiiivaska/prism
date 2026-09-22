@@ -1,0 +1,224 @@
+import SwiftUI
+import DSCore
+import DSComponents
+import DSTokens
+
+/// What an example sits on: the `surface` an `examples[]` entry declares when the component does not draw its own.
+public enum DSExampleGround: Hashable {
+    /// `color.bg.page`.
+    case page
+    /// The synthetic map, drawn only from `color.map.*`.
+    case map
+    /// The synthetic image: washes of the map grounds, blurred.
+    case image
+
+    /// The ground an example declares, from `surface` and, for a glass example, from `backdrop`.
+    public static func of(_ example: DSSpecExample) -> DSExampleGround {
+        switch example.surface {
+        case "map": .map
+        case "image": .image
+        case "glass": example.backdrop == "map" ? .map : .image
+        default: .page
+        }
+    }
+}
+
+/// The page an example renders on: the ground, `space.page-margin` around it, the harness's own width, and the
+/// backdrop pixels a glass surface blurs.
+///
+/// This is the showcase's own copy of the stage the snapshot harness uses (`DSComponents/Examples`), which is
+/// `internal` and `#if DEBUG` and so unreachable from an app. Both draw only from `color.map.*` and
+/// `space.page-margin`, which is what makes them the same stage.
+///
+/// **The stage constrains the width, because an example is staged at the width its spec means.** A bare stage
+/// hands the whole page to the example, and a greedy layout — `Surface`'s `vivid-pair`, `grid: ["1", "2", "2", "1"]`
+/// — takes every point of it, so the 2×2 rendered as wide as the window on the Mac and as wide as the screen on
+/// the phone. Neither of the two harnesses this one copies works that way:
+///
+/// - the web's `.ds-sc-stage` is `inline-size: fit-content` and caps a text example at `calc(card-min * 2)`
+///   (`src/harness/harness.css`);
+/// - the Apple snapshot harness renders each example at its own size — `Surface/vivid-pair` is a 268 pt square
+///   baseline and `Button/primary-md` is 136 × 88 — inside a proposal it never has to fill.
+///
+/// So the stage is fit-content too, capped at **two card columns and the card gap** (`size.card-min` × 2 +
+/// `space.card-gap`), which is the widest thing either harness stages and is what a text example wraps at. The
+/// horizontal `ScrollView` is what makes fit-content safe on a phone: `Card/vivid-pair` is 460 pt wide and no
+/// iPhone is, so the stage scrolls sideways rather than squeezing the example into a width no spec means.
+public struct DSExampleStage<Content: View>: View {
+    private let ground: DSExampleGround
+    private let content: Content
+    private var ds = DSThemeValues()
+
+    public init(_ ground: DSExampleGround = .page, @ViewBuilder content: () -> Content) {
+        self.ground = ground
+        self.content = content()
+    }
+
+    /// The widest an example is ever staged: a two-column card grid. The two grids the harnesses stage use
+    /// different gaps — `space.card-gap` for Surface's tiles, `space.4` for Card's cells — so the cap takes the
+    /// larger, and no density can make the cap narrower than the grid it is capping.
+    public static func contentWidth(_ tokens: DSTokenSet) -> CGFloat {
+        2 * tokens.size.cardMin + max(tokens.space.cardGap, tokens.space.step4)
+    }
+
+    public var body: some View {
+        let tokens = ds.tokens
+        // Inside the horizontal scroll view the proposed width is unspecified, so an example takes its own ideal
+        // width — the snapshot harness's fit-content — and the cap is what a greedy layout and a paragraph of
+        // body text stop at.
+        let staged = content
+            .frame(maxWidth: DSExampleStage.contentWidth(tokens), alignment: .leading)
+            .padding(tokens.space.pageMargin)
+        let grounded = Group {
+            switch ground {
+            case .page: staged.background(tokens.color.bgPage)
+            case .map: staged.dsBackdrop { DSExampleMap() }
+            case .image: staged.dsBackdrop { DSExampleImage() }
+            }
+        }
+        ScrollView(.horizontal) {
+            grounded
+        }
+        // Nothing bounces and no bar appears while the stage fits, so a Mac window wide enough for the harness
+        // looks exactly as it did.
+        .scrollBounceBehavior(.basedOnSize)
+    }
+}
+
+/// The frame a component that sizes itself from its content is staged in: a `size.card-min` square.
+///
+/// Both harnesses give one. The web writes it as `.ds-sc-frame { inline-size: var(--ds-size-card-min);
+/// block-size: var(--ds-size-card-min) }` and the Apple snapshot harness as `DSExampleCardFrame`, which is why
+/// `Card/solid-metric` is a 248 pt baseline — a 200 pt square and the page margin — on both stacks. Without it a
+/// Card takes whatever the page proposes, and on a phone that is a squat rectangle with its title truncated,
+/// which is not the example the spec wrote.
+public struct DSExampleFrame<Content: View>: View {
+    private let content: Content
+    private var ds = DSThemeValues()
+
+    public init(@ViewBuilder content: () -> Content) { self.content = content() }
+
+    public var body: some View {
+        let side = ds.tokens.size.cardMin
+        content.frame(width: side, height: side)
+    }
+}
+
+/// An empty content slot at an example size, for a Surface example, which sets no content.
+public struct DSExampleSlot: View {
+    public enum Size: Hashable { case card, tile, pill }
+
+    private let size: Size
+    private var ds = DSThemeValues()
+
+    public init(_ size: Size) { self.size = size }
+
+    public var body: some View {
+        let tokens = ds.tokens
+        switch size {
+        case .card:
+            Color.clear.frame(
+                width: tokens.size.cardMin - 2 * tokens.space.cardPadding,
+                height: tokens.size.cardMin - 2 * tokens.space.cardPadding
+            )
+        case .tile:
+            Color.clear.frame(
+                width: tokens.space.step13 - 2 * tokens.space.cardPadding,
+                height: tokens.space.step13 - 2 * tokens.space.cardPadding
+            )
+        case .pill:
+            Color.clear.frame(width: tokens.space.step13, height: tokens.size.controlMd)
+        }
+    }
+}
+
+/// A map drawn only from `color.map.*` (ADR-0030 §1): land, blocks and buildings, a park, water, roads over their
+/// casing and a route. Every ground stays inside ADR-0022 §3.3's glass limits in both schemes.
+public struct DSExampleMap: View {
+    private var ds = DSThemeValues()
+
+    public init() {}
+
+    public var body: some View {
+        let color = ds.tokens.color
+        let space = ds.tokens.space
+        let chart = ds.tokens.chart
+        let border = ds.tokens.border
+        Canvas { context, size in
+            let w = size.width
+            let h = size.height
+            context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(color.mapLand))
+
+            let columns = 4
+            let rows = 4
+            let cell = CGSize(width: w / CGFloat(columns), height: h / CGFloat(rows))
+            for row in 0..<rows {
+                for column in 0..<columns where (row + column) % 3 != 2 {
+                    let block = CGRect(
+                        x: CGFloat(column) * cell.width, y: CGFloat(row) * cell.height,
+                        width: cell.width, height: cell.height
+                    ).insetBy(dx: space.step4, dy: space.step4)
+                    context.fill(Path(roundedRect: block, cornerRadius: space.step1), with: .color(color.mapBlock))
+                    context.fill(
+                        Path(block.insetBy(dx: block.width / 4, dy: block.height / 4)),
+                        with: .color(color.mapBuilding)
+                    )
+                }
+            }
+
+            context.fill(
+                Path(ellipseIn: CGRect(x: w * 0.52, y: h * 0.06, width: w * 0.42, height: h * 0.34)),
+                with: .color(color.mapPark)
+            )
+            var river = Path()
+            river.move(to: CGPoint(x: 0, y: h * 0.78))
+            river.addCurve(
+                to: CGPoint(x: w, y: h * 0.62),
+                control1: CGPoint(x: w * 0.35, y: h * 0.66),
+                control2: CGPoint(x: w * 0.6, y: h * 0.9)
+            )
+            context.stroke(river, with: .color(color.mapWater), lineWidth: space.step8)
+
+            var roads = Path()
+            roads.move(to: CGPoint(x: 0, y: h * 0.5))
+            roads.addLine(to: CGPoint(x: w, y: h * 0.5))
+            roads.move(to: CGPoint(x: w * 0.5, y: 0))
+            roads.addLine(to: CGPoint(x: w * 0.5, y: h))
+            context.stroke(roads, with: .color(color.mapRoadCasing), lineWidth: space.step4 + 2 * border.strong)
+            context.stroke(roads, with: .color(color.mapRoad), lineWidth: space.step4)
+
+            var route = Path()
+            route.move(to: CGPoint(x: w * 0.1, y: h * 0.5))
+            route.addLine(to: CGPoint(x: w * 0.5, y: h * 0.5))
+            route.addLine(to: CGPoint(x: w * 0.5, y: h * 0.12))
+            let lineStyle = StrokeStyle(lineWidth: 2 * chart.lineWidth, lineCap: .round, lineJoin: .round)
+            let casingStyle = StrokeStyle(lineWidth: 3.5 * chart.lineWidth, lineCap: .round, lineJoin: .round)
+            context.stroke(route, with: .color(color.mapRouteCasing), style: casingStyle)
+            context.stroke(route, with: .color(color.mapRoute), style: lineStyle)
+        }
+    }
+}
+
+/// A soft, photograph-like backdrop from the map grounds: washes of park, water and building over the land,
+/// blurred, inside every glass limit of ADR-0022 §3.3 in both schemes.
+public struct DSExampleImage: View {
+    private var ds = DSThemeValues()
+
+    public init() {}
+
+    public var body: some View {
+        let color = ds.tokens.color
+        let blur = ds.tokens.material.glassFillBlur
+        Canvas { context, size in
+            let w = size.width
+            let h = size.height
+            context.fill(Path(CGRect(origin: .zero, size: size)), with: .color(color.mapLand))
+            var washes = context
+            washes.addFilter(.blur(radius: DSBlur.radius(cssStandardDeviation: blur)))
+            washes.fill(Path(ellipseIn: CGRect(x: -w * 0.1, y: -h * 0.1, width: w * 0.7, height: h * 0.6)), with: .color(color.mapPark))
+            washes.fill(Path(ellipseIn: CGRect(x: w * 0.45, y: h * 0.3, width: w * 0.7, height: h * 0.6)), with: .color(color.mapWater))
+            washes.fill(Path(ellipseIn: CGRect(x: w * 0.1, y: h * 0.55, width: w * 0.5, height: h * 0.5)), with: .color(color.mapBuilding))
+            washes.fill(Path(ellipseIn: CGRect(x: w * 0.6, y: -h * 0.05, width: w * 0.35, height: h * 0.35)), with: .color(color.mapBuilding))
+        }
+    }
+}

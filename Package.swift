@@ -25,6 +25,8 @@ let package = Package(
         .library(name: "DSCore", targets: ["DSCore"]),
         .library(name: "DSComponents", targets: ["DSComponents"]),
         .library(name: "DSCharts", targets: ["DSCharts"]),
+        // The showcase app's view layer; a product so the generated Xcode project can link it (docs/showcase.md).
+        .library(name: "DSShowcase", targets: ["DSShowcase"]),
     ],
     dependencies: [
         // Test-only: snapshot rendering of SwiftUI views (MIT).
@@ -69,6 +71,17 @@ let package = Package(
             name: "DSCharts",
             dependencies: ["DSCore"],
             path: "swift/Sources/DSCharts",
+            swiftSettings: uiSettings
+        ),
+        // Everything the showcase app is made of except its twenty-line shell (docs/showcase.md): the generated token
+        // and component catalogues, the example renderers, the screens and the axis bar. It is a package target so
+        // that `swift build` and the two `xcodebuild build -scheme Prism-Package` steps compile it — a component
+        // that lands without its renderer must fail in CI, not only on the machine that runs the app. The screens
+        // are `#if os(iOS) || os(macOS)`: the owner asked for a macOS/iOS app, and the watch has no split view.
+        .target(
+            name: "DSShowcase",
+            dependencies: ["DSTokens", "DSCore", "DSComponents", "DSIcons"],
+            path: "swift/Showcase/Sources/DSShowcase",
             swiftSettings: uiSettings
         ),
         // Host-runnable (`swift test` on macOS): token parity, contrast math, surface rules, spring conversions.

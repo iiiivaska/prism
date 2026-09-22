@@ -1,6 +1,6 @@
 # ADR-0028: Prism is MIT-licensed
 
-- Status: accepted
+- Status: superseded by [ADR-0031](0031-license-proprietary.md) (proprietary, all rights reserved, from 2026-09-22; versions published under MIT before that date stay MIT for those versions)
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #28
 - Amends: ADR-0014 (Distribution: the repository and every package carry the MIT license text)

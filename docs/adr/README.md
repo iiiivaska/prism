@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-One file per decision, numbered to match `docs/decisions.md`. An ADR is never edited to change its meaning; a new ADR amends or supersedes it and both link to each other: the new ADR names the old one in its `Amends` line, and the old one's `Status` line and this index's Status column name the new one.
+One file per decision, numbered to match `docs/decisions.md`. An ADR is never edited to change its meaning; a new ADR amends or supersedes it and both link to each other: the new ADR names the old one in its `Amends` or `Supersedes` line, and the old one's `Status` line and this index's Status column name the new one.
 
 | ADR | Title | Status |
 |-----|-------|--------|
@@ -17,11 +17,11 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023) |
 | [0012](0012-layers-and-v1-scope.md) | Five layers and the v1 scope | accepted |
 | [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019) |
-| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028) |
+| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028, 0031) |
 | [0015](0015-references-inspiration-only.md) | References are inspiration only | accepted |
 | [0016](0016-name-and-prefix.md) | Name Prism, prefix `ds` | accepted (amended by 0018, 0019) |
 | [0017](0017-blueprint-first.md) | First deliverable is a blueprint, in English | accepted |
-| [0018](0018-repository-name-and-visibility.md) | Repository `iiiivaska/prism`, public (amends 0014, 0016) | accepted |
+| [0018](0018-repository-name-and-visibility.md) | Repository `iiiivaska/prism`, public (amends 0014, 0016) | accepted (amended by 0031) |
 | [0019](0019-web-runtime-contract.md) | Web runtime contract: `data-ds-*` attributes, nesting and defaults (amends 0003, 0004, 0010, 0013, 0016) | accepted (amended by 0025, 0029) |
 | [0020](0020-brand-model.md) | Brand model: what a brand overrides and how brands reach each stack (amends 0002, 0003, 0004, 0007, 0008, 0024) | accepted (amended by 0029) |
 | [0021](0021-typography-rules.md) | Typography rules: thin weights, numerals, units and Dynamic Type (amends 0004, 0007, 0008, 0010, 0011) | accepted (amended by 0027, 0030) |
@@ -31,9 +31,10 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted |
 | [0026](0026-figma-metadata-scope.md) | Figma metadata where Figma reads it; code syntax derived by the build (amends 0004, 0005) | accepted |
 | [0027](0027-font-emission-layout-and-manifest-names.md) | Font emission layout and manifest CSS names follow the build (amends 0021, 0024) | accepted |
-| [0028](0028-license-mit.md) | Prism is MIT-licensed (amends 0014) | accepted |
+| [0028](0028-license-mit.md) | Prism is MIT-licensed (amends 0014) | superseded by 0031 |
 | [0029](0029-direction-board-sign-off.md) | Direction board sign-off (2026-09-15): glass follows the scheme, one-temperature vivid pairs, compact margin, watch density, ghost button (amends 0010, 0019, 0020, 0022, 0024) | accepted |
 | [0030](0030-semantic-roles-from-the-direction-board.md) | Semantic roles found by the direction board: map, charts and solids on media, edges and bloom, tints, axis and watch type (amends 0007, 0021, 0022, 0024) | accepted |
+| [0031](0031-license-proprietary.md) | Prism is proprietary, all rights reserved; the license carries the requirement, not the visibility (supersedes 0028; amends 0014, 0018) | accepted |
 
 ## Template
 
@@ -43,6 +44,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 - Status: proposed | accepted | accepted (<part> amended by ADR-NNNN) | superseded by ADR-NNNN
 - Date: YYYY-MM-DD
 - Decision record entry: docs/decisions.md #N
+- Supersedes: ADR-NNNN   ← only in an ADR that replaces an older one outright
 - Amends: ADR-NNNN (<part>)   ← only in an ADR that amends older ones
 
 ## Context

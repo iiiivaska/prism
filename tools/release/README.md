@@ -97,12 +97,12 @@ Steps 3 to 8 are `.github/workflows/release.yml`; steps 1 and 2 are the author's
 `fixtures/README.md` has the commands.
 
 `pnpm release:pack --list` is what prints the file list each package would ship, and it is the step
-that judges it: it packs with pnpm, reads the tarball back and checks that ADR-0028's `LICENSE` and
-`"license": "MIT"` are in it, that critic C-14's `spec/` is where the skill sends agents, that
-ADR-0021 §11's brand font files are in `@iiiivaska/prism-tokens`, that every `exports` subpath and
-`style` resolves to a file the tarball really carries, and that no `workspace:` or `catalog:`
-specifier was left for a consumer's installer. That is stronger than a notice list, and it is why
-the release workflow's file-list step is this one.
+that judges it: it packs with pnpm, reads the tarball back and checks that ADR-0031's `LICENSE` and
+`"license": "SEE LICENSE IN LICENSE"` are in it, that critic C-14's `spec/` is where the skill sends
+agents, that ADR-0021 §11's brand font files are in `@iiiivaska/prism-tokens`, that every `exports`
+subpath and `style` resolves to a file the tarball really carries, and that no `workspace:` or
+`catalog:` specifier was left for a consumer's installer. That is stronger than a notice list, and
+it is why the release workflow's file-list step is this one.
 
 `pnpm -r publish --dry-run` is a different and much thinner thing, and worth keeping only as that: it
 runs the publish path the release runs for real — the recursive filter selects the published

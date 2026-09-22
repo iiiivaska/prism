@@ -1,7 +1,7 @@
 name: release
 
 # Roadmap P3-6; ADR-0014 (one tag = one version, SPM by tag, npm on GitHub Packages), ADR-0018
-# (repository and package visibility), ADR-0028 (MIT, a LICENSE in every package), ADR-0024 §14 (the
+# (repository and package visibility), ADR-0031 (proprietary, a LICENSE in every package), ADR-0024 §14 (the
 # pre-1.0 bump policy), critic C-15 (the version authority).
 #
 # Two entrances, and only one of them can release:
@@ -24,7 +24,7 @@ name: release
 # pushes the release commit and the tag — so no repository secret has to exist for a release to work.
 #
 # Before the first real run, the owner still owes three things; `release` fails fast on each:
-#   * the ADR-0015 legal checkpoint (ADR-0028 rule 5), recorded as the `LEGAL_CHECKPOINT` variable;
+#   * the ADR-0015 legal checkpoint (ADR-0031 rule 5), recorded as the `LEGAL_CHECKPOINT` variable;
 #   * the GitHub Packages visibility decision of ADR-0018 ("private, free" re-checked here), recorded
 #     as `PACKAGE_VISIBILITY`;
 #   * the `release` environment itself, with the owner as a required reviewer.
@@ -196,10 +196,10 @@ jobs:
           cache: true
           require-lockfile: true
       - run: pnpm -r build
-      - name: What each package would ship (ADR-0028, ADR-0021 §11, critic C-14)
+      - name: What each package would ship (ADR-0031, ADR-0021 §11, critic C-14)
         # The file-list audit, and the only step here that knows what ships: `pack.ts` packs each
         # package with pnpm, reads the tarball back and holds it against the documents — LICENSE and
-        # `"license": "MIT"`, no `workspace:`/`catalog:` specifier left for a consumer's installer,
+        # `"license": "SEE LICENSE IN LICENSE"`, no `workspace:`/`catalog:` specifier left for a consumer's installer,
         # every `exports` subpath and `style` resolving to a file that is really in there, `spec/`
         # where the skill sends agents, and every brand's fonts. `--list` prints the files.
         run: node tools/release/pack.ts --list --out "$RUNNER_TEMP/tarballs"
@@ -276,7 +276,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ "${LEGAL_CHECKPOINT:-}" != "cleared" ]; then
-            echo "::error::the ADR-0015 legal checkpoint gates the first package release (ADR-0028 rule 5). Set the repository variable LEGAL_CHECKPOINT to 'cleared' once the owner has recorded it."
+            echo "::error::the ADR-0015 legal checkpoint gates the first package release (ADR-0031 rule 5). Set the repository variable LEGAL_CHECKPOINT to 'cleared' once the owner has recorded it."
             exit 1
           fi
           case "${PACKAGE_VISIBILITY:-}" in

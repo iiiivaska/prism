@@ -2,8 +2,8 @@
 // packaged-not-permitted fixture exits 1 naming the item (the ticket's acceptance); and each half of
 // the packaged-versus-shipped comparison fails on a tree held in memory — a shipped file no item
 // claims, an item that claims files the repository does not ship, a font without its license text,
-// license copies that drifted apart, an ADR-0028 license copy that differs from the root one, and a
-// dependency a published package declares without a ledger entry.
+// license copies that drifted apart, an ADR-0031 license copy that differs from the root one, a
+// manifest that still claims MIT, and a dependency a published package declares without a ledger entry.
 import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -20,7 +20,11 @@ const schema = JSON.parse(readFileSync(toolSchemaPath(), "utf8")) as object;
 // An empty GITHUB_STEP_SUMMARY keeps the fixture tables out of a CI job's real step summary.
 const runCli = (...args: string[]) => spawnSync(process.execPath, [cli, ...args], { encoding: "utf8", env: { ...process.env, GITHUB_STEP_SUMMARY: "" } });
 
-const LICENSE_TEXT = "MIT License\n\nCopyright (c) 2026 Demo\n";
+// The license a tree under test carries: proprietary, like Prism's own since ADR-0031.
+const LICENSE_TEXT = "Demo — proprietary license\n\nCopyright (c) 2026 Demo. All rights reserved.\n";
+// npm's form for a license that ships with the package, which ADR-0031 rule 2 requires; spelled out
+// here rather than imported from check.ts, so the test states the rule instead of echoing the code.
+const MANIFEST_LICENSE = "SEE LICENSE IN LICENSE";
 const OFL_TEXT = "Copyright 2026 The Synth Project Authors\n\nSIL Open Font License, Version 1.1\n";
 
 /** An in-memory repository: repository-relative path → contents. */
@@ -53,10 +57,10 @@ const OWN_ITEM = {
   id: "demo",
   kind: "code",
   name: "Demo",
-  spdx: "MIT",
+  spdx: "LicenseRef-Demo-Proprietary",
   source: "https://example.invalid/demo",
   license_url: "https://example.invalid/demo/LICENSE",
-  attribution: "Copyright (c) 2026 Demo",
+  attribution: "Copyright (c) 2026 Demo. All rights reserved.",
   permitted_use: "own",
   packaged: true,
   packaged_as: ["LICENSE", "web/packages/*/LICENSE"],
@@ -86,7 +90,7 @@ function tree(files: Readonly<Record<string, string>> = {}, items: readonly Reco
     "licenses/inventory.json": inventoryJson(items),
     "brands/acme/fonts/synth/Synth.ttf": "font bytes",
     "brands/acme/fonts/synth/OFL.txt": OFL_TEXT,
-    "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }),
+    "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE }),
     "web/packages/tokens/LICENSE": LICENSE_TEXT,
     ...files,
   });
@@ -104,7 +108,18 @@ describe("the repository (acceptance: the committed ledger matches what Prism sh
     expect(result.ok).toBe(true);
   });
 
-  it("claims every packaged file: the bundled fonts, the generated icon assets, their license text and the ADR-0028 license copies", () => {
+  it("carries the proprietary license of ADR-0031: all rights reserved at the root, repeated in every published package, and no manifest left on MIT", () => {
+    const root = readFileSync(join(repo, "LICENSE"), "utf8");
+    expect(root).toContain("Copyright (c) 2026 iiiivaska. All rights reserved.");
+    expect(root).not.toContain("Permission is hereby granted, free of charge");
+    for (const name of ["tokens", "react", "charts"]) {
+      expect(readFileSync(join(repo, "web", "packages", name, "LICENSE"), "utf8")).toBe(root);
+      const manifest = JSON.parse(readFileSync(join(repo, "web", "packages", name, "package.json"), "utf8")) as { license?: string };
+      expect(manifest.license).toBe("SEE LICENSE IN LICENSE");
+    }
+  });
+
+  it("claims every packaged file: the bundled fonts, the generated icon assets, their license text and the ADR-0031 license copies", () => {
     const claimed = result.rows.filter((row) => row.check === "packaged-files").map((row) => row.subject);
     expect(claimed).toContain("brands/prism/fonts/onest/Onest[wght].ttf");
     expect(claimed).toContain("swift/Sources/DSTokens/Resources/Fonts/jetbrains-mono/OFL.txt");
@@ -203,7 +218,7 @@ describe("license text with the bytes", () => {
       LICENSE: LICENSE_TEXT,
       "licenses/inventory.json": inventoryJson([OWN_ITEM, FONT_ITEM]),
       "brands/acme/fonts/synth/Synth.ttf": "font bytes",
-      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }),
+      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE }),
       "web/packages/tokens/LICENSE": LICENSE_TEXT,
     });
     expect(failedChecks(reader)).toEqual(["license-text"]);
@@ -234,6 +249,28 @@ describe("license text with the bytes", () => {
     expect(failures(reader)[0]).toContain("ships 1 files, none of them its license text (MIT, ADR-0015 rule 2)");
   });
 
+  it("fails when a font copy outside the packaged roots has lost its notice (F-3)", () => {
+    // docs/ ships in no package, but a copy is still a copy: OFL condition 2 asks every one of them to
+    // carry the notice. The packaged roots are a maintained list, so this sweep does not consult it.
+    const reader = tree({
+      "web/packages/tokens/src/generated/prism/fonts/synth/synth.woff2": "web font bytes",
+      "web/packages/tokens/src/generated/prism/fonts/synth/OFL.txt": OFL_TEXT,
+      "docs/direction-board/assets/fonts/synth/synth.woff2": "web font bytes",
+    });
+    expect(failedChecks(reader)).toEqual(["license-text"]);
+    expect(failures(reader)[0]).toContain("no license text beside this unpackaged font copy");
+  });
+
+  it("passes when that copy keeps its notice", () => {
+    const reader = tree({
+      "web/packages/tokens/src/generated/prism/fonts/synth/synth.woff2": "web font bytes",
+      "web/packages/tokens/src/generated/prism/fonts/synth/OFL.txt": OFL_TEXT,
+      "docs/direction-board/assets/fonts/synth/synth.woff2": "web font bytes",
+      "docs/direction-board/assets/fonts/synth/OFL.txt": OFL_TEXT,
+    });
+    expect(failures(reader)).toEqual([]);
+  });
+
   it("accepts a vendor-prefixed license name beside icon assets", () => {
     const glyphs = { ...FONT_ITEM, id: "glyphs", kind: "icons", spdx: "MIT", packaged_as: ["swift/Sources/DSIcons/Resources/**"] };
     const reader = tree(
@@ -247,14 +284,14 @@ describe("license text with the bytes", () => {
   });
 });
 
-describe("the ADR-0028 license copies", () => {
+describe("the ADR-0031 license copies", () => {
   it("fails when a published package's LICENSE is not byte-identical to the root one", () => {
     const reader = tree({ "web/packages/tokens/LICENSE": `${LICENSE_TEXT}\nand one more clause\n` });
     expect(failedChecks(reader)).toEqual(["license-copies"]);
     expect(failures(reader)[0]).toContain("is not byte-identical to LICENSE");
   });
 
-  it("fails when a published package has no LICENSE or does not declare MIT", () => {
+  it("fails when a published package has no LICENSE, or declares a license that is not the one ADR-0031 rule 2 names", () => {
     const reader = memoryReader({
       LICENSE: LICENSE_TEXT,
       "licenses/inventory.json": inventoryJson([OWN_ITEM, FONT_ITEM]),
@@ -264,7 +301,13 @@ describe("the ADR-0028 license copies", () => {
     });
     const detail = failures(reader).join("\n");
     expect(detail).toContain("no web/packages/tokens/LICENSE");
-    expect(detail).toContain('not "MIT"');
+    expect(detail).toContain('its manifest declares license "Apache-2.0", not "SEE LICENSE IN LICENSE"');
+  });
+
+  it("fails on the license Prism used to publish: MIT is no longer what a manifest may declare", () => {
+    const reader = tree({ "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }) });
+    expect(failedChecks(reader)).toEqual(["license-copies"]);
+    expect(failures(reader)[0]).toContain('its manifest declares license "MIT", not "SEE LICENSE IN LICENSE" (ADR-0031 rule 2)');
   });
 
   it("ignores a private package, which npm never publishes", () => {
@@ -277,16 +320,16 @@ describe("the ADR-0028 license copies", () => {
       "licenses/inventory.json": inventoryJson([{ ...OWN_ITEM, packaged_as: ["web/packages/*/LICENSE"] }, FONT_ITEM]),
       "brands/acme/fonts/synth/Synth.ttf": "font bytes",
       "brands/acme/fonts/synth/OFL.txt": OFL_TEXT,
-      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }),
+      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE }),
       "web/packages/tokens/LICENSE": LICENSE_TEXT,
     };
-    expect(failures(memoryReader(files))[0]).toContain("ADR-0028 rule 1 puts the MIT text at the repository root");
+    expect(failures(memoryReader(files))[0]).toContain("ADR-0031 rule 1 puts the license text at the repository root");
   });
 });
 
 describe("declared dependencies", () => {
   const withDependency = (manifest: Record<string, unknown>, items: readonly Record<string, unknown>[]): RepoReader =>
-    tree({ "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT", ...manifest }) }, items);
+    tree({ "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE, ...manifest }) }, items);
 
   it("fails when a published package declares a package the ledger does not list", () => {
     const reader = withDependency({ peerDependencies: { react: "^19" } }, [OWN_ITEM, FONT_ITEM]);
@@ -303,8 +346,8 @@ describe("declared dependencies", () => {
 
   it("passes on a dependency that is another Prism package", () => {
     const reader = tree({
-      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }),
-      "web/packages/react/package.json": JSON.stringify({ name: "@demo/react", private: false, license: "MIT", dependencies: { "@demo/tokens": "workspace:*" } }),
+      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE }),
+      "web/packages/react/package.json": JSON.stringify({ name: "@demo/react", private: false, license: MANIFEST_LICENSE, dependencies: { "@demo/tokens": "workspace:*" } }),
       "web/packages/react/LICENSE": LICENSE_TEXT,
     });
     expect(failures(reader)).toEqual([]);
@@ -329,7 +372,7 @@ describe("the ledger itself", () => {
       "licenses/inventory.json": inventoryJson([OWN_ITEM, FONT_ITEM], { permitted_use_values: ["own"] }),
       "brands/acme/fonts/synth/Synth.ttf": "font bytes",
       "brands/acme/fonts/synth/OFL.txt": OFL_TEXT,
-      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: "MIT" }),
+      "web/packages/tokens/package.json": JSON.stringify({ name: "@demo/tokens", private: false, license: MANIFEST_LICENSE }),
       "web/packages/tokens/LICENSE": LICENSE_TEXT,
     });
     expect(failures(reader).join("\n")).toContain("does not mirror the schema enum");

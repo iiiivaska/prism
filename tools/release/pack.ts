@@ -1,4 +1,4 @@
-// release:pack (roadmap P3-6; ADR-0028 rule 2, ADR-0021 §11, critic C-14).
+// release:pack (roadmap P3-6; ADR-0031 rule 2, ADR-0021 §11, critic C-14).
 //
 // What each published package would actually ship, checked before anything is published. The packer
 // is the only thing that knows the answer — `files`, `.npmignore` and npm's own always-included and
@@ -6,9 +6,10 @@
 // `catalog:` specifiers into real ranges while it packs — so this tool packs the tarball, reads it
 // back and holds it against what the documents promise:
 //
-//   license       ADR-0028 rule 2: every published package carries its own copy of LICENSE
-//   manifest      the package.json inside the tarball: the version, `"license": "MIT"` (ADR-0028
-//                 rule 2) and no `workspace:` or `catalog:` specifier left for a consumer to resolve.
+//   license       ADR-0031 rule 2: every published package carries its own copy of LICENSE
+//   manifest      the package.json inside the tarball: the version, the `license` field ADR-0031
+//                 rule 2 names and no `workspace:` or `catalog:` specifier left for a consumer to
+//                 resolve.
 //                 `pnpm pack` rewrites them and `npm pack` does not, which is why the tarballs the
 //                 fixtures install and the ones a release publishes are both packed with pnpm.
 //   exports       every subpath of `exports` (and `style`) resolves to a file the tarball carries,
@@ -19,7 +20,7 @@
 //                 pattern contract, SCHEMA.md, both JSON schemas and haptics.yaml — because the skill
 //                 sends agents to node_modules/@iiiivaska/prism-react/spec/. Not spec/icons/, which
 //                 pairs ids with SF Symbol names (ADR-0013 rule 5).
-//   fonts         ADR-0021 §11 and ADR-0028 rule 3: every brand @iiiivaska/prism-tokens serves ships
+//   fonts         ADR-0021 §11 and ADR-0031 rule 3: every brand @iiiivaska/prism-tokens serves ships
 //                 its fonts.css, its font files and the OFL text beside them.
 //
 //   node release/pack.ts                 check every published package
@@ -37,6 +38,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { PACKAGE_LICENSE } from '../licenses/check.ts';
 import { publishedPackages, REPO_ROOT, StampError } from './targets.ts';
 
 export interface Packed {
@@ -159,9 +161,13 @@ const EVERY_PACKAGE: readonly Rule[] = [
   {
     check: 'license',
     run: (manifest, files) => {
-      need(files, 'LICENSE', 'ADR-0028 rule 2');
-      if (manifest['license'] !== 'MIT') fail(`ADR-0028 rule 2: "license" is ${JSON.stringify(manifest['license'])}, not "MIT"`);
-      return 'LICENSE shipped, "license": "MIT"';
+      need(files, 'LICENSE', 'ADR-0031 rule 2');
+      // The same constant the P2-4 gate checks in the working tree, asserted here on the packed
+      // tarball: Prism's license is proprietary, so the field is npm's `SEE LICENSE IN <filename>`.
+      if (manifest['license'] !== PACKAGE_LICENSE) {
+        fail(`ADR-0031 rule 2: "license" is ${JSON.stringify(manifest['license'])}, not ${JSON.stringify(PACKAGE_LICENSE)}`);
+      }
+      return `LICENSE shipped, "license": ${JSON.stringify(PACKAGE_LICENSE)}`;
     },
   },
   {
@@ -222,7 +228,7 @@ const PER_PACKAGE: Readonly<Record<string, readonly Rule[]>> = {
           if (faces.length === 0) fail(`ADR-0021 §11: ${brand} ships no .woff2 face`);
           for (const face of faces) {
             const ofl = `${face.slice(0, face.lastIndexOf('/'))}/OFL.txt`;
-            need(files, ofl, `ADR-0028 rule 3 (${brand})`);
+            need(files, ofl, `ADR-0031 rule 3 (${brand})`);
           }
           detail.push(`${brand}: ${String(faces.length)} face(s)`);
         }

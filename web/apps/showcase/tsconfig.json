@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  // Vite builds the app; `tsc` only type-checks it, the two Vite plugins and their virtual modules
+  // (src/virtual.d.ts). `resolveJsonModule` is for `@iiiivaska/prism-tokens/manifest.json`, which the
+  // Foundations screen enumerates.
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["es2024", "dom", "dom.iterable"],
+    "jsx": "react-jsx",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client"]
+  },
+  "include": ["src", "plugins", "vite.config.ts"]
+}

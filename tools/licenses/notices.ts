@@ -23,7 +23,7 @@ export const NOTICES_PATH = "THIRD_PARTY_NOTICES.md";
 
 /** One line per value, printed for the values the inventory actually uses. */
 export const PERMITTED_USE_MEANING: Readonly<Record<PermittedUse, string>> = {
-  own: "Prism's own work, under the MIT License of `LICENSE` (ADR-0028).",
+  own: "Prism's own work, under the proprietary license in `LICENSE`: all rights reserved (ADR-0031).",
   "adapt-with-attribution": "may be adapted and shipped inside Prism, with the attribution below.",
   dependency: "declared as a dependency and installed from its own registry; Prism vendors none of its bytes.",
   "sdk-runtime": "used at run time through the Apple SDK, inside apps running on Apple platforms; never bundled and never on the web.",
@@ -42,7 +42,7 @@ export function renderNotices(inventory: Inventory): string {
     "",
     `Generated from \`licenses/inventory.json\` (updated ${inventory.updated}) with \`pnpm licenses:notices\`; do not edit by hand. \`pnpm licenses:check\` gates the inventory against what the repository packages, and \`pnpm licenses:notices --check\` fails when this file is stale.`,
     "",
-    "Prism's own code, tokens, specs, generated outputs and documentation are under the MIT License in `LICENSE`, Copyright (c) 2026 iiiivaska (ADR-0028). Everything below keeps its own license; the MIT grant does not relicense it.",
+    "Prism's own code, tokens, specs, generated outputs and documentation are under the proprietary license in `LICENSE`, Copyright (c) 2026 iiiivaska, all rights reserved (ADR-0031). Everything below keeps its own license: `LICENSE` neither relicenses it nor narrows what it grants you.",
     "",
     "| Item | Kind | License | Permitted use in Prism | Packaged | Source |",
     "|---|---|---|---|---|---|",

@@ -68,6 +68,8 @@ Report the gap with the name of the closest existing component and what it lacks
 
 ## Setting up a consuming app
 
+Prism is proprietary — Copyright (c) 2026 iiiivaska, all rights reserved (`LICENSE`, ADR-0031) — so this section is for an app the copyright holder has permitted to use it; installing the packages is not itself a license, and if you are not working on such an app, stop here and ask.
+
 **Swift**: add `https://github.com/iiiivaska/prism` as a package dependency by tag and link `DSComponents` (and `DSCharts` if needed). While Prism is 0.x, depend with `.upToNextMinor(from: "0.y.z")`, because a 0.y bump may break (ADR-0024 §14). Wrap each scene's root view in `DSTheme(brand: .<yourBrand>)`, where `<yourBrand>` is the app's `DSBrand` case, and read colors as `tokens.color.<name>` from the environment's `DSTokenSet`; density and modality are detected automatically. Every brand lives in Prism's `brands/`: ask for one there instead of restyling in the app.
 
 **Web**: add to `.npmrc`:

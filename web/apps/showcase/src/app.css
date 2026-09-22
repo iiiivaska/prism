@@ -1,0 +1,872 @@
+/*
+ * The chrome. Plain CSS over the `--ds-*` variables and nothing else: `Sidebar`, `TabBar` and
+ * `AdaptiveShell` are specified and unimplemented, so this frame cannot be built from Prism
+ * components yet, and the About screen says so. Every value below is a token, except the few
+ * structural numbers a layout needs (the rail's width, the container-query breakpoint), which are
+ * layout, not design.
+ *
+ * The rail and the axis bar switch on a **container query** over the app itself, not on a user agent
+ * and not on the viewport, so the shell behaves the same inside a narrow frame as on a small screen.
+ */
+
+html {
+  color-scheme: light dark;
+}
+
+html,
+body {
+  margin: 0;
+  background-color: var(--ds-color-bg-page);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-ui);
+}
+
+body {
+  font-size: var(--ds-type-body-md-font-size);
+  line-height: var(--ds-type-body-md-line-height);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.ds-sc-app {
+  container: ds-sc / inline-size;
+  min-block-size: 100dvh;
+}
+
+.ds-sc-mono {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-type-micro-font-size);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-sc-dim {
+  color: var(--ds-color-text-secondary);
+}
+
+/* ---- header -------------------------------------------------------------- */
+
+.ds-sc-header {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--ds-z-overlay);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-3) var(--ds-space-page-margin);
+  background-color: var(--ds-color-bg-surface);
+  border-block-end: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+}
+
+.ds-sc-header-top {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-3);
+}
+
+.ds-sc-wordmark {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-type-title-md-font-size);
+  font-weight: var(--ds-type-title-md-font-weight);
+  letter-spacing: var(--ds-type-title-md-letter-spacing);
+  color: var(--ds-color-text-primary);
+  text-decoration: none;
+}
+
+.ds-sc-wordmark-tail {
+  color: var(--ds-color-text-secondary);
+}
+
+.ds-sc-brand-badge {
+  margin-inline-start: auto;
+  padding: var(--ds-space-1) var(--ds-space-3);
+  border-radius: var(--ds-radius-chip);
+  background-color: var(--ds-color-bg-surface-nested);
+  color: var(--ds-color-text-secondary);
+}
+
+/* ---- axis bar ------------------------------------------------------------ */
+
+.ds-sc-axis-region {
+  display: contents;
+}
+
+.ds-sc-axisbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--ds-space-2) var(--ds-space-5);
+  padding-block-start: var(--ds-space-2);
+  border-block-start: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+}
+
+.ds-sc-axisbar[data-open="false"] {
+  display: none;
+}
+
+.ds-sc-axis {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}
+
+.ds-sc-axis-name {
+  min-inline-size: 7ch;
+  font-size: var(--ds-type-label-sm-font-size);
+  font-weight: var(--ds-type-label-sm-font-weight);
+  color: var(--ds-color-text-secondary);
+}
+
+/* The resolved value always takes its own line, so every axis group is the same two-line shape
+   whether or not its buttons wrapped, and the bar does not go ragged as values change length. */
+.ds-sc-axis-resolved {
+  flex-basis: 100%;
+  color: var(--ds-color-text-tertiary);
+}
+
+/* An axis the probe found nothing responding to. It reads as a warning, because the control is a
+   control that does nothing, and the app would rather say so than let the choice look like an effect. */
+.ds-sc-axis-inert,
+.ds-sc-axis-partial {
+  margin-inline-start: var(--ds-space-2);
+  padding: var(--ds-space-0) var(--ds-space-2);
+  border-radius: var(--ds-radius-badge);
+  background-color: var(--ds-color-bg-tint-warning);
+  color: var(--ds-color-text-warning);
+}
+
+/* An axis no token answers and a component does. It is not a dead control, so it is not a warning —
+   it is the one thing on this bar the reader would otherwise get backwards. */
+.ds-sc-axis-partial {
+  background-color: var(--ds-color-bg-tint-info);
+  color: var(--ds-color-text-info);
+}
+
+.ds-sc-segments {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-1);
+  padding: var(--ds-space-1);
+  border-radius: var(--ds-radius-control);
+  background-color: var(--ds-color-bg-surface-nested);
+}
+
+.ds-sc-segments button,
+.ds-sc-segments a {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: var(--ds-space-1) var(--ds-space-3);
+  border-radius: var(--ds-radius-control);
+  background: transparent;
+  color: var(--ds-color-text-secondary);
+  font-family: var(--ds-font-ui);
+  font-size: var(--ds-type-label-sm-font-size);
+  text-decoration: none;
+  transition: background-color var(--ds-motion-duration-fast) var(--ds-motion-easing-out);
+}
+
+.ds-sc-segments button:hover,
+.ds-sc-segments a:hover {
+  background-color: var(--ds-color-bg-fill-neutral-subtle);
+}
+
+.ds-sc-segments button[data-selected],
+.ds-sc-segments a[data-selected] {
+  background-color: var(--ds-color-bg-fill-inverse);
+  color: var(--ds-color-text-on-inverse);
+}
+
+.ds-sc-axis-toggle,
+.ds-sc-nav-toggle {
+  appearance: none;
+  cursor: pointer;
+  padding: var(--ds-space-2) var(--ds-space-4);
+  border: var(--ds-border-hairline) solid var(--ds-color-border-boundary);
+  border-radius: var(--ds-radius-control);
+  background-color: var(--ds-color-bg-surface-raised);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-ui);
+  font-size: var(--ds-type-label-sm-font-size);
+}
+
+.ds-sc-axis-toggle {
+  align-self: flex-start;
+}
+
+/* ---- body and rail ------------------------------------------------------- */
+
+.ds-sc-body {
+  display: block;
+}
+
+.ds-sc-rail-region[data-open="false"] {
+  display: none;
+}
+
+.ds-sc-rail {
+  padding: var(--ds-space-4) var(--ds-space-page-margin);
+  border-block-end: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+}
+
+.ds-sc-rail-group + .ds-sc-rail-group {
+  margin-block-start: var(--ds-space-2);
+}
+
+.ds-sc-rail-section {
+  display: block;
+  padding: var(--ds-space-2) var(--ds-space-2);
+  border-radius: var(--ds-radius-control);
+  color: var(--ds-color-text-primary);
+  font-size: var(--ds-type-label-md-font-size);
+  font-weight: var(--ds-type-label-md-font-weight);
+  text-decoration: none;
+}
+
+.ds-sc-rail-section[aria-current] {
+  background-color: var(--ds-color-bg-fill-neutral-subtle);
+}
+
+.ds-sc-rail-items {
+  margin: 0;
+  padding: 0 0 0 var(--ds-space-2);
+  list-style: none;
+  max-block-size: 40dvh;
+  overflow-y: auto;
+}
+
+.ds-sc-rail-items a {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--ds-space-2);
+  padding: var(--ds-space-1) var(--ds-space-2);
+  border-radius: var(--ds-radius-control);
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-body-sm-font-size);
+  text-decoration: none;
+}
+
+.ds-sc-rail-items a:hover {
+  background-color: var(--ds-color-bg-fill-neutral-subtle);
+}
+
+.ds-sc-rail-items a[aria-current] {
+  color: var(--ds-color-text-primary);
+  background-color: var(--ds-color-bg-surface-nested);
+}
+
+.ds-sc-rail-note {
+  color: var(--ds-color-text-tertiary);
+}
+
+.ds-sc-main {
+  padding: var(--ds-space-6) var(--ds-space-page-margin) var(--ds-space-13);
+  min-inline-size: 0;
+}
+
+@container ds-sc (min-width: 900px) {
+  .ds-sc-nav-toggle,
+  .ds-sc-axis-toggle {
+    display: none;
+  }
+
+  .ds-sc-axisbar[data-open] {
+    display: grid;
+  }
+
+  .ds-sc-body {
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .ds-sc-rail-region[data-open] {
+    display: block;
+    position: sticky;
+    /* The header measures itself (src/app.tsx); the fallback is only for the first paint. */
+    inset-block-start: var(--ds-sc-header, 9rem);
+    max-block-size: calc(100dvh - var(--ds-sc-header, 9rem) - var(--ds-space-4));
+    overflow-y: auto;
+  }
+
+  .ds-sc-rail {
+    border-block-end: 0;
+    border-inline-end: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+  }
+
+  .ds-sc-rail-items {
+    max-block-size: none;
+  }
+}
+
+/* ---- screens ------------------------------------------------------------- */
+
+.ds-sc-screen {
+  max-inline-size: 72rem;
+}
+
+.ds-sc-screen-title {
+  margin: 0 0 var(--ds-space-2);
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-type-display-md-font-size);
+  font-weight: var(--ds-type-display-md-font-weight);
+  line-height: var(--ds-type-display-md-line-height);
+  letter-spacing: var(--ds-type-display-md-letter-spacing);
+}
+
+.ds-sc-lead {
+  margin: 0 0 var(--ds-space-6);
+  max-inline-size: 60ch;
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-body-lg-font-size);
+  line-height: var(--ds-type-body-lg-line-height);
+}
+
+.ds-sc-panel {
+  margin-block-end: var(--ds-space-section-gap);
+  padding: var(--ds-space-5);
+  border-radius: var(--ds-radius-card);
+  background-color: var(--ds-color-bg-surface);
+}
+
+.ds-sc-panel-title {
+  margin: 0 0 var(--ds-space-3);
+  font-size: var(--ds-type-title-sm-font-size);
+  font-weight: var(--ds-type-title-sm-font-weight);
+}
+
+.ds-sc-note {
+  margin: 0 0 var(--ds-space-3);
+  max-inline-size: 78ch;
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-body-sm-font-size);
+  line-height: var(--ds-type-body-sm-line-height);
+}
+
+.ds-sc-tag {
+  display: inline-block;
+  padding: var(--ds-space-0) var(--ds-space-2);
+  border-radius: var(--ds-radius-badge);
+  font-size: var(--ds-type-micro-font-size);
+  font-weight: var(--ds-type-label-sm-font-weight);
+  white-space: nowrap;
+}
+
+.ds-sc-tag[data-tone="ok"] {
+  background-color: var(--ds-color-bg-tint-success);
+  color: var(--ds-color-text-success);
+}
+
+.ds-sc-tag[data-tone="warn"] {
+  background-color: var(--ds-color-bg-tint-warning);
+  color: var(--ds-color-text-warning);
+}
+
+.ds-sc-tag[data-tone="info"] {
+  background-color: var(--ds-color-bg-tint-info);
+  color: var(--ds-color-text-info);
+}
+
+.ds-sc-tag[data-tone="off"] {
+  background-color: var(--ds-color-bg-surface-nested);
+  color: var(--ds-color-text-tertiary);
+}
+
+.ds-sc-facts {
+  margin: 0;
+  display: grid;
+  gap: var(--ds-space-2);
+}
+
+.ds-sc-facts > div {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr);
+  gap: var(--ds-space-3);
+  align-items: baseline;
+}
+
+.ds-sc-facts dt {
+  color: var(--ds-color-text-tertiary);
+  font-size: var(--ds-type-label-sm-font-size);
+}
+
+.ds-sc-facts dd {
+  margin: 0;
+  font-size: var(--ds-type-body-sm-font-size);
+  /* A fact's value is a path, a version string or a whole context dump, in mono, in the narrow column of a
+     two-column row. At 360 CSS px `web/apps/vrt/matrix.ts` in the platform-key row reached 385 px and scrolled
+     the document sideways, which is the one thing a page at phone width must not do. `anywhere` rather than
+     `break-word`: it also lets the value count towards the column's own min-content size, so the grid stops
+     asking for a width the viewport has not got. Inherited, so the `code` and `.ds-sc-mono` spans inside take
+     it too. */
+  overflow-wrap: anywhere;
+}
+
+/* Wrapping a path instead of overflowing it is only half the answer at phone width: a 12rem key column leaves
+   about 9rem for the value, and a fact broken every nine characters is not a fact anybody reads. Below the
+   container width where the rail appears, the row stacks — key over value, the value across the whole panel. */
+@container ds-sc (max-width: 560px) {
+  .ds-sc-facts > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ds-space-1);
+  }
+}
+
+.ds-sc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-4);
+  margin: var(--ds-space-3) 0 0;
+}
+
+.ds-sc-links a {
+  color: var(--ds-color-text-accent);
+  font-size: var(--ds-type-body-sm-font-size);
+}
+
+code,
+.ds-sc-path {
+  font-family: var(--ds-font-mono);
+  font-size: var(--ds-type-micro-font-size);
+}
+
+.ds-sc-path {
+  color: var(--ds-color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+/* ---- token rows ---------------------------------------------------------- */
+
+.ds-sc-compare-control {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+  margin-block-end: var(--ds-space-5);
+}
+
+.ds-sc-compare {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--ds-space-4);
+}
+
+.ds-sc-compare > .ds-sc-column {
+  padding: var(--ds-space-3);
+  border-radius: var(--ds-radius-inner);
+  background-color: var(--ds-color-bg-page);
+}
+
+.ds-sc-column-caption {
+  margin: 0 0 var(--ds-space-2);
+  color: var(--ds-color-text-tertiary);
+}
+
+.ds-sc-row {
+  display: grid;
+  grid-template-columns: 8rem minmax(0, 1fr);
+  gap: var(--ds-space-4);
+  padding-block: var(--ds-space-3);
+  border-block-start: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+}
+
+.ds-sc-row:first-child {
+  border-block-start: 0;
+}
+
+.ds-sc-row-specimen {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.5rem;
+}
+
+.ds-sc-row-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+}
+
+.ds-sc-row-type,
+.ds-sc-row-axes {
+  color: var(--ds-color-text-tertiary);
+}
+
+.ds-sc-row-description {
+  margin: var(--ds-space-1) 0 0;
+  max-inline-size: 78ch;
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-body-sm-font-size);
+  line-height: var(--ds-type-body-sm-line-height);
+}
+
+.ds-sc-row-values {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-1) var(--ds-space-4);
+  margin-block-start: var(--ds-space-2);
+}
+
+.ds-sc-value {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--ds-space-1);
+  min-inline-size: 0;
+}
+
+.ds-sc-value-label {
+  color: var(--ds-color-text-tertiary);
+  font-size: var(--ds-type-micro-font-size);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ds-sc-value-text {
+  color: var(--ds-color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+/* A specimen that needs the width — a type role at its real size, a gradient band — takes the
+   whole row and the text sits under it, instead of overflowing an 8rem column. */
+.ds-sc-row[data-layout="stacked"] {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--ds-space-2);
+}
+
+.ds-sc-row[data-layout="stacked"] .ds-sc-row-specimen {
+  min-block-size: 0;
+  max-inline-size: 100%;
+  overflow: hidden;
+}
+
+/* ---- specimens ----------------------------------------------------------- */
+
+.ds-sc-swatch {
+  display: inline-block;
+  inline-size: 3rem;
+  block-size: 3rem;
+  border-radius: var(--ds-radius-inner);
+  border: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+  overflow: hidden;
+  /* A checkerboard, so a translucent token reads as translucent. */
+  background-image: conic-gradient(var(--ds-color-bg-surface-nested) 0 25%, transparent 0 50%, var(--ds-color-bg-surface-nested) 0 75%, transparent 0);
+  background-size: 12px 12px;
+}
+
+.ds-sc-swatch-wide {
+  inline-size: 7rem;
+}
+
+.ds-sc-swatch-fill {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.ds-sc-rule {
+  display: block;
+  inline-size: 100%;
+  padding-block: var(--ds-space-2);
+  border-block-end: var(--ds-border-hairline) dashed var(--ds-color-border-hairline);
+}
+
+.ds-sc-rule-fill {
+  display: block;
+  block-size: var(--ds-space-2);
+  min-inline-size: 1px;
+  max-inline-size: 100%;
+  border-radius: var(--ds-radius-badge);
+  background-color: var(--ds-color-bg-fill-inverse);
+}
+
+.ds-sc-shadow-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  padding: var(--ds-space-3);
+}
+
+.ds-sc-shadow-box {
+  inline-size: 3rem;
+  block-size: 2rem;
+  border-radius: var(--ds-radius-inner);
+  background-color: var(--ds-color-bg-surface-raised);
+}
+
+.ds-sc-type-sample {
+  display: block;
+  color: var(--ds-color-text-primary);
+  white-space: nowrap;
+}
+
+.ds-sc-number {
+  color: var(--ds-color-text-primary);
+}
+
+.ds-sc-stroke {
+  inline-size: 100%;
+  block-size: 1rem;
+  color: var(--ds-color-text-secondary);
+}
+
+.ds-sc-replay {
+  appearance: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+  inline-size: 100%;
+  background: transparent;
+}
+
+.ds-sc-track {
+  display: block;
+  position: relative;
+  inline-size: 100%;
+  block-size: var(--ds-space-5);
+  border-radius: var(--ds-radius-badge);
+  background-color: var(--ds-color-bg-surface-nested);
+}
+
+.ds-sc-dot {
+  position: absolute;
+  inset-block-start: 50%;
+  inline-size: var(--ds-space-4);
+  block-size: var(--ds-space-4);
+  margin-block-start: calc(var(--ds-space-4) / -2);
+  border-radius: 50%;
+  background-color: var(--ds-color-bg-fill-accent-strong);
+}
+
+@keyframes ds-sc-travel {
+  from {
+    inset-inline-start: 0;
+  }
+
+  to {
+    inset-inline-start: calc(100% - var(--ds-space-4));
+  }
+}
+
+/* ---- tiles, counts, grids ------------------------------------------------ */
+
+.ds-sc-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  gap: var(--ds-space-4);
+}
+
+.ds-sc-tile {
+  display: grid;
+  gap: var(--ds-space-2);
+  justify-items: stretch;
+  min-inline-size: 0;
+}
+
+/* The harness stage is sized for a full example; a tile shows one surface, so it gives it the
+   track's width and a card's proportion rather than the example's fixed minimum. */
+.ds-sc-tile > .ds-sc-backdrop {
+  inline-size: 100%;
+  padding: var(--ds-space-7);
+}
+
+.ds-sc-tile .ds-sc-frame {
+  inline-size: 100%;
+  block-size: 7rem;
+}
+
+.ds-sc-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-6);
+}
+
+.ds-sc-count {
+  display: grid;
+}
+
+.ds-sc-count-value {
+  font-family: var(--ds-font-display);
+  font-size: var(--ds-type-metric-md-font-size);
+  font-weight: var(--ds-type-metric-md-font-weight);
+  line-height: var(--ds-type-metric-md-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.ds-sc-count-label {
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-caption-font-size);
+}
+
+.ds-sc-controls {
+  display: grid;
+  gap: var(--ds-space-3);
+}
+
+.ds-sc-ladder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ds-space-5);
+  margin-block-end: var(--ds-space-4);
+}
+
+.ds-sc-ladder-cell {
+  display: grid;
+  justify-items: center;
+  gap: var(--ds-space-2);
+  color: var(--ds-color-icon-primary);
+}
+
+.ds-sc-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: var(--ds-space-4);
+}
+
+.ds-sc-icon-cell {
+  display: grid;
+  gap: var(--ds-space-1);
+  padding: var(--ds-space-3);
+  border-radius: var(--ds-radius-inner);
+  background-color: var(--ds-color-bg-surface-nested);
+}
+
+.ds-sc-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  block-size: 3rem;
+  color: var(--ds-color-icon-primary);
+}
+
+.ds-sc-icon-meta {
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-micro-font-size);
+  overflow-wrap: anywhere;
+}
+
+.ds-sc-glyph-missing {
+  color: var(--ds-color-text-critical);
+}
+
+/* ---- components ---------------------------------------------------------- */
+
+.ds-sc-component-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--ds-space-1);
+}
+
+.ds-sc-component-list a {
+  display: grid;
+  gap: var(--ds-space-1);
+  padding: var(--ds-space-3);
+  border-radius: var(--ds-radius-inner);
+  color: inherit;
+  text-decoration: none;
+}
+
+.ds-sc-component-list a:hover {
+  background-color: var(--ds-color-bg-fill-neutral-subtle);
+}
+
+.ds-sc-component-name {
+  font-size: var(--ds-type-label-md-font-size);
+  font-weight: var(--ds-type-label-md-font-weight);
+}
+
+.ds-sc-component-list .ds-sc-dim {
+  font-size: var(--ds-type-body-sm-font-size);
+  line-height: var(--ds-type-body-sm-line-height);
+}
+
+.ds-sc-support {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-2);
+  margin-block-start: var(--ds-space-3);
+}
+
+.ds-sc-support-cell {
+  display: grid;
+  gap: var(--ds-space-0);
+  padding: var(--ds-space-2) var(--ds-space-3);
+  border-radius: var(--ds-radius-inner);
+  background-color: var(--ds-color-bg-surface-nested);
+}
+
+.ds-sc-support-cell[data-current] {
+  background-color: var(--ds-color-bg-tint-accent);
+}
+
+.ds-sc-support-key {
+  color: var(--ds-color-text-tertiary);
+}
+
+.ds-sc-example {
+  overflow-x: auto;
+  border-radius: var(--ds-radius-inner);
+  background-color: var(--ds-color-bg-page);
+}
+
+.ds-sc-props summary {
+  cursor: pointer;
+  color: var(--ds-color-text-tertiary);
+  font-size: var(--ds-type-micro-font-size);
+}
+
+.ds-sc-props pre {
+  margin: var(--ds-space-2) 0 0;
+  overflow-x: auto;
+  color: var(--ds-color-text-secondary);
+}
+
+.ds-sc-example-ids {
+  margin: 0;
+  padding-inline-start: var(--ds-space-5);
+  display: grid;
+  gap: var(--ds-space-1);
+  font-size: var(--ds-type-body-sm-font-size);
+}
+
+.ds-sc-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--ds-type-body-sm-font-size);
+}
+
+.ds-sc-table th {
+  text-align: start;
+  color: var(--ds-color-text-tertiary);
+  font-size: var(--ds-type-label-sm-font-size);
+  font-weight: var(--ds-type-label-sm-font-weight);
+}
+
+.ds-sc-table th,
+.ds-sc-table td {
+  padding: var(--ds-space-2) var(--ds-space-3) var(--ds-space-2) 0;
+  border-block-end: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
+  vertical-align: top;
+}
+
+.ds-sc-behaviour {
+  margin: 0;
+  padding-inline-start: var(--ds-space-5);
+  display: grid;
+  gap: var(--ds-space-2);
+  max-inline-size: 78ch;
+  color: var(--ds-color-text-secondary);
+  font-size: var(--ds-type-body-sm-font-size);
+  line-height: var(--ds-type-body-sm-line-height);
+}
+
+:focus-visible {
+  outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  outline-offset: 2px;
+}

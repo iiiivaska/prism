@@ -1,4 +1,4 @@
-// release:pack (roadmap P3-6): what each published package would ship is what ADR-0028, ADR-0021 §11
+// release:pack (roadmap P3-6): what each published package would ship is what ADR-0031, ADR-0021 §11
 // and critic C-14 promise. The rules run against synthetic file lists, and once against this
 // repository — that last case needs the packages built (`pnpm -r build`), the way the visual-regression
 // fixture does; the `web` CI job builds before it tests.
@@ -18,8 +18,12 @@ function packed(name: string, files: readonly string[], manifest: Record<string,
   };
 }
 
+// What ADR-0031 rule 2 requires in a published manifest: npm's form for a license that ships with
+// the package. Spelled out here, not imported, so the test says the rule rather than echoing pack.ts.
+const MANIFEST_LICENSE = 'SEE LICENSE IN LICENSE';
+
 const MANIFEST = {
-  license: 'MIT',
+  license: MANIFEST_LICENSE,
   exports: { '.': { types: './dist/index.d.ts', default: './dist/index.js' }, './package.json': './package.json' },
 };
 
@@ -29,13 +33,20 @@ const status = (rows: readonly { check: string; status: string; detail: string }
   rows.find((r) => r.check === check);
 
 describe('every published package', () => {
-  test('carries its own LICENSE and says MIT (ADR-0028 rule 2)', () => {
+  test('carries its own LICENSE and names it the way npm names a bundled license (ADR-0031 rule 2)', () => {
     expect(status(checkPacked(packed('p', BASE)), 'license')?.status).toBe('pass');
+    expect(status(checkPacked(packed('p', BASE)), 'license')?.detail).toBe('LICENSE shipped, "license": "SEE LICENSE IN LICENSE"');
     const noLicense = checkPacked(packed('p', ['package.json', 'dist/index.js', 'dist/index.d.ts']));
     expect(status(noLicense, 'license')?.status).toBe('fail');
-    expect(status(noLicense, 'license')?.detail).toContain('ADR-0028 rule 2: LICENSE is not in the tarball');
-    const notMit = checkPacked(packed('p', BASE, { ...MANIFEST, license: 'Apache-2.0' }));
-    expect(status(notMit, 'license')?.detail).toContain('not "MIT"');
+    expect(status(noLicense, 'license')?.detail).toContain('ADR-0031 rule 2: LICENSE is not in the tarball');
+    const other = checkPacked(packed('p', BASE, { ...MANIFEST, license: 'Apache-2.0' }));
+    expect(status(other, 'license')?.detail).toContain('"license" is "Apache-2.0", not "SEE LICENSE IN LICENSE"');
+  });
+
+  test('a tarball that still says MIT would be the relicensing half-done, and fails (ADR-0031 rule 2)', () => {
+    const mit = checkPacked(packed('p', BASE, { ...MANIFEST, license: 'MIT' }));
+    expect(status(mit, 'license')?.status).toBe('fail');
+    expect(status(mit, 'license')?.detail).toContain('"license" is "MIT", not "SEE LICENSE IN LICENSE"');
   });
 
   test('an export that names a file the tarball leaves out is the C-14 failure, caught here', () => {
@@ -46,7 +57,7 @@ describe('every published package', () => {
   });
 
   test('a `*` subpath is expanded against the tarball, and needs at least one file', () => {
-    const manifest = { license: 'MIT', exports: { './brands/*/tokens.css': './src/generated/*/tokens.css' } };
+    const manifest = { license: MANIFEST_LICENSE, exports: { './brands/*/tokens.css': './src/generated/*/tokens.css' } };
     const withBrands = ['LICENSE', 'package.json', 'src/generated/prism/tokens.css', 'src/generated/prism-native/tokens.css'];
     expect(status(checkPacked(packed('p', withBrands, manifest)), 'exports')?.detail).toBe('1 subpaths → 2 files');
     expect(status(checkPacked(packed('p', ['LICENSE', 'package.json'], manifest)), 'exports')?.status).toBe('fail');
@@ -115,7 +126,7 @@ describe('@iiiivaska/prism-react ships the specs the skill sends agents to (C-14
   });
 });
 
-describe('@iiiivaska/prism-tokens ships every brand it serves (ADR-0021 §11, ADR-0028 rule 3)', () => {
+describe('@iiiivaska/prism-tokens ships every brand it serves (ADR-0021 §11, ADR-0031 rule 3)', () => {
   const brand = (name: string, face: string) => [
     `src/generated/${name}/tokens.css`,
     `src/generated/${name}/fonts/fonts.css`,
@@ -130,9 +141,9 @@ describe('@iiiivaska/prism-tokens ships every brand it serves (ADR-0021 §11, AD
     expect(status(rows, 'fonts')?.detail).toBe('prism-native: 1 face(s), prism: 1 face(s)');
   });
 
-  test('a face with no OFL text beside it fails (ADR-0028 rule 3)', () => {
+  test('a face with no OFL text beside it fails (ADR-0031 rule 3)', () => {
     const files = [...BASE, ...brand('prism', 'onest').filter((f) => !f.endsWith('OFL.txt'))];
-    expect(status(checkPacked(packed('@iiiivaska/prism-tokens', files)), 'fonts')?.detail).toContain('ADR-0028 rule 3');
+    expect(status(checkPacked(packed('@iiiivaska/prism-tokens', files)), 'fonts')?.detail).toContain('ADR-0031 rule 3');
   });
 
   test('a brand with no fonts.css fails (ADR-0021 §11)', () => {
