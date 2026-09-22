@@ -1,0 +1,81 @@
+/*
+ * Divider (spec/components/Divider.yaml, specVersion 1). Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Divider writes data-ds-orientation, data-ds-inset and data-ds-surface (the material the
+ * enclosing Surface publishes) onto one element, and this sheet maps them to the tokens Divider.yaml
+ * binds. It reads no axis attribute, no variant and no media query of the runtime contract: Increase
+ * Contrast arrives through color.border.hairline itself (behavior 8), and the glass fallback has already
+ * happened in React when this sheet sees data-ds-surface="raised" (behavior 9).
+ *
+ * The root is the one line. It spans its container on the long axis and is border.hairline thick on the
+ * other; inset: content is padding inside the root, and the colour is painted into the content box only,
+ * so the line is shorter while the box is not (behaviors 3 and 4: the Divider owns no margin).
+ *
+ * Custom properties named --ds--divider-* are this component's own (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  .ds-divider {
+    /* root.color has no `default`: on a material with no cell (inverse, accent) the line paints nothing (behavior 7). */
+    --ds--divider-color: transparent;
+    /* root.inset has no `none` cell: no inset, in the form Surface.css writes for padding: none. */
+    --ds--divider-inset: calc(var(--ds-space-card-padding) * 0);
+
+    box-sizing: border-box;
+    flex: none;
+    align-self: stretch;
+    margin: 0;
+    border: 0;
+    background-color: var(--ds--divider-color);
+    background-clip: content-box;
+  }
+
+  /* ---- root.thickness, along the orientation; root.inset trims the two ends of the long axis ---- */
+
+  .ds-divider[data-ds-orientation="horizontal"] {
+    block-size: var(--ds-border-hairline);
+    padding-inline: var(--ds--divider-inset);
+  }
+
+  /* Behavior 2: vertical stretches to the height of a parent with a definite cross size. */
+  .ds-divider[data-ds-orientation="vertical"] {
+    inline-size: var(--ds-border-hairline);
+    min-block-size: 100%;
+    padding-block: var(--ds--divider-inset);
+  }
+
+  .ds-divider[data-ds-inset="content"] {
+    --ds--divider-inset: var(--ds-space-card-padding);
+  }
+
+  /* ---- root.color, keyed by the published material (behaviors 5 and 7) ---- */
+
+  .ds-divider:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"]) {
+    --ds--divider-color: var(--ds-color-border-hairline);
+  }
+
+  /* On vivid and on either glass color.border.hairline disappears (behavior 5). */
+
+  .ds-divider[data-ds-surface="vivid"] {
+    --ds--divider-color: var(--ds-color-border-on-media);
+  }
+
+  .ds-divider:is([data-ds-surface="glass"], [data-ds-surface="glassLight"]) {
+    --ds--divider-color: var(--ds-color-border-on-glass-fill);
+  }
+
+  /*
+   * Forced colors keep a background's alpha, so a 10 % hairline would stay a 10 % line of the system
+   * Canvas colour, and white 40 % on vivid would vanish into Canvas: the line takes CanvasText instead.
+   * The selector names the materials the line is drawn on, so that it is as specific as the material
+   * rules above and wins over them by coming last; on inverse and accent it stays unpainted. Web only;
+   * Apple's twin is the Increase Contrast step of the token (behavior 8).
+   */
+  @media (forced-colors: active) {
+    .ds-divider:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"], [data-ds-surface="vivid"], [data-ds-surface="glass"], [data-ds-surface="glassLight"]) {
+      forced-color-adjust: none;
+      --ds--divider-color: CanvasText;
+    }
+  }
+}

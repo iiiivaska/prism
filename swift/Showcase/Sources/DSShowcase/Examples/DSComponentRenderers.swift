@@ -253,3 +253,32 @@ struct DSVividCardGrid: View {
         }
     }
 }
+
+// MARK: - Divider
+
+/// Divider.yaml's `orientation`, `inset` and `isDecorative`, staged in the rule frame every harness shares
+/// (`DSExampleRuleFrame`). A Divider carries no text, so there is no sample string, and it declares no action.
+public struct DSDividerRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        // A value the spec writes and this build does not know is nil: the page says so rather than drawing the
+        // default in its place. An example that writes no value takes the spec's default.
+        let orientation: DSDividerOrientation? = example.string("orientation") == nil ? .horizontal : example.raw("orientation")
+        let inset: DSDividerInset? = example.string("inset") == nil ? DSDividerInset.none : example.raw("inset")
+        guard let orientation, let inset else { return nil }
+        // `isDecorative` defaults true in the spec, and `bool(_:)` alone would default it false. On Apple both values
+        // hide the line (Divider.yaml `notes.platform.ios`), so this changes no announcement here; it keeps the props
+        // the page passes the ones the spec writes.
+        let isDecorative = example.bool("isDecorative", default: true)
+        return AnyView(
+            DSExampleRuleFrame(orientation) {
+                DSDivider(orientation: orientation, inset: inset, isDecorative: isDecorative)
+            }
+        )
+    }
+
+    /// The Surface hugs the rule frame: `inset: content` is `space.card-padding` from the container's edge, and a
+    /// `card`-padded Surface would put a second one around it.
+    public func surfacePadding(for example: DSSpecExample) -> DSSurfacePadding { DSSurfacePadding.none }
+}

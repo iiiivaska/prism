@@ -43,8 +43,8 @@ enum DSSnapshotMatrix {
     /// gallery column then links to that platform's cell of the parity report (critic C-25: `apple` is not a
     /// platform key).
     nonisolated static let platform = "ios"
-    /// The components P3-3 implements, in roadmap order.
-    nonisolated static let components = ["Surface", "Text", "Button", "Card"]
+    /// The components the manifest implements on iOS, in roadmap order: P3-3's four, then Phase 4's.
+    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider"]
     /// Both densities of the acceptance line: iOS's default and the pointer default.
     nonisolated static let densities: [DSDensity] = [.regular, .compact]
 
@@ -85,11 +85,12 @@ enum DSSnapshotMatrix {
 @MainActor
 @Suite("The P3-3 snapshot matrix and its file names")
 struct DSSnapshotMatrixTests {
-    /// 8 Surface, 6 Text, 7 Button and 7 Card examples; one Card example is light only; 3 Surface, 1 Text and 2 Card
-    /// examples render glass.
+    /// 8 Surface, 6 Text, 7 Button, 7 Card and 6 Divider examples; one Card example is light only; 3 Surface, 1 Text,
+    /// 2 Card and 1 Divider examples render glass.
     ///
-    /// Surface 8×8 + 3×4 = 76, Text 6×8 + 1×4 + 6×4 = 76, Button 7×8 = 56, Card 6×8 + 1×4 + 2×4 = 60.
-    static let expectedCount = 268
+    /// Surface 8×8 + 3×4 = 76, Text 6×8 + 1×4 + 6×4 = 76, Button 7×8 = 56, Card 6×8 + 1×4 + 2×4 = 60,
+    /// Divider 6×8 + 1×4 = 52.
+    static let expectedCount = 320
 
     @Test func theMatrixHasTheExpectedSizeAndUniqueNames() {
         let paths = DSSnapshotMatrix.allPaths

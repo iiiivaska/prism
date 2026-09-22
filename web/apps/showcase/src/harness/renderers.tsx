@@ -15,6 +15,10 @@
  *    Surface of that material, over `backdrop` when the material is glass.
  *  - `grid` — a 2×2, row-major, one component per cell with the cell's vivid slot.
  *
+ * Divider is staged by its own entry (`renderDividerExample`), as the gallery stages it: in a rule frame,
+ * and on a material in a Surface with no padding, because its `inset: content` is measured from the
+ * container's edge.
+ *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
  * renders the component's interactive form). The one exception is a component whose API bundles several
@@ -25,12 +29,15 @@ import type { ReactElement, ReactNode } from "react";
 import {
   Button,
   Card,
+  Divider,
   Surface,
   Text,
   iconRegistry,
   type BackdropKind,
   type ButtonProps,
   type CardProps,
+  type DividerOrientation,
+  type DividerProps,
   type IconName,
   type SurfaceMaterial,
   type SurfaceProps,
@@ -148,6 +155,43 @@ export function renderTextExample(props: Readonly<Record<string, unknown>>, exam
 
 export function renderButtonExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
   return <Stage>{onExampleSurface(example, <Button {...(props as unknown as ButtonProps)} />)}</Stage>;
+}
+
+/**
+ * The frame a Divider stretches along: `size.card-min` long, with `size.row` of empty space on either side
+ * of the line — the gallery's `RuleFrame` and the SwiftUI harness's `DSExampleRuleFrame`, the same numbers.
+ */
+function RuleFrame(props: { readonly orientation: DividerOrientation; readonly children: ReactNode }): ReactNode {
+  return (
+    <div className="ds-sc-rule-frame" data-ds-sc-rule-frame={props.orientation}>
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * A Divider on its example's `surface`, staged exactly as `renderDividerExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it: on the page, or inside a Surface of that material
+ * with no padding, hugging the rule frame, over `backdrop` when the material is glass. A padded Surface
+ * would apply the card padding twice to `inset: content`.
+ */
+export function renderDividerExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const args = props as unknown as DividerProps;
+  const rule = (
+    <RuleFrame orientation={args.orientation ?? "horizontal"}>
+      <Divider {...args} />
+    </RuleFrame>
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{rule}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, rule)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card" padding="none">
+      {rule}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
 }
 
 /**

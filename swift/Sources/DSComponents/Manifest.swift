@@ -34,10 +34,15 @@
 /// magnitude Card shares with every other Prism control, and the minimum gap between the rows of the anatomy — each
 /// a number both stacks had chosen for itself. Surface 3 writes down the per-material default of `elevation`, which
 /// this target already drew.
+///
+/// P4-1 adds Divider (`DSDivider`) on iOS, iPadOS and macOS. Divider.yaml marks watchOS `none`, so its row has no
+/// `watchos` key: one there would claim a platform the spec rules out, which the parity report fails as
+/// `manifest/unsupported` (ADR-0006 rule 4).
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
+        "Divider": ["ios": 1, "ipados": 1, "macos": 1],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]

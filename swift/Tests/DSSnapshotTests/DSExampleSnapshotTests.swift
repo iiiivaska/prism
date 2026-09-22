@@ -8,8 +8,8 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// The SwiftUI snapshots of roadmap P3-3: every spec example of Surface, Text, Button and Card (`DSExamples`, which the
-/// `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus forced Reduce
+/// The SwiftUI snapshots of roadmap P3-3: every spec example of Surface, Text, Button, Card and Divider (`DSExamples`,
+/// which the `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus forced Reduce
 /// Transparency for every glass example and Bold Text for every Text example (`DSSnapshotMatrix`).
 ///
 /// README.md beside this file documents the naming, the pinned rendering, the tolerance and how to record.
@@ -82,7 +82,7 @@ struct DSExampleSnapshotTests {
     /// The accessibility axes the baselines are pinned on are written through SwiftUI's underscored environment keys,
     /// which are SPI (`DSSnapshotConditions`). This renders a probe under the same conditions and reads the **public**
     /// values back out of it, so a toolchain that renames one of those keys, or changes what it means, fails here —
-    /// loudly, and before any image is written — instead of recording 268 standard-state images under accessibility
+    /// loudly, and before any image is written — instead of recording the standard-state images under accessibility
     /// names. It also holds the two channels that are forced separately, SwiftUI's own values and Prism's context, to
     /// the same answer.
     @Test func theForcedConditionsReachTheRender() throws {
@@ -161,7 +161,7 @@ struct DSExampleSnapshotTests {
     /// A SwiftUI render is reproducible inside one toolchain and one simulator runtime, not across them: the roadmap's
     /// Xcode 27 lane is exactly this divergence, and today the owner's Mac has only Xcode 27.0 while CI pins 26.6. Both
     /// the recorded set and the run carry their own stamp, so a set recorded elsewhere fails with one readable line
-    /// instead of 268 pixel diffs.
+    /// instead of a pixel diff per image.
     static func provenanceMismatch() throws -> String? {
         let baselines = try? FileManager.default.contentsOfDirectory(atPath: baselineDirectory.path)
         guard let baselines, baselines.contains(where: { $0 != "provenance.json" && !$0.hasPrefix(".") }) else {
@@ -201,7 +201,8 @@ enum DSSnapshotRendering {
     /// One pixel per point, the scale the web baselines are captured at (`deviceScaleFactor: 1`), so the gallery pairs
     /// compare like for like and the committed set stays small.
     static let scale: CGFloat = 1
-    /// No example of the four specs declares a locale, so every one renders in en_US, UTC and the Gregorian calendar.
+    /// No example of the snapshotted specs declares a locale, so every one renders in en_US, UTC and the Gregorian
+    /// calendar.
     static let locale = Locale(identifier: "en_US")
     static let timeZone = TimeZone(identifier: "UTC") ?? TimeZone(secondsFromGMT: 0) ?? .current
     static var calendar: Calendar {
@@ -286,7 +287,7 @@ enum DSSnapshotRendering {
 /// **The three underscored keys are SPI.** `_colorSchemeContrast`, `_accessibilityReduceTransparency` and
 /// `_accessibilityReduceMotion` are the only way to write SwiftUI's own accessibility values from a test — the public
 /// keys are get-only — and they are exactly the axis the baselines are pinned on. They work on Xcode 27 and on the
-/// iOS 26.5 runtime, but a toolchain may rename or drop them, and then this whole matrix would quietly record 268
+/// iOS 26.5 runtime, but a toolchain may rename or drop them, and then this whole matrix would quietly record its
 /// standard-state images under accessibility names. One modifier holds them, and
 /// `DSExampleSnapshotTests.theForcedConditionsReachTheRender` reads the public values back out of a render made
 /// through it, so a toolchain that drops one fails on that test before any image is written.

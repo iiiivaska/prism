@@ -308,6 +308,8 @@ notes:
   design: Primary uses elevation.1 so it lifts from solid surfaces; on vivid surfaces use variant=secondary.
 ```
 
+`notes.platform` is keyed by the six keys of `platforms` and by nothing else. `spec:validate` reports any other key as `spec/schema`, and the Apple showcase generator refuses to write rather than drop its note, so a misspelt `watchos` fails instead of vanishing.
+
 ## Versioning rules
 
 - Bump `specVersion` for any change an implementation must react to (anatomy, props, states, bindings, behavior, accessibility). Editorial fixes don't bump.

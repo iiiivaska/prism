@@ -564,14 +564,25 @@ function examplesOf(spec: SpecRow): SpecExample[] {
   return out;
 }
 
-function platformNotesOf(spec: SpecRow): readonly (readonly [string, string])[] {
+/**
+ * `notes.platform`, one note per spec platform key. A key that is not one of them is a problem, not a
+ * note to skip: the schema rejects it too (spec/component.schema.json), and a misspelt `watchos` dropped
+ * here would take its note out of the app without a word.
+ */
+function platformNotesOf(spec: SpecRow, problems: string[]): readonly (readonly [string, string])[] {
   const notes = spec.doc.value?.['notes'];
   if (!isRecord(notes)) return [];
   const platform = notes['platform'];
   if (!isRecord(platform)) return [];
-  return Object.entries(platform)
-    .filter((e): e is [string, string] => typeof e[1] === 'string')
-    .filter(([key]) => (PLATFORMS as readonly string[]).includes(key));
+  const out: [string, string][] = [];
+  for (const [key, value] of Object.entries(platform)) {
+    if (!(PLATFORMS as readonly string[]).includes(key)) {
+      problems.push(`${spec.file}: notes.platform.${key} is not a spec platform key (${PLATFORMS.join(', ')})`);
+    } else if (typeof value === 'string') {
+      out.push([key, value]);
+    }
+  }
+  return out;
 }
 
 function stringField(spec: SpecRow, field: string): string | null {
@@ -657,7 +668,7 @@ export function renderComponentCatalog(reader: SourceReader, problems: string[])
       `            isPattern: ${isPattern ? 'true' : 'false'},`,
       `            platforms: [${platforms.join(', ')}],`,
       `            implemented: [${implementedPairs.join(', ')}],`,
-      `            platformNotes: [${platformNotesOf(spec).map(([k, v]) => `(${swiftString(k)}, ${swiftString(v)})`).join(', ')}],`,
+      `            platformNotes: [${platformNotesOf(spec, problems).map(([k, v]) => `(${swiftString(k)}, ${swiftString(v)})`).join(', ')}],`,
       '            examples: [',
     );
     for (const example of examples) {

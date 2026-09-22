@@ -49,6 +49,27 @@ body {
   max-inline-size: calc(var(--ds-size-card-min) * 2);
 }
 
+/*
+ * The rule frame a Divider stretches along (renderDividerExample): size.card-min long, with size.row of
+ * empty space on either side of the line.
+ */
+.ds-gallery-rule-frame {
+  display: flex;
+  box-sizing: content-box;
+}
+
+.ds-gallery-rule-frame[data-ds-gallery-rule-frame="horizontal"] {
+  flex-direction: column;
+  inline-size: var(--ds-size-card-min);
+  padding-block: var(--ds-size-row);
+}
+
+.ds-gallery-rule-frame[data-ds-gallery-rule-frame="vertical"] {
+  flex-direction: row;
+  block-size: var(--ds-size-card-min);
+  padding-inline: var(--ds-size-row);
+}
+
 .ds-gallery-grid {
   display: grid;
   grid-template-columns: repeat(2, var(--ds-size-card-min));

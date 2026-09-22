@@ -8,8 +8,12 @@
  *   of that material, over `backdrop` when the material is glass.
  * - `grid`: a 2×2, row-major, one component per cell with the cell's vivid slot.
  *
+ * Divider is staged by its own renderer (`renderDividerExample`): in a rule frame, and on a material in a
+ * Surface with no padding, because its `inset: content` is measured from the container's edge.
+ *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button and Card examples carry their strings in their props.
+ * (src/harness/content.ts); Button and Card examples carry their strings in their props, and Divider
+ * draws none.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
  * for every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -21,6 +25,7 @@ import type { ReactElement, ReactNode } from "react";
 import {
   Button,
   Card,
+  Divider,
   Surface,
   Text,
   iconRegistry,
@@ -28,6 +33,8 @@ import {
   type ButtonProps,
   type CardActionKind,
   type CardProps,
+  type DividerOrientation,
+  type DividerProps,
   type IconName,
   type SurfaceMaterial,
   type SurfaceProps,
@@ -151,6 +158,45 @@ function onExampleSurface(example: ExampleFields, node: ReactNode): ReactNode {
 
 export function renderButtonExample(args: ButtonProps, example: ExampleFields): ReactElement {
   return <Stage>{onExampleSurface(example, <Button {...args} />)}</Stage>;
+}
+
+/**
+ * The frame a Divider stretches along: `size.card-min` long, with `size.row` of empty space on either side
+ * of the line, so a horizontal rule is 200 × 89 at regular density and 200 × 65 at compact, and a vertical
+ * one the same frame turned on its side. The frame's padding places the line, so it sits on whole pixels
+ * rather than wherever centring would round it. The SwiftUI snapshot harness and both showcases stage the
+ * same frame (`DSExampleRuleFrame`, and `ds-sc-rule-frame` in web/apps/showcase).
+ */
+function RuleFrame(props: { readonly orientation: DividerOrientation; readonly children: ReactNode }): ReactNode {
+  return (
+    <div className="ds-gallery-rule-frame" data-ds-gallery-rule-frame={props.orientation}>
+      {props.children}
+    </div>
+  );
+}
+
+/**
+ * A Divider on its example's `surface`: on the page, or inside a Surface of that material, over `backdrop`
+ * when the material is glass. Unlike `onExampleSurface`, the Surface has no padding and no card-sized frame
+ * of its own; it hugs the rule frame. `inset: content` trims the line by `space.card-padding` from the
+ * container's edge, so a padded Surface would apply the card padding twice.
+ */
+export function renderDividerExample(args: DividerProps, example: ExampleFields): ReactElement {
+  const rule = (
+    <RuleFrame orientation={args.orientation ?? "horizontal"}>
+      <Divider {...args} />
+    </RuleFrame>
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{rule}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, rule)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card" padding="none">
+      {rule}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
 }
 
 /**

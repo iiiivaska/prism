@@ -1,7 +1,7 @@
 # DSSnapshotTests
 
-The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button and Card
-across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
+The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button, Card and
+Divider across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
 component's pixels back** — because this is the target that runs where a Prism view really rasterizes.
 
 | File | What it holds |
@@ -14,6 +14,7 @@ component's pixels back** — because this is the target that runs where a Prism
 | `DSButtonReduceMotionTests.swift` | That the Reduce Motion press substitute is visible (ADR-0023 §8.4). iOS only. |
 | `DSCardSimulatorPixelTests.swift` | What a Card draws for the Card.yaml v5 readings, read back as pixels: the open glyph of a card with no handler, that glyph centred in the `action.size` box at the padding corner (behavior 14), the tint over the page, the custom disc's fill per published material. iOS only. |
 | `DSTextFiguresRenderTests.swift` | That `numeric: tabular` renders at the role's own weight (ADR-0021 §5). iOS only. |
+| `DSDividerAccessibilityTreeTests.swift` | What a Divider publishes to VoiceOver, read off UIKit's accessibility tree rather than a render: no element for any example or either value of `isDecorative` (Divider.yaml `notes.platform.ios`), with controls that an unnamed element is found. It turns on the accessibility runtime's automation mode for each walk and restores it; a runtime without that switch skips the suite with the reason instead of failing it. iOS only. |
 | `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
 | `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
 
@@ -70,9 +71,10 @@ density × the standard state and Increase Contrast, plus:
 | Text | 6 (1 glass) | 6×8 + 1×4 + 6×4 = **76** |
 | Button | 7 | 7×8 = **56** |
 | Card | 7 (2 glass, 1 light-only) | 6×8 + 1×4 + 2×4 = **60** |
-| | **28** | **268** |
+| Divider | 6 (1 glass) | 6×8 + 1×4 = **52** |
+| | **34** | **320** |
 
-`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 268, so adding an example is a deliberate
+`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 320, so adding an example is a deliberate
 change to this file and not a silent one. `theMatrixCoversEveryComponentTheManifestImplementsOnIOS` holds the
 hand-written `DSSnapshotMatrix.components` to the components `DSComponentsManifest` implements on iOS, so a component
 cannot land in the manifest without being snapshotted. Both tests run in the host `swift test`, which CI runs before
@@ -89,7 +91,7 @@ SPI: they work on Xcode 27 and on the iOS 26.5 runtime, and a toolchain may rena
 is exactly the axis the baselines are pinned on, so `theForcedConditionsReachTheRender` renders a probe under
 `DSSnapshotConditions` and reads the **public** values back out of it, for all sixteen scheme × density ×
 accessibility combinations, together with the `DSTokenContext` DSCore derives at the same point. A toolchain that
-drops one of the keys fails there — before an image is written — instead of quietly recording 268 standard-state
+drops one of the keys fails there — before an image is written — instead of quietly recording the standard-state
 images under accessibility names.
 
 ## Naming
@@ -122,8 +124,8 @@ Everything that reaches a pixel is pinned here, not taken from the machine:
 | Width | 402 pt | iPhone 17's portrait width: an example lays out inside the phone's width and no wider. |
 | Height | the example's own | Snapshots are tight, so a height change is a diff and not a band of empty page. |
 | Scale | 1 | What the web baselines are captured at (`deviceScaleFactor: 1`), so a P3-5 pair compares like for like. |
-| Dynamic Type | Large | The reference size; the accessibility sizes are the equal-width suite's job, not 268 more images. |
-| Locale, time zone, calendar | `en_US`, UTC, Gregorian | No example of these four specs declares a locale. The one date on screen (Card `glass-vehicle`) is literal text from the spec, not a formatted date, so it does not move with the locale. |
+| Dynamic Type | Large | The reference size; the accessibility sizes are the equal-width suite's job, not another copy of the matrix. |
+| Locale, time zone, calendar | `en_US`, UTC, Gregorian | No example of the snapshotted specs declares a locale. The one date on screen (Card `glass-vehicle`) is literal text from the spec, not a formatted date, so it does not move with the locale. |
 | Layout direction | left-to-right | |
 
 A render is repeated until two passes in a row are identical (up to four): a Surface sizes its backdrop copy and its
@@ -169,8 +171,8 @@ therefore stamped with what recorded it:
 ```
 
 `xcode` and `sdk` come from the test bundle's `Info.plist` (`DTXcodeBuild`, `DTSDKName`), which xcodebuild fills in. A
-run whose stamp differs from the recorded one fails **once**, naming the fields that differ, instead of reporting 268
-pixel diffs for a reason that is not the code.
+run whose stamp differs from the recorded one fails **once**, naming the fields that differ, instead of reporting a
+pixel diff per image for a reason that is not the code.
 
 **Record the baselines with the Xcode `XCODE_VERSION` pins in `.github/workflows/ci.yml` (26.6).** Since 2026-09-15 the
 owner's Mac has only Xcode 27.0 while CI pins 26.6 (docs/roadmap.md, "Xcode 27 lane"), so a set recorded locally today

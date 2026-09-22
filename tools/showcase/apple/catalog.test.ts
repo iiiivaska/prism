@@ -73,6 +73,19 @@ describe("the Apple showcase catalogues", () => {
     expect(problems).toContain("space.3: no Swift member type for DSTokenSet.space.step3 — the key-path table is stale");
   });
 
+  it("reports a notes.platform key that is not a platform instead of dropping its note", () => {
+    // A misspelt key used to be filtered out here, so its note left the app without a word while the spec still
+    // validated; the schema now refuses it too (spec/component.schema.json). The generator refuses to write.
+    const path = "spec/components/Divider.yaml";
+    const text = reader.readText(path);
+    expect(text).toContain("\n    watchos: ");
+    const doctored = text.replace("\n    watchos: ", "\n    watchoss: ");
+    const { problems } = renderCatalogs(overlayReader(reader, memoryReader({ [path]: doctored })));
+    expect(problems).toContain(
+      "spec/components/Divider.yaml: notes.platform.watchoss is not a spec platform key (ios, ipados, macos, watchos, web-touch, web-desktop)",
+    );
+  });
+
   it("carries every spec, implemented or not, so the app can never silently omit one", () => {
     const catalog = files.find((f) => f.path.endsWith("DSShowcaseCatalog.swift"))?.contents ?? "";
     const specs = [

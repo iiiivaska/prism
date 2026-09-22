@@ -1,0 +1,9 @@
+{
+  "description": "`notes.platform` has a key that is not one of the six spec platform keys (`watchoss`), which every reader keyed by platform would drop without a word.",
+  "expect": [
+    {
+      "code": "spec/schema",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

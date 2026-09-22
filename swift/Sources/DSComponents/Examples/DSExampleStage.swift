@@ -38,7 +38,9 @@ struct DSExample: Identifiable {
 
 /// Every example of the components this target implements, in spec order.
 enum DSExamples {
-    static var all: [DSExample] { DSSurfaceExamples.all + DSTextExamples.all + DSButtonExamples.all + DSCardExamples.all }
+    static var all: [DSExample] {
+        DSSurfaceExamples.all + DSTextExamples.all + DSButtonExamples.all + DSCardExamples.all + DSDividerExamples.all
+    }
 
     static func named(_ id: String) -> DSExample? { all.first { $0.id == id } }
 }

@@ -157,7 +157,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "platform": { "type": "object", "additionalProperties": { "type": "string" } },
+        "platform": {
+          "type": "object",
+          "description": "One note per spec platform key, and no other key: a misspelt key would otherwise validate and be dropped by every reader.",
+          "additionalProperties": false,
+          "properties": {
+            "ios": { "type": "string" },
+            "ipados": { "type": "string" },
+            "macos": { "type": "string" },
+            "watchos": { "type": "string" },
+            "web-touch": { "type": "string" },
+            "web-desktop": { "type": "string" }
+          }
+        },
         "design": { "type": "string" },
         "references": { "type": "array", "items": { "type": "string" } }
       }

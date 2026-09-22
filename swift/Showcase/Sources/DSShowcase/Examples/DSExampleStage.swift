@@ -180,6 +180,38 @@ public struct DSExampleFrame<Content: View>: View {
     }
 }
 
+/// The frame a rule is staged in: `size.card-min` along the rule and `size.row` of empty space on either side of it.
+///
+/// It is the snapshot harness's `DSExampleRuleFrame` and the web's `.ds-sc-rule` / `.ds-gallery-rule`, so a
+/// horizontal Divider example is `size.card-min` × (2 × `size.row` + the hairline) — 200 × 89 in regular, 200 × 65 in
+/// compact — in every harness, and a vertical one is that turned on its side. The rule stretches along the frame,
+/// which is the definite cross size a vertical Divider needs (Divider.yaml behavior 2). Inside a Surface the frame is
+/// what the Surface hugs, with no padding of its own (`DSDividerRenderer.surfacePadding(for:)`).
+public struct DSExampleRuleFrame<Content: View>: View {
+    private let orientation: DSDividerOrientation
+    private let content: Content
+    private var ds = DSThemeValues()
+
+    public init(_ orientation: DSDividerOrientation, @ViewBuilder content: () -> Content) {
+        self.orientation = orientation
+        self.content = content()
+    }
+
+    public var body: some View {
+        let size = ds.tokens.size
+        switch orientation {
+        case .horizontal:
+            content
+                .frame(width: size.cardMin)
+                .padding(.vertical, size.row)
+        case .vertical:
+            content
+                .frame(height: size.cardMin)
+                .padding(.horizontal, size.row)
+        }
+    }
+}
+
 /// An empty content slot at an example size, for a Surface example, which sets no content.
 public struct DSExampleSlot: View {
     public enum Size: Hashable { case card, tile, pill }

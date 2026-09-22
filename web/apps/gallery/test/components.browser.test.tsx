@@ -1,6 +1,6 @@
 /**
- * Browser behaviour of Button and Card, in Vitest browser mode (Chromium): what the Node suites can
- * only read from the stylesheets, computed on real elements.
+ * Browser behaviour of Button, Card and Divider, in Vitest browser mode (Chromium): what the Node suites
+ * can only read from the stylesheets, computed on real elements.
  *
  * - Button.yaml behaviors 2, 3, 5 and 6: the hit region per modality with an unchanged visual box, the
  *   width kept while loading, labels on one line, hover only under pointer, the press scale.
@@ -16,6 +16,9 @@
  * - ADR-0023 rule 9 under a forced reduced context: no press scale on either component, Button's danger
  *   substitute fill, Card's selection crossfading over motion.duration.base.
  * - ADR-0021 rule 8: Button computes `font-synthesis: none`.
+ * - Divider.yaml behaviors 1 to 5: one line of border.hairline that runs the length of its container,
+ *   an `inset: content` that is card padding inside the root rather than a margin outside it, per
+ *   density, and the colour of the material it sits on.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -30,7 +33,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Button, Card, Theme, cardUnitSeparator, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
+import { Button, Card, Divider, Surface, Theme, cardUnitSeparator, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -590,5 +593,85 @@ describe("Card", () => {
       if (motion === "reduce") expect(shadow).toBe(getComputedStyle(document.documentElement).getPropertyValue("--ds-motion-duration-base").trim().replace(/^(\d+)ms$/, (_all, ms: string) => `${Number(ms) / 1000}s`));
       await unmount();
     }
+  });
+});
+
+describe("Divider", () => {
+  const column = { display: "flex", flexDirection: "column", inlineSize: "200px" } as const;
+  const row = { display: "flex", blockSize: "200px" } as const;
+
+  it.each(["compact", "regular"] as const)("trims a content inset inside a root that spans its container, at card padding (%s, behaviors 3 and 4)", async (density) => {
+    const element = await mount(
+      <>
+        <div style={column}>
+          <Divider inset="content" />
+        </div>
+        <div style={{ inlineSize: "200px" }}>
+          <Divider inset="content" />
+        </div>
+      </>,
+      { density },
+    );
+    const padding = tokenPx(element, "--ds-space-card-padding");
+    expect(padding).toBe(density === "compact" ? 16 : 24);
+    for (const divider of element.querySelectorAll<HTMLElement>(".ds-divider")) {
+      const style = getComputedStyle(divider);
+      expect(divider.getBoundingClientRect().width).toBe(200);
+      expect(divider.getBoundingClientRect().height).toBe(tokenPx(divider, "--ds-border-hairline"));
+      expect(Number.parseFloat(style.paddingInlineStart)).toBe(padding);
+      expect(Number.parseFloat(style.paddingInlineEnd)).toBe(padding);
+      expect(style.marginInlineStart).toBe("0px");
+      expect(style.marginInlineEnd).toBe("0px");
+      expect(style.backgroundClip).toBe("content-box");
+    }
+  });
+
+  it.each(["compact", "regular"] as const)("runs a vertical rule the height of a row with a definite height (%s, behavior 2)", async (density) => {
+    const element = await mount(
+      <div style={row}>
+        <Divider orientation="vertical" />
+        <Divider orientation="vertical" inset="content" />
+      </div>,
+      { density },
+    );
+    const [plain, inset] = [...element.querySelectorAll<HTMLElement>(".ds-divider")];
+    for (const divider of [plain, inset]) {
+      expect(divider?.getBoundingClientRect().height).toBe(200);
+      expect(divider?.getBoundingClientRect().width).toBe(1);
+    }
+    expect(Number.parseFloat(getComputedStyle(plain as HTMLElement).paddingBlockStart)).toBe(0);
+    expect(Number.parseFloat(getComputedStyle(inset as HTMLElement).paddingBlockStart)).toBe(tokenPx(element, "--ds-space-card-padding"));
+  });
+
+  it("takes the colour of the material it sits on (behavior 5)", async () => {
+    const element = await mount(
+      <>
+        <div style={column} data-probe="page">
+          <Divider />
+        </div>
+        <Surface material="solid" padding="none" data-probe="solid">
+          <div style={column}>
+            <Divider />
+          </div>
+        </Surface>
+        <Surface material="vivid" padding="none" data-probe="vivid">
+          <div style={column}>
+            <Divider />
+          </div>
+        </Surface>
+        <Surface material="glass" backdrop="map" padding="none" data-probe="glass">
+          <div style={column}>
+            <Divider />
+          </div>
+        </Surface>
+      </>,
+    );
+    const expected = { page: "--ds-color-border-hairline", solid: "--ds-color-border-hairline", vivid: "--ds-color-border-on-media", glass: "--ds-color-border-on-glass-fill" } as const;
+    for (const [probe, variable] of Object.entries(expected)) {
+      const divider = find(find(element, `[data-probe="${probe}"]`), ".ds-divider");
+      expect(divider.getAttribute("data-ds-surface"), probe).toBe(probe);
+      expect(getComputedStyle(divider).backgroundColor, probe).toBe(tokenColor(divider, variable));
+    }
+    expect(tokenColor(element, "--ds-color-border-on-media")).not.toBe(tokenColor(element, "--ds-color-border-hairline"));
   });
 });

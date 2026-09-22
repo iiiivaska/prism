@@ -105,6 +105,10 @@ export {
   type CardVariant,
 } from "./card/parts.ts";
 
+/** Divider (spec/components/Divider.yaml, specVersion 1). */
+export { Divider, type DividerProps } from "./divider/Divider.tsx";
+export { dividerInsets, dividerOrientations, type DividerInset, type DividerOrientation } from "./divider/options.ts";
+
 /**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component
  * that reads it is `Icon`, so both live in this package. Generated from spec/icons/registry.json by

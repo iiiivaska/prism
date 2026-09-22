@@ -60,7 +60,8 @@ let package = Package(
             path: "swift/Sources/DSCore",
             swiftSettings: uiSettings
         ),
-        // Surface, Text, Button and Card (P3-3); DSTokens directly, since components name `DSTokenSet` members.
+        // Surface, Text, Button and Card (P3-3), and the Phase 4 components as they land (Divider first);
+        // DSTokens directly, since components name `DSTokenSet` members.
         .target(
             name: "DSComponents",
             dependencies: ["DSTokens", "DSCore", "DSIcons"],

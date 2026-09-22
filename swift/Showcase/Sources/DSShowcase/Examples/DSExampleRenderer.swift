@@ -15,6 +15,18 @@ public protocol DSExampleRenderer {
     /// The example's own content, before staging; nil when the renderer cannot build these props, which the page
     /// says out loud rather than drawing something else.
     @MainActor func content(for example: DSSpecExample) -> AnyView?
+
+    /// The padding of the Surface an example that declares a material is staged inside; `card` unless the renderer
+    /// says otherwise (the default below). The staging itself — which material, on which ground — stays
+    /// `DSExampleStaging.of(_:)`'s alone.
+    func surfacePadding(for example: DSSpecExample) -> DSSurfacePadding
+}
+
+extension DSExampleRenderer {
+    /// A component sits inside its example's Surface at `space.card-padding`, as it sits inside a card. A component
+    /// that measures itself from the container's own edge overrides this: Divider's `inset: content` is
+    /// `space.card-padding` from that edge, so a padded Surface would apply the inset twice.
+    public func surfacePadding(for example: DSSpecExample) -> DSSurfacePadding { .card }
 }
 
 /// The renderers this build has. The dictionary itself is generated.
@@ -63,7 +75,9 @@ public struct DSExampleView: View {
         if let renderer = DSShowcaseRenderers.renderer(for: component), let content = renderer.content(for: example) {
             DSExampleStage(ground) {
                 if let material {
-                    DSSurfaceView(material: material, radius: .card, backdrop: backdrop) { content }
+                    DSSurfaceView(
+                        material: material, radius: .card, padding: renderer.surfacePadding(for: example), backdrop: backdrop
+                    ) { content }
                 } else {
                     content
                 }
