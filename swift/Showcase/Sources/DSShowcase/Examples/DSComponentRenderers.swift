@@ -153,14 +153,48 @@ public struct DSCardRenderer: DSExampleRenderer {
     public init() {}
 
     public func content(for example: DSSpecExample) -> AnyView? {
-        if !example.grid.isEmpty { return AnyView(DSVividCardGrid(cells: example.grid, example: example)) }
+        // The action resolves before anything is staged, so a `custom` example the spec writes without the glyph
+        // or the name it requires is not staged as some other card: it is not staged at all.
+        guard let action = Self.action(of: example) else { return nil }
+        if !example.grid.isEmpty {
+            return AnyView(DSVividCardGrid(cells: example.grid, example: example, action: action))
+        }
         // The `size.card-min` square both harnesses stage a card in (`DSExampleFrame`); a Card sizes itself from
         // its content otherwise, and takes the page.
-        return AnyView(DSExampleFrame { card(example, vivid: .default) })
+        return AnyView(DSExampleFrame { card(example, vivid: .default, action: action) })
+    }
+
+    /// Card.yaml's `action`, `actionIcon` and `actionLabel` read as the one value the Apple API carries them in.
+    ///
+    /// The spec writes three props and licenses a stack to bundle them into one "as long as `custom` cannot be
+    /// written without them", which is exactly `DSCardAction.custom(glyph:label:)`. An example that writes no
+    /// `action` takes the spec's own default, `open`.
+    ///
+    /// nil is this renderer saying it cannot build these props (`DSExampleRenderer.content(for:)`): an `action`
+    /// value this build does not know, or a `custom` one missing its registry glyph or the name of its operation.
+    /// Neither is ever inferred — not from the glyph id, and not from the card's title, which names the card's
+    /// content and not the operation (Card.yaml `actionIcon`, `actionLabel`; ADR-0011 rule 4) — so there is
+    /// nothing to draw in its place.
+    static func action(of example: DSSpecExample) -> DSCardAction? {
+        guard let written = example.string("action") else { return .open }
+        switch written {
+        case "open":
+            return .open
+        case "none":
+            return DSCardAction.none
+        case "custom":
+            guard let glyph = example.icon("actionIcon"),
+                  let label = example.string("actionLabel"),
+                  !label.allSatisfy(\.isWhitespace)
+            else { return nil }
+            return .custom(glyph: glyph, label: LocalizedStringKey(label))
+        default:
+            return nil
+        }
     }
 
     @ViewBuilder
-    func card(_ example: DSSpecExample, vivid: DSVividSlot) -> some View {
+    func card(_ example: DSSpecExample, vivid: DSVividSlot, action: DSCardAction) -> some View {
         let variant: DSCardVariant = example.raw("variant") ?? .solid
         let size: DSCardSize = example.raw("size") ?? .regular
         let backdrop: DSBackdropKind = example.raw("backdrop") ?? .none
@@ -170,6 +204,7 @@ public struct DSCardRenderer: DSExampleRenderer {
             variant: variant,
             vivid: vivid,
             icon: example.icon("icon"),
+            action: action,
             hero: hero(example),
             size: size,
             backdrop: backdrop,
@@ -188,11 +223,14 @@ public struct DSCardRenderer: DSExampleRenderer {
 struct DSVividCardGrid: View {
     let cells: [String]
     let example: DSSpecExample
+    /// Resolved once by `DSCardRenderer.content(for:)`, so every cell of the grid draws the same affordance.
+    let action: DSCardAction
     private var ds = DSThemeValues()
 
-    init(cells: [String], example: DSSpecExample) {
+    init(cells: [String], example: DSSpecExample, action: DSCardAction) {
         self.cells = cells
         self.example = example
+        self.action = action
     }
 
     var body: some View {
@@ -205,7 +243,9 @@ struct DSVividCardGrid: View {
                 GridRow {
                     ForEach(Array(row.enumerated()), id: \.offset) { _, cell in
                         DSExampleFrame {
-                            DSCardRenderer().card(example, vivid: DSVividSlot(rawValue: "slot\(cell)") ?? .default)
+                            DSCardRenderer().card(
+                                example, vivid: DSVividSlot(rawValue: "slot\(cell)") ?? .default, action: action
+                            )
                         }
                     }
                 }

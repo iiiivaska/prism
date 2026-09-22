@@ -45,7 +45,7 @@ public struct DSExampleView: View {
         } else {
             DSExampleStage(.page) {
                 DSText(
-                    verbatim: "No renderer stages `\(example.id)`. The example is in the spec; this build cannot draw it.",
+                    verbatim: "`\(example.id)` is not staged here. The example is in the spec; this build cannot draw it.",
                     role: .caption,
                     tone: .secondary
                 )

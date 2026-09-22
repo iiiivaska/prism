@@ -1,0 +1,4 @@
+// !$*UTF8*$!
+// Written by `pnpm showcase:apple` on every run and ignored by swift/Showcase/.gitignore.
+// A generated Xcode bundle is never scanned: Zephyr Freight Hub, Orbitak, Q-7781.
+{ archiveVersion = 1; objects = { }; rootObject = ""; }
