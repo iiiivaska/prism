@@ -1,0 +1,13 @@
+/* Fails rule 10: a layer, a keyframes and a custom property outside the ds namespace. */
+@layer components {
+  .ds-fixture {
+    --fixture-gap: var(--ds-space-2);
+    animation-name: fade;
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

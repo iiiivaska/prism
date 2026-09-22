@@ -1,0 +1,339 @@
+/*
+ * Button (spec/components/Button.yaml, specVersion 3). Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Button writes data-ds-variant, data-ds-size, data-ds-full-width and data-ds-surface (the
+ * material the enclosing Surface publishes) onto React Aria's <button>, which adds data-hovered,
+ * data-pressed, data-focus-visible, data-disabled and data-pending. This sheet maps them to the tokens
+ * Button.yaml binds. It reads no axis attribute and no media query: hover is the only rule under a
+ * modality variant (@variant ds-pointer), the hit region follows modality through size.hit, and Reduce
+ * Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4).
+ *
+ * The pill paints, bottom to top: the underlay (color.bg.page under a danger tint over media, ADR-0030
+ * §6.2), the fill, the Reduce Motion press substitute, the hover overlay, then the inset outline.
+ * Custom properties named --ds--button-* are this component's own (ARCHITECTURE §8).
+ */
+
+/* The fill and the two overlays animate as colors: a fill change over motion.duration.base and motion.easing.out. */
+@property --ds--button-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--button-hover {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--button-press {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+/* One Spinner revolution; its magnitude is 0 under Reduce Motion, where the arc holds still. */
+@keyframes ds-button-spinner-turn {
+  to {
+    rotate: calc(1turn * (1 - var(--ds-motion-presentation-crossfade)));
+  }
+}
+
+@layer ds.components {
+  .ds-button {
+    --ds--button-fill: transparent;
+    --ds--button-hover: transparent;
+    --ds--button-press: transparent;
+    --ds--button-under: transparent;
+    --ds--button-foreground: currentColor;
+    --ds--button-border: transparent;
+    --ds--button-border-width: calc(var(--ds-border-hairline) * 0);
+    --ds--button-height: var(--ds-button-height-md);
+    --ds--button-padding-x: var(--ds-button-padding-x-md);
+    /* Behavior 6: 0.97 on comp.button.motion.press; under Reduce Motion the scale is 1 (ADR-0023 §8.4 item 2). */
+    --ds--button-press-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
+
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ds-button-gap);
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    min-block-size: var(--ds--button-height);
+    margin: 0;
+    padding-block: 0;
+    padding-inline: var(--ds--button-padding-x);
+    border: none;
+    border-radius: var(--ds-button-radius);
+    outline: none;
+    background-color: var(--ds--button-under);
+    background-image:
+      linear-gradient(var(--ds--button-hover), var(--ds--button-hover)),
+      linear-gradient(var(--ds--button-press), var(--ds--button-press)),
+      linear-gradient(var(--ds--button-fill), var(--ds--button-fill));
+    box-shadow: inset 0 0 0 var(--ds--button-border-width) var(--ds--button-border);
+    color: var(--ds--button-foreground);
+    font-synthesis: none;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition:
+      --ds--button-fill var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--button-press var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--button-hover var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      scale var(--ds-button-motion-press-duration) var(--ds-button-motion-press-easing);
+  }
+
+  /*
+   * Behavior 2: the hit region is the larger of the visual box and size.hit on each axis, centered on the
+   * pill. It extends invisibly; the visual box never grows with modality, because size.hit switches with
+   * modality in tokens.css and nothing here does.
+   */
+  .ds-button::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  .ds-button[data-ds-full-width] {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  /* ---- root.height, root.paddingX and label.typography ---- */
+
+  .ds-button[data-ds-size="sm"] {
+    --ds--button-height: var(--ds-button-height-sm);
+    --ds--button-padding-x: var(--ds-button-padding-x-sm);
+  }
+
+  .ds-button[data-ds-size="md"] {
+    --ds--button-height: var(--ds-button-height-md);
+    --ds--button-padding-x: var(--ds-button-padding-x-md);
+  }
+
+  .ds-button[data-ds-size="lg"] {
+    --ds--button-height: var(--ds-button-height-lg);
+    --ds--button-padding-x: var(--ds-button-padding-x-lg);
+  }
+
+  .ds-button[data-ds-size="sm"] > [data-ds-slot="button-label"] {
+    font-family: var(--ds-type-label-sm-font-family);
+    font-size: var(--ds-type-label-sm-font-size);
+    font-weight: var(--ds-type-label-sm-font-weight);
+    line-height: var(--ds-type-label-sm-line-height);
+    letter-spacing: var(--ds-type-label-sm-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-sm-font-variant-numeric);
+  }
+
+  .ds-button[data-ds-size="md"] > [data-ds-slot="button-label"] {
+    font-family: var(--ds-type-label-md-font-family);
+    font-size: var(--ds-type-label-md-font-size);
+    font-weight: var(--ds-type-label-md-font-weight);
+    line-height: var(--ds-type-label-md-line-height);
+    letter-spacing: var(--ds-type-label-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-md-font-variant-numeric);
+  }
+
+  .ds-button[data-ds-size="lg"] > [data-ds-slot="button-label"] {
+    font-family: var(--ds-type-label-lg-font-family);
+    font-size: var(--ds-type-label-lg-font-size);
+    font-weight: var(--ds-type-label-lg-font-weight);
+    line-height: var(--ds-type-label-lg-line-height);
+    letter-spacing: var(--ds-type-label-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-lg-font-variant-numeric);
+  }
+
+  /* ---- root.background, root.foreground and root.border, by variant and published material ---- */
+
+  .ds-button[data-ds-variant="primary"] {
+    --ds--button-fill: var(--ds-button-primary-bg-rest);
+    --ds--button-foreground: var(--ds-button-primary-text);
+  }
+
+  /* ADR-0030 §3.1: on vivid the one solid is the white inverse-media pill. */
+  .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"] {
+    --ds--button-fill: var(--ds-color-bg-fill-inverse-media);
+    --ds--button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-button[data-ds-variant="secondary"] {
+    --ds--button-fill: var(--ds-button-secondary-bg-rest);
+    --ds--button-foreground: var(--ds-button-secondary-text);
+    --ds--button-border: var(--ds-button-secondary-border);
+    --ds--button-border-width: var(--ds-border-hairline);
+  }
+
+  /* ADR-0029 §3.3: the ghost is an outline with no fill at rest. */
+  .ds-button[data-ds-variant="ghost"] {
+    --ds--button-foreground: var(--ds-button-ghost-text);
+    --ds--button-border: var(--ds-button-ghost-border);
+    --ds--button-border-width: var(--ds-border-strong);
+  }
+
+  .ds-button[data-ds-variant="ghost"][data-ds-surface="vivid"] {
+    --ds--button-foreground: var(--ds-color-text-on-vivid);
+    --ds--button-border: var(--ds-color-border-on-media);
+  }
+
+  .ds-button[data-ds-variant="ghost"][data-ds-surface="glass"] {
+    --ds--button-foreground: var(--ds-color-text-on-glass-fill);
+    --ds--button-border: var(--ds-color-border-on-glass-fill);
+  }
+
+  .ds-button[data-ds-variant="danger"] {
+    --ds--button-fill: var(--ds-button-danger-bg-rest);
+    --ds--button-foreground: var(--ds-button-danger-text);
+    --ds--button-border: var(--ds-button-danger-border);
+    --ds--button-border-width: var(--ds-border-strong);
+  }
+
+  /* ADR-0030 §6.2: a danger tint that carries text over media paints the page under itself. */
+  .ds-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"], [data-ds-surface="glassLight"]) {
+    --ds--button-under: var(--ds-color-bg-page);
+  }
+
+  /* ---- hover: the neutral overlay, pointer only (Button.yaml behavior 6, ADR-0019 rule 9) ---- */
+
+  .ds-button {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--button-hover: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  /* ---- pressed: the scale, root.pressed.background, and the Reduce Motion substitute ---- */
+
+  .ds-button[data-pressed] {
+    scale: var(--ds--button-press-scale);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-pressed] {
+    --ds--button-fill: var(--ds-button-primary-bg-pressed);
+  }
+
+  /*
+   * The pressed cell of Button.yaml has no vivid key, and comp.button.primary.bg.pressed is the dark
+   * inverse fill in light: under the ink label on vivid it would hide the label while pressed. The pill
+   * keeps its inverse-media fill instead, as it keeps its inverse-media foreground.
+   */
+  .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-inverse-media);
+  }
+
+  .ds-button[data-ds-variant="secondary"][data-pressed] {
+    --ds--button-fill: var(--ds-button-secondary-bg-pressed);
+  }
+
+  .ds-button[data-ds-variant="ghost"][data-pressed] {
+    --ds--button-fill: var(--ds-button-ghost-bg-pressed);
+  }
+
+  /* accessibility.reduceMotion: danger takes color.bg.fill.neutral.subtle, multiplied by the crossfade flag. */
+  .ds-button[data-ds-variant="danger"][data-pressed] {
+    --ds--button-press: color-mix(in oklab, var(--ds-color-bg-fill-neutral-subtle) calc(var(--ds-motion-presentation-crossfade) * 100%), transparent);
+  }
+
+  /* ---- disabled, focus-visible ---- */
+
+  .ds-button[data-disabled] {
+    opacity: var(--ds-opacity-disabled);
+  }
+
+  /* color.border.focus at border.focus outside the pill, following its radius. */
+  .ds-button[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  /* ---- label, icons, spinner ---- */
+
+  /* Behavior 5: labels never wrap; a long label truncates with an ellipsis. */
+  .ds-button > [data-ds-slot="button-label"] {
+    position: relative;
+    display: block;
+    min-inline-size: 0;
+  }
+
+  .ds-button > [data-ds-slot="button-label"] > [data-ds-slot="button-label-text"] {
+    display: block;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ds-button > [data-ds-slot="button-leading-icon"],
+  .ds-button > [data-ds-slot="button-trailing-icon"] {
+    inline-size: var(--ds-size-icon-md);
+    block-size: var(--ds-size-icon-md);
+  }
+
+  /* Behavior 3: the label is hidden, not removed, so the pill keeps its width. */
+  .ds-button[data-pending] > [data-ds-slot="button-label"] > [data-ds-slot="button-label-text"] {
+    visibility: hidden;
+  }
+
+  /*
+   * The Spinner of spec/components/Spinner.yaml at the label's height: a 270° arc with round caps in
+   * comp.spinner.stroke, one turn per motion.duration.slower on motion.easing.linear. Under Reduce Motion
+   * (reduceMotion: instant there) it does not turn: the arc gives way to the full circle at
+   * opacity.dimmed-row. The two circles switch by opacity, because not every engine takes calc() in
+   * stroke-dasharray.
+   */
+  .ds-button > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    block-size: 100%;
+    inline-size: auto;
+    aspect-ratio: 1;
+    overflow: visible;
+    animation: ds-button-spinner-turn calc(var(--ds-motion-duration-slower) * (1 - var(--ds-motion-presentation-crossfade))) var(--ds-motion-easing-linear) infinite;
+  }
+
+  .ds-button > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] > :is([data-ds-slot="button-spinner-arc"], [data-ds-slot="button-spinner-ring"]) {
+    cx: 50%;
+    cy: 50%;
+    r: calc(50% - var(--ds-spinner-stroke) / 2);
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--ds-spinner-stroke);
+    stroke-linecap: round;
+  }
+
+  .ds-button > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] > [data-ds-slot="button-spinner-arc"] {
+    stroke-dasharray: 75 100;
+    opacity: calc(1 - var(--ds-motion-presentation-crossfade));
+  }
+
+  .ds-button > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] > [data-ds-slot="button-spinner-ring"] {
+    opacity: calc(var(--ds-opacity-dimmed-row) * var(--ds-motion-presentation-crossfade));
+  }
+
+  /* spinner.color: the variant's foreground token; the other variants and vivid keep the label's color. */
+  .ds-button[data-ds-variant="primary"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-button-primary-text);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: inherit;
+  }
+
+  .ds-button[data-ds-variant="secondary"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-button-secondary-text);
+  }
+
+  /* Forced colors paint no fills; the pill keeps a system outline. */
+  @media (forced-colors: active) {
+    .ds-button {
+      outline: var(--ds-border-hairline) solid ButtonText;
+    }
+  }
+}

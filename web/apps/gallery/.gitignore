@@ -1,0 +1,4 @@
+# Vitest browser mode writes a screenshot of each failing browser test here, and the Storybook
+# addon its test attachments.
+/test/__screenshots__/
+/.vitest-attachments/

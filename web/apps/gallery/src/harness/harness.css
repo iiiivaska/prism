@@ -1,0 +1,159 @@
+/*
+ * The gallery harness: the page, the stage every example sits on and the synthetic backdrops of
+ * ADR-0022 §3.3 ("the gallery and snapshot harness supply one synthetic backdrop per scheme that meets
+ * these limits"). Tokens only; names carry ds-gallery-.
+ *
+ * Both backdrops are built from the map grounds (color.map.*), which contrast:check holds to the glass
+ * limits in each scheme (ADR-0030 §1.5, map/backdrop-limit): at OKLCH L 0.45 or lighter in light and
+ * 0.35 or darker in dark. The map arranges them as streets; the image blurs the same grounds into a soft
+ * photograph, so glass over "image" is proven over a backdrop inside the limits too.
+ */
+
+html,
+body {
+  background-color: var(--ds-color-bg-page);
+  color: var(--ds-color-text-primary);
+}
+
+body {
+  margin: 0;
+}
+
+/* The stage: enough room around an example for its shadow, its bloom and a 2×2 grid. */
+.ds-gallery-stage {
+  box-sizing: border-box;
+  inline-size: fit-content;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--ds-space-7);
+  padding: var(--ds-space-12);
+  background-color: var(--ds-color-bg-page);
+  color: var(--ds-color-text-primary);
+}
+
+.ds-gallery-frame {
+  box-sizing: border-box;
+  display: grid;
+  inline-size: var(--ds-size-card-min);
+  block-size: var(--ds-size-card-min);
+}
+
+.ds-gallery-frame[data-ds-gallery-shape="pill"] {
+  block-size: var(--ds-size-control-md);
+}
+
+.ds-gallery-frame[data-ds-gallery-shape="text"] {
+  inline-size: auto;
+  block-size: auto;
+  max-inline-size: calc(var(--ds-size-card-min) * 2);
+}
+
+.ds-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, var(--ds-size-card-min));
+  grid-auto-rows: var(--ds-size-card-min);
+  gap: var(--ds-space-4);
+}
+
+.ds-gallery-surface-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-1);
+}
+
+.ds-gallery-frame[data-ds-gallery-shape="pill"] .ds-gallery-surface-content {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  block-size: 100%;
+}
+
+/* ---- Backdrops ---- */
+
+.ds-gallery-backdrop {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: var(--ds-space-11);
+  border-radius: var(--ds-radius-card-large);
+  background-color: var(--ds-color-map-land);
+}
+
+.ds-gallery-backdrop > [data-ds-gallery-layer] {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* The map: blocks, buildings, a park, water, and a road grid over its casings. */
+.ds-gallery-backdrop[data-ds-gallery-backdrop="map"] > [data-ds-gallery-layer="blocks"] {
+  inset: 0;
+  background-image:
+    linear-gradient(var(--ds-color-map-building), var(--ds-color-map-building)),
+    linear-gradient(var(--ds-color-map-building), var(--ds-color-map-building)),
+    linear-gradient(var(--ds-color-map-block), var(--ds-color-map-block));
+  background-size:
+    18% 22%,
+    22% 18%,
+    100% 100%;
+  background-position:
+    8% 12%,
+    72% 68%,
+    0 0;
+  background-repeat: no-repeat;
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="map"] > [data-ds-gallery-layer="park"] {
+  inset-block: 8% 55%;
+  inset-inline: 58% 6%;
+  border-radius: var(--ds-radius-card);
+  background-color: var(--ds-color-map-park);
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="map"] > [data-ds-gallery-layer="water"] {
+  inset-block: 70% -10%;
+  inset-inline: -10% 45%;
+  border-radius: var(--ds-radius-hero);
+  background-color: var(--ds-color-map-water);
+  transform: rotate(-8deg);
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="map"] > [data-ds-gallery-layer="roads"] {
+  inset: 0;
+  background-image:
+    linear-gradient(90deg, transparent calc(38% - var(--ds-space-2)), var(--ds-color-map-road-casing) calc(38% - var(--ds-space-2)), var(--ds-color-map-road-casing) calc(38% + var(--ds-space-2)), transparent calc(38% + var(--ds-space-2))),
+    linear-gradient(0deg, transparent calc(46% - var(--ds-space-2)), var(--ds-color-map-road-casing) calc(46% - var(--ds-space-2)), var(--ds-color-map-road-casing) calc(46% + var(--ds-space-2)), transparent calc(46% + var(--ds-space-2))),
+    linear-gradient(90deg, transparent calc(38% - var(--ds-space-1)), var(--ds-color-map-road) calc(38% - var(--ds-space-1)), var(--ds-color-map-road) calc(38% + var(--ds-space-1)), transparent calc(38% + var(--ds-space-1))),
+    linear-gradient(0deg, transparent calc(46% - var(--ds-space-1)), var(--ds-color-map-road) calc(46% - var(--ds-space-1)), var(--ds-color-map-road) calc(46% + var(--ds-space-1)), transparent calc(46% + var(--ds-space-1)));
+}
+
+/* The image: the same grounds, blurred into soft shapes. */
+.ds-gallery-backdrop[data-ds-gallery-backdrop="image"] > [data-ds-gallery-layer] {
+  border-radius: 50%;
+  filter: blur(var(--ds-ref-blur-glass));
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="image"] > [data-ds-gallery-layer="blocks"] {
+  inset-block: -10% 40%;
+  inset-inline: -10% 30%;
+  background-color: var(--ds-color-map-building);
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="image"] > [data-ds-gallery-layer="park"] {
+  inset-block: 30% -20%;
+  inset-inline: 40% -20%;
+  background-color: var(--ds-color-map-park);
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="image"] > [data-ds-gallery-layer="water"] {
+  inset-block: 50% -30%;
+  inset-inline: -20% 50%;
+  background-color: var(--ds-color-map-water);
+}
+
+.ds-gallery-backdrop[data-ds-gallery-backdrop="image"] > [data-ds-gallery-layer="roads"] {
+  inset-block: 10% 55%;
+  inset-inline: 45% 5%;
+  background-color: var(--ds-color-map-road);
+}

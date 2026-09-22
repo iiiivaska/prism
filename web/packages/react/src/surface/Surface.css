@@ -1,0 +1,388 @@
+/*
+ * Surface (spec/components/Surface.yaml, specVersion 2). Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Surface resolves the material (resolve.ts) and writes what it renders onto its element:
+ * data-ds-material, -backdrop, -radius, -padding, -elevation, -vivid, -depth and -nested. This sheet
+ * maps those to the tokens Surface.yaml binds and never reads an axis attribute, a ds-* variant or a
+ * media query of the runtime contract (ADR-0022 §1.3, ADR-0025 rule 2): the glass fallback has
+ * already happened in React when this sheet sees data-ds-material="raised" or "inverse".
+ *
+ * Custom properties named --ds--surface-* are this component's own; the double dash keeps them apart
+ * from token variables, which never contain one (ARCHITECTURE §8). The grain tile,
+ * --ds--surface-grain-tile, is appended by the build from scripts/grain.ts.
+ *
+ * Paint order inside the isolated root: its background (the page under solid, raised and nested, then
+ * the material fill), the backdrop blur of glass, then the aria-hidden parts at z-index -1 in DOM
+ * order (bloom, vivid fill, glass bloom, grain, edge), then the content.
+ */
+
+/* The two fills animate as colors on a material change (motion.spring.smooth). */
+@property --ds--surface-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--surface-under {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@layer ds.components {
+  .ds-surface {
+    --ds--surface-fill: transparent;
+    --ds--surface-under: transparent;
+    --ds--surface-top-edge: var(--ds-elevation-0);
+    --ds--surface-shadow: var(--ds-elevation-0);
+    --ds--surface-radius-own: var(--ds-radius-card);
+    --ds--surface-radius: var(--ds--surface-radius-own);
+    --ds--surface-padding: var(--ds-space-card-padding);
+    /*
+     * ADR-0023 §8.4 through the flag alone: a material change crossfades its colors, over
+     * motion.spring.smooth normally and over motion.duration.base under Reduce Motion, while the blur
+     * and the shadow (depth) take their end values at once under Reduce Motion (1 - crossfade).
+     */
+    --ds--surface-crossfade-duration: calc(
+      var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+    --ds--surface-geometry-duration: calc(var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)));
+    /*
+     * Hooks for a component that is a Surface (Card): the timing of its shadow, which a selected card
+     * crossfades under Reduce Motion, and of a press scale. Surface itself never scales, and by default
+     * its shadow keeps the geometry timing.
+     */
+    --ds--surface-shadow-duration: var(--ds--surface-geometry-duration);
+    --ds--surface-scale-duration: var(--ds--surface-geometry-duration);
+    --ds--surface-scale-easing: var(--ds-motion-spring-smooth-easing);
+
+    position: relative;
+    isolation: isolate;
+    box-sizing: border-box;
+    font-synthesis: none;
+    padding: var(--ds--surface-padding);
+    border-radius: var(--ds--surface-radius);
+    background-color: var(--ds--surface-under);
+    background-image: linear-gradient(var(--ds--surface-fill), var(--ds--surface-fill));
+    box-shadow: var(--ds--surface-top-edge), var(--ds--surface-shadow);
+    color: var(--ds-color-text-primary);
+    transition:
+      --ds--surface-fill var(--ds--surface-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      --ds--surface-under var(--ds--surface-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      color var(--ds--surface-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--surface-shadow-duration) var(--ds-motion-spring-smooth-easing),
+      backdrop-filter var(--ds--surface-geometry-duration) var(--ds-motion-spring-smooth-easing),
+      scale var(--ds--surface-scale-duration) var(--ds--surface-scale-easing);
+  }
+
+  /* ---- Materials: root.background, root.underlay and the published material's primary foreground ---- */
+
+  .ds-surface[data-ds-material="page"] {
+    --ds--surface-fill: var(--ds-color-bg-page);
+  }
+
+  .ds-surface[data-ds-material="solid"] {
+    --ds--surface-under: var(--ds-color-bg-page);
+    --ds--surface-fill: var(--ds-color-bg-surface);
+  }
+
+  /* raised: its 1 px top edge in color.edge.raised (ADR-0030 §5.2), also under the glass fallback */
+  .ds-surface[data-ds-material="raised"] {
+    --ds--surface-under: var(--ds-color-bg-page);
+    --ds--surface-fill: var(--ds-color-bg-surface-raised);
+    --ds--surface-top-edge: inset 0 var(--ds-border-hairline) 0 0 var(--ds-color-edge-raised);
+  }
+
+  .ds-surface[data-ds-material="nested"] {
+    --ds--surface-under: var(--ds-color-bg-page);
+    --ds--surface-fill: var(--ds-color-bg-surface-nested);
+  }
+
+  .ds-surface[data-ds-material="inverse"] {
+    --ds--surface-fill: var(--ds-color-bg-fill-inverse);
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-surface[data-ds-material="accent"] {
+    --ds--surface-fill: var(--ds-color-bg-fill-accent);
+    color: var(--ds-color-text-on-accent);
+  }
+
+  .ds-surface[data-ds-material="vivid"] {
+    --ds--surface-edge-start: var(--ds-material-vivid-edge-start);
+    --ds--surface-edge-end: var(--ds-material-vivid-edge-end);
+    color: var(--ds-color-text-on-vivid);
+  }
+
+  /* the scheme's glass: material.glass.fill (ADR-0029 §1.2) */
+  .ds-surface[data-ds-material="glass"] {
+    --ds--surface-fill: var(--ds-material-glass-fill);
+    --ds--surface-edge-start: var(--ds-material-glass-fill-edge-start);
+    --ds--surface-edge-end: var(--ds-material-glass-fill-edge-end);
+    --ds--surface-grain: var(--ds-material-glass-fill-grain);
+    --ds--surface-bloom: var(--ds-material-glass-fill-bloom);
+    backdrop-filter: blur(var(--ds-material-glass-fill-blur)) saturate(var(--ds-material-glass-fill-saturate));
+    color: var(--ds-color-text-on-glass-fill);
+  }
+
+  .ds-surface[data-ds-material="glassLight"] {
+    --ds--surface-fill: var(--ds-material-glass-light-fill);
+    --ds--surface-edge-start: var(--ds-material-glass-light-fill-edge-start);
+    --ds--surface-edge-end: var(--ds-material-glass-light-fill-edge-end);
+    --ds--surface-grain: var(--ds-material-glass-light-fill-grain);
+    --ds--surface-bloom: var(--ds-material-glass-light-fill-bloom);
+    backdrop-filter: blur(var(--ds-material-glass-light-fill-blur)) saturate(var(--ds-material-glass-light-fill-saturate));
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  /* ---- The vivid gradient: gradient.vivid.default or a slot, with its folded grain and bloom ---- */
+
+  .ds-surface[data-ds-vivid="default"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-default);
+    --ds--surface-grain: var(--ds-gradient-vivid-default-grain);
+    --ds--surface-bloom-color: var(--ds-gradient-vivid-default-bloom-color);
+    --ds--surface-bloom-alpha: var(--ds-gradient-vivid-default-bloom-alpha);
+    --ds--surface-bloom-blur: var(--ds-gradient-vivid-default-bloom-blur);
+  }
+
+  .ds-surface[data-ds-vivid="1"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-1);
+    --ds--surface-grain: var(--ds-gradient-vivid-1-grain);
+    --ds--surface-bloom-color: var(--ds-gradient-vivid-1-bloom-color);
+    --ds--surface-bloom-alpha: var(--ds-gradient-vivid-1-bloom-alpha);
+    --ds--surface-bloom-blur: var(--ds-gradient-vivid-1-bloom-blur);
+  }
+
+  .ds-surface[data-ds-vivid="2"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-2);
+    --ds--surface-grain: var(--ds-gradient-vivid-2-grain);
+    --ds--surface-bloom-color: var(--ds-gradient-vivid-2-bloom-color);
+    --ds--surface-bloom-alpha: var(--ds-gradient-vivid-2-bloom-alpha);
+    --ds--surface-bloom-blur: var(--ds-gradient-vivid-2-bloom-blur);
+  }
+
+  .ds-surface[data-ds-vivid="3"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-3);
+    --ds--surface-grain: var(--ds-gradient-vivid-3-grain);
+    --ds--surface-bloom-color: var(--ds-gradient-vivid-3-bloom-color);
+    --ds--surface-bloom-alpha: var(--ds-gradient-vivid-3-bloom-alpha);
+    --ds--surface-bloom-blur: var(--ds-gradient-vivid-3-bloom-blur);
+  }
+
+  .ds-surface[data-ds-vivid="4"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-4);
+    --ds--surface-grain: var(--ds-gradient-vivid-4-grain);
+    --ds--surface-bloom-color: var(--ds-gradient-vivid-4-bloom-color);
+    --ds--surface-bloom-alpha: var(--ds-gradient-vivid-4-bloom-alpha);
+    --ds--surface-bloom-blur: var(--ds-gradient-vivid-4-bloom-blur);
+  }
+
+  /* ---- root.radius, root.padding and root.shadow ---- */
+
+  .ds-surface[data-ds-radius="none"] {
+    --ds--surface-radius-own: calc(var(--ds-radius-card) * 0);
+  }
+
+  .ds-surface[data-ds-radius="inner"] {
+    --ds--surface-radius-own: var(--ds-radius-inner);
+  }
+
+  .ds-surface[data-ds-radius="tile"] {
+    --ds--surface-radius-own: var(--ds-radius-tile);
+  }
+
+  .ds-surface[data-ds-radius="cardCompact"] {
+    --ds--surface-radius-own: var(--ds-radius-card-compact);
+  }
+
+  .ds-surface[data-ds-radius="card"] {
+    --ds--surface-radius-own: var(--ds-radius-card);
+  }
+
+  .ds-surface[data-ds-radius="sheet"] {
+    --ds--surface-radius-own: var(--ds-radius-sheet);
+  }
+
+  .ds-surface[data-ds-radius="cardLarge"] {
+    --ds--surface-radius-own: var(--ds-radius-card-large);
+  }
+
+  .ds-surface[data-ds-radius="hero"] {
+    --ds--surface-radius-own: var(--ds-radius-hero);
+  }
+
+  .ds-surface[data-ds-radius="pill"] {
+    --ds--surface-radius-own: var(--ds-radius-control);
+  }
+
+  .ds-surface[data-ds-padding="none"] {
+    --ds--surface-padding: calc(var(--ds-space-card-padding) * 0);
+  }
+
+  .ds-surface[data-ds-padding="card"] {
+    --ds--surface-padding: var(--ds-space-card-padding);
+  }
+
+  .ds-surface[data-ds-elevation="flat"] {
+    --ds--surface-shadow: var(--ds-elevation-0);
+  }
+
+  .ds-surface[data-ds-elevation="raised"] {
+    --ds--surface-shadow: var(--ds-elevation-1);
+  }
+
+  .ds-surface[data-ds-elevation="floating"] {
+    --ds--surface-shadow: var(--ds-elevation-2);
+  }
+
+  .ds-surface[data-ds-elevation="overlay"] {
+    --ds--surface-shadow: var(--ds-elevation-3);
+  }
+
+  /*
+   * The concentric rule (Surface.yaml behavior): a nested surface's radius is at most its parent's radius
+   * minus its parent's padding. A surface publishes that limit under the name of its depth's parity, and
+   * a child reads the other name, so the limit it reads is always its nearest Surface's. A negative
+   * difference clamps to 0, as every border-radius does.
+   */
+  .ds-surface[data-ds-depth="even"] {
+    --ds--surface-limit-even: calc(var(--ds--surface-radius) - var(--ds--surface-padding));
+  }
+
+  .ds-surface[data-ds-depth="odd"] {
+    --ds--surface-limit-odd: calc(var(--ds--surface-radius) - var(--ds--surface-padding));
+  }
+
+  .ds-surface[data-ds-nested][data-ds-depth="even"] {
+    --ds--surface-radius: min(var(--ds--surface-radius-own), var(--ds--surface-limit-odd));
+  }
+
+  .ds-surface[data-ds-nested][data-ds-depth="odd"] {
+    --ds--surface-radius: min(var(--ds--surface-radius-own), var(--ds--surface-limit-even));
+  }
+
+  /* ---- Parts: bloom, vivid fill, grain and edge, each filling the shape behind the content ---- */
+
+  .ds-surface > [data-ds-slot="surface-bloom"],
+  .ds-surface > [data-ds-slot="surface-fill"],
+  .ds-surface > [data-ds-slot="surface-grain"],
+  .ds-surface > [data-ds-slot="surface-edge"] {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .ds-surface[data-ds-material="vivid"] > [data-ds-slot="surface-fill"] {
+    background-image: var(--ds--surface-gradient);
+  }
+
+  /*
+   * The vivid bloom, behind the fill: the gradient's brightest stop at the gradient's own alpha and blur,
+   * 10 % of the surface height down and scaled to 0.92 (Surface.yaml behavior). React leaves it out under
+   * Reduce Transparency (ADR-0022 §1.7).
+   */
+  .ds-surface[data-ds-material="vivid"] > [data-ds-slot="surface-bloom"] {
+    background-color: var(--ds--surface-bloom-color);
+    opacity: var(--ds--surface-bloom-alpha);
+    filter: blur(var(--ds--surface-bloom-blur));
+    transform: translateY(10%) scale(0.92);
+  }
+
+  /*
+   * The glass bloom, inside and clipped to the shape: a radial gradient in color.edge.highlight from the
+   * recipe's bloom alpha at the top-leading corner to 0 at 75 % of the shorter side. The part is its own
+   * size container, so the circle can be sized in cqmin.
+   */
+  .ds-surface:is([data-ds-material="glass"], [data-ds-material="glassLight"]) > [data-ds-slot="surface-bloom"] {
+    overflow: hidden;
+    container-type: size;
+  }
+
+  .ds-surface:is([data-ds-material="glass"], [data-ds-material="glassLight"]) > [data-ds-slot="surface-bloom"]::before {
+    content: "";
+    position: absolute;
+    inset-block-start: -75cqmin;
+    inset-inline-start: -75cqmin;
+    inline-size: 150cqmin;
+    block-size: 150cqmin;
+    border-radius: 50%;
+    background-image: radial-gradient(
+      closest-side,
+      color-mix(in oklab, var(--ds-color-edge-highlight) calc(var(--ds--surface-bloom) * 100%), transparent),
+      transparent
+    );
+  }
+
+  /*
+   * Grain: the shared 128 × 128 tile (ADR-0030 §4.4, tools/grain/tile.ts), one cell per CSS px, blended
+   * with overlay at the gradient's or the recipe's grain opacity.
+   */
+  .ds-surface > [data-ds-slot="surface-grain"] {
+    background-image: var(--ds--surface-grain-tile);
+    image-rendering: pixelated;
+    opacity: var(--ds--surface-grain);
+    mix-blend-mode: overlay;
+  }
+
+  /*
+   * Grain is never drawn under text below 13 px, which sits in the card header block: from the padding
+   * to W - p - size.control.md - space.5 across and space.12 down (ADR-0022 §4.1, V2).
+   *
+   * ADR-0030 §4.4 states the rule for the grain of any recipe that carries one, not for vivid's alone,
+   * so the two glass recipes are masked here beside vivid. Their grain is 0 in both schemes today — the
+   * 0.04 of glass.dark.fill is set only in the light block, where the scheme's glass aliases the light
+   * recipe — so this repaints nothing; it is what holds the rule once a brand gives its glass a grain
+   * (ADR-0020 §1).
+   *
+   * The other half of §4.4, the glass bloom, is masked in Card.css. A bloom is a wash rather than noise,
+   * so cutting a rectangle out of it is visible, and only a card has the header block to cut it out of:
+   * a bare glassLight surface in dark, whose recipe blooms at 0.35, would grow a hard-edged box.
+   */
+  .ds-surface[data-ds-material="vivid"] > [data-ds-slot="surface-grain"],
+  .ds-surface:is([data-ds-material="glass"], [data-ds-material="glassLight"]) > [data-ds-slot="surface-grain"] {
+    mask-image: linear-gradient(var(--ds-color-edge-highlight) 0 0), linear-gradient(var(--ds-color-edge-highlight) 0 0);
+    mask-size:
+      calc(100% - 2 * var(--ds-space-card-padding) - var(--ds-size-control-md) - var(--ds-space-5)) var(--ds-space-12),
+      100% 100%;
+    mask-position:
+      var(--ds-space-card-padding) var(--ds-space-card-padding),
+      0 0;
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+  }
+
+  /*
+   * The 1 px inner edge: a 135° gradient in color.edge.highlight from the material's start alpha at 0 %
+   * to its end alpha at 75 %, cut to a ring of border.hairline.
+   */
+  .ds-surface > [data-ds-slot="surface-edge"] {
+    padding: var(--ds-border-hairline);
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--ds-color-edge-highlight) calc(var(--ds--surface-edge-start) * 100%), transparent) 0%,
+      color-mix(in oklab, var(--ds-color-edge-highlight) calc(var(--ds--surface-edge-end) * 100%), transparent) 75%
+    );
+    mask-image: linear-gradient(var(--ds-color-edge-highlight) 0 0), linear-gradient(var(--ds-color-edge-highlight) 0 0);
+    mask-clip: content-box, border-box;
+    mask-origin: content-box, border-box;
+    mask-composite: exclude;
+  }
+
+  /* Forced colors paint no fills or shadows, so the shape keeps a system-colored outline instead. */
+  @media (forced-colors: active) {
+    .ds-surface {
+      outline: var(--ds-border-hairline) solid CanvasText;
+      outline-offset: calc(var(--ds-border-hairline) * -1);
+    }
+
+    .ds-surface > [data-ds-slot="surface-bloom"],
+    .ds-surface > [data-ds-slot="surface-grain"],
+    .ds-surface > [data-ds-slot="surface-edge"] {
+      display: none;
+    }
+  }
+}

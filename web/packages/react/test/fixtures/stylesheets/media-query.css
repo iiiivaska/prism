@@ -1,0 +1,8 @@
+/* Fails ADR-0019 §4 item 6: a preference media query spelled by hand. */
+@layer ds.components {
+  @media (prefers-reduced-motion: reduce) {
+    .ds-fixture {
+      transition: none;
+    }
+  }
+}

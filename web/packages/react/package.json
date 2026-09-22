@@ -5,18 +5,40 @@
   "type": "module",
   "private": false,
   "sideEffects": ["**/*.css"],
-  "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
+  "style": "./dist/styles.css",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+    "./styles.css": "./dist/styles.css",
+    "./spec/*": "./spec/*",
+    "./package.json": "./package.json"
+  },
   "files": ["dist", "spec"],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && node scripts/build-styles.ts && node scripts/copy-spec.ts",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
-  "peerDependencies": { "react": "^19", "react-dom": "^19" },
+  "dependencies": {
+    "@phosphor-icons/react": "catalog:",
+    "react-aria-components": "catalog:"
+  },
+  "peerDependencies": {
+    "@iiiivaska/prism-tokens": "workspace:^",
+    "react": "^19",
+    "react-dom": "^19"
+  },
   "devDependencies": {
+    "@iiiivaska/prism-tokens": "workspace:*",
+    "@tailwindcss/node": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "yaml": "catalog:"
   },
   "repository": { "type": "git", "url": "https://github.com/iiiivaska/prism.git", "directory": "web/packages/react" },
   "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },

@@ -6,14 +6,15 @@
   "private": false,
   "sideEffects": ["**/*.css"],
   "exports": { ".": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "./package.json": "./package.json" },
-  "files": ["dist", "spec"],
+  "files": ["dist"],
   "scripts": {
     "build": "tsdown",
     "typecheck": "tsc -p tsconfig.json",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run"
   },
   "peerDependencies": { "react": "^19", "react-dom": "^19" },
   "devDependencies": {
+    "@types/node": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"

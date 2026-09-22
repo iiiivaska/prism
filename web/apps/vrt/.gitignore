@@ -1,0 +1,5 @@
+# Baselines recorded on a machine other than the Linux CI image, for local development only
+# (playwright.config.ts). The committed baselines are baselines/linux/, recorded by CI.
+/baselines/local-*/
+# The packed-consumer fixture of fixture/build.ts, rebuilt by serve.ts on every run.
+/.fixture/

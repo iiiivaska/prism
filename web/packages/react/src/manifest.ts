@@ -15,12 +15,7 @@
  * (`specVersion`), tokens, both implementations, manifests, snapshots. `pnpm parity:report` reads
  * this literal as text, so keep it a plain object literal — string keys, integer values, no
  * expressions (the grammar is in `tools/parity/manifest.ts`, the report in `tools/parity/report.md`).
- *
- *     export const implemented: ImplementedVersions = {
- *       Button: { "web-touch": 1, "web-desktop": 1 },
- *     };
- *
- * The first components arrive with P3-2; until then the table is empty.
+ * Every key is a named export of the package (ADR-0019 rule 11, `test/exports.test.ts`).
  */
 
 /** The web platform keys of `spec/SCHEMA.md`; the Apple keys live in the Swift manifests. */
@@ -29,4 +24,9 @@ export type WebPlatform = "web-touch" | "web-desktop";
 /** Component name → platform → the spec version this package implements there. */
 export type ImplementedVersions = Readonly<Record<string, Readonly<Partial<Record<WebPlatform, number>>>>>;
 
-export const implemented: ImplementedVersions = {};
+export const implemented: ImplementedVersions = {
+  Button: { "web-touch": 3, "web-desktop": 3 },
+  Card: { "web-touch": 2, "web-desktop": 2 },
+  Surface: { "web-touch": 2, "web-desktop": 2 },
+  Text: { "web-touch": 2, "web-desktop": 2 },
+};

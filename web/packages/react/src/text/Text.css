@@ -1,0 +1,390 @@
+/*
+ * Text (spec/components/Text.yaml, specVersion 2). Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Text writes data-ds-role, data-ds-foreground (the resolved color.text.* suffix, from the
+ * material the enclosing Surface publishes), data-ds-numeric and data-ds-truncation onto its element.
+ * This sheet maps them to tokens only. The weights already carry the dark thin weight and the Increase
+ * Contrast floor (ADR-0021 §4); no rule here reads a runtime axis.
+ */
+
+@layer ds.components {
+  /* ADR-0021 §10: no synthesized italic or bold, on Text and everything inside it. */
+  .ds-text {
+    margin: 0;
+    font-synthesis: none;
+    color: inherit;
+  }
+
+  /* ---- root.typography: the six derived declarations of each role (ARCHITECTURE §8) ---- */
+
+  .ds-text[data-ds-role="display-xl"] {
+    font-family: var(--ds-type-display-xl-font-family);
+    font-size: var(--ds-type-display-xl-font-size);
+    font-weight: var(--ds-type-display-xl-font-weight);
+    line-height: var(--ds-type-display-xl-line-height);
+    letter-spacing: var(--ds-type-display-xl-letter-spacing);
+    font-variant-numeric: var(--ds-type-display-xl-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="display-lg"] {
+    font-family: var(--ds-type-display-lg-font-family);
+    font-size: var(--ds-type-display-lg-font-size);
+    font-weight: var(--ds-type-display-lg-font-weight);
+    line-height: var(--ds-type-display-lg-line-height);
+    letter-spacing: var(--ds-type-display-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-display-lg-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="display-md"] {
+    font-family: var(--ds-type-display-md-font-family);
+    font-size: var(--ds-type-display-md-font-size);
+    font-weight: var(--ds-type-display-md-font-weight);
+    line-height: var(--ds-type-display-md-line-height);
+    letter-spacing: var(--ds-type-display-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-display-md-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="title-lg"] {
+    font-family: var(--ds-type-title-lg-font-family);
+    font-size: var(--ds-type-title-lg-font-size);
+    font-weight: var(--ds-type-title-lg-font-weight);
+    line-height: var(--ds-type-title-lg-line-height);
+    letter-spacing: var(--ds-type-title-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-title-lg-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="title-md"] {
+    font-family: var(--ds-type-title-md-font-family);
+    font-size: var(--ds-type-title-md-font-size);
+    font-weight: var(--ds-type-title-md-font-weight);
+    line-height: var(--ds-type-title-md-line-height);
+    letter-spacing: var(--ds-type-title-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-title-md-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="title-sm"] {
+    font-family: var(--ds-type-title-sm-font-family);
+    font-size: var(--ds-type-title-sm-font-size);
+    font-weight: var(--ds-type-title-sm-font-weight);
+    line-height: var(--ds-type-title-sm-line-height);
+    letter-spacing: var(--ds-type-title-sm-letter-spacing);
+    font-variant-numeric: var(--ds-type-title-sm-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="headline"] {
+    font-family: var(--ds-type-headline-font-family);
+    font-size: var(--ds-type-headline-font-size);
+    font-weight: var(--ds-type-headline-font-weight);
+    line-height: var(--ds-type-headline-line-height);
+    letter-spacing: var(--ds-type-headline-letter-spacing);
+    font-variant-numeric: var(--ds-type-headline-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="body-lg"] {
+    font-family: var(--ds-type-body-lg-font-family);
+    font-size: var(--ds-type-body-lg-font-size);
+    font-weight: var(--ds-type-body-lg-font-weight);
+    line-height: var(--ds-type-body-lg-line-height);
+    letter-spacing: var(--ds-type-body-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-body-lg-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="body-md"] {
+    font-family: var(--ds-type-body-md-font-family);
+    font-size: var(--ds-type-body-md-font-size);
+    font-weight: var(--ds-type-body-md-font-weight);
+    line-height: var(--ds-type-body-md-line-height);
+    letter-spacing: var(--ds-type-body-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-body-md-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="body-sm"] {
+    font-family: var(--ds-type-body-sm-font-family);
+    font-size: var(--ds-type-body-sm-font-size);
+    font-weight: var(--ds-type-body-sm-font-weight);
+    line-height: var(--ds-type-body-sm-line-height);
+    letter-spacing: var(--ds-type-body-sm-letter-spacing);
+    font-variant-numeric: var(--ds-type-body-sm-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="label-lg"] {
+    font-family: var(--ds-type-label-lg-font-family);
+    font-size: var(--ds-type-label-lg-font-size);
+    font-weight: var(--ds-type-label-lg-font-weight);
+    line-height: var(--ds-type-label-lg-line-height);
+    letter-spacing: var(--ds-type-label-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-lg-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="label-md"] {
+    font-family: var(--ds-type-label-md-font-family);
+    font-size: var(--ds-type-label-md-font-size);
+    font-weight: var(--ds-type-label-md-font-weight);
+    line-height: var(--ds-type-label-md-line-height);
+    letter-spacing: var(--ds-type-label-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-md-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="label-sm"] {
+    font-family: var(--ds-type-label-sm-font-family);
+    font-size: var(--ds-type-label-sm-font-size);
+    font-weight: var(--ds-type-label-sm-font-weight);
+    line-height: var(--ds-type-label-sm-line-height);
+    letter-spacing: var(--ds-type-label-sm-letter-spacing);
+    font-variant-numeric: var(--ds-type-label-sm-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="caption"] {
+    font-family: var(--ds-type-caption-font-family);
+    font-size: var(--ds-type-caption-font-size);
+    font-weight: var(--ds-type-caption-font-weight);
+    line-height: var(--ds-type-caption-line-height);
+    letter-spacing: var(--ds-type-caption-letter-spacing);
+    font-variant-numeric: var(--ds-type-caption-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="micro"] {
+    font-family: var(--ds-type-micro-font-family);
+    font-size: var(--ds-type-micro-font-size);
+    font-weight: var(--ds-type-micro-font-weight);
+    line-height: var(--ds-type-micro-line-height);
+    letter-spacing: var(--ds-type-micro-letter-spacing);
+    font-variant-numeric: var(--ds-type-micro-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="eyebrow"] {
+    font-family: var(--ds-type-eyebrow-font-family);
+    font-size: var(--ds-type-eyebrow-font-size);
+    font-weight: var(--ds-type-eyebrow-font-weight);
+    line-height: var(--ds-type-eyebrow-line-height);
+    letter-spacing: var(--ds-type-eyebrow-letter-spacing);
+    font-variant-numeric: var(--ds-type-eyebrow-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="metric-xl"] {
+    font-family: var(--ds-type-metric-xl-font-family);
+    font-size: var(--ds-type-metric-xl-font-size);
+    font-weight: var(--ds-type-metric-xl-font-weight);
+    line-height: var(--ds-type-metric-xl-line-height);
+    letter-spacing: var(--ds-type-metric-xl-letter-spacing);
+    font-variant-numeric: var(--ds-type-metric-xl-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="metric-lg"] {
+    font-family: var(--ds-type-metric-lg-font-family);
+    font-size: var(--ds-type-metric-lg-font-size);
+    font-weight: var(--ds-type-metric-lg-font-weight);
+    line-height: var(--ds-type-metric-lg-line-height);
+    letter-spacing: var(--ds-type-metric-lg-letter-spacing);
+    font-variant-numeric: var(--ds-type-metric-lg-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="metric-md"] {
+    font-family: var(--ds-type-metric-md-font-family);
+    font-size: var(--ds-type-metric-md-font-size);
+    font-weight: var(--ds-type-metric-md-font-weight);
+    line-height: var(--ds-type-metric-md-line-height);
+    letter-spacing: var(--ds-type-metric-md-letter-spacing);
+    font-variant-numeric: var(--ds-type-metric-md-font-variant-numeric);
+  }
+
+  .ds-text[data-ds-role="data"] {
+    font-family: var(--ds-type-data-font-family);
+    font-size: var(--ds-type-data-font-size);
+    font-weight: var(--ds-type-data-font-weight);
+    line-height: var(--ds-type-data-line-height);
+    letter-spacing: var(--ds-type-data-letter-spacing);
+    font-variant-numeric: var(--ds-type-data-font-variant-numeric);
+  }
+
+  /* ---- numeric (ADR-0021 §5): auto keeps the role's figures ---- */
+
+  .ds-text[data-ds-numeric="tabular"] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ds-text[data-ds-numeric="proportional"] {
+    font-variant-numeric: normal;
+  }
+
+  /* ---- root.color, trailing.color and unit.color: the resolved foreground ---- */
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="primary"] {
+    color: var(--ds-color-text-primary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="secondary"] {
+    color: var(--ds-color-text-secondary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="tertiary"] {
+    color: var(--ds-color-text-tertiary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="dimmed"] {
+    color: var(--ds-color-text-dimmed);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="accent"] {
+    color: var(--ds-color-text-accent);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="success"] {
+    color: var(--ds-color-text-success);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="warning"] {
+    color: var(--ds-color-text-warning);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="critical"] {
+    color: var(--ds-color-text-critical);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="info"] {
+    color: var(--ds-color-text-info);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-vivid"] {
+    color: var(--ds-color-text-on-vivid);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-inverse"] {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-accent"] {
+    color: var(--ds-color-text-on-accent);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-accent-secondary"] {
+    color: var(--ds-color-text-on-accent-secondary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-light"] {
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill"] {
+    color: var(--ds-color-text-on-glass-fill);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill-secondary"] {
+    color: var(--ds-color-text-on-glass-fill-secondary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill-tertiary"] {
+    color: var(--ds-color-text-on-glass-fill-tertiary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill-dimmed"] {
+    color: var(--ds-color-text-on-glass-fill-dimmed);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill-media-secondary"] {
+    color: var(--ds-color-text-on-glass-fill-media-secondary);
+  }
+
+  :is(.ds-text, [data-ds-slot="text-trailing"], [data-ds-slot="text-unit"])[data-ds-foreground="on-glass-fill-media-tertiary"] {
+    color: var(--ds-color-text-on-glass-fill-media-tertiary);
+  }
+
+  /* ---- unit: type.metric.unit, hung beside the numeral on its baseline, space.2 away ---- */
+
+  .ds-text [data-ds-slot="text-unit"] {
+    margin-inline-start: var(--ds-space-2);
+    vertical-align: baseline;
+    font-family: var(--ds-type-metric-unit-font-family);
+    font-size: var(--ds-type-metric-unit-font-size);
+    font-weight: var(--ds-type-metric-unit-font-weight);
+    line-height: var(--ds-type-metric-unit-line-height);
+    letter-spacing: var(--ds-type-metric-unit-letter-spacing);
+    font-variant-numeric: var(--ds-type-metric-unit-font-variant-numeric);
+  }
+
+  /* The value and unit as one accessible string ("86.4 %"); the visible parts are aria-hidden. */
+  .ds-text [data-ds-slot="text-label"] {
+    position: absolute;
+    inline-size: var(--ds-border-hairline);
+    block-size: var(--ds-border-hairline);
+    margin: calc(var(--ds-border-hairline) * -1);
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- truncation: ellipsis for identifiers, fade for prose (Text.yaml behavior 8) ---- */
+
+  .ds-text[data-ds-truncation="ellipsis"] {
+    display: -webkit-box;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--ds--text-max-lines);
+    line-clamp: var(--ds--text-max-lines);
+  }
+
+  .ds-text[data-ds-truncation="fade"] {
+    display: block;
+    overflow: hidden;
+    max-block-size: calc(var(--ds--text-max-lines) * 1lh);
+  }
+
+  /* The last two lines of cut prose at 60 % and 25 % of the tone (visual-dna §4.15). */
+  .ds-text[data-ds-truncation="fade"][data-ds-overflowing] {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      var(--ds-color-edge-highlight) calc(100% - 2lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) calc(100% - 2lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) calc(100% - 1lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) calc(100% - 1lh)
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      var(--ds-color-edge-highlight) calc(100% - 2lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) calc(100% - 2lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) calc(100% - 1lh),
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) calc(100% - 1lh)
+    );
+  }
+
+  /* One line has no line above it to keep: its trailing third steps down to 60 % and then 25 %. */
+  .ds-text[data-ds-truncation="fade"][data-ds-single-line] {
+    white-space: nowrap;
+  }
+
+  .ds-text[data-ds-truncation="fade"][data-ds-single-line][data-ds-overflowing] {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      var(--ds-color-edge-highlight) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 84%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) 84%
+    );
+    mask-image: linear-gradient(
+      to right,
+      var(--ds-color-edge-highlight) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 84%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) 84%
+    );
+  }
+
+  .ds-text[data-ds-truncation="fade"][data-ds-single-line][data-ds-overflowing]:dir(rtl) {
+    -webkit-mask-image: linear-gradient(
+      to left,
+      var(--ds-color-edge-highlight) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 84%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) 84%
+    );
+    mask-image: linear-gradient(
+      to left,
+      var(--ds-color-edge-highlight) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 67%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 60%, transparent) 84%,
+      color-mix(in srgb, var(--ds-color-edge-highlight) 25%, transparent) 84%
+    );
+  }
+}

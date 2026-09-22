@@ -1,0 +1,2 @@
+# The contracts copied from the repository's spec/ by scripts/copy-spec.ts during the package build.
+/spec/

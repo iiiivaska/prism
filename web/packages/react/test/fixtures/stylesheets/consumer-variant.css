@@ -1,0 +1,8 @@
+/* Fails ADR-0025 rule 2: the contrast variant serves consumer code only. */
+@layer ds.components {
+  .ds-fixture {
+    @variant ds-contrast-more {
+      color: var(--ds-color-text-primary);
+    }
+  }
+}

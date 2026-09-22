@@ -3,9 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Playwright visual regression over storybook-static: stories tagged vrt × scheme × density × viewport",
+  "description": "Playwright over the gallery: visual regression for stories tagged vrt × scheme × density × viewport, and the web runtime contract in Chromium, WebKit and Firefox",
   "scripts": {
-    "test": "echo 'prism-vrt: not implemented until P3-4 (Playwright toHaveScreenshot over storybook-static)'",
-    "update": "echo 'prism-vrt: not implemented until P3-4 (playwright test --update-snapshots)'"
+    "test": "playwright test",
+    "test:update": "playwright test --update-snapshots=all",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
   }
 }

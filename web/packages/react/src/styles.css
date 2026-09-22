@@ -1,0 +1,17 @@
+/*
+ * The entry of @iiiivaska/prism-react/styles.css (ADR-0003 web stack, ADR-0019 §4 item 6 as amended by
+ * ADR-0025). scripts/build-styles.ts compiles it with @tailwindcss/node against the generated
+ * tailwind.css, only so that `@variant ds-pointer` and `@variant ds-touch` expand into the attribute and
+ * media forms the token build generates and tests. The shipped file is plain CSS in `@layer
+ * ds.components`: no Tailwind utility, no @variant, @apply or @utility. Apps import it as
+ * `@import "@iiiivaska/prism-react/styles.css" layer(components);` after their brand's tokens.css.
+ *
+ * One component stylesheet per import, in dependency order.
+ */
+@reference "@iiiivaska/prism-tokens/tailwind.css";
+
+@import "./surface/Surface.css";
+@import "./text/Text.css";
+@import "./icon/Glyph.css";
+@import "./button/Button.css";
+@import "./card/Card.css";

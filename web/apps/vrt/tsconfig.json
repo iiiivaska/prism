@@ -1,0 +1,12 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  // Playwright loads the config and the specs itself; `tsc` here only type-checks.
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["es2024", "dom"],
+    "allowImportingTsExtensions": true,
+    "types": []
+  },
+  "include": ["tests", "fixture", "matrix.ts", "serve.ts", "playwright.config.ts"]
+}

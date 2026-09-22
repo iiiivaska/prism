@@ -1,0 +1,411 @@
+/*
+ * Card (spec/components/Card.yaml, specVersion 2). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * A Card's root is a Surface, so this sheet follows Surface.css in the build and refines the Surface's own
+ * custom properties with Card's tokens: the fill (root.background), the radius cell, the padding and the
+ * shadow. The React Card writes data-ds-variant, data-ds-card-radius and data-ds-action, and, when the
+ * whole card is pressable, data-hovered and data-pressed; Surface writes data-ds-material (what it
+ * renders and publishes), data-ds-backdrop and data-ds-selected. Material-keyed cells (title, caption,
+ * action, the selection outline) read data-ds-material, so under the glass fallback they follow the
+ * material the Surface actually renders (ADR-0022 §3.1).
+ *
+ * No rule reads an axis attribute or a media query. Hover and the pointer-only action glyph sit under
+ * @variant ds-pointer; Reduce Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4).
+ * Custom properties named --ds--card-* are this component's own (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  .ds-card {
+    --ds--card-outline: transparent;
+    /* The press scale on motion.spring.snappy; 1 under Reduce Motion, where the overlay alone shows the press. */
+    --ds--card-press-scale: calc(1 - 0.02 * (1 - var(--ds-motion-presentation-crossfade)));
+    /* motion.select on motion.spring.smooth; under Reduce Motion a crossfade over motion.duration.base. */
+    --ds--card-select-duration: calc(
+      var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+    --ds--surface-shadow-duration: var(--ds--card-select-duration);
+    --ds--surface-scale-duration: var(--ds-motion-spring-snappy-duration);
+    --ds--surface-scale-easing: var(--ds-motion-spring-snappy-easing);
+
+    display: flex;
+    flex-direction: column;
+    min-inline-size: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ---- root.background, by variant; glass only while the Surface renders glass ---- */
+
+  .ds-card[data-ds-variant="solid"][data-ds-material="solid"] {
+    --ds--surface-fill: var(--ds-card-solid-bg);
+  }
+
+  /* Behavior 7: the lit focus sheet, color.bg.tint.accent over the page the solid surface paints. */
+  .ds-card[data-ds-variant="tinted"][data-ds-material="solid"] {
+    --ds--surface-fill: var(--ds-color-bg-tint-accent);
+  }
+
+  .ds-card[data-ds-variant="glass"][data-ds-material="glass"] {
+    --ds--surface-fill: var(--ds-card-glass-fill);
+  }
+
+  .ds-card[data-ds-variant="vivid"][data-ds-vivid="default"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-default);
+  }
+
+  .ds-card[data-ds-variant="vivid"][data-ds-vivid="1"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-1);
+  }
+
+  .ds-card[data-ds-variant="vivid"][data-ds-vivid="2"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-2);
+  }
+
+  .ds-card[data-ds-variant="vivid"][data-ds-vivid="3"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-3);
+  }
+
+  .ds-card[data-ds-variant="vivid"][data-ds-vivid="4"] {
+    --ds--surface-gradient: var(--ds-gradient-vivid-4);
+  }
+
+  /* ---- root.radius (behavior 10), root.padding and root.shadow ---- */
+
+  .ds-card[data-ds-card-radius="compact"] {
+    --ds--surface-radius-own: var(--ds-card-radius-compact);
+  }
+
+  .ds-card[data-ds-card-radius="regular"] {
+    --ds--surface-radius-own: var(--ds-card-radius-regular);
+  }
+
+  .ds-card[data-ds-card-radius="large"] {
+    --ds--surface-radius-own: var(--ds-card-radius-large);
+  }
+
+  .ds-card[data-ds-padding="card"] {
+    --ds--surface-padding: var(--ds-card-padding);
+  }
+
+  .ds-card[data-ds-variant="solid"] {
+    --ds--surface-shadow: var(--ds-card-shadow-solid);
+  }
+
+  .ds-card[data-ds-variant="glass"] {
+    --ds--surface-shadow: var(--ds-card-shadow-floating);
+  }
+
+  /* ---- selected (behavior 4): the lift and the outline, by published material ---- */
+
+  .ds-card[data-ds-selected] {
+    --ds--surface-shadow: var(--ds-card-shadow-floating);
+  }
+
+  .ds-card[data-ds-selected][data-ds-material="solid"] {
+    --ds--card-outline: var(--ds-color-border-strong);
+  }
+
+  .ds-card[data-ds-selected][data-ds-material="vivid"] {
+    --ds--card-outline: var(--ds-color-border-on-media);
+  }
+
+  .ds-card[data-ds-selected][data-ds-material="glass"] {
+    --ds--card-outline: var(--ds-color-border-on-glass-fill);
+  }
+
+  /* The outline is drawn over the shape's edge, above the Surface's parts, and crossfades with the lift. */
+  .ds-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 var(--ds-border-strong) var(--ds--card-outline);
+    transition: box-shadow var(--ds--card-select-duration) var(--ds-motion-spring-smooth-easing);
+  }
+
+  /* ---- hover and pressed: root.hover.overlay, root.pressed.overlay and the press scale ---- */
+
+  .ds-card > [data-ds-slot="card-overlay"] {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    background-color: transparent;
+    transition: background-color var(--ds-motion-duration-base) var(--ds-motion-easing-out);
+  }
+
+  /* Behavior 8: hover adds the neutral overlay on solid and tinted, pointer only; vivid and glass do not change. */
+  .ds-card:is([data-ds-variant="solid"], [data-ds-variant="tinted"]) {
+    @variant ds-pointer {
+      &[data-hovered] > [data-ds-slot="card-overlay"] {
+        background-color: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  .ds-card[data-pressed] > [data-ds-slot="card-overlay"] {
+    background-color: var(--ds-color-bg-fill-neutral-subtle);
+  }
+
+  .ds-card[data-pressed] {
+    scale: var(--ds--card-press-scale);
+  }
+
+  /* focus-visible: color.border.focus at border.focus, following the card radius. */
+  .ds-card[data-ds-action="open"]:focus-visible {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  /*
+   * The glass bloom is left out of the header block, "so it never lightens the fill under the text whose
+   * pair tools/contrast checks on the flat material" (Surface.yaml behavior, ADR-0030 §4.4) — the same
+   * rule, and the same ADR-0022 §4.1 geometry, that Surface.css cuts the grain out of. It lives here
+   * because the header block is the card's: a bare glassLight surface has no such text and, in dark,
+   * blooms at 0.35, so the cut would show there as a hard-edged box rather than as a contrast guard.
+   *
+   * A card's glass is the scheme's glass, whose bloom is 0 in both schemes today, so nothing repaints;
+   * this is what keeps the block clean once a brand gives that recipe a bloom (ADR-0020 §1).
+   */
+  .ds-card:is([data-ds-material="glass"], [data-ds-material="glassLight"]) > [data-ds-slot="surface-bloom"] {
+    mask-image: linear-gradient(var(--ds-color-edge-highlight) 0 0), linear-gradient(var(--ds-color-edge-highlight) 0 0);
+    mask-size:
+      calc(100% - 2 * var(--ds-space-card-padding) - var(--ds-size-control-md) - var(--ds-space-5)) var(--ds-space-12),
+      100% 100%;
+    mask-position:
+      var(--ds-space-card-padding) var(--ds-space-card-padding),
+      0 0;
+    mask-repeat: no-repeat;
+    mask-composite: exclude;
+  }
+
+  /* ---- layout (behavior 2) ---- */
+
+  .ds-card > [data-ds-slot="card-header"] {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--ds-space-5);
+  }
+
+  .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: flex-start;
+    min-inline-size: 0;
+  }
+
+  .ds-card > [data-ds-slot="card-body"] {
+    flex: 1 1 auto;
+    min-block-size: 0;
+  }
+
+  .ds-card > [data-ds-slot="card-footer"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: last baseline;
+    justify-content: space-between;
+    gap: var(--ds-space-3);
+  }
+
+  .ds-card > [data-ds-slot="card-footer"] > [data-ds-slot="card-aside"] {
+    margin-inline-start: auto;
+  }
+
+  /* iconRing: size.icon.ring, a color.border.hairline ring, the glyph at size.icon.md. */
+  .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > [data-ds-slot="card-icon-ring"] {
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    inline-size: var(--ds-size-icon-ring);
+    block-size: var(--ds-size-icon-ring);
+    margin-block-end: var(--ds-space-4);
+    border-radius: var(--ds-radius-control);
+    box-shadow: inset 0 0 0 var(--ds-border-hairline) var(--ds-color-border-hairline);
+  }
+
+  .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > [data-ds-slot="card-icon-ring"] > [data-ds-slot="card-icon"] {
+    inline-size: var(--ds-size-icon-md);
+    block-size: var(--ds-size-icon-md);
+  }
+
+  /* V3: on vivid the unit joins the caption line, space.2 after the caption. */
+  .ds-card-caption > [data-ds-slot="card-caption-unit"][data-ds-after-caption] {
+    margin-inline-start: var(--ds-space-2);
+  }
+
+  /* action: a size.control.md box at the top-right padding corner, the glyph at size.icon.sm. */
+  .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+    box-sizing: border-box;
+    display: grid;
+    flex: none;
+    place-items: center;
+    inline-size: var(--ds-size-control-md);
+    block-size: var(--ds-size-control-md);
+    color: var(--ds-color-icon-secondary);
+  }
+
+  .ds-card > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] [data-ds-slot="card-action-glyph"] {
+    inline-size: var(--ds-size-icon-sm);
+    block-size: var(--ds-size-icon-sm);
+  }
+
+  /* The open glyph shows on hover, press and keyboard focus under pointer, and always under touch. */
+  .ds-card[data-ds-action="open"] {
+    @variant ds-pointer {
+      & > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+        opacity: 0;
+      }
+
+      &:is([data-hovered], [data-pressed], :focus-visible) > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+        opacity: 1;
+      }
+    }
+  }
+
+  /* ---- title.color, caption.color and action.color by published material (behavior 9) ---- */
+
+  .ds-card[data-ds-material="solid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
+    color: var(--ds-card-solid-text);
+  }
+
+  .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
+    color: var(--ds-card-vivid-text);
+  }
+
+  .ds-card[data-ds-material="glass"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
+    color: var(--ds-card-glass-text);
+  }
+
+  .ds-card[data-ds-material="glassLight"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  .ds-card[data-ds-material="inverse"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-title {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-card[data-ds-material="solid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-card-solid-caption);
+  }
+
+  .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-card-vivid-caption);
+  }
+
+  .ds-card[data-ds-material="glass"][data-ds-backdrop="map"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-color-text-on-glass-fill-secondary);
+  }
+
+  .ds-card[data-ds-material="glass"][data-ds-backdrop="image"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-color-text-on-glass-fill-media-secondary);
+  }
+
+  .ds-card[data-ds-material="glass"][data-ds-backdrop="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-color-text-on-glass-fill-media-secondary);
+  }
+
+  .ds-card[data-ds-material="glassLight"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  .ds-card[data-ds-material="inverse"] > [data-ds-slot="card-header"] > [data-ds-slot="card-heading"] > .ds-card-caption {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  /* action.color; a material with no cell takes the secondary tone of Icon.yaml (inverse: on-inverse). */
+  .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+    color: var(--ds-color-text-on-vivid);
+  }
+
+  .ds-card[data-ds-material="glass"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+    color: var(--ds-color-text-on-glass-fill);
+  }
+
+  .ds-card[data-ds-material="glassLight"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  .ds-card[data-ds-material="inverse"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  /*
+   * action: custom, the one solid circular IconButton (IconButton.yaml primary: the inverse solid, the
+   * white inverse-media solid on vivid and glass), ringed in action.border on vivid and glass, where a
+   * white disc needs an edge.
+   */
+  .ds-card-action-button {
+    --ds--card-disc-fill: var(--ds-icon-button-primary-bg-rest);
+    --ds--card-disc-overlay: transparent;
+    --ds--card-disc-ring: transparent;
+    --ds--card-disc-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
+
+    position: relative;
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
+    inline-size: 100%;
+    block-size: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--ds-radius-control);
+    outline: none;
+    background-color: var(--ds--card-disc-fill);
+    background-image: linear-gradient(var(--ds--card-disc-overlay), var(--ds--card-disc-overlay));
+    box-shadow: inset 0 0 0 var(--ds-border-hairline) var(--ds--card-disc-ring);
+    color: var(--ds-icon-button-primary-icon);
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    transition: scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
+  }
+
+  /* The hit region: the larger of the disc and size.hit on each axis, as Button's. */
+  .ds-card-action-button::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  .ds-card:is([data-ds-material="vivid"], [data-ds-material="glass"]) > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {
+    --ds--card-disc-fill: var(--ds-color-bg-fill-inverse-media);
+    color: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-card[data-ds-material="vivid"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {
+    --ds--card-disc-ring: var(--ds-color-border-on-media);
+  }
+
+  .ds-card[data-ds-material="glass"] > [data-ds-slot="card-header"] > [data-ds-slot="card-action"] > .ds-card-action-button {
+    --ds--card-disc-ring: var(--ds-color-border-on-glass-fill);
+  }
+
+  .ds-card-action-button {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--card-disc-overlay: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  .ds-card-action-button[data-pressed] {
+    --ds--card-disc-overlay: var(--ds-color-bg-fill-neutral-subtle);
+    scale: var(--ds--card-disc-scale);
+  }
+
+  .ds-card-action-button[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  @media (forced-colors: active) {
+    .ds-card-action-button {
+      outline: var(--ds-border-hairline) solid ButtonText;
+    }
+  }
+}

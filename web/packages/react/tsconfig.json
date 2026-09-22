@@ -1,15 +1,16 @@
 {
   "extends": "../../../tsconfig.base.json",
-  // Bundled by tsdown (ESM + .d.ts into dist/); `tsc` here only type-checks.
+  // Bundled by tsdown (ESM + .d.ts into dist/); `tsc` here only type-checks. scripts/ and test/ run
+  // under Node 24 type stripping and pull Node's types in with a reference directive.
   "compilerOptions": {
     "module": "preserve",
     "moduleResolution": "bundler",
-    "lib": ["es2024", "dom"],
+    "lib": ["es2024", "dom", "dom.iterable"],
     "jsx": "react-jsx",
     // `src/generated/icons.ts` (tools/icons) is imported with its explicit `.ts` extension, as the
     // generated modules of @iiiivaska/prism-tokens are.
     "allowImportingTsExtensions": true,
     "types": []
   },
-  "include": ["src", "tsdown.config.ts"]
+  "include": ["src", "scripts", "test", "tsdown.config.ts", "vitest.config.ts"]
 }

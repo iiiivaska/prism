@@ -1,0 +1,125 @@
+<!doctype html>
+<!--
+  The runtime-contract fixture (roadmap P3-4, ADR-0019): a consumer page over the packed
+  @iiiivaska/prism-tokens. Every package subpath below is fenced in double percent signs;
+  `fixture/build.ts` resolves each one through the packed package's `exports` field and rewrites the
+  fence into the URL the static server serves that file at, so this page names package subpaths and
+  never file paths.
+
+  `<html>` carries no `data-ds-*` attribute, so the document starts on the media fallbacks of ADR-0019
+  §1 and the spec turns each axis on by hand. Every declaration reads a token; the probes exist so that
+  a switch is observable as a painted value, not only as a custom property.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Prism runtime contract</title>
+    <link rel="stylesheet" href="%%@iiiivaska/prism-tokens/brands/prism-native/tokens.css%%" />
+    <link rel="stylesheet" href="%%@iiiivaska/prism-tokens/brands/prism-native/fonts.css%%" />
+    <link rel="stylesheet" href="%%@iiiivaska/prism-tokens/motion.css%%" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--ds-space-4);
+        font-family: var(--ds-font-ui);
+        background-color: var(--ds-color-bg-page);
+        color: var(--ds-color-text-primary);
+      }
+
+      /* colorScheme, per element (ADR-0019 §1 item 4): the root probe and the nested scope paint the same token. */
+      #root-page,
+      #nested-scheme-page {
+        display: block;
+        padding: var(--ds-space-4);
+        background-color: var(--ds-color-bg-page);
+        color: var(--ds-color-text-primary);
+      }
+
+      /* density, per element: the box is one card padding wide, so the value is measurable. */
+      #root-density,
+      #nested-density-probe {
+        display: block;
+        inline-size: var(--ds-space-card-padding);
+        block-size: var(--ds-space-card-padding);
+        background-color: var(--ds-color-bg-surface);
+      }
+
+      /* modality, root only: the hit size is the token the modality blocks switch. */
+      #root-modality {
+        display: block;
+        inline-size: var(--ds-size-hit);
+        block-size: var(--ds-size-hit);
+        background-color: var(--ds-color-bg-surface);
+      }
+
+      /* motion, root only: the spring a component would transition with. */
+      #root-motion {
+        display: block;
+        inline-size: var(--ds-space-card-padding);
+        block-size: var(--ds-space-card-padding);
+        background-color: var(--ds-color-bg-surface);
+        transition-property: background-color;
+        transition-duration: var(--ds-motion-spring-snappy-duration);
+      }
+
+      /* The brand's own face, so the spec can prove it loaded from the package with no network. */
+      #root-inter {
+        margin: 0;
+        font-family: var(--ds-font-ui);
+        font-size: var(--ds-type-body-md-font-size);
+        font-weight: var(--ds-type-body-md-font-weight);
+        line-height: var(--ds-type-body-md-line-height);
+      }
+    </style>
+  </head>
+  <body>
+    <main id="root-page">
+      <span id="root-density"></span>
+      <span id="root-modality"></span>
+      <span id="root-motion"></span>
+      <p id="root-inter">Prism runtime contract 0123456789</p>
+      <!-- Both scopes get their attributes from the runtime's own scope(), never from a name spelled here. -->
+      <section id="nested-scheme">
+        <span id="nested-scheme-page"></span>
+      </section>
+      <section id="nested-density">
+        <span id="nested-density-probe"></span>
+      </section>
+    </main>
+    <script type="module">
+      import { mountRoot, readContext, rootAttributes, scope, watchContext, webRuntime } from "%%@iiiivaska/prism-tokens%%";
+
+      for (const [element, context] of [
+        [document.querySelector("#nested-scheme"), { colorScheme: "dark" }],
+        [document.querySelector("#nested-density"), { density: "regular" }],
+      ]) {
+        for (const [attribute, value] of Object.entries(scope(context))) element.setAttribute(attribute, value);
+      }
+
+      const events = [];
+      const cleanups = [];
+      watchContext((context) => {
+        events.push(context);
+      });
+
+      /**
+       * What the spec drives the page through. `readContext` and `mountRoot` come from the packed
+       * package, so the spec exercises the published runtime and not a copy of it.
+       */
+      globalThis.prism = {
+        webRuntime,
+        rootAttributes,
+        scope,
+        events,
+        read: (selector) => readContext(selector === undefined ? undefined : document.querySelector(selector)),
+        mount: (context) => {
+          cleanups.push(mountRoot(context));
+        },
+        unmountAll: () => {
+          while (cleanups.length > 0) cleanups.pop()();
+        },
+      };
+    </script>
+  </body>
+</html>
