@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Card: the corner-pinned card (`spec/components/Card.yaml`, specVersion 2).
+/// Card: the corner-pinned card (`spec/components/Card.yaml`, specVersion 5).
 ///
 /// A `DSSurfaceView` of the chosen material with a fixed anatomy: title and caption pinned top-left (an icon ring above
 /// them off vivid), one action or the open affordance at the top-right padding corner, the caller's content under the
@@ -19,20 +19,38 @@ import DSTokens
 /// Behaviour, from the spec:
 ///  - `solid` is flat on `comp.card.solid.bg`; `vivid` draws a gradient slot (unset: the default gradient) with its
 ///    bloom; `glass` floats on the scheme's glass and needs a `backdrop` of image, map or vivid, or the Surface falls
-///    back to the opaque raised card; `tinted` lays `color.bg.tint.accent` over the page and is a light-scheme look.
+///    back to the opaque raised card; `tinted` is a solid surface whose fill is `color.bg.tint.accent` over the page
+///    the solid surface paints, and is a light-scheme look. A tinted card publishes `solid`, never `page`.
 ///  - Title and caption colours follow the material the card's Surface publishes, and on the scheme's glass the
 ///    caption also its backdrop kind; under the glass fallback the card renders the standard tones.
 ///  - On vivid the hero holds only its value and trailing group; the unit joins the caption line, where V2 guarantees
-///    the functional tier (V3, ADR-0030 §8). The icon ring is not drawn on vivid, and on vivid the header ends where the
-///    V2 header block does.
-///  - `action: .open` draws the `nav.open` glyph; with `onAction` the whole card is the button. Under pointer modality
-///    the glyph shows on hover and on keyboard focus, under touch always. `action: .custom` draws one solid action
-///    circle, and only that circle is pressable.
+///    the functional tier (V3, ADR-0030 §8), separated from the caption by `DSCardAppearance.unitSeparator` — the one
+///    separator behavior 9 gives both stacks, written into the caption's own string so the words stay apart in the
+///    name a pressable card builds from it. The icon ring is not drawn on vivid, and on vivid the header ends where
+///    the V2 header block does.
+///  - `action: .open` with an `onAction` makes the whole card the button and draws the `nav.open` glyph: under pointer
+///    modality on hover and on keyboard focus, under touch always. Without an `onAction` there is nothing to open, so
+///    no glyph and no control are drawn in either modality and the header is laid out as `action: .none` lays it out.
+///    `action: .custom` draws one solid action circle, and only that circle is pressable.
+///  - The affordance at the padding corner takes one `action.size` box whichever it is — the custom disc fills it,
+///    the open glyph is centred in it — and the header stops that box plus `header.gap` short of the corner, on
+///    vivid whatever the action (behavior 14). The React Card leaves the same room, as its header's `gap` beside a
+///    `size.control.md` action slot.
+///  - The title takes two lines at most and the caption one, both with an ellipsis (behavior 15): the header block's
+///    budget, so a long title truncates instead of pushing the hero out of the card.
 ///  - A press scales the card to 0.97 on `motion.spring.snappy` with the `color.bg.fill.neutral.subtle` overlay and
 ///    `haptic.press.button`; under Reduce Motion only the overlay shows, over `motion.duration.base` with
-///    `motion.easing.out`. Hover (pointer, pressable cards) lays the same overlay on solid and tinted cards.
+///    `motion.easing.out`. That 0.97 is `DSControlAppearance.pressedScale`, the magnitude behavior 16 gives every
+///    Prism control — the card, the disc inside it and Button's pill shrink alike, on Apple and on the web. Hover
+///    (pointer, pressable cards) lays the same overlay on solid and tinted cards.
+///  - The three rows of the anatomy — header, body slot, footer — are `root.gap` apart at the minimum
+///    (`DSCardAppearance.rowGap`, behavior 17); a card taller than its content spreads the slack above the footer,
+///    so the hero stays pinned to the bottom.
 ///  - `isSelected` passes `selected` to the Surface, lifts the card to `comp.card.shadow.floating` and draws the
 ///    selection outline for the published material, on `motion.spring.smooth` (a crossfade under Reduce Motion).
+///  - A pressable card is one accessibility element, named by its title, caption and hero value. A card that is not
+///    pressable is a group named by its title alone, and its caption, hero and aside are read as the elements they
+///    are.
 ///  - The focus ring follows the card radius outside the card.
 ///  - The aside wraps below the hero when both do not fit; the hero clamps at accessibility3.
 ///  - On watchOS the card is solid, compact and has no aside.
@@ -103,11 +121,19 @@ public struct DSCard<Content: View, Aside: View>: View {
     public var body: some View {
         let parts = DSCardParts(
             title: title, caption: caption, variant: variant.rendered(), vivid: vivid, icon: icon, action: action,
-            hero: hero, size: size.rendered(), backdrop: backdrop, isSelected: isSelected,
+            hasAction: onAction != nil, hero: hero, size: size.rendered(), backdrop: backdrop, isSelected: isSelected,
             hasContent: Content.self != EmptyView.self,
             hasAside: Aside.self != EmptyView.self && !DSPlatform.isWatch
         )
-        if let onAction, DSCardAppearance.isPressable(action.kind, hasAction: true) {
+        // The form the card renders travels up with it, so a gallery or a test can ask what an example
+        // actually built rather than look at a picture (`DSCardForm`).
+        card(parts).preference(key: DSCardFormKey.self, value: [parts.form])
+    }
+
+    /// The card itself: one button when the whole card is the control, a group otherwise.
+    @ViewBuilder
+    private func card(_ parts: DSCardParts) -> some View {
+        if let onAction, parts.isPressable {
             Button(action: onAction) {
                 DSCardLabel(parts: parts, isPressable: true, onAction: nil, content: content, aside: aside)
             }
@@ -116,8 +142,8 @@ public struct DSCard<Content: View, Aside: View>: View {
             .accessibilityLabel(parts.accessibilityLabel)
             .accessibilityAddTraits(isSelected ? .isSelected : [])
         } else {
-            // A group: its label is the card's, and whatever the body, the aside or the action circle holds stays
-            // reachable inside it.
+            // A group: named by its title alone, with the caption, the hero, the body, the aside and the action circle
+            // reachable inside it as the elements they are (Card.yaml `accessibility.label`).
             DSCardLabel(parts: parts, isPressable: false, onAction: onAction, content: content, aside: aside)
                 .accessibilityElement(children: .contain)
                 .accessibilityLabel(parts.accessibilityLabel)
@@ -204,6 +230,8 @@ struct DSCardParts {
     let vivid: DSVividSlot
     let icon: DSIconName?
     let action: DSCardAction
+    /// Whether the card was given an `onAction`: what makes an `open` card pressable and draws its glyph.
+    let hasAction: Bool
     let hero: DSCardHero?
     let size: DSCardSize
     let backdrop: DSBackdropKind
@@ -211,15 +239,73 @@ struct DSCardParts {
     let hasContent: Bool
     let hasAside: Bool
 
-    /// Title, caption and hero value, joined: "Line output, Last 24 hours, 86.4 %" (Card.yaml `accessibility.label`).
-    var accessibilityLabel: Text {
+    /// `accessibility.role`: the whole card is the control when it is `open` and has a handler.
+    var isPressable: Bool { DSCardAppearance.isPressable(action.kind, hasAction: hasAction) }
+
+    /// What the padding corner actually draws: an `open` card with no handler draws and reserves nothing
+    /// (Card.yaml behavior 4).
+    var renderedAction: DSCardActionKind { DSCardAppearance.renderedAction(action.kind, hasAction: hasAction) }
+
+    /// The form this card renders, published to whatever renders it (`DSCardFormKey`).
+    var form: DSCardForm { DSCardForm(action: action.kind, hasAction: hasAction) }
+
+    /// `accessibility.label`. A pressable card is one element, so its name has to carry what it holds: title, caption
+    /// and hero value, joined ("Line output, Last 24 hours, 86.4 %"). A card that is not pressable is a group whose
+    /// caption and hero are elements of their own, so the group is named by its title alone and nothing is read twice.
+    var accessibilityName: DSCardName {
+        guard isPressable else { return DSCardName(title: title, caption: nil, hero: nil) }
+        let spoken = hero.map { hero -> String in
+            let value = hero.value + (hero.trailing ?? "")
+            return hero.unit.map { "\(value) \($0)" } ?? value
+        }
+        return DSCardName(title: title, caption: caption, hero: spoken)
+    }
+
+    /// `accessibilityName` as the label SwiftUI takes.
+    var accessibilityLabel: Text { accessibilityName.text }
+}
+
+/// What names a Card, part by part, so the rule is a value a test can compare and not a `Text` nobody can read back
+/// (Card.yaml `accessibility.label`).
+struct DSCardName: Equatable {
+    let title: LocalizedStringKey
+    /// The caption, on the name of a pressable card only.
+    let caption: LocalizedStringKey?
+    /// The hero's value, trailing group and unit as one spoken string, on the name of a pressable card only.
+    let hero: String?
+
+    /// The parts joined by ", ", the way an assistive technology reads one element's name.
+    var text: Text {
         var parts = [Text(title)]
         if let caption { parts.append(Text(caption)) }
-        if let hero {
-            let value = hero.value + (hero.trailing ?? "")
-            parts.append(Text(verbatim: hero.unit.map { "\(value) \($0)" } ?? value))
-        }
+        if let hero { parts.append(Text(verbatim: hero)) }
         return parts.dropFirst().reduce(parts[0]) { Text("\($0), \($1)") }
+    }
+}
+
+/// Which of Card's forms a rendered card is: the affordance it draws at the padding corner, and whether the whole
+/// card is the control (Card.yaml behaviors 3, 4 and 5).
+///
+/// A value, so the form an example asks for is something a test can read back rather than a picture someone has to
+/// look at. The web generates its stories from the spec and gives every `action` prop a spy, so a story cannot lose
+/// its handler; this example set is written by hand, and `DSComponentsContractTests` reads this preference out of
+/// every rendered example to hold the same rule ("Every example gets its handlers", spec/SCHEMA.md).
+struct DSCardForm: Equatable {
+    /// The affordance the card was asked for.
+    let action: DSCardActionKind
+    /// Whether the card was given its `onAction`: the handler every example carries (spec/SCHEMA.md).
+    let hasAction: Bool
+
+    /// Whether the whole card is the control, which is `open` with a handler and nothing else (behavior 3).
+    var isPressable: Bool { DSCardAppearance.isPressable(action, hasAction: hasAction) }
+}
+
+/// The forms of every Card in a view tree, in render order.
+struct DSCardFormKey: PreferenceKey {
+    static let defaultValue: [DSCardForm] = []
+
+    static func reduce(value: inout [DSCardForm], nextValue: () -> [DSCardForm]) {
+        value.append(contentsOf: nextValue())
     }
 }
 
@@ -291,6 +377,7 @@ private struct DSCardLabel<Content: View, Aside: View>: View {
             )
         }
         .cardHeaderBlock()
+        .surfaceFill(DSCardAppearance.tint(parts.variant))
         .scaleEffect(DSControlAppearance.scale(isPressed: pressed, motion: motion))
         .animation(DSCardAppearance.pressAnimation(motion), value: pressed)
         .animation(DSCardAppearance.selectAnimation(motion), value: parts.isSelected)
@@ -331,9 +418,13 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
     var body: some View {
         let tokens = ds.tokens
         let surface = ds.surface
-        let space = tokens.space
-        let actionWidth = DSCardAppearance.actionWidth(parts.action.kind, tokens)
+        let actionWidth = DSCardAppearance.actionWidth(parts.renderedAction, tokens)
         let trailing = DSCardAppearance.headerTrailingSpace(on: surface.material, actionWidth: actionWidth, tokens)
+        // `tokens.root.gap` (behavior 17): the minimum between the header, the body slot and the footer. The spacer
+        // takes whatever is left over, so a card taller than its content keeps the hero at the bottom and a card
+        // that shrinks to its content keeps the gaps and nothing else. The web reads the same cell as the
+        // `row-gap` of `.ds-card`.
+        let rowGap = DSCardAppearance.rowGap(tokens)
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
                 header(tokens, surface: surface)
@@ -344,12 +435,12 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
             if parts.hasContent {
                 content
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, space.step4)
+                    .padding(.top, rowGap)
             }
             Spacer(minLength: 0)
             if parts.hero != nil || parts.hasAside {
                 footer(tokens, surface: surface)
-                    .padding(.top, space.step4)
+                    .padding(.top, rowGap)
             }
         }
         .background {
@@ -413,14 +504,25 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
         case .none:
             EmptyView()
         case .open:
-            DSGlyph(.navOpen, box: tokens.size.iconSm)
-                .foregroundStyle(tokens[keyPath: DSCardAppearance.action(on: surface)])
-                .opacity(
-                    DSCardAppearance.showsOpenGlyph(
-                        interaction: tokens.interaction, isHovered: state.isRawHovered, isFocused: state.isFocused
-                    ) ? 1 : 0
-                )
-                .animation(DSControlAppearance.hoverAnimation(ds.motion), value: state.isRawHovered)
+            // Behavior 4: with no handler the glyph is not hidden, it is not there — no view, and no room kept for
+            // one, which is what `renderedAction` already took out of `actionWidth`.
+            if parts.isPressable {
+                // Behavior 14: the glyph is centred in the same `action.size` box the custom disc fills, so both
+                // affordances sit in one place and the header reserves one width for either.
+                DSGlyph(.navOpen, box: tokens.size.iconSm)
+                    .foregroundStyle(tokens[keyPath: DSCardAppearance.action(on: surface)])
+                    .frame(
+                        width: DSCardAppearance.actionWidth(.open, tokens),
+                        height: DSCardAppearance.actionWidth(.open, tokens)
+                    )
+                    .opacity(
+                        DSCardAppearance.showsOpenGlyph(
+                            interaction: tokens.interaction, isHovered: state.isRawHovered,
+                            isFocused: state.isFocused, isPressable: parts.isPressable
+                        ) ? 1 : 0
+                    )
+                    .animation(DSControlAppearance.hoverAnimation(ds.motion), value: state.isRawHovered)
+            }
         case let .custom(glyph, label):
             DSCardActionCircle(glyph: glyph, label: label, action: onAction)
         }
@@ -461,16 +563,27 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
 }
 
 extension DSCardAppearance {
-    /// What joins the caption and the unit on vivid, as the direction board's vivid captions read ("New best · min:s").
+    /// What joins the caption and the unit on vivid: a space, a middle dot and a space, the one separator Card.yaml
+    /// behavior 9 gives both stacks ("Dollars per batch · kg"), as the direction board's vivid captions read
+    /// ("New best · min:s").
+    ///
+    /// It is text inside the caption, not a gap between two boxes, so the words stay apart in the caption's own
+    /// string — and therefore in the single accessible name a pressable card builds from title, caption and hero.
+    /// The web writes the same string (`cardUnitSeparator`, `web/packages/react/src/card/parts.ts`). A card with no
+    /// caption shows the unit alone, with no leading separator.
     static let unitSeparator = " · "
 
     /// The hero clamps at accessibility3 (Card.yaml `accessibility.dynamicType`).
     static let heroLargestTypeSize: DynamicTypeSize = .accessibility3
 }
 
-/// The layers the card draws inside its Surface's shape and around it: the tint, the hover and pressed overlays, the
-/// selection outline and the focus ring. They sit behind the anatomy, above the Surface's own layers, and reach out to
-/// the shape by the card padding the Surface publishes with its radius.
+/// The layers the card draws inside its Surface's shape and around it: the hover and pressed overlays, the selection
+/// outline and the focus ring. They sit behind the anatomy, above the Surface's own layers, and reach out to the
+/// shape by the card padding the Surface publishes with its radius.
+///
+/// The tint of a `tinted` card is not one of them: it replaces the fill of the solid Surface the card asks for
+/// (`surfaceFill(_:)`), so it lies on the page that surface paints and not on `color.bg.surface` (Card.yaml
+/// behavior 7).
 private struct DSCardLayers: View {
     let parts: DSCardParts
     let state: DSCardState
@@ -489,9 +602,6 @@ private struct DSCardLayers: View {
         let tokens = ds.tokens
         let shape = RoundedRectangle(cornerRadius: geometry.radius, style: .continuous)
         ZStack {
-            if let tint = DSCardAppearance.tint(parts.variant) {
-                shape.fill(tokens[keyPath: tint])
-            }
             if let hover = DSCardAppearance.hoverOverlay(parts.variant) {
                 shape
                     .fill(tokens[keyPath: hover])
@@ -609,7 +719,11 @@ private struct DSCardActionDisc<Label: View>: View {
                         .opacity(pressed || hovered ? 1 : 0)
                         .animation(DSControlAppearance.hoverAnimation(motion), value: hovered)
                     if let border = DSCardAppearance.actionBorder(on: material) {
-                        Circle().strokeBorder(tokens[keyPath: border], lineWidth: tokens.border.hairline)
+                        Circle()
+                            .strokeBorder(
+                                tokens[keyPath: border],
+                                lineWidth: DSCardAppearance.actionBorderWidth(tokens.border)
+                            )
                     }
                 }
             }

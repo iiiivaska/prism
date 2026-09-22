@@ -1,5 +1,5 @@
 /*
- * Surface (spec/components/Surface.yaml, specVersion 2). Compiled into styles.css by
+ * Surface (spec/components/Surface.yaml, specVersion 3). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Surface resolves the material (resolve.ts) and writes what it renders onto its element:

@@ -1,3 +1,4 @@
+#if os(iOS)
 import CoreGraphics
 import SwiftUI
 import Testing
@@ -13,6 +14,12 @@ import DSTokens
 /// Each case renders the same pill twice through the same pipeline, at rest and pressed, and compares the two images;
 /// no colour value is written here, so the tokens decide both sides. Modality is touch, which is where this matters:
 /// there is no hover overlay to fall back on.
+///
+/// **Why this is a simulator suite.** The substitute is a token colour composited over a token fill, and `swift test`
+/// copies Colors.xcassets uncompiled, so on the macOS host the pill at rest and the pill pressed are the same empty
+/// image and every variant measures a step of 0 (`DSRenderCapability`). `xcodebuild` compiles the catalog, so this
+/// runs with the snapshots on the pinned iPhone 17. The geometry behind it — that nothing scales under Reduce Motion
+/// — is also `DSButtonBindingTests.pressMotion` on the host, in value space.
 @MainActor
 @Suite("The Reduce Motion press substitute is visible (ADR-0023 §8.4)", .serialized)
 struct DSButtonReduceMotionTests {
@@ -95,6 +102,7 @@ struct DSButtonReduceMotionTests {
     /// Motion press**, so the record is not this comment alone.
     @Test(arguments: DSButtonVariant.allCases)
     func theReduceMotionPressIsVisible(_ variant: DSButtonVariant) throws {
+        try DSRenderCapability.requireRasterizing()
         for scheme in [ColorScheme.light, .dark] {
             for material in Self.materials {
                 let rest = try #require(Self.pixels(variant, isPressed: false, on: material, scheme: scheme), "\(variant) \(material) \(scheme) did not render")
@@ -128,3 +136,4 @@ struct DSButtonReduceMotionTests {
         #expect(DSControlAppearance.substituteOpacity(isPressed: false, motion: reduced) == 0)
     }
 }
+#endif

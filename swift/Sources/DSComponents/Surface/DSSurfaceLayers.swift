@@ -13,6 +13,9 @@ struct DSSurfaceLayers: View {
     let brand: DSBrand
     let gradient: DSGradientToken
     let elevation: DSSurfaceElevation
+    /// A fill that replaces the material's own (`DSSurfaceView.surfaceFill(_:)`); nil keeps it. The underlay, the
+    /// edge and the grain are the material's either way.
+    var fillOverride: DSColorToken?
     let cornerRadius: CGFloat
     /// The pixels under a glass surface; nil when glass does not render or nothing supplied a backdrop.
     let backdrop: DSBackdropSource?
@@ -134,10 +137,13 @@ struct DSSurfaceLayers: View {
         .clipShape(shape)
     }
 
-    /// `tokens.root.background`, or the vivid gradient drawn on its CSS gradient line in OKLab (DSCore).
+    /// `tokens.root.background`, or the vivid gradient drawn on its CSS gradient line in OKLab (DSCore). A caller
+    /// that supplied a fill of its own paints that instead of the material's, over the same underlay (a tinted Card).
     @ViewBuilder
     private func fill(_ size: CGSize) -> some View {
-        if resolution.material == .vivid {
+        if let fillOverride {
+            shape.fill(fillOverride.color(brand))
+        } else if resolution.material == .vivid {
             shape.fill(DSGradient.fill(gradient, size: size))
         } else if let background = DSSurfaceAppearance.background(resolution.material) {
             shape.fill(background.color(brand))

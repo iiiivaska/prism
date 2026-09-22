@@ -1,6 +1,6 @@
 name: Card
 layer: composite
-specVersion: 2
+specVersion: 5
 status: draft
 summary: >-
   The corner-pinned card: a Surface with a fixed anatomy (title and caption top-left, one action or
@@ -31,9 +31,14 @@ anatomy:
     description: hairline ring with an icon, top-left, above the title; not drawn on vivid
   - part: action
     optional: true
-    description: top-right affordance; either the nav.open glyph or one solid circular IconButton
+    description: >-
+      top-right affordance, one `action.size` box either way: the nav.open glyph of a pressable card centred
+      in it, or the solid circular disc of a custom action, which follows IconButton's grammar but takes
+      Card's own cells
   - part: body
     slot: true
+    optional: true
+    description: the middle, between the header and the footer; a card given no content draws no body box at all
   - part: hero
     optional: true
     description: bottom-left metric (Text role metric-lg) with trailing group and, off vivid, a hung unit
@@ -63,8 +68,25 @@ props:
     type: enum
     values: [none, open, custom]
     default: open
+    description: >-
+      which affordance sits at the padding corner; `custom` carries `actionIcon` and `actionLabel` with it,
+      and a stack may bundle the three into one value (an enum payload, an object) as long as `custom` cannot
+      be written without them
+  - name: actionIcon
+    type: icon
+    description: >-
+      the glyph of a `custom` action: a registry id, required with `action: custom` and never inferred from
+      the card
+  - name: actionLabel
+    type: string
+    description: >-
+      what a `custom` action does ("Add a reading"): required with `action: custom`, never inferred from the
+      glyph id, and never the title, which names the card's content and not the operation
   - name: onAction
     type: action
+    description: >-
+      fires on the whole card with `action: open` and on the disc with `custom`; a card without it is not
+      pressable, and an `open` card without it draws no glyph
   - name: hero
     type: data
     description: "{ value, trailing?, unit?, tone? } rendered with Text metric-lg; `unit` is not set on vivid"
@@ -99,6 +121,7 @@ tokens:
       regular: comp.card.radius.regular
       large: comp.card.radius.large
     padding: comp.card.padding
+    gap: space.4
     shadow:
       solid: comp.card.shadow.solid
       glass: comp.card.shadow.floating
@@ -115,6 +138,8 @@ tokens:
     focus-visible:
       ring: color.border.focus
       ringWidth: border.focus
+  header:
+    gap: space.5
   title:
     typography: type.headline
     color:
@@ -145,9 +170,18 @@ tokens:
       solid: color.icon.secondary
       vivid: color.text.on-vivid
       glass: color.text.on-glass-fill
+    fill:
+      default: color.bg.fill.inverse
+      vivid: color.bg.fill.inverse-media
+      glass: color.bg.fill.inverse
+    glyphColor:
+      default: color.text.on-inverse
+      vivid: color.text.on-inverse-media
+      glass: color.text.on-inverse
     border:
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+    borderWidth: border.hairline
   hero:
     typography: type.metric.lg
   aside:
@@ -156,14 +190,21 @@ tokens:
 behavior:
   - The card is a Surface of the chosen material; `glass` needs a `backdrop` of image, map or vivid or the Surface falls back to an opaque raised card.
   - Header pins to the top-left with the action at the padding corner top-right; hero pins bottom-left; aside pins bottom-right and shares the hero's baseline; the middle may be empty and the card keeps its declared aspect.
-  - "`action: open` renders the nav.open glyph at the small icon size in the secondary icon color and makes the whole card pressable; `custom` renders one solid circular IconButton and only that button is pressable."
-  - "`isSelected` passes `selected` to the Surface and adds its own cue: the card lifts to comp.card.shadow.floating and draws the selection outline, so selection reads in both schemes even where glass and light glass share one fill."
+  - "A card is pressable when `action: open` and `onAction` is set: the whole card is the control, it draws the nav.open glyph at size.icon.sm in the action's color cell, centred in the action box behavior 14 gives it, and one press fires `onAction` on release inside the card."
+  - "`action: open` without an `onAction` draws no glyph and no control. The glyph is the cue that the card opens (docs/research/visual-dna.md §4.9), so a card with nothing to open shows none of it, under pointer and under touch alike, and its header is laid out as `action: none` lays it out."
+  - "`action: custom` draws one solid circular disc at size.control.md, carrying `actionIcon` at size.icon.sm and named by `actionLabel`; with an `onAction` that disc is the only control on the card and the card around it stays a group, and without one it is a named disc that presses nothing."
+  - "The disc is the one inverse solid on the card (docs/research/visual-dna.md §1 principle 9), keyed by the material the enclosing Surface publishes: on vivid it takes the white media pair, color.bg.fill.inverse-media under color.text.on-inverse-media (ADR-0030 §3.1); on every other published material, the scheme's glass included, it takes color.bg.fill.inverse under color.text.on-inverse. The scheme's glass keeps the scheme's own inverse because since ADR-0029 §1 that glass is light glass in light and smoke in dark, where color.bg.fill.inverse is already ink on the one and white on the other; a white disc would disappear on light glass over the bright imagery ADR-0029 §1.6 allows under it, which is why the ring there is color.border.on-glass-fill and not the white color.border.on-media (ADR-0030 §3.2). The disc binds Card's own cells, never another component's comp tokens (ADR-0024 §5.2)."
+  - "`isSelected` passes `selected` to the Surface and adds its own cue: the card lifts to comp.card.shadow.floating and draws the selection outline of the material it publishes, so selection reads in both schemes even where glass and light glass share one fill. A tinted card publishes solid, so its outline is color.border.strong."
   - Vivid cards render their bloom behind themselves; at most one 2×2 vivid grid or one vivid card in six per screen (enforced by the pattern spec, warned by the gallery lint). A 2×2 alternates one gradient slot pair on its diagonals.
-  - "On vivid the hero holds only its value and trailing group, which are 24 px or more; the unit joins the caption line in the header block, where V2 guarantees the functional tier (ADR-0030 §8). The icon ring is not drawn, and the aside holds a sparkline, a glyph or text of 24 px or more."
-  - "`tinted` is a light-scheme look: it fills the card with color.bg.tint.accent over the page. A dark screen leads with a Surface of material accent instead."
-  - Hover (pointer) adds the neutral overlay on solid and tinted; vivid and glass do not change on hover.
+  - "On vivid the hero holds only its value and trailing group, which are 24 px or more; the unit joins the caption line in the header block, where V2 guarantees the functional tier (ADR-0030 §8). One separator joins them, the same string on both stacks: a space, a middle dot and a space, so a caption of `Dollars per batch` with a unit of `kg` is the one line `Dollars per batch · kg` - text, not a margin, so the words stay apart in the caption's own text and in the accessible name a pressable card builds from it. A card with no caption shows the unit alone, with no leading separator. The icon ring is not drawn, and the aside holds a sparkline, a glyph or text of 24 px or more."
+  - "`tinted` is a light-scheme look, and the card publishes `solid`: it fills the card with color.bg.tint.accent over the color.bg.page that every opaque surface paints under itself (ADR-0030 §5.1), so its text takes the standard tones and its material cells are the solid ones. It never publishes `page`: that names the screen's ground, which a chip or a control over media keys its glass cells to. A dark screen leads with a Surface of material accent instead."
+  - Hover (pointer) adds the neutral overlay on a pressable solid or tinted card; a card with nothing to press takes no hover cue, and vivid and glass do not change on hover.
   - Title and caption colors follow the material the enclosing Surface publishes, and on the scheme's glass also its backdrop kind; a part with no cell for the published material takes its tone from Text.
   - "Compact density uses comp.card.radius.compact and the compact card padding; `size: large` uses comp.card.radius.large for cards with a side of 200 px or more."
+  - "The affordance at the padding corner takes one `action.size` box whichever it is: the `custom` disc fills that box, and the open glyph is centred in it at `action.iconSize`. The header ends `action.size` plus `header.gap` before the trailing padding edge wherever an affordance is drawn, and on vivid it ends there whatever the action - `action: none` and a handler-less `open` included - because that is the V2 header block the grain and the bloom are cut out of (ADR-0022 §4.1, Surface.yaml behavior). Off vivid a card that draws no affordance gives the header the whole content width."
+  - "The title takes two lines at most and the caption one, both truncating with an ellipsis (docs/research/visual-dna.md §4.9). That is the header block's budget: a long title truncates rather than growing the header past the block, pushing the hero down and overflowing a card whose size the grid sets."
+  - "A press scales the whole card to 0.97 on the press spring (motion.spring.snappy), the magnitude every Prism control shares (docs/research/visual-dna.md §1 principle 9): the same number Button's pill takes, and the same number the `custom` disc takes on its own, so a card and the disc inside it shrink alike. Under Reduce Motion nothing scales and the pressed overlay alone shows the press (ADR-0023 §8.4)."
+  - "`root.gap` is the minimum space between the three rows of the anatomy: the body slot sits space.4 below the header and the footer - hero and aside - space.4 below the body, and a card with no body keeps the one gap between its header and its footer. A card taller than its content spreads the slack between the body and the footer, so the hero stays pinned to the bottom (behavior 2); a card that shrinks to its content keeps the gaps and nothing else."
 
 motion:
   press: motion.spring.snappy
@@ -174,11 +215,15 @@ haptics:
   press: haptic.press.button
 
 accessibility:
-  role: button when pressable, otherwise group
-  label: title plus caption plus hero value ("Line output, last 24 hours, 86.4 percent")
+  role: "button when pressable (`action: open` with an `onAction`), otherwise group"
+  label: >-
+    a pressable card is one element, named by its title, caption and hero value ("Line output, last 24 hours,
+    86.4 percent"); a card that is not pressable is a group named by its title alone, and its caption and hero
+    are read as the elements they are, not a second time in the group's name. A custom disc carries
+    `actionLabel` as its own name.
   traits: [button]
-  keyboard: focusable when pressable; Enter activates; the focus ring is color.border.focus at border.focus width, following the card radius
-  dynamicType: title and caption scale; hero clamps at the accessibility3 size; the aside wraps below the hero when both cannot fit
+  keyboard: focusable when pressable, and a custom disc with an `onAction` is focusable on its own; Enter activates; the focus ring is color.border.focus at border.focus width, following the card radius
+  dynamicType: title and caption scale and keep their two-line and one-line budgets (behavior 15), truncating with an ellipsis rather than pushing the hero out of the card; hero clamps at the accessibility3 size; the aside wraps below the hero when both cannot fit
   contrast: title and caption on solid use comp.card.solid.text and comp.card.solid.caption; on vivid every tone is color.text.on-vivid; on the scheme's glass the caption follows the published backdrop kind (tools/contrast checks every backdrop)
   reduceTransparency: glass resolves to an opaque raised card over color.bg.page, the bloom is dropped, and a selected card publishes inverse
   reduceMotion: the press scale is replaced by a fill change to color.bg.fill.neutral.subtle over motion.duration.base with motion.easing.out, and selection crossfades to the selected shadow and outline instead of scaling
@@ -188,8 +233,10 @@ usage:
     - "Keep the anatomy: title top-left, action top-right, hero bottom-left; let the middle breathe."
     - Use vivid for the one thing the screen sells (a 2×2 grid of KPIs, one hero card).
     - Put a Sparkline in the aside when the hero has a trend.
+    - Give an `open` card its `onAction`; the glyph is the promise that the card opens.
   dont:
     - Don't put a button row inside a card; a card has one action.
+    - Don't name a custom action after the card; `actionLabel` says what the disc does, not what the card holds.
     - Don't mix radii within one card family on a screen.
     - Don't place captions or hairlines on the bloom or the lightest stop of a vivid card.
     - Don't use `tinted` in a dark scope; the lit tile is a Surface of material accent.
@@ -219,6 +266,18 @@ examples:
 notes:
   platform:
     watchos: solid only, compact size, no aside; the card is a full-width row and the watch density gives it 16 px of padding.
-    macos: "hover overlay on solid cards; the action glyph appears on hover only when `action: open` (always visible on touch)."
-  design: Corner-pinned anatomy from docs/research/visual-dna.md §4.9; vivid 2×2 from §4.4; glass vehicle card from §4.3. Example strings are invented (ADR-0015 rule 3).
+    macos: "hover overlay on pressable solid and tinted cards; the open glyph appears on hover or keyboard focus, and only on a pressable card (on touch it is always visible)."
+  design: >-
+    Corner-pinned anatomy from docs/research/visual-dna.md §4.9; vivid 2×2 from §4.4; glass vehicle card from
+    §4.3. Example strings are invented (ADR-0015 rule 3). specVersion 3 settles the first review round of
+    P3-3 and P3-4: the custom disc's fill and glyph cells keyed by the published material, the handler as the
+    test of pressability (the open glyph and the hover cue go with it), the accessible name of a card that is
+    not pressable, and the material a tinted card publishes. specVersion 4 settles the second round: the
+    header geometry both stacks had written their own way - one `action.size` box for either affordance,
+    `header.gap` between the heading and it, the V2 block reserved on vivid whatever the action (behavior 14)
+    - and the two-line title with its one-line caption (behavior 15), which lived only in a Swift doc
+    comment. specVersion 5 settles the third round, three numbers each stack had chosen for itself: the
+    separator that joins the vivid unit to the caption (behavior 9), the press magnitude Card shares with
+    every other Prism control (behavior 16), and the minimum gap between the rows of the anatomy
+    (`root.gap`, behavior 17).
   references: [docs/adr/0009-materials-in-layers.md, docs/adr/0015-references-inspiration-only.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

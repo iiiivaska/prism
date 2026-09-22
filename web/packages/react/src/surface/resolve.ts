@@ -1,5 +1,5 @@
 /**
- * Material resolution for the web `Surface` (spec/components/Surface.yaml, specVersion 2): the table
+ * Material resolution for the web `Surface` (spec/components/Surface.yaml, specVersion 3): the table
  * of ADR-0022 §1, as ADR-0025 §1 places it in React, with ADR-0029 §1.2 (the scheme's glass) and
  * ADR-0030 §5 (the page under solid, raised and nested; the raised edge).
  *
@@ -70,6 +70,21 @@ export interface SurfaceResolution {
 /** The two materials the fallback of ADR-0022 §1 can replace. */
 export function isGlassMaterial(material: SurfaceMaterial): boolean {
   return material === "glass" || material === "glassLight";
+}
+
+/**
+ * The elevation a Surface draws: the one the caller declared, or the default of the material it
+ * **requested**. `raised` draws `elevation.1` as its own default (ADR-0030 §5.2), every other material
+ * `flat`, where "solid surfaces never draw a border or a shadow at `flat`" (Surface.yaml behavior).
+ *
+ * The default belongs to the requested material, not to the one that renders: under the glass fallback
+ * "the elevation stays the one the requesting Surface declares (ADR-0022 §1.1); `elevation.1` is
+ * `raised`'s default, not an override" (ADR-0030 §5.2), so an undeclared glass surface stays `flat`.
+ * The web twin of `DSSurfaceAppearance.elevation(declared:requested:)` and of
+ * `DSSurfaceElevation.materialDefault(for:)` (swift/Sources/DSComponents/Surface).
+ */
+export function surfaceElevation(declared: SurfaceElevation | undefined, requested: SurfaceMaterial): SurfaceElevation {
+  return declared ?? (requested === "raised" ? "raised" : "flat");
 }
 
 /**

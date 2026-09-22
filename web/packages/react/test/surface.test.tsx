@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Surface (spec/components/Surface.yaml, specVersion 2).
+ * Surface (spec/components/Surface.yaml, specVersion 3).
  *
  * - The React Surface test of ADR-0022 rule 1 and ADR-0025 rule 1: the full resolution table against an
  *   independent statement of ADR-0022 §1.2 and §1.6, and the same table rendered on the server through
@@ -17,7 +17,7 @@ import { describe, expect, it } from "vitest";
 import { Theme, type TokenContext } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
 import { Surface, useSurfaceContext } from "../src/index.ts";
-import { backdropKinds, resolveSurface, surfaceMaterials, type BackdropKind, type SurfaceMaterial } from "../src/surface/resolve.ts";
+import { backdropKinds, resolveSurface, surfaceElevation, surfaceElevations, surfaceMaterials, type BackdropKind, type SurfaceMaterial } from "../src/surface/resolve.ts";
 import { flattenRules, parseCss } from "./css.ts";
 import { cell, cssVariable, loadSpec, propValues } from "./spec.ts";
 
@@ -52,8 +52,8 @@ function attributes(html: string): Record<string, string> {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Surface.yaml specVersion 2", () => {
-    expect(spec.specVersion).toBe(2);
+  it("is Surface.yaml specVersion 3", () => {
+    expect(spec.specVersion).toBe(3);
     expect([...surfaceMaterials]).toEqual(propValues(spec, "material"));
     expect([...backdropKinds]).toEqual(propValues(spec, "backdrop"));
   });
@@ -106,11 +106,32 @@ describe("the resolution table (ADR-0022 rule 1)", () => {
     expect(render(<Theme transparency="reduce"><Surface material="glass" backdrop="image" selected /></Theme>)).toBe("inverse");
   });
 
-  it("keeps the declared elevation under the fallback, and raised's own elevation when none is declared", () => {
+  it("takes the undeclared elevation from the requested material, not from the one that renders", () => {
+    // ADR-0022 §1.1: under the fallback "radius and elevation are the ones the requesting Surface
+    // declares"; ADR-0030 §5.2: "`elevation.1` is `raised`'s default, not an override". So a glass
+    // surface that declares none stays flat however it resolves, and only a requested `raised` lifts.
+    // The table is `DSSurfaceElevation.materialDefault(for:)` on the Apple side.
     const elevation = (node: ReactNode): string | undefined => attributes(renderToStaticMarkup(node))["data-ds-elevation"];
     expect(elevation(<Theme contrast="more"><Surface material="glass" backdrop="map" elevation="overlay" /></Theme>)).toBe("overlay");
-    expect(elevation(<Theme contrast="more"><Surface material="glass" backdrop="map" /></Theme>)).toBe("raised");
+    expect(elevation(<Theme contrast="more"><Surface material="glass" backdrop="map" /></Theme>)).toBe("flat");
+    expect(elevation(<Theme transparency="reduce"><Surface material="glassLight" backdrop="image" /></Theme>)).toBe("flat");
+    expect(elevation(<Surface material="glass" backdrop="none" />)).toBe("flat");
+    expect(elevation(<Surface material="glass" backdrop="map" />)).toBe("flat");
     expect(elevation(<Surface material="solid" />)).toBe("flat");
+    expect(elevation(<Surface material="raised" />)).toBe("raised");
+    expect(elevation(<Surface material="raised" elevation="flat" />)).toBe("flat");
+    // specVersion 3 writes that default into the spec, in the `elevation` prop and beside the fallback
+    // sentence in behavior; it was implemented here and on Apple before any sentence stated it.
+    const declaration = spec.props.find((prop) => prop.name === "elevation") as { readonly description?: string } | undefined;
+    expect(declaration?.description ?? "").toContain("the default of the material the caller requested");
+    expect((spec.behavior ?? []).join("\n")).toContain("a glass surface that asked for none stays flat");
+  });
+
+  it("states that table once, for both stacks (surfaceElevation)", () => {
+    for (const material of surfaceMaterials) {
+      expect(surfaceElevation(undefined, material), material).toBe(material === "raised" ? "raised" : "flat");
+      for (const declared of surfaceElevations) expect(surfaceElevation(declared, material), material).toBe(declared);
+    }
   });
 
   it("publishes its depth for the concentric radius rule", () => {

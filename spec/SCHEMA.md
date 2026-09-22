@@ -239,6 +239,8 @@ examples:
 
 Every example is rendered by both stacks into `gallery/snapshots/<Name>/<id>.<platform>.<scheme>.png`. The gallery shows them side by side; that is how drift becomes visible to a human.
 
+**Every example gets its handlers.** Both galleries pass a no-op handler for each prop of type `action` the spec declares, whether or not the example's `props` name it, so an example renders the component's interactive form in both stacks: a Card example that keeps `action: open` is a pressable card with its glyph on Apple and on the web alike. Where a component behaves differently without a handler — a Card with nothing to open is a group and draws no glyph (`Card.yaml`) — that form is a gallery probe, not a spec example, so the two stacks never disagree about an example by accident.
+
 ### Slot content in examples
 
 An example fills a `slot` prop, or a `data` prop that holds components, in one of four forms. Both galleries implement all four the same way, so the two stacks render the same content:

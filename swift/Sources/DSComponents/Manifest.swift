@@ -24,11 +24,21 @@
 /// vivid → solid and glass → the raised fallback (Surface), display and title roles collapsed (Text), every size `lg`,
 /// ghost → secondary and no trailing icon (Button), solid, compact and no aside (Card). `DSComponentsTests` checks every
 /// cell against the spec's `specVersion` and `platforms`.
+///
+/// Card and Surface carry the review rounds of P3-3 and P3-4. Card 3 settled the custom disc's fill and glyph cells,
+/// the handler as the test of pressability (the open glyph and the hover cue go with it), the accessible name of a
+/// card that is not pressable, and the material a tinted card publishes; Card 4 settled the header geometry both
+/// stacks had written their own way — one `action.size` box for either affordance, `header.gap` between the heading
+/// and it, the V2 header block reserved on vivid whatever the action — and the two-line title with its one-line
+/// caption. Card 5 settles the third round — the separator that joins the vivid unit to the caption, the press
+/// magnitude Card shares with every other Prism control, and the minimum gap between the rows of the anatomy — each
+/// a number both stacks had chosen for itself. Surface 3 writes down the per-material default of `elevation`, which
+/// this target already drew.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
-        "Card": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
-        "Surface": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+        "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
+        "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]
 }

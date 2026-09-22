@@ -1,14 +1,52 @@
 # DSSnapshotTests
 
 The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button and Card
-across the accessibility matrix, and the equal-width figures of ADR-0021 §5 as assertions.
+across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
+component's pixels back** — because this is the target that runs where a Prism view really rasterizes.
 
 | File | What it holds |
 |------|---------------|
 | `DSSnapshotMatrix.swift` | The matrix, the file names it produces, and the check that no baseline is stale. Runs on the host too. |
 | `DSExampleSnapshotTests.swift` | The renders, the comparison, the forced conditions and the check that they reach a render. iOS only (`#if os(iOS)`). |
+| `DSRenderCapability.swift` | The probe every pixel read asks first: can this process rasterize a Prism view at all? All platforms. |
+| `DSSurfaceRenderTests.swift` | What a Surface draws: the glass fallback, selection, and the whole bloom. iOS only. |
+| `DSButtonRenderTests.swift` | What a Button draws: the ghost pill's missing rest fill, the disabled dim. iOS only. |
+| `DSButtonReduceMotionTests.swift` | That the Reduce Motion press substitute is visible (ADR-0023 §8.4). iOS only. |
+| `DSCardRenderTests.swift` | What a Card draws for the Card.yaml v5 readings: the open glyph of a card with no handler, that glyph centred in the `action.size` box at the padding corner (behavior 14), the tint over the page, the custom disc's fill per published material. iOS only. |
+| `DSTextFiguresRenderTests.swift` | That `numeric: tabular` renders at the role's own weight (ADR-0021 §5). iOS only. |
 | `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
 | `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
+
+## Why the pixel suites live here
+
+Every Prism colour is a catalog entry — `DSColorToken.color(_:)` is `Color("<brand>/<token>", bundle: .module)`,
+resolved out of the generated `Colors.xcassets`. `xcodebuild` compiles that catalog with actool, so a simulator run
+resolves every name. **`swift test` under SwiftPM's legacy build system copies the catalog uncompiled**, without an
+`Assets.car`, and every one of those names then resolves to nothing and paints clear. `ColorCatalogTests` skips
+DSTokensTests for exactly this reason, in exactly those words.
+
+Layout, body evaluation and the image's size survive that intact: a `GeometryReader` probe still reports the right
+width, an environment probe still sees the right context, and `ImageRenderer.cgImage` still returns a correctly sized
+image. Only the pixels are missing. That is what makes it dangerous — **two blank renders compare equal**, so a test
+that asserts two things look alike passes on two empty images, and only a test that asserts two things *differ* fails.
+Before P3-5 these suites lived in DSComponentsTests and ran under `swift test`: on a Mac whose Xcode compiles the
+catalog they passed, and on CI half of them failed for the environment while the other half passed on nothing.
+
+So they moved to the target that runs on the pinned simulator, behind `#if os(iOS)`, and each pixel test calls
+`DSRenderCapability.requireRasterizing()` before it reads anything. The probe renders two known token colours and
+reads them back: a process that can rasterize returns both **opaque** and returns them **different from each other**;
+a process whose catalog is missing returns transparent black for both. A blank raster therefore fails loudly, naming
+what the probe saw, instead of being scored as a passing comparison.
+
+What stayed in DSComponentsTests is everything that needs no rasterizer and is faster without one: the bindings (which
+token cell a variant takes), the geometry maths, the contracts against the specs, and the two suites that drive an
+`ImageRenderer` only to read an environment value back out of it (`descendantsReadThePublishedMaterial`,
+`DSCardRenderTests`) — they read no pixels, so a blank raster cannot fool them.
+
+`DSTextEqualWidthTests.boldTextReachesTheTextRoute` is the one pixel read that could not move: on macOS, which has no
+Dynamic Type, its ink measurement is the only evidence that a forced condition reaches the text route at all. It runs
+in both places and carries the probe as a condition trait, so a host that cannot rasterize **skips** it with a message
+naming the reason and the simulator command, rather than failing for the environment or measuring 0 on both sides.
 
 The examples themselves are `DSExamples` in `DSComponents` (`Sources/DSComponents/Examples`), the same values the
 `#Preview` blocks show, so a preview and its baseline cannot drift apart.
@@ -167,7 +205,14 @@ In this repository, build with `-derivedDataPath` outside the working tree: the 
 codesign fails on the provenance attribute (`tools/tokens/ARCHITECTURE.md` F44).
 
 `swift test` on the macOS host runs what does not need a simulator: the matrix, its names, the stale-baseline check and
-the equal-width suite.
+the equal-width suite. The pixel suites are compiled out there (`#if os(iOS)`), and the one pixel read that stays,
+`boldTextReachesTheTextRoute`, skips when the probe says the process cannot rasterize. To see that skip on a Mac whose
+Xcode *does* compile the catalog, hide the compiled catalog from the built bundle and run without rebuilding:
+
+```sh
+b=.build/out/Products/Debug/DSSnapshotTests.xctest/Contents/Resources/Prism_DSTokens.bundle/Contents/Resources/Assets.car
+mv "$b" "$b.disabled" && swift test --skip-build; mv "$b.disabled" "$b"
+```
 
 ## The equal-width tests (ADR-0021 §5)
 
@@ -177,6 +222,14 @@ an `ImageRenderer` pass — rather than comparing images, so the rule is checked
 "1111" and "0000" must lay out within **0.5 pt** (ADR-0021 rule 5) in every tabular role — `data`, `axis` through
 DSCore's text route, and `metric-xl`, `metric-lg`, `metric-md` set to `numeric: tabular` — at **Large**, at
 **accessibility3** and under **Bold Text**, for both brands. The suite also holds the negative cases (the default
-proportional metrics lay "1111" out narrower, so a role that quietly stopped being tabular fails) and a check that the
-three conditions really reach the text route, since macOS has no Dynamic Type and would otherwise pass three copies of
-the same render.
+proportional metrics lay "1111" out narrower, so a role that quietly stopped being tabular fails) and the check that
+the conditions really reach the text route, since the three would otherwise be three copies of the same render. That
+check is two tests, because its two halves need different things:
+
+| Test | Reads | Runs |
+|------|-------|------|
+| `theConditionsReachTheTextRoute` | the advance width at accessibility3 against Large | everywhere; macOS has no Dynamic Type, so there it asserts the two are equal and only the simulator exercises the widening |
+| `boldTextReachesTheTextRoute` | the **ink** of Bold Text against Large, since Onest's tabular figures keep their advance across weights and a width cannot show this one | everywhere the process can rasterize; elsewhere it skips (see "Why the pixel suites live here") |
+
+What `numeric: tabular` does to the *weight* — ADR-0021 §5's other half — is `DSTextFiguresRenderTests`, which is ink
+rather than width and therefore a simulator suite.

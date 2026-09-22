@@ -1,3 +1,4 @@
+#if os(iOS)
 import CoreGraphics
 import SwiftUI
 import Testing
@@ -14,6 +15,11 @@ import DSTokens
 /// The binding tests can say what the weight resolves to; only a render can say what reached the screen. Ink is
 /// measured as the distance of every pixel from the ground it sits on, summed: it does not care where a glyph sits,
 /// which is what lets a tabular run — the same digits at different advances — be compared with a proportional one.
+///
+/// **Why this is a simulator suite.** The ink and the ground are both token colours, and `swift test` copies
+/// Colors.xcassets uncompiled, so on the macOS host the digits and the page come back transparent, the ink measures
+/// 0 and the ratio is NaN (`DSRenderCapability`). `xcodebuild` compiles the catalog, so this runs with the snapshots
+/// on the pinned iPhone 17. What the weight resolves to is `DSTextBindingTests` on the host, in value space.
 @MainActor
 @Suite("The figures override renders at the role's weight (ADR-0021 §5)", .serialized)
 struct DSTextFiguresRenderTests {
@@ -66,6 +72,7 @@ struct DSTextFiguresRenderTests {
     /// The hero counter of `Text.yaml`'s motion block — `agent/SKILL.md` tells apps to set `numeric: tabular` on a
     /// number that updates while it is visible — carries the weight of the role it is.
     @Test func theTabularHeroRendersAtTheRolesWeight() throws {
+        try DSRenderCapability.requireRasterizing()
         let own = try #require(Self.ink(.auto), "the role's own figures did not render")
         let tabular = try #require(Self.ink(.tabular), "the tabular override did not render")
         #expect(own > 0 && tabular > 0, "the probe rendered no text")
@@ -77,3 +84,4 @@ struct DSTextFiguresRenderTests {
         )
     }
 }
+#endif
