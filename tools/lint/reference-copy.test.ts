@@ -40,10 +40,12 @@ describe("scanTree", () => {
   it("passes a clean tree: near misses, binary files, build output and the analyses are ignored", () => {
     const result = scanTree(join(fixtures, "clean"), entries);
     expect(result.findings).toEqual([]);
-    expect(result.filesScanned).toBe(11);
+    // The Apple showcase catalogue is one of them; the generated PrismShowcase.xcodeproj beside it
+    // and web/apps/vrt/.fixture carry hits on purpose and are neither scanned nor counted.
+    expect(result.filesScanned).toBe(12);
   });
 
-  it("reports every hit in a tampered tree, including the optional web/apps and gallery targets and the direction board", () => {
+  it("reports every hit in a tampered tree, including the optional web/apps, swift/Showcase and gallery targets and the direction board", () => {
     expect(scanTree(join(fixtures, "tampered"), entries).findings.map(formatFinding)).toEqual([
       'agent/SKILL.md:4: reference UI copy "Keeper\'s Log"',
       'agent/SKILL.md:5: reference UI copy "Zephyr Freight Hub"',
@@ -54,6 +56,8 @@ describe("scanTree", () => {
       'docs/research/fonts/harness-g1-dark.html:5: reference UI copy "Zephyr Freight Hub"',
       'gallery/README.md:1: reference UI copy "Orbitak"',
       'spec/components/Card.yaml:3: reference UI copy "Zephyr Freight Hub"',
+      'swift/Showcase/Sources/DSShowcase/Generated/DSShowcaseCatalog.swift:5: reference UI copy "Zephyr Freight Hub"',
+      'swift/Showcase/Sources/DSShowcase/Generated/DSShowcaseCatalog.swift:6: reference UI copy "Q-7781"',
       'swift/Sources/DSComponents/Card.swift:4: reference UI copy "Q-7781"',
       'swift/Tests/DSComponentsTests/CardTests.swift:4: reference UI copy "Q-7781"',
       'tokens/ref/typography.tokens.json:6: reference UI copy "Orbitak"',
@@ -223,23 +227,23 @@ describe("CLI", () => {
   it("exits 0 on a clean tree", () => {
     const run = runCli("--root", join(fixtures, "clean"), "--denylist", fixtureDenylist);
     expect(run.status).toBe(0);
-    expect(run.stdout).toContain("no reference UI copy in 11 files (7 denylist entries)");
+    expect(run.stdout).toContain("no reference UI copy in 12 files (7 denylist entries)");
   });
 
   it("uses the shipped denylist by default", () => {
     const run = runCli("--root", join(fixtures, "clean"));
     expect(run.status).toBe(0);
-    expect(run.stdout).toContain(`no reference UI copy in 11 files (${shipped.length} denylist entries)`);
+    expect(run.stdout).toContain(`no reference UI copy in 12 files (${shipped.length} denylist entries)`);
   });
 
   it("exits 1 on a tampered tree and prints path:line for each hit", () => {
     const run = runCli("--root", join(fixtures, "tampered"), "--denylist", fixtureDenylist);
     expect(run.status).toBe(1);
     const lines = run.stdout.trim().split("\n");
-    expect(lines).toHaveLength(15);
+    expect(lines).toHaveLength(17);
     expect(lines[0]).toBe('agent/SKILL.md:4: reference UI copy "Keeper\'s Log"');
     expect(lines.every((line) => /^[\w/.-]+:\d+: reference UI copy ".+"$/.test(line))).toBe(true);
-    expect(run.stderr).toContain("15 hits in 12 files");
+    expect(run.stderr).toContain("17 hits in 13 files");
   });
 
   it.each<[string[], string]>([
