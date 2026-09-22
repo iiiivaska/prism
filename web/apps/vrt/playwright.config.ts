@@ -14,14 +14,26 @@ import { runtimeProjects, viewports } from "./matrix.ts";
  * Baselines are renders of the CI container image `mcr.microsoft.com/playwright:v1.63.0-noble`
  * (keep equal to `@playwright/test` in the catalog) and live in `baselines/linux/`, committed. Rendering
  * differs by OS and GPU, so any other platform compares against its own `baselines/local-<platform>/`,
- * which .gitignore keeps out of the repository: on a Mac, `pnpm --filter @iiiivaska/prism-vrt test:update`
- * records a local set to develop against, and only CI records the Linux set (`.github/workflows/ci.yml`,
+ * which .gitignore keeps out of the repository: on a Mac, `pnpm vrt:update` records a local set to
+ * develop against, and only CI records the Linux set (`.github/workflows/ci.yml`,
  * job `web-vrt`, which uploads it as the `vrt-baselines` artifact when the folder is empty or when asked).
  *
- *   pnpm --filter @iiiivaska/prism-vrt test          compare
- *   pnpm --filter @iiiivaska/prism-vrt test:update   record (--update-snapshots=all)
+ *   pnpm vrt          compare                        (pnpm --filter @iiiivaska/prism-vrt test)
+ *   pnpm vrt:update   record, --update-snapshots=all (pnpm --filter @iiiivaska/prism-vrt run test:update)
  *
  * The recording script is `test:update`, not `update`: `pnpm update` is pnpm's own dependency update.
+ *
+ * After a change that deliberately moves what a story draws, the local set goes stale where the pixels
+ * moved, and `pnpm -r test` then fails on those screenshots until they are recorded again. Refresh the
+ * ones that moved rather than the whole set — `--update-snapshots=changed` rewrites only the baselines
+ * that differ, and `--grep` keeps the run to the stories that changed, so an unrelated drift elsewhere
+ * is not silently blessed:
+ *
+ *   pnpm --filter @iiiivaska/prism-vrt exec playwright test --grep "Card/glass-vehicle" --update-snapshots=changed
+ *
+ * The story title is `<Component>/<example-id>`, the same pair the baseline's path carries, and both
+ * viewport projects run unless `--project` narrows it further. Only `baselines/local-<platform>/` is
+ * touched on a Mac; `baselines/linux/` is CI's and no local run can reach it.
  */
 const platformFolder = process.platform === "linux" ? "linux" : `local-${process.platform}`;
 const port = 6007;

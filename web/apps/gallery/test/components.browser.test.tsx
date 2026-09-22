@@ -524,7 +524,7 @@ describe("Card", () => {
 
   it("joins the vivid unit to the caption with one separator, in the text and in the name (behavior 9)", async () => {
     // The separator is text inside the caption, not a margin, so the caption's own `textContent` carries
-    // the break — and so does the single accessible name `aria-labelledby` builds for a pressable card.
+    // the break — and so does the single name a pressable card is announced by.
     // With the margin it announced "Per batchkg"; `DSCardAppearance.unitSeparator` is the same string.
     const element = await mount(
       <Card variant="vivid" title="Average yield" caption="Per batch" hero={{ value: "2,450", unit: "kg" }} onAction={(): void => undefined} />,
@@ -532,12 +532,36 @@ describe("Card", () => {
     const card = find(element, ".ds-card");
     const caption = find(card, ".ds-card-caption");
     expect(caption.textContent).toBe(`Per batch${cardUnitSeparator}kg`);
-    const named = (card.getAttribute("aria-labelledby") ?? "")
-      .split(" ")
-      .map((id) => document.getElementById(id)?.textContent ?? "")
-      .join(", ");
+    const named = card.getAttribute("aria-label") ?? "";
     expect(named).toContain(`Per batch${cardUnitSeparator}kg`);
     expect(named).not.toContain("Per batchkg");
+  });
+
+  it("names a pressable card by what it draws, in reading order (Card.yaml accessibility.label)", async () => {
+    // The composition itself is `cardAccessibleName`, pinned over every spec example by the React suite
+    // and by `accessibleName` in swift/Tests/DSComponentsTests/DSCardBindingTests.swift. What only a
+    // browser can say is that the string is the name the platform computes — `aria-label` wins over the
+    // element's contents — and that each part of it is the text of the element the card draws, so the
+    // name cannot drift from the screen.
+    const spoken = (element: Element): string => element.querySelector("[data-ds-slot='text-label']")?.textContent ?? element.textContent ?? "";
+    const named = async (props: CardProps, parts: readonly string[]): Promise<void> => {
+      const card = find(await mount(<Card {...props} onAction={(): void => undefined} />), ".ds-card");
+      const drawn = parts.map((part) => spoken(find(card, part)));
+      expect(card.getAttribute("aria-label"), String(props.title)).toBe(drawn.join(", "));
+      expect(card.getAttribute("aria-labelledby")).toBeNull();
+      await unmount();
+    };
+    // Off vivid the hero hangs its own unit and speaks it as one element ("86.4 %").
+    await named(metric, [".ds-card-title", ".ds-card-caption", ".ds-card-hero"]);
+    // On vivid the unit is drawn on the caption line, so that is where the name says it, once.
+    await named({ variant: "vivid", title: "Average yield", caption: "Per batch", hero: { value: "2,450", unit: "kg" } }, [
+      ".ds-card-title",
+      ".ds-card-caption",
+      ".ds-card-hero",
+    ]);
+    // A part the card does not draw is left out with its separator.
+    await named({ title: "Queued", hero: { value: "37" } }, [".ds-card-title", ".ds-card-hero"]);
+    await named({ title: "Unit 4417", caption: "21.11.2026, 14:05:22" }, [".ds-card-title", ".ds-card-caption"]);
   });
 
   it("takes comp.card.radius.compact at compact density and comp.card.radius.regular at regular (behavior 13)", async () => {

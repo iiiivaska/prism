@@ -90,7 +90,9 @@ export { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from
 /** Card (spec/components/Card.yaml, specVersion 5): the corner-pinned card on a Surface. */
 export { Card, type CardProps } from "./card/Card.tsx";
 export {
+  cardAccessibleName,
   cardActions,
+  cardNameSeparator,
   cardSizes,
   cardUnitSeparator,
   cardVariants,
@@ -98,6 +100,7 @@ export {
   type CardActionKind,
   type CardCustomAction,
   type CardHero,
+  type CardName,
   type CardSize,
   type CardVariant,
 } from "./card/parts.ts";

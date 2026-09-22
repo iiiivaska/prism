@@ -316,27 +316,72 @@ struct DSCardBindingTests {
         }
     }
 
-    /// `accessibility.role` and `accessibility.label`: a pressable card is one element named by its title, caption
-    /// and hero value; a card that is not pressable is a group named by its title alone, so its caption and hero are
-    /// read once, as the elements they are.
-    @Test @MainActor func accessibleName() {
-        func parts(action: DSCardAction, hasAction: Bool) -> DSCardParts {
-            DSCardParts(
-                title: "Line output", caption: "Last 24 hours", variant: .solid, vivid: .default, icon: nil,
-                action: action, hasAction: hasAction, hero: DSCardHero("86", trailing: ".4", unit: "%"),
-                size: .regular, backdrop: .none, isSelected: false, hasContent: false, hasAside: false
-            )
+    /// `accessibility.role` and `accessibility.label`: a pressable card is one element named by what it draws — the
+    /// title, the caption line and the hero, in that reading order, joined by `DSCardName.separator` — and a card
+    /// that is not pressable is a group named by its title alone, so its caption and hero are read once, as the
+    /// elements they are.
+    ///
+    /// The strings below are the ones the React suite expects for the same cards
+    /// (`web/packages/react/test/card.test.tsx`, "the accessible name"), so the two stacks announce a card with one
+    /// voice: the vivid unit on the caption line where behavior 9 draws it and nowhere else, the trailing group
+    /// against the value with no gap, the unit's own characters, and a part the card does not draw left out with its
+    /// separator. Each case prints its name, so a run shows what this side composes.
+    @Test(arguments: DSCardNameCase.all) @MainActor func accessibleName(_ example: DSCardNameCase) {
+        let parts = example.parts(action: .open, hasAction: true)
+        #expect(parts.isPressable)
+        #expect(parts.accessibilityName.spoken(title: example.title, caption: example.caption) == example.name)
+        print("DSCardName \(example.id) | \(parts.accessibilityName.spoken(title: example.title, caption: example.caption))")
+    }
+
+    /// The parts of the name, before they are joined: the caption line carries the vivid unit (behavior 9) and the
+    /// hero then does not, which is the reading the two stacks had split over.
+    @Test @MainActor func theNamesPartsAreTheOnesTheCardDraws() {
+        let vivid = DSCardNameCase.vividUnit.parts(action: .open, hasAction: true)
+        #expect(vivid.captionLine == DSCardCaptionLine(caption: "Per batch", unit: "kg"))
+        #expect(vivid.captionLine?.spoken("Per batch") == "Per batch · kg")
+        #expect(vivid.spokenHero == "2,450")
+        // Off vivid the same hero hangs its own unit, so the hero speaks it and the caption line does not.
+        let solid = DSCardNameCase(id: "solid-unit", variant: .solid, title: "Average yield", caption: "Per batch", hero: DSCardHero("2,450", unit: "kg"), name: "")
+            .parts(action: .open, hasAction: true)
+        #expect(solid.captionLine == DSCardCaptionLine(caption: "Per batch", unit: nil))
+        #expect(solid.spokenHero == "2,450 kg")
+        // A vivid card with no caption of its own contributes the unit alone, with no leading separator.
+        let bare = DSCardNameCase(id: "vivid-unit-only", variant: .vivid, title: "Average yield", caption: nil, hero: DSCardHero("2,450", unit: "kg"), name: "")
+            .parts(action: .open, hasAction: true)
+        #expect(bare.captionLine?.spoken(nil) == "kg")
+        #expect(bare.accessibilityName.spoken(title: "Average yield") == "Average yield, kg, 2,450")
+        // An empty unit is no unit: it hangs nothing, joins nothing and names nothing (`unit !== ""` on the web).
+        let empty = DSCardNameCase(id: "empty-unit", variant: .vivid, title: "Queued", caption: nil, hero: DSCardHero("37", unit: ""), name: "")
+            .parts(action: .open, hasAction: true)
+        #expect(empty.heroUnit == nil)
+        #expect(empty.captionLine == nil)
+        #expect(empty.accessibilityName.spoken(title: "Queued") == "Queued, 37")
+    }
+
+    /// The separator, and the sentence in `Card.yaml` that fixes it for both stacks.
+    @Test @MainActor func theNameIsComposedTheWayTheSpecSaysItIs() throws {
+        #expect(DSCardName.separator == ", ")
+        let yaml = try DSComponentsContractTests.spec("Card")
+        #expect(yaml.contains("joined by a comma and a space"), "Card.yaml accessibility.label states the separator")
+        // The names the sentence writes out itself, so the rule and this table cannot drift apart. The rest are
+        // titles alone, which the sentence states as a rule rather than by example.
+        for id in DSCardNameCase.writtenOutInTheSpec {
+            let example = try #require(DSCardNameCase.all.first { $0.id == id })
+            #expect(yaml.contains(example.name), "Card.yaml accessibility.label writes out \(id)")
         }
-        let pressable = parts(action: .open, hasAction: true)
-        #expect(pressable.isPressable)
-        #expect(pressable.accessibilityName == DSCardName(title: "Line output", caption: "Last 24 hours", hero: "86.4 %"))
+    }
+
+    /// A card that is not pressable is a group named by its title alone, whatever left it one.
+    @Test @MainActor func aGroupIsNamedByItsTitleAlone() {
+        let example = DSCardNameCase.all[0]
         for group in [
-            parts(action: .open, hasAction: false),
-            parts(action: .none, hasAction: true),
-            parts(action: .custom(glyph: .actionPause, label: "Pause line 4"), hasAction: true),
+            example.parts(action: .open, hasAction: false),
+            example.parts(action: .none, hasAction: true),
+            example.parts(action: .custom(glyph: .actionPause, label: "Pause line 4"), hasAction: true),
         ] {
             #expect(!group.isPressable, "\(group.action)")
             #expect(group.accessibilityName == DSCardName(title: "Line output", caption: nil, hero: nil), "\(group.action)")
+            #expect(group.accessibilityName.spoken(title: example.title, caption: example.caption) == example.title, "\(group.action)")
         }
     }
 
@@ -391,12 +436,80 @@ struct DSCardBindingTests {
     }
 }
 
-/// What a Card publishes to its parts, read from a render: a glass card publishes the scheme's glass with its backdrop,
-/// raised under the fallback and inverse when selected under the fallback, so its title and caption cells follow
-/// (ADR-0022 rules 6 and 10).
+/// A card whose accessible name is known: the props, and the one string both stacks name it with
+/// (Card.yaml `accessibility.label`).
+///
+/// Every `examples[]` entry of the spec is here — each one is pressable, because spec/SCHEMA.md gives every example
+/// its handlers — plus `vivid-unit`, the vivid card with a hero unit that the P3-4 review round found the two stacks
+/// announcing differently. The React suite carries the same table for the same ids.
+///
+/// The title and the caption are written as `String`s and passed to `DSCardName.spoken(title:caption:)` as well as
+/// into the props: a `LocalizedStringKey` built from one of these strings, with no strings table to look it up in,
+/// resolves to that same string, so supplying it is the localization step and nothing more. The order, the
+/// separators, the unit's place and the parts that drop out are all the component's.
+nonisolated struct DSCardNameCase: Sendable, CustomStringConvertible {
+    let id: String
+    let variant: DSCardVariant
+    let title: String
+    let caption: String?
+    let hero: DSCardHero?
+    /// What `accessibility.label` composes for this card when it is pressable.
+    let name: String
+
+    var description: String { "\(id) → \(name)" }
+
+    @MainActor func parts(action: DSCardAction, hasAction: Bool) -> DSCardParts {
+        DSCardParts(
+            title: LocalizedStringKey(stringLiteral: title),
+            caption: caption.map { LocalizedStringKey(stringLiteral: $0) },
+            variant: variant, vivid: .default, icon: nil, action: action, hasAction: hasAction, hero: hero,
+            size: .regular, backdrop: variant == .glass ? .image : .none, isSelected: false,
+            hasContent: false, hasAside: false
+        )
+    }
+
+    static let all: [DSCardNameCase] = [
+        DSCardNameCase(
+            id: "solid-metric", variant: .solid, title: "Line output", caption: "Last 24 hours",
+            hero: DSCardHero("86", trailing: ".4", unit: "%"), name: "Line output, Last 24 hours, 86.4 %"
+        ),
+        DSCardNameCase(
+            id: "vivid-default-kpi", variant: .vivid, title: "Average yield", caption: "Dollars per batch",
+            hero: DSCardHero("$2,450"), name: "Average yield, Dollars per batch, $2,450"
+        ),
+        DSCardNameCase(id: "vivid-pair", variant: .vivid, title: "Average yield", caption: nil, hero: nil, name: "Average yield"),
+        DSCardNameCase(
+            id: "glass-vehicle", variant: .glass, title: "Unit 4417", caption: "21.11.2026, 14:05:22", hero: nil,
+            name: "Unit 4417, 21.11.2026, 14:05:22"
+        ),
+        DSCardNameCase(id: "glass-selected", variant: .glass, title: "Unit 4417", caption: nil, hero: nil, name: "Unit 4417"),
+        DSCardNameCase(id: "tinted-focus", variant: .tinted, title: "Sensor", caption: "Active", hero: nil, name: "Sensor, Active"),
+        DSCardNameCase(id: "compact", variant: .solid, title: "Queued", caption: nil, hero: DSCardHero("37"), name: "Queued, 37"),
+        DSCardNameCase(
+            id: "vivid-unit", variant: .vivid, title: "Average yield", caption: "Per batch",
+            hero: DSCardHero("2,450", unit: "kg"), name: "Average yield, Per batch · kg, 2,450"
+        ),
+    ]
+
+    /// The ids whose names `accessibility.label` writes out; the others are named by their title alone, which the
+    /// sentence states as a rule.
+    static let writtenOutInTheSpec = ["solid-metric", "vivid-default-kpi", "glass-vehicle", "compact", "vivid-unit"]
+
+    /// The vivid card with a hero unit: the one the review round found the two stacks announcing differently.
+    static let vividUnit = all[7]
+}
+
+/// What a Card publishes to its parts, read on the host out of an `ImageRenderer` pass that reads no pixels: a glass
+/// card publishes the scheme's glass with its backdrop, raised under the fallback and inverse when selected under the
+/// fallback, so its title and caption cells follow (ADR-0022 rules 6 and 10).
+///
+/// It is not the pixel suite of the same component: that one is `DSCardSimulatorPixelTests` in DSSnapshotTests, which
+/// reads colours back and therefore needs the compiled colour catalog only `xcodebuild` produces
+/// (swift/Tests/DSSnapshotTests/README.md, "Why the pixel suites live here"). This one reads an environment value, so
+/// a blank raster cannot fool it and it runs under `swift test`.
 @MainActor
-@Suite("Card renders (ADR-0022 §1.6, §3.1)", .serialized)
-struct DSCardRenderTests {
+@Suite("Card publishes its material, read on the host (ADR-0022 §1.6, §3.1)", .serialized)
+struct DSCardPublishedContextHostTests {
     static func published(_ card: (ContextReader) -> DSCard<ContextReader, EmptyView>, reduceTransparency: Bool = false, increasedContrast: Bool = false) -> DSSurfaceContext? {
         let probe = ContextProbe()
         let view = DSTheme { card(ContextReader(probe: probe)) }

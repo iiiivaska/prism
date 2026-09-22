@@ -217,10 +217,19 @@ haptics:
 accessibility:
   role: "button when pressable (`action: open` with an `onAction`), otherwise group"
   label: >-
-    a pressable card is one element, named by its title, caption and hero value ("Line output, last 24 hours,
-    86.4 percent"); a card that is not pressable is a group named by its title alone, and its caption and hero
-    are read as the elements they are, not a second time in the group's name. A custom disc carries
-    `actionLabel` as its own name.
+    a pressable card is one element, named by the header and the hero it draws, in that reading order and
+    joined by a comma and a space: the title, then the caption line, then the hero. The caption line is the
+    caption as it is drawn, so on vivid it carries the hero's unit after behavior 9's separator and a card with
+    no caption of its own contributes that unit alone. The hero is its value with its trailing group straight
+    after it and, off vivid, a space and the unit - the unit's own characters, not a word for them, because
+    nothing here maps `%` to "percent" and the assistive technology says it in the voice's own language. A part
+    the card does not draw is left out with its separator. The examples are therefore named
+    "Line output, Last 24 hours, 86.4 %", "Average yield, Dollars per batch, $2,450",
+    "Unit 4417, 21.11.2026, 14:05:22" and "Queued, 37"; a vivid card whose hero carries a unit is
+    "Average yield, Per batch · kg, 2,450"; and a card with neither caption nor hero is named by its title
+    alone. A card that is not pressable is a group named by its title alone, and its caption and hero are read
+    as the elements they are, not a second time in the group's name. A custom disc carries `actionLabel` as
+    its own name.
   traits: [button]
   keyboard: focusable when pressable, and a custom disc with an `onAction` is focusable on its own; Enter activates; the focus ring is color.border.focus at border.focus width, following the card radius
   dynamicType: title and caption scale and keep their two-line and one-line budgets (behavior 15), truncating with an ellipsis rather than pushing the hero out of the card; hero clamps at the accessibility3 size; the aside wraps below the hero when both cannot fit
@@ -279,5 +288,11 @@ notes:
     comment. specVersion 5 settles the third round, three numbers each stack had chosen for itself: the
     separator that joins the vivid unit to the caption (behavior 9), the press magnitude Card shares with
     every other Prism control (behavior 16), and the minimum gap between the rows of the anatomy
-    (`root.gap`, behavior 17).
+    (`root.gap`, behavior 17). `accessibility.label` was rewritten under that same specVersion 5, not a sixth:
+    the one sentence named the parts of a pressable card's name but not how they are composed, and the two
+    stacks had read it differently - Apple joined them with a comma while the web left the join to
+    `aria-labelledby`, which concatenates with a space, and the vivid unit was read after the hero on Apple
+    and on the caption line on the web. The rule now states the order, the separator, where the unit sits per
+    material and what an absent part does, with the name of every example written out; no binding, prop or
+    behavior changed with it.
   references: [docs/adr/0009-materials-in-layers.md, docs/adr/0015-references-inspiration-only.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

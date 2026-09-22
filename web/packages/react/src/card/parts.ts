@@ -1,8 +1,8 @@
 /**
  * The enums of spec/components/Card.yaml (specVersion 5) and the choices Card makes in React: which
  * Surface material a variant renders, which `root.radius` cell a card takes, the line budget of the
- * header block, and the separator that joins the vivid unit to the caption. test/card.test.tsx reads
- * the spec and checks them.
+ * header block, the separator that joins the vivid unit to the caption, and the composition of a
+ * card's accessible name. test/card.test.tsx reads the spec and checks them.
  */
 import type { Density } from "@iiiivaska/prism-tokens";
 import type { IconName } from "../generated/icons.ts";
@@ -76,12 +76,76 @@ export const cardCaptionLines = 1;
  * space, so a caption of `Dollars per batch` with a unit of `kg` is the one line `Dollars per batch · kg`.
  *
  * It is text inside the caption element, never a margin between two boxes: the caption's own text content carries
- * the break, and so does the single accessible name a pressable card builds out of title, caption and hero
- * (`aria-labelledby`). Without it the caption read "Dollars per batchkg" to a screen reader while the pixels looked
+ * the break, and so does the caption part of the single name a pressable card carries (`cardCaptionLine`, which
+ * composes both). Without it the caption read "Dollars per batchkg" to a screen reader while the pixels looked
  * right. Apple writes the same string as `DSCardAppearance.unitSeparator`; a card with no caption shows the unit
  * alone, with no leading separator.
  */
 export const cardUnitSeparator = " · ";
+
+/**
+ * Card.yaml `accessibility.label`: what joins the parts of a pressable card's name — a comma and a space,
+ * the pause an assistive technology reads between them. Apple writes the same string
+ * (`DSCardName.separator`, `swift/Sources/DSComponents/Card/DSCard.swift`).
+ */
+export const cardNameSeparator = ", ";
+
+/**
+ * The caption line the header draws: the caption, and on vivid the hero's unit joined to it by
+ * `cardUnitSeparator` (behavior 9), or that unit alone when the card has no caption of its own. An empty
+ * string is no caption and no unit.
+ *
+ * One function for the line that is drawn and the line the name reads, so the separator lands in both
+ * (`DSCardCaptionLine` on Apple).
+ */
+export function cardCaptionLine(caption: string | undefined, unit: string | undefined, onVivid: boolean): string | undefined {
+  const text = caption === undefined || caption === "" ? undefined : caption;
+  const joined = onVivid && unit !== undefined && unit !== "" ? unit : undefined;
+  if (joined === undefined) return text;
+  return text === undefined ? joined : `${text}${cardUnitSeparator}${joined}`;
+}
+
+/**
+ * The hero as `Text` speaks a metric: the value with its trailing group straight after it and, off vivid, a
+ * space and the unit ("86.4 %") — the string Text already gives that element. On vivid the unit is on the
+ * caption line instead (behavior 9), so the name does not say it a second time. `DSCardParts.spokenHero`
+ * composes the same string.
+ */
+export function cardSpokenHero(hero: CardHero | undefined, onVivid: boolean): string | undefined {
+  if (hero === undefined) return undefined;
+  const value = `${hero.value}${hero.trailing ?? ""}`;
+  if (onVivid || hero.unit === undefined || hero.unit === "") return value;
+  return `${value} ${hero.unit}`;
+}
+
+/** What a card's accessible name is composed of: the props it draws its header and hero from. */
+export interface CardName {
+  readonly variant: CardVariant;
+  readonly title: string;
+  readonly caption?: string;
+  readonly hero?: CardHero;
+  /** A pressable card is one element and carries all three parts; a group is named by its title alone. */
+  readonly pressable: boolean;
+}
+
+/**
+ * Card.yaml `accessibility.label`, as one string: the title, the caption line and the hero, in that reading
+ * order, joined by `cardNameSeparator`, with a part the card does not draw left out along with its
+ * separator. A card that is not pressable is a group named by its title alone, because its caption and hero
+ * are then elements of their own and reading them into the group's name would say them twice.
+ *
+ * It is written into `aria-label` rather than gathered from the parts with `aria-labelledby`: that attribute
+ * concatenates the referenced elements with a space, which is not this rule and not what
+ * `DSCardName.spoken(title:caption:)` composes on Apple. The same props therefore name a card the same way
+ * on both stacks, character for character.
+ */
+export function cardAccessibleName(card: CardName): string {
+  const onVivid = card.variant === "vivid";
+  const parts = card.pressable
+    ? [card.title, cardCaptionLine(card.caption, card.hero?.unit, onVivid), cardSpokenHero(card.hero, onVivid)]
+    : [card.title];
+  return parts.filter((part) => part !== undefined && part !== "").join(cardNameSeparator);
+}
 
 /** Card.yaml `size`. */
 export const cardSizes = ["compact", "regular", "large"] as const;

@@ -14,11 +14,12 @@
  *   selected glass card then publishes `inverse` (ADR-0022 §1.6). Title, caption and action colors follow
  *   the material the Surface publishes, and on the scheme's glass its backdrop kind (behavior 12).
  * - `action: open` with an `onAction` makes the whole card one button: React Aria's `Pressable` gives it
- *   press, Enter and Space, its label is title, caption and hero value (`aria-labelledby`), and the
- *   nav.open glyph shows on hover or focus under pointer and always under touch. Without a handler there
- *   is nothing to press, so the card stays a group named by its title alone, its caption and hero read
- *   as the elements they are: "role: button when pressable (`action: open` with an `onAction`),
- *   otherwise group" (Card.yaml accessibility), the same rule as
+ *   press, Enter and Space, its name is the title, the caption line and the hero joined by
+ *   `cardNameSeparator` (`cardAccessibleName`, written into `aria-label` so the string is the rule's and not
+ *   the browser's space-joined reading of `aria-labelledby`), and the nav.open glyph shows on hover or focus
+ *   under pointer and always under touch. Without a handler there is nothing to press, so the card stays a
+ *   group named by its title alone, its caption and hero read as the elements they are: "role: button when
+ *   pressable (`action: open` with an `onAction`), otherwise group" (Card.yaml accessibility), the same rule as
  *   `DSCardAppearance.isPressable(_:hasAction:)`. `custom` renders one solid circular button carrying its
  *   own glyph and its own name, the only pressable part. `none` is a group.
  * - The open glyph is the cue that the card opens, not decoration (Card.yaml behavior 4, specVersion 3),
@@ -34,7 +35,8 @@
  * - V3 (behavior 9, ADR-0030 §8): on vivid the hero holds only its value and trailing group; a `unit`
  *   joins the caption line in the header block, `cardUnitSeparator` between them — text inside the
  *   caption, the same string `DSCardAppearance.unitSeparator` holds, so the caption's own text content
- *   carries the break and so does the name a pressable card builds from it. The icon ring is not drawn.
+ *   carries the break and so does the caption part of the name (`cardCaptionLine` composes both, and the
+ *   hero then drops the unit it no longer carries). The icon ring is not drawn.
  * - The header geometry is behavior 14, one set of numbers for both stacks: the affordance takes one
  *   `action.size` box whichever it is, with the open glyph centred in it, and the heading is separated
  *   from it by the header's `gap` (`header.gap`). On vivid the heading reserves that block even when no
@@ -51,7 +53,6 @@
 import {
   useCallback,
   useEffect,
-  useId,
   useLayoutEffect,
   useState,
   type HTMLAttributes,
@@ -68,7 +69,9 @@ import { Surface } from "../surface/Surface.tsx";
 import type { BackdropKind, VividSlot } from "../surface/resolve.ts";
 import { Text } from "../text/Text.tsx";
 import {
+  cardAccessibleName,
   cardActionKind,
+  cardCaptionLine,
   cardCaptionLines,
   cardTitleLines,
   cardUnitSeparator,
@@ -185,9 +188,6 @@ export function Card(props: CardProps): ReactNode {
 
   const [isPressed, setPressed] = useState(false);
   const [isHovered, setHovered] = useState(false);
-  const titleId = useId();
-  const captionId = useId();
-  const heroId = useId();
 
   const onVivid = variant === "vivid";
   const kind = cardActionKind(action);
@@ -215,11 +215,15 @@ export function Card(props: CardProps): ReactNode {
   }, [onVivid, icon, unitInCaption, kind, hasHandler]);
 
   const hasCaptionText = caption !== undefined && caption !== "";
-  const hasCaption = hasCaptionText || unitInCaption;
+  const captionLine = cardCaptionLine(caption, hero?.unit, onVivid);
+  const hasCaption = captionLine !== undefined;
   // Behavior 2 and 17: the body slot is drawn only when the card was given one, so an empty card keeps one
   // `root.gap` between its header and its footer instead of two around a box of nothing.
   const hasBody = children !== undefined && children !== null && children !== false;
-  const labelledBy = [titleId, hasCaption ? captionId : null, hero === undefined ? null : heroId].filter((id) => id !== null).join(" ");
+  // Card.yaml `accessibility.label`: the name is composed here, not gathered by `aria-labelledby`, which
+  // would concatenate the title, the caption line and the hero with a space instead of the comma the rule
+  // asks for and Apple writes (`DSCardName`). A group takes its title alone.
+  const name = cardAccessibleName({ variant, title, caption, hero, pressable });
 
   const card = (
     <Surface
@@ -233,7 +237,7 @@ export function Card(props: CardProps): ReactNode {
       backdrop={backdrop}
       selected={isSelected}
       role={pressable ? "button" : "group"}
-      aria-labelledby={pressable ? labelledBy : titleId}
+      aria-label={name}
       data-ds-variant={variant}
       data-ds-card-radius={radiusCell}
       data-ds-action={kind}
@@ -256,16 +260,16 @@ export function Card(props: CardProps): ReactNode {
               <Glyph name={icon} slot="card-icon" />
             </span>
           ) : null}
-          <Text role="headline" id={titleId} className="ds-card-title" truncation="ellipsis" maxLines={cardTitleLines}>
+          <Text role="headline" className="ds-card-title" truncation="ellipsis" maxLines={cardTitleLines}>
             {title}
           </Text>
           {hasCaption ? (
-            <Text role="caption" tone="secondary" id={captionId} className="ds-card-caption" truncation="ellipsis" maxLines={cardCaptionLines}>
+            <Text role="caption" tone="secondary" className="ds-card-caption" truncation="ellipsis" maxLines={cardCaptionLines}>
               {caption}
               {unitInCaption ? (
                 // Behavior 9: the separator is part of the caption's text, so the line reads "Per batch · kg"
-                // wherever the caption is read — on screen, in `textContent`, and in the one name
-                // `aria-labelledby` builds for a pressable card.
+                // wherever the caption is read — on screen, in `textContent`, and in the one name a pressable
+                // card carries. What this element reads is `cardCaptionLine`, the name's own caption part.
                 <span data-ds-slot="card-caption-unit">{hasCaptionText ? `${cardUnitSeparator}${hero?.unit ?? ""}` : hero?.unit}</span>
               ) : null}
             </Text>
@@ -301,7 +305,6 @@ export function Card(props: CardProps): ReactNode {
               tone={hero.tone ?? "primary"}
               trailing={hero.trailing}
               unit={onVivid ? undefined : hero.unit}
-              id={heroId}
               className="ds-card-hero"
             >
               {hero.value}
