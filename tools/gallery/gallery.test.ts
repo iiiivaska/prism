@@ -259,11 +259,12 @@ describe('the repository', () => {
   test('every image is of the rule, every pair is complete, and nothing is wrong', () => {
     expect(gallery.diagnostics).toEqual([]);
     expect(gallery.counts.missing).toBe(0);
-    // P3-3's 268 SwiftUI snapshots and P3-4's 220 web screenshots, paired.
-    expect(gallery.counts.images).toBe(488);
+    // P3-3's 268 SwiftUI snapshots and P3-4's 220 web screenshots, plus P4-1's Divider (52 SwiftUI, 48 web):
+    // 320 and 268, paired. Each wave-1 component moves this number in the commit that lands its baselines.
+    expect(gallery.counts.images).toBe(588);
     expect(gallery.counts.paired).toBe(gallery.counts.cells);
     expect(gallery.platforms).toEqual(['ios', 'web-desktop', 'web-touch']);
-    expect(gallery.components.filter((c) => c.recorded.length > 0).map((c) => c.name)).toEqual(['Button', 'Surface', 'Text', 'Card']);
+    expect(gallery.components.filter((c) => c.recorded.length > 0).map((c) => c.name)).toEqual(['Button', 'Divider', 'Surface', 'Text', 'Card']);
     expect(gallery.components).toHaveLength(57);
     expect(gallery.patterns).toEqual(['AdaptiveShell', 'DashboardGrid', 'DetailScreen']);
   });
