@@ -27,13 +27,21 @@
     "licenses:check": "pnpm --filter @iiiivaska/prism-tools licenses:check",
     "licenses:notices": "pnpm --filter @iiiivaska/prism-tools licenses:notices",
     "parity:report": "pnpm --filter @iiiivaska/prism-tools parity:report",
+    "gallery:build": "pnpm --filter @iiiivaska/prism-tools gallery:build",
+    "release:plan": "pnpm --filter @iiiivaska/prism-tools release:plan",
+    "release:stamp": "pnpm --filter @iiiivaska/prism-tools release:stamp",
+    "release:check": "pnpm --filter @iiiivaska/prism-tools release:check",
+    "release:pack": "pnpm --filter @iiiivaska/prism-tools release:pack",
+    "fixtures:web": "pnpm --filter @iiiivaska/prism-tools fixtures:web",
+    "fixtures:apple": "pnpm --filter @iiiivaska/prism-tools fixtures:apple",
     "gallery": "pnpm --filter @iiiivaska/prism-gallery dev",
     "stories": "pnpm --filter @iiiivaska/prism-gallery stories",
     "vrt": "pnpm --filter @iiiivaska/prism-vrt test",
     "vrt:update": "pnpm --filter @iiiivaska/prism-vrt run test:update",
-    "release": "changeset version && pnpm install --lockfile-only && pnpm -r publish --access restricted"
+    "release:version": "changeset version && pnpm release:stamp && pnpm icons:build && pnpm install --lockfile-only"
   },
   "devDependencies": {
+    "@changesets/cli": "catalog:",
     "@eslint/js": "catalog:",
     "eslint": "catalog:",
     "globals": "catalog:",

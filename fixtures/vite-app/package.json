@@ -1,0 +1,21 @@
+{
+  "name": "prism-consumer-vite",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "A Vite consumer of Prism, installed from the packed tarballs (roadmap P3-6). tools/release/fixture-web.ts rewrites the two file: specifiers to the tarballs it packs.",
+  "scripts": {
+    "build": "vite build",
+    "smoke": "node smoke.mjs"
+  },
+  "dependencies": {
+    "@iiiivaska/prism-react": "file:./prism-react.tgz",
+    "@iiiivaska/prism-tokens": "file:./prism-tokens.tgz",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0",
+    "vite": "^8.3.0"
+  }
+}

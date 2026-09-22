@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Build and check tooling: DTCG schema validation, token build (Style Dictionary 5 + resolver driver), Terrazzo lint and orthogonality, source normalizer, contrast, token diff, font check, spec validation, icon registry validation, parity report, license gate, notices, literal-values guard, reference-copy guard",
+  "description": "Build and check tooling: DTCG schema validation, token build (Style Dictionary 5 + resolver driver), Terrazzo lint and orthogonality, source normalizer, contrast, token diff, font check, spec validation, icon registry validation, parity report, gallery pairing, license gate, notices, literal-values guard, reference-copy guard",
   "engines": { "node": ">=24" },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json",
@@ -23,6 +23,13 @@
     "icons:validate": "node icons/validate.ts",
     "icons:build": "node icons/validate.ts --write",
     "parity:report": "node parity/report.ts",
+    "gallery:build": "node gallery/build.ts",
+    "release:plan": "node release/stamp.ts --plan",
+    "release:stamp": "node release/stamp.ts",
+    "release:check": "node release/stamp.ts --check",
+    "release:pack": "node release/pack.ts",
+    "fixtures:web": "node release/fixture-web.ts",
+    "fixtures:apple": "node release/fixture-apple.ts",
     "licenses:check": "node licenses/check.ts",
     "licenses:notices": "node licenses/notices.ts"
   },

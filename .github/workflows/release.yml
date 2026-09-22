@@ -1,0 +1,343 @@
+name: release
+
+# Roadmap P3-6; ADR-0014 (one tag = one version, SPM by tag, npm on GitHub Packages), ADR-0018
+# (repository and package visibility), ADR-0028 (MIT, a LICENSE in every package), ADR-0024 §14 (the
+# pre-1.0 bump policy), critic C-15 (the version authority).
+#
+# Two entrances, and only one of them can release:
+#
+#   workflow_dispatch  the release. `confirm` must be typed as the exact version
+#                      `pnpm release:plan` computes from the pending changesets, and `publish` must be
+#                      turned on; with `publish` off the run is the full rehearsal — every gate, both
+#                      stacks built, the tarballs packed and audited, `--dry-run` publishes — and
+#                      nothing leaves the runner.
+#   push of a v* tag   verification only. It re-runs every gate against the tag and proves the tree at
+#                      the tag is stamped and would ship what the documents promise. It publishes
+#                      nothing and creates nothing: a stray tag push cannot release, and the tag this
+#                      workflow creates itself would not re-trigger it anyway (a GITHUB_TOKEN push
+#                      never triggers a workflow).
+#
+# Secrets and write permissions live in one place: the `release` job, behind the `release`
+# environment. `plan`, `verify` and `package` run with `contents: read` and no secret at all, so the
+# whole rehearsal is runnable by anyone who can dispatch a workflow. GITHUB_TOKEN is enough for both
+# side effects — `packages: write` publishes to GitHub Packages under the same owner, `contents: write`
+# pushes the release commit and the tag — so no repository secret has to exist for a release to work.
+#
+# Before the first real run, the owner still owes three things; `release` fails fast on each:
+#   * the ADR-0015 legal checkpoint (ADR-0028 rule 5), recorded as the `LEGAL_CHECKPOINT` variable;
+#   * the GitHub Packages visibility decision of ADR-0018 ("private, free" re-checked here), recorded
+#     as `PACKAGE_VISIBILITY`;
+#   * the `release` environment itself, with the owner as a required reviewer.
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Version to release, exactly as `pnpm release:plan` prints it (e.g. 0.2.0)'
+        required: true
+        type: string
+      publish:
+        description: 'Publish to GitHub Packages and create the SPM tag. Off = rehearsal.'
+        type: boolean
+        default: false
+
+# Everything a release does to the world happens in the `release` job, which raises these itself.
+permissions:
+  contents: read
+
+concurrency:
+  # One release at a time, and never cancel one half-way: a cancelled run could leave a tag without
+  # packages.
+  group: release
+  cancel-in-progress: false
+
+env:
+  # The Xcode the SwiftUI baselines were recorded with (.github/workflows/ci.yml); a release verifies
+  # the same tree the same way.
+  XCODE_VERSION: '26.6'
+
+jobs:
+  plan:
+    name: Plan the release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.plan.outputs.version }}
+      tag: ${{ steps.plan.outputs.tag }}
+      publish: ${{ steps.plan.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # the release notes and tokens:diff read the history and the last tag
+      - uses: pnpm/setup@v2.1.0
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      - name: Resolve the version this run is about
+        id: plan
+        shell: bash
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          CONFIRM: ${{ inputs.confirm }}
+          PUBLISH: ${{ inputs.publish }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = push ]; then
+            # A tag names a release that already happened: the tree must already be stamped to it.
+            version="${REF_NAME#v}"
+            stamped="$(cat VERSION)"
+            if [ "$version" != "$stamped" ]; then
+              echo "::error::the tag $REF_NAME does not match VERSION ($stamped): the tag does not point at a release commit"
+              exit 1
+            fi
+            publish=false
+          else
+            # A dispatch names a release that has not happened yet: what the pending changesets
+            # compute must be what the operator typed. `--plan` prints `next <version>`.
+            next="$(node tools/release/stamp.ts --plan | awk '$1 == "next" { print $2 }')"
+            if [ -z "$next" ] || [ "$next" = "(nothing" ]; then
+              echo "::error::no changeset is pending: there is nothing to release. Add one with \`pnpm changeset\`."
+              exit 1
+            fi
+            if [ "$next" != "$CONFIRM" ]; then
+              echo "::error::the pending changesets produce $next, but this run was confirmed for '$CONFIRM'. Re-read \`pnpm release:plan\` and dispatch again."
+              exit 1
+            fi
+            version="$next"
+            publish="$PUBLISH"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Release plan"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| event | \`$EVENT\` |"
+            echo "| version | \`$version\` |"
+            echo "| tag | \`v$version\` |"
+            echo "| publishes | \`$publish\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  verify:
+    name: Contracts, web and tools
+    runs-on: ubuntu-latest
+    needs: plan
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: pnpm/setup@v2.1.0
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      # The same gates ci.yml runs, ungated here: at a release every tool exists by definition, and a
+      # skipped check is not a check.
+      - run: pnpm tokens:validate
+      - run: pnpm lint:literals
+      - run: pnpm lint:reference-copy
+      - run: pnpm tokens:lint
+      - run: pnpm tokens:normalize:check
+      - name: Tokens rebuild to the committed bytes
+        run: |
+          set -euo pipefail
+          pnpm tokens:build
+          generated="swift/Sources/DSTokens/Generated swift/Sources/DSTokens/Resources/Colors.xcassets swift/Sources/DSTokens/Resources/Fonts swift/Tests/DSTokensTests/Generated web/packages/tokens/src/generated tokens/export"
+          if [ -n "$(git status --porcelain -- $generated)" ]; then
+            git status --short -- $generated
+            echo "::error::generated token output is stale; a release never regenerates silently"
+            exit 1
+          fi
+      - run: pnpm contrast:check
+      - run: pnpm fonts:check
+      - run: pnpm spec:validate
+      - run: pnpm icons:validate
+      - run: pnpm licenses:check
+      - run: pnpm licenses:notices --check
+      - run: pnpm parity:report --fail-on-lag
+      - name: Every copy of the version agrees with the fixed group (critic C-15)
+        # Which question can be asked here depends on the entrance, because `changeset version` has
+        # not run yet — the `release` job runs it, at the end of this workflow.
+        #   push      the tag names a release that already happened, so the tree is already stamped
+        #             to it and the exact version is a fair thing to demand.
+        #   dispatch  `plan` computed what the *pending* changesets will produce, while this checkout
+        #             still carries the current version. Demanding it here fails every dispatch. What
+        #             is true now is that the tree is self-consistent, which is what plain `--check`
+        #             proves; the exact version is asserted after the stamp, in `release`.
+        env:
+          EVENT: ${{ github.event_name }}
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT" = push ]; then
+            node tools/release/stamp.ts --check --version "$VERSION"
+          else
+            node tools/release/stamp.ts --check
+          fi
+      - run: pnpm -r build
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm -r --filter '!@iiiivaska/prism-vrt' test
+
+  package:
+    name: Pack and rehearse the publish
+    runs-on: ubuntu-latest
+    needs: [plan, verify]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/setup@v2.1.0
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      - run: pnpm -r build
+      - name: What each package would ship (ADR-0028, ADR-0021 §11, critic C-14)
+        # The file-list audit, and the only step here that knows what ships: `pack.ts` packs each
+        # package with pnpm, reads the tarball back and holds it against the documents — LICENSE and
+        # `"license": "MIT"`, no `workspace:`/`catalog:` specifier left for a consumer's installer,
+        # every `exports` subpath and `style` resolving to a file that is really in there, `spec/`
+        # where the skill sends agents, and every brand's fonts. `--list` prints the files.
+        run: node tools/release/pack.ts --list --out "$RUNNER_TEMP/tarballs"
+      - name: The publish path itself runs, and uploads nothing
+        # A smoke test of the command the `release` job runs for real, minus the upload, and it needs
+        # no token: the recursive filter selects exactly the published packages and each resolves its
+        # `publishConfig.registry`. It is not a content check — pnpm's dry run packs nothing and
+        # prints no file list; that is the step above.
+        run: pnpm -r publish --dry-run --no-git-checks
+      - name: The Vite consumer fixture builds against the packed tarballs
+        run: |
+          pnpm --filter @iiiivaska/prism-gallery exec playwright install --with-deps chromium
+          node tools/release/fixture-web.ts --tarballs "$RUNNER_TEMP/tarballs" --work "$RUNNER_TEMP/vite-fixture"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: tarballs
+          path: ${{ runner.temp }}/tarballs
+          if-no-files-found: error
+
+  apple:
+    name: Swift package and the SwiftUI consumer fixture
+    runs-on: macos-26
+    needs: [plan, verify]
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode ${{ env.XCODE_VERSION }}
+        run: |
+          set -euo pipefail
+          app="/Applications/Xcode_${XCODE_VERSION}.app"
+          if [ ! -d "$app" ]; then
+            echo "::error::Xcode $XCODE_VERSION is not installed on this runner image"
+            exit 1
+          fi
+          app="$(cd "$app" && pwd -P)"
+          echo "DEVELOPER_DIR=$app/Contents/Developer" >> "$GITHUB_ENV"
+      - run: swift build && swift test
+      - run: xcodebuild build -scheme Prism-Package -destination 'generic/platform=iOS Simulator'
+      - run: xcodebuild build -scheme Prism-Package -destination 'generic/platform=watchOS Simulator'
+      - name: The SwiftUI consumer fixture builds against the package
+        # `--package local` here: a released tag is not fetchable until the tag exists, and the tree at
+        # this commit is what the tag will point at. `--package tag` is the rehearsal a person runs
+        # against a scratch clone; after a real release the same command run against the pushed tag is the
+        # check that a consumer can resolve it (there is no separate job for that yet).
+        run: node tools/release/fixture-apple.ts --package local --work "$RUNNER_TEMP/apple-fixture"
+
+  release:
+    name: Publish and tag
+    runs-on: ubuntu-latest
+    needs: [plan, verify, package, apple]
+    # The only job with side effects, and it runs only from a dispatch that turned `publish` on. A tag
+    # push can never reach it.
+    if: github.event_name == 'workflow_dispatch' && needs.plan.outputs.publish == 'true'
+    # Owner-configured: required reviewer, and the home of anything secret a future registry needs.
+    environment:
+      name: release
+      url: https://github.com/${{ github.repository }}/pkgs/npm/prism-tokens
+    permissions:
+      contents: write # the release commit, the SPM tag and the GitHub release
+      packages: write # GitHub Packages, under the same owner as this repository
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}
+      - uses: pnpm/setup@v2.1.0
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      - name: The owner's two open decisions (ADR-0015 legal checkpoint, ADR-0018 visibility)
+        env:
+          LEGAL_CHECKPOINT: ${{ vars.LEGAL_CHECKPOINT }}
+          PACKAGE_VISIBILITY: ${{ vars.PACKAGE_VISIBILITY }}
+        run: |
+          set -euo pipefail
+          if [ "${LEGAL_CHECKPOINT:-}" != "cleared" ]; then
+            echo "::error::the ADR-0015 legal checkpoint gates the first package release (ADR-0028 rule 5). Set the repository variable LEGAL_CHECKPOINT to 'cleared' once the owner has recorded it."
+            exit 1
+          fi
+          case "${PACKAGE_VISIBILITY:-}" in
+            private|public) : ;;
+            *)
+              echo "::error::ADR-0018 leaves the GitHub Packages visibility to this ticket. Set the repository variable PACKAGE_VISIBILITY to 'private' or 'public' and record the choice in ADR-0018."
+              exit 1
+              ;;
+          esac
+      - name: Identify the release commit as this workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+      - name: Version, stamp and regenerate (critic C-15)
+        # `changeset version` computes the number over the fixed group and writes the three published
+        # manifests; `release:stamp` records it in VERSION and writes every derived copy from there;
+        # `icons:build` follows the registry version into the generated constants.
+        run: pnpm release:version
+      - name: The tree is stamped to exactly the version this run confirmed
+        run: node tools/release/stamp.ts --check --version ${{ needs.plan.outputs.version }}
+      - name: Rebuild and re-verify at the release version
+        # The stamp touched generated inputs (the icon registry's version), so the generated outputs
+        # are checked again rather than the git status: `icons:validate` and `tokens:check` fail on
+        # anything the stamp left stale, and the packs are re-audited at the new version.
+        run: |
+          set -euo pipefail
+          pnpm -r build
+          pnpm icons:validate
+          pnpm tokens:check
+          pnpm licenses:check
+          node tools/release/pack.ts
+      - name: The release commit and the SPM tag
+        # One tag for both stacks (ADR-0014): SwiftPM consumers resolve it, and the GitHub release
+        # hangs off it. It is created before the publish so the packages can never name a commit that
+        # does not exist.
+        env:
+          TAG: ${{ needs.plan.outputs.tag }}
+          VERSION: ${{ needs.plan.outputs.version }}
+        run: |
+          set -euo pipefail
+          git add -A
+          git commit -m "Release $VERSION"
+          git tag -a "$TAG" -m "Prism $VERSION"
+          git push origin HEAD:"${{ github.ref_name }}"
+          git push origin "$TAG"
+      - name: Publish to GitHub Packages
+        # `publishConfig.registry` in each manifest points at npm.pkg.github.com, and .npmrc reads
+        # NODE_AUTH_TOKEN; GITHUB_TOKEN with `packages: write` is enough under the same owner.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm -r publish --no-git-checks --access ${{ vars.PACKAGE_VISIBILITY == 'public' && 'public' || 'restricted' }}
+      - name: The GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.plan.outputs.tag }}
+        run: gh release create "$TAG" --title "Prism ${{ needs.plan.outputs.version }}" --generate-notes
+      - name: What a consumer now does
+        run: |
+          {
+            echo "### Released ${{ needs.plan.outputs.version }}"
+            echo
+            echo "* Swift: \`.package(url: \"https://github.com/${{ github.repository }}\", .upToNextMinor(from: \"${{ needs.plan.outputs.version }}\"))\`"
+            echo "* Web: \`@iiiivaska/prism-tokens\`, \`@iiiivaska/prism-react\`, \`@iiiivaska/prism-charts\` at \`${{ needs.plan.outputs.version }}\` on GitHub Packages (\`${{ vars.PACKAGE_VISIBILITY }}\`)"
+          } >> "$GITHUB_STEP_SUMMARY"
