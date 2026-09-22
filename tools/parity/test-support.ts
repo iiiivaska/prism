@@ -1,11 +1,17 @@
 // Fixture harness for parity:report, the same shape tools/spec uses. Every `fixtures/<case>/` tree is
 // an overlay of the repository: it holds only the spec or manifest files its defect touches, plus
 // `fixture.json` with the description, the paths it removes, the (code, file) pairs the run must
-// report and the cells that must lag. Everything else — the four slice specs, the three untouched
-// manifests — is the repository's, so a case reads as a diff.
+// report and the cells that must lag. The specs are the repository's, so a case reads as a diff.
+//
+// The manifests are not: a case is read against four empty tables (`emptyManifests`), and a manifest
+// the case does not write is one it says nothing about. Were the repository's own manifests to leak
+// in, every component the stacks implement would become a second, unasked-for input — an orphan in a
+// tree that has only `Sample.yaml`, or an extra lagging cell in `lagging` — and each new component
+// wave would rewrite expectations that are about a defect, not about what is shipped.
 import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { fsReader, overlayReader, REPO_ROOT, type Diagnostic, type SourceReader } from '../tokens/api.ts';
+import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic, type SourceReader } from '../tokens/api.ts';
+import { MANIFESTS, type ManifestSyntax } from './config.ts';
 import type { Lag } from './types.ts';
 
 export const FIXTURES = fileURLToPath(new URL('./fixtures/', import.meta.url));
@@ -37,8 +43,20 @@ export function parityCases(): ParityCase[] {
     });
 }
 
+/** An `implemented` table with no entries, in each syntax of `tools/parity/manifest.ts`. */
+const EMPTY_TABLE: Readonly<Record<ManifestSyntax, string>> = {
+  swift: 'public enum Manifest {\n    public static let implemented: [String: [String: Int]] = [:]\n}\n',
+  ts: 'export const implemented = {};\n',
+};
+
+/** The four manifest paths, each holding an empty table: the base every fixture is a diff against. */
+export function emptyManifests(): Record<string, string> {
+  return Object.fromEntries(MANIFESTS.map((m) => [m.path, EMPTY_TABLE[m.syntax]]));
+}
+
 export function caseReader(c: ParityCase): SourceReader {
-  return overlayReader(fsReader(REPO_ROOT), fsReader(`${FIXTURES}${c.name}`), c.remove);
+  const base = overlayReader(fsReader(REPO_ROOT), memoryReader(emptyManifests()));
+  return overlayReader(base, fsReader(`${FIXTURES}${c.name}`), c.remove);
 }
 
 /** `code|file` pairs, sorted: what a fixture declares and what a run reports. */

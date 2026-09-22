@@ -27,6 +27,10 @@
     "licenses:check": "pnpm --filter @iiiivaska/prism-tools licenses:check",
     "licenses:notices": "pnpm --filter @iiiivaska/prism-tools licenses:notices",
     "parity:report": "pnpm --filter @iiiivaska/prism-tools parity:report",
+    "gallery": "pnpm --filter @iiiivaska/prism-gallery dev",
+    "stories": "pnpm --filter @iiiivaska/prism-gallery stories",
+    "vrt": "pnpm --filter @iiiivaska/prism-vrt test",
+    "vrt:update": "pnpm --filter @iiiivaska/prism-vrt run test:update",
     "release": "changeset version && pnpm install --lockfile-only && pnpm -r publish --access restricted"
   },
   "devDependencies": {
