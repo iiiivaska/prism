@@ -244,7 +244,16 @@ jobs:
         # First: from P3-4 the react package, the gallery and their lint and type checks resolve the
         # workspace packages through their export maps, which point at dist/. web/apps/gallery runs
         # `storybook build` into storybook-static/.
+        # From P3-7 this is also where the web showcase is built, on Linux: pnpm orders the workspace
+        # topologically, so web/apps/showcase builds last, against the export maps of the packages this
+        # step has just built. That is the whole CI cost of the web app — it stops the build here the
+        # moment it no longer compiles against them, and it needs no browser and no second build.
         run: pnpm -r build
+      - name: The web showcase was in that build # P3-7
+        # `pnpm -r build` covers the showcase by construction, and this asserts it stayed covered: a filter
+        # or a workspace edit that quietly drops web/apps/showcase would otherwise leave the app to rot
+        # green. Costs nothing and builds nothing — it only looks at what the step above wrote.
+        run: test -f web/apps/showcase/dist/index.html
       - name: Lint
         run: pnpm lint
       - name: Typecheck
@@ -380,6 +389,16 @@ jobs:
         run: |
           xcodebuild build -scheme Prism-Package -destination 'generic/platform=iOS Simulator'
           xcodebuild build -scheme Prism-Package -destination 'generic/platform=watchOS Simulator'
+      - name: The showcase target compiles # P3-7
+        # docs/showcase.md §5: everything the Apple showcase app is made of except its twenty-line shell is
+        # the package target DSShowcase, so the three builds above already compile it — for macOS, for the
+        # iOS Simulator and for the watch, where its screens are `#if os(iOS) || os(macOS)` and the module
+        # comes out empty. This names that contract and costs nothing: .build is warm, so it is a no-op when
+        # the target is healthy, and it is the step that says so when a component that landed in
+        # DSComponentsManifest has no DS<Name>Renderer yet. Compile only, by design — no simulator run and no
+        # snapshots. The app *bundle* is never built here: it would want a generated Xcode project and a
+        # second DerivedData tree for a shell of about twenty lines.
+        run: swift build --target DSShowcase
       - name: Compile the color catalog for iOS, macOS and watchOS and check its entries # P1-5
         if: needs.plan.outputs.tokens_build == 'true' && needs.plan.outputs.xcassets == 'true'
         run: bash tools/tokens/scripts/verify-xcassets.sh

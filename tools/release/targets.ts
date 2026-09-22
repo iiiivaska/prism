@@ -212,7 +212,7 @@ export function fixedGroupIssues(root: string = REPO_ROOT, names: readonly strin
  * consumer reads, the tokens package exports the same number to JavaScript, and the icon registry's
  * `version` is documented as the system version in `spec/icons/registry.schema.json`. The licence
  * inventory's own `prism` item is the system too: it records which Prism the third-party list belongs
- * to (ADR-0028 §4), so it is stamped rather than left to drift.
+ * to (ADR-0031 §4), so it is stamped rather than left to drift.
  *
  * Stamping the registry changes generated code (`DSIconName.registryVersion`,
  * `iconRegistryVersion`), so the release runs `pnpm icons:build` after the stamp; CI's own
@@ -237,7 +237,7 @@ export const DERIVED: readonly VersionCarrier[] = [
   jsonManifest('spec/icons/registry.json', 'the icon registry version, documented as the system version'),
   pattern(
     'licenses/inventory.json',
-    "the `prism` item's version: the system this inventory ships with (ADR-0028 §4)",
+    "the `prism` item's version: the system this inventory ships with (ADR-0031 §4)",
     /^(\s*\{ "id": "prism",.*?"version": ")(\d+\.\d+\.\d+)(")/mu,
   ),
 ];

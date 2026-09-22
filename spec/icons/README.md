@@ -2,7 +2,7 @@
 
 Agents and components never reference an icon by a vendor name. They use a semantic id from `registry.json` (`nav.back`, `action.add`, `status.warning`), found by tag or category — every entry carries both. The registry maps every id to:
 
-- `web.phosphor` — a Phosphor Icons name (MIT), rendered by `@phosphor-icons/react` and bundled as SVG in the web package;
+- `web.phosphor` — a Phosphor Icons name (MIT), rendered by `@phosphor-icons/react`, which the consuming app installs; Prism's web package ships names only;
 - `apple.symbol` — an SF Symbol name, used only inside apps running on Apple platforms (their license forbids any other use), or `apple.custom` — an image set generated from the Phosphor cuts when no SF Symbol carries the same metaphor.
 
 Weight is a token, not a vendor prop: `icon.weight` ∈ thin / light / regular / medium / bold / heavy maps to a real Phosphor cut and to an SF weight, and carries the **number** a numeric weight token holds. Style is separate: outline / filled / duotone. Size is the px box of `ref.size.icon`, with a measured SF point size beside it.

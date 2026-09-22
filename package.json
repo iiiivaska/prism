@@ -5,6 +5,7 @@
   "type": "module",
   "engines": { "node": ">=24", "pnpm": ">=12" },
   "packageManager": "pnpm@12.4.1",
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck",
@@ -34,8 +35,14 @@
     "release:pack": "pnpm --filter @iiiivaska/prism-tools release:pack",
     "fixtures:web": "pnpm --filter @iiiivaska/prism-tools fixtures:web",
     "fixtures:apple": "pnpm --filter @iiiivaska/prism-tools fixtures:apple",
+    "showcase:apple": "pnpm --filter @iiiivaska/prism-tools showcase:apple",
+    "showcase:apple:generate": "pnpm --filter @iiiivaska/prism-tools showcase:apple:generate",
     "gallery": "pnpm --filter @iiiivaska/prism-gallery dev",
     "stories": "pnpm --filter @iiiivaska/prism-gallery stories",
+    "showcase": "pnpm --filter @iiiivaska/prism-showcase dev",
+    "showcase:web": "pnpm --filter @iiiivaska/prism-showcase dev",
+    "showcase:build": "pnpm --filter @iiiivaska/prism-showcase build",
+    "showcase:preview": "pnpm --filter @iiiivaska/prism-showcase preview",
     "vrt": "pnpm --filter @iiiivaska/prism-vrt test",
     "vrt:update": "pnpm --filter @iiiivaska/prism-vrt run test:update",
     "release:version": "changeset version && pnpm release:stamp && pnpm icons:build && pnpm install --lockfile-only"

@@ -1,6 +1,6 @@
 # ADR-0018: Repository `iiiivaska/prism`, public
 
-- Status: accepted
+- Status: accepted (amended by [ADR-0031](0031-license-proprietary.md): the private-repository alternative was tried on 2026-09-22 and reversed the same day when metered Actions minutes met the account's billing state, the repository and its package visibility stay public, and the owner's requirement is carried by the license instead)
 - Date: 2026-09-14
 - Decision record entry: docs/decisions.md #18
 - Amends: ADR-0014 (Swift package URL), ADR-0016 (GitHub repository name)

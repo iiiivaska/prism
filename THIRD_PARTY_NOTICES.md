@@ -1,8 +1,8 @@
 # Third-party notices
 
-Generated from `licenses/inventory.json` (updated 2026-09-16) with `pnpm licenses:notices`; do not edit by hand. `pnpm licenses:check` gates the inventory against what the repository packages, and `pnpm licenses:notices --check` fails when this file is stale.
+Generated from `licenses/inventory.json` (updated 2026-09-22) with `pnpm licenses:notices`; do not edit by hand. `pnpm licenses:check` gates the inventory against what the repository packages, and `pnpm licenses:notices --check` fails when this file is stale.
 
-Prism's own code, tokens, specs, generated outputs and documentation are under the MIT License in `LICENSE`, Copyright (c) 2026 iiiivaska (ADR-0028). Everything below keeps its own license; the MIT grant does not relicense it.
+Prism's own code, tokens, specs, generated outputs and documentation are under the proprietary license in `LICENSE`, Copyright (c) 2026 iiiivaska, all rights reserved (ADR-0031). Everything below keeps its own license: `LICENSE` neither relicenses it nor narrows what it grants you.
 
 | Item | Kind | License | Permitted use in Prism | Packaged | Source |
 |---|---|---|---|---|---|
@@ -30,6 +30,7 @@ Prism's own code, tokens, specs, generated outputs and documentation are under t
 | d3-scale ^4.0.2 | code | [ISC](https://raw.githubusercontent.com/d3/d3-scale/main/LICENSE) | dependency | no | [github.com/d3/d3-scale](https://github.com/d3/d3-scale) |
 | Motion ^13.2.0 | code | [MIT](https://raw.githubusercontent.com/motiondivision/motion/main/LICENSE.md) | dependency | no | [github.com/motiondivision/motion](https://github.com/motiondivision/motion) |
 | Style Dictionary ^5.5.3 | code | [Apache-2.0](https://raw.githubusercontent.com/style-dictionary/style-dictionary/main/LICENSE) | dependency | no | [github.com/style-dictionary/style-dictionary](https://github.com/style-dictionary/style-dictionary) |
+| woff2-encoder ^2.0.0 | code | [MIT](https://raw.githubusercontent.com/itskyedo/woff2-encoder/main/LICENSE) | dependency | no | [github.com/itskyedo/woff2-encoder](https://github.com/itskyedo/woff2-encoder) |
 | swift-snapshot-testing 1.19.4 | code | [MIT](https://raw.githubusercontent.com/pointfreeco/swift-snapshot-testing/main/LICENSE) | dependency | no | [github.com/pointfreeco/swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) |
 | Untitled UI FREE v2.0 | figma-kit | [LicenseRef-UntitledUI](https://www.untitledui.com/license) | inventory-only | no | [www.figma.com/community/file/1020079203222518115](https://www.figma.com/community/file/1020079203222518115) |
 | Apple iOS and iPadOS 26 / macOS 26 / watchOS 26 kits | figma-kit | [LicenseRef-Apple-Design-Resources](https://developer.apple.com/support/downloads/terms/apple-design-resources/Apple-Design-Resources-License-20230621-English.pdf) | apple-mockups-only | no | [www.figma.com/@apple](https://www.figma.com/@apple) |
@@ -38,7 +39,7 @@ Prism's own code, tokens, specs, generated outputs and documentation are under t
 
 ## What the permitted uses mean
 
-- **own** — Prism's own work, under the MIT License of `LICENSE` (ADR-0028).
+- **own** — Prism's own work, under the proprietary license in `LICENSE`: all rights reserved (ADR-0031).
 - **adapt-with-attribution** — may be adapted and shipped inside Prism, with the attribution below.
 - **dependency** — declared as a dependency and installed from its own registry; Prism vendors none of its bytes.
 - **sdk-runtime** — used at run time through the Apple SDK, inside apps running on Apple platforms; never bundled and never on the web.
@@ -51,18 +52,18 @@ Prism's own code, tokens, specs, generated outputs and documentation are under t
 
 Prism ships these files, each with the license text of the work it comes from.
 
-- **Onest** — Copyright 2021 The Onest Project Authors. Signature preset ui/display. Bundle OFL.txt next to the font.
+- **Onest** — Copyright 2021 The Onest Project Authors. Signature preset ui/display. Bundle OFL.txt next to the font. OFL 1.1 permits bundling with any software, proprietary software included, so long as each copy carries the copyright notice and the license (OFL condition 2) and the font is never sold by itself (condition 1); no Reserved Font Name is declared for this family, and condition 5 keeps the font itself under the OFL whatever LICENSE says about Prism. The web face is a Modified Version under the OFL — tools/tokens/formats/fonts.ts re-encodes the upstream TTF to woff2, a format change — presented under the original family name in fonts.css; that is lawful precisely because no Reserved Font Name is declared, and it would stop being lawful if the family ever declared one upstream (OFL condition 3, with TERMINATION attached).
   - `brands/prism/fonts/onest/**`
   - `swift/Sources/DSTokens/Resources/Fonts/onest/**`
   - `web/packages/tokens/src/generated/*/fonts/onest/**`
-- **JetBrains Mono** — Copyright 2020 The JetBrains Mono Project Authors. Signature preset mono; google/fonts build, pinned by ADR-0021.
+- **JetBrains Mono** — Copyright 2020 The JetBrains Mono Project Authors. Signature preset mono; google/fonts build, pinned by ADR-0021. Same OFL terms as Onest: bundling inside proprietary software is permitted with the notice and the license beside it, the font is never sold by itself, and no Reserved Font Name is declared. The web face is a Modified Version under the OFL — tools/tokens/formats/fonts.ts re-encodes the upstream TTF to woff2, a format change — presented under the original family name in fonts.css; that is lawful precisely because no Reserved Font Name is declared, and it would stop being lawful if the family ever declared one upstream (OFL condition 3, with TERMINATION attached).
   - `brands/prism/fonts/jetbrains-mono/**`
   - `swift/Sources/DSTokens/Resources/Fonts/jetbrains-mono/**`
   - `web/packages/tokens/src/generated/*/fonts/jetbrains-mono/**`
-- **Inter** — Copyright 2016 The Inter Project Authors. Native preset, web only: self-hosted woff2 built from upstream InterVariable.ttf in brands/prism-native/fonts/inter/ (from the Inter-4.1.zip release asset, whose LICENSE.txt is the OFL.txt beside it); never loaded from Google Fonts (ADR-0020).
+- **Inter** — Copyright 2016 The Inter Project Authors. Native preset, web only: self-hosted woff2 built from upstream InterVariable.ttf in brands/prism-native/fonts/inter/ (from the Inter-4.1.zip release asset, whose LICENSE.txt is the OFL.txt beside it); never loaded from Google Fonts (ADR-0020). The woff2 build is a Modified Version under the OFL (a format change), which the OFL allows because no Reserved Font Name is declared; it ships under the OFL with its text beside it, and is never sold by itself.
   - `brands/prism-native/fonts/inter/**`
   - `web/packages/tokens/src/generated/*/fonts/inter/**`
-- **Phosphor Icons** — Copyright (c) 2023 Phosphor Icons. The image sets of swift/Sources/DSIcons are the SVG sources of @phosphor-icons/core 2.1.1, copied byte for byte by icons:build (P2-2, ADR-0013), redistributed with the package's MIT text as Phosphor-LICENSE.txt beside them. The web side ships names only (web/packages/react/src/generated/icons.ts), rendered by @phosphor-icons/react in the consuming app.
+- **Phosphor Icons** — Copyright (c) 2023 Phosphor Icons. The image sets of swift/Sources/DSIcons are the SVG sources of @phosphor-icons/core 2.1.1, copied byte for byte by icons:build (P2-2, ADR-0013), redistributed with the package's MIT text as Phosphor-LICENSE.txt beside them. The web side ships names only (web/packages/react/src/generated/icons.ts), rendered by @phosphor-icons/react in the consuming app. MIT permits redistribution inside a proprietary work without restriction, provided the copyright notice and the permission notice travel with the copies, which Phosphor-LICENSE.txt does.
   - `swift/Sources/DSIcons/Resources/Icons.xcassets/**/*.svg`
   - `swift/Sources/DSIcons/Resources/Phosphor-LICENSE.txt`
 

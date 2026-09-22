@@ -1,0 +1,2 @@
+# The static build. `pnpm showcase:build` writes it; nothing here is committed.
+dist/

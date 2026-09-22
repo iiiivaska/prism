@@ -58,7 +58,8 @@ describe("the committed notices", () => {
       expect(committed).toContain(`[${item.spdx}](${item.license_url})`);
     }
     expect(committed).not.toContain("| Prism (this repository)");
-    expect(committed).toContain("Copyright (c) 2026 iiiivaska (ADR-0028)");
+    expect(committed).toContain("Copyright (c) 2026 iiiivaska, all rights reserved (ADR-0031)");
+    expect(committed).not.toContain("under the MIT License in `LICENSE`");
   });
 
   it("lists the files every packaged item ships as", () => {
@@ -75,7 +76,7 @@ describe("the render", () => {
     updated: "2026-01-02",
     permitted_use_values: [],
     items: [
-      { id: "self", kind: "code", name: "Self", spdx: "MIT", source: "https://example.invalid/self", license_url: "https://example.invalid/self/LICENSE", attribution: "Copyright (c) 2026 Self", permitted_use: "own", packaged: true, packaged_as: ["LICENSE"] },
+      { id: "self", kind: "code", name: "Self", spdx: "LicenseRef-Self-Proprietary", source: "https://example.invalid/self", license_url: "https://example.invalid/self/LICENSE", attribution: "Copyright (c) 2026 Self", permitted_use: "own", packaged: true, packaged_as: ["LICENSE"] },
       {
         id: "synth",
         kind: "font",

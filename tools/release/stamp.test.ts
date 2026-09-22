@@ -54,7 +54,7 @@ function tree(options: TreeOptions = {}): string {
   );
   for (const [file, text] of Object.entries(options.changesets ?? {})) write(root, `.changeset/${file}`, text);
   for (const [name, version] of Object.entries(published)) {
-    write(root, `web/packages/${name}/package.json`, `{\n  "name": "@iiiivaska/prism-${name}",\n  "version": "${version}",\n  "license": "MIT"\n}\n`);
+    write(root, `web/packages/${name}/package.json`, `{\n  "name": "@iiiivaska/prism-${name}",\n  "version": "${version}",\n  "license": "SEE LICENSE IN LICENSE"\n}\n`);
   }
   write(root, 'web/apps/gallery/package.json', `{\n  "name": "@iiiivaska/prism-gallery",\n  "private": true,\n  "version": "${derived}"\n}\n`);
   write(root, 'web/apps/vrt/package.json', `{\n  "name": "@iiiivaska/prism-vrt",\n  "private": true,\n  "version": "${derived}"\n}\n`);
@@ -71,7 +71,7 @@ function tree(options: TreeOptions = {}): string {
   write(
     root,
     'licenses/inventory.json',
-    `{\n  "updated": "2026-09-22",\n  "items": [\n    { "id": "prism", "kind": "code", "name": "Prism (this repository)", "version": "${derived}", "spdx": "MIT", "packaged": true },\n    { "id": "onest", "kind": "font", "name": "Onest", "version": "2.001", "spdx": "OFL-1.1", "packaged": true }\n  ]\n}\n`,
+    `{\n  "updated": "2026-09-22",\n  "items": [\n    { "id": "prism", "kind": "code", "name": "Prism (this repository)", "version": "${derived}", "spdx": "LicenseRef-Prism-Proprietary", "packaged": true },\n    { "id": "onest", "kind": "font", "name": "Onest", "version": "2.001", "spdx": "OFL-1.1", "packaged": true }\n  ]\n}\n`,
   );
   return root;
 }

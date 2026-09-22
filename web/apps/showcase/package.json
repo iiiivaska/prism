@@ -1,0 +1,28 @@
+{
+  "name": "@iiiivaska/prism-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "The web showcase (roadmap P3-7, docs/showcase.md): every token and every implemented component of the brand this document loaded, live, with every axis switched through the ADR-0019 runtime",
+  "scripts": {
+    "dev": "vite --port 5273 --strictPort",
+    "build": "vite build",
+    "preview": "vite preview --port 5273 --strictPort",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@iiiivaska/prism-react": "workspace:*",
+    "@iiiivaska/prism-tokens": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@phosphor-icons/core": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "yaml": "catalog:"
+  }
+}

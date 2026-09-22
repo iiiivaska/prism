@@ -30,6 +30,8 @@
     "release:pack": "node release/pack.ts",
     "fixtures:web": "node release/fixture-web.ts",
     "fixtures:apple": "node release/fixture-apple.ts",
+    "showcase:apple": "node showcase/apple/run.ts",
+    "showcase:apple:generate": "node showcase/apple/run.ts --generate",
     "licenses:check": "node licenses/check.ts",
     "licenses:notices": "node licenses/notices.ts"
   },

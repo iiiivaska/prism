@@ -43,5 +43,5 @@
   "repository": { "type": "git", "url": "https://github.com/iiiivaska/prism.git", "directory": "web/packages/react" },
   "publishConfig": { "registry": "https://npm.pkg.github.com", "access": "restricted" },
   "engines": { "node": ">=22.12" },
-  "license": "MIT"
+  "license": "SEE LICENSE IN LICENSE"
 }

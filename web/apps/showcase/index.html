@@ -1,0 +1,21 @@
+<!doctype html>
+<!--
+  `<html>` carries no `data-ds-*` attribute at rest. Everything the visitor has not chosen follows the
+  OS and the device through the stylesheet's own media queries, exactly as an app that passes nothing
+  does (ADR-0019 §4 item 1); the axis bar writes only the axes it is asked for, through `<Theme>`.
+
+  The brand is a build-time axis on the web (ADR-0020 §6): one brand per document, picked from
+  `?brand=` before the app mounts. There is no `data-ds-brand`.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Prism showcase</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

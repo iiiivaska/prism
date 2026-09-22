@@ -1,4 +1,4 @@
-// The provenance ledger (ADR-0015 rule 5, ADR-0028): the types of `licenses/inventory.json`, its
+// The provenance ledger (ADR-0015 rule 5, ADR-0031): the types of `licenses/inventory.json`, its
 // JSON Schema validation and the small accessors `licenses:check` and `licenses:notices` share.
 //
 // The file is the single source for THIRD_PARTY_NOTICES.md and for the gate, so nothing here fixes
@@ -32,7 +32,7 @@ export const PERMITTED_USE = [
 ] as const;
 export type PermittedUse = (typeof PERMITTED_USE)[number];
 
-/** The only two values a packaged item may carry (ADR-0015 rule 5, ADR-0028 rule 3). */
+/** The only two values a packaged item may carry (ADR-0015 rule 5, ADR-0031 rule 3). */
 export const PACKAGEABLE_USE: readonly PermittedUse[] = ["own", "adapt-with-attribution"];
 
 export const KINDS = ["font", "icons", "figma-kit", "code", "reference", "image", "other"] as const;

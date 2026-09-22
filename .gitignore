@@ -15,6 +15,14 @@ web/apps/vrt/test-results/
 # and gallery/index.json are committed. `pnpm gallery:build` fills this folder in seconds.
 gallery/snapshots/
 web/apps/vrt/playwright-report/
+# The showcase apps (P3-7, docs/showcase.md). Their build output is already ignored above — `dist/` covers
+# web/apps/showcase/dist, `DerivedData/` covers what `pnpm showcase:apple` builds into a temporary directory,
+# and the generated swift/Showcase/PrismShowcase.xcodeproj is ignored by that app's own .gitignore. What is
+# left is pixels: the gallery and the visual-regression suite own every committed image (ADR-0005), the two
+# showcase apps record none, and a screenshot taken while driving one is a working file. `git add -f` if an
+# app ever needs a real raster asset.
+swift/Showcase/**/*.png
+web/apps/showcase/**/*.png
 # Generated outputs are committed on purpose (see ADR-004); never ignore them.
 # Local
 .env
