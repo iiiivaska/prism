@@ -79,6 +79,14 @@ catalog:
   "@storybook/addon-vitest": ^10.6.0
   # Keep equal to the mcr.microsoft.com/playwright image tag in .github/workflows/ci.yml.
   "@playwright/test": ^1.63.0
+  # The browser provider of Vitest 4 browser mode, which @storybook/addon-vitest 10.6 peers
+  # (`@vitest/browser-playwright ^4`), and the Playwright it drives; both checked 2026-09-16
+  # (published 2026-08-18 and 2026-09-04, MIT). Keep playwright on the same version as @playwright/test.
+  "@vitest/browser-playwright": ^4.1.11
+  playwright: ^1.63.0
+  # The Vite that Storybook's react-vite builder and Vitest 4 share (8.3.0, published 2026-09-10, MIT);
+  # the lockfile already resolves it through Vitest.
+  vite: ^8.3.0
 
 # pnpm >= 10 runs no dependency install scripts unless they are approved here, and strictDepBuilds
 # (default true) fails the install on an unreviewed one. Nothing in today's tree has one; esbuild's

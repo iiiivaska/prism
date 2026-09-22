@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      update-vrt-baselines:
+        # P3-4: web-vrt records new Linux baselines instead of comparing, uploads them as the
+        # `vrt-baselines` artifact and fails, so that someone commits them.
+        description: Record the web visual regression baselines in the Playwright image
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -205,13 +213,15 @@ jobs:
           runtime: node@24
           cache: true
           require-lockfile: true
+      - name: Build every workspace package
+        # First: from P3-4 the react package, the gallery and their lint and type checks resolve the
+        # workspace packages through their export maps, which point at dist/. web/apps/gallery runs
+        # `storybook build` into storybook-static/.
+        run: pnpm -r build
       - name: Lint
         run: pnpm lint
       - name: Typecheck
         run: pnpm typecheck
-      - name: Build every workspace package
-        # web/apps/gallery prints a placeholder until P3-4, which makes this `storybook build`.
-        run: pnpm -r build
       - name: Install Chromium for Storybook tests in Vitest browser mode # P3-4
         if: needs.plan.outputs.gallery == 'true'
         run: pnpm --filter @iiiivaska/prism-gallery exec playwright install --with-deps chromium
@@ -247,13 +257,67 @@ jobs:
           runtime: node@24
           cache: true
           require-lockfile: true
-      - name: Screenshot every story tagged vrt across scheme × density × viewport
+      - name: Build the package the runtime-contract fixture packs # P3-4
+        # This job takes storybook-static from the `web` job instead of building it, so no `dist/` exists
+        # here. web/apps/vrt/fixture/build.ts runs `npm pack` over @iiiivaska/prism-tokens, whose export
+        # map points `.` and `./react` at dist/, and serve.ts builds the fixture when it starts.
+        run: pnpm --filter @iiiivaska/prism-tokens build
+      - name: Compare, or record baselines when there are none or the run asks for them # P3-4
+        id: vrt-mode
+        shell: bash
+        env:
+          REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.update-vrt-baselines }}
+        run: |
+          set -euo pipefail
+          # Baselines are Linux renders of this image (web/apps/vrt/playwright.config.ts); .gitkeep is not one.
+          if [ "$REQUESTED" = true ]; then
+            echo "record=true" >> "$GITHUB_OUTPUT"
+            echo "Recording baselines: requested by workflow_dispatch."
+          elif [ -z "$(find web/apps/vrt/baselines/linux -type f -name '*.png' -print -quit 2>/dev/null)" ]; then
+            echo "record=true" >> "$GITHUB_OUTPUT"
+            echo "Recording baselines: web/apps/vrt/baselines/linux holds none."
+          else
+            echo "record=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Screenshot every story tagged vrt, and run the runtime contract in three engines
+        # Two suites, split by Playwright project: the screenshots across scheme × density × viewport in
+        # Chromium, and the runtime-contract spec (ADR-0019 rule 5, ADR-0025) in Chromium, WebKit and
+        # Firefox, all three of which this image ships.
+        if: steps.vrt-mode.outputs.record == 'false'
         run: pnpm --filter @iiiivaska/prism-vrt test
+      - name: Record the Linux baselines
+        id: vrt-record
+        if: steps.vrt-mode.outputs.record == 'true'
+        run: pnpm --filter @iiiivaska/prism-vrt run test:update
+      - name: Upload the recorded baselines
+        # `always()`: a recording run that stopped part-way — a runtime-contract regression in this
+        # container, a screenshot timeout, a crashed worker — still hands back the images it did write.
+        # A bare `record == 'true'` is ANDed with success(), so that run would go red with no artifact and
+        # no diagnostics, and the operator would have nothing to act on. `warn` rather than `error` for
+        # the same reason: the step that failed has already said why, and a second red X over an empty
+        # folder would only bury it.
+        if: always() && steps.vrt-mode.outputs.record == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: vrt-baselines
+          path: web/apps/vrt/baselines/linux
+          if-no-files-found: warn
+      - name: Ask for the recorded baselines to be committed
+        # Only after a complete recording: a failed one has already failed the job with its own message.
+        if: steps.vrt-record.outcome == 'success'
+        shell: bash
+        run: |
+          echo "::error title=VRT baselines recorded, not compared::This run recorded new Linux baselines instead of comparing against committed ones. Download the 'vrt-baselines' artifact of this run, unpack it into web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<viewport>.<scheme>.<density>.png), review the images, commit them, and push; the next run compares against them."
+          exit 1
       - uses: actions/upload-artifact@v7
+        # Either mode: a compare run's diffs and traces, or what a recording run left behind when it
+        # stopped. After a complete recording the step above fails the job by design and this folder is
+        # empty, which `ignore` passes over in silence.
         if: failure()
         with:
           name: vrt-diffs
           path: web/apps/vrt/test-results
+          if-no-files-found: ignore
 
   apple:
     name: Swift package
@@ -313,8 +377,34 @@ jobs:
         if: needs.plan.outputs.dscore_tests == 'true' && needs.plan.outputs.dscore_scheme == 'true'
         run: xcodebuild test -scheme DSCoreTests -destination 'platform=watchOS Simulator,name=Apple Watch Series 11 (46mm),OS=latest'
       - name: Gallery snapshots (SwiftUI) # P3-3
-        if: needs.plan.outputs.snapshots == 'true'
-        run: xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest'
+        # Every spec example (swift/Tests/DSSnapshotTests) against the baselines under its __Snapshots__, which compare
+        # only with the Xcode they were recorded with (XCODE_VERSION). Until the first set is committed (the plan's
+        # `snapshots` gate is false) the step records them instead and fails, the next step uploads them as the
+        # `snapshot-baselines-apple` artifact, and someone reviews and commits them. xcodebuild hands TEST_RUNNER_*
+        # variables to the tests without the prefix; the gallery pairs (P3-5) are written on every run.
+        # The destination is pinned to the runtime the baselines are recorded on, not `latest`: a newer simulator
+        # runtime rasterizes differently, and the suite would then fail for the runtime and not for the code
+        # (swift/Tests/DSSnapshotTests/README.md, "Provenance"). Move this pin and the baselines together.
+        id: swiftui-snapshots
+        env:
+          RECORD: ${{ needs.plan.outputs.snapshots != 'true' }}
+          TEST_RUNNER_DS_GALLERY_DIR: ${{ github.workspace }}/gallery/snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$RECORD" = true ]; then export TEST_RUNNER_DS_SNAPSHOT_RECORD=1; fi
+          xcodebuild test -scheme Prism-Package -only-testing:DSSnapshotTests -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5'
+          if [ "$RECORD" = true ]; then
+            echo "::error title=SwiftUI baselines recorded, not compared::This run recorded the SwiftUI snapshot baselines with Xcode $XCODE_VERSION instead of comparing, because swift/Tests/DSSnapshotTests/__Snapshots__ holds none. Download the 'snapshot-baselines-apple' artifact of this run, unpack it into swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.apple.<scheme>.<density>[.<variant>].png, beside the provenance.json that says what recorded them), review the images, commit them, and push; the next run compares against them."
+            exit 1
+          fi
+      - name: Upload the recorded SwiftUI baselines # P3-3
+        if: failure() && needs.plan.outputs.snapshots != 'true' && steps.swiftui-snapshots.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: snapshot-baselines-apple
+          path: swift/Tests/DSSnapshotTests/__Snapshots__
+          if-no-files-found: error
       - name: Upload SwiftUI snapshots # P3-5
         if: needs.plan.outputs.snapshots == 'true' && !cancelled()
         uses: actions/upload-artifact@v7

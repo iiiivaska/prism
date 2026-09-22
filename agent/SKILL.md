@@ -5,7 +5,7 @@ description: How to build UI with the Prism design system (SwiftUI + React). Use
 
 # Prism for agents
 
-Prism is a token-driven, brand-agnostic design system with two implementations: SwiftUI (`import DSComponents`, `DSCharts`) and React (`@iiiivaska/prism-react`, `@iiiivaska/prism-charts`). This skill tells you what exists and the rules you must not break. When in doubt, open the component's spec: `spec/components/<Name>.yaml` in the Prism repository (or `node_modules/@iiiivaska/prism-react/spec/` and the SPM package's `Spec/` resources).
+Prism is a token-driven, brand-agnostic design system with two implementations: SwiftUI (`import DSComponents`, `DSCharts`) and React (`@iiiivaska/prism-react`, `@iiiivaska/prism-charts`). This skill tells you what exists and the rules you must not break. When in doubt, open the component's spec: `spec/components/<Name>.yaml` in the Prism repository, or `node_modules/@iiiivaska/prism-react/spec/`, which carries the data-viz contracts too (the SPM package ships no spec resources).
 
 ## The five rules
 

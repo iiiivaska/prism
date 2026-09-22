@@ -1,7 +1,7 @@
 // parity:report (roadmap P2-3): the repository's report lists every v1 spec and is committed
 // up to date, every fixture reports exactly the diagnostics and the lagging cells it declares, and
 // `--fail-on-lag` is the only thing that turns lag into an exit code (ADR-0006 rule 3, critic G-21).
-import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, test } from 'vitest';
@@ -9,7 +9,10 @@ import { fsReader, REPO_ROOT } from '../tokens/api.ts';
 import { LAYER_MANIFEST, MANIFESTS, manifestFor, PLATFORMS, REPORT_PATH } from './config.ts';
 import { formatJson, main, parseArgs, passed, renderReport, runParity } from './report.ts';
 import { cellText, lagLine, summaryLine } from './render.ts';
-import { caseReader, lagKeys, parityCases } from './test-support.ts';
+import { caseReader, emptyManifests, lagKeys, parityCases } from './test-support.ts';
+
+/** The components both stacks implement: the P3-3 and P3-4 slice (roadmap P3-3, P3-4). */
+const SLICE = ['Button', 'Surface', 'Text', 'Card'] as const;
 
 /** Console capture: the CLI prints, and a test reads what it printed. */
 function capture<T>(run: () => T): { value: T; out: string; err: string } {
@@ -66,10 +69,17 @@ describe('the repository', () => {
     }
   });
 
-  test('nothing is implemented yet, so every component row is pending rather than lagging (P2-5)', () => {
-    expect([...new Set(result.rows.filter((r) => r.kind !== null).map((r) => r.state))]).toEqual(['pending']);
-    expect(result.rows.every((r) => r.cells.every((c) => c.implemented === 0))).toBe(true);
-    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 0 in parity, 286 pending, 56 satisfied by `none`, 0 diagnostic(s)');
+  test('the slice is in parity on both stacks, and every other component row is pending (P3-3, P3-4)', () => {
+    const components = result.rows.filter((r) => r.kind !== null);
+    // Row order is layer then name, so the three primitives come before the composite.
+    expect(components.filter((r) => r.state === 'parity').map((r) => r.spec.name)).toEqual([...SLICE]);
+    expect([...new Set(components.map((r) => r.state))]).toEqual(['pending', 'parity']);
+    // A slice row carries its own `specVersion` in every cell; nothing else has an implementation.
+    for (const row of components) {
+      const expected = row.state === 'parity' ? row.spec.specVersion : 0;
+      for (const cell of row.cells) expect(cell.implemented, `${row.spec.name} on ${cell.platform}`).toBe(expected);
+    }
+    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 24 in parity, 262 pending, 56 satisfied by `none`, 0 diagnostic(s)');
   });
 
   test('a pattern is a contract-only row with its own table and no manifest cell (ADR-0012 rule 3)', () => {
@@ -90,9 +100,13 @@ describe('the repository', () => {
     expect(markdown).not.toContain('| [DashboardGrid](../../spec/patterns/DashboardGrid.yaml) | pattern |');
   });
 
-  test('the four manifests exist and are empty', () => {
+  test('the four manifests exist; the component pair carries the slice and the chart pair is empty', () => {
     expect(result.manifests.map((m) => m.file.path)).toEqual(MANIFESTS.map((m) => m.path));
-    expect(result.manifests.every((m) => m.present && m.entries === 0)).toBe(true);
+    expect(result.manifests.every((m) => m.present)).toBe(true);
+    // Both stacks declare the same four components; the charts manifests wait for data-viz wave 1.
+    expect(result.manifests.map((m) => [m.file.kind, m.entries])).toEqual(
+      MANIFESTS.map((m) => [m.kind, m.kind === 'components' ? SLICE.length : 0]),
+    );
   });
 
   test('the committed report is what this run renders', () => {
@@ -193,8 +207,10 @@ describe('fixtures', () => {
 });
 
 /**
- * A tree with one header-only spec at v2, the repository's manifests, and one component implemented
- * a version behind on iOS: the smallest thing `--fail-on-lag` has to fail on.
+ * A tree with one header-only spec at v2, four empty manifests, and one component implemented a
+ * version behind on iOS: the smallest thing `--fail-on-lag` has to fail on. The manifests are empty
+ * rather than copied from the repository, whose entries would all be orphans in a tree whose only
+ * spec is `Sample.yaml`.
  */
 function lagTree(): string {
   const root = mkdtempSync(join(tmpdir(), 'prism-parity-'));
@@ -213,9 +229,9 @@ function lagTree(): string {
     '  web-desktop: full',
     '',
   ].join('\n'));
-  for (const manifest of MANIFESTS) {
-    mkdirSync(join(root, dirname(manifest.path)), { recursive: true });
-    cpSync(join(REPO_ROOT, manifest.path), join(root, manifest.path));
+  for (const [path, text] of Object.entries(emptyManifests())) {
+    mkdirSync(join(root, dirname(path)), { recursive: true });
+    writeFileSync(join(root, path), text);
   }
   writeFileSync(join(root, MANIFESTS[0]?.path ?? ''), [
     'public enum DSComponentsManifest {',
