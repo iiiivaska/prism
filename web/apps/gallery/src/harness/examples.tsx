@@ -50,6 +50,11 @@ import {
   type VividSlot,
 } from "@iiiivaska/prism-react";
 import { contentFor } from "./content.ts";
+// The stage, frame and backdrop classes the renderers below use (`ds-gallery-*`). The Storybook preview
+// loads harness.css for the whole document; importing it here as well keeps a story module
+// self-contained for a tool that compiles the stories without `.storybook/preview`, as the claude.ai/design
+// sync does (.design-sync/NOTES.md).
+import "./harness.css";
 
 /** The fields of a spec example beyond its props. */
 export interface ExampleFields {

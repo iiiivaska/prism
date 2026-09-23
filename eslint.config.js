@@ -14,6 +14,11 @@ export default defineConfig(
     // workspace twice, from files whose tsconfig is not this one, and a leftover one fails `pnpm lint`
     // for a reason that has nothing to do with the tree being reviewed.
     ".claude/worktrees/",
+    // The claude.ai/design sync (.design-sync/NOTES.md): its inputs include forks of the converter's
+    // own adapters, and its staged scripts and output are machine-made; none of it is workspace code.
+    ".design-sync/",
+    ".ds-sync/",
+    "ds-bundle/",
     ".build/",
     ".swiftpm/",
     "tools/lint/fixtures/",
