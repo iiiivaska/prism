@@ -390,7 +390,7 @@ nonisolated public enum DSSurface: Sendable {
             )
         }
         let fallback =
-            requested.isGlass && (isWatch || context.transparency == .reduced || context.contrast == .increased || invalidBackdrop)
+            requested.isGlass && glassFallsBack(isWatch: isWatch, context: context, invalidBackdrop: invalidBackdrop)
 
         let material: DSSurfaceMaterial
         if fallback {
@@ -416,5 +416,15 @@ nonisolated public enum DSSurface: Sendable {
             drawsRaisedEdge: material == .raised,
             drawsVividBloom: material == .vivid && context.transparency != .reduced
         )
+    }
+
+    /// Whether glass that was asked for falls back: any one of the four triggers of ADR-0022 §1.2 — the watch,
+    /// Reduce Transparency, Increase Contrast, or a backdrop that cannot carry glass (`invalidBackdrop`, which the
+    /// caller decides and logs).
+    ///
+    /// This is the one place the four are evaluated. Surface's resolution asks it, and ADR-0036 §3 has the glass
+    /// chip's resolution ask it too, so the two fallbacks cannot drift apart.
+    private static func glassFallsBack(isWatch: Bool, context: DSTokenContext, invalidBackdrop: Bool) -> Bool {
+        isWatch || context.transparency == .reduced || context.contrast == .increased || invalidBackdrop
     }
 }

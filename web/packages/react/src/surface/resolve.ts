@@ -88,6 +88,19 @@ export function surfaceElevation(declared: SurfaceElevation | undefined, request
 }
 
 /**
+ * Whether glass that was asked for falls back: any one of the triggers of ADR-0022 §1.2 — Reduce
+ * Transparency, Increase Contrast, or a backdrop that cannot carry glass (`hasInvalidBackdrop`, which
+ * the resolver decides). Trigger 1, the watch, has no web input.
+ *
+ * This is the one place they are evaluated, the twin of DSCore's `DSSurface.glassFallsBack`.
+ * `resolveSurface` asks it, and ADR-0036 §3 has the glass chip's resolver ask it too, so the two
+ * fallbacks cannot drift apart. It is not exported: the resolvers in this file are its only callers.
+ */
+function glassFallsBack(context: Pick<TokenContext, "contrast" | "transparency">, hasInvalidBackdrop: boolean): boolean {
+  return context.transparency === "reduce" || context.contrast === "more" || hasInvalidBackdrop;
+}
+
+/**
  * Resolves one Surface. The four triggers of ADR-0022 §1.2 replace glass with one opaque `raised`
  * surface (watchOS never applies on the web), and a selected glass surface renders and publishes
  * `inverse` instead (§1.6).
@@ -99,7 +112,7 @@ export function resolveSurface(
   const { material: requested, backdrop, selected } = request;
   const glass = isGlassMaterial(requested);
   const hasInvalidBackdrop = glass && backdrop === "none";
-  const isGlassFallback = glass && (context.transparency === "reduce" || context.contrast === "more" || hasInvalidBackdrop);
+  const isGlassFallback = glass && glassFallsBack(context, hasInvalidBackdrop);
   const material: SurfaceMaterial = isGlassFallback ? (selected ? "inverse" : "raised") : requested;
   const recipe: GlassRecipe | null = isGlassFallback ? null : requested === "glass" ? "fill" : requested === "glassLight" ? "lightFill" : null;
   return {

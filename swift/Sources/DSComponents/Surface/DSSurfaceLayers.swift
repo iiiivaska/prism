@@ -7,6 +7,9 @@ import DSTokens
 /// The drawing half of `DSSurfaceView`: every layer of Surface.yaml's anatomy, from the values
 /// `DSSurfaceAppearance` binds. It sits in the Surface's background, so it takes the content's size, draws nothing
 /// hit-testable and nothing an assistive technology reads.
+///
+/// Two of the layers are views of their own, `DSBackdropMirror` and `DSGlassEdge` (`DSBackdropMirror.swift`), so that
+/// the Surface module's glass chip can draw them too (ADR-0036 §7).
 struct DSSurfaceLayers: View {
     let resolution: DSSurfaceResolution
     let tokens: DSTokenSet
@@ -102,7 +105,7 @@ struct DSSurfaceLayers: View {
                 shape.fill(underlay.color(brand))
             }
             if let backdrop, let recipe = resolution.glass {
-                backdropMirror(backdrop, recipe: recipe)
+                DSBackdropMirror(backdrop: backdrop, recipe: recipe, shape: shape, edge: .bleed)
                     .transition(.opacity)
             }
             fill(size)
@@ -112,29 +115,6 @@ struct DSSurfaceLayers: View {
         }
         .frame(width: size.width, height: size.height, alignment: .topLeading)
         .compositingGroup()
-    }
-
-    /// The part of the backdrop under this surface, saturated and blurred by the recipe (CSS
-    /// `backdrop-filter: blur() saturate()`); `blurRadius` is the recipe's CSS standard deviation in SwiftUI's
-    /// units (ADR-0030 §4.3).
-    ///
-    /// The copy reaches `bleed` past the surface on every side before it is blurred, so pixels near the edge are
-    /// averaged with the backdrop around the surface, as `backdrop-filter` does, and not with transparency.
-    private func backdropMirror(_ backdrop: DSBackdropSource, recipe: DSGlassRecipe) -> some View {
-        let bleed = DSSurfaceAppearance.blurBleed(radius: recipe.blurRadius)
-        return GeometryReader { proxy in
-            let frame = proxy.frame(in: .named(backdrop.space))
-            backdrop.content
-                .frame(width: backdrop.size.width, height: backdrop.size.height)
-                .offset(x: bleed - frame.minX, y: bleed - frame.minY)
-                .frame(width: proxy.size.width + 2 * bleed, height: proxy.size.height + 2 * bleed, alignment: .topLeading)
-                .clipped()
-                .saturation(recipe.saturate)
-                .blur(radius: recipe.blurRadius)
-                .offset(x: -bleed, y: -bleed)
-                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
-        }
-        .clipShape(shape)
     }
 
     /// `tokens.root.background`, or the vivid gradient drawn on its CSS gradient line in OKLab (DSCore). A caller
@@ -207,7 +187,7 @@ struct DSSurfaceLayers: View {
         }
     }
 
-    /// The 1 px inner edge, `border.hairline` wide.
+    /// The 1 px inner edge, `border.hairline` wide. Glass and vivid draw it with `DSGlassEdge`.
     @ViewBuilder
     private func edge(_ size: CGSize) -> some View {
         switch DSSurfaceAppearance.edge(resolution, tokens) {
@@ -223,18 +203,9 @@ struct DSSurfaceLayers: View {
             .compositingGroup()
             .clipShape(shape)
         case .highlight(let color, let start, let end):
-            let highlight = color.color(brand)
-            let line = DSGradientGeometry.unitPoints(angle: DSSurfaceAppearance.edgeAngle, size: size)
-            shape.strokeBorder(
-                LinearGradient(
-                    stops: [
-                        .init(color: highlight.opacity(start), location: 0),
-                        .init(color: highlight.opacity(end), location: DSSurfaceAppearance.edgeEndLocation),
-                    ],
-                    startPoint: line.start,
-                    endPoint: line.end
-                ),
-                lineWidth: tokens.border.hairline
+            DSGlassEdge(
+                shape: shape, color: color.color(brand), start: start, end: end,
+                lineWidth: tokens.border.hairline, size: size
             )
         case nil:
             EmptyView()
