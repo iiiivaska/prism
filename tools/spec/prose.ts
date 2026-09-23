@@ -65,24 +65,18 @@ export function expandPath(text: string): string[] {
 }
 
 export interface ProseHit {
-  /** The path as prose wrote it, punctuation removed. */
+  /** The path as prose wrote it, punctuation removed; from `proseStrings`, the whole string. */
   readonly text: string;
   /** JSON path of the string inside the spec, for the line number. */
   readonly at: readonly (string | number)[];
 }
 
-/** Every token path or glob in the prose `fields` of `spec` (a component's by default), in document order. */
-export function proseTokenPaths(spec: Record<string, unknown>, categories: ReadonlySet<string>, fields: readonly string[] = PROSE_FIELDS): ProseHit[] {
+/** Every string value in the prose `fields` of `spec` (a component's by default), whole, in document order. */
+export function proseStrings(spec: Record<string, unknown>, fields: readonly string[] = PROSE_FIELDS): ProseHit[] {
   const out: ProseHit[] = [];
   const walk = (value: unknown, at: readonly (string | number)[]): void => {
     if (typeof value === 'string') {
-      const seen = new Set<string>();
-      for (const word of value.split(/\s+/)) {
-        const text = bareWord(word);
-        if (seen.has(text) || !isTokenPath(text, categories)) continue;
-        seen.add(text);
-        out.push({ text, at });
-      }
+      out.push({ text: value, at });
       return;
     }
     if (Array.isArray(value)) {
@@ -95,6 +89,21 @@ export function proseTokenPaths(spec: Record<string, unknown>, categories: Reado
   };
   for (const field of fields) {
     if (field in spec) walk(spec[field], [field]);
+  }
+  return out;
+}
+
+/** Every token path or glob in the prose `fields` of `spec` (a component's by default), in document order. */
+export function proseTokenPaths(spec: Record<string, unknown>, categories: ReadonlySet<string>, fields: readonly string[] = PROSE_FIELDS): ProseHit[] {
+  const out: ProseHit[] = [];
+  for (const { text: value, at } of proseStrings(spec, fields)) {
+    const seen = new Set<string>();
+    for (const word of value.split(/\s+/)) {
+      const text = bareWord(word);
+      if (seen.has(text) || !isTokenPath(text, categories)) continue;
+      seen.add(text);
+      out.push({ text, at });
+    }
   }
   return out;
 }

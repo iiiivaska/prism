@@ -187,6 +187,8 @@ describe('fixtures', () => {
       'spec/parse',
       'spec/schema',
       'spec/unknown-part',
+      'strings/placeholder',
+      'strings/unknown',
     ]);
   });
 

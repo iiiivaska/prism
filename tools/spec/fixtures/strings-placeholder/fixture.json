@@ -1,0 +1,9 @@
+{
+  "description": "Behavior writes a strings key's English default with a placeholder the entry does not declare.",
+  "expect": [
+    {
+      "code": "strings/placeholder",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

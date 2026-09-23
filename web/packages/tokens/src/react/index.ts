@@ -1,7 +1,8 @@
 /**
  * `@iiiivaska/prism-tokens/react` (ADR-0019 §4): `<Theme>` and `useTokenContext()`, re-exported by
- * `@iiiivaska/prism-react`. React is an optional peer dependency — the package's root export imports
- * none of this.
+ * `@iiiivaska/prism-react`, and the strings table `<Theme strings>` hands to components through
+ * `useStrings()` (ADR-0032 decision 5). React is an optional peer dependency — the package's root export
+ * imports none of this.
  *
  * The whole framework-free runtime is re-exported here, so an app needs one import for `<Theme>`,
  * `scope()` and `rootAttributes()`.
@@ -22,6 +23,7 @@ import { brandTokens, setBrandTokens, type BrandTokens } from "../runtime/brand.
 import { readContext, watchContext } from "../runtime/context.ts";
 import { isDevelopment } from "../runtime/env.ts";
 import { mountRoot } from "../runtime/mount.ts";
+import { defaultStrings, type StringKey, type StringsTable } from "../runtime/strings.ts";
 
 export * from "../index.ts";
 
@@ -29,6 +31,26 @@ export * from "../index.ts";
 const RootContext = createContext<TokenContext | null>(null);
 /** The brand table the enclosing `<Theme>` was given, so a server renders per request (ADR-0020 §6). */
 const BrandContext = createContext<BrandTokens | null>(null);
+/** The strings table of the enclosing `<Theme>` (ADR-0032 decision 5); Prism's English defaults without one. */
+const StringsContext = createContext<StringsTable>(defaultStrings);
+
+const stringKeys = Object.keys(defaultStrings) as StringKey[];
+
+/**
+ * An app's `strings` over Prism's English defaults, key by key: a key the app gives a string replaces the
+ * default, every other key keeps it. A key the table does not have is not carried, and neither is a value
+ * that is not a string, so an untyped caller cannot leave a component with no template to fill. The result
+ * is frozen, like `defaultStrings`, so no component can change the table another one reads.
+ */
+function mergeStrings(given: Partial<StringsTable> | undefined): StringsTable {
+  if (given === undefined) return defaultStrings;
+  const merged: Record<string, string> = {};
+  for (const key of stringKeys) {
+    const value: unknown = given[key];
+    merged[key] = typeof value === "string" ? value : defaultStrings[key];
+  }
+  return Object.freeze(merged) as StringsTable;
+}
 
 /** `useSyncExternalStore` needs a cached snapshot; the context is recomputed but its identity is kept. */
 let cached: TokenContext | undefined;
@@ -55,6 +77,15 @@ export interface ThemeProps extends Partial<TokenContext> {
    * `useBrandTokens()` through React and, in the browser, `brandTokens()` for canvas and vanilla code.
    */
   readonly tokens?: BrandTokens;
+  /**
+   * The app's component-owned strings (ADR-0032 decision 5): a template per key of `spec/strings.yaml`,
+   * shallow-merged over Prism's English `defaultStrings`, so an app replaces the keys it translates and
+   * keeps the rest. Components read the result with `useStrings()`. Root-only, like the brand: set once,
+   * beside `tokens`, in the app's own translation process. A nested `<Theme>`, which throws in
+   * development, passes the enclosing table through in production whatever it is handed, as a nested
+   * `DSTheme` leaves Apple's `\.dsStrings` alone.
+   */
+  readonly strings?: Partial<StringsTable>;
   readonly children?: ReactNode;
 }
 
@@ -68,8 +99,9 @@ export interface ThemeProps extends Partial<TokenContext> {
  * (ADR-0019 §4 item 1, rule 6).
  */
 export function Theme(props: ThemeProps): ReactNode {
-  const { colorScheme, contrast, transparency, density, modality, motion, tokens, children } = props;
+  const { colorScheme, contrast, transparency, density, modality, motion, tokens, strings, children } = props;
   const parent = useContext(RootContext);
+  const inherited = useContext(StringsContext);
   if (parent !== null && isDevelopment()) {
     throw new Error("Theme is root-only; spread scope() on an element for a nested color scheme or density");
   }
@@ -85,6 +117,9 @@ export function Theme(props: ThemeProps): ReactNode {
   }, [colorScheme, contrast, transparency, density, modality, motion]);
 
   const snapshot = useMemo<TokenContext>(() => ({ ...defaultContext, ...choices }), [choices]);
+  // Root-only: under an enclosing <Theme> the strings are the root's, never this one's `strings` and never
+  // the English defaults a missing prop would give, so a production nesting cannot reset its subtree.
+  const table = useMemo(() => (parent === null ? mergeStrings(strings) : inherited), [parent, inherited, strings]);
 
   // In the browser the table also reaches code outside React (canvas, visx, Motion), from a committed
   // render: registering it while rendering would publish a table a discarded concurrent render never
@@ -99,7 +134,7 @@ export function Theme(props: ThemeProps): ReactNode {
   return createElement(
     RootContext.Provider,
     { value: snapshot },
-    createElement(BrandContext.Provider, { value: tokens ?? null }, children),
+    createElement(BrandContext.Provider, { value: tokens ?? null }, createElement(StringsContext.Provider, { value: table }, children)),
   );
 }
 
@@ -124,4 +159,13 @@ export function useBrandTokens<T extends BrandTokens = BrandTokens>(): T {
   const fromTheme = useContext(BrandContext);
   if (fromTheme !== null) return fromTheme as T;
   return brandTokens<T>();
+}
+
+/**
+ * The strings table components fill their templates from (ADR-0032 decision 5): the enclosing `<Theme
+ * strings>` merged over `defaultStrings`, or `defaultStrings` itself outside a `<Theme>` or when it was given
+ * none. The web twin of Apple's `@Environment(\.dsStrings)`.
+ */
+export function useStrings(): StringsTable {
+  return useContext(StringsContext);
 }

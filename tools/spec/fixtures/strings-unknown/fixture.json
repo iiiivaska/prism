@@ -1,0 +1,9 @@
+{
+  "description": "Behavior names a strings key that spec/strings.yaml does not declare.",
+  "expect": [
+    {
+      "code": "strings/unknown",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 // spec:validate (roadmap P2-1; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
-// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10).
+// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rule 4).
 //
 // Every spec/components/*.yaml is checked against spec/component.schema.json, and every
 // spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
@@ -22,6 +22,10 @@
 //                                layout, rules or composition) that does not resolve
 //   category/unclassified        a sys category that is neither in the schema regex nor in NON_BINDABLE
 //   haptic/unknown               a haptics binding that spec/haptics.yaml does not declare
+//   strings/unknown              prose names a `strings.<Component>.<name>` key that spec/strings.yaml does not declare
+//   strings/placeholder          a `{name}` written after a key (its English default, or a mention of one of its
+//                                placeholders) that the entry does not declare; also a `{name}` in an entry's own
+//                                default that its `placeholders` do not declare (ADR-0032 rule 4)
 //   composition/unknown          a pattern composes a name with no spec in spec/components/ or spec/patterns/
 //   composition/prop             a pattern sets a prop the composed spec does not declare, or a value its type does not allow
 //   example/light-glass-backdrop light glass over something other than an image or a map
@@ -55,10 +59,10 @@ import { error, formatDiagnostics, formatDiagnosticsJson, sortDiagnostics } from
 import { walkBindings } from './bindings.ts';
 import {
   COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup, HAPTICS, LIGHT_GLASS_BACKDROPS,
-  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, VIVID_SLOT_PAIRS,
+  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
-import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseTokenPaths } from './prose.ts';
+import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
 import { bindableCategories, compileSchema, errorMessage, pointerToPath, SchemaShapeError } from './schema.ts';
 
 export interface SpecValidateOptions {
@@ -160,6 +164,7 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
   }
 
   const haptics = loadHaptics(reader, HAPTICS, diagnostics);
+  const strings = loadStrings(reader, STRINGS, diagnostics);
 
   const specs: { doc: SpecDoc; value: Record<string, unknown> }[] = [];
   for (const path of yamlFiles(reader, COMPONENTS_DIR)) {
@@ -206,7 +211,7 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
   const categories = categoriesOf(ids);
   for (const { doc, value } of specs) {
     schemaDiagnostics(validateComponent, COMPONENT_SCHEMA, doc, value, diagnostics);
-    checkSpec(doc, value, { bundle, bindable, categories, haptics, diagnostics, bound, kind: 'component' });
+    checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, diagnostics, bound, kind: 'component' });
   }
   if (validatePattern !== null) {
     // A pattern may compose a component or another pattern (DashboardGrid places a DetailScreen).
@@ -214,7 +219,7 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
     for (const { doc, value } of [...specs, ...patterns]) composable.set(specName(doc, value), value);
     for (const { doc, value } of patterns) {
       schemaDiagnostics(validatePattern, PATTERN_SCHEMA, doc, value, diagnostics);
-      checkSpec(doc, value, { bundle, bindable, categories, haptics, diagnostics, bound, kind: 'pattern' });
+      checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, diagnostics, bound, kind: 'pattern' });
       checkComposition(doc, value, composable, diagnostics);
     }
   }
@@ -246,6 +251,90 @@ function loadHaptics(reader: SourceReader, path: string, diagnostics: Diagnostic
   return new Set(Object.keys(table));
 }
 
+/** A strings key as a spec names it: `strings.<Component>.<name>`, the component in PascalCase (ADR-0032 rule 3). */
+const STRING_KEY = /(?<![\w.])strings\.([A-Z][A-Za-z0-9]*\.[a-z][A-Za-z0-9]*)/g;
+/** A key as spec/strings.yaml declares it, without the `strings.` prefix. */
+const TABLE_KEY = /^[A-Z][A-Za-z0-9]*\.[a-z][A-Za-z0-9]*$/;
+/** A `{placeholder}` in a template: the name grammar both stacks' fill accepts. */
+const PLACEHOLDER = /\{([A-Za-z][A-Za-z0-9]*)\}/g;
+
+function placeholdersIn(text: string): string[] {
+  return [...new Set([...text.matchAll(PLACEHOLDER)].map((m) => m[1] ?? ''))];
+}
+
+/**
+ * The keys spec/strings.yaml declares, each with the placeholders its entry declares; null when the
+ * file does not parse. An absent table declares nothing, so every key a spec names is then unknown.
+ */
+function loadStrings(reader: SourceReader, path: string, diagnostics: Diagnostic[]): Map<string, Set<string>> | null {
+  if (!reader.exists(path)) return new Map();
+  const doc = loadSpec(path, reader.readText(path));
+  for (const problem of doc.problems) {
+    diagnostics.push(error('spec/parse', problem.message, { file: path, line: problem.line, hint: 'the strings table must parse and round-trip as plain YAML' }));
+  }
+  if (doc.value === null) return null;
+  const table = doc.value['strings'];
+  if (!isRecord(table)) {
+    diagnostics.push(error('spec/parse', 'the strings table has no `strings` mapping', { file: path, line: 1, hint: 'declare each key under `strings:` (ADR-0032 rule 4)' }));
+    return null;
+  }
+  const out = new Map<string, Set<string>>();
+  for (const [key, entry] of Object.entries(table)) {
+    const line = doc.lineOf(['strings', key]);
+    const template = isRecord(entry) && typeof entry['default'] === 'string' ? entry['default'] : null;
+    const listed: unknown = isRecord(entry) ? entry['placeholders'] : undefined;
+    const declared = Array.isArray(listed) && listed.every((p): p is string => typeof p === 'string') ? new Set<string>(listed) : null;
+    if (!TABLE_KEY.test(key) || template === null || declared === null) {
+      diagnostics.push(error('spec/parse', `\`${key}\` is not a strings entry`, {
+        file: path, line, hint: 'write `<Component>.<name>: { default: "…", placeholders: [...] }`, the component spelled as its spec `name` (ADR-0032 rules 3 and 4)',
+      }));
+      continue;
+    }
+    for (const name of placeholdersIn(template)) {
+      if (declared.has(name)) continue;
+      diagnostics.push(error('strings/placeholder', `the English default of \`${key}\` fills \`{${name}}\`, which its placeholders do not declare`, {
+        file: path, line, hint: `add ${name} to the entry's placeholders, or take it out of the default`,
+      }));
+    }
+    out.set(key, declared);
+  }
+  return out;
+}
+
+/**
+ * ADR-0032 rule 4: every `strings.<Component>.<name>` a spec names is a key of spec/strings.yaml, and
+ * every `{name}` the prose writes after it - the English default written out beside the key, or a
+ * mention of one of its placeholders - up to the next key or the end of that string, is a placeholder
+ * the entry declares.
+ */
+function checkStrings(doc: SpecDoc, spec: Record<string, unknown>, table: ReadonlyMap<string, ReadonlySet<string>>, fields: readonly string[], diagnostics: Diagnostic[]): void {
+  for (const { text, at } of proseStrings(spec, fields)) {
+    const mentions = [...text.matchAll(STRING_KEY)];
+    const reported = new Set<string>();
+    mentions.forEach((m, i) => {
+      const key = m[1] ?? '';
+      const where = { file: doc.path, line: doc.lineOf(at) };
+      const declared = table.get(key);
+      if (declared === undefined) {
+        if (reported.has(key)) return;
+        reported.add(key);
+        diagnostics.push(error('strings/unknown', `prose names \`strings.${key}\`, which ${STRINGS} does not declare`, {
+          ...where, hint: `declare \`${key}\` in ${STRINGS} with its placeholders and English default, or name a key it declares (ADR-0032 rule 4)`,
+        }));
+        return;
+      }
+      const end = mentions[i + 1]?.index ?? text.length;
+      for (const name of placeholdersIn(text.slice(m.index + m[0].length, end))) {
+        if (declared.has(name) || reported.has(`${key}{${name}}`)) continue;
+        reported.add(`${key}{${name}}`);
+        diagnostics.push(error('strings/placeholder', `prose fills \`{${name}}\` in \`strings.${key}\`, which declares ${declared.size === 0 ? 'no placeholders' : [...declared].map((p) => `{${p}}`).join(', ')}`, {
+          ...where, hint: `write the placeholders ${STRINGS} declares for \`${key}\`, or declare \`${name}\` there first (ADR-0032 rule 4)`,
+        }));
+      }
+    });
+  }
+}
+
 function schemaDiagnostics(validate: ValidateFunction, schema: string, doc: SpecDoc, value: Record<string, unknown>, diagnostics: Diagnostic[]): void {
   if (validate(value)) return;
   for (const e of validate.errors ?? []) {
@@ -267,6 +356,8 @@ interface SpecContext {
   /** The sys categories the dictionary holds; the first segment of a prose candidate. */
   readonly categories: ReadonlySet<string>;
   readonly haptics: ReadonlySet<string> | null;
+  /** spec/strings.yaml: key → the placeholders its entry declares; null when the table does not parse. */
+  readonly strings: ReadonlyMap<string, ReadonlySet<string>> | null;
   readonly diagnostics: Diagnostic[];
   /** comp group → the ids its spec binds. */
   readonly bound: Map<string, Set<string>>;
@@ -378,7 +469,10 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
     }
   }
 
-  for (const hit of proseTokenPaths(spec, ctx.categories, ctx.kind === 'pattern' ? PATTERN_PROSE_FIELDS : PROSE_FIELDS)) {
+  const proseFields = ctx.kind === 'pattern' ? PATTERN_PROSE_FIELDS : PROSE_FIELDS;
+  if (ctx.strings !== null) checkStrings(doc, spec, ctx.strings, proseFields, diagnostics);
+
+  for (const hit of proseTokenPaths(spec, ctx.categories, proseFields)) {
     if (resolveIds(ctx.bundle, hit.text).length > 0) continue;
     diagnostics.push(error('prose/unknown', `prose names \`${hit.text}\`, which resolves to no token`, {
       file: doc.path, line: doc.lineOf(hit.at), hint: suggestion(ctx.bundle, hit.text),

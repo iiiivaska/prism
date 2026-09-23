@@ -1,5 +1,5 @@
 // Paths and vocabularies spec:validate checks against (ADR-0006, ADR-0022 §3.1, ADR-0023 §8.4,
-// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3). Everything here is a decision an ADR records; the
+// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rule 4). Everything here is a decision an ADR records; the
 // bindable categories are not, because ADR-0024 §5.3 makes the regex in spec/component.schema.json
 // their single copy (`bindableCategories()` in schema.ts reads it back).
 
@@ -14,6 +14,11 @@ export const COMPONENT_SCHEMA = `${SPEC_DIR}/component.schema.json`;
  */
 export const PATTERN_SCHEMA = `${SPEC_DIR}/pattern.schema.json`;
 export const HAPTICS = `${SPEC_DIR}/haptics.yaml`;
+/**
+ * The component-owned strings table (ADR-0032 rule 4): every `strings.<Component>.<name>` key a spec
+ * may name, with the placeholders its English default fills.
+ */
+export const STRINGS = `${SPEC_DIR}/strings.yaml`;
 
 /**
  * `sys` categories that no spec may bind (ADR-0024 §5.3). Every other category the dictionary holds

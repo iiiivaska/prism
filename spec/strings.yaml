@@ -1,0 +1,24 @@
+# Component-owned strings (ADR-0032). The key list is the contract (rule 4): a key is
+# `<Component>.<name>`, the component segment spelled as the spec's `name` in PascalCase (rule 3), and
+# its value is the English default, a template whose `{placeholders}` the component fills from its own
+# props. Prism ships these English defaults only; an app replaces the table once, at the root
+# (`DSTheme(strings:)` on Apple, `<Theme strings>` on the web), in its own translation process (rules 8
+# and 5). A spec names a key as `strings.<Component>.<name>` in `behavior` or `accessibility` and writes
+# the default out beside it; `spec:validate` checks that the key is here and that every `{placeholder}`
+# the spec writes after it is one the entry declares.
+#
+# A template is filled only when every placeholder it declares has a value (rule 10), a placeholder is
+# filled with the component's own value and never with another template, a template selects no plural
+# form (rule 9), and a number is produced by the platform's locale formatter before it is placed
+# (rule 4). Each stack's table carries every key below, in this order, with these defaults, and a test
+# on each stack reads this file to prove it.
+#
+# `Button.loading` is carried but not yet read: Button keeps its own "loading" constant until its
+# migration, ADR-0032's separate follow-up.
+
+version: 1
+strings:
+  Badge.count:    { default: "{count} {label}",  placeholders: [count, label] }
+  Badge.overflow: { default: "{max}+",           placeholders: [max] }
+  Button.loading: { default: "{label}, loading", placeholders: [label] }
+  Chip.remove:    { default: "Remove {label}",   placeholders: [label] }

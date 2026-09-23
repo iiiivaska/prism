@@ -6,12 +6,15 @@ import {
   brandTokens,
   clearBrandTokens,
   defaultContext,
+  defaultStrings,
   mountRoot,
   readContext,
   rootAttributes,
   setBrandTokens,
   useBrandTokens,
+  useStrings,
   useTokenContext,
+  type StringsTable,
   type ThemeProps,
   type TokenContext,
 } from "../src/react/index.ts";
@@ -29,6 +32,16 @@ function ContextProbe(): ReactNode {
 function BrandProbe(): ReactNode {
   const tokens = useBrandTokens<typeof prism>();
   return createElement("i", { id: "brand" }, tokens.table["color.bg.page"].$cssVar);
+}
+
+/** Renders the strings table as JSON; the escaped quotes are undone before parsing. */
+function StringsProbe(): ReactNode {
+  return createElement("i", { id: "strings" }, JSON.stringify(useStrings()));
+}
+
+function stringsIn(node: ReactNode): StringsTable {
+  const body = /<i id="strings">(.*)<\/i>/u.exec(renderToStaticMarkup(node))?.[1] ?? "null";
+  return JSON.parse(body.replaceAll("&quot;", '"').replaceAll("&amp;", "&")) as StringsTable;
 }
 
 function markup(node: ReactNode): string {
@@ -176,5 +189,80 @@ describe("the brand table reaches React (ADR-0020 §6)", () => {
 
   it("fails when the app handed over none", () => {
     expect(() => markup(createElement(BrandProbe))).toThrowError(/setBrandTokens/);
+  });
+});
+
+/**
+ * ADR-0032 decision 5: an app replaces Prism's English strings once, at the root, through `<Theme
+ * strings>`, shallow-merged over `defaultStrings`, and a component reads the result with `useStrings()`.
+ * Root-only as Apple's `DSTheme(strings:)` is: a nested `<Theme>` throws in development and passes the
+ * root's table through in production, and every table a component reads is frozen, as Apple's is a value.
+ * The keys and defaults themselves are held to spec/strings.yaml by
+ * web/packages/react/test/strings.test.ts, which has the YAML reader this package does not.
+ */
+describe("the strings table reaches React (ADR-0032 decision 5)", () => {
+  it("is Prism's English defaults without a <Theme>, and inside one that was given none", () => {
+    expect(stringsIn(createElement(StringsProbe))).toEqual(defaultStrings);
+    expect(stringsIn(createElement(Theme, null, createElement(StringsProbe)))).toEqual(defaultStrings);
+    expect(Object.keys(defaultStrings)).toEqual(["Badge.count", "Badge.overflow", "Button.loading", "Chip.remove"]);
+  });
+
+  it("merges the app's keys over the defaults, key by key, and keeps every other default", () => {
+    const strings = { "Badge.count": "{label}: {count}", "Chip.remove": "Dismiss {label}" } as const;
+    expect(stringsIn(createElement(Theme, { strings }, createElement(StringsProbe)))).toEqual({ ...defaultStrings, ...strings });
+  });
+
+  it("carries no key the table does not have, and never a value that is not a string", () => {
+    const loose = { "Badge.count": undefined, "Badge.overflow": 99, "Nope.never": "{x}" } as unknown as ThemeProps["strings"];
+    expect(stringsIn(createElement(Theme, { strings: loose }, createElement(StringsProbe)))).toEqual(defaultStrings);
+  });
+
+  it("is a frozen value, the defaults and a merged table alike, as Apple's DSStrings is", () => {
+    expect(Object.isFrozen(defaultStrings)).toBe(true);
+    expect(() => {
+      (defaultStrings as Record<string, string>)["Badge.count"] = "{count}";
+    }).toThrowError(TypeError);
+    expect(defaultStrings["Badge.count"]).toBe("{count} {label}");
+    let seen: StringsTable | undefined;
+    function Grab(): ReactNode {
+      seen = useStrings();
+      return null;
+    }
+    markup(createElement(Theme, { strings: { "Badge.count": "{label}: {count}" } }, createElement(Grab)));
+    expect(seen?.["Badge.count"]).toBe("{label}: {count}");
+    expect(Object.isFrozen(seen)).toBe(true);
+  });
+
+  it("is root-only in production too: a nested <Theme> passes the enclosing table through, whatever it is handed", () => {
+    const env = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env;
+    expect(env).toBeDefined();
+    const before = env?.["NODE_ENV"];
+    if (env !== undefined) env["NODE_ENV"] = "production";
+    try {
+      const root = { "Badge.count": "{label}: {count}" } as const;
+      const other = { "Chip.remove": "Dismiss {label}" } as const;
+      const nested = (outer: ThemeProps["strings"], inner: ThemeProps["strings"]): StringsTable =>
+        stringsIn(createElement(Theme, { strings: outer }, createElement(Theme, { strings: inner }, createElement(StringsProbe))));
+      // Given none, it does not reset its subtree to English; given its own, it does not replace the root's.
+      expect(nested(root, undefined)).toEqual({ ...defaultStrings, ...root });
+      expect(nested(root, other)).toEqual({ ...defaultStrings, ...root });
+      // Under a root that was given none, a nested table is not carried either.
+      expect(nested(undefined, other)).toEqual(defaultStrings);
+    } finally {
+      if (env !== undefined) {
+        if (before === undefined) delete env["NODE_ENV"];
+        else env["NODE_ENV"] = before;
+      }
+    }
+  });
+
+  it("still renders no element, is still root-only, and puts nothing on <html>", () => {
+    const strings = { "Badge.count": "{label}: {count}" };
+    expect(markup(createElement(Theme, { strings }, createElement("p", null, "hello")))).toBe("<p>hello</p>");
+    expect(() => markup(createElement(Theme, { strings }, createElement(Theme, { strings }, "x")))).toThrowError(
+      "Theme is root-only; spread scope() on an element for a nested color scheme or density",
+    );
+    // The table is not an axis: the hydration snapshot is the resolver default, as with no prop at all.
+    expect(serverContext({ strings })).toEqual(DEFAULT_CONTEXT);
   });
 });
