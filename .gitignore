@@ -30,3 +30,11 @@ web/apps/showcase/**/*.png
 # Claude Code local state
 .claude/worktrees/
 .claude/settings.local.json
+
+# design-sync (claude.ai/design): build artifacts, transient scratch and staged scripts
+.design-sync/sb-reference/
+.design-sync/learnings/
+.design-sync/.cache/
+.design-sync/node_modules
+.ds-sync/
+ds-bundle/

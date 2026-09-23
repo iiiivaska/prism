@@ -1,0 +1,62 @@
+{
+  "pkg": "@iiiivaska/prism-react",
+  "projectId": "aaf1de00-d1d0-43ef-9616-de52fd6272fb",
+  "globalName": "PrismReact",
+  "shape": "storybook",
+  "storybookConfigDir": "web/apps/gallery/.storybook",
+  "storybookStatic": ".design-sync/sb-reference",
+  "buildCmd": "pnpm -F \"@iiiivaska/prism-react...\" build",
+  "entry": "web/packages/react/dist/index.js",
+  "extraEntries": [
+    "../../../.design-sync/entries/brand-tokens.ts"
+  ],
+  "provider": {
+    "component": "Theme",
+    "props": {
+      "tokens": {
+        "$ref": "prismTokens"
+      },
+      "colorScheme": "light",
+      "density": "compact"
+    }
+  },
+  "titleMap": {
+    "Contract": null
+  },
+  "libOverrides": {
+    "dts.mjs": "prism-react declares its types only under exports[\".\"].types, which the bundled findTypesRoot/projectFor never read; and IconName (51 string literals) must stay a union, not collapse to unknown",
+    "css.mjs": "Prism token CSS is two files in two directories beside a second brand (prism-native) that must not ship, so tokensGlob is a string[]"
+  },
+  "tokensPkg": "@iiiivaska/prism-tokens",
+  "tokensGlob": [
+    "src/generated/prism/tokens.css",
+    "src/generated/motion.css"
+  ],
+  "extraFonts": [
+    "../tokens/src/generated/prism/fonts/fonts.css"
+  ],
+  "storyImports": {
+    "loaders": {
+      ".css": "css"
+    }
+  },
+  "overrides": {
+    "Button": {
+      "cardMode": "column"
+    },
+    "Card": {
+      "cardMode": "column"
+    },
+    "Divider": {
+      "cardMode": "column"
+    },
+    "Surface": {
+      "cardMode": "column"
+    },
+    "Text": {
+      "cardMode": "column"
+    }
+  },
+  "docsDir": "../../../.design-sync/docs",
+  "readmeHeader": ".design-sync/conventions.md"
+}
