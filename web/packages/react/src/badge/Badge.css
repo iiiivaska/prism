@@ -1,0 +1,138 @@
+/*
+ * Badge (spec/components/Badge.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Badge writes data-ds-variant, data-ds-tone and data-ds-emphasis onto its root, always all
+ * three, and this sheet maps them to the tokens Badge.yaml binds. It reads no axis attribute, no material
+ * and no preference query: the three fills are opaque, so a badge is the same on every ground (behavior
+ * 12), nothing it binds depends on density, and Reduce Motion arrives through
+ * --ds-motion-presentation-crossfade (ADR-0023 §8.4).
+ *
+ * The root paints, bottom to top: the fill, then the outline's stroke as an inset shadow, drawn inside the
+ * pill so it never adds to the layout (Button's idiom). A filled badge has no stroke at all: its border
+ * width is bound on `outline` only. The label part holds the digits, a Text at type.micro with tabular
+ * figures; the root sets their colour, and the Text inherits it (`tone: inherit`).
+ *
+ * Badge applies no offset (behavior 13): a host that anchors it on a corner places it from its own
+ * tokens.badge.offset. Custom properties named --ds--badge-* are this component's own (ARCHITECTURE §8).
+ */
+
+/* motion.count: new digits fade in; the old ones leave at once. */
+@keyframes ds-badge-replace {
+  from {
+    opacity: 0;
+  }
+}
+
+@layer ds.components {
+  .ds-badge {
+    /* root.background and root.border have no cell for the other emphasis: no fill, no stroke. */
+    --ds--badge-fill: transparent;
+    --ds--badge-border: transparent;
+    /* root.borderWidth has an `outline` cell only, and root.paddingX a `count` cell only. */
+    --ds--badge-border-width: calc(var(--ds-border-hairline) * 0);
+    --ds--badge-padding-x: calc(var(--ds-space-1) * 0);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--ds--badge-min-width);
+    min-block-size: var(--ds--badge-height);
+    margin: 0;
+    padding-block: 0;
+    padding-inline: var(--ds--badge-padding-x);
+    border: none;
+    border-radius: var(--ds-radius-control);
+    background-color: var(--ds--badge-fill);
+    box-shadow: inset 0 0 0 var(--ds--badge-border-width) var(--ds--badge-border);
+    color: var(--ds--badge-foreground);
+    white-space: nowrap;
+    vertical-align: middle;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /*
+   * The digits: a flex box around the Text, so the pill's height is type.micro's line and never the line of
+   * the text around the badge.
+   */
+  .ds-badge-label {
+    display: flex;
+  }
+
+  /* ---- root.height, root.minWidth and root.paddingX, by variant (behavior 2) ---- */
+
+  .ds-badge[data-ds-variant="count"] {
+    --ds--badge-height: var(--ds-size-icon-md);
+    --ds--badge-min-width: var(--ds-size-icon-md);
+    --ds--badge-padding-x: var(--ds-space-1);
+  }
+
+  .ds-badge[data-ds-variant="dot"] {
+    --ds--badge-height: var(--ds-space-3);
+    --ds--badge-min-width: var(--ds-space-3);
+  }
+
+  /* ---- root.background[filled] and label.color[filled], by tone ---- */
+
+  .ds-badge[data-ds-emphasis="filled"][data-ds-tone="neutral"] {
+    --ds--badge-fill: var(--ds-badge-neutral-bg);
+    --ds--badge-foreground: var(--ds-badge-neutral-text);
+  }
+
+  .ds-badge[data-ds-emphasis="filled"][data-ds-tone="accent"] {
+    --ds--badge-fill: var(--ds-badge-accent-bg);
+    --ds--badge-foreground: var(--ds-badge-accent-text);
+  }
+
+  .ds-badge[data-ds-emphasis="filled"][data-ds-tone="critical"] {
+    --ds--badge-fill: var(--ds-badge-critical-bg);
+    --ds--badge-foreground: var(--ds-badge-critical-text);
+  }
+
+  /* ---- root.border[outline], root.borderWidth[outline] and label.color[outline], by tone ---- */
+
+  .ds-badge[data-ds-emphasis="outline"] {
+    --ds--badge-border-width: var(--ds-border-hairline);
+  }
+
+  .ds-badge[data-ds-emphasis="outline"][data-ds-tone="neutral"] {
+    --ds--badge-border: var(--ds-color-border-strong);
+    --ds--badge-foreground: var(--ds-color-text-secondary);
+  }
+
+  .ds-badge[data-ds-emphasis="outline"][data-ds-tone="accent"] {
+    --ds--badge-border: var(--ds-color-accent);
+    --ds--badge-foreground: var(--ds-color-text-accent);
+  }
+
+  .ds-badge[data-ds-emphasis="outline"][data-ds-tone="critical"] {
+    --ds--badge-border: var(--ds-color-text-critical);
+    --ds--badge-foreground: var(--ds-color-text-critical);
+  }
+
+  /*
+   * motion.count over motion.duration.quick while the crossfade flag is 0, motion.duration.instant while it
+   * is 1 (reduceMotion: instant, ADR-0023 §8.4), on motion.easing.out, the easing of a state change off the
+   * spring path (ADR-0023 §9). Only digits that replace other digits are marked; the first drawing is not.
+   */
+  .ds-badge-label[data-ds-replaced] {
+    animation: ds-badge-replace
+      calc(var(--ds-motion-duration-quick) * (1 - var(--ds-motion-presentation-crossfade)) + var(--ds-motion-duration-instant) * var(--ds-motion-presentation-crossfade))
+      var(--ds-motion-easing-out);
+  }
+
+  /*
+   * Forced colors drop the fill and the inset stroke, so the pill and the dot would vanish into Canvas: the
+   * badge keeps its shape as a CanvasText outline drawn inside it (Surface's idiom), and its digits take the
+   * system's text colour. Web only.
+   */
+  @media (forced-colors: active) {
+    .ds-badge {
+      outline: var(--ds-border-hairline) solid CanvasText;
+      outline-offset: calc(var(--ds-border-hairline) * -1);
+    }
+  }
+}

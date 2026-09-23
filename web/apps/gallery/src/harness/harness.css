@@ -71,6 +71,14 @@ body {
 }
 
 /*
+ * The box a Badge sits in inside a Surface (renderBadgeExample): a flex box, so the Surface hugs the pill and
+ * no line box around an inline mark adds height to it.
+ */
+.ds-gallery-mark {
+  display: flex;
+}
+
+/*
  * The row an `inherit-in-row` Icon sits in (renderIconExample): the row's own foreground, color.text.primary
  * (ListRow.yaml title.color.default), which a glyph with tone: inherit takes.
  */

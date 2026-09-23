@@ -32,6 +32,9 @@ extension DSGlyphSize: DSSpecKey {}
 extension DSGlyphWeight: DSSpecKey {}
 extension DSGlyphTone: DSSpecKey {}
 extension DSIconStyle: DSSpecKey {}
+extension DSBadgeVariant: DSSpecKey {}
+extension DSBadgeTone: DSSpecKey {}
+extension DSBadgeEmphasis: DSSpecKey {}
 
 /// Something the spec says that the reader cannot turn into a binding: a part or property that is not there, a cell
 /// that names a token the Apple catalogue does not bind, a block of the wrong shape.

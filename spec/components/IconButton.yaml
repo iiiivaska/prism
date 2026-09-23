@@ -136,6 +136,8 @@ tokens:
         default: comp.icon-button.primary.icon
         vivid: color.text.on-inverse-media
         glass: color.text.on-inverse-media
+  badge:
+    offset: space.1
 
 behavior:
   - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
@@ -152,7 +154,7 @@ behavior:
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the circle; touch never shows a hover state (ADR-0010 rule 2). For `plain`, whose circle is otherwise invisible, the hover overlay and the pressed fill paint that circle at comp.icon-button.size.sm, .md or .lg - never the larger invisible hit region, which would make the wash jump with modality.
   - Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9). Secondary, ghost and plain also take their pressed fill; primary and danger, whose pressed cell carries the same value as their rest cell, take the pressed overlay of color.bg.fill.neutral.subtle instead, so no variant's press is carried by the scale alone.
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; an unavailable action is better explained than disabled."
-  - "An optional Badge, passed in the `badge` slot, is anchored outside the top-trailing corner of the circle, overlapping it; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value, in the words Badge.yaml gives it: the `strings.Badge.count` sentence when the badge carries a `label`, and the locale-formatted count alone when it does not."
+  - "An optional Badge, passed in the `badge` slot, is anchored space.1 outside the top-trailing corner of the circle, overlapping it - the `badge` part's `offset`, which is the host's because Badge applies no offset of its own; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value, in the words Badge.yaml gives it: the `strings.Badge.count` sentence when the badge carries a `label`, and the locale-formatted count alone when it does not."
   - Buttons of one group share one size and one variant, apart from the single primary or selected circle (visual-dna §11 anti-pattern 24).
 
 motion:

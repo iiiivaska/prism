@@ -12,14 +12,29 @@
  * and Button's and Card's were recorded before Icon moved every glyph onto one path, so the move could
  * not change a name.
  */
+import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Icon, Theme } from "@iiiivaska/prism-react";
+import { Badge, Icon, Theme } from "@iiiivaska/prism-react";
+// The host flag is internal to the package (IconButton sets it, roadmap P4-4), so it is imported from the
+// source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so this is the one context
+// the Badge above reads.
+import { BadgeHostContext } from "../../../packages/react/src/badge/host.ts";
+import * as badgeStories from "../src/stories/Badge.stories.tsx";
 import * as buttonStories from "../src/stories/Button.stories.tsx";
 import * as cardStories from "../src/stories/Card.stories.tsx";
 import * as dividerStories from "../src/stories/Divider.stories.tsx";
 import * as iconStories from "../src/stories/Icon.stories.tsx";
-import { accessibleNodes, examplesInTheTree, nodesInTheTree, type AccessibleNode } from "./accessibility.tsx";
+import {
+  accessibleNodes,
+  examplesInTheTree,
+  examplesTextInTheTree,
+  nodesInTheTree,
+  textInTheTree,
+  textRuns,
+  type AccessibleNode,
+  type TextRun,
+} from "./accessibility.tsx";
 
 describe("the reading", () => {
   let host: HTMLElement | null = null;
@@ -45,6 +60,14 @@ describe("the reading", () => {
     expect(await accessibleNodes(staged(`<div role="separator" aria-hidden="true"></div>`))).toEqual([]);
     expect(await accessibleNodes(staged(`<div><span>Above</span></div>`))).toEqual([]);
     expect(await accessibleNodes(staged(`<span role="img" aria-label="Rule"><svg aria-hidden="true"></svg></span>`))).toEqual([{ role: "image", name: "Rule" }]);
+  });
+
+  // The unfiltered half: a text run is found with the node that holds it, loose text is held by nothing,
+  // and text under aria-hidden is not in the tree at all.
+  it("reads every text run with the node that holds it, and none that is hidden", async () => {
+    expect(await textRuns(staged(`<span role="img" aria-label="Rule"><span><span>3</span></span></span>`))).toEqual([{ text: "3", in: { role: "image", name: "Rule" } }]);
+    expect(await textRuns(staged(`<div><span>Above</span></div>`))).toEqual([{ text: "Above", in: null }]);
+    expect(await textRuns(staged(`<span role="img" aria-label="Rule" aria-hidden="true"><span>3</span></span>`))).toEqual([]);
   });
 
   it("names a node the way the browser does, not the way the markup reads", async () => {
@@ -168,5 +191,86 @@ describe("Icon (Icon.yaml accessibility)", () => {
       expect(await read(blank), JSON.stringify(blank)).toEqual([]);
     }
     expect(await read("Locked for editing")).toEqual([{ role: "image", name: "Locked for editing" }]);
+  });
+});
+
+/**
+ * Badge.yaml `accessibility` and behavior 10 (ADR-0032): a badge that stands alone with a non-blank `label`
+ * is one image named by the string it contributes, the `strings.Badge.count` sentence with the true count
+ * (`128 open incidents` while it draws `99+`) or a dot's `label` alone; every other badge is hidden. Every
+ * example stands alone with a label, so each is one node, and its name is byte for byte the string
+ * swift/Tests/DSSnapshotTests/DSBadgeAccessibilityTreeTests.swift reads off the simulator for the same id.
+ * The role is the stacks' one difference (`notes.platform`): Chromium's `image` here, an element with no
+ * trait on Apple.
+ *
+ * The digits are not a node the name reading can see either way, because it leaves out every text run.
+ * Chromium's own tree does keep them: the drawn digits are one `StaticText` held by the image and by
+ * nothing else, so no digit is loose text beside the badge, and a hidden badge leaves no text at all. An
+ * image's children are presentational, so at the platform level the image is a leaf and a screen reader
+ * hears its name alone; that last step is Chromium's platform mapping, which the protocol read here does
+ * not expose, so it is stated and not asserted.
+ */
+describe("Badge (Badge.yaml accessibility)", () => {
+  const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {
+    "count-neutral": [{ role: "image", name: "3 unread alerts" }],
+    "count-critical": [{ role: "image", name: "12 open incidents" }],
+    "count-accent": [{ role: "image", name: "7 items needing attention" }],
+    "count-overflow": [{ role: "image", name: "128 open incidents" }],
+    "outline-neutral": [{ role: "image", name: "4 queued runs" }],
+    "outline-critical": [{ role: "image", name: "2 open incidents" }],
+    "dot-critical": [{ role: "image", name: "unread" }],
+    "dot-accent": [{ role: "image", name: "new" }],
+    "on-vivid": [{ role: "image", name: "3 unread alerts" }],
+    "on-glass-over-map": [{ role: "image", name: "2 open incidents" }],
+  };
+
+  it("names each example by its contribution, as the Apple suite does", async () => {
+    expect(await examplesInTheTree(badgeStories)).toEqual(expected);
+  });
+
+  it("holds the drawn digits as the image's own text, never as text beside it, and a dot holds none", async () => {
+    const digits = (text: string, name: string): TextRun[] => [{ text, in: { role: "image", name } }];
+    expect(await examplesTextInTheTree(badgeStories)).toEqual({
+      "count-neutral": digits("3", "3 unread alerts"),
+      "count-critical": digits("12", "12 open incidents"),
+      "count-accent": digits("7", "7 items needing attention"),
+      // The run is what the badge draws; the name is what it says.
+      "count-overflow": digits("99+", "128 open incidents"),
+      "outline-neutral": digits("4", "4 queued runs"),
+      "outline-critical": digits("2", "2 open incidents"),
+      "dot-critical": [],
+      "dot-accent": [],
+      "on-vivid": digits("3", "3 unread alerts"),
+      "on-glass-over-map": digits("2", "2 open incidents"),
+    });
+  });
+
+  // The hidden cases no example stages, which DSBadgeAccessibilityTreeTests holds Apple's tree to as well:
+  // a count with no label, a blank label (DSIconBindingTests.blankLabels, Icon's rule), a dot with no label,
+  // counts that render nothing, and a labelled badge inside a host that reads it. None is in the tree at all:
+  // no node, and no text run of its digits either.
+  it("leaves out every badge that has no label, renders nothing or is read by its host", async () => {
+    const read = (node: ReactNode): Promise<AccessibleNode[]> => nodesInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    const text = (node: ReactNode): Promise<TextRun[]> => textInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    expect(await read(<Badge count={3} />)).toEqual([]);
+    expect(await text(<Badge count={3} />)).toEqual([]);
+    for (const blank of ["", "  ", "\t\n", "\u00a0", "\u3000", "\ufeff"]) {
+      expect(await read(<Badge count={3} label={blank} />), JSON.stringify(blank)).toEqual([]);
+      expect(await text(<Badge count={3} label={blank} />), JSON.stringify(blank)).toEqual([]);
+    }
+    expect(await read(<Badge variant="dot" />)).toEqual([]);
+    for (const count of [0, -1, undefined]) {
+      expect(await read(<Badge count={count} label="unread alerts" />), String(count)).toEqual([]);
+    }
+    const hosted = (
+      <BadgeHostContext.Provider value={true}>
+        <Badge count={3} label="unread alerts" />
+      </BadgeHostContext.Provider>
+    );
+    expect(await read(hosted)).toEqual([]);
+    expect(await text(hosted)).toEqual([]);
+    // And the control: the same badge out of the host is the one image, holding its digits.
+    expect(await read(<Badge count={3} label="unread alerts" />)).toEqual([{ role: "image", name: "3 unread alerts" }]);
+    expect(await text(<Badge count={3} label="unread alerts" />)).toEqual([{ text: "3", in: { role: "image", name: "3 unread alerts" } }]);
   });
 });

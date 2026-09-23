@@ -20,7 +20,8 @@
  * container's edge.
  *
  * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
- * frame, and on a material in a Surface hugging the glyph.
+ * frame, and on a material in a Surface hugging the glyph. Badge is staged the same way
+ * (`renderBadgeExample`).
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -30,6 +31,7 @@
  */
 import type { ReactElement, ReactNode } from "react";
 import {
+  Badge,
   Button,
   Card,
   Divider,
@@ -230,6 +232,26 @@ export function renderIconExample(props: Readonly<Record<string, unknown>>, exam
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       {glyph}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * A Badge on its example's `surface`, staged exactly as `renderBadgeExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it, which is Icon's staging: straight on the stage, with no
+ * card-sized frame, or inside a Surface of that material with `radius: card` and its default card padding,
+ * hugging the badge in a flex box (`ds-sc-mark`), over `backdrop` when the material is glass.
+ */
+export function renderBadgeExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const mark = <Badge {...props} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{mark}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, mark)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-sc-mark">{mark}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

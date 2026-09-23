@@ -7,6 +7,7 @@ import SwiftUI
 
 extension DSShowcaseRenderers {
     static let generated: [String: any DSExampleRenderer] = [
+        "Badge": DSBadgeRenderer(),
         "Button": DSButtonRenderer(),
         "Divider": DSDividerRenderer(),
         "Icon": DSIconRenderer(),

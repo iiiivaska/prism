@@ -23,7 +23,7 @@ struct DSComponentsContractTests {
         try DSSpec.component(name).text
     }
 
-    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon"]
+    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge"]
     nonisolated static let applePlatforms = ["ios", "ipados", "macos", "watchos"]
 
     @Test(arguments: implemented)

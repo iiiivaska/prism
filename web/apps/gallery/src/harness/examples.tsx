@@ -12,11 +12,12 @@
  * Surface with no padding, because its `inset: content` is measured from the container's edge.
  *
  * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
- * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph.
+ * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge
+ * is staged the same way (`renderBadgeExample`).
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button, Card and Icon examples carry their strings in their props, and Divider
- * draws none.
+ * (src/harness/content.ts); Button, Card, Icon and Badge examples carry their strings in their props, and
+ * Divider draws none.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
  * for every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -26,6 +27,7 @@
  */
 import type { ReactElement, ReactNode } from "react";
 import {
+  Badge,
   Button,
   Card,
   Divider,
@@ -34,6 +36,7 @@ import {
   Text,
   iconRegistry,
   type BackdropKind,
+  type BadgeProps,
   type ButtonProps,
   type CardActionKind,
   type CardProps,
@@ -234,6 +237,28 @@ export function renderIconExample(args: IconProps, example: ExampleFields): Reac
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       {glyph}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * A Badge on its example's `surface`, staged the same way in all four harnesses (the SwiftUI snapshots, both
+ * showcases and here), which is Icon's staging: straight on the stage, with no card-sized frame, or inside a
+ * Surface of that material with `radius: card` and its default card padding, hugging the badge, over
+ * `backdrop` when the material is glass. Inside the Surface the badge sits in a flex box (`ds-gallery-mark`),
+ * so the Surface is as tall as the pill and no line of text around it adds height, as `DSSurfaceView` hugs
+ * the badge on Apple. Only filled badges are staged over media (Badge.yaml behavior 12).
+ */
+export function renderBadgeExample(args: BadgeProps, example: ExampleFields): ReactElement {
+  const mark = <Badge {...args} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{mark}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, mark)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-gallery-mark">{mark}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

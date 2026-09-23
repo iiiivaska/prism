@@ -40,7 +40,7 @@ struct DSExample: Identifiable {
 enum DSExamples {
     static var all: [DSExample] {
         DSSurfaceExamples.all + DSTextExamples.all + DSButtonExamples.all + DSCardExamples.all + DSDividerExamples.all
-            + DSIconExamples.all
+            + DSIconExamples.all + DSBadgeExamples.all
     }
 
     static func named(_ id: String) -> DSExample? { all.first { $0.id == id } }

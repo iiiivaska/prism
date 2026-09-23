@@ -41,6 +41,14 @@ export {
 } from "@iiiivaska/prism-tokens/react";
 
 /**
+ * The component-owned strings of ADR-0032, from the same runtime: Prism's English `defaultStrings`, the
+ * table an app replaces once through `<Theme strings>`, and `useStrings()`, which reads the merged table.
+ * The keys are `spec/strings.yaml`. The template fill the components make, `fillTemplate` (./strings.ts),
+ * is internal and is not exported, as Apple's `DSStrings.fill` is `package` API (ADR-0032 decision 5).
+ */
+export { defaultStrings, useStrings, type StringKey, type StringsTable } from "@iiiivaska/prism-tokens/react";
+
+/**
  * Implemented spec version per component and platform (ADR-0006 rule 2, critic G-21), the web twin
  * of `DSComponentsManifest` in swift/Sources/DSComponents/Manifest.swift. The parity report (roadmap
  * P2-3) compares it with `specVersion` in spec/components/*.yaml. Edited by hand in the same change
@@ -112,6 +120,10 @@ export { dividerInsets, dividerOrientations, type DividerInset, type DividerOrie
 /** Icon (spec/components/Icon.yaml, specVersion 1). */
 export { Icon, type IconProps } from "./icon/Icon.tsx";
 export { glyphSizes, glyphTones, glyphWeights, type GlyphSize, type GlyphTone, type GlyphWeight } from "./icon/options.ts";
+
+/** Badge (spec/components/Badge.yaml, specVersion 1): a count or an unread dot, never a control. */
+export { Badge, type BadgeProps } from "./badge/Badge.tsx";
+export { badgeEmphases, badgeTones, badgeVariants, type BadgeEmphasis, type BadgeTone, type BadgeVariant } from "./badge/options.ts";
 
 /**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component

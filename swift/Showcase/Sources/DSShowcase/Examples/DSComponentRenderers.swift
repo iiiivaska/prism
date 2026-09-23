@@ -335,3 +335,42 @@ private struct DSRowForeground<Content: View>: View {
         content.foregroundStyle(ds.tokens.color.textPrimary)
     }
 }
+
+// MARK: - Badge
+
+/// Badge.yaml's `variant`, `tone`, `emphasis`, `count`, `max` and `label`, staged as Icon is in every harness: no frame
+/// of its own, so a page example is the badge on the page, and an example that declares a material is the badge inside
+/// a `card`-padded Surface that hugs it (the default `surfacePadding`). Badge declares no action, and its labels are the
+/// spec's own phrases, so there is no sample string here.
+public struct DSBadgeRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        let variant: DSBadgeVariant? = example.string("variant") == nil ? .count : example.raw("variant")
+        let tone: DSBadgeTone? = example.string("tone") == nil ? .neutral : example.raw("tone")
+        let emphasis: DSBadgeEmphasis? = example.string("emphasis") == nil ? .filled : example.raw("emphasis")
+        guard let variant, let tone, let emphasis else { return nil }
+        // `count` and `max` are whole numbers: one written as anything else — a fraction, a string — is not drawn as
+        // some other number (`DSPropValue.int` would truncate a fraction).
+        var count: Int?
+        if let written = example["count"] {
+            guard let whole = Self.whole(written) else { return nil }
+            count = whole
+        }
+        var max = 99
+        if let written = example["max"] {
+            guard let whole = Self.whole(written) else { return nil }
+            max = whole
+        }
+        // The label goes through as the caller's key; a blank one is no label, which `DSBadge` itself decides.
+        let label = example.string("label").map { LocalizedStringKey($0) }
+        return AnyView(DSBadge(count: count, variant: variant, tone: tone, emphasis: emphasis, max: max, label: label))
+    }
+
+    /// A number prop that is a whole number, or nil.
+    static func whole(_ value: DSPropValue) -> Int? {
+        value.double.flatMap { Int(exactly: $0) }
+    }
+}

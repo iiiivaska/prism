@@ -42,8 +42,13 @@
 ///
 /// P4-2 adds Icon (`DSIcon`) on all four Apple platforms. Icon.yaml marks watchOS `full` — it is one of the nine
 /// components ADR-0010 puts on the wrist — so its row carries a `watchos` key, and every prop works there.
+///
+/// P4-3 adds Badge (`DSBadge`) on iOS, iPadOS and macOS, with the strings table of ADR-0032 it is the first to read
+/// (`DSStrings`, `DSTheme(strings:)`). Badge.yaml marks watchOS `none` — a watch alert row shows its count with Text at
+/// the micro role — so its row, like Divider's, has no `watchos` key.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
+        "Badge": ["ios": 1, "ipados": 1, "macos": 1],
         "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],

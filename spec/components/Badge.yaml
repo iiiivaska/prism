@@ -63,7 +63,8 @@ tokens:
         neutral: color.border.strong
         accent: color.accent
         critical: color.text.critical
-    borderWidth: border.hairline
+    borderWidth:
+      outline: border.hairline
     radius: radius.control
     height:
       count: size.icon.md
@@ -73,7 +74,6 @@ tokens:
       dot: space.3
     paddingX:
       count: space.1
-    offset: space.1
   label:
     typography: type.micro
     color:
@@ -88,17 +88,18 @@ tokens:
 
 behavior:
   - A Badge is not interactive. It has no press, hover or focus state and is never a tap target; the control it marks carries the action and the accessibility label.
-  - "`variant: count` renders a pill at least size.icon.md tall and wide, so a one-digit and a two-digit badge share one silhouette; `dot` renders a space.3 circle with no digits."
+  - "`variant: count` renders a pill at least size.icon.md tall and wide: one digit sits in a size.icon.md circle, and more digits keep its height and capsule shape and widen it to hug them with space.1 either side; `dot` renders a space.3 circle with no digits."
   - "A count above `max` renders the `strings.Badge.overflow` template, \"{max}+\" in Prism's English defaults; the digits are type.micro, which is the only role allowed below 12 px and only for badge digits."
   - "Badge owns two strings and invents neither. The overflow mark is `strings.Badge.overflow`, and the string the badge contributes to the name of what it marks is `strings.Badge.count`, \"{count} {label}\" in Prism's English defaults, filled with the true `count` and the `label` the caller passed. Above `max` it is still the true count: the badge draws the overflow mark because four digits do not fit its silhouette, but it speaks the number (\"128 open incidents\", not \"99+ open incidents\"). Both are templates an app replaces once at the root, so a Russian app says a Russian sentence in a Russian order (ADR-0032 rules 1 and 2)."
   - "A count badge with no `label` fills no template. `strings.Badge.count` is used only when both of its placeholders have a value, so a badge whose `label` was left out - legal only inside a host that names what it counts, such as IconButton's `badge` slot, which reads the badge as part of the button's accessibility value - contributes the true `count` alone, rendered by the locale number formatter below: an IconButton named \"Alerts\" carrying a badge of 3 reads \"Alerts, 3\", never the template with an empty `{label}` left in it (ADR-0032 rule 10). A dot with no `label` has no count to fall back on and contributes nothing, so a dot whose news the host's own name does not already say needs a `label`."
   - "The template does no plural selection: `{label}` goes in as the caller wrote it. A `label` that must agree with the count - \"1 unread alert\" against \"3 unread alerts\", and in Russian a different noun form for 1, for 3 and for 5 - is therefore the caller's to choose for that count, with the app's own plural rules (ADR-0032 rule 9)."
   - "`count` and `max` are rendered by the platform's own locale number formatter, never by pasting digits together: a four-figure count separates its thousands the way the reader's locale does (ADR-0032 rule 4). The locale is the one the platform's locale context gives the badge where it renders - SwiftUI's `locale` environment value on Apple, React Aria's `useLocale()` on the web, which is the app's `I18nProvider` or the browser's language - and Badge has no locale prop of its own."
   - The digits are tabular, because a count changes while it is on screen and ADR-0021 §5 makes every live value tabular; a badge whose count goes from 8 to 9 therefore keeps its digit column.
-  - "`count: 0` hides the badge, because an empty mark reads as a broken one; a state that must stay visible uses the dot variant instead. A `count` badge with no `count` at all renders nothing: the mark is the number, and there is no empty form of it."
+  - "`count: 0` hides the badge, because an empty mark reads as a broken one; a state that must stay visible uses the dot variant instead. A `count` badge with no `count` at all renders nothing: the mark is the number, and there is no empty form of it. Likewise, a `count` that is not a whole number of at least 1 renders nothing, as 0 does: a negative count, and on the web, where any number can arrive, a fraction, `NaN`, an infinity or an integer beyond the safe range. A hidden badge draws no element and contributes nothing. A `dot` ignores `count`. `count` is compared with `max` as numbers, before either is formatted, and on the web a `max` that is not a safe integer is read as the default 99."
+  - "A badge is exposed to assistive technology only when it has a `label` and no host reads it, and it is then one element named by the string it contributes: the `strings.Badge.count` sentence for a count, the `label` alone for a dot. A `label` that is empty or nothing but whitespace, once the stack has resolved it (on Apple a localized key, looked up in the environment's locale), is no `label`, the rule Icon follows. Every other badge that renders is hidden: one with no `label`, and one inside a host that reads it - IconButton's `badge` slot among them - even when it carries a `label`, because the host speaks the badge's contribution as part of its own accessibility value and a second element would say the count twice."
   - "`emphasis: filled` is the solid mark: the neutral tone is the inverse solid (ink on light, white on dark), accent is the one attention fill and critical is the solid danger disc. `outline` has no fill at all and is the resting form beside a filled sibling, the way an inactive tab's count sits beside the active tab's."
   - "Over a map, an image, a vivid surface or glass only the filled emphasis is used. Its three fills are opaque, so the checked pair reaches the digits whatever the ground is, and no underlay is needed. An outline badge is not placed over media: its stroke and its digits would sit straight on the backdrop, where no pair checks them."
-  - The badge is offset space.1 outside the corner of the element it marks and overlaps it; it never changes that element's layout or its hit region.
+  - "Badge applies no offset of its own and never changes the layout or the hit region of what it marks. A host that anchors it on a corner places it from that corner by its own `tokens.badge.offset` (IconButton, StatCard), because a component sets no space outside its root (spec/SCHEMA.md); a badge that leads or trails a row sits in the row's flow."
   - "A critical badge is never the only cue for a problem: the row, the tab or the button it marks also names the state in words."
   - The badge never animates its arrival with a pulse or a bounce; a changed count replaces the old one over motion.duration.quick.
   - A badge that carries a status word instead of a count is a StatusPill; a pressable pill with a label is a Chip.
@@ -108,7 +109,7 @@ motion:
   reduceMotion: instant
 
 accessibility:
-  role: none by itself; the count is part of the accessibility label of the element the badge marks
+  role: none by itself; the count is part of the accessibility label of the element the badge marks. A badge that stands alone with a `label` is one element named by the string it contributes, which the web exposes as an image and Apple as an element with no trait (notes.platform)
   label: the `strings.Badge.count` template filled with the true count, above `max` too, and the caller's `label`, which is "3 unread alerts" under the English defaults; a badge that stands alone carries that string itself, and a dot has no count, so it announces the caller's `label` alone ("unread"). A count badge with no `label`, which only a host that names what it counts may hold, contributes the locale-formatted count alone and no template ("3"), and a dot with no `label` contributes nothing (behavior). Neither the template nor the number is a word Badge invented (ADR-0032 rules 1, 2, 4 and 10)
   traits: []
   keyboard: not focusable; the badge is never in the focus order, and its meaning reaches the keyboard through the control it marks
@@ -139,7 +140,7 @@ examples:
     props: { variant: count, tone: accent, count: 7, label: "items needing attention" }
   - id: count-overflow
     props: { variant: count, tone: critical, count: 128, max: 99, label: "open incidents" }
-    description: renders "99+" and keeps the two-digit silhouette
+    description: renders "99+" in a pill that keeps the count pill's size.icon.md height and capsule shape and widens past a two-digit pill to hug its three characters with space.1 either side
   - id: outline-neutral
     props: { variant: count, tone: neutral, emphasis: outline, count: 4, label: "queued runs" }
     description: the resting count beside an active tab's filled badge
@@ -160,9 +161,11 @@ examples:
 
 notes:
   platform:
+    ios: "An exposed badge (behavior) is one accessibility element named by the string it contributes, with no trait (`traits: []`); every other badge is `accessibilityHidden`. The role is the stacks' one difference - the web exposes the same badge as `role=\"img\"` - and the name is byte-identical on both."
     watchos: "`none`. Badge is not in ADR-0010's Tier 3 set. A watch alert row shows its count with Text at the micro role instead, so the wrist keeps one text element rather than a mark plus a mark."
     macos: identical to iOS; the badge never reacts to hover, because it is not a control.
-    web-desktop: rendered as a decorative element with `aria-hidden` when its count is already in the host control's accessible name.
+    web-touch: "An exposed badge (behavior) is `role=\"img\"` named by `aria-label`; every other badge is `aria-hidden`."
+    web-desktop: "An exposed badge (behavior) is `role=\"img\"` named by `aria-label`; every other badge is `aria-hidden`, including one whose count is already in the host control's accessible name."
   design: >-
     Seven of eleven shots carry a badge (docs/research/component-inventory.md): a numbered danger disc
     offset outside an icon button's corner, a numbered badge leading an alert row, count badges on tabs

@@ -1,6 +1,6 @@
 /**
- * Browser behaviour of Button, Card, Divider and Icon, in Vitest browser mode (Chromium): what the Node suites
- * can only read from the stylesheets, computed on real elements.
+ * Browser behaviour of Button, Card, Divider, Icon and Badge, in Vitest browser mode (Chromium): what the Node
+ * suites can only read from the stylesheets, computed on real elements.
  *
  * - Button.yaml behaviors 2, 3, 5 and 6: the hit region per modality with an unchanged visual box, the
  *   width kept while loading, labels on one line, hover only under pointer, the press scale.
@@ -25,6 +25,11 @@
  *   on and `inherit` taking the color around it; the mirror under `dir="rtl"`; no event handler run and no
  *   focus taken, even past the type; a changed `name` fading its new glyph in over motion.duration.quick,
  *   and at once under Reduce Motion; Button's and Card's glyphs are the same box.
+ * - Badge.yaml behaviors 1, 2, 8, 11 and 15 and `motion`: the count pill at least `size.icon.md` on both axes,
+ *   growing past it only in width, the dot a `space.3` square, the same in every density; the fills, the
+ *   stroke inside the outline pill and none on a filled one; tabular digits; never a tap target; a changed
+ *   count fading its new digits in over motion.duration.quick, at once under Reduce Motion, and not at all on
+ *   the first drawing or on a badge that reappears.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -39,7 +44,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Button, Card, Divider, Icon, Surface, Theme, cardUnitSeparator, glyphSizes, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
+import { Badge, Button, Card, Divider, Icon, Surface, Theme, cardUnitSeparator, glyphSizes, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -897,5 +902,172 @@ describe("Icon", () => {
     expect(getComputedStyle(ring).color).toBe(tokenColor(ring, "--ds-color-icon-primary"));
     const trailing = find(element, '.ds-icon[data-ds-slot="button-trailing-icon"]');
     expect(getComputedStyle(trailing).color).toBe(getComputedStyle(find(element, ".ds-button")).color);
+  });
+});
+
+describe("Badge", () => {
+  const seconds = (variable: string): string =>
+    getComputedStyle(document.documentElement).getPropertyValue(variable).trim().replace(/^(\d+)ms$/, (_all, ms: string) => `${Number(ms) / 1000}s`);
+
+  it("is a count pill at least size.icon.md on both axes and a space.3 dot, the same in every density (behavior 2)", async () => {
+    const measured: Record<string, readonly number[]> = {};
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      const element = await mount(
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
+          <Badge count={3} label="unread alerts" data-probe="one" />
+          <Badge count={12} tone="critical" label="open incidents" data-probe="two" />
+          <Badge count={128} max={99} tone="critical" label="open incidents" data-probe="overflow" />
+          <Badge count={4} emphasis="outline" label="queued runs" data-probe="outline" />
+          <Badge variant="dot" tone="critical" label="unread" data-probe="dot" />
+        </div>,
+        { density },
+      );
+      const floor = tokenPx(element, "--ds-size-icon-md");
+      const dot = tokenPx(element, "--ds-space-3");
+      expect([floor, dot]).toEqual([20, 8]);
+      for (const probe of ["one", "two", "overflow", "outline", "dot"]) {
+        const rect = find(element, `[data-probe="${probe}"]`).getBoundingClientRect();
+        measured[`${density} ${probe}`] = [rect.width, rect.height];
+      }
+      // One digit is the size.icon.md circle, in either emphasis. More digits share its height and its capsule
+      // and widen it to hug them with space.1 on either side, never cutting one: `12` and `99+`.
+      expect(measured[`${density} one`], density).toEqual([floor, floor]);
+      expect(measured[`${density} outline`], density).toEqual([floor, floor]);
+      for (const probe of ["two", "overflow"]) {
+        const [width = 0, height] = measured[`${density} ${probe}`] ?? [];
+        const pill = find(element, `[data-probe="${probe}"]`);
+        const digits = find(pill, ".ds-text").getBoundingClientRect();
+        expect(height, `${density} ${probe}`).toBe(floor);
+        expect(width, `${density} ${probe}`).toBeGreaterThanOrEqual(floor);
+        expect(Number.parseFloat(getComputedStyle(pill).paddingInlineStart), `${density} ${probe}`).toBe(tokenPx(pill, "--ds-space-1"));
+        expect(width, `${density} ${probe}`).toBeCloseTo(Math.max(floor, digits.width + 2 * tokenPx(pill, "--ds-space-1")), 3);
+        expect(getComputedStyle(pill).borderTopLeftRadius, `${density} ${probe}`).toBe(`${tokenPx(pill, "--ds-radius-control")}px`);
+      }
+      expect(measured[`${density} overflow`]?.[0] ?? 0, density).toBeGreaterThan(measured[`${density} two`]?.[0] ?? 0);
+      expect(measured[`${density} dot`], density).toEqual([dot, dot]);
+      await unmount();
+    }
+    for (const probe of ["one", "two", "overflow", "outline", "dot"]) {
+      expect(measured[`regular ${probe}`], probe).toEqual(measured[`compact ${probe}`]);
+      expect(measured[`comfortable ${probe}`], probe).toEqual(measured[`compact ${probe}`]);
+    }
+  });
+
+  it("keeps the pill's height when it sits in a line of taller text", async () => {
+    const element = await mount(
+      <p style={{ margin: 0, fontSize: "32px", lineHeight: "48px" }}>
+        Queued <Badge count={4} label="queued runs" data-probe="inline" />
+      </p>,
+    );
+    const badge = find(element, '[data-probe="inline"]');
+    expect(badge.getBoundingClientRect().height).toBe(tokenPx(badge, "--ds-size-icon-md"));
+  });
+
+  it("fills a filled badge with no stroke, and strokes an outline one inside the pill with no fill (behavior 11)", async () => {
+    const element = await mount(
+      <>
+        <Badge count={3} tone="neutral" label="unread alerts" data-probe="filled-neutral" />
+        <Badge count={3} tone="accent" label="unread alerts" data-probe="filled-accent" />
+        <Badge count={3} tone="critical" label="unread alerts" data-probe="filled-critical" />
+        <Badge count={3} tone="neutral" emphasis="outline" label="unread alerts" data-probe="outline-neutral" />
+        <Badge count={3} tone="accent" emphasis="outline" label="unread alerts" data-probe="outline-accent" />
+        <Badge count={3} tone="critical" emphasis="outline" label="unread alerts" data-probe="outline-critical" />
+      </>,
+    );
+    const filled = { neutral: ["--ds-badge-neutral-bg", "--ds-badge-neutral-text"], accent: ["--ds-badge-accent-bg", "--ds-badge-accent-text"], critical: ["--ds-badge-critical-bg", "--ds-badge-critical-text"] } as const;
+    for (const [tone, [fill, text]] of Object.entries(filled)) {
+      const badge = find(element, `[data-probe="filled-${tone}"]`);
+      const style = getComputedStyle(badge);
+      expect(style.backgroundColor, tone).toBe(tokenColor(badge, fill));
+      expect(style.color, tone).toBe(tokenColor(badge, text));
+      // A zero-width inset shadow: a filled badge has no stroke at all.
+      expect(style.boxShadow, tone).toMatch(/ 0px 0px 0px 0px inset$/u);
+      expect(getComputedStyle(find(badge, ".ds-text")).color, tone).toBe(style.color);
+    }
+    const outline = { neutral: ["--ds-color-border-strong", "--ds-color-text-secondary"], accent: ["--ds-color-accent", "--ds-color-text-accent"], critical: ["--ds-color-text-critical", "--ds-color-text-critical"] } as const;
+    for (const [tone, [stroke, text]] of Object.entries(outline)) {
+      const badge = find(element, `[data-probe="outline-${tone}"]`);
+      const style = getComputedStyle(badge);
+      expect(style.backgroundColor, tone).toMatch(TRANSPARENT);
+      expect(style.color, tone).toBe(tokenColor(badge, text));
+      expect(style.boxShadow, tone).toBe(`${tokenColor(badge, stroke)} 0px 0px 0px ${tokenPx(badge, "--ds-border-hairline")}px inset`);
+      expect(style.borderTopWidth, tone).toBe("0px");
+    }
+  });
+
+  it("draws tabular digits in type.micro, so a count going from 8 to 9 keeps its digit column (behavior 8)", async () => {
+    const element = await mount(
+      <>
+        <Badge count={18} label="queued runs" data-probe="eighteen" />
+        <Badge count={11} label="queued runs" data-probe="eleven" />
+      </>,
+    );
+    const eighteen = find(find(element, '[data-probe="eighteen"]'), ".ds-text");
+    const eleven = find(find(element, '[data-probe="eleven"]'), ".ds-text");
+    expect(getComputedStyle(eighteen).fontVariantNumeric).toBe("tabular-nums");
+    expect(getComputedStyle(eighteen).fontSize).toBe(`${tokenPx(eighteen, "--ds-type-micro-font-size")}px`);
+    expect(eighteen.getBoundingClientRect().width).toBeCloseTo(eleven.getBoundingClientRect().width, 3);
+  });
+
+  it("is never a tap target: presses reach what it marks, and it takes no focus (behavior 1)", async () => {
+    const press = vi.fn();
+    const element = await mount(
+      <div data-probe="host" style={{ position: "relative", display: "inline-block", padding: "16px" }} onClick={press}>
+        <Badge count={3} label="unread alerts" data-probe="badge" />
+      </div>,
+    );
+    const badge = find(element, '[data-probe="badge"]');
+    expect(getComputedStyle(badge).pointerEvents).toBe("none");
+    const rect = badge.getBoundingClientRect();
+    expect(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2)).toBe(find(element, '[data-probe="host"]'));
+    await userEvent.click(badge, { force: true });
+    expect(press).toHaveBeenCalledTimes(1);
+    badge.focus();
+    expect(document.activeElement).not.toBe(badge);
+  });
+
+  it("fades new digits in over motion.duration.quick, and replaces them at once under Reduce Motion (motion)", async () => {
+    for (const motion of ["standard", "reduce"] as const) {
+      const theme = (count: number): ReactNode => (
+        <Theme tokens={tokens} colorScheme="light" density="compact" modality="pointer" motion={motion}>
+          <Badge count={count} label="unread alerts" data-probe="swap" />
+        </Theme>
+      );
+      const element = await mount(<Badge count={8} label="unread alerts" data-probe="swap" />, { motion });
+      const first = find(element, '[data-probe="swap"] [data-ds-slot="badge-label"]');
+      expect(first.hasAttribute("data-ds-replaced"), motion).toBe(false);
+      expect(getComputedStyle(first).animationName, motion).toBe("none");
+      await act(async () => {
+        root?.render(theme(9));
+        await Promise.resolve();
+      });
+      const replaced = find(element, '[data-probe="swap"] [data-ds-slot="badge-label"]');
+      expect(replaced, motion).not.toBe(first);
+      expect(replaced.textContent, motion).toBe("9");
+      expect(replaced.hasAttribute("data-ds-replaced"), motion).toBe(true);
+      const style = getComputedStyle(replaced);
+      expect(style.animationName, motion).toBe("ds-badge-replace");
+      expect(style.animationDuration, motion).toBe(motion === "reduce" ? seconds("--ds-motion-duration-instant") : seconds("--ds-motion-duration-quick"));
+      expect(style.animationDuration, motion).toBe(motion === "reduce" ? "0s" : "0.1s");
+      // The name follows the count at once: it is never animated.
+      expect(find(element, '[data-probe="swap"]').getAttribute("aria-label"), motion).toBe("9 unread alerts");
+      await unmount();
+    }
+  });
+
+  it("does not fade a badge that reappears after rendering nothing: it arrives, and a badge never animates its arrival (behavior 15)", async () => {
+    const element = await mount(<Badge count={0} label="unread alerts" data-probe="back" />);
+    expect(element.querySelector('[data-probe="back"]')).toBeNull();
+    await act(async () => {
+      root?.render(
+        <Theme tokens={tokens} colorScheme="light" density="compact" modality="pointer" motion="standard">
+          <Badge count={3} label="unread alerts" data-probe="back" />
+        </Theme>,
+      );
+      await Promise.resolve();
+    });
+    const label = find(element, '[data-probe="back"] [data-ds-slot="badge-label"]');
+    expect(label.hasAttribute("data-ds-replaced")).toBe(false);
+    expect(getComputedStyle(label).animationName).toBe("none");
   });
 });

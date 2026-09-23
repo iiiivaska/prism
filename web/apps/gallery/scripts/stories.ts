@@ -37,6 +37,7 @@ interface Renderer {
 }
 
 const RENDERERS: Readonly<Record<string, Renderer>> = {
+  Badge: { render: "renderBadgeExample" },
   Button: { render: "renderButtonExample" },
   Card: { render: "renderCardExample", args: "CardExampleArgs" },
   Divider: { render: "renderDividerExample" },

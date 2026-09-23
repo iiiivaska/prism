@@ -23,6 +23,12 @@
  *
  * Roles are Chromium's spelling of them (`image` for `role="img"`, `separator`, `button`). Names are the
  * strings Chromium computed, compared byte for byte with the ones the Apple suites read for the same ids.
+ *
+ * Because that reading drops every text run, it says nothing about text: a run missing from it was
+ * filtered, not absent. `textRuns` is the unfiltered half for that question. It keeps every `StaticText`
+ * Chromium has not ignored and names the node that holds it — the nearest ancestor the reading above
+ * would keep — so a claim such as "the digits are the image's own text, never text beside it" is read off
+ * the tree rather than assumed from an empty list.
  */
 import { act, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
@@ -67,8 +73,21 @@ function isolatedWorld(): Promise<number> {
   return world;
 }
 
-/** The nodes of `element`'s subtree, `element` included, that carry a role or a name, in tree order. */
-export async function accessibleNodes(element: Element): Promise<AccessibleNode[]> {
+/** One node of Chromium's tree as the protocol hands it back, before either reading filters it. */
+interface TreeNode {
+  readonly id: string;
+  readonly parentId: string | undefined;
+  readonly ignored: boolean;
+  readonly role: string;
+  readonly name: string;
+}
+
+/**
+ * The nodes of Chromium's tree for `element`'s subtree, `element` included, in tree order and each with
+ * its parent: `Accessibility.queryAXTree` with no name or role to match. Ignored nodes may be among them;
+ * both readings below drop those.
+ */
+async function treeOf(element: Element): Promise<TreeNode[]> {
   const session = cdp();
   const contextId = await isolatedWorld();
   const token = crypto.randomUUID();
@@ -78,16 +97,54 @@ export async function accessibleNodes(element: Element): Promise<AccessibleNode[
     if (result.objectId === undefined) throw new Error("The isolated world did not find the element it was handed.");
     const { nodes } = await session.send("Accessibility.queryAXTree", { objectId: result.objectId });
     await session.send("Runtime.releaseObject", { objectId: result.objectId });
-    return nodes.flatMap((node) => {
-      if (node.ignored) return [];
-      const role = typeof node.role?.value === "string" ? node.role.value : "";
-      const name = typeof node.name?.value === "string" ? node.name.value : "";
-      if (UNROLED.has(role) && !(role === "generic" && name !== "")) return [];
-      return [{ role, name }];
-    });
+    return nodes.map((node) => ({
+      id: node.nodeId,
+      parentId: node.parentId,
+      ignored: node.ignored,
+      role: typeof node.role?.value === "string" ? node.role.value : "",
+      name: typeof node.name?.value === "string" ? node.name.value : "",
+    }));
   } finally {
     element.removeAttribute(TARGET);
   }
+}
+
+/** Whether the reading keeps a node: in the tree, and carrying a role of its own or, for a `generic`, a name. */
+function isKept(node: TreeNode): boolean {
+  return !node.ignored && !(UNROLED.has(node.role) && !(node.role === "generic" && node.name !== ""));
+}
+
+/** The nodes of `element`'s subtree, `element` included, that carry a role or a name, in tree order. */
+export async function accessibleNodes(element: Element): Promise<AccessibleNode[]> {
+  return (await treeOf(element)).filter(isKept).map(({ role, name }) => ({ role, name }));
+}
+
+/** One run of text in Chromium's tree, and the node that holds it. */
+export interface TextRun {
+  /** The run's text, as Chromium has it. */
+  readonly text: string;
+  /**
+   * The nearest ancestor `accessibleNodes` would keep, which is the node whose content the run is; null
+   * when no such ancestor sits inside the element read, so the run is loose text.
+   */
+  readonly in: AccessibleNode | null;
+}
+
+/**
+ * Every `StaticText` of `element`'s subtree that Chromium has not ignored, in tree order, with the node
+ * that holds it: the reading `accessibleNodes` filters out. Text under `aria-hidden` or `display: none`
+ * is ignored or absent, so it is not here either.
+ */
+export async function textRuns(element: Element): Promise<TextRun[]> {
+  const nodes = await treeOf(element);
+  const byId = new Map(nodes.map((node) => [node.id, node]));
+  const parentOf = (node: TreeNode): TreeNode | undefined => (node.parentId === undefined ? undefined : byId.get(node.parentId));
+  return nodes.flatMap((node) => {
+    if (node.ignored || node.role !== "StaticText") return [];
+    let holder = parentOf(node);
+    while (holder !== undefined && !isKept(holder)) holder = parentOf(holder);
+    return [{ text: node.name, in: holder === undefined ? null : { role: holder.role, name: holder.name } }];
+  });
 }
 
 /** A generated stories module (src/stories/<Component>.stories.tsx), one story per spec example. */
@@ -117,11 +174,20 @@ function exampleId(parameters: unknown): string {
  * lists its exports alphabetically, so the keys are not in the spec's order.)
  */
 export async function examplesInTheTree(stories: StoriesModule): Promise<Record<string, AccessibleNode[]>> {
-  const read: Record<string, AccessibleNode[]> = {};
+  return perExample(stories, nodesInTheTree);
+}
+
+/** The text runs of every example, staged the same way (`textRuns`), keyed by the example's id. */
+export async function examplesTextInTheTree(stories: StoriesModule): Promise<Record<string, TextRun[]>> {
+  return perExample(stories, textInTheTree);
+}
+
+async function perExample<T>(stories: StoriesModule, read: (node: ReactNode) => Promise<T>): Promise<Record<string, T>> {
+  const found: Record<string, T> = {};
   for (const Story of Object.values(composeStories(stories, preview)).filter(isComposedStory)) {
-    read[exampleId(Story.parameters)] = await nodesInTheTree(<Story />);
+    found[exampleId(Story.parameters)] = await read(<Story />);
   }
-  return read;
+  return found;
 }
 
 /**
@@ -130,6 +196,15 @@ export async function examplesInTheTree(stories: StoriesModule): Promise<Record<
  * whatever `<Theme>` the node needs.
  */
 export async function nodesInTheTree(node: ReactNode): Promise<AccessibleNode[]> {
+  return mounted(node, accessibleNodes);
+}
+
+/** The text runs of one React node (`textRuns`), mounted the way `nodesInTheTree` mounts it. */
+export async function textInTheTree(node: ReactNode): Promise<TextRun[]> {
+  return mounted(node, textRuns);
+}
+
+async function mounted<T>(node: ReactNode, read: (element: Element) => Promise<T>): Promise<T> {
   const host = document.createElement("div");
   document.body.append(host);
   const root = createRoot(host);
@@ -138,7 +213,7 @@ export async function nodesInTheTree(node: ReactNode): Promise<AccessibleNode[]>
       root.render(node);
       await Promise.resolve();
     });
-    return await accessibleNodes(host);
+    return await read(host);
   } finally {
     await act(async () => {
       root.unmount();
