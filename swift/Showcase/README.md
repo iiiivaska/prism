@@ -71,8 +71,10 @@ The Icons screen's four controls have keys of their own, spelled as the web's co
 `DSShowcaseIconSize` (`sm`, `md`, `lg`), `DSShowcaseIconWeight` (`control`, `display`), `DSShowcaseIconStyle`
 (`default`, `outline`, `filled`, `duotone`) and `DSShowcaseIconDirection` (`ltr`, `rtl`), plus
 `DSShowcaseIconsBlock` (`registry`, `ladder`), which opens the screen scrolled to that block. Each implies the Icons
-section. They name a state of the screen, never an icon: the screen has no per-icon page (`docs/showcase.md` §2,
-"The Icons screen").
+section, `DSShowcaseIconStyle default` included. A `DSShowcaseSection` wins over the section a key implies, and
+that includes one left in the app's defaults domain by an earlier `defaults write`, which `UserDefaults` reads as
+it reads a launch argument. They name a state of the screen, never an icon: the screen has no per-icon page
+(`docs/showcase.md` §2, "The Icons screen").
 
 ```sh
 xcrun simctl launch "iPhone 17" com.example.prism.showcase \

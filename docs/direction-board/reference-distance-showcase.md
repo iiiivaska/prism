@@ -6,6 +6,7 @@
 - Built and run for this review: the web app (`pnpm showcase`) and the Apple app on the iPhone 17 simulator (iOS 26.5) and on the Mac (`pnpm showcase:apple`, `--platform macos`)
 - Companions: the three direction-board screens, reviewed 2026-09-16 — [README.md § Reference-distance review](README.md#reference-distance-review); the gallery, reviewed 2026-09-22 — [reference-distance-gallery.md](reference-distance-gallery.md)
 - **Re-reviewed, the Icons screens only: 2026-09-23** — [§11](#11-re-review-of-the-icons-screens--2026-09-23). P4-2 fired §10 condition 2 by implementing `Icon`, and P4-D4 then reconciled the two screens. §11 carries their verdict, a correction to this review (SD-6) and the Icons clearance's own expiry conditions. Sections 1–10 stand as written on 2026-09-22, apart from pointers to §11.
+- **Re-reviewed, the component pages: 2026-09-23** — [§12](#12-re-review-of-the-component-pages--2026-09-23). P4-4's `IconButton/with-badge` fired §10 condition 4, and SD-8 flagged it. §12 reviews the IconButton page on both apps, with that example on its own page on Apple, and the pages wave 1 added or changed. It closes SD-8, records SD-9 (the pages of the four wave-1 components staged 39 examples that no review had read), and replaces §10 condition 4. Sections 1–11 stand as written, apart from pointers to §12.
 
 This is the **showcase half** of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. The gallery half closed on the same day and recorded in its §7 that the showcase half stayed open; this document is what closes it. Critic **C-16** flagged the ordering.
 
@@ -335,7 +336,7 @@ Every screen in both apps. A "screen" is one page shape; where a shape is instan
 1. **Phase 5 rebuilds the chrome from real components** (`docs/showcase.md` §2; `Sidebar`, `TabBar`, `AdaptiveShell`). The chrome then stops being platform furniture and becomes a Prism composition. **SD-3.**
 2. **The Icons screen gains a browser affordance** — search, filter by category, copy-to-clipboard, copy-as-SVG, download, or a per-icon detail page — or `Icon` is implemented and the screen moves into Components. **SD-1.** — **Fired** when P4-2 implemented `Icon` (62a30cf). The Icons screens were re-reviewed on 2026-09-23 in [§11](#11-re-review-of-the-icons-screens--2026-09-23), and their clearance now expires on the conditions in §11.8, not on this one.
 3. **The web axis bar gains a viewport/device control or a canvas/docs tab pair.** **SD-2.**
-4. **A new staged example composes more than one component** — the first chart example from the data-viz wave, or a pattern example screen. This is the gallery review's **RD-1** condition, and it reaches the showcase too, because the showcase stages whatever the specs carry with no edit of its own.
+4. **A new staged example composes more than one component** — the first chart example from the data-viz wave, or a pattern example screen. This is the gallery review's **RD-1** condition, and it reaches the showcase too, because the showcase stages whatever the specs carry with no edit of its own. — **Fired** when P4-4 landed `IconButton/with-badge` (`6aebd6c`). Reviewed on 2026-09-23 in [§12](#12-re-review-of-the-component-pages--2026-09-23), whose §12.7 replaces this condition.
 
 A new token group, a newly implemented component, a new single-component example or a new brand does **not** expire it: each of those is the same screen shape with different rows, which is the whole design of both apps.
 
@@ -373,7 +374,7 @@ The web rail's Icons entry has no sub-items, and the route ignores anything afte
 - **What it is.** From the top:
   - A title and a one-line lead: the entry count and the vendor package.
   - A panel tagged `Icon`. It says that every glyph below is `Icon` with `tone: primary`, at the axes set here; that the spec examples are on Components; that the ladder is registry data; and that *"nothing here acts on one icon: a cell is the registry's row with a picture"*.
-  - *Icon's axes*: four segmented rows. `size` offers sm · 16px, md · 20px and lg · 24px. `weight` offers control · icon.weight and display · icon.weight-display. `style` offers entry default, outline, filled and duotone. `direction` offers ltr and rtl. Under them is one note per axis, with counts taken from the registry: 27 of 51 entries are `fill: false`, 6 are marked `rtlMirror`, and the flip count is measured.
+  - *Icon's axes*: four segmented rows. `size` offers sm · 16px, md · 20px and lg · 24px. `weight` offers control · icon.weight and display · icon.weight-display. `style` offers entry default, outline, filled and duotone. `direction` offers ltr and rtl. Under them are three notes, for weight, style and direction (size has none), with counts taken from the registry: 27 of 51 entries are `fill: false`, 6 are marked `rtlMirror`, and the flip count is measured.
   - *The registry*: 51 cards. At 1440 px they are five across, each 208 × 200 px, with a 12 px gap, an 8 px radius, a 6 % ink tint and no border. At 375 px there is one per row. Each card has a 24 px glyph centred at the top. Under it, left-aligned, are the id in bold mono, the token path, the categories, the tags, and one mono line with the default style, the Phosphor binding and the `fill: false` and `mirrors in rtl` marks.
   - *Registry data: the ladder*: `action.add` at six rungs, four boxes and three styles, tagged `registry`.
 - **Nearest reference (of the eleven).** Still no icon library. The nearest single move is the factor grid of the finance monitor desktop 27597487: six white cards at a 12 px gutter, each opened by an icon row with a title under it.
@@ -453,13 +454,13 @@ Rows 14–16 continue §6's numbering. §6 row 10 is superseded by them.
 
 **Action.** Taken by P4-D4. This re-review tapped a tile on the iPhone, and read both stacks' sources for any gesture, button, link, route or launch key that names an entry (§11.1). The lesson for the next reviewer: open every launch key a screen documents, and touch what looks touchable.
 
-#### SD-7 — Not a distance matter: what the web's direction note measures depends on how the app is served
+#### SD-7 — Not a distance matter: what the web's direction note measures depends on how the app is served — **fixed 2026-09-23**
 
-**What.** Under rtl, measured the same way on 2026-09-23, the note reads **0 of 6** flipped in the Vite build and **6 of 6** under a fresh `vite` dev server.
+**What.** Under rtl, measured the same way on 2026-09-23, the note read **0 of 6** flipped in the Vite build and **6 of 6** under a fresh `vite` dev server.
 
-**Why.** `Glyph.css` writes `:dir(rtl)`. The dev server passes that selector through, and Chromium matches it. A build that targets Prism's Chrome 111 floor lowers it to `:lang()` selectors, which a `dir` attribute on its own never matches (`docs/showcase.md` §2, "The Icons screen"). So a reader running `pnpm showcase` sees an `ok` tag, a reader of the built app sees a `warn` tag, and both tags are true.
+**Why.** `Glyph.css` wrote `:dir(rtl)`. The dev server passed that selector through, and Chromium matched it. A build that targets Prism's Chrome 111 floor lowers it to `:lang()` selectors, which a `dir` attribute on its own never matches (`docs/showcase.md` §2, "The Icons screen"). So a reader running `pnpm showcase` saw an `ok` tag, a reader of the built app saw a `warn` tag, and both tags were true.
 
-**Whose.** The defect belongs to `@iiiivaska/prism-react`: Icon.yaml behavior 11 fails on the web for a consumer that targets the floor and sets only `dir`. `Text.css` uses the same selector for its fade.
+**Whose.** The defect belonged to `@iiiivaska/prism-react`: Icon.yaml behavior 11 failed on the web for a consumer that targeted the floor and set only `dir`. `Text.css` used the same selector for its fade. It was fixed in the package the same day: `Glyph.css` and `Text.css` now read the nearest `dir` attribute through attribute selectors, and the runtime-contract suite's direction page checks both at the floor in Chromium, WebKit and Firefox. Icon.yaml now states that reading and what it leaves out (`dir="auto"`, more than four nested changes of direction, a direction set without a `dir` attribute), which narrows behavior 11's web half, so Icon went to specVersion 3 on both stacks.
 
 **Distance.** None. Mirrored or not, the grid is the same grid.
 
@@ -467,7 +468,7 @@ Rows 14–16 continue §6's numbering. §6 row 10 is superseded by them.
 
 `.ds-sc-header` now paints `--ds-color-bg-page` under a `--ds-color-bg-surface` layer (`web/apps/showcase/src/app.css`), as ADR-0030 §5.1 has a surface do. Read off the running build in dark, the header is `background-color: oklch(0.164 0.0065 271)` under a `rgba(255, 255, 255, 0.06)` gradient. At 1440 and 375 px, on every state opened, the grid scrolls under an opaque header.
 
-#### SD-8 — Outside this re-review, and flagged: §10 condition 4 may have fired with P4-4
+#### SD-8 — Outside this re-review, and flagged: §10 condition 4 may have fired with P4-4 — **closed 2026-09-23** ([§12](#12-re-review-of-the-component-pages--2026-09-23))
 
 **What.** Condition 4 expires this document's clearance when a staged example composes more than one component. `IconButton.yaml`'s `with-badge` example is a secondary icon button with the notification glyph and a count Badge of 3 at its top-trailing corner. It composes `IconButton`, `Icon` and `Badge`, and both apps stage it with no edit of their own, because they stage every example of an implemented component.
 
@@ -485,7 +486,7 @@ Rows 14–16 continue §6's numbering. §6 row 10 is superseded by them.
 
 Out of scope, with the reason:
 
-- **The `Icon` component page on Components**, which stages Icon's eleven spec examples. A newly implemented component does not expire this document (§10, last paragraph), and those are single-component examples.
+- **The `Icon` component page on Components**, which stages Icon's eleven spec examples. A newly implemented component does not expire this document (§10, last paragraph), and those are single-component examples. *(Pointer added 2026-09-23: that left the page's examples reviewed by no one, because §5.7 defers examples to the gallery review and the gallery review had not read them. See SD-9 in §12.5.)*
 - **Every other screen of both apps.** They are covered by §§4–9 on the conditions in §10, which this section does not re-read. See SD-8 for one condition that may have fired.
 - **The glyphs themselves.** As in §9, they are a licence question and not a composition question.
 
@@ -504,5 +505,129 @@ Out of scope, with the reason:
 5. **§10 condition 1**: the chrome is rebuilt from `Sidebar`, `TabBar` and `AdaptiveShell`. On the Mac, that puts a Prism sidebar beside this grid.
 
 **It does not expire** when a registry entry is added, removed or re-bound, when a note is reworded, when SD-7 is fixed and the note reads 6 of 6 in a build, or when a brand, scheme or density is added.
+
+**It is not a legal opinion**, for the reasons §10 gives.
+
+---
+
+## 12. Re-review of the component pages — 2026-09-23
+
+- **Subject.**
+  - The IconButton page of both apps, with its `with-badge` example, and Apple's own page for that example.
+  - The other pages where wave 1 put new examples on screen: the Divider, Icon and Badge pages, and the Apple Overview's *"Live, not a picture"* strip.
+  - Reviewed on `main` at `deb6632`. Other tickets had uncommitted edits in the working tree that day. They touched source comments, the Icons screens' notes, the VRT harness, and the package's two direction selectors (SD-7), which change only what draws under rtl. Apart from those two selectors, none touches a component page or a renderer.
+- **Why.** §10 condition 4 fired. P4-4 landed `IconButton/with-badge` (`6aebd6c`), a staged example that composes IconButton, Icon and Badge, and SD-8 flagged it as unreviewed. Checking that condition exposed a second gap (SD-9): the pages of the four wave-1 components staged 39 examples that no review had read.
+- **Format.** As in §§4–6 and §11. The example itself is reviewed in the four terms, from its baselines, in [`reference-distance-gallery.md` §9.4](reference-distance-gallery.md#94-iconbuttonwith-badge). This section reviews what the apps put around it.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The screenshots of Prism's own screens taken for this review stayed in the session scratchpad, and none is committed (`docs/showcase.md` §5).
+
+### 12.1 Method
+
+- **Web.**
+  - Built with Vite into the scratchpad and served with `vite preview`. Driven in Playwright Chromium at **1440** and **375** CSS px, in light and dark, with the colour-scheme axis on `auto` and the scheme emulated.
+  - Opened `#/components/IconButton`, `Badge`, `Icon`, `Divider`, `Button` and `Card`. Took a full-page screenshot of each, and captured the `with-badge` panel on its own.
+  - The DOM says the same in all four width-and-scheme states. The IconButton page stages 12 example panels (Badge 10, Icon 11, Divider 6, Button 7, Card 7). The `with-badge` panel holds one button and no link. The button's accessible name is "Open notifications, 3 unread", and the badge is `aria-hidden`. The circle measures 32 × 32 and the badge 20 × 20. The badge's box extends 4 px beyond the circle's top edge and its trailing edge.
+  - The app's density axis on `auto` resolves to compact here, at both widths, which is why the circle is 32.
+- **iPhone.**
+  - Built with `pnpm showcase:apple --no-launch --work <scratch>` and installed on the iPhone 17 (iOS 26.5). The simulator was already booted and was left booted.
+  - Opened `-DSShowcaseComponent IconButton`, scrolled to its last examples, in light and dark. Opened `-DSShowcaseExample IconButton/with-badge` in light and dark, each at the device's own regular density, at compact, and under Increase Contrast.
+  - Opened the Badge page scrolled to its last examples (light), and the Icon and Divider pages at their top (dark). The Icon and Divider examples further down those two pages were not scrolled to. They are staged the same way as their baselines, which all four harnesses share (`web/apps/gallery/src/harness/examples.tsx`), and gallery §9.5 reviews those baselines.
+- **Mac.**
+  - Built with `--platform macos` and captured by window id.
+  - Opened the IconButton page, the `with-badge` example page and the Overview, in light and dark (the Overview in light only).
+  - Every launch named its section with `-DSShowcaseSection`, because the persistent `DSShowcaseSection = foundations` default that §11.1 found is still in this Mac's defaults domain. That default was read, not changed.
+- **`Package.resolved`** was byte-identical after both Apple builds.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 648 files. That is the 645 files tracked at `deb6632` plus three new VRT fixture files that another ticket had in the working tree, because the guard walks the disk. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 12.2 The IconButton page and `with-badge`, on each stack
+
+- **What it is.**
+  - *Web.* The component page: a header, the facts, per-platform support, the links, then 12 example panels in spec order, then Props, States and Behaviour. `with-badge` is the twelfth panel. It has its id as the title, the spec's description sentence, the stage, and a collapsed `props` disclosure. The stage is a 160 px square at the leading side of the panel, and the mark in its centre is a 32 px circle, 36 × 36 with its badge.
+  - *iPhone.* The page stages all 12 examples as blocks. Each block has the id, a stage with a hairline border, the props line and the description, and `with-badge` is last. Its own page, *"IconButton · with-badge"*, opens with the resolved-context strip, then the block, then *"Props, as the spec writes them"*. The circle is 40 pt at the phone's regular density and 32 pt at compact.
+  - *Mac.* The same pages in the split view. The Mac defaults to compact density and the pointer, so the circle is 32 pt, as on the web.
+- **Nearest reference.** For the mark itself, the bell buttons of the incident console 27571204 and the traffic console 27220417 (gallery §9.4). For the page, none of the eleven, because no shot is a documentation page.
+- **Nearest showcase of the genre (from recollection).** A documentation site's badge page, which shows a count on an icon in a specimen panel above the component's API. Material 3's badges page is the one this reviewer recalls best. Storybook's docs page has the same shape: a story in a canvas block over an args table.
+- **Families mixed.** The genre's specimen-panel page, and the example's own families (gallery §9.4).
+- **What differs.**
+  - Neither app puts `with-badge` in a bar, a toolbar or a cluster. It stands on the same stage every example gets, under its description, twelfth of twelve in a vertical list of specimens. On its stage the bell never meets a search field, an avatar or another round button.
+  - The other round buttons on the page are specimens, each on its own stage. The apps' own round chrome buttons (the iPhone's back chevron and axes button, and the Mac toolbar's) are Apple's furniture, cleared in §4.2, and none of them carries a badge.
+  - Compared with the genre's page: the prose is the spec's, the props are printed as the spec writes them, and the page carries a support block per platform. §5.7 already cleared that shape.
+- **Verdict.** **Not a copy**: on the web at 1440 and 375 px, on the iPhone, and on the Mac. The apps add a stage and a paragraph to the gallery's picture, and nothing that brings it nearer to the reference's header.
+
+### 12.3 The other pages wave 1 changed
+
+- **The Divider, Icon and Badge pages, and IconButton's other 11 examples.**
+  - These pages have the same shape as every component page (§5.7). They stage 6, 11, 10 and 11 examples, the ones [gallery §9.5](reference-distance-gallery.md#95-the-other-38-wave-1-examples) reviews from their baselines.
+  - The apps stage them with the same renderers, one example per stage, so §5.7's reasoning carries over: staging an example live does not change its distance.
+  - The parts of gallery RD-6 are on these pages. `IconButton/on-glass-over-map` and `with-badge` are on the IconButton page with one example between them, each on its own stage, and `Badge/on-glass-over-map` is on the Badge page. RD-6 is about what would happen if one example joined them. Staged side by side, they do not.
+  - One thing the apps add to the gallery's picture: they print each example's props, and the props hold its spoken words. On the iPhone, under the red "2" on glass over the map, the props line reads *"label: open incidents"*. Under the locate circle it reads *"label: Center on the vehicle"*. On the web both sit in the collapsed `props` disclosure. These are the genre words that gallery RD-2 item 3 and RD-6 name, and here a reader sees them next to the picture. They are invented strings, and `lint:reference-copy` passes over both apps. Changing RD-6's count would not change them; changing the label would.
+- **The Apple Overview's "Live, not a picture" strip.**
+  - §5.8 described it staging four examples. It now stages eight: `Badge/count-neutral`, `Button/primary-md`, `Divider/horizontal`, `Icon/control-md`, `IconButton/secondary-md`, `Surface/solid-card`, `Text/hero-metric` and `Card/solid-metric`, four across on the Mac.
+  - Each is on its own stage under its own label, so nothing is composed. A black "3" disc and a settings circle sit side by side as two labelled specimens, not as a badge on a button.
+  - §10's last paragraph applies: it is the same screen shape with more rows. The web Overview stages no example (§5.8).
+- **Verdict.** **Not a copy.**
+
+### 12.4 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 17–21 continue §11.5's numbering.
+
+| # | Screen | Copy? | Why | What would have to change |
+|---|---|---|---|---|
+| 17 | IconButton page, web, 1440 and 375 px (§12.2) | **No** | Twelve specimens in panels. `with-badge` is the last, alone on its stage, 32 px. | Nothing, before a release. |
+| 18 | IconButton page and the `with-badge` page, iPhone (§12.2) | **No** | The same specimens as blocks, with the example on its own page between the context strip and its props. | Nothing, before a release. |
+| 19 | The same two pages, Mac (§12.2) | **No** | The same pages in the split view, at 32 pt. | Nothing, before a release. |
+| 20 | Divider, Icon and Badge pages, both apps (§12.3) | **No** | One example per stage. Verdicts in gallery §9.5, where RD-6 names the nearest image, on the Badge page. There the Apple props line prints its label, *"open incidents"*. | Nothing, before a release. RD-6's changes to the count and the label are cheap and optional. |
+| 21 | Apple Overview, "Live, not a picture", at eight (§12.3) | **No** | Eight labelled specimens on eight stages. | Nothing, before a release. |
+
+### 12.5 Findings of this re-review
+
+#### SD-8 — closed
+
+`IconButton/with-badge` is reviewed from its baselines in gallery §9.4 and as both apps stage it in §12.2. It is **not a copy**. A bell with a count badge is the genre's composition, and a reasonable person recognises the genre, not a product. What would turn it into 27571204's bell is spelled out there, and in §12.7 below.
+
+#### SD-9 — "A newly implemented component does not expire it" was right about the page, and it left the examples on the page unreviewed
+
+**What.** §10's last paragraph says that a newly implemented component does not expire this clearance, because its page is *"the same screen shape with different rows"*. That is true of the page. But §5.7 cleared the examples on those pages by pointing to the gallery review, and the gallery review never covered a component it had not seen (gallery **RD-5**). So from Divider's landing (`32bbfa1`), 20 minutes before its baselines (`fb3ae87`) put the same examples in the gallery, until gallery §9 and this section, both apps staged wave-1 examples that no review had read. §11 did not catch it: §11.7 put the Icon component page out of scope for exactly this reason.
+
+**Why it matters.** It is the same failure as gallery RD-5, and it matters for the same reason: every document said the precondition was met when it was not. No release was made in that window.
+
+**Action.** Taken: gallery §9.4 and §9.5 review the 39 examples, and §12.7 replaces the paragraph.
+
+#### Carried from the gallery: RD-8
+
+At compact density the badge covers a quarter of the glyph's box. Compact is what the Mac and the web showcase at desktop widths show by default, so these two apps are where a reader meets it first. It is not a distance matter (gallery RD-8).
+
+### 12.6 Coverage
+
+| Screen | Where | States opened | Section | Verdict |
+|---|---|---|---|---|
+| IconButton page, with `with-badge` | web, a Vite build served by `vite preview`, in Chromium | 1440 / 375 px × light / dark | §12.2 | not a copy |
+| IconButton page and `IconButton/with-badge` page | iPhone 17, iOS 26.5 | light / dark; regular, compact, Increase Contrast | §12.2 | not a copy |
+| IconButton page and `IconButton/with-badge` page | Mac, 1280 × 880 pt window | light / dark | §12.2 | not a copy |
+| Divider, Icon, Badge, Button and Card pages | web | 1440 / 375 px × light / dark | §12.3 | not a copy |
+| Badge page, to its last examples; Icon and Divider pages, at their top | iPhone 17, iOS 26.5 | light (Badge); dark (Icon, Divider) | §12.3 | not a copy |
+| Overview, "Live, not a picture" | Mac | light | §12.3 | not a copy |
+
+The 39 wave-1 examples themselves are covered in gallery §9.4 and §9.5, where they are 688 images.
+
+### 12.7 What this clearance covers, and when it expires
+
+**It covers** both apps as built on 2026-09-23 from `main` at `deb6632`, as §§4–10, §11 and this section read them: every page of both apps, including the pages of all eight implemented components, Apple's 67 example pages, and the Overview strip at eight.
+
+**Every one of §10's conditions was read on 2026-09-23:**
+- Condition 1 did not fire: the chrome is still plain platform furniture.
+- Condition 3 did not fire: the web axis bar still has its seven axis rows and no viewport control or canvas/docs tab pair, as the 1440 px screenshots show.
+- Condition 2 fired and is answered by §11. None of §11.8's Icons conditions has fired at `deb6632`.
+- Condition 4 fired and is answered here.
+
+So **the rule 3 precondition is met again for the whole of both apps**, not only for the Icons screens. It had not been met since Divider's page began staging examples (SD-9).
+
+**It expires on any of these.** Items 4–7 replace §10 condition 4. Conditions 1 and 3 of §10, and §11.8 for the Icons screens, stand.
+
+4. **A staged example other than `IconButton/with-badge` composes more than one component in gallery §9.3's sense**: a second component in a slot the example fills. A part the host draws from its own anatomy (a glyph, Button's spinner, Card's hero), or the Surface or synthetic backdrop an example is staged on, does not count. `with-badge` itself is reviewed in §12.2 and gallery §9.4; a change to it is condition 6's, or gallery §9.9 condition 6's.
+5. **The apps stage an example the gallery review does not name** (gallery §9.9 condition 3; gallery §9.8 names the 67 by id). The apps stage every example of every implemented component with no edit of their own, so the gallery review's coverage of examples is this document's coverage of examples.
+6. **The notification composition moves towards the reference's bell** (gallery §9.9 condition 5). That includes the apps' own chrome: a badged bell in the showcase's header or toolbar. The IconButton page, whose twelve specimens each stand on their own stage (§12.2), is not such a composition.
+7. **Either app puts two different Prism components together outside a spec example's stage, other than as it does at `deb6632`.** Three such pairings exist there, all on Apple, and §4.2, §§5.4–5.5, §11.3 and §§12.2–12.3 read them: Text as the app's type, in the heading, label or props line beside whatever it names, a staged example included; Text inside a Surface, in the resolved-context strip that opens every screen (a nested Surface holding three lines of Text) and in the Foundations material, elevation and gradient tiles (a Surface holding its name); and Text under an Icon, in the Icons tiles. The web app has none: its Icons cells and its Foundations tiles each hold one Prism component, with the app's own markup beside it. Anything else fires this condition. For example: a Badge on a chrome button; a Button, IconButton, Card or Divider in a toolbar, header or panel the app draws; an Icon beside a heading; Text and a Surface made into a card or a tile of figures; or a strip whose staged examples share one stage.
+
+**It does not expire** when a newly implemented component's page appears, as long as a dated section of the gallery review names its examples. This replaces §10's last paragraph, which assumed that without saying so.
 
 **It is not a legal opinion**, for the reasons §10 gives.

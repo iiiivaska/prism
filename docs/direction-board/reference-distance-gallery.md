@@ -7,6 +7,7 @@
 - Revised again: **2026-09-22**, after the Button and Card baselines were decoded pixel by pixel rather than read. What changed: §3.1's *Affordance* bullet and §4 row 1, which had the `danger` pill as unfilled and "its own invention" when it paints the references' own critical wash and the distance is one of role (**RD-4**); §3.1's *Geometry* bullet, which attributed the control heights to modality when they come from density; §3.3, which now answers the Apple-materials question a reader asks first; and §3.7 and RD-2 item 3, which quoted `glass-vehicle`'s caption prop instead of the truncated string the card actually draws. No verdict in §4 moved.
 - Subject: `gallery/index.html`, `gallery/index.json` and the **488 committed PNGs** they pair, at `showcase-and-license` (PR #11)
 - Companion: the same review for the three direction-board screens is [README.md § Reference-distance review](README.md#reference-distance-review), reviewed 2026-09-16
+- **Re-reviewed: 2026-09-23**, in [§9](#9-re-review-of-the-wave-1-examples--2026-09-23). The showcase review's finding SD-8 asked for a rule 3 review of `IconButton/with-badge`, which composes three components. That review found a wider gap: no review had read any of the 688 images that Divider, Icon, Badge and IconButton added after this document (RD-5). §9 lists which of the gallery's 67 examples compose more than one component. It reviews all 39 wave-1 examples, `with-badge` in full, and the 104 Button and Card images re-recorded since. It adds four findings and replaces §8's condition 3. Sections 1–8 stand as written on 2026-09-22, apart from pointers to §9.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -332,6 +333,8 @@ The forced-state variants (§3.11) are not a row of their own: **158** of the 48
 | `docs/direction-board/renders/` (7 tracked PNGs) | Renders of the three board screens, covered by the board's own review. |
 | `docs/research/fonts/` (6 specimen PNGs) | Type specimens of candidate OFL families. No UI composition; `docs/legal-checkpoint.md` §3.3 already records their licence position. |
 
+*Pointer added 2026-09-23: four of the 53 components in that list now have images: Divider, Icon, Badge and IconButton, 688 images from wave 1. [§9](#9-re-review-of-the-wave-1-examples--2026-09-23) reviews them. The row's pointer to §8 named no condition that fired when they landed (RD-5).*
+
 ---
 
 ## 8. What this clearance does and does not cover
@@ -342,8 +345,257 @@ The forced-state variants (§3.11) are not a row of their own: **158** of the 48
 
 1. **A pattern example screen lands in the gallery** (`DashboardGrid`, `DetailScreen` or `AdaptiveShell`, Phase 4). A pattern screen is a composition; re-run this review for it before any release.
 2. **P5-1 rebuilds the two direction-board screens from real components into the gallery.** Those are compositions the board already reviewed once, but rebuilt from components they are new artefacts and the review must be re-stated against the rebuilt renders.
-3. **A new example is added to a reviewed component that composes more than one part** — for instance a Card example that fills `body` and `aside` (RD-2), or the first chart example from the data-viz wave. A new variant of an existing single-component example does not expire it.
+3. **A new example is added to a reviewed component that composes more than one part** — for instance a Card example that fills `body` and `aside` (RD-2), or the first chart example from the data-viz wave. A new variant of an existing single-component example does not expire it. — *2026-09-23: did not fire by its letter. `IconButton/with-badge` composes three components, but IconButton was not a reviewed component. Replaced by §9.9, whose condition 3 also covers what this one missed: components whose first baselines land after a review (RD-5).*
 
 **It does not cover** the showcase apps (P3-7), which are public and are reviewed separately: `docs/legal-checkpoint.md` §5.2's outstanding item 1 is satisfied for the gallery half here, and for the showcase half by **P5-3**, [`reference-distance-showcase.md`](reference-distance-showcase.md), written the same day and expiring on its own conditions.
 
 **It is not a legal opinion.** `docs/legal-checkpoint.md` §4.2 leaves the EU unregistered-design question open, notes that *"recognizably the same composition" is the agents' own standard, not a legal one*, and §4.5 records that the question sharpened when Prism went proprietary. Nothing here changes that. This document says what the screens are and how far they sit from what the research recorded; it does not say what the owner is permitted to ship.
+
+---
+
+## 9. Re-review of the wave 1 examples — 2026-09-23
+
+- **Subject.** `gallery/index.html`, `gallery/index.json` and the **1176 committed PNGs** they pair, on `main` at `deb6632`. That is 67 examples of 8 components, in 644 cells with 0 missing (`gallery/index.json`, `counts`).
+- **Why.** The showcase review's finding **SD-8** ([`reference-distance-showcase.md` §11.6](reference-distance-showcase.md#116-findings-of-this-re-review)) flagged `IconButton/with-badge`. P4-4 landed that example, it composes three components, and nobody had reviewed it. Checking the conditions it might have fired turned up a wider gap: no review had read any image of Divider, Icon, Badge or IconButton (**RD-5**).
+- **Format.** The same as §§3–4: per group, what it is, the nearest reference by `references.json` shot id, the families mixed, what differs, and the release question. §9.3 first settles which examples compose more than one component.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops and screenshots made for this section stayed in the session scratchpad, and none is committed.
+
+### 9.1 What changed since 2026-09-22
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| Divider landed, with its baselines | `32bbfa1`, `fb3ae87` | 100 | no |
+| Icon landed, with its baselines | `62a30cf`, `12d89d8` | 228 | no |
+| Badge landed, with its baselines | `e32588c`, `cace2ff` | 164 | no |
+| IconButton landed, with its baselines, `with-badge` among them | `6aebd6c`, `f05a75f` | 196 | no |
+| Button re-recorded on purpose. Its glyphs are now drawn by Icon, and its ghost and danger rings by `border.hairline` (ADR-0033). | `12d89d8`, `f05a75f` | 40 of 112 | yes, in their earlier form |
+| Card re-recorded on purpose. Its glyphs are now drawn by Icon. | `12d89d8` | 64 of 112 | yes, in their earlier form |
+
+The gallery now holds 488 + 688 = 1176 images. Surface and Text did not move. ADR-0035's rebinding (`d084a0e`) moved only Icon and IconButton images, which are among the 688.
+
+**The 104 re-recorded images.** Each was compared at the same scale with its 2026-09-22 version (`git show 38199f2:<path>`). Every one draws the same elements in the same places. Only two things moved:
+- the glyphs are now drawn by Icon, and on Card the ↗ is a little smaller in its box;
+- the web's ghost and danger rings used to draw wider and are now hairlines, which is how §3.1 describes them and how the Apple images always drew them.
+
+No claim in §3 rests on what moved, and no verdict in §4 changes.
+
+**§8's conditions.** Conditions 1 and 2 did not fire: no pattern has an implementation, and P5-1 has not started. §9.3 answers condition 3.
+
+### 9.2 Method
+
+- **`with-badge`.** All 16 baselines were opened at full resolution and at 3–4× nearest-neighbour: 8 Apple images (light and dark, regular and compact, each with its `increased-contrast` twin) and 8 web images (both platform keys, both schemes, both densities). Their fills and boxes were decoded from the PNGs. The gallery page itself was opened in Chromium at 1440 px, in light and dark. `gallery/snapshots/` is gitignored (a local copy existed, but the page was served from the scratchpad with `snapshots/<Component>/<file>` mapped to the committed baselines). That mapping is what `pnpm gallery:build` collects, so the page showed exactly the committed images, and nothing was written into the repository. Both showcase apps were built and run as well ([`reference-distance-showcase.md` §12](reference-distance-showcase.md#12-re-review-of-the-component-pages--2026-09-23)).
+- **The other 38 wave-1 examples.** The Apple light and dark regular images of every example were opened on contact sheets. So were the web twins of every example that sits on a material. The compact and `increased-contrast` rows were spot-checked. Each component's page in the web showcase was opened at 1440 and 375 px.
+- **Numbers.** Every colour below is a decoded pixel. Every size is either a DOM measurement from the web showcase, a token value, or a box decoded from a PNG, and each says which.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 648 files. That is the 645 files tracked at `deb6632` plus three new VRT fixture files that another ticket had in the working tree, because the guard walks the disk. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current. The second gate matters because this section names glyphs. It names none of Apple's symbol names, which ADR-0013 rule 5 keeps out of documents.
+
+### 9.3 Which examples compose more than one component
+
+§8's condition 3 and the showcase review's §10 condition 4 both turn on an example that "composes more than one". Read at the level of the specs and the code, nearly every example does. Card is a Surface and draws its hero with Text (Card.yaml, `root` and `hero`), IconButton draws its glyph with Icon (IconButton.yaml, `icon`), Button's loading state draws a Spinner (Button.yaml, `spinner`), and in code Badge sets its digits with Text. On that reading all seven Card examples were already compositions on 2026-09-22, and neither review read it that way. The reading used here is what a reader sees: **an example composes more than one component when its own props put a second component on screen as a separate element.** Each of the 67 examples is of one of these kinds, and six are of two:
+
+| Kind | Examples | Did it fire a condition? | Why |
+|---|---|---|---|
+| **A second component, in a slot the example fills** | `IconButton/with-badge`: a Badge in the `badge` slot, which ADR-0034 types as a Badge. No other example of the 67 fills a slot. The eight specs have three other slots, Surface's `content` and Card's `body` and `aside`, and no example's props fill any of them. | **Yes.** It fired the showcase review's §10 condition 4. By its letter it did not fire this document's condition 3, because IconButton was not a reviewed component. No review covered it at all (RD-5). | Reviewed in §9.4. |
+| A second component that the host draws as a part of its own anatomy | **Icon**, from a registry id: all 12 IconButton examples, `with-badge` among them (`glyph`, drawn in the `icon` part); `Button/secondary-md` (`trailingIcon`) and `Button/ghost-sm` (`leadingIcon`); `Card/tinted-focus` (`icon`, in the icon ring); and the ↗ in the `action` part of all seven Card examples, four of them in `Card/vivid-pair`. Every Card example keeps `action: open`, and both galleries pass a handler for every `action` prop (spec/SCHEMA.md, "Every example gets its handlers"), so each draws its pressable form. **Spinner**, from a boolean: `Button/loading`, where `isLoading` replaces the label with a Spinner in the `spinner` part (Button.yaml). **Text**, from a value: the `hero` of `Card/solid-metric`, `vivid-default-kpi` and `compact`, which Card.yaml renders with Text at metric-lg. | No | The example passes a registry id, a boolean or a value, not a component. The host draws the result in a part of its own anatomy: IconButton's `icon`, Button's leading or trailing icon and its `spinner`, Card's `iconRing`, `action` and `hero`. A reader sees one control or one card. Every one of these parts that is on Button or Card was in the same place on 2026-09-22: §3.1 reviewed the loading pill as a spinner replacing the label, and §§3.5–3.8 reviewed the ↗, the heroes and the icon ring. The glyphs were drawn then by the internal glyph path that Icon replaced (§9.1). |
+| Staged inside a Surface, because the example declares a material | `Button/on-vivid`, `Text/on-vivid` and `Text/on-glass-over-map`, all reviewed on 2026-09-22. `Divider/horizontal-inset`, `vertical`, `on-vivid` and `on-glass-over-map`. `Icon/on-vivid`, `on-glass-over-map` and `on-glass-light-over-image`. `Badge/on-vivid` and `on-glass-over-map`. `IconButton/on-vivid` and `on-glass-over-map`. | No | The harness wraps the component in a Surface of the material that the example's `surface` field names, over the synthetic backdrop when that material is glass (`web/apps/gallery/src/harness/examples.tsx`; `DSExampleStage` on Apple). That Surface is the ground the example stands on. It carries nothing but the component: no title, no copy and no second element. §3.3 and §3.4 cleared those grounds, and §3.1 and §3.10 reviewed the first three examples as single components on them. Whether a ground plus a component makes a recognisable picture is still a distance question, and §9.5 asks it where it applies. |
+| One component over a synthetic backdrop, because the example's `surface` is `map` or `image` | `Surface/glass-over-map`, `glass-light-over-image` and `glass-selected`; `Card/glass-vehicle` and `glass-selected`. All five were reviewed on 2026-09-22. | No | The component is itself the surface, so the harness wraps it in nothing. It stands on the synthetic map or image, which the harness paints from token colours (`harness.css`; `DSExampleStage` on Apple) and which is not a component. §3.4 cleared both backdrops, and §3.3 and §3.7 reviewed these five on them. |
+| Four of one component in a grid | `Surface/vivid-pair`, `Card/vivid-pair` | No | One component, repeated. §3.5 reviewed it as the 2×2, and it has not changed. |
+| One component on the page ground, and nothing else | `Button/primary-md`, `danger-md` and `disabled`. `Surface/solid-card`, `vivid-default`, `inverse-pill` and `accent-tile`. `Text/hero-metric`, `title-two-tone`, `caption` and `data-tabular`. `Divider/horizontal` and `semantic`. `Icon/control-md`, `corner-sm`, `display-lg`, `status-filled`, `accent-mark`, `inherit-in-row`, `decorative` and `named-standalone`. `Badge/count-neutral`, `count-critical`, `count-accent`, `count-overflow`, `outline-neutral`, `outline-critical`, `dot-critical` and `dot-accent`. | No | `Icon/inherit-in-row` stands in the harness's row foreground, which sets the colour ListRow's title would take and draws nothing (`RowForeground` on the web, `DSRowForeground` on Apple). |
+
+The six of two kinds are `with-badge` (a slot and its glyph), `IconButton/on-vivid` and `on-glass-over-map` (a glyph and a staging Surface), `Card/glass-vehicle` and `glass-selected` (the ↗ and a backdrop), and `Card/vivid-pair` (the ↗ and the grid). The rows count 29 examples on the page ground alone, 22 with a part drawn by a second component, 14 inside a staging Surface, 5 over a backdrop, 2 grids and 1 filled slot, which is 73 placements for 67 examples.
+
+*Corrected on 2026-09-23, before this section was committed, after its verification read every row against the specs.* The first version of this table gave "one component on the page ground" as "every other example", which filed `Button/loading` and the three Surface examples over a synthetic backdrop there. It described the second row as glyphs only, so Button's Spinner and Card's Text hero were in no row by name, and it had no row for a backdrop, which Card's two glass examples also stand on. The reclassification changes no verdict and fires no condition. Every one of these examples was in the gallery on 2026-09-22 and was reviewed then as it is drawn (§3.1 for the loading pill, §§3.3–3.7 for the rest), and none of them fills a slot, which is the only kind that fires §9.9 condition 4 and the showcase review's §12.7 condition 4.
+
+One edge case, for completeness. On the web the harness fills Surface's content slot with sample copy set in Text (RD-3), and it sets `Text/title-two-tone`'s second line as a nested Text. Those are the harness's copy and a role pair of one component. The 2026-09-22 review read them that way (§§3.2, 3.3 and 3.9), and no example's props put them there.
+
+### 9.4 `IconButton/with-badge`
+
+- **What it is.** The props are `variant: secondary`, `size: md`, `glyph: object.notification`, `label: "Open notifications"` and `badge: { variant: count, tone: neutral, count: 3, label: "unread" }`. On screen, the three components make one mark:
+  - **IconButton.** A raised puck inside a 1 px hairline ring. In light the puck decodes to `(247, 248, 250)` on a `(241, 242, 245)` page, with the ring at `(224, 225, 227)`. In dark the puck is `(35, 36, 38)` on `(13, 14, 17)`, with the ring at `(53, 53, 55)`. Under `increased-contrast` the light ring darkens to `(177, 178, 180)`. The circle is `comp.icon-button.size.md`: the decoded boxes show 40 at regular density and 32 at compact, on both stacks.
+  - **Icon.** The registry's `object.notification`, an outline bell centred in the `size.icon.md` (20) box. On the web it is Phosphor's drawing. On Apple it is the system symbol that the registry binds (ADR-0013).
+  - **Badge.** A 20 × 20 disc (`size.icon.md`) in the neutral filled emphasis, which is the inverse solid. In light it is `(13, 14, 17)` with a white digit, and in dark it is white with a near-black digit. The digit is "3" in `type.micro`: Onest 11/500 with tabular figures, read from the web showcase's computed style.
+  - **Placement.** The badge's box extends 4 px (`space.1`, IconButton.yaml's `badge.offset`) beyond the circle's top edge and beyond its trailing edge. The whole mark therefore measures 36 × 36 at compact and 44 × 44 at regular. This was measured in both stacks' baselines and in the web showcase's DOM.
+  - **Nothing else.** The name "Open notifications" and the value "3 unread" are spoken, not drawn. In the web showcase the button's accessible name is "Open notifications, 3 unread", and the badge is `aria-hidden`. The showcase apps print the props, these words among them, beside the example (showcase §12.2).
+  - **Its frame.** The mark sits alone: on the web on a 160 or 168 px stage with page around it, and on Apple in an 80 or 88 pt tight crop. The gallery shows it in eight rows (two schemes, two densities, standard and increased contrast). In the increased-contrast rows the web cells read "not in this matrix".
+- **Nearest reference.** The bell button of the two consoles:
+  - **Incident console 27571204 (mobile).** In its top row sits a 44 pt round **glass** button carrying a bell, over the map. On it is a **red** 18 pt disc with a white 11 pt Medium "2", 4 pt outside the button's top-right corner. Its analysis records this under *Layout & Spacing*, mobile, and under *Components*, as the round icon button and the notification badge.
+  - **Traffic console 27220417 (desktop) and 27289370 (mobile).** Its numbered badge, a red 18 px disc with a white 11 px numeral, sits on its bell (its analysis §6). On the desktop the bell is one of four 44 px round buttons between a search pill and an avatar, at the right of the top row (§5). On the phone it is a glass puck in the header, opposite the back button. Its round buttons are glass over the map or solid on the canvas. The incident console's desktop shot, 27619812, re-uses the desktop frames.
+  - **The component inventory** lists this move as the first of Badge's shapes, a *"numbered danger disc offset outside an icon button's corner"*. Badge appears in 7 of the 11 shots.
+- **Families mixed.**
+  - The placement and the 4 px overhang come from the two consoles above.
+  - The badge's material and size come from the **finance dashboard 27678963**. Its count badge is a 20 px circle with an 11 px Medium numeral, ink for the active item and outlined for the rest. Prism's neutral filled badge is that badge's ink form, and `outline` is its resting form (Badge.yaml, `notes.design`). The dashboard puts its counts on section tabs, not on a button.
+  - The puck and the ring come from the round-button grammar all the dark-ops shots share (the traffic console's analysis §9.8: every control is a pill or a circle), and from the hairline rings of the finance dashboard's 44 px icon circles.
+  - The **shipping console 27658472** also puts a bell in a 44 px circle, marked with a red radial glow and a 6 px dot instead of a number. Nothing of it is used here.
+- **What differs.**
+  - *Colour.* Wherever a reference puts a count on a button, the disc is **red**: pure red at `#FF0004` in the incident console, `#FE3232` in the traffic console. It is the one chromatic mark on a monochrome screen, and it means an incident. `with-badge` has no hue at all. Its neutral count is ink in light and white in dark, because Badge.yaml says *"a neutral count stays achromatic"* and keeps red for a real status. Prism has a critical count (`Badge/count-critical`), and this example does not use it.
+  - *Material and ground.* The reference's button is transmissive glass over a map, at about 14–20 % white. Prism's is an opaque raised puck with a hairline ring, on an empty page. Prism's IconButton on glass over the map (`on-glass-over-map`) carries no badge. The traffic console's desktop also draws round buttons solid on the canvas. That is the plainest form of a round button, which every shot has, not a choice particular to that product.
+  - *Geometry.* A circle of 32 or 40 with a 20 px badge, against 44 with an 18 px badge. The overhang is the same 4 px. That is `space.1`, the first step of Prism's 4 px scale, and it is also the reference's number. It is stated here so that a later reader does not have to discover it. The badge is larger for its circle: 0.63 or 0.50 of the circle's width, against 0.41. At compact it covers a corner of the glyph, and the reference's badge does not cover its glyph (RD-8, not a distance matter).
+  - *Arrangement.* This is the difference the verdict rests on. The reference's bell is **one of a row**. On the phone it sits beside a logo and a vehicle chip, over a map, above a strip of seven round tools. On the desktop it sits at the top-trailing corner in a cluster with a search pill, other round buttons and an avatar. `with-badge` has no neighbour: no bar, no second button, no field, no avatar and no map.
+  - *Type and count.* Prism's is "3" in Onest with tabular figures. The reference's is "2" in its geometric sans. Prism's digit pair is `color.text.on-inverse` on `color.bg.fill.inverse`, a functional pair in `tokens/contrast-pairs.json`. The reference's white on pure red is about 4.0:1, which its own analysis flags as failing AA at 11 px.
+  - *Accessibility.* The badge is hidden, and its count is read into the button's value (ADR-0034). No reference records an accessibility state.
+- **Is the commonness a defence? Yes, up to a clear limit.** A bell for notifications with the unread count pinned to its top-trailing corner is not any one product's design. It is the standard form of the function. The glyph says what the control opens. The number says how many items wait. The corner is where a mark sits without hiding the glyph or changing the control's size. Operating systems draw it on app icons, mail and chat clients draw it on their inboxes, and design-system documentation shows it on its badge page. ADR-0015's Context records why that matters. A layout idea is an unprotectable method (17 U.S.C. §102(b), Copyright Office Circular 33, *Apple v. Microsoft*; in the EU, *BSA* and *Cofemel*), while the exact composition is protectable, and EU design law now gives GUIs an unregistered right against copying. So the genre is free to use, and what has to differ is the composition. That is the ADR's reading, recorded here, not a legal opinion, and `docs/legal-checkpoint.md` §4.2 leaves the EU design question open. A reasonable person who sees `with-badge` recognises the genre (a notification button with an unread count), not a product. Nothing in the image says which product, and the product it is nearest to is identified by choices the image does not make.
+- **Where the defence would stop.** The genre supplies three elements and how they relate. A product adds its own choices on top. The reference's choices are: a red disc, which is the only colour on a monochrome console; the digit 2; an 18 px badge 4 px outside a 44 px glass puck; a satellite or rendered map under it; and neighbours — a logo and a vehicle chip on the phone, a search pill, round buttons and an avatar on the desktop. `with-badge` shares one of those choices, the 4 px overhang, and none of the others. The defence stops working in two ways:
+  - **When those choices accumulate.** Prism already holds most of them, spread across separate examples. `Badge/on-glass-over-map` is a critical red "2" on glass over the map (RD-6). `IconButton/on-glass-over-map` is a round control on glass over the map. `with-badge` is the bell with the corner count. Each of these on its own is genre. An example or a screen that composed them — a badged `object.notification` IconButton on glass or over a map, or with a critical count, or with a count of 2 — would reproduce 27571204's bell part for part, apart from the face of the digit.
+  - **When the bell gets the reference's neighbours.** A badged bell among other round buttons at a screen's top-trailing corner, beside a search field and an avatar, is the tools cluster that the board's D4 rework removed as 27220417's inventory ([README.md](README.md), § Ride report: *"the tools cluster is gone"*). `TopBar.yaml`'s `desktop-navigation` example already specifies that cluster (RD-7). It is unimplemented, so no screen draws it yet.
+- **Verdict.** **Not a copy.** It is the genre's composition drawn alone, achromatic, opaque, on an empty page, and it shares with the nearest product's bell a single number. Nothing has to change before a release. §9.9 condition 5 records the changes that would bring it nearer.
+
+### 9.5 The other 38 wave-1 examples
+
+Each of these is one component. None fired a condition (§9.3), but before this section no review covered any of them (RD-5), so each group gets the same four questions.
+
+#### 9.5.1 Divider — 6 examples, 100 images
+
+- **What it is.** One hairline in a rule frame, 200 px long, horizontal or vertical, full or inset. It sits on the page, in a solid card, on a vivid tile, or on glass over the map. It carries no text. `semantic` draws what `horizontal` draws; only what it exposes to assistive technology differs.
+- **Nearest reference.** None as a composition. The move is the 1 px rule of visual-dna principle 1: the hairline rail under the finance dashboard 27678963's section tabs, and the hairline rows of the incident console's route-offset table (27619812).
+- **Families mixed.** The hairline ladder all the shots share.
+- **What differs.** One line with nothing on either side of it: no row, no table and no tab above it.
+- **Verdict.** **Not a copy.** A rule is nobody's expression.
+
+#### 9.5.2 Icon — 11 examples, 228 images
+
+- **What it is.** One registry glyph per example, alone on the stage:
+  - `control-md` (settings), `corner-sm` (↗), `display-lg` (a map), `status-filled` (the warning mark, filled, in the warning tone), `accent-mark` (`object.gps` in the accent), `inherit-in-row` (`status.online` in a row's foreground), `decorative` (a chart) and `named-standalone` (a lock);
+  - on a material: ↗ on vivid, a map pin on glass over the map, and play on light glass over the image;
+  - the `increased-contrast`, `bold-text` and `reduce-transparency` twins.
+- **Nearest reference.** The references' stroke icon sets: 1.5 px outlines at 20–24 px with round caps, in white at 80–100 %, as the iconography notes of the traffic console 27220417, incident console 27571204 and shipping console 27658472 analyses record them. The drawings themselves are not the references'. They are Phosphor's on the web and Apple's system symbols on Apple. That is a licence question, answered in `docs/legal-checkpoint.md` §2.3 and ADR-0013, not a composition question. Two examples echo how a reference *uses* a glyph:
+  - `accent-mark` is an orange GPS glyph, which is how the incident console marks a degraded connection on its vehicle sheet;
+  - `on-glass-over-map` puts a map-pin glyph over a map, where the traffic console places category pins.
+- **Families mixed.** The stroke-icon convention, and the rule of one attention accent.
+- **What differs.**
+  - Each image is one glyph on an empty stage: no row, no label, no sheet and no vehicle.
+  - The pin sits monochrome in a glass tile and marks no place. The reference's pins are coloured discs anchored to the map.
+  - The orange of `accent-mark` is Prism's accent. Its step 500 is `#F39444`, the default accent the traffic console's analysis proposed (§11, principle 5), which the board signed off as Prism's. Here it names no state and sits on no sheet.
+- **Verdict.** **Not a copy.** These are single glyphs, drawn by their vendors, one per image.
+
+#### 9.5.3 Badge — 10 examples, 164 images
+
+- **What it is.** One mark per example, standing alone. Counts: neutral (3), critical (12) and accent (7). An overflow, "99+", in critical. Outlined counts: neutral (4) and critical (2). Two 8 px dots (`space.3`), critical and accent. A neutral 3 on vivid, and a critical 2 on glass over the map. Every filled count is a 20 px disc (`size.icon.md`). The critical disc decodes to `(229, 37, 42)`, which is `#E5252A`, `ref.color.status.danger.badge`.
+- **Nearest reference.** The red numbered disc of the incident console 27571204 (18 px, "2", on its bell) and of the traffic console 27220417 (on its bell and at the start of its alert rows). Also the finance dashboard 27678963's 20 px count badges, in ink, white-outline and lime, on its section tabs.
+- **Families mixed.** The dark-ops red disc. The dashboard's pair of an ink count and an outlined count, as Badge.yaml records. The shipping console 27658472's 6 px red unread dot.
+- **What differs.**
+  - Every Badge example stands alone. None sits on a button, a tab or a row. The only host in the gallery is `with-badge` (§9.4).
+  - The critical red is the reference's red made legible. `#E5252A` is the value the traffic console's analysis proposed in place of its `#FF0000` so that a white 11 px digit passes AA (§10, item 4, and §11, principle 5). That is a principle with a number, which ADR-0015 rule 2 admits.
+  - The accent count is Prism's orange, not the dashboard's lime.
+  - The "99+" overflow and the tabular digits have no reference counterpart.
+  - An outlined badge is never placed over media.
+- **Closest image.** `Badge/on-glass-over-map`: see **RD-6**.
+- **Verdict.** **Not a copy.** A count disc alone on a stage is the notification badge of every platform.
+
+#### 9.5.4 IconButton, the other 11 examples — 180 images
+
+- **What it is.** One circle per example:
+  - `secondary-md` (settings, the raised puck), `primary-md` (add, the inverse solid) and `ghost-md` (filter, a hairline ring with no fill);
+  - `plain-sm` (a bare ↗ at 16 px), `danger-md` (delete, the critical tint in a critical ring) and `lg-touch` (play, primary, large);
+  - `selected-in-group` (a map glyph in the inverse solid; the siblings its description mentions are not drawn), `disabled` (refresh, at `opacity.disabled`) and `label-ru` (refresh; the Russian name is spoken, and the circle is unchanged);
+  - on a material: `on-vivid` (a ghost ↗ in the on-media ring) and `on-glass-over-map` (locate, in the white media solid).
+- **Nearest reference.** The round buttons of all eleven shots (the component inventory counts IconButton in 11 of 11):
+  - the traffic console 27220417's 44 px pucks, glass over the map or solid on the canvas, and its vertical stack of round map controls;
+  - the finance dashboard 27678963's 44 px hairline icon circles and its solid ink ↗ disc on vivid cards;
+  - the incident console 27571204's strip of seven round tools.
+- **Families mixed.** The pill-and-circle grammar, and one solid among hairlines (visual-dna principle 9). The ghost with no fill is the owner's choice against the references' ghost fill (ADR-0029 §3.3).
+- **What differs.**
+  - One circle per image, never a row, strip, stack or cluster.
+  - The size comes from density (32 or 40 for `md`), where the references use a fixed 44.
+  - The glyphs are the vendors' drawings.
+  - `danger-md` repeats RD-4: the references mark state in red and never make red a control.
+- **Closest image.** `on-glass-over-map`: a white solid circle with a locate crosshair, on a glass tile over the synthetic map. It is one of the traffic console's map controls, alone and not in its stack. Its name, "Center on the vehicle", is spoken, not drawn in the gallery, though the showcase apps print it in the example's props. It belongs to the fleet genre that RD-2 item 3 already names. It is one of RD-6's three parts.
+- **Verdict.** **Not a copy.** Single circles, each a control grammar that all eleven shots share and no one shot owns.
+
+### 9.6 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 13–18 continue §4's numbering.
+
+| # | Screen | Copy? | Why |
+|---|---|---|---|
+| 13 | **`IconButton/with-badge` (§9.4)** | **No** | The genre's notification button with an unread count, drawn alone, achromatic and opaque on an empty page. The only thing it shares with 27571204's bell, beyond the genre, is the 4 px overhang. What makes that bell a product's (red, the 2, glass, the map, and its neighbours) is absent. |
+| 14 | Divider (§9.5.1) | **No** | A hairline. |
+| 15 | Icon (§9.5.2) | **No** | One vendor glyph per image. The orange GPS mark and the pin in a glass tile echo how a reference uses a glyph, one glyph at a time, with nothing around it. |
+| 16 | Badge (§9.5.3) | **No, and `on-glass-over-map` is the nearest of the new images to a reference** | A mark alone on a stage. That one example has the reference badge's colour, number and ground. See RD-6. |
+| 17 | IconButton, the other 11 (§9.5.4) | **No** | One circle per image, never a row or a stack. |
+| 18 | The 104 re-recorded Button and Card images (§9.1) | **No**: rows 1, 6, 7 and 8 stand | The same elements in the same places. |
+
+**Summary.** No gallery image at `deb6632` is close enough to one product that a reasonable person would call it a copy. The closest new images are `with-badge`, which is genre, and `Badge/on-glass-over-map`, which has the reference badge's particular choices but none of its composition. They matter together more than apart, which is what RD-6 and §9.9 condition 5 record.
+
+### 9.7 Findings of this re-review
+
+#### RD-5 — From `fb3ae87` on, the gallery held images that no review covered, and no document said so
+
+**What.** §7 listed Divider, Icon, Badge and IconButton among the 53 components with no image, and said that each *"becomes reviewable when its first snapshot lands (§8)"*. §8 named no such event. Its condition 3 fires on a new example added to a **reviewed** component, and it says that a new variant of a single-component example does not expire the clearance. So when Divider's baselines landed (`fb3ae87`, 2026-09-23), followed by Icon's, Badge's and IconButton's, nothing in this document expired, and nothing covered the new images either. The showcase review had the same gap (its **SD-9**). All the while, `docs/legal-checkpoint.md` §5.2 said that nothing stood between the repository and a release except the owner's own act.
+
+**Why it matters.** For about sixteen hours on 2026-09-23, 688 public images, and the showcase pages that stage the same examples, sat outside ADR-0015 rule 3 while every document said the rule was satisfied. No release was made (`docs/legal-checkpoint.md` §3.2), so nothing shipped unreviewed. The failure is in how the conditions were written. They listed what *expires* a clearance and assumed that anything they did not list was covered.
+
+**Action.** Taken here: §9.4 and §9.5 review the 39 examples. §9.9 condition 3 now says the clearance covers named examples only.
+
+#### RD-6 — `Badge/on-glass-over-map` has the reference badge's colour, number and ground, and three examples between them hold the reference's bell
+
+**What.** The example is a critical disc reading "2", on a glass tile over the synthetic map. The incident console 27571204's bell badge is a red disc reading "2" on a glass button over a map, and the traffic console's is a red 18 px "2". The example has no bell and no button. It is one mark on a tile, so it is not a copy (§9.5.3). But the gallery now holds the parts of that bell in three separate examples:
+- `IconButton/with-badge`: the bell with a count at the corner;
+- `IconButton/on-glass-over-map`: a round control on glass over the map;
+- `Badge/on-glass-over-map`: a red "2" on glass over the map.
+
+None of them composes the others.
+
+**Why it matters.** An example that composed them would be 27571204's bell, part for part, apart from the face of the digit. The "2" does not seem to have been chosen for the resemblance. Still, its example label is "open incidents", and incidents are that shot's subject too. The gallery never draws the label: it is spoken. But both showcase apps print each example's props, and on the iPhone the line under the red "2" reads *"label: open incidents"* ([`reference-distance-showcase.md` §12.3](reference-distance-showcase.md#123-the-other-pages-wave-1-changed)).
+
+**What would help. Cheap, and not required.** Change the example's count to something other than 2. That is one `Badge.yaml` example edit, and it moves 20 baselines (12 Apple and 8 web) through the sanctioned re-record route. Give the example a label outside the incident genre in the same edit. The label moves no baseline, because it is never drawn. Independently of the count, §9.9 condition 5 makes composing any of the three parts an expiry condition.
+
+#### RD-7 — TopBar's `desktop-navigation` example specifies the tools cluster that the board's D4 rework removed
+
+**What.** `TopBar.yaml`'s `desktop-navigation` example has a brand, a PillTabs row, a SearchField, the notification and settings actions, and, in its own description, *"the trailing cluster with an Avatar"*. The board review's account of the first ride report listed *"a tools cluster across the top: logo, pill tabs, a search pill with a keyboard shortcut, bell, settings and avatar"* as 27220417's inventory, and D4 removed it ([README.md](README.md), § Ride report). The spec example is that inventory without the keyboard shortcut. The shipping console 27658472's top-right cluster is also a search field, settings and a bell.
+
+**Why it matters.** TopBar is unimplemented, so no screen draws it, and nothing is uncovered today. But this example is where `with-badge`'s genre defence (§9.4) would stop: put a badge on that bell, and the example is the reference's header. It is recorded so that whoever implements TopBar reads it before recording the first baseline.
+
+**Action.** None now. That example must be reviewed before any release that ships it. Recomposing the example, for instance without the avatar or without the search field, is the cheap way to make that review easy. §9.9 conditions 3 and 5 cover it.
+
+#### RD-8 — Not a distance matter: at compact density the badge covers a quarter of the glyph's box
+
+**What.** At compact the circle is 32 px, with the 20 px glyph box centred 6 px in from its edges. The 20 px badge's box extends 4 px beyond the circle's top-trailing corner, so badge and glyph box overlap by 10 × 10 px, the box's top-trailing quarter. On the bell, that is the trailing half of the crown and the trailing shoulder. At regular density the overlap is 6 × 6 px. Compact is the default on the Mac and in the web showcase at desktop widths, so this is the picture a reader of either app sees first. IconButton.yaml says the badge *"never moves the glyph"*. It does not say the badge never covers it.
+
+**Why it is recorded.** The reference's 18 px badge on a 44 px circle clears its glyph, so covering more of it moves the example away from the reference, not towards it. It is a legibility question for IconButton's owner, not a distance question.
+
+**Action.** None here. A different offset, or a smaller badge at compact, would be an IconButton.yaml decision with baselines to move.
+
+### 9.8 Coverage
+
+| Component | Examples | Images | Reviewed in | Verdict |
+|---|---|---|---|---|
+| Button | 7 | 112 | §3.1. The 40 re-recorded images: §9.1 | not a copy |
+| Surface | 8 | 140 | §3.2, §3.3, §3.5 | not a copy |
+| Text | 6 | 124 | §3.9, §3.10 | not a copy |
+| Card | 7 | 112 | §3.5–§3.8. The 64 re-recorded images: §9.1 | not a copy; RD-2 stands |
+| Divider | 6 | 100 | §9.5.1 | not a copy |
+| Icon | 11 | 228 | §9.5.2 | not a copy |
+| Badge | 10 | 164 | §9.5.3 | not a copy; RD-6 |
+| IconButton | 12 | 196 | §9.4 (`with-badge`, 16 images) and §9.5.4 (the other 180) | not a copy |
+| **Total** | **67** | **1176** | | |
+
+§7's list of out-of-scope sections still stands for the 49 components with no image, the three patterns and the documentation chrome, for the reasons §7 gives.
+
+**The 67 examples, by id.** This list is what §9.9 condition 3 means by an example this document names. Each is read in the section the table above gives for its component.
+
+- Button: `primary-md`, `secondary-md`, `ghost-sm`, `danger-md`, `loading`, `disabled`, `on-vivid`.
+- Surface: `solid-card`, `vivid-default`, `vivid-pair`, `glass-over-map`, `glass-light-over-image`, `glass-selected`, `inverse-pill`, `accent-tile`.
+- Text: `hero-metric`, `title-two-tone`, `caption`, `on-vivid`, `on-glass-over-map`, `data-tabular`.
+- Card: `solid-metric`, `vivid-default-kpi`, `vivid-pair`, `glass-vehicle`, `glass-selected`, `tinted-focus`, `compact`.
+- Divider: `horizontal`, `horizontal-inset`, `vertical`, `semantic`, `on-vivid`, `on-glass-over-map`.
+- Icon: `control-md`, `corner-sm`, `display-lg`, `status-filled`, `accent-mark`, `inherit-in-row`, `decorative`, `named-standalone`, `on-vivid`, `on-glass-over-map`, `on-glass-light-over-image`.
+- Badge: `count-neutral`, `count-critical`, `count-accent`, `count-overflow`, `outline-neutral`, `outline-critical`, `dot-critical`, `dot-accent`, `on-vivid`, `on-glass-over-map`.
+- IconButton: `secondary-md`, `primary-md`, `ghost-md`, `plain-sm`, `danger-md`, `selected-in-group`, `lg-touch`, `disabled`, `on-vivid`, `on-glass-over-map`, `label-ru`, `with-badge`.
+
+### 9.9 What this clearance covers, and when it expires
+
+**It covers** the gallery on `main` at `deb6632`: all 1176 images, 67 examples and 8 components, including the 104 images re-recorded since 2026-09-22. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires, or stops covering part of the gallery, on any of these.** Items 3–6 replace §8's condition 3. §8's first two conditions stand.
+
+1. **A pattern example screen lands**, as in §8 condition 1.
+2. **P5-1 rebuilds the board screens into the gallery**, as in §8 condition 2.
+3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.)
+4. **An example other than `IconButton/with-badge` composes more than one component in §9.3's sense**: a second component in a slot the example fills. Examples: Card's `body` or `aside` filled (RD-2), a chart in a ChartContainer, a Badge in any host other than `with-badge`, a TabBar or Sidebar item with a count. `with-badge` itself is reviewed in §9.4; a change to what it fills is condition 5's or condition 6's.
+5. **The notification composition moves towards the reference's bell** (RD-6, RD-7). That means any of these:
+   - `with-badge`, or any IconButton with a badge, put on glass or over a map;
+   - such a button given a critical-tone count or a count of 2;
+   - such a button set in one composition with other round buttons: a Toolbar, a stack of map controls, a TopBar's trailing cluster. Specimens on separate stages of one page, as the gallery and both showcase apps show IconButton's twelve examples today, are not one composition;
+   - `Badge/on-glass-over-map` joined to a button.
+6. **A re-record after `deb6632` changes what an example draws**: an element added or removed, or a tone, a material or a glyph binding changed. The re-records before it, the 104 images of §9.1 and ADR-0035's rebinding (`d084a0e`) among them, are in what this section reviewed. A re-record that changes only how the same elements are drawn (a glyph path, a stroke width, antialiasing) does not expire it. That kind should still be compared as §9.1 compared the 104.
+
+**It is not a legal opinion**, for the reasons §8 gives.

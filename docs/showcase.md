@@ -167,12 +167,12 @@ P3-5 already guarantees has a row for every spec — including the ones nothing 
 
 The gallery link is `gallery/README.md`, **not** `gallery/index.html`. GitHub serves an HTML file under
 `/blob/` as its own source, so a link to the page opened a screenful of markup and the `#<Name>` anchor
-the page really carries could not fire inside it; publishing those screens is gated on a
-reference-distance review that has not happened, so there is no rendered copy to link either. The
-README is a page GitHub does render, and it is the page that says what the gallery is and how to open
-it — from a checkout, or from the `gallery` artifact of a green CI run. The anchor still means something
-in both of those places, so both apps print it beside the link as the path it is
-(`gallery/index.html#Button in a checkout`) rather than hiding it inside a URL that cannot honour it.
+the page really carries could not fire inside it; nothing publishes a rendered copy of those screens, so
+there is none to link either. The README is a page GitHub does render, and it is the page that says what
+the gallery is and how to open it — from a checkout, or from the `gallery` artifact of a green CI run.
+The anchor still means something in both of those places, so both apps print it beside the link as the
+path it is (`gallery/index.html#Button in a checkout`) rather than hiding it inside a URL that cannot
+honour it.
 
 ### The Icons screen (P4-D4)
 
@@ -184,7 +184,7 @@ both screens now have exactly this, in this order and in the same words:
 | Part | What it is |
 |---|---|
 | The lead | the entry count; that every glyph is `Icon` with `tone: primary` and no label, so hidden from assistive technology; where `Icon`'s spec examples are; that the ladder is registry data; and that nothing on the screen acts on one icon |
-| Icon's axes | four controls, each one of `Icon`'s own axes, set for the whole grid at once. `size` is sm, md or lg, each labelled with its box. `weight` is control or display. `style` is *entry default*, outline, filled or duotone: *entry default* passes each entry's registry `defaultStyle` as the prop, since the spec's own default is outline. `direction` is ltr or rtl, set on the grid alone. Under the controls is one note per axis, saying what that axis does on that stack |
+| Icon's axes | four controls, each one of `Icon`'s own axes, set for the whole grid at once. `size` is sm, md or lg, each labelled with its box. `weight` is control or display. `style` is *entry default*, outline, filled or duotone: *entry default* passes each entry's registry `defaultStyle` as the prop, since the spec's own default is outline. `direction` is ltr or rtl, set on the grid alone. Under the controls are three notes, for `weight`, `style` and `direction`, each saying what that axis does on that stack; `size` has none |
 | The registry | every entry, in registry order, drawn by `Icon` with those four axes. Under each glyph is the entry's registry row, left to right in either direction: id, label key, tags, default style, binding, `fill: false` and, on the web, `mirrors in rtl`. The web also shows the categories on their own line, because its half of the registry keeps them apart from the tags; the Apple half folds them into the tags |
 | The ladder | registry data for the registry's first entry (`action.add`): the six rungs of the weight table, the four boxes of the size table and the three styles, drawn from the entry's binding and labelled as the registry's, not as the component |
 
@@ -203,9 +203,10 @@ nothing that acts on one entry, and nothing that finds or exports one.
 **The Apple detail sheet went.** Until P4-D4, every Apple tile was a button. It opened a sheet for that
 one icon, with its weight ladder, its four boxes and its registry facts. That sheet is the per-icon page
 SD-1 lists. P5-3's §5.6 said the screen had no per-icon page. That was true of the web and not of Apple,
-where the sheet had been part of the screen since the showcase landed (0ee722a). The re-review therefore
-has to judge the Apple screen with the sheet removed, as well as the new controls. There were three ways
-to settle it:
+where the sheet had been part of the screen since the showcase landed (0ee722a). The re-review
+(`docs/direction-board/reference-distance-showcase.md` §11, 2026-09-23) therefore judged the Apple screen
+with the sheet removed, as well as the new controls, and recorded the correction as SD-6. There were three
+ways to settle the sheet:
 
 - keep the sheet on Apple only, which leaves the two screens unequal;
 - add the same page to the web, which gives the second stack the affordance SD-1 warns about;
@@ -219,7 +220,8 @@ None of the sheet's content needed a page:
   web's ladder panel, on both stacks.
 
 So a tile is not a button on either stack, and no launch argument names an icon: `-DSShowcaseIcon` was
-removed with the sheet. The screen is now nearer the "registry table" SD-1 cleared than it was before.
+removed with the sheet. The screen is now nearer the "registry table" SD-1 cleared than it was before, and
+the re-review found SD-1's margin holding on both stacks (§11.4 of the review) and neither screen a copy.
 
 **ADR-0035, shown on the screen.** 27 of the 51 entries are marked `fill: false`. With `style` on
 filled, those 27 draw their outline, on both stacks, because that is how `Icon` draws them. Without a
@@ -249,26 +251,33 @@ reads its own half of it, and three differences come from the platforms, not the
 
 **A defect the web's direction control found.** Under rtl, the web screen measures how many of the
 entries marked `rtlMirror` the document actually draws flipped, in the same way `src/axis-probe.ts`
-measures an axis. On 2026-09-23 it measured 0 of 6.
+measures an axis. On 2026-09-23 the reading depended on how the app was served: **0 of 6** in a build
+(`pnpm showcase:build`, served by `vite preview`) and **6 of 6** under the dev server (`pnpm showcase`).
+The re-review recorded it as finding SD-7 of `docs/direction-board/reference-distance-showcase.md`. What
+it found that day:
 
-- `web/packages/react/src/icon/Glyph.css` writes `.ds-glyph[data-ds-mirror]:dir(rtl)`, and
-  `@iiiivaska/prism-react`'s own `dist/styles.css` keeps that selector.
+- `web/packages/react/src/icon/Glyph.css` wrote `.ds-glyph[data-ds-mirror]:dir(rtl)`, and
+  `@iiiivaska/prism-react`'s own `dist/styles.css` kept that selector.
 - `:dir()` arrived in Chrome 120. Prism's browser floor, which is Tailwind v4's, is Chrome 111.
-- A consumer whose build targets that floor gets the selector lowered by Lightning CSS to
-  `:is(:lang(ar), :lang(he), …)`. The showcase's Vite build is one such consumer: Vite 8's default
-  target, `baseline-widely-available`, also starts at Chrome 111.
-- A `dir="rtl"` without an RTL `lang` never matches the lowered selector. So Icon.yaml behavior 11 does
-  not hold on the web for an app that sets the direction alone.
-- `Text.css` has the same `:dir(rtl)` selector for its fade, and it is lowered the same way.
+- The dev server passes the selector through, and Chromium matches it. A consumer whose build targets
+  the floor gets it lowered by Lightning CSS to `:is(:lang(ar), :lang(he), …)`. The showcase's Vite
+  build is one such consumer: Vite 8's default target, `baseline-widely-available`, also starts at
+  Chrome 111.
+- A `dir="rtl"` without an RTL `lang` never matches the lowered selector. So Icon.yaml behavior 11 did
+  not hold on the web for a built app that sets the direction alone.
+- `Text.css` had the same `:dir(rtl)` selector for its fade, lowered the same way.
 
-The fix belongs to `@iiiivaska/prism-react`, not to the showcase. Until the measurement reads 6 of 6, the
-screen prints it with a warning tag rather than claim the flip.
+The defect belonged to `@iiiivaska/prism-react`, not to the showcase, and was fixed there the same day
+(SD-7): a build now reads 6 of 6. Either way the screen measures rather than claims: it prints the count
+it reads off the document it is running in, tagged `ok` when every marked entry is drawn flipped and
+`warn` when any is not.
 
 **Opening a state directly.** The Apple app names the screen's states, as it names every page
 (`swift/Showcase/README.md`): `-DSShowcaseIconSize`, `-DSShowcaseIconWeight`, `-DSShowcaseIconStyle`
 (`default`, `outline`, `filled` or `duotone`), `-DSShowcaseIconDirection` (`ltr` or `rtl`) and
 `-DSShowcaseIconsBlock` (`registry` or `ladder`, to open the screen scrolled to that block). Each key
-implies the Icons section.
+implies the Icons section, `-DSShowcaseIconStyle default` included, and a `-DSShowcaseSection` that names
+another section wins over it.
 
 ## 3. Axes
 
@@ -423,7 +432,8 @@ and a second baseline set would be a second canon to keep green.
    registry's ladder (every rung, box and style, where `Icon`'s props reach only some) is still drawn from the
    binding, and labelled as registry data. P4-D4 then made the two Icons screens one screen (§2, "The Icons
    screen"). The screen's reference-distance clearance
-   (`docs/direction-board/reference-distance-showcase.md` §10, condition 2) expired with it, and that
-   review is re-run as a task of its own.
+   (`docs/direction-board/reference-distance-showcase.md` §10, condition 2) expired when `Icon` landed,
+   and the review was re-run for both Icons screens on 2026-09-23, after P4-D4: neither is a copy (§11 of
+   that document, whose §11.8 says what expires the new clearance).
 4. **watchOS is out of scope for the app.** The package supports it, the `watch` density is switchable
    inside the iOS and macOS app, and a watch *run* is not part of this.
