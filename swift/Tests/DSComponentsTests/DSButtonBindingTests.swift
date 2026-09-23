@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Button.yaml` specVersion 3: the binding matrix keyed by variant and published material, the sizes
+/// `spec/components/Button.yaml` specVersion 4: the binding matrix keyed by variant and published material, the sizes
 /// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule and the watch
 /// adaptations.
 ///
@@ -18,9 +18,9 @@ import DSTokens
 /// integers, the gallery pairs by filename, and each snapshot suite compares a stack to itself.
 ///
 /// What stays hand-written, and why, is marked at each test: a rule the spec states as prose (the hit region, the
-/// Dynamic Type clamp, the watch adaptations), a value the spec deliberately does not bind (the outline width), and
-/// the one documented deviation from a cell (the primary spinner on vivid).
-@Suite("Button bindings (Button.yaml v3)")
+/// Dynamic Type clamp, the watch adaptations), a rule an ADR states where the spec has no cell (the danger underlay),
+/// and the documented deviations from a cell (the primary pressed fill and spinner on vivid).
+@Suite("Button bindings (Button.yaml v4)")
 struct DSButtonBindingTests {
     let spec: DSSpec
     /// Ghost and danger bind no spinner cell of their own, so their spinner is Spinner.yaml's arc.
@@ -51,11 +51,11 @@ struct DSButtonBindingTests {
     /// The axis check is what keeps the loops below honest: a loop over an axis the matrix is not keyed by would
     /// read `default` at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 3)
+        #expect(try spec.specVersion == 4)
         #expect(try spec.propValues("variant") == DSButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSButtonSize.allCases.map(\.rawValue))
         let variants = Set(try spec.propValues("variant"))
-        for property in ["root.background", "root.foreground", "root.border", "root.pressed.background", "spinner.color"] {
+        for property in ["root.background", "root.foreground", "root.border", "root.borderWidth", "root.pressed.background", "spinner.color"] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
         }
@@ -87,19 +87,21 @@ struct DSButtonBindingTests {
         }
     }
 
-    /// `tokens.root.border`, and the width the spec does not bind.
+    /// `tokens.root.border` and `tokens.root.borderWidth`: the outline's colour on every published material, and its
+    /// width, which the spec keys by variant alone (ADR-0033: `border.hairline`, as the signed-off direction board
+    /// draws every pill). The width is asked on every material too, because the view reads it wherever it strokes.
     @Test func borderCells() throws {
         for material in Self.materials {
             for variant in DSButtonVariant.allCases {
                 try spec.binds(DSButtonAppearance.border(variant, on: material), at: "root.border", variant, material)
+                try spec.binds(DSButtonAppearance.borderWidth(variant), at: "root.borderWidth", variant, material)
+                // Wherever an outline is drawn it has a width, and wherever there is a width there is an outline.
+                #expect(
+                    (DSButtonAppearance.border(variant, on: material) == nil) == (DSButtonAppearance.borderWidth(variant) == nil),
+                    "\(variant) \(material)"
+                )
             }
         }
-        // Button.yaml binds no border width; the signed-off direction board draws every pill outline at
-        // `border.hairline` (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`). The absence is
-        // asserted, so the day the spec binds one this test says to read the cell instead of this line.
-        #expect(throws: DSSpecMismatch.self) { try spec.cell("root.borderWidth") }
-        let border = Self.tokens().border
-        #expect(DSButtonAppearance.borderWidth(border) == border.hairline)
     }
 
     /// `tokens.root.pressed.background` and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion
@@ -128,9 +130,9 @@ struct DSButtonBindingTests {
 
     /// A tinted danger pill paints `color.bg.page` under its tint over media (ADR-0030 §6.2), and nowhere else.
     ///
-    /// Button.yaml v3 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
+    /// Button.yaml v4 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
     /// comes from the ADR and the materials are the ones IconButton.yaml keys its own `underlay` by. The missing
-    /// property is asserted, so a v4 that adds the cell fails here rather than leaving two rules in two places.
+    /// property is asserted, so a version that adds the cell fails here rather than leaving two rules in two places.
     @Test func dangerPaintsThePageOverMedia() throws {
         #expect(throws: DSSpecMismatch.self) { try spec.cell("root.underlay") }
         for material in Self.materials {

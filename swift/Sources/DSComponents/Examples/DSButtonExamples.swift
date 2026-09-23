@@ -64,7 +64,7 @@ enum DSButtonExamples {
                 ForEach(DSButtonSize.allCases, id: \.self) { size in
                     DSButton(verbatim: size.rawValue, size: size, leadingIcon: .actionAdd, trailingIcon: .navForward) {}
                 }
-                DSButton("Send invoice", fullWidth: true) {}
+                DSButton("Send invoice", isFullWidth: true) {}
                 DSButton(DSExampleProse.paragraph, variant: .secondary) {}
                     .frame(width: DSExampleSize.card)
             }

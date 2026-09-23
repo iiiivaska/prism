@@ -1,7 +1,7 @@
 # DSSnapshotTests
 
 The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button, Card,
-Divider, Icon and Badge across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
+Divider, Icon, Badge and IconButton across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
 component's pixels back** — because this is the target that runs where a Prism view really rasterizes.
 
 | File | What it holds |
@@ -17,6 +17,9 @@ component's pixels back** — because this is the target that runs where a Prism
 | `DSDividerAccessibilityTreeTests.swift` | What a Divider publishes to VoiceOver, read off UIKit's accessibility tree rather than a render: no element for any example or either value of `isDecorative` (Divider.yaml `notes.platform.ios`), with controls that an unnamed element is found. It turns on the accessibility runtime's automation mode for each walk and restores it; a runtime without that switch skips the suite with the reason instead of failing it. iOS only. |
 | `DSIconAccessibilityTreeTests.swift` | What an Icon publishes to VoiceOver, read off the same tree with Divider's walk: `named-standalone` is one image named "Locked for editing", byte for byte the web's, and every other example, a glyph with no `label` and a labelled one marked decorative are no element, so an SF Symbol's own name never leaks. It also holds Button's and Card's trees, whose glyphs `DSIcon` now draws, to one element per control. Skipped with the reason where the runtime has no automation switch. iOS only. |
 | `DSBadgeAccessibilityTreeTests.swift` | What a Badge publishes to VoiceOver, read off the same tree with Divider's walk: every example is one element with no trait Badge adds, named byte for byte as the web names it (`128 open incidents` for the badge that draws `99+`), and a badge with no label, a blank label, a hidden count or a host that reads it is no element; a badge speaks the app's `strings.Badge.count` template, not a constant. Skipped with the reason where the runtime has no automation switch. iOS only. |
+| `DSIconButtonAccessibilityTreeTests.swift` | What an IconButton publishes to VoiceOver, read off the same tree with Divider's walk: every example is one button named by its `label` byte for byte as the web names it (the Cyrillic `label-ru` included), with no hint — no tooltip substitute reads the name twice — the selected trait exactly on `selected-in-group`, not-enabled exactly on `disabled`, and for `with-badge` the badge's contribution, `3 unread`, as its value, in the app's `strings.Badge.count` template and the environment's locale; the glyph and the badge are never elements. Skipped with the reason where the runtime has no automation switch. iOS only. |
+| `DSIconButtonRenderTests.swift` | Where an IconButton draws its badge: `space.1` above the circle and past its trailing edge (its leading edge under right to left), a `size.icon.md` square, and the circle's own box unchanged by it, in compact and regular. iOS only. |
+| `DSIconButtonReduceMotionTests.swift` | That an IconButton's press is visible under Reduce Motion for every variant and a selected circle, with the primary and selected overlay's known gap held as a known issue; and that the primary and danger pressed overlay shows on every press, not only under Reduce Motion. iOS only. |
 | `DSIconBoxTests.swift` | What an Icon draws: every registry glyph, in every box, at `control` and at `display` in the `lg` box, standard and under Bold Text, draws no ink outside its box (Icon.yaml anatomy); `display` below `lg` draws the `control` cut's pixels (behavior 3); Bold Text and `filled` change the drawing. iOS only. |
 | `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
 | `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
@@ -78,9 +81,10 @@ density × the standard state and Increase Contrast, plus:
 | Divider | 6 (1 glass) | 6×8 + 1×4 = **52** |
 | Icon | 11 (2 glass) | 11×8 + 11×4 + 2×4 = **140** |
 | Badge | 10 (1 glass) | 10×8 + 1×4 = **84** |
-| | **55** | **544** |
+| IconButton | 12 (1 glass) | 12×8 + 1×4 = **100** |
+| | **67** | **644** |
 
-`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 544, so adding an example is a deliberate
+`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 644, so adding an example is a deliberate
 change to this file and not a silent one. `theMatrixCoversEveryComponentTheManifestImplementsOnIOS` holds the
 hand-written `DSSnapshotMatrix.components` to the components `DSComponentsManifest` implements on iOS, so a component
 cannot land in the manifest without being snapshotted. Both tests run in the host `swift test`, which CI runs before

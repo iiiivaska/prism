@@ -1,5 +1,5 @@
 /**
- * The enums of spec/components/Button.yaml (specVersion 3). The stylesheet maps them, with the material
+ * The enums of spec/components/Button.yaml (specVersion 4). The stylesheet maps them, with the material
  * the enclosing Surface publishes, to the tokens Button.yaml binds; test/button.test.tsx reads the spec
  * and checks both, so neither can drift.
  */

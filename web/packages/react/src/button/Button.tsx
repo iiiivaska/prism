@@ -1,5 +1,5 @@
 /**
- * `Button` (spec/components/Button.yaml, specVersion 3): one action, one label, an optional leading or
+ * `Button` (spec/components/Button.yaml, specVersion 4): one action, one label, an optional leading or
  * trailing icon, on React Aria Components' `Button`.
  *
  * - React Aria owns the behavior (Button.yaml behavior 1): `onPress` fires once on release inside the
@@ -47,7 +47,7 @@ export interface ButtonProps
   /** Fires once on release inside the hit area. */
   readonly onPress: (event: PressEvent) => void;
   /** Stretches the pill to its container and centers the content. Default false. */
-  readonly fullWidth?: boolean;
+  readonly isFullWidth?: boolean;
   readonly className?: string;
   readonly style?: CSSProperties;
   readonly ref?: Ref<HTMLButtonElement>;
@@ -67,7 +67,7 @@ export function Button(props: ButtonProps): ReactNode {
     isLoading = false,
     isDisabled = false,
     onPress,
-    fullWidth = false,
+    isFullWidth = false,
     className,
     style,
     ref,
@@ -91,7 +91,7 @@ export function Button(props: ButtonProps): ReactNode {
       data-ds-variant={variant}
       data-ds-size={size}
       data-ds-surface={surface.material}
-      data-ds-full-width={fullWidth ? "" : undefined}
+      data-ds-full-width={isFullWidth ? "" : undefined}
     >
       {leadingIcon === undefined ? null : <IconPart slot="button-leading-icon" name={leadingIcon} size="md" tone="inherit" />}
       <span data-ds-slot="button-label">

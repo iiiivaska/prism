@@ -140,7 +140,7 @@ public struct DSButtonRenderer: DSExampleRenderer {
                 trailingIcon: example.icon("trailingIcon"),
                 isLoading: example.bool("isLoading"),
                 isDisabled: example.bool("isDisabled"),
-                fullWidth: example.bool("fullWidth"),
+                isFullWidth: example.bool("isFullWidth"),
                 action: example.handler("onPress") ?? {}
             )
         )
@@ -346,31 +346,93 @@ public struct DSBadgeRenderer: DSExampleRenderer {
     public init() {}
 
     public func content(for example: DSSpecExample) -> AnyView? {
+        Self.badge { example[$0] }.map { AnyView($0) }
+    }
+
+    /// A Badge written as the mapping SCHEMA's slot form gives it — IconButton's `badge: { variant: count, … }` — with
+    /// the same reading an example's own props get; nil for anything else, and for props this build cannot draw.
+    static func badge(_ value: DSPropValue) -> DSBadge? {
+        guard case .map = value else { return nil }
+        return badge { value[$0] }
+    }
+
+    /// Badge.yaml's six props, read through `prop`, as the one `DSBadge` they describe.
+    static func badge(_ prop: (String) -> DSPropValue?) -> DSBadge? {
         // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
         // default in its place; an example that writes no value takes the spec's default.
-        let variant: DSBadgeVariant? = example.string("variant") == nil ? .count : example.raw("variant")
-        let tone: DSBadgeTone? = example.string("tone") == nil ? .neutral : example.raw("tone")
-        let emphasis: DSBadgeEmphasis? = example.string("emphasis") == nil ? .filled : example.raw("emphasis")
+        let variant: DSBadgeVariant? = raw(prop("variant"), default: .count)
+        let tone: DSBadgeTone? = raw(prop("tone"), default: .neutral)
+        let emphasis: DSBadgeEmphasis? = raw(prop("emphasis"), default: .filled)
         guard let variant, let tone, let emphasis else { return nil }
         // `count` and `max` are whole numbers: one written as anything else — a fraction, a string — is not drawn as
         // some other number (`DSPropValue.int` would truncate a fraction).
         var count: Int?
-        if let written = example["count"] {
+        if let written = prop("count") {
             guard let whole = Self.whole(written) else { return nil }
             count = whole
         }
         var max = 99
-        if let written = example["max"] {
+        if let written = prop("max") {
             guard let whole = Self.whole(written) else { return nil }
             max = whole
         }
         // The label goes through as the caller's key; a blank one is no label, which `DSBadge` itself decides.
-        let label = example.string("label").map { LocalizedStringKey($0) }
-        return AnyView(DSBadge(count: count, variant: variant, tone: tone, emphasis: emphasis, max: max, label: label))
+        let label = prop("label")?.string.map { LocalizedStringKey($0) }
+        return DSBadge(count: count, variant: variant, tone: tone, emphasis: emphasis, max: max, label: label)
+    }
+
+    /// An enum prop: its default where no string is written, the case it spells, or nil for a value this build does not
+    /// know — `DSSpecExample.raw(_:as:)` behind the `string == nil` default every renderer in this file uses.
+    private static func raw<T: RawRepresentable>(_ value: DSPropValue?, default fallback: T) -> T? where T.RawValue == String {
+        guard let written = value?.string else { return fallback }
+        return T(rawValue: written)
     }
 
     /// A number prop that is a whole number, or nil.
     static func whole(_ value: DSPropValue) -> Int? {
         value.double.flatMap { Int(exactly: $0) }
+    }
+}
+
+// MARK: - IconButton
+
+/// IconButton.yaml's `variant`, `size`, `glyph`, `label`, `badge`, `isSelected`, `isDisabled` and `onPress`, staged as
+/// Badge is in every harness: no frame of its own, so a page example is the button on the page, and an example that
+/// declares a material is the button inside a `card`-padded Surface that hugs it (the default `surfacePadding`).
+///
+/// `glyph` and `label` are required, and neither is ever invented: an example that writes no glyph, or no name, or a
+/// name of nothing but whitespace, is not staged, because a circle with no name is exactly what IconButton exists not
+/// to be (ADR-0011 rule 4, ADR-0032 rule 6). The `badge` slot is read as a Badge through the same reading
+/// `DSBadgeRenderer` gives a Badge example's own props.
+public struct DSIconButtonRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        guard let glyph = example.icon("glyph"),
+              let label = example.string("label"),
+              !label.allSatisfy(\.isWhitespace)
+        else { return nil }
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        let variant: DSIconButtonVariant? = example.string("variant") == nil ? .secondary : example.raw("variant")
+        let size: DSIconButtonSize? = example.string("size") == nil ? .md : example.raw("size")
+        guard let variant, let size else { return nil }
+        var badge: DSBadge?
+        if let written = example["badge"] {
+            guard let made = DSBadgeRenderer.badge(written) else { return nil }
+            badge = made
+        }
+        return AnyView(
+            DSIconButton(
+                LocalizedStringKey(label),
+                glyph: glyph,
+                variant: variant,
+                size: size,
+                badge: badge,
+                isSelected: example.bool("isSelected"),
+                isDisabled: example.bool("isDisabled"),
+                action: example.handler("onPress") ?? {}
+            )
+        )
     }
 }

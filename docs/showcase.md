@@ -247,7 +247,7 @@ Per component, four states, all from the catalogue:
 |---|---|
 | implemented at `specVersion` | the examples |
 | implemented behind the spec | the examples, plus "implements v3 of spec v5" and the parity link — the report's own `LAG` |
-| `platforms.<key>` is `full`/`adapted`, no manifest entry | "Specified, not implemented here yet", the spec summary, the example ids it will have, the spec link. Every one of the 50 unimplemented specs is a row, so the app never silently omits |
+| `platforms.<key>` is `full`/`adapted`, no manifest entry | "Specified, not implemented here yet", the spec summary, the example ids it will have, the spec link. Every one of the 49 unimplemented specs is a row, so the app never silently omits |
 | `platforms.<key>` is `none` | "Not on this platform, by design", with the reason from `notes.platform.<key>` when the spec gives one |
 
 The same rule applies to the foundations: a `ref` token shows a value on the web (it is a CSS variable)

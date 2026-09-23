@@ -4,7 +4,7 @@ import DSIcons
 import DSTokens
 
 /// Button: a tappable action with one label and an optional leading or trailing icon
-/// (`spec/components/Button.yaml`, specVersion 3).
+/// (`spec/components/Button.yaml`, specVersion 4).
 ///
 ///     DSButton("Continue") { save() }
 ///     DSButton("Details", variant: .secondary, trailingIcon: .navOpen) { openDetails() }
@@ -31,7 +31,9 @@ import DSTokens
 ///  - `isDisabled` lowers the button to `opacity.disabled` and removes it from the focus order. Prefer explaining why
 ///    an action is unavailable.
 ///  - The label never wraps and truncates with an ellipsis; the label and the height scale with Dynamic Type up to
-///    accessibility3, and past it the label wraps to two lines. `fullWidth` stretches the pill and centres the content.
+///    accessibility3, and past it the label wraps to two lines. `isFullWidth` stretches the pill and centres the
+///    content.
+///  - Secondary, ghost and danger outline the pill at `border.hairline` on every material (ADR-0033).
 ///  - The focus ring is `color.border.focus` at `border.focus` outside the pill.
 ///  - On watchOS every size renders `lg`, ghost renders as secondary and there is no trailing icon.
 ///
@@ -44,7 +46,7 @@ public struct DSButton: View {
     private let trailingIcon: DSIconName?
     private let isLoading: Bool
     private let isDisabled: Bool
-    private let fullWidth: Bool
+    private let isFullWidth: Bool
     private let action: () -> Void
 
     private var ds = DSThemeValues()
@@ -58,7 +60,7 @@ public struct DSButton: View {
     ///   - trailingIcon: a registry glyph after the label, at `size.icon.md`; not drawn on watchOS.
     ///   - isLoading: replaces the label with a spinner and ignores presses.
     ///   - isDisabled: dims the button and takes it out of input and the focus order.
-    ///   - fullWidth: stretches the pill to the width it is offered.
+    ///   - isFullWidth: stretches the pill to the width it is offered.
     ///   - action: the spec's `onPress`, fired on release.
     public init(
         _ key: LocalizedStringKey,
@@ -70,13 +72,13 @@ public struct DSButton: View {
         trailingIcon: DSIconName? = nil,
         isLoading: Bool = false,
         isDisabled: Bool = false,
-        fullWidth: Bool = false,
+        isFullWidth: Bool = false,
         action: @escaping () -> Void
     ) {
         self.init(
             content: .localized(key, tableName: tableName, bundle: bundle), variant: variant, size: size,
             leadingIcon: leadingIcon, trailingIcon: trailingIcon, isLoading: isLoading, isDisabled: isDisabled,
-            fullWidth: fullWidth, action: action
+            isFullWidth: isFullWidth, action: action
         )
     }
 
@@ -89,12 +91,13 @@ public struct DSButton: View {
         trailingIcon: DSIconName? = nil,
         isLoading: Bool = false,
         isDisabled: Bool = false,
-        fullWidth: Bool = false,
+        isFullWidth: Bool = false,
         action: @escaping () -> Void
     ) {
         self.init(
             content: .verbatim(label), variant: variant, size: size, leadingIcon: leadingIcon,
-            trailingIcon: trailingIcon, isLoading: isLoading, isDisabled: isDisabled, fullWidth: fullWidth, action: action
+            trailingIcon: trailingIcon, isLoading: isLoading, isDisabled: isDisabled, isFullWidth: isFullWidth,
+            action: action
         )
     }
 
@@ -108,12 +111,13 @@ public struct DSButton: View {
         trailingIcon: DSIconName? = nil,
         isLoading: Bool = false,
         isDisabled: Bool = false,
-        fullWidth: Bool = false,
+        isFullWidth: Bool = false,
         action: @escaping () -> Void
     ) {
         self.init(
             content: .verbatim(String(label)), variant: variant, size: size, leadingIcon: leadingIcon,
-            trailingIcon: trailingIcon, isLoading: isLoading, isDisabled: isDisabled, fullWidth: fullWidth, action: action
+            trailingIcon: trailingIcon, isLoading: isLoading, isDisabled: isDisabled, isFullWidth: isFullWidth,
+            action: action
         )
     }
 
@@ -125,7 +129,7 @@ public struct DSButton: View {
         trailingIcon: DSIconName?,
         isLoading: Bool,
         isDisabled: Bool,
-        fullWidth: Bool,
+        isFullWidth: Bool,
         action: @escaping () -> Void
     ) {
         label = content
@@ -135,7 +139,7 @@ public struct DSButton: View {
         self.trailingIcon = trailingIcon
         self.isLoading = isLoading
         self.isDisabled = isDisabled
-        self.fullWidth = fullWidth
+        self.isFullWidth = isFullWidth
         self.action = action
     }
 
@@ -157,7 +161,7 @@ public struct DSButton: View {
                 variant: variant
             )
         }
-        .buttonStyle(DSButtonStyle(variant: variant, size: size, isLoading: isLoading, fullWidth: fullWidth))
+        .buttonStyle(DSButtonStyle(variant: variant, size: size, isLoading: isLoading, isFullWidth: isFullWidth))
         .disabled(isDisabled)
         .focusEffectDisabled()
         .dynamicTypeSize(...DSButtonAppearance.largestTypeSize)
@@ -239,7 +243,7 @@ private struct DSButtonStyle: ButtonStyle {
     let variant: DSButtonVariant
     let size: DSButtonSize
     let isLoading: Bool
-    let fullWidth: Bool
+    let isFullWidth: Bool
 
     func makeBody(configuration: Configuration) -> some View {
         DSButtonPill(
@@ -248,7 +252,7 @@ private struct DSButtonStyle: ButtonStyle {
             variant: variant,
             size: size,
             isLoading: isLoading,
-            fullWidth: fullWidth
+            isFullWidth: isFullWidth
         )
     }
 }
@@ -261,20 +265,20 @@ struct DSButtonPill<Label: View>: View {
     let variant: DSButtonVariant
     let size: DSButtonSize
     let isLoading: Bool
-    let fullWidth: Bool
+    let isFullWidth: Bool
 
     private var ds = DSThemeValues()
     @Environment(\.isEnabled) private var isEnabled
     @Environment(\.isFocused) private var isFocused
     @State private var isHovered = false
 
-    init(label: Label, isPressed: Bool, variant: DSButtonVariant, size: DSButtonSize, isLoading: Bool, fullWidth: Bool) {
+    init(label: Label, isPressed: Bool, variant: DSButtonVariant, size: DSButtonSize, isLoading: Bool, isFullWidth: Bool) {
         self.label = label
         self.isPressed = isPressed
         self.variant = variant
         self.size = size
         self.isLoading = isLoading
-        self.fullWidth = fullWidth
+        self.isFullWidth = isFullWidth
     }
 
     var body: some View {
@@ -298,7 +302,7 @@ struct DSButtonPill<Label: View>: View {
             label
         }
         .padding(.horizontal, DSButtonAppearance.paddingX(size, button))
-        .frame(maxWidth: fullWidth ? .infinity : nil)
+        .frame(maxWidth: isFullWidth ? .infinity : nil)
         .foregroundStyle(tokens[keyPath: DSButtonAppearance.foreground(variant, on: material)])
         .background {
             ZStack {
@@ -315,8 +319,9 @@ struct DSButtonPill<Label: View>: View {
                     .fill(tokens[keyPath: DSButtonAppearance.hoverOverlay])
                     .opacity(hovered ? 1 : 0)
                     .animation(DSControlAppearance.hoverAnimation(motion), value: hovered)
-                if let border = DSButtonAppearance.border(variant, on: material) {
-                    shape.strokeBorder(tokens[keyPath: border], lineWidth: DSButtonAppearance.borderWidth(tokens.border))
+                if let border = DSButtonAppearance.border(variant, on: material),
+                   let width = DSButtonAppearance.borderWidth(variant) {
+                    shape.strokeBorder(tokens[keyPath: border], lineWidth: tokens[keyPath: width])
                 }
             }
         }

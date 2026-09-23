@@ -92,12 +92,30 @@ struct DSDividerAccessibilityTreeTests {
 
     // MARK: - The walk
 
-    /// One node VoiceOver would stop on: its label, empty when it has none, and its traits.
+    /// One node VoiceOver would stop on: its label, its value and its hint, each empty when it has none, and its traits.
+    /// The value and the hint are what IconButton's tree test reads beside the label (a badge's count, and the hint a
+    /// tooltip substitute would add); the callers that read only the label are unaffected.
     struct Element: CustomStringConvertible {
         let label: String
+        let value: String
+        let hint: String
         let traits: UIAccessibilityTraits
 
-        var description: String { "\(label.debugDescription) traits=\(traits.rawValue)" }
+        init(label: String, value: String = "", hint: String = "", traits: UIAccessibilityTraits) {
+            self.label = label
+            self.value = value
+            self.hint = hint
+            self.traits = traits
+        }
+
+        var description: String {
+            [
+                label.debugDescription,
+                value.isEmpty ? nil : "value=\(value.debugDescription)",
+                hint.isEmpty ? nil : "hint=\(hint.debugDescription)",
+                "traits=\(traits.rawValue)",
+            ].compactMap(\.self).joined(separator: " ")
+        }
     }
 
     /// The accessibility elements of `content` hosted between the two labels of `around`, in tree order.
@@ -133,7 +151,12 @@ struct DSDividerAccessibilityTreeTests {
         func visit(_ object: NSObject, depth: Int) {
             guard depth < 64, seen.insert(ObjectIdentifier(object)).inserted else { return }
             if object.isAccessibilityElement {
-                out.append(Element(label: object.accessibilityLabel ?? "", traits: object.accessibilityTraits))
+                out.append(Element(
+                    label: object.accessibilityLabel ?? "",
+                    value: object.accessibilityValue ?? "",
+                    hint: object.accessibilityHint ?? "",
+                    traits: object.accessibilityTraits
+                ))
             }
             if object.accessibilityElementsHidden { return }
             var children: [NSObject] = []

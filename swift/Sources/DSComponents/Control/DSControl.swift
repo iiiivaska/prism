@@ -94,27 +94,56 @@ struct DSHoverTracking: ViewModifier {
 
 // MARK: - Focus ring
 
-/// The focus ring: `color.border.focus` at `border.focus` width outside the shape, following its radius
-/// (Button.yaml and Card.yaml accessibility, docs/research/visual-dna.md §7.5).
+/// The focus ring: `color.border.focus` at `border.focus` width outside the shape, following its outline
+/// (Button.yaml, Card.yaml and IconButton.yaml accessibility, docs/research/visual-dna.md §7.5).
+///
+/// The ring traces the shape it surrounds, grown by its own width, so it touches that shape evenly all the way round.
+/// A caller says which shape that is (`Outline`): a continuous rounded rectangle for Button's pill and Card's corners,
+/// a circle for a body drawn as `Circle()` — IconButton and Card's action disc.
 ///
 /// On macOS under Increase Contrast the ring takes the system's focus colour instead (Button.yaml
 /// `notes.platform.macos`), which SwiftUI exposes as the accent colour the focus indicator is drawn from. The
 /// contrast state is Prism's token context, never the OS setting (ADR-0022 §1.3).
 struct DSFocusRing: View {
-    let cornerRadius: CGFloat
+    /// The outline of the shape the ring surrounds.
+    enum Outline: Hashable, Sendable {
+        /// A continuous rounded rectangle of this corner radius; the ring's own radius is larger by the ring's width.
+        case roundedRectangle(cornerRadius: CGFloat)
+        /// A circle: the body is `Circle()` on a square box. Written as a rounded rectangle instead — at a radius of
+        /// half the side or more, as `radius.control` is — SwiftUI clamps the radius and the continuous style draws a
+        /// squircle, whose ring wanders in and out around a round body by up to about 0.15 pt instead of keeping one
+        /// distance from it.
+        case circle
+    }
+
+    let outline: Outline
     private var ds = DSThemeValues()
 
+    /// A ring around a continuous rounded rectangle: Button's pill, a card.
     init(cornerRadius: CGFloat) {
-        self.cornerRadius = cornerRadius
+        self.init(.roundedRectangle(cornerRadius: cornerRadius))
+    }
+
+    init(_ outline: Outline) {
+        self.outline = outline
     }
 
     var body: some View {
         let width = ds.tokens.border.focus
-        RoundedRectangle(cornerRadius: cornerRadius + width, style: .continuous)
-            .strokeBorder(color, lineWidth: width)
+        ring(width: width)
             .padding(-width)
             .allowsHitTesting(false)
             .accessibilityHidden(true)
+    }
+
+    @ViewBuilder private func ring(width: CGFloat) -> some View {
+        switch outline {
+        case .roundedRectangle(let cornerRadius):
+            RoundedRectangle(cornerRadius: cornerRadius + width, style: .continuous)
+                .strokeBorder(color, lineWidth: width)
+        case .circle:
+            Circle().strokeBorder(color, lineWidth: width)
+        }
     }
 
     private var color: Color {

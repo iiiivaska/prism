@@ -1,6 +1,6 @@
 /**
- * Browser behaviour of Button, Card, Divider, Icon and Badge, in Vitest browser mode (Chromium): what the Node
- * suites can only read from the stylesheets, computed on real elements.
+ * Browser behaviour of Button, Card, Divider, Icon, Badge and IconButton, in Vitest browser mode (Chromium): what
+ * the Node suites can only read from the stylesheets, computed on real elements.
  *
  * - Button.yaml behaviors 2, 3, 5 and 6: the hit region per modality with an unchanged visual box, the
  *   width kept while loading, labels on one line, hover only under pointer, the press scale.
@@ -30,6 +30,12 @@
  *   stroke inside the outline pill and none on a filled one; tabular digits; never a tap target; a changed
  *   count fading its new digits in over motion.duration.quick, at once under Reduce Motion, and not at all on
  *   the first drawing or on a badge that reappears.
+ * - IconButton.yaml behaviors 2, 3, 5 to 7, 12, 13, 15 and 16: a circle of `root.size` that is the same under
+ *   either modality and a hit region of at least `size.hit` around it; `plain` draws nothing but the glyph; the
+ *   selected circle is primary's; hover under pointer only; the 0.97 press with its pressed overlay on every
+ *   press, Reduce Motion included; the focus ring outside the circle; disabled; the badge `badge.offset` outside
+ *   the top-trailing corner, in either writing direction, moving neither the circle nor the glyph; and no hint
+ *   attribute on any root.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -44,7 +50,24 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Badge, Button, Card, Divider, Icon, Surface, Theme, cardUnitSeparator, glyphSizes, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
+import {
+  Badge,
+  Button,
+  Card,
+  Divider,
+  Icon,
+  IconButton,
+  Surface,
+  Theme,
+  cardUnitSeparator,
+  glyphSizes,
+  iconButtonSizes,
+  iconButtonVariants,
+  type CardProps,
+  type Density,
+  type Modality,
+  type Motion,
+} from "@iiiivaska/prism-react";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -1069,5 +1092,240 @@ describe("Badge", () => {
     const label = find(element, '[data-probe="back"] [data-ds-slot="badge-label"]');
     expect(label.hasAttribute("data-ds-replaced")).toBe(false);
     expect(getComputedStyle(label).animationName).toBe("none");
+  });
+});
+
+describe("IconButton", () => {
+  const noop = (): void => undefined;
+  const sizeToken = { sm: "--ds-icon-button-size-sm", md: "--ds-icon-button-size-md", lg: "--ds-icon-button-size-lg" } as const;
+  const glyphToken = { sm: "--ds-size-icon-sm", md: "--ds-size-icon-md", lg: "--ds-size-icon-lg" } as const;
+
+  it("is a circle of root.size, the same under either modality, with a hit region of at least size.hit around it (behaviors 2 and 7)", async () => {
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      for (const size of iconButtonSizes) {
+        const measured: Partial<Record<Modality, { side: number; hitTop: number; hit: number }>> = {};
+        for (const modality of ["pointer", "touch"] as const) {
+          const element = await mount(<IconButton size={size} variant="plain" glyph="nav.open" label="Open details" onPress={noop} />, { modality, density });
+          const button = find(element, ".ds-icon-button");
+          const rect = button.getBoundingClientRect();
+          const side = tokenPx(button, sizeToken[size]);
+          expect([rect.width, rect.height], `${density} ${size} ${modality}`).toEqual([side, side]);
+          // radius.control on a square: a circle, whose radius is at least half the side.
+          expect(Number.parseFloat(getComputedStyle(button).borderTopLeftRadius), `${density} ${size}`).toBeGreaterThanOrEqual(side / 2);
+          // The glyph is the icon box, the same in every density, centred in the circle.
+          const glyph = find(button, '[data-ds-slot="icon-button-glyph"]').getBoundingClientRect();
+          const box = tokenPx(button, glyphToken[size]);
+          expect([glyph.width, glyph.height], `${density} ${size}`).toEqual([box, box]);
+          expect(glyph.left - rect.left, `${density} ${size}`).toBeCloseTo((side - box) / 2, 3);
+          expect(glyph.top - rect.top, `${density} ${size}`).toBeCloseTo((side - box) / 2, 3);
+          const before = getComputedStyle(button, "::before");
+          measured[modality] = { side, hitTop: Number.parseFloat(before.top), hit: tokenPx(button, "--ds-size-hit") };
+          await unmount();
+        }
+        const { pointer, touch } = measured;
+        expect(touch?.side, `${density} ${size}`).toBe(pointer?.side);
+        for (const each of [pointer, touch]) {
+          expect(each?.hitTop, `${density} ${size}`).toBeCloseTo(Math.min(0, ((each?.side ?? 0) - (each?.hit ?? 0)) / 2), 3);
+        }
+      }
+    }
+  });
+
+  it("takes a press anywhere in the hit region, which reaches past a small circle under touch (behaviors 2 and 3)", async () => {
+    const onPress = vi.fn();
+    const element = await mount(
+      <div style={{ padding: "24px" }}>
+        <IconButton size="sm" variant="plain" glyph="nav.open" label="Open details" onPress={onPress} />
+      </div>,
+      { modality: "touch", density: "compact" },
+    );
+    const button = find(element, ".ds-icon-button");
+    const rect = button.getBoundingClientRect();
+    const hit = tokenPx(button, "--ds-size-hit");
+    expect(hit).toBeGreaterThan(rect.width);
+    // Just outside the circle, inside size.hit: the button's own region.
+    const x = rect.left - (hit - rect.width) / 2 + 1;
+    const y = rect.top + rect.height / 2;
+    expect(document.elementFromPoint(x, y)).toBe(button);
+    // `plain` paints nothing at rest: no fill, no ring.
+    const style = getComputedStyle(button);
+    expect(style.getPropertyValue("--ds--icon-button-fill").trim()).toMatch(TRANSPARENT);
+    expect(style.boxShadow).toMatch(/ 0px 0px 0px 0px inset$/u);
+    await act(async () => {
+      await userEvent.click(button, { position: { x: x - rect.left, y: rect.height / 2 } });
+    });
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders a selected circle as primary renders it, whatever its variant, and announces it with aria-current (behavior 6)", async () => {
+    const element = await mount(
+      <div>
+        <IconButton variant="primary" glyph="object.map" label="Map view" data-probe="primary" onPress={noop} />
+        {iconButtonVariants.map((variant) => (
+          <IconButton key={variant} variant={variant} glyph="object.map" label="Map view" isSelected data-probe={`selected-${variant}`} onPress={noop} />
+        ))}
+        <IconButton variant="ghost" glyph="object.map-pin" label="Pin view" data-probe="unselected" onPress={noop} />
+      </div>,
+    );
+    const primary = getComputedStyle(find(element, '[data-probe="primary"]'));
+    for (const variant of iconButtonVariants) {
+      const probe = find(element, `[data-probe="selected-${variant}"]`);
+      const style = getComputedStyle(probe);
+      await settles(() => getComputedStyle(probe).getPropertyValue("--ds--icon-button-fill").trim(), primary.getPropertyValue("--ds--icon-button-fill").trim());
+      await settles(() => getComputedStyle(probe).color, primary.color);
+      expect(style.boxShadow, variant).toBe(primary.boxShadow);
+      expect(style.backgroundColor, variant).toMatch(TRANSPARENT);
+      expect(probe.getAttribute("aria-current"), variant).toBe("true");
+      expect(probe.getAttribute("data-ds-variant"), variant).toBe(variant);
+      expect(probe.hasAttribute("aria-pressed"), variant).toBe(false);
+    }
+    expect(find(element, '[data-probe="unselected"]').hasAttribute("aria-current")).toBe(false);
+    expect(find(element, '[data-probe="primary"]').hasAttribute("aria-current")).toBe(false);
+  });
+
+  it("adds the hover overlay under pointer only (behavior 12)", async () => {
+    for (const modality of ["pointer", "touch"] as const) {
+      const element = await mount(<IconButton variant="plain" glyph="nav.open" label="Open details" onPress={noop} />, { modality });
+      const button = find(element, ".ds-icon-button");
+      await act(async () => {
+        await userEvent.hover(button);
+      });
+      await vi.waitFor(() => {
+        expect(button.hasAttribute("data-hovered")).toBe(true);
+      });
+      const overlay = (): string => getComputedStyle(button).getPropertyValue("--ds--icon-button-hover").trim();
+      if (modality === "pointer") {
+        await settles(overlay, tokenColor(button, "--ds-color-bg-fill-neutral-subtle"));
+      } else {
+        await sleep(400);
+        expect(overlay(), modality).toMatch(TRANSPARENT);
+      }
+      await act(async () => {
+        await userEvent.unhover(button);
+      });
+      await unmount();
+    }
+  });
+
+  it("scales to 0.97 while pressed, not under Reduce Motion, and shows the pressed overlay on every press in both (behavior 13)", async () => {
+    for (const motion of ["standard", "reduce"] as const) {
+      for (const variant of ["danger", "primary"] as const) {
+        const onPress = vi.fn();
+        const element = await mount(<IconButton variant={variant} glyph="action.delete" label="Delete route" onPress={onPress} />, { motion });
+        const button = find(element, ".ds-icon-button");
+        const release = await pressWithKeyboard(button);
+        expect(button.hasAttribute("data-pressed"), `${motion} ${variant}`).toBe(true);
+        const style = getComputedStyle(button);
+        await settles(() => style.getPropertyValue("--ds--icon-button-press").trim(), tokenColor(button, "--ds-color-bg-fill-neutral-subtle"));
+        if (motion === "standard") await settles(() => style.scale, "0.97");
+        else expect(style.scale, variant).toBe("1");
+        await release();
+        expect(onPress, `${motion} ${variant}`).toHaveBeenCalledTimes(1);
+        await settles(() => style.getPropertyValue("--ds--icon-button-press").trim(), TRANSPARENT);
+        await unmount();
+      }
+    }
+  });
+
+  it("takes the variant's pressed fill while pressed (behavior 13, accessibility.reduceMotion)", async () => {
+    const cells = { secondary: "--ds-icon-button-secondary-bg-pressed", ghost: "--ds-icon-button-ghost-bg-pressed", plain: "--ds-icon-button-ghost-bg-pressed" } as const;
+    for (const [variant, cell] of Object.entries(cells) as [keyof typeof cells, string][]) {
+      const element = await mount(<IconButton variant={variant} glyph="action.filter" label="Filter results" onPress={noop} />, { motion: "reduce" });
+      const button = find(element, ".ds-icon-button");
+      const release = await pressWithKeyboard(button);
+      await settles(() => getComputedStyle(button).getPropertyValue("--ds--icon-button-fill").trim(), tokenColor(button, cell));
+      expect(getComputedStyle(button).scale, variant).toBe("1");
+      await release();
+      await unmount();
+    }
+  });
+
+  it("draws the focus ring outside the circle, and the badge stays outside the ring's shape (accessibility.keyboard)", async () => {
+    const element = await mount(<IconButton glyph="object.notification" label="Open notifications" badge={{ count: 3, label: "unread" }} onPress={noop} />);
+    const button = find(element, ".ds-icon-button");
+    await act(async () => {
+      await userEvent.tab();
+    });
+    expect(document.activeElement).toBe(button);
+    await vi.waitFor(() => {
+      expect(button.hasAttribute("data-focus-visible")).toBe(true);
+    });
+    const style = getComputedStyle(button);
+    expect(style.outlineStyle).toBe("solid");
+    expect(Number.parseFloat(style.outlineWidth)).toBe(tokenPx(button, "--ds-border-focus"));
+    expect(style.outlineColor).toBe(tokenColor(button, "--ds-color-border-focus"));
+    expect(Number.parseFloat(style.outlineOffset)).toBe(0);
+    // The badge takes no focus of its own.
+    expect(button.querySelectorAll("[tabindex]").length).toBe(0);
+  });
+
+  it("dims the whole control, badge included, and leaves the focus order when disabled (behavior 15)", async () => {
+    const onPress = vi.fn();
+    const element = await mount(<IconButton glyph="action.refresh" label="Refresh readings" badge={{ count: 3, label: "unread" }} isDisabled onPress={onPress} />);
+    const button = find(element, ".ds-icon-button");
+    const probe = document.createElement("div");
+    probe.style.opacity = "var(--ds-opacity-disabled)";
+    element.append(probe);
+    const disabled = getComputedStyle(probe).opacity;
+    probe.remove();
+    expect(Number(disabled)).toBeLessThan(1);
+    expect(getComputedStyle(button).opacity).toBe(disabled);
+    expect((button as HTMLButtonElement).disabled).toBe(true);
+    await act(async () => {
+      await userEvent.click(button, { force: true });
+    });
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it("anchors the badge badge.offset outside the top-trailing corner, in either writing direction, moving nothing (behavior 16)", async () => {
+    for (const dir of ["ltr", "rtl"] as const) {
+      const element = await mount(
+        <div dir={dir} style={{ display: "flex", gap: "48px", padding: "24px" }}>
+          <IconButton glyph="object.notification" label="Open notifications" data-probe="bare" onPress={noop} />
+          <IconButton glyph="object.notification" label="Open notifications" badge={{ variant: "count", tone: "neutral", count: 3, label: "unread" }} data-probe="badged" onPress={noop} />
+          <IconButton glyph="object.notification" label="Open notifications" badge={{ count: 128, label: "unread" }} data-probe="wide" onPress={noop} />
+        </div>,
+      );
+      const bare = find(element, '[data-probe="bare"]');
+      const offset = tokenPx(bare, "--ds-space-1");
+      expect(offset).toBe(4);
+      for (const probe of ["badged", "wide"]) {
+        const button = find(element, `[data-probe="${probe}"]`);
+        const circle = button.getBoundingClientRect();
+        const badge = find(button, ".ds-badge").getBoundingClientRect();
+        // The circle and the glyph are where the bare button has them: the badge is out of flow.
+        expect([circle.width, circle.height], `${dir} ${probe}`).toEqual([bare.getBoundingClientRect().width, bare.getBoundingClientRect().height]);
+        const glyph = find(button, '[data-ds-slot="icon-button-glyph"]').getBoundingClientRect();
+        const bareGlyph = find(bare, '[data-ds-slot="icon-button-glyph"]').getBoundingClientRect();
+        expect([glyph.left - circle.left, glyph.top - circle.top], `${dir} ${probe}`).toEqual([bareGlyph.left - bare.getBoundingClientRect().left, bareGlyph.top - bare.getBoundingClientRect().top]);
+        expect(badge.top, `${dir} ${probe}`).toBeCloseTo(circle.top - offset, 3);
+        if (dir === "ltr") expect(badge.right, probe).toBeCloseTo(circle.right + offset, 3);
+        else expect(badge.left, probe).toBeCloseTo(circle.left - offset, 3);
+        // It overlaps the circle, and takes no pointer of its own.
+        expect(badge.bottom, `${dir} ${probe}`).toBeGreaterThan(circle.top);
+        expect(getComputedStyle(find(button, '[data-ds-slot="icon-button-badge"]')).pointerEvents).toBe("none");
+      }
+      await unmount();
+    }
+  });
+
+  it("writes no hint on any root: no title, no description, no pressed state (behavior 5)", async () => {
+    const element = await mount(
+      <div>
+        {iconButtonVariants.map((variant) => (
+          <IconButton key={variant} variant={variant} glyph="action.settings" label="Open settings" onPress={noop} />
+        ))}
+        <IconButton glyph="object.map" label="Map view" isSelected onPress={noop} />
+        <IconButton glyph="object.notification" label="Open notifications" badge={{ count: 3, label: "unread" }} onPress={noop} />
+      </div>,
+    );
+    const roots = [...element.querySelectorAll<HTMLElement>(".ds-icon-button")];
+    expect(roots.length).toBe(iconButtonVariants.length + 2);
+    for (const button of roots) {
+      for (const name of ["title", "aria-describedby", "aria-description", "aria-pressed", "aria-labelledby"]) {
+        expect(button.hasAttribute(name), name).toBe(false);
+      }
+      expect(button.querySelector("[title]")).toBeNull();
+    }
   });
 });

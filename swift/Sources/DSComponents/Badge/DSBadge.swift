@@ -146,6 +146,22 @@ public struct DSBadge: View {
     }
 }
 
+extension DSBadge {
+    /// What this badge contributes to a host that reads it — IconButton's `badge` slot (P4-4) — or nil when it
+    /// contributes nothing: `DSBadgeAppearance.contribution` for these props, with the `label` resolved where the badge
+    /// renders, exactly as `body` names an exposed badge. The host passes its own `locale` and `strings` environment
+    /// values, which are the badge's too, since the badge renders inside it.
+    ///
+    /// It lives in this file because the props are private to it; it reads them and draws nothing, so what a badge
+    /// shows and exposes is unchanged. The web's twin is `badgeContribution` in `badge/text.ts`.
+    func contribution(locale: Locale, strings: DSStrings) -> String? {
+        DSBadgeAppearance.contribution(
+            variant, count: count, label: label.map { DSIconAppearance.resolved($0, locale: locale) }, locale: locale,
+            strings: strings
+        )
+    }
+}
+
 /// The digits of a count badge: `type.micro`, tabular, in the label colour, replaced when they change.
 ///
 /// **The replacement, never a roll.** `DSText` rolls a string that counts up over `motion.duration.slow`

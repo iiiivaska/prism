@@ -65,11 +65,11 @@ extension DSShowcaseCatalog {
             layer: "primitive",
             summary: "A tappable action with one label and an optional leading or trailing icon. Controls in Prism are pills or circles; the primary variant is the single solid pill in a group, secondary is a raised pill, ghost is outlined with no fill at rest, danger is a tinted pill with critical text.",
             since: "0.1.0",
-            specVersion: 3,
+            specVersion: 4,
             specPath: "spec/components/Button.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .adapted), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [("ios", 3), ("ipados", 3), ("macos", 3), ("watchos", 3)],
+            implemented: [("ios", 4), ("ipados", 4), ("macos", 4), ("watchos", 4)],
             platformNotes: [("watchos", "sizes collapse to lg; no trailing icon; ghost renders as secondary. The watch density gives lg 44 pt."), ("macos", "default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on."), ("web-desktop", "built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.")],
             examples: [
                 DSSpecExample(id: "primary-md", props: [("variant", .string("primary")), ("size", .string("md")), ("label", .string("Continue"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),
@@ -189,8 +189,8 @@ extension DSShowcaseCatalog {
             specPath: "spec/components/IconButton.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .none), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [],
-            platformNotes: [("watchos", "none. ADR-0010's Tier 3 list has no IconButton: the watch acts through Button, whose sizes collapse to lg, and through system chrome. A nameless 44 pt circle in a one-column stack of at most three tiles would spend the whole width on a tap target without a word."), ("macos", "Hover is required and the default size follows compact density (32 pt); no system help tag is attached until Prism has a Tooltip (behavior), and the focus ring uses the system color when Increase Contrast is on."), ("web-desktop", "Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-selected` drive the CSS states (ADR-0019).")],
+            implemented: [("ios", 1), ("ipados", 1), ("macos", 1)],
+            platformNotes: [("watchos", "none. ADR-0010's Tier 3 list has no IconButton: the watch acts through Button, whose sizes collapse to lg, and through system chrome. A nameless 44 pt circle in a one-column stack of at most three tiles would spend the whole width on a tap target without a word."), ("macos", "Hover is required and the default size follows compact density (32 pt); no system help tag is attached until Prism has a Tooltip (behavior), and the focus ring uses the system color when Increase Contrast is on."), ("web-desktop", "Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-ds-selected` drive the CSS states (ADR-0019); a button has no accessibility value on the web, so the badge's contribution follows `label` in the accessible name after a comma (`Open notifications, 3 unread`), as VoiceOver reads a label and then its value.")],
             examples: [
                 DSSpecExample(id: "secondary-md", props: [("variant", .string("secondary")), ("size", .string("md")), ("glyph", .string("action.settings")), ("label", .string("Open settings"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),
                 DSSpecExample(id: "primary-md", props: [("variant", .string("primary")), ("size", .string("md")), ("glyph", .string("action.add")), ("label", .string("Add a site"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),
@@ -203,6 +203,7 @@ extension DSShowcaseCatalog {
                 DSSpecExample(id: "on-vivid", props: [("variant", .string("ghost")), ("size", .string("md")), ("glyph", .string("nav.open")), ("label", .string("Open the yield card"))], surface: "vivid", backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),
                 DSSpecExample(id: "on-glass-over-map", props: [("variant", .string("primary")), ("size", .string("md")), ("glyph", .string("action.locate")), ("label", .string("Center on the vehicle"))], surface: "glass", backdrop: "map", grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),
                 DSSpecExample(id: "label-ru", props: [("variant", .string("secondary")), ("size", .string("md")), ("glyph", .string("action.refresh")), ("label", .string("Обновить показания линии"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: "a long Russian name, which is spoken and never drawn, so the circle does not change"),
+                DSSpecExample(id: "with-badge", props: [("variant", .string("secondary")), ("size", .string("md")), ("glyph", .string("object.notification")), ("label", .string("Open notifications")), ("badge", .map([DSPropValue.Pair("variant", .string("count")), DSPropValue.Pair("tone", .string("neutral")), DSPropValue.Pair("count", .number(3)), DSPropValue.Pair("label", .string("unread"))]))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: "the badge slot filled - a count Badge anchored space.1 outside the circle's top-trailing corner, hidden itself and read into the button's accessibility value, \"3 unread\""),
             ]
     )
 

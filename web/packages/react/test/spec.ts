@@ -42,6 +42,30 @@ export function cell(binding: Binding | undefined, ...keys: readonly string[]): 
   return typeof current === "string" ? current : undefined;
 }
 
+/**
+ * The binding at a spec path: `<part>.<property>` under `tokens`, a state block's property included
+ * (`root.pressed.background`), or a `motion.*` entry; `undefined` when the spec does not carry it.
+ */
+export function bindingAt(spec: ComponentSpec, path: string): Binding | undefined {
+  const [head = "", ...rest] = path.split(".");
+  let current: Binding | undefined = head === "motion" ? spec.motion : spec.tokens[head];
+  for (const segment of rest) {
+    if (current === undefined || typeof current === "string") return undefined;
+    current = current[segment];
+  }
+  return current;
+}
+
+/**
+ * How a failure names a cell: `IconButton.yaml tokens.root.border [ghost, vivid]`, the spec path and the keys
+ * asked of it. It is the Apple helper's name for the same cell (swift/Tests/DSComponentsTests/DSSpecBindings.swift,
+ * `cellName`), so a failure on either stack points at the same line of the spec.
+ */
+export function cellName(spec: ComponentSpec, path: string, ...keys: readonly string[]): string {
+  const block = path === "motion" || path.startsWith("motion.") ? path : `tokens.${path}`;
+  return `${spec.name}.yaml ${block}${keys.length === 0 ? "" : ` [${keys.join(", ")}]`}`;
+}
+
 /** A public token path's custom property (ARCHITECTURE §8): `color.bg.page` → `--ds-color-bg-page`. */
 export function cssVariable(path: string): string {
   const segments = path.split(".");

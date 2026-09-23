@@ -1,10 +1,11 @@
 /// <reference types="node" />
 /**
- * Button (spec/components/Button.yaml, specVersion 3).
+ * Button (spec/components/Button.yaml, specVersion 4).
  *
  * - Button.css binds what Button.yaml binds: every variant on every material the matrices key, the rest,
- *   pressed and hover fills, sizes, label typography, icons, the spinner, disabled and focus-visible,
- *   read through a small cascade so the material cells are checked as they win on the element.
+ *   pressed and hover fills, the outline's colour and width, sizes, label typography, icons, the spinner,
+ *   disabled and focus-visible, read through a small cascade so the material cells are checked as they
+ *   win on the element.
  * - Motion: the press rides comp.button.motion.press, and ADR-0023 §8.4 arrives through
  *   --ds-motion-presentation-crossfade (the press scale and the danger substitute).
  * - Server renders: React Aria's button with the published material, the loading and disabled states,
@@ -42,8 +43,8 @@ function html(node: ReactNode): string {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Button.yaml specVersion 3", () => {
-    expect(spec.specVersion).toBe(3);
+  it("is Button.yaml specVersion 4", () => {
+    expect(spec.specVersion).toBe(4);
     expect([...buttonVariants]).toEqual(propValues(spec, "variant"));
     expect([...buttonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -53,14 +54,16 @@ describe("Button.css binds what Button.yaml binds", () => {
   const variants = propValues(spec, "variant") as ButtonVariant[];
   const combinations = variants.flatMap((variant) => materials.map((material) => ({ variant, material })));
 
-  it.each(combinations)("root.background, root.foreground and root.border of $variant on $material", ({ variant, material }) => {
+  it.each(combinations)("root.background, root.foreground, root.border and root.borderWidth of $variant on $material", ({ variant, material }) => {
     expect(cascade.value(on(variant, material), "--ds--button-fill")).toBe(bound(cell(root["background"], variant, material)) ?? "transparent");
     expect(cascade.value(on(variant, material), "--ds--button-foreground")).toBe(bound(cell(root["foreground"], variant, material)));
     const border = cell(root["border"], variant, material);
     expect(cascade.value(on(variant, material), "--ds--button-border")).toBe(bound(border) ?? "transparent");
-    const width = cascade.value(on(variant, material), "--ds--button-border-width");
-    if (border === undefined) expect(width).toBe("calc(var(--ds-border-hairline) * 0)");
-    else expect(width).toMatch(/^var\(--ds-border-(?:hairline|strong)\)$/);
+    // root.borderWidth is keyed by variant alone, so the outline keeps its width on every material (ADR-0033).
+    const width = cell(root["borderWidth"], variant, material);
+    expect(cascade.value(on(variant, material), "--ds--button-border-width")).toBe(bound(width) ?? "calc(var(--ds-border-hairline) * 0)");
+    // Wherever an outline is drawn it has a width, and wherever there is a width there is an outline.
+    expect(width === undefined, `${variant} on ${material}`).toBe(border === undefined);
   });
 
   it.each(combinations)("root.pressed.background of $variant on $material", ({ variant, material }) => {
@@ -223,8 +226,8 @@ describe("Button renders", () => {
     expect(out).toContain('data-disabled="true"');
   });
 
-  it("fullWidth, and icons drawn by Icon's box: md, the label's color, hidden, in the brand table's cut", () => {
-    const out = html(<Button label="Filter" leadingIcon="action.filter" trailingIcon="nav.open" fullWidth onPress={noop} />);
+  it("isFullWidth, and icons drawn by Icon's box: md, the label's color, hidden, in the brand table's cut", () => {
+    const out = html(<Button label="Filter" leadingIcon="action.filter" trailingIcon="nav.open" isFullWidth onPress={noop} />);
     expect(out).toContain('data-ds-full-width=""');
     // The part is Icon's box under Button's part name; `tone: inherit` writes no data-ds-tone, so the glyph
     // takes the label's foreground, and a glyph with no `label` is hidden (Icon.yaml behaviors 9 and 14).

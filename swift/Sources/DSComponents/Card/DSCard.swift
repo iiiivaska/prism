@@ -803,7 +803,8 @@ private struct DSCardActionDisc<Label: View>: View {
             }
             .overlay {
                 if isFocused && interactive {
-                    DSFocusRing(cornerRadius: side / 2)
+                    // A circle around the circle, as IconButton's: a rounded rectangle at half the side is a squircle.
+                    DSFocusRing(.circle)
                 }
             }
             .modifier(DSHitRegion())

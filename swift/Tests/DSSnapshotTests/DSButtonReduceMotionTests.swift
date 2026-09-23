@@ -43,7 +43,7 @@ struct DSButtonReduceMotionTests {
                 variant: variant,
                 size: .md,
                 isLoading: false,
-                fullWidth: false
+                isFullWidth: false
             )
             .frame(width: side, height: side)
         }

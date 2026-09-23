@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Button.yaml` (specVersion 3) binds, as pure functions of the variant, the size and the
+/// Every value `spec/components/Button.yaml` (specVersion 4) binds, as pure functions of the variant, the size and the
 /// material the enclosing Surface publishes, so the binding matrix runs on the host. `DSButton` only draws what these
 /// return.
 ///
@@ -58,10 +58,16 @@ nonisolated enum DSButtonAppearance {
         }
     }
 
-    /// The width of the outline. Button.yaml binds no width; the signed-off direction board draws every pill outline
-    /// at `border.hairline` (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`).
-    static func borderWidth(_ border: DSTokenSet.Border) -> CGFloat {
-        border.hairline
+    /// `tokens.root.borderWidth`: `border.hairline` for every outlined variant and nothing for primary, which has no
+    /// outline. The cell has no material level, so the ghost outline on vivid and glass is as wide as on a solid
+    /// ground; the width is the signed-off direction board's (docs/direction-board, `.btn-secondary`, `.btn-ghost`,
+    /// `.btn-danger`; ADR-0033). The stroke is drawn inside the pill (`strokeBorder`), as the web's inset shadow is,
+    /// and never adds to the layout.
+    static func borderWidth(_ variant: DSButtonVariant) -> KeyPath<DSTokenSet, CGFloat>? {
+        switch variant {
+        case .primary: nil
+        case .secondary, .ghost, .danger: \.border.hairline
+        }
     }
 
     /// `tokens.root.pressed.background`; danger has no cell and keeps its tint.
@@ -107,7 +113,7 @@ nonisolated enum DSButtonAppearance {
     static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
 
     /// The page under the danger tint over media: "a tinted element that carries text or a glyph over media paints
-    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v3 has no
+    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v4 has no
     /// underlay cell, so the published materials that mean media are the ones IconButton.yaml keys its `underlay` by,
     /// vivid and the scheme's glass, and light glass, which only sits over imagery.
     static func underlay(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {

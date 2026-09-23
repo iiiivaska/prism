@@ -15,7 +15,7 @@
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Badge, Icon, Theme } from "@iiiivaska/prism-react";
+import { Badge, Icon, IconButton, Theme } from "@iiiivaska/prism-react";
 // The host flag is internal to the package (IconButton sets it, roadmap P4-4), so it is imported from the
 // source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so this is the one context
 // the Badge above reads.
@@ -25,6 +25,7 @@ import * as buttonStories from "../src/stories/Button.stories.tsx";
 import * as cardStories from "../src/stories/Card.stories.tsx";
 import * as dividerStories from "../src/stories/Divider.stories.tsx";
 import * as iconStories from "../src/stories/Icon.stories.tsx";
+import * as iconButtonStories from "../src/stories/IconButton.stories.tsx";
 import {
   accessibleNodes,
   examplesInTheTree,
@@ -272,5 +273,58 @@ describe("Badge (Badge.yaml accessibility)", () => {
     // And the control: the same badge out of the host is the one image, holding its digits.
     expect(await read(<Badge count={3} label="unread alerts" />)).toEqual([{ role: "image", name: "3 unread alerts" }]);
     expect(await text(<Badge count={3} label="unread alerts" />)).toEqual([{ text: "3", in: { role: "image", name: "3 unread alerts" } }]);
+  });
+});
+
+/**
+ * IconButton.yaml `accessibility` and behaviors 4, 5 and 16 (ADR-0032): every example is exactly one button, and
+ * its name is `label` byte for byte, never the glyph's id: the glyph is Icon with no `label`, so it adds no node,
+ * and no example writes a hint of any kind (no title, no description). `with-badge` also carries the badge's
+ * contribution, the `strings.Badge.count` sentence, after `", "`: a button has no accessibility value on the web,
+ * so the value follows the label in the name. Apple reads the same example as the label `Open notifications` and
+ * the value `3 unread`, and every name here is, byte for byte, the label
+ * swift/Tests/DSSnapshotTests/DSIconButtonAccessibilityTreeTests.swift reads off the simulator for the same id,
+ * plus that value where there is one. `label-ru` is Cyrillic and survives as written.
+ */
+describe("IconButton (IconButton.yaml accessibility)", () => {
+  const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {
+    "secondary-md": [{ role: "button", name: "Open settings" }],
+    "primary-md": [{ role: "button", name: "Add a site" }],
+    "ghost-md": [{ role: "button", name: "Filter results" }],
+    "plain-sm": [{ role: "button", name: "Open details" }],
+    "danger-md": [{ role: "button", name: "Delete route" }],
+    "selected-in-group": [{ role: "button", name: "Map view" }],
+    "lg-touch": [{ role: "button", name: "Start the run" }],
+    disabled: [{ role: "button", name: "Refresh readings" }],
+    "on-vivid": [{ role: "button", name: "Open the yield card" }],
+    "on-glass-over-map": [{ role: "button", name: "Center on the vehicle" }],
+    // "Обновить показания линии", written as its code points so the bytes compared are unambiguous: 24 of them,
+    // all in U+041E to U+044F but the spaces, 46 bytes of UTF-8.
+    "label-ru": [{ role: "button", name: "\u041e\u0431\u043d\u043e\u0432\u0438\u0442\u044c \u043f\u043e\u043a\u0430\u0437\u0430\u043d\u0438\u044f \u043b\u0438\u043d\u0438\u0438" }],
+    "with-badge": [{ role: "button", name: "Open notifications, 3 unread" }],
+  };
+
+  it("names each example by its label, and with-badge by its label and the badge's count, as the Apple suite does", async () => {
+    expect(await examplesInTheTree(iconButtonStories)).toEqual(expected);
+  });
+
+  // The badge is hidden by the host flag, and its digits with it: no example leaves a text run in the tree, so the
+  // count is heard once, in the button's name, and never again as text beside the button.
+  it("leaves no text in the tree: the glyph and the badge's digits are hidden", async () => {
+    const found = await examplesTextInTheTree(iconButtonStories);
+    expect(Object.keys(found).sort()).toEqual(Object.keys(expected).sort());
+    for (const [id, runs] of Object.entries(found)) expect(runs, id).toEqual([]);
+  });
+
+  // The cases no example stages: a badge that says nothing adds nothing to the name, and one that renders nothing
+  // is not in the tree at all.
+  it("adds nothing to the name for a badge that says nothing or draws nothing", async () => {
+    const read = (node: ReactNode): Promise<AccessibleNode[]> => nodesInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    const named = (badge: Parameters<typeof IconButton>[0]["badge"]): ReactNode => <IconButton glyph="object.notification" label="Open notifications" badge={badge} onPress={() => undefined} />;
+    expect(await read(named({ count: 3 }))).toEqual([{ role: "button", name: "Open notifications, 3" }]);
+    expect(await read(named({ variant: "dot", label: "new" }))).toEqual([{ role: "button", name: "Open notifications, new" }]);
+    expect(await read(named({ variant: "dot" }))).toEqual([{ role: "button", name: "Open notifications" }]);
+    expect(await read(named({ count: 0, label: "unread" }))).toEqual([{ role: "button", name: "Open notifications" }]);
+    expect(await read(named({ count: 128, max: 99, label: "unread" }))).toEqual([{ role: "button", name: "Open notifications, 128 unread" }]);
   });
 });

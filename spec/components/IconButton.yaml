@@ -83,8 +83,8 @@ tokens:
       danger: comp.icon-button.danger.border
     borderWidth:
       secondary: border.hairline
-      ghost: border.strong
-      danger: border.strong
+      ghost: border.hairline
+      danger: border.hairline
     radius: radius.control
     size:
       sm: comp.icon-button.size.sm
@@ -94,7 +94,10 @@ tokens:
       overlay: color.bg.fill.neutral.subtle
     pressed:
       background:
-        primary: comp.icon-button.primary.bg.pressed
+        primary:
+          default: comp.icon-button.primary.bg.pressed
+          vivid: color.bg.fill.inverse-media
+          glass: color.bg.fill.inverse-media
         secondary: comp.icon-button.secondary.bg.pressed
         ghost: comp.icon-button.ghost.bg.pressed
         plain: comp.icon-button.ghost.bg.pressed
@@ -145,14 +148,15 @@ behavior:
   - "`variant: plain` is the bare glyph: no fill, no ring, nothing but the glyph and that invisible hit region, which is why the region is not optional. It is the affordance Card pins to its top-right corner and the collapse glyph of a rail."
   - "`label` is required and is a real sentence, not the glyph's id: an icon-only control always carries a name, and that name is this string - never the glyph's registry entry, which nothing resolves (ADR-0011 rule 4 as ADR-0032 rule 6 reads it). It is the control's accessible name on every platform, under every modality and in every one of the cases below; nothing in the next clause reduces it."
   - "Prism has no Tooltip yet. Tooltip.yaml is a contract no stack implements, and it is not in this wave, so no behavior, token or state of this spec depends on one, and until it ships an IconButton shows no hint on hover or on focus on any platform, macOS included. Each hint a platform offers in a Tooltip's place also puts the name into the accessibility tree a second time. SwiftUI's `help` modifier sets the accessibility hint as well as the macOS help tag, and VoiceOver reads that hint after the name; the iPadOS pointer route writes the same hint; and on the web a `title` beside an accessible name is read twice by some screen readers. A hint equal to the name is the same sentence twice, and a hover-only hint is not an affordance in the first place (visual-dna §11 anti-pattern 31). Touch never had one. The name itself is not at risk anywhere: `label` reaches assistive technology on every platform and under every modality. What is lost is the name drawn on screen, and the cost is accepted for two users on macOS and web-desktop, where the old clause showed it on hover and on focus: a sighted pointer user gets no name on hover, and a sighted keyboard user, who saw it when focus reached the control, gets none on focus. Until Tooltip ships, the glyph alone identifies the control to both. When it ships, it is gated by interaction.tooltip, which will be bound here; it owes both users their name - on pointer rest and at once on `focus-visible`, as Tooltip.yaml already specifies - and this clause is replaced."
-  - "`isSelected` renders the circle as the inverse solid whatever its variant, and a group holds exactly one selected circle - the active tool, the active view, the send button (visual-dna §1 principle 9 and §4.7)."
+  - "`isSelected` renders the circle as the inverse solid whatever its variant, and a group holds exactly one selected circle - the active tool, the active view, the send button (visual-dna §1 principle 9 and §4.7). A selected circle renders as `primary` renders it in every state. It takes the `selected` cells, which are primary's cell for cell, with no ring and no underlay, and when pressed it takes primary's pressed overlay. It is announced as selected: the selected trait on Apple, `aria-current=\"true\"` on the web. Its role stays `button`, and an unselected circle carries neither."
   - The circle is radius.control on a square box whose side is comp.icon-button.size.sm, .md or .lg; those follow density, so md is 32 pt on desktop, 40 pt on touch and 48 pt under the comfortable density (ADR-0024 §7.1).
   - The glyph is an Icon at size.icon.sm, .md or .lg; a control glyph is the md box, and the sm box belongs to `plain` corner glyphs (visual-dna §1 principle 13).
   - On a vivid surface, and on the scheme's glass, the primary and selected circles become the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media); a ghost circle outlines in color.border.on-media or color.border.on-glass-fill and its glyph takes that material's foreground.
   - "`danger` is a critical-tint circle with a critical glyph and a critical outline; on vivid and on the scheme's glass it paints the `underlay` cell, color.bg.page, as an opaque disc under its tint, so the pair the contrast gate checks is the pair that renders (visual-dna §4.11 note P1-9, ADR-0030 §1.8). On every other material there is no underlay cell and the tint composites over the surface itself."
   - The ghost and plain rings on media (color.border.on-media, color.border.on-glass-fill) are decorative (ADR-0030 §3.2); the glyph is what identifies the control, which is why every IconButton carries one.
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the circle; touch never shows a hover state (ADR-0010 rule 2). For `plain`, whose circle is otherwise invisible, the hover overlay and the pressed fill paint that circle at comp.icon-button.size.sm, .md or .lg - never the larger invisible hit region, which would make the wash jump with modality.
-  - Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9). Secondary, ghost and plain also take their pressed fill; primary and danger, whose pressed cell carries the same value as their rest cell, take the pressed overlay of color.bg.fill.neutral.subtle instead, so no variant's press is carried by the scale alone.
+  - "Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9). Secondary, ghost and plain also take their pressed fill; primary and danger, whose pressed cell carries the same value as their rest cell, take the pressed overlay of color.bg.fill.neutral.subtle instead, so no variant's press is carried by the scale alone, except where that overlay cannot show: the primary and selected overlay (`color.bg.fill.neutral.subtle` over `color.bg.fill.inverse`) composites to nothing in both schemes, and over color.bg.fill.inverse-media it does so in dark. This is Button's known gap, and it lasts until the primary pressed cells (`comp.icon-button.primary.bg.pressed`, and color.bg.fill.inverse-media over media) get a step of their own."
+  - IconButton plays one haptic per press, haptic.press.button on touch-down. A group that selects, such as TabBar, plays haptic.selection in its place, as Pagination.yaml replaces it.
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; an unavailable action is better explained than disabled."
   - "An optional Badge, passed in the `badge` slot, is anchored space.1 outside the top-trailing corner of the circle, overlapping it - the `badge` part's `offset`, which is the host's because Badge applies no offset of its own; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value, in the words Badge.yaml gives it: the `strings.Badge.count` sentence when the badge carries a `label`, and the locale-formatted count alone when it does not."
   - Buttons of one group share one size and one variant, apart from the single primary or selected circle (visual-dna §11 anti-pattern 24).
@@ -164,7 +168,6 @@ motion:
 
 haptics:
   press: haptic.press.button
-  select: haptic.selection
 
 accessibility:
   role: button
@@ -172,9 +175,9 @@ accessibility:
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the circle, following radius.control
   dynamicType: the circle and the glyph box do not scale with Dynamic Type - density is their lever - and the name is spoken rather than drawn, so nothing of it scales; a Tooltip, when Prism ships one, will scale with type.label.md
-  contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and over media color.text.on-inverse-media on color.bg.fill.inverse-media; the ghost ring on a solid ground is color.border.strong at the boundary tier (3:1); danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, where the pair is checked with the page under it. Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
+  contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and over media color.text.on-inverse-media on color.bg.fill.inverse-media; the ghost ring's colour on a solid ground, comp.icon-button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier is a property of that colour and holds at any stroke width, so it says nothing about how wide the ring is, which is the `borderWidth` cell's alone - the colour color.border.strong and the width border.strong are two tokens that share a name and nothing else; danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, where the pair is checked with the page under it. Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
   reduceTransparency: not applicable (IconButton draws no material of its own); when the enclosing Surface falls back from glass to raised, the glass cells stop applying and the button renders its default cells
-  reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, and the pressed overlay of color.bg.fill.neutral.subtle for primary and danger, whose pressed fill carries the same value as their rest fill. Every variant therefore still shows a press with no scale at all. Selection crossfades to the inverse solid instead of scaling
+  reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, and the pressed overlay of color.bg.fill.neutral.subtle for primary and danger, whose pressed fill carries the same value as their rest fill. Every variant therefore still shows a press with no scale at all, except primary and selected wherever their overlay composites to nothing (behavior, Button's known gap). Selection crossfades to the inverse solid instead of scaling
 
 usage:
   do:
@@ -215,12 +218,15 @@ examples:
   - id: label-ru
     props: { variant: secondary, size: md, glyph: action.refresh, label: "Обновить показания линии" }
     description: a long Russian name, which is spoken and never drawn, so the circle does not change
+  - id: with-badge
+    props: { variant: secondary, size: md, glyph: object.notification, label: "Open notifications", badge: { variant: count, tone: neutral, count: 3, label: "unread" } }
+    description: the badge slot filled - a count Badge anchored space.1 outside the circle's top-trailing corner, hidden itself and read into the button's accessibility value, "3 unread"
 
 notes:
   platform:
     watchos: "none. ADR-0010's Tier 3 list has no IconButton: the watch acts through Button, whose sizes collapse to lg, and through system chrome. A nameless 44 pt circle in a one-column stack of at most three tiles would spend the whole width on a tap target without a word."
     macos: Hover is required and the default size follows compact density (32 pt); no system help tag is attached until Prism has a Tooltip (behavior), and the focus ring uses the system color when Increase Contrast is on.
-    web-desktop: Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-selected` drive the CSS states (ADR-0019).
+    web-desktop: Built on the same React Aria Button as Button; `onPress`, not `onClick`, and `data-pressed` / `data-hovered` / `data-ds-selected` drive the CSS states (ADR-0019); a button has no accessibility value on the web, so the badge's contribution follows `label` in the accessible name after a comma (`Open notifications, 3 unread`), as VoiceOver reads a label and then its value.
   design: >-
     The circle-and-ring grammar, the one solid among hairlines and the 0.97 press come from
     docs/research/visual-dna.md §1 principles 2, 9 and 13 and §4.7; the bare glyph, the raised puck, the

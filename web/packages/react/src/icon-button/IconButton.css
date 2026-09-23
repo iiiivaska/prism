@@ -1,0 +1,325 @@
+/*
+ * IconButton (spec/components/IconButton.yaml, specVersion 1). Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React IconButton writes data-ds-variant (always the caller's variant), data-ds-size, data-ds-surface
+ * (the material the enclosing Surface publishes) and data-ds-selected onto React Aria's <button>, which adds
+ * data-hovered, data-pressed, data-focus-visible and data-disabled. This sheet maps them to the tokens
+ * IconButton.yaml binds. It reads no axis attribute and no media query: hover is the only rule under a
+ * modality variant (@variant ds-pointer), the hit region follows modality through size.hit, the circle
+ * follows density through comp.icon-button.size.*, and Reduce Motion arrives through
+ * --ds-motion-presentation-crossfade (ADR-0023 §8.4). No selector uses :not(), which test/cascade.ts cannot
+ * read.
+ *
+ * The circle paints, bottom to top, Button's order: the underlay (color.bg.page under a danger tint over
+ * media, the `underlay` cell), the fill, the pressed overlay, the hover overlay, then the ring drawn inside
+ * the circle as an inset shadow; the glyph above them, and the badge above everything. The focus ring is an
+ * outline outside the circle, around the circle alone.
+ * Custom properties named --ds--icon-button-* are this component's own (ARCHITECTURE §8).
+ */
+
+/* The fill and the two overlays animate as colors. */
+@property --ds--icon-button-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--icon-button-hover {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--icon-button-press {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@layer ds.components {
+  .ds-icon-button {
+    --ds--icon-button-fill: transparent;
+    --ds--icon-button-hover: transparent;
+    --ds--icon-button-press: transparent;
+    --ds--icon-button-under: transparent;
+    --ds--icon-button-foreground: currentColor;
+    --ds--icon-button-border: transparent;
+    --ds--icon-button-border-width: calc(var(--ds-border-hairline) * 0);
+    --ds--icon-button-size: var(--ds-icon-button-size-md);
+    /* Behavior 13: 0.97 on motion.spring.snappy; under Reduce Motion the scale is 1 (ADR-0023 §8.4 item 2). */
+    --ds--icon-button-press-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
+    /* motion.select on motion.spring.smooth; under Reduce Motion a crossfade over motion.duration.base (Card's idiom). */
+    --ds--icon-button-select-duration: calc(
+      var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+
+    /*
+     * Behavior 7: a square of root.size at radius.control, with no padding, which never shrinks in a row. The
+     * circle does not scale with Dynamic Type (`accessibility.dynamicType`): density is its only lever.
+     */
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ds--icon-button-size);
+    block-size: var(--ds--icon-button-size);
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--ds-radius-control);
+    outline: none;
+    background-color: var(--ds--icon-button-under);
+    background-image:
+      linear-gradient(var(--ds--icon-button-hover), var(--ds--icon-button-hover)),
+      linear-gradient(var(--ds--icon-button-press), var(--ds--icon-button-press)),
+      linear-gradient(var(--ds--icon-button-fill), var(--ds--icon-button-fill));
+    box-shadow: inset 0 0 0 var(--ds--icon-button-border-width) var(--ds--icon-button-border);
+    color: var(--ds--icon-button-foreground);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    /*
+     * A press changes the fill and the overlays over motion.duration.base on motion.easing.out (Button's
+     * timing, and `accessibility.reduceMotion`'s), and scales on motion.spring.snappy. The foreground, the ring
+     * and the underlay change only with selection or material, so they take motion.select's timing here and
+     * in both directions; the fill takes it on the way into the selected state (below).
+     */
+    transition:
+      --ds--icon-button-fill var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--icon-button-press var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--icon-button-hover var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      background-color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
+  }
+
+  /*
+   * Behavior 2: the hit region is the larger of the circle and size.hit on each axis, centered on it, Button's
+   * region verbatim. It extends invisibly; the circle never grows with modality, because size.hit switches
+   * with modality in tokens.css and nothing here does. `plain` draws nothing else, which is why the region is
+   * not optional (behavior 3).
+   */
+  .ds-icon-button::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  /* ---- root.size and icon.size: the circle follows density, the glyph box is the same in every density ---- */
+
+  .ds-icon-button[data-ds-size="sm"] {
+    --ds--icon-button-size: var(--ds-icon-button-size-sm);
+  }
+
+  .ds-icon-button[data-ds-size="md"] {
+    --ds--icon-button-size: var(--ds-icon-button-size-md);
+  }
+
+  .ds-icon-button[data-ds-size="lg"] {
+    --ds--icon-button-size: var(--ds-icon-button-size-lg);
+  }
+
+  .ds-icon-button[data-ds-size="sm"] > [data-ds-slot="icon-button-glyph"] {
+    inline-size: var(--ds-size-icon-sm);
+    block-size: var(--ds-size-icon-sm);
+  }
+
+  .ds-icon-button[data-ds-size="md"] > [data-ds-slot="icon-button-glyph"] {
+    inline-size: var(--ds-size-icon-md);
+    block-size: var(--ds-size-icon-md);
+  }
+
+  .ds-icon-button[data-ds-size="lg"] > [data-ds-slot="icon-button-glyph"] {
+    inline-size: var(--ds-size-icon-lg);
+    block-size: var(--ds-size-icon-lg);
+  }
+
+  /* ---- root.background, root.underlay, root.border, root.borderWidth and icon.color, by variant and published material ---- */
+
+  /*
+   * root.borderWidth is border.hairline for every outlined variant (ADR-0033). It has no material level, so the
+   * vivid and glass rules below change the ring's colour only.
+   */
+
+  .ds-icon-button[data-ds-variant="primary"] {
+    --ds--icon-button-fill: var(--ds-icon-button-primary-bg-rest);
+    --ds--icon-button-foreground: var(--ds-icon-button-primary-icon);
+  }
+
+  /* Behavior 10: on vivid and on the scheme's glass the one solid is the white inverse-media circle. */
+  .ds-icon-button[data-ds-variant="primary"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
+    --ds--icon-button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-icon-button[data-ds-variant="secondary"] {
+    --ds--icon-button-fill: var(--ds-icon-button-secondary-bg-rest);
+    --ds--icon-button-foreground: var(--ds-icon-button-secondary-icon);
+    --ds--icon-button-border: var(--ds-icon-button-secondary-border);
+    --ds--icon-button-border-width: var(--ds-border-hairline);
+  }
+
+  /* The ghost is a hairline ring with no fill at rest. */
+  .ds-icon-button[data-ds-variant="ghost"] {
+    --ds--icon-button-foreground: var(--ds-icon-button-ghost-icon);
+    --ds--icon-button-border: var(--ds-icon-button-ghost-border);
+    --ds--icon-button-border-width: var(--ds-border-hairline);
+  }
+
+  .ds-icon-button[data-ds-variant="ghost"][data-ds-surface="vivid"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-vivid);
+    --ds--icon-button-border: var(--ds-color-border-on-media);
+  }
+
+  .ds-icon-button[data-ds-variant="ghost"][data-ds-surface="glass"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-glass-fill);
+    --ds--icon-button-border: var(--ds-color-border-on-glass-fill);
+  }
+
+  /* Behavior 3: the bare glyph, with no fill and no ring. */
+  .ds-icon-button[data-ds-variant="plain"] {
+    --ds--icon-button-foreground: var(--ds-icon-button-plain-icon);
+  }
+
+  .ds-icon-button[data-ds-variant="plain"][data-ds-surface="vivid"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-vivid);
+  }
+
+  .ds-icon-button[data-ds-variant="plain"][data-ds-surface="glass"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-glass-fill);
+  }
+
+  .ds-icon-button[data-ds-variant="danger"] {
+    --ds--icon-button-fill: var(--ds-icon-button-danger-bg-rest);
+    --ds--icon-button-foreground: var(--ds-icon-button-danger-icon);
+    --ds--icon-button-border: var(--ds-icon-button-danger-border);
+    --ds--icon-button-border-width: var(--ds-border-hairline);
+  }
+
+  /*
+   * Behavior 11, the `underlay` cell: on vivid and on the scheme's glass a danger tint paints color.bg.page under
+   * itself, so the pair the contrast gate checks is the pair that renders. The cell names those two materials
+   * only; light glass keeps no underlay (Button's own rule adds one there, and this spec does not).
+   */
+  .ds-icon-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+    --ds--icon-button-under: var(--ds-color-bg-page);
+  }
+
+  /* ---- hover: the neutral overlay over the circle, pointer only (behavior 12, ADR-0019 rule 9) ---- */
+
+  .ds-icon-button {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--icon-button-hover: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  /* ---- pressed: the scale, root.pressed.background and root.pressed.overlay (behavior 13) ---- */
+
+  .ds-icon-button[data-pressed] {
+    scale: var(--ds--icon-button-press-scale);
+  }
+
+  .ds-icon-button[data-ds-variant="primary"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-icon-button-primary-bg-pressed);
+  }
+
+  .ds-icon-button[data-ds-variant="primary"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"])[data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
+  }
+
+  .ds-icon-button[data-ds-variant="secondary"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-icon-button-secondary-bg-pressed);
+  }
+
+  /* For `plain` the pressed fill paints the circle, never the larger hit region (behavior 12). */
+  .ds-icon-button:is([data-ds-variant="ghost"], [data-ds-variant="plain"])[data-pressed] {
+    --ds--icon-button-fill: var(--ds-icon-button-ghost-bg-pressed);
+  }
+
+  /*
+   * Primary and danger, whose pressed fill carries their rest value, take the overlay on every press, in every
+   * motion mode, so no press is carried by the scale alone. Unlike Button's danger substitute it is not
+   * multiplied by the crossfade flag. Over an inverse solid the overlay composites to nothing: the known gap
+   * behavior 13 records.
+   */
+  .ds-icon-button:is([data-ds-variant="primary"], [data-ds-variant="danger"])[data-pressed] {
+    --ds--icon-button-press: var(--ds-color-bg-fill-neutral-subtle);
+  }
+
+  /*
+   * ---- selected: the circle as `primary` renders it, whatever the variant (behavior 6) ----
+   * The `selected` cells for the fill and the glyph; primary's for everything else: no ring, no underlay, and
+   * primary's pressed overlay. `[data-ds-variant]` and `[data-ds-surface]` are on every IconButton, so here they
+   * only lift the rules above every variant, material and pressed rule before them. Arriving here, the fill,
+   * the foreground, the ring and the underlay move on motion.select's timing; leaving, the fill takes the rest
+   * timing, because a transition runs on the timing of the state it arrives in.
+   */
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface] {
+    --ds--icon-button-fill: var(--ds-icon-button-primary-bg-rest);
+    --ds--icon-button-foreground: var(--ds-icon-button-primary-icon);
+    --ds--icon-button-under: transparent;
+    --ds--icon-button-border: transparent;
+    --ds--icon-button-border-width: calc(var(--ds-border-hairline) * 0);
+    transition:
+      --ds--icon-button-fill var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      --ds--icon-button-press var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--icon-button-hover var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      background-color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
+    --ds--icon-button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-icon-button[data-ds-selected][data-pressed] {
+    --ds--icon-button-press: var(--ds-color-bg-fill-neutral-subtle);
+  }
+
+  /* ---- disabled, focus-visible ---- */
+
+  /* Behavior 15: the whole control, badge included, at opacity.disabled; React Aria takes it out of the focus order. */
+  .ds-icon-button[data-disabled] {
+    opacity: var(--ds-opacity-disabled);
+  }
+
+  /* color.border.focus at border.focus outside the circle, following radius.control; the badge is not inside it. */
+  .ds-icon-button[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  /* ---- the badge part: badge.offset outside the top-trailing corner (behavior 16) ---- */
+
+  /*
+   * Badge applies no offset of its own; the host places it. Its top edge sits space.1 above the circle's top
+   * edge and its trailing edge space.1 past the circle's trailing edge, following the writing direction. It is
+   * out of flow and takes no pointer, so it never changes the circle's size, the hit region or the glyph's
+   * place, and it is never a target of its own. It sits inside the button, so it scales with the press and
+   * dims with the disabled button.
+   */
+  .ds-icon-button > [data-ds-slot="icon-button-badge"] {
+    position: absolute;
+    inset-block-start: calc(var(--ds-space-1) * -1);
+    inset-inline-end: calc(var(--ds-space-1) * -1);
+    display: flex;
+    pointer-events: none;
+  }
+
+  /* Forced colors paint no fills; the circle keeps a system outline. */
+  @media (forced-colors: active) {
+    .ds-icon-button {
+      outline: var(--ds-border-hairline) solid ButtonText;
+    }
+  }
+}

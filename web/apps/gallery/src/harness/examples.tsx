@@ -13,11 +13,11 @@
  *
  * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
  * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge
- * is staged the same way (`renderBadgeExample`).
+ * and IconButton are staged the same way (`renderBadgeExample`, `renderIconButtonExample`).
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button, Card, Icon and Badge examples carry their strings in their props, and
- * Divider draws none.
+ * (src/harness/content.ts); Button, Card, Icon, Badge and IconButton examples carry their strings in their
+ * props, and Divider draws none.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
  * for every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -32,6 +32,7 @@ import {
   Card,
   Divider,
   Icon,
+  IconButton,
   Surface,
   Text,
   iconRegistry,
@@ -42,6 +43,7 @@ import {
   type CardProps,
   type DividerOrientation,
   type DividerProps,
+  type IconButtonProps,
   type IconName,
   type IconProps,
   type SurfaceMaterial,
@@ -259,6 +261,27 @@ export function renderBadgeExample(args: BadgeProps, example: ExampleFields): Re
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-gallery-mark">{mark}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * An IconButton on its example's `surface`, staged the same way in all four harnesses (the SwiftUI snapshots,
+ * both showcases and here), which is Badge's staging: straight on the stage, with no card-sized frame, or inside
+ * a Surface of that material with `radius: card` and its default card padding, hugging the circle in a flex box
+ * (`ds-gallery-mark`), over `backdrop` when the material is glass. The stage's padding holds the badge, which
+ * overhangs the circle's top-trailing corner by `badge.offset`, and the focus ring outside the circle.
+ */
+export function renderIconButtonExample(args: IconButtonProps, example: ExampleFields): ReactElement {
+  const button = <IconButton {...args} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{button}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, button)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-gallery-mark">{button}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

@@ -44,7 +44,7 @@ enum DSSnapshotMatrix {
     /// platform key).
     nonisolated static let platform = "ios"
     /// The components the manifest implements on iOS, in roadmap order: P3-3's four, then Phase 4's.
-    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge"]
+    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton"]
     /// Both densities of the acceptance line: iOS's default and the pointer default.
     nonisolated static let densities: [DSDensity] = [.regular, .compact]
 
@@ -91,12 +91,12 @@ enum DSSnapshotMatrix {
 @MainActor
 @Suite("The P3-3 snapshot matrix and its file names")
 struct DSSnapshotMatrixTests {
-    /// 8 Surface, 6 Text, 7 Button, 7 Card, 6 Divider, 11 Icon and 10 Badge examples; one Card example is light only;
-    /// 3 Surface, 1 Text, 2 Card, 1 Divider, 2 Icon and 1 Badge examples render glass.
+    /// 8 Surface, 6 Text, 7 Button, 7 Card, 6 Divider, 11 Icon, 10 Badge and 12 IconButton examples; one Card example
+    /// is light only; 3 Surface, 1 Text, 2 Card, 1 Divider, 2 Icon, 1 Badge and 1 IconButton examples render glass.
     ///
     /// Surface 8×8 + 3×4 = 76, Text 6×8 + 1×4 + 6×4 = 76, Button 7×8 = 56, Card 6×8 + 1×4 + 2×4 = 60,
-    /// Divider 6×8 + 1×4 = 52, Icon 11×8 + 11×4 + 2×4 = 140, Badge 10×8 + 1×4 = 84.
-    static let expectedCount = 544
+    /// Divider 6×8 + 1×4 = 52, Icon 11×8 + 11×4 + 2×4 = 140, Badge 10×8 + 1×4 = 84, IconButton 12×8 + 1×4 = 100.
+    static let expectedCount = 644
 
     @Test func theMatrixHasTheExpectedSizeAndUniqueNames() {
         let paths = DSSnapshotMatrix.allPaths

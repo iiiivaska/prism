@@ -23,7 +23,7 @@ struct DSComponentsContractTests {
         try DSSpec.component(name).text
     }
 
-    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge"]
+    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton"]
     nonisolated static let applePlatforms = ["ios", "ipados", "macos", "watchos"]
 
     @Test(arguments: implemented)
@@ -108,15 +108,16 @@ struct DSExampleHandlerTests {
     }
 
     /// Card is the one implemented spec whose `action` prop is optional in the Swift API, so it is the one whose
-    /// examples could lose their handler: `DSButton`'s `action` is a required parameter, which makes a Button example
-    /// without one a compile error rather than a different picture.
+    /// examples could lose their handler: `DSButton`'s and `DSIconButton`'s `action` is a required parameter, which
+    /// makes a Button or IconButton example without one a compile error rather than a different picture. IconButton's
+    /// `onPress` is required in the spec too, and the examples pass `{}` for it (`DSIconButtonExample.button`).
     @Test func cardIsTheSpecWhoseHandlerCanBeForgotten() throws {
         var withActions: [String: [String]] = [:]
         for name in DSComponentsContractTests.implemented {
             let props = try DSSpec.component(name).actionProps
             if !props.isEmpty { withActions[name] = props }
         }
-        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"]])
+        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"], "IconButton": ["onPress"]])
     }
 
     /// Every Card example renders a card that was given its `onAction`, so an `open` example is the pressable card

@@ -46,13 +46,24 @@
 /// P4-3 adds Badge (`DSBadge`) on iOS, iPadOS and macOS, with the strings table of ADR-0032 it is the first to read
 /// (`DSStrings`, `DSTheme(strings:)`). Badge.yaml marks watchOS `none` — a watch alert row shows its count with Text at
 /// the micro role — so its row, like Divider's, has no `watchos` key.
+///
+/// Button 4 binds the outline width, which the spec had left open and the two stacks had each chosen: `border.hairline`
+/// for secondary, ghost and danger, as the signed-off direction board draws every pill (ADR-0033). This target already
+/// drew that width and now reads it from the spec's cell. Button 4 also renames `fullWidth` to `isFullWidth`, the
+/// rename spec/SCHEMA.md owed the next change to Button.yaml ("One meaning, one name, one polarity").
+///
+/// P4-4 adds IconButton (`DSIconButton`) on iOS, iPadOS and macOS, built on Icon for its glyph and on Badge for its
+/// `badge` slot, which it reads into its own accessibility value through `strings.Badge.count`. IconButton.yaml marks
+/// watchOS `none` — the watch acts through Button and system chrome — so its row, like Divider's and Badge's, has no
+/// `watchos` key.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
-        "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
+        "Button": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 1, "ipados": 1, "macos": 1, "watchos": 1],
+        "IconButton": ["ios": 1, "ipados": 1, "macos": 1],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]

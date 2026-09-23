@@ -1,5 +1,5 @@
 /*
- * Button (spec/components/Button.yaml, specVersion 3). Compiled into styles.css by
+ * Button (spec/components/Button.yaml, specVersion 4). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Button writes data-ds-variant, data-ds-size, data-ds-full-width and data-ds-surface (the
@@ -150,7 +150,12 @@
     font-variant-numeric: var(--ds-type-label-lg-font-variant-numeric);
   }
 
-  /* ---- root.background, root.foreground and root.border, by variant and published material ---- */
+  /* ---- root.background, root.foreground, root.border and root.borderWidth, by variant and published material ---- */
+
+  /*
+   * root.borderWidth is border.hairline for every outlined variant, as the signed-off direction board draws each
+   * pill (ADR-0033). It has no material level, so the vivid and glass rules below change the outline's colour only.
+   */
 
   .ds-button[data-ds-variant="primary"] {
     --ds--button-fill: var(--ds-button-primary-bg-rest);
@@ -174,7 +179,7 @@
   .ds-button[data-ds-variant="ghost"] {
     --ds--button-foreground: var(--ds-button-ghost-text);
     --ds--button-border: var(--ds-button-ghost-border);
-    --ds--button-border-width: var(--ds-border-strong);
+    --ds--button-border-width: var(--ds-border-hairline);
   }
 
   .ds-button[data-ds-variant="ghost"][data-ds-surface="vivid"] {
@@ -191,7 +196,7 @@
     --ds--button-fill: var(--ds-button-danger-bg-rest);
     --ds--button-foreground: var(--ds-button-danger-text);
     --ds--button-border: var(--ds-button-danger-border);
-    --ds--button-border-width: var(--ds-border-strong);
+    --ds--button-border-width: var(--ds-border-hairline);
   }
 
   /* ADR-0030 §6.2: a danger tint that carries text over media paints the page under itself. */

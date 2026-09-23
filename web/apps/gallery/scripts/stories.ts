@@ -42,6 +42,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   Card: { render: "renderCardExample", args: "CardExampleArgs" },
   Divider: { render: "renderDividerExample" },
   Icon: { render: "renderIconExample" },
+  IconButton: { render: "renderIconButtonExample" },
   Surface: { render: "renderSurfaceExample" },
   Text: { render: "renderTextExample" },
 };

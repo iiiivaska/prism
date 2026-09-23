@@ -36,6 +36,8 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0030](0030-semantic-roles-from-the-direction-board.md) | Semantic roles found by the direction board: map, charts and solids on media, edges and bloom, tints, axis and watch type (amends 0007, 0021, 0022, 0024) | accepted |
 | [0031](0031-license-proprietary.md) | Prism is proprietary, all rights reserved; the license carries the requirement, not the visibility (supersedes 0028; amends 0014, 0018) | accepted |
 | [0032](0032-component-owned-strings.md) | Component-owned strings: Prism speaks the caller's words, and the icon registry's label is never a name (amends 0011) | accepted |
+| [0033](0033-control-outlines-are-hairlines.md) | A control's outline is a hairline, and the contrast it owes belongs to its colour: Button binds `border.hairline`, as the signed-off board draws it | accepted |
+| [0034](0034-badge-slots-hold-a-badge.md) | A badge slot holds a Badge, not a view, and its host speaks the badge: the host draws it hidden and reads its words in the same render | accepted |
 
 ## Template
 

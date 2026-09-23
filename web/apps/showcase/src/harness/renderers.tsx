@@ -20,8 +20,8 @@
  * container's edge.
  *
  * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
- * frame, and on a material in a Surface hugging the glyph. Badge is staged the same way
- * (`renderBadgeExample`).
+ * frame, and on a material in a Surface hugging the glyph. Badge and IconButton are staged the same way
+ * (`renderBadgeExample`, `renderIconButtonExample`).
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -36,6 +36,7 @@ import {
   Card,
   Divider,
   Icon,
+  IconButton,
   Surface,
   Text,
   iconRegistry,
@@ -44,6 +45,7 @@ import {
   type CardProps,
   type DividerOrientation,
   type DividerProps,
+  type IconButtonProps,
   type IconName,
   type IconProps,
   type SurfaceMaterial,
@@ -252,6 +254,44 @@ export function renderBadgeExample(props: Readonly<Record<string, unknown>>, exa
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-sc-mark">{mark}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * IconButton.yaml's `glyph` and `label` are required and never inferred, the one from the other or from anything
+ * else (behavior 4, ADR-0011 rule 4), so props without a registry glyph or with a blank label cannot be staged:
+ * null, the web's reading of `DSIconButtonRenderer` returning nil. The `badge` slot is the spec's mapping of
+ * Badge's own props, which is `IconButtonBadge` as it stands; anything but a mapping cannot be staged either.
+ */
+function iconButtonArgs(props: Readonly<Record<string, unknown>>): IconButtonProps | null {
+  const { glyph, label, badge } = props;
+  if (typeof glyph !== "string" || !(glyph in iconRegistry)) return null;
+  if (typeof label !== "string" || label.trim() === "") return null;
+  const args = props as unknown as IconButtonProps;
+  if (badge === undefined) return args;
+  if (typeof badge !== "object" || badge === null || Array.isArray(badge)) return null;
+  return { ...args, badge };
+}
+
+/**
+ * An IconButton on its example's `surface`, staged exactly as `renderIconButtonExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it, which is Badge's staging: straight on the stage, with no
+ * card-sized frame, or inside a Surface of that material with `radius: card` and its default card padding,
+ * hugging the circle in a flex box (`ds-sc-mark`), over `backdrop` when the material is glass.
+ */
+export function renderIconButtonExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const args = iconButtonArgs(props);
+  if (args === null) return <Unstageable example={example} />;
+  const button = <IconButton {...args} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{button}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, button)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-sc-mark">{button}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

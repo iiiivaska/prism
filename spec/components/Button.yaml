@@ -1,6 +1,6 @@
 name: Button
 layer: primitive
-specVersion: 3
+specVersion: 4
 status: draft
 summary: >-
   A tappable action with one label and an optional leading or trailing icon. Controls in Prism are
@@ -55,7 +55,7 @@ props:
   - name: onPress
     type: action
     required: true
-  - name: fullWidth
+  - name: isFullWidth
     type: boolean
     default: false
 
@@ -86,6 +86,10 @@ tokens:
         vivid: color.border.on-media
         glass: color.border.on-glass-fill
       danger: comp.button.danger.border
+    borderWidth:
+      secondary: border.hairline
+      ghost: border.hairline
+      danger: border.hairline
     radius: comp.button.radius
     height:
       sm: comp.button.height.sm
@@ -127,9 +131,10 @@ behavior:
   - The hit region is the larger of the visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly beyond a smaller visual height, and the visual box never grows with modality.
   - "`isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input; the accessibility label becomes \"<label>, loading\"."
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; disabled buttons are avoided in favor of explaining why an action is unavailable."
-  - Labels never wrap; long labels truncate with an ellipsis; `fullWidth` stretches the pill and centers the content.
+  - Labels never wrap; long labels truncate with an ellipsis; `isFullWidth` stretches the pill and centers the content.
   - Pressed state scales the pill to 0.97 with comp.button.motion.press and returns on release; hover (pointer only) adds the hover overlay.
   - The ghost variant has no fill at rest; it is an outline in comp.button.ghost.border that takes comp.button.ghost.bg.pressed while pressed and the hover overlay on hover.
+  - Every outline - secondary, ghost and danger, on every material - is border.hairline wide, as the signed-off direction board draws each of those pills (ADR-0033). The width is the `borderWidth` cell's alone; the contrast an outline owes is carried by its colour (`accessibility.contrast`).
   - On a vivid surface the primary pill becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media) and a ghost pill outlines in color.border.on-media.
   - Only one `primary` button may appear in a group; a group of segments never gets a filled track.
 
@@ -146,7 +151,7 @@ accessibility:
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: label scales with type.label.*; height grows with it up to the accessibility3 size, then clamps and the label wraps to two lines
-  contrast: every variant's foreground/background pair is in tokens/contrast-pairs.json (primary = on-inverse on inverse; danger = critical text on the critical tint)
+  contrast: every variant's foreground/background pair is in tokens/contrast-pairs.json (primary = on-inverse on inverse; danger = critical text on the critical tint). The ghost outline's colour, comp.button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier belongs to that colour and holds at any stroke width, so it binds nothing about the outline's width, which is border.hairline (ADR-0033)
   reduceTransparency: not applicable (no glass); on a vivid or glass surface the pill keeps its own tokens
   reduceMotion: the press scale is replaced by a fill change to the variant's pressed background (comp.button.primary.bg.pressed, comp.button.secondary.bg.pressed, comp.button.ghost.bg.pressed; danger takes color.bg.fill.neutral.subtle) over motion.duration.base with motion.easing.out
 
@@ -181,5 +186,5 @@ notes:
     watchos: sizes collapse to lg; no trailing icon; ghost renders as secondary. The watch density gives lg 44 pt.
     macos: default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on.
     web-desktop: built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.
-  design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9; the ghost button's transparent rest is ADR-0029 §3.3.
-  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9; the ghost button's transparent rest is ADR-0029 §3.3; every outline's border.hairline width is the signed-off direction board's (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`), ADR-0033.
+  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0033-control-outlines-are-hairlines.md]
