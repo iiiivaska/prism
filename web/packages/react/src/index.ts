@@ -58,9 +58,12 @@ export { implemented, type ImplementedVersions, type WebPlatform } from "./manif
 
 /** Surface (spec/components/Surface.yaml, specVersion 3). */
 export { Surface, type SurfaceProps } from "./surface/Surface.tsx";
+/** Backdrop (ADR-0036 §8): the page over media the app paints itself, declared without painting anything. */
+export { Backdrop, type BackdropProps } from "./surface/Backdrop.tsx";
 /**
- * What the nearest Surface publishes. Only Surface resolves and publishes a material (ADR-0022 rule 1),
- * so the context itself and the resolver stay inside the package.
+ * What the nearest Surface or Backdrop publishes. Only the Surface module resolves and publishes (ADR-0022 rule 1,
+ * ADR-0036): a Surface publishes the material it paints, and Backdrop the page over media the app paints itself.
+ * The context object, the resolvers and the chip shape stay inside the package.
  */
 export { useSurfaceContext, type SurfaceContextValue } from "./surface/context.ts";
 export {

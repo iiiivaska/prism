@@ -100,7 +100,8 @@ public enum DSExampleStaging: Hashable {
 }
 
 /// The page an example renders on: the ground, `space.page-margin` around it, the harness's own width, and the
-/// backdrop pixels a glass surface blurs.
+/// backdrop pixels a glass surface blurs. A map or image ground is declared with `dsBackdrop(_:_:)`, so a component
+/// staged straight on it reads the page over that kind (ADR-0036 §8.7).
 ///
 /// This is the showcase's own copy of the stage the snapshot harness uses (`DSComponents/Examples`), which is
 /// `internal` and `#if DEBUG` and so unreachable from an app. Both draw only from `color.map.*` and
@@ -148,8 +149,8 @@ public struct DSExampleStage<Content: View>: View {
         let grounded = Group {
             switch ground {
             case .page: staged.background(tokens.color.bgPage)
-            case .map: staged.dsBackdrop { DSExampleMap() }
-            case .image: staged.dsBackdrop { DSExampleImage() }
+            case .map: staged.dsBackdrop(.map) { DSExampleMap() }
+            case .image: staged.dsBackdrop(.image) { DSExampleImage() }
             }
         }
         ScrollView(.horizontal) {

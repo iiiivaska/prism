@@ -7,6 +7,8 @@
  *   to its root element — a generic test over the exports, so a new component is covered without edits;
  * - rule 13 of ADR-0020 is `lint:literals` kind `brand`; this suite only checks that the package names
  *   no brand in its bundle;
+ * - ADR-0036 §8: `Surface` and `Backdrop` are the only public publishers of a surface context, so the
+ *   context object, its root value, the resolvers and the chip shape are not exported;
  * - the export map, resolved by a scratch consumer over the built package: `.`, `./styles.css`,
  *   `./spec/*` (C-14's second half) and `./package.json`.
  */
@@ -29,11 +31,31 @@ const exportNames = Object.keys(prism);
  * Components of this package that render no DOM element of their own, whatever props they are given.
  *
  * Rule 8 cannot be checked against a name in here, so a name only belongs in it when the component renders no
- * element *by design* — `Theme` is a context provider and returns its children. A component that draws nothing
- * only because this suite gave it nothing belongs in `MINIMUM_PROPS` instead: putting it here would stop
- * checking it, silently, for as long as the entry lives.
+ * element *by design*: the context providers, which return their children. `Theme` provides the token context, and
+ * `Backdrop` the page over media (ADR-0036 §8), which is rule 8's existing exception for a provider. A component
+ * that draws nothing only because this suite gave it nothing belongs in `MINIMUM_PROPS` instead: putting it here
+ * would stop checking it, silently, for as long as the entry lives.
  */
-const RENDERS_NO_ELEMENT = new Set(["Theme"]);
+const RENDERS_NO_ELEMENT = new Set(["Theme", "Backdrop"]);
+
+/**
+ * What stays inside the package (ADR-0022 rule 1, ADR-0036 §8.4 and rule 8): the context object and its root value,
+ * through which anything could publish a material it does not paint, and the Surface module's resolvers and chip
+ * shape. The two public publishers are `Surface` and `Backdrop`; `useSurfaceContext` reads.
+ *
+ * The chip's names are here before the chip is (roadmap P4-5), as `MINIMUM_PROPS` runs ahead of its components: a
+ * name the package does not define yet is trivially not exported, and is checked from the day it lands.
+ */
+const INTERNAL = [
+  "SurfaceContext",
+  "rootSurfaceContext",
+  "resolveSurface",
+  "resolveSurfaceChip",
+  "useSurfaceChip",
+  "SurfaceChipScope",
+  "SurfaceChipEdge",
+  "InsideGlassChipContext",
+] as const;
 
 /**
  * The fewest props a component needs before it renders anything at all — the rest of this suite gives every
@@ -87,6 +109,18 @@ describe("names (ADR-0019 rule 11)", () => {
         else expect(platforms[platform], `${component} ${platform}`).toBe(specVersion);
       }
     }
+  });
+});
+
+describe("the surface context (ADR-0022 rule 1, ADR-0036 §8)", () => {
+  it("has two public publishers, Surface and Backdrop, and one reader", () => {
+    expect(typeof prism.Surface).toBe("function");
+    expect(typeof prism.Backdrop).toBe("function");
+    expect(typeof prism.useSurfaceContext).toBe("function");
+  });
+
+  it.each(INTERNAL.map((name) => [name] as const))("keeps %s inside the package", (name) => {
+    expect(exportNames).not.toContain(name);
   });
 });
 

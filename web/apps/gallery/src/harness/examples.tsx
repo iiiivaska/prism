@@ -3,7 +3,8 @@
  * go to the component as Storybook args; its `surface`, `backdrop` and `grid` fields choose the stage
  * around it, the same way the SwiftUI snapshot harness reads them (roadmap P3-3, P3-5).
  *
- * - `surface: map | image`: the component sits on that synthetic backdrop (harness.css).
+ * - `surface: map | image`: the component sits on that synthetic backdrop (harness.css), which `GalleryGround`
+ *   declares with the package's `Backdrop`, so the component reads the page over that kind (ADR-0036 §8.7).
  * - `surface: <material>` on a component that does not render a Surface itself: it sits inside a Surface
  *   of that material, over `backdrop` when the material is glass.
  * - `grid`: a 2×2, row-major, one component per cell with the cell's vivid slot.
@@ -27,6 +28,7 @@
  */
 import type { ReactElement, ReactNode } from "react";
 import {
+  Backdrop,
   Badge,
   Button,
   Card,
@@ -63,14 +65,19 @@ export interface ExampleFields {
   readonly description?: string;
 }
 
-function Backdrop(props: { readonly kind: "map" | "image"; readonly children: ReactNode }): ReactNode {
+/**
+ * The synthetic map or image an example sits on (harness.css), declared to the components on it with the package's
+ * `Backdrop` (ADR-0036 §8.7), so a component staged straight on the ground reads the page over that kind, as it
+ * would over an app's own map. `Backdrop` renders no element, so the stage's markup is what it was without it.
+ */
+function GalleryGround(props: { readonly kind: "map" | "image"; readonly children: ReactNode }): ReactNode {
   return (
     <div className="ds-gallery-backdrop" data-ds-gallery-backdrop={props.kind}>
       <span data-ds-gallery-layer="blocks" aria-hidden="true" />
       <span data-ds-gallery-layer="park" aria-hidden="true" />
       <span data-ds-gallery-layer="water" aria-hidden="true" />
       <span data-ds-gallery-layer="roads" aria-hidden="true" />
-      {props.children}
+      <Backdrop kind={props.kind}>{props.children}</Backdrop>
     </div>
   );
 }
@@ -80,7 +87,7 @@ function Stage(props: { readonly children: ReactNode }): ReactNode {
 }
 
 function onBackdrop(kind: string | undefined, node: ReactNode): ReactNode {
-  return kind === "map" || kind === "image" ? <Backdrop kind={kind}>{node}</Backdrop> : node;
+  return kind === "map" || kind === "image" ? <GalleryGround kind={kind}>{node}</GalleryGround> : node;
 }
 
 function SurfaceContent(props: { readonly exampleId: string }): ReactNode {

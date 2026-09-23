@@ -71,9 +71,13 @@ extension EnvironmentValues {
         set { self[DSBrandKey.self] = newValue }
     }
 
-    /// The material and backdrop kind the enclosing Surface published (ADR-0022 §3.1, ADR-0029 §1.4). Text,
-    /// charts and component parts read their foreground family from it; it nests with the surfaces.
-    public var dsSurfaceContext: DSSurfaceContext {
+    /// The material and backdrop kind the nearest publisher published (ADR-0022 §3.1, ADR-0029 §1.4). Text,
+    /// charts and component parts read their foreground family from it; it nests, and the nearest publisher wins.
+    ///
+    /// Reading is public. Writing is `package` (ADR-0036 §8.4): in app code the two publishers are `DSSurfaceView`,
+    /// which publishes the material it paints, and `dsBackdrop(_:_:)`, which publishes the page over media the app
+    /// paints itself. Anything else could publish a material nothing paints, which the glass fallback never sees.
+    public package(set) var dsSurfaceContext: DSSurfaceContext {
         get { self[DSSurfaceContextKey.self] }
         set { self[DSSurfaceContextKey.self] = newValue }
     }
@@ -108,8 +112,11 @@ extension View {
         environment(\.dsModalityOverride, modality).environment(\.dsModality, modality)
     }
 
-    /// Publishes a surface context to descendants. `DSSurface.resolve` produces it; P3-3's `Surface` applies it.
-    public func dsSurfaceContext(_ context: DSSurfaceContext) -> some View {
+    /// Publishes a surface context to descendants: Prism's own writer, `package` since ADR-0036 §8.4. It is called by
+    /// the two public publishers, `DSSurfaceView` (the context `DSSurface.resolve` produces) and `dsBackdrop(_:_:)`
+    /// (the page over the declared kind), and by a Prism composite whose spec publishes a material it does not paint
+    /// (ADR-0036 rule 9).
+    package func dsSurfaceContext(_ context: DSSurfaceContext) -> some View {
         environment(\.dsSurfaceContext, context)
     }
 

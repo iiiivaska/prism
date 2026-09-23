@@ -1,3 +1,4 @@
+import OSLog
 import SwiftUI
 import DSCore
 
@@ -23,7 +24,7 @@ private struct DSSurfaceGeometryKey: EnvironmentKey {
 }
 
 extension EnvironmentValues {
-    /// The nearest backdrop a glass Surface can blur: from `dsBackdrop(_:)`, or from the enclosing opaque Surface.
+    /// The nearest backdrop a glass Surface can blur: from `dsBackdrop(_:_:)`, or from the enclosing opaque Surface.
     var dsBackdropSource: DSBackdropSource? {
         get { self[DSBackdropSourceKey.self] }
         set { self[DSBackdropSourceKey.self] = newValue }
@@ -37,23 +38,43 @@ extension EnvironmentValues {
 }
 
 extension View {
-    /// Draws `backdrop` behind this view and hands its pixels to the glass Surfaces inside.
+    /// Declares that this view sits on media the app paints itself — an image, a map or a vivid gradient — draws that
+    /// media behind the view, and hands its pixels to the glass inside (ADR-0036 §8).
     ///
-    /// Glass renders only over an image, a map or a vivid surface, and the parent declares which with the Surface's
-    /// `backdrop` (Surface.yaml). This modifier supplies what that backdrop looks like: a glass `DSSurfaceView`
-    /// inside it blurs and saturates the part of `backdrop` under itself with its recipe, as `backdrop-filter`
-    /// does on the web. A `DSSurfaceView` of an opaque material hands down its own fill the same way, so glass on a
-    /// vivid card needs no modifier.
+    /// It publishes `DSSurfaceContext(material: .page, backdrop: kind)` to the view, so Prism's components on it know
+    /// they sit on the page over that kind, as the glass chips of Avatar and Chip will (ADR-0036 §3). With
+    /// `DSSurfaceView`, it is one of the two public publishers of a surface context, and the only one that paints
+    /// nothing of Prism's. Only the page can be published without paint: any other material names paint that is not
+    /// there.
+    ///
+    /// SwiftUI cannot read what lies behind a view, so the declaration also supplies the pixels, and the two cannot be
+    /// declared apart. A glass `DSSurfaceView` inside blurs and saturates the part of `backdrop` under itself with its
+    /// recipe, as `backdrop-filter` does on the web; a `DSSurfaceView` of an opaque material hands down its own fill
+    /// the same way, so glass on a vivid card needs no modifier.
     ///
     ///     ZStack(alignment: .bottomLeading) {
     ///         Color.clear
     ///         DSSurfaceView(material: .glass, backdrop: .map, elevation: .overlay) { … }
     ///     }
-    ///     .dsBackdrop { MapView() }
+    ///     .dsBackdrop(.map) { MapView() }
     ///
-    /// The modifier changes no material and reads no setting; under the glass fallback the Surface ignores it.
-    public func dsBackdrop<Backdrop: View>(@ViewBuilder _ backdrop: () -> Backdrop) -> some View {
-        modifier(DSBackdropModifier(backdrop: AnyView(backdrop())))
+    /// A glass Surface still declares its own `backdrop` (Surface.yaml): it does not read it from this modifier. The
+    /// nearest publisher wins, so a `dsBackdrop` inside a Surface overrides the Surface's context for its subtree, and
+    /// a Surface inside a `dsBackdrop` publishes its own. The modifier reads no setting; under the glass fallback a
+    /// Surface ignores the pixels. `.none` is not media: it logs at debug level, publishes nothing and still hands the
+    /// pixels down.
+    ///
+    /// - Parameters:
+    ///   - kind: what the app draws under this view: `.image`, `.map` or `.vivid`. Name the media actually drawn;
+    ///     Prism's components inside read `(page, kind)` as their ground.
+    ///   - backdrop: the media itself, drawn behind this view and handed to any glass Surface inside it.
+    public func dsBackdrop<Backdrop: View>(_ kind: DSBackdropKind, @ViewBuilder _ backdrop: () -> Backdrop) -> some View {
+        if kind == .none {
+            DSBackdropLog.log.debug(
+                "dsBackdrop(.none) publishes no surface context: declare what the backdrop is, image, map or vivid (ADR-0036 §8.3)."
+            )
+        }
+        return modifier(DSBackdropModifier(kind: kind, backdrop: AnyView(backdrop())))
     }
 
     /// Publishes a backdrop drawn in the coordinate space `space`, `size` large.
@@ -62,22 +83,38 @@ extension View {
     }
 }
 
+private enum DSBackdropLog {
+    static let log = Logger(subsystem: "app.prism.dscomponents", category: "backdrop")
+}
+
 private struct DSBackdropModifier: ViewModifier {
+    let kind: DSBackdropKind
     let backdrop: AnyView
     @Namespace private var space
     @State private var size: CGSize = .zero
 
     // Written out: a private stored property makes the synthesized memberwise initializer private, which Swift 6.3
     // (Xcode 26.6, the CI pin) rejects at the call site.
-    init(backdrop: AnyView) {
+    init(kind: DSBackdropKind, backdrop: AnyView) {
+        self.kind = kind
         self.backdrop = backdrop
     }
 
     func body(content: Content) -> some View {
-        content
+        declared(content)
             .dsBackdropSource(backdrop, space: space, size: size)
             .background { backdrop }
             .onGeometryChange(for: CGSize.self, of: \.size) { size = $0 }
             .coordinateSpace(.named(space))
+    }
+
+    /// The page over `kind`, published to the content; nothing under `.none`.
+    @ViewBuilder
+    private func declared(_ content: Content) -> some View {
+        if kind == .none {
+            content
+        } else {
+            content.dsSurfaceContext(DSSurfaceContext(material: .page, backdrop: kind))
+        }
     }
 }

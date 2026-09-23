@@ -186,7 +186,7 @@ struct DSIconButtonExampleStage: View {
                 DSExampleIconButtonRow()
                 DSSurfaceView(material: .vivid, radius: .card) { DSExampleIconButtonRow() }
                 DSSurfaceView(material: .glass, radius: .card, backdrop: .image) { DSExampleIconButtonRow() }
-                    .dsBackdrop { DSExampleImage() }
+                    .dsBackdrop(.image) { DSExampleImage() }
                 DSSurfaceView(material: .raised, radius: .card) { DSExampleIconButtonRow() }
             }
         }

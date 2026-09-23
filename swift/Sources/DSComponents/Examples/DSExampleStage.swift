@@ -57,7 +57,8 @@ enum DSExampleGround {
 }
 
 /// The page an example renders on: the ground, `space.page-margin` around the example, and the backdrop pixels a
-/// glass surface blurs.
+/// glass surface blurs. A map or image ground is declared with `dsBackdrop(_:_:)`, so a component staged straight on
+/// it reads the page over that kind (ADR-0036 §8.7); the snapshot suite inherits this stage.
 struct DSExampleStage<Content: View>: View {
     let ground: DSExampleGround
     let content: Content
@@ -74,9 +75,9 @@ struct DSExampleStage<Content: View>: View {
         case .page:
             padded.background(ds.tokens.color.bgPage)
         case .map:
-            padded.dsBackdrop { DSExampleMap() }
+            padded.dsBackdrop(.map) { DSExampleMap() }
         case .image:
-            padded.dsBackdrop { DSExampleImage() }
+            padded.dsBackdrop(.image) { DSExampleImage() }
         }
     }
 }

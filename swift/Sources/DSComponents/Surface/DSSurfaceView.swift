@@ -22,7 +22,7 @@ import DSTokens
 ///     of the height down, scaled to 0.92; skipped under Reduce Transparency;
 ///  2. the elevation's shadow layers, outside the shape only, as CSS draws a box-shadow;
 ///  3. `color.bg.page` under `solid`, `raised` and `nested`;
-///  4. on glass, the backdrop under the surface (`dsBackdrop(_:)`, or the enclosing opaque Surface), saturated and
+///  4. on glass, the backdrop under the surface (`dsBackdrop(_:_:)`, or the enclosing opaque Surface), saturated and
 ///     blurred by the recipe;
 ///  5. the fill: the material's color, the glass recipe's fill, or the vivid gradient on its CSS gradient line;
 ///  6. grain (vivid and glass), blended with overlay, outside the card header block;

@@ -25,7 +25,7 @@ struct DSSurfaceRenderTests {
 
     static func centre(_ view: some View, scheme: ColorScheme) -> [UInt8]? {
         let content = DSTheme {
-            view.frame(width: side, height: side).dsBackdrop { DSExampleImage() }
+            view.frame(width: side, height: side).dsBackdrop(.image) { DSExampleImage() }
         }
         .environment(\.colorScheme, scheme)
         let renderer = ImageRenderer(content: content)
@@ -55,7 +55,7 @@ struct DSSurfaceRenderTests {
     /// Every pixel down one column of a `side × side` render, top to bottom in image order.
     static func column(_ view: some View, side: CGFloat, x: Int, scheme: ColorScheme) -> [[UInt8]]? {
         let content = DSTheme {
-            view.frame(width: side, height: side).dsBackdrop { DSExampleImage() }
+            view.frame(width: side, height: side).dsBackdrop(.image) { DSExampleImage() }
         }
         .environment(\.colorScheme, scheme)
         let renderer = ImageRenderer(content: content)

@@ -50,7 +50,7 @@ enum DSButtonExamples {
                 DSExampleButtonRow()
                 DSSurfaceView(material: .vivid, radius: .card) { DSExampleButtonRow() }
                 DSSurfaceView(material: .glass, radius: .card, backdrop: .image) { DSExampleButtonRow() }
-                    .dsBackdrop { DSExampleImage() }
+                    .dsBackdrop(.image) { DSExampleImage() }
                 DSSurfaceView(material: .raised, radius: .card) { DSExampleButtonRow() }
             }
         }

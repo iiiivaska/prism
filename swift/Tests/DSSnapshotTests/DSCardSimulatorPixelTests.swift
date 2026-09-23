@@ -48,7 +48,7 @@ struct DSCardSimulatorPixelTests {
         let content = DSTheme {
             view
                 .frame(width: side, height: side)
-                .dsBackdrop { DSExampleImage() }
+                .dsBackdrop(.image) { DSExampleImage() }
         }
         .dsDensity(.regular)
         .dsModality(modality)
