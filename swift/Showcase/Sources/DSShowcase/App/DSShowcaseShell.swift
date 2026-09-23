@@ -48,8 +48,9 @@ struct DSShowcaseShell: View {
         self.axes = axes
         self.presentation = presentation
         // A launch argument that names a page implies its section, so `-DSShowcaseExample Card/solid-metric`
-        // alone opens the right stack.
+        // alone opens the right stack, and `-DSShowcaseIconStyle filled` the Icons screen.
         let implied: DSShowcaseSection? = DSShowcaseLaunch.tokenGroup != nil ? .foundations
+            : DSShowcaseLaunch.namesIconState ? .icons
             : (DSShowcaseLaunch.component ?? DSShowcaseLaunch.example.flatMap { DSShowcaseCatalog.named($0.component) })
                 .map { $0.isPattern ? .patterns : .components }
         _section = State(initialValue: DSShowcaseLaunch.section ?? implied ?? .overview)

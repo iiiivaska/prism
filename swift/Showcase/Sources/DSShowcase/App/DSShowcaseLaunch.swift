@@ -1,6 +1,7 @@
 #if os(iOS) || os(macOS)
 import SwiftUI
 import DSCore
+import DSComponents
 import DSIcons
 import DSTokens
 
@@ -49,8 +50,36 @@ enum DSShowcaseLaunch {
         return DSExampleRef(component: entry.name, example: example)
     }
 
-    /// One icon of the registry, by its semantic id.
-    static var icon: DSIconName? { string("DSShowcaseIcon").flatMap(DSIconName.init(rawValue:)) }
+    /// The Icons screen's four controls, by the spellings the web's controls print: `sm`/`md`/`lg`,
+    /// `control`/`display`, `default`/`outline`/`filled`/`duotone` (`default` is each entry's registry style, as is an
+    /// absent key) and `ltr`/`rtl`. They name a state of that screen, not an icon: the screen has no per-icon page, and
+    /// no key opens one.
+    static var iconSize: DSGlyphSize? { string("DSShowcaseIconSize").flatMap(DSGlyphSize.init(rawValue:)) }
+
+    static var iconWeight: DSGlyphWeight? { string("DSShowcaseIconWeight").flatMap(DSGlyphWeight.init(rawValue:)) }
+
+    static var iconStyle: DSIconStyle? { string("DSShowcaseIconStyle").flatMap(DSIconStyle.init(rawValue:)) }
+
+    static var iconDirection: LayoutDirection? {
+        switch string("DSShowcaseIconDirection") {
+        case "ltr": .leftToRight
+        case "rtl": .rightToLeft
+        default: nil
+        }
+    }
+
+    /// A block of the Icons screen to open it at, `registry` or `ladder`: the grid and the ladder sit below the
+    /// controls, and a screenshot run names where it looks rather than scrolling by hand.
+    enum IconsBlock: String, Hashable {
+        case registry, ladder
+    }
+
+    static var iconsBlock: IconsBlock? { string("DSShowcaseIconsBlock").flatMap(IconsBlock.init(rawValue:)) }
+
+    /// Whether any of the Icons screen's keys is set, which implies that section.
+    static var namesIconState: Bool {
+        iconSize != nil || iconWeight != nil || iconStyle != nil || iconDirection != nil || iconsBlock != nil
+    }
 
     static var opensAxes: Bool { flag("DSShowcaseAxes") ?? false }
 

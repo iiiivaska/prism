@@ -56,7 +56,11 @@ body {
   flex-direction: column;
   gap: var(--ds-space-2);
   padding: var(--ds-space-3) var(--ds-space-page-margin);
-  background-color: var(--ds-color-bg-surface);
+  /* The surface over the page, as a Surface paints bg.page under solid, raised and nested (ADR-0030 §5.1): in
+     dark bg.surface is a 6 % white film, and on its own it let the page scroll visibly through the header
+     (finding SD-4 of docs/direction-board/reference-distance-showcase.md). */
+  background-color: var(--ds-color-bg-page);
+  background-image: linear-gradient(var(--ds-color-bg-surface), var(--ds-color-bg-surface));
   border-block-end: var(--ds-border-hairline) solid var(--ds-color-border-hairline);
 }
 
@@ -706,12 +710,25 @@ code,
   gap: var(--ds-space-3);
 }
 
+/* The notes that say what each control does sit below the controls, not against the last one. */
+.ds-sc-controls + .ds-sc-note {
+  margin-block-start: var(--ds-space-4);
+}
+
 .ds-sc-ladder {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: var(--ds-space-5);
   margin-block-end: var(--ds-space-4);
+}
+
+/* The name of one of the registry's tables, above its row, so a wrapped row still reads as one table. */
+.ds-sc-ladder-name {
+  margin: 0 0 var(--ds-space-2);
+  font-size: var(--ds-type-label-sm-font-size);
+  font-weight: var(--ds-type-label-sm-font-weight);
+  color: var(--ds-color-text-secondary);
 }
 
 .ds-sc-ladder-cell {
@@ -729,6 +746,8 @@ code,
 
 .ds-sc-icon-cell {
   display: grid;
+  /* A cell is stretched to its row's tallest; without this the stretch spreads its lines apart. */
+  align-content: start;
   gap: var(--ds-space-1);
   padding: var(--ds-space-3);
   border-radius: var(--ds-radius-inner);

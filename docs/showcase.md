@@ -147,7 +147,7 @@ the app says so on its About screen. Phase 5 rebuilds the chrome from real compo
 |---|---|
 | Overview | brand, system version (`DSTokensInfo.version` / the tokens package's `version`), the effective context, counts: tokens by tier, components implemented / specified, icons |
 | Foundations | one screen per token group, in the order above; each specimen shows the path, the value, the CSS variable or the Swift member, and the description the manifest carries. Materials are shown through `Surface` over the synthetic map and image of the example harness, because Surface is what publishes them; motion specimens replay on tap |
-| Icons | the registry as data — id, label key, tags, default style — with every entry drawn by `Icon` at the size and weight picked above it; beside it the registry's weight ladder and four boxes, which reach further than `Icon`'s props, drawn from the registry's own binding and labelled as registry data (see §4). `Icon`'s spec examples are on Components |
+| Icons | one screen on both stacks (P4-D4, "The Icons screen" below): four controls for the whole grid — `size`, `weight`, `style` (or each entry's registry `defaultStyle`) and `direction` — over the registry as data, every entry drawn by `Icon` beside its registry row (id, label key, tags, default style, binding, the `fill: false` and mirroring marks); then the registry's ladder of six rungs, four boxes and three styles for one entry, which reaches further than `Icon`'s props, drawn from the registry's own binding and labelled as registry data (see §4). Nothing on it acts on one icon. `Icon`'s spec examples are on Components |
 | Components | one page per component, its examples staged exactly as the gallery stages them, plus the spec summary, its version and support row |
 | About | what the chrome is, what the app reads, links to the spec, the parity report and the gallery |
 
@@ -173,6 +173,102 @@ README is a page GitHub does render, and it is the page that says what the galle
 it — from a checkout, or from the `gallery` artifact of a green CI run. The anchor still means something
 in both of those places, so both apps print it beside the link as the path it is
 (`gallery/index.html#Button in a checkout`) rather than hiding it inside a URL that cannot honour it.
+
+### The Icons screen (P4-D4)
+
+Landing `Icon` (P4-2) left the two Icons screens unequal. The web screen had four controls: size, weight,
+style and direction. The Apple screen had size and weight, drew every entry in its registry
+`defaultStyle`, and opened a per-icon detail sheet from each tile. P4-D4 decided one capability set, and
+both screens now have exactly this, in this order and in the same words:
+
+| Part | What it is |
+|---|---|
+| The lead | the entry count; that every glyph is `Icon` with `tone: primary` and no label, so hidden from assistive technology; where `Icon`'s spec examples are; that the ladder is registry data; and that nothing on the screen acts on one icon |
+| Icon's axes | four controls, each one of `Icon`'s own axes, set for the whole grid at once. `size` is sm, md or lg, each labelled with its box. `weight` is control or display. `style` is *entry default*, outline, filled or duotone: *entry default* passes each entry's registry `defaultStyle` as the prop, since the spec's own default is outline. `direction` is ltr or rtl, set on the grid alone. Under the controls is one note per axis, saying what that axis does on that stack |
+| The registry | every entry, in registry order, drawn by `Icon` with those four axes. Under each glyph is the entry's registry row, left to right in either direction: id, label key, tags, default style, binding, `fill: false` and, on the web, `mirrors in rtl`. The web also shows the categories on their own line, because its half of the registry keeps them apart from the tags; the Apple half folds them into the tags |
+| The ladder | registry data for the registry's first entry (`action.add`): the six rungs of the weight table, the four boxes of the size table and the three styles, drawn from the entry's binding and labelled as the registry's, not as the component |
+
+The web draws the controls as segmented buttons and the Apple app as segmented pickers under their names.
+Those are the two apps' own conventions. What the controls do is the same.
+
+**Why this set, and nothing more.** Finding SD-1 of `docs/direction-board/reference-distance-showcase.md`
+cleared the Icons screen as "a registry table with a picture". It names the affordances that would make
+the screen an icon browser: search, filter by category, copy, copy-as-SVG, download and a per-icon page.
+The two controls Apple gained are not on that list. They are not ways to find a glyph or take one away:
+`style` and `direction` are two of `Icon`'s own axes. They show the registry as Prism draws it: every
+style, including ADR-0035's outline fallback, and the right-to-left mirroring the registry declares for
+each platform. They act on the whole grid at once, as `size` and `weight` already did. The screen gained
+nothing that acts on one entry, and nothing that finds or exports one.
+
+**The Apple detail sheet went.** Until P4-D4, every Apple tile was a button. It opened a sheet for that
+one icon, with its weight ladder, its four boxes and its registry facts. That sheet is the per-icon page
+SD-1 lists. P5-3's §5.6 said the screen had no per-icon page. That was true of the web and not of Apple,
+where the sheet had been part of the screen since the showcase landed (0ee722a). The re-review therefore
+has to judge the Apple screen with the sheet removed, as well as the new controls. There were three ways
+to settle it:
+
+- keep the sheet on Apple only, which leaves the two screens unequal;
+- add the same page to the web, which gives the second stack the affordance SD-1 warns about;
+- remove it, which is what P4-D4 did.
+
+None of the sheet's content needed a page:
+
+- The facts are the entry's registry row. They are now on every tile, as the web's cards always carried
+  them.
+- The ladder is the registry's tables, and one entry shows those as well as any other. It is now the
+  web's ladder panel, on both stacks.
+
+So a tile is not a button on either stack, and no launch argument names an icon: `-DSShowcaseIcon` was
+removed with the sheet. The screen is now nearer the "registry table" SD-1 cleared than it was before.
+
+**ADR-0035, shown on the screen.** 27 of the 51 entries are marked `fill: false`. With `style` on
+filled, those 27 draw their outline, on both stacks, because that is how `Icon` draws them. Without a
+label, a reader who picks filled sees 27 glyphs that did not change and could take the control for
+broken. So the screen says it in four places:
+
+- Each of those tiles carries the tag `fill: false → outline` while the style it asked for draws the
+  outline.
+- Every tile's registry row reads `fill: false` wherever the registry says so.
+- The style note gives the number of such entries, counted from the registry.
+- The ladder's style row labels `filled` for `action.add` as "no filled drawing".
+
+No entry is filled by default and also marked `fill: false` (ADR-0035 rule 3), so *entry default* never
+shows the tag.
+
+**What still differs, and where the screen says so.** The two screens show one registry, but each stack
+reads its own half of it, and three differences come from the platforms, not the apps:
+
+- **Weight on a filled glyph.** The web draws Phosphor's single fill cut at every weight. Apple's fill
+  variant takes the weight and the Bold Text step (Icon.yaml behavior 6). Each stack's weight note says
+  which applies.
+- **Duotone.** The web draws Phosphor's duotone cut and Apple renders the symbol hierarchically. ADR-0035
+  left that pair unaudited, and both style notes say so.
+- **Direction.** `rtlMirror` is set per platform. The web marks six entries. Apple marks none, because the
+  system mirrors direction-relative symbols itself. Under rtl on the iPhone and the Mac, `nav.back`,
+  `nav.forward`, `nav.open`, `nav.sidebar` and `object.chart` flip.
+
+**A defect the web's direction control found.** Under rtl, the web screen measures how many of the
+entries marked `rtlMirror` the document actually draws flipped, in the same way `src/axis-probe.ts`
+measures an axis. On 2026-09-23 it measured 0 of 6.
+
+- `web/packages/react/src/icon/Glyph.css` writes `.ds-glyph[data-ds-mirror]:dir(rtl)`, and
+  `@iiiivaska/prism-react`'s own `dist/styles.css` keeps that selector.
+- `:dir()` arrived in Chrome 120. Prism's browser floor, which is Tailwind v4's, is Chrome 111.
+- A consumer whose build targets that floor gets the selector lowered by Lightning CSS to
+  `:is(:lang(ar), :lang(he), …)`. The showcase's Vite build is one such consumer: Vite 8's default
+  target, `baseline-widely-available`, also starts at Chrome 111.
+- A `dir="rtl"` without an RTL `lang` never matches the lowered selector. So Icon.yaml behavior 11 does
+  not hold on the web for an app that sets the direction alone.
+- `Text.css` has the same `:dir(rtl)` selector for its fade, and it is lowered the same way.
+
+The fix belongs to `@iiiivaska/prism-react`, not to the showcase. Until the measurement reads 6 of 6, the
+screen prints it with a warning tag rather than claim the flip.
+
+**Opening a state directly.** The Apple app names the screen's states, as it names every page
+(`swift/Showcase/README.md`): `-DSShowcaseIconSize`, `-DSShowcaseIconWeight`, `-DSShowcaseIconStyle`
+(`default`, `outline`, `filled` or `duotone`), `-DSShowcaseIconDirection` (`ltr` or `rtl`) and
+`-DSShowcaseIconsBlock` (`registry` or `ladder`, to open the screen scrolled to that block). Each key
+implies the Icons section.
 
 ## 3. Axes
 
@@ -252,8 +348,9 @@ Per component, four states, all from the catalogue:
 
 The same rule applies to the foundations: a `ref` token shows a value on the web (it is a CSS variable)
 and on Apple says "primitive tier — no public API"; a token with `deprecated` set shows the
-replacement; and on the Icons screen the registry's ladder — all six rungs and all four boxes, of which
-`Icon`'s props reach two rungs and three boxes — is labelled as registry data, not as the component. Until
+replacement; and on the Icons screen the registry's ladder — all six rungs, all four boxes and the three
+styles, of which `Icon`'s props reach two rungs, three boxes and the three styles — is labelled as
+registry data, not as the component. Until
 `Icon` entered both manifests (P4-2) the whole screen was such a preview, labelled "drawn from the
 registry binding — `Icon` is implemented on neither stack"; the catalogue then moved `Icon` into
 Components, and the grid is drawn by `Icon` itself.
@@ -323,8 +420,9 @@ and a second baseline set would be a second canon to keep green.
 3. ~~**`Icon` is implemented on neither stack.**~~ **Implemented in P4-2.** `Icon` is public on both
    stacks and in both manifests, and Button and Card draw their glyphs through it, so the Icons screen
    draws the 51 registry entries with the component and its spec examples are on Components. Only the
-   registry's ladder (every rung and box, where `Icon`'s props reach only some) is still drawn from the binding, and
-   labelled as registry data. The screen's reference-distance clearance
+   registry's ladder (every rung, box and style, where `Icon`'s props reach only some) is still drawn from the
+   binding, and labelled as registry data. P4-D4 then made the two Icons screens one screen (§2, "The Icons
+   screen"). The screen's reference-distance clearance
    (`docs/direction-board/reference-distance-showcase.md` §10, condition 2) expired with it, and that
    review is re-run as a task of its own.
 4. **watchOS is out of scope for the app.** The package supports it, the `watch` density is switchable

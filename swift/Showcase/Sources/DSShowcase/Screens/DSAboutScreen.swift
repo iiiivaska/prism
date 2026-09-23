@@ -36,7 +36,7 @@ struct DSAboutScreen: View {
                         tone: .secondary
                     )
                     DSText(
-                        verbatim: "The Icons screen is the registry, each entry drawn by Icon at Icon's own sizes and weights; the registry's six-rung ladder and four boxes reach further than Icon's props do, so its detail sheet draws those from the registry's binding and labels them as registry data. Icon's examples are on Components.",
+                        verbatim: "The Icons screen is the registry, each entry drawn by Icon at Icon's own sizes, weights, styles and direction, the same four controls as the web's; the registry's six-rung ladder, four boxes and three styles reach further than Icon's props do, so the screen draws those for one entry from the registry's binding and labels them as registry data. Icon's examples are on Components.",
                         role: .bodySm,
                         tone: .secondary
                     )

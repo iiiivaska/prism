@@ -5,6 +5,7 @@
 - Reviewed: **2026-09-22**, against `docs/research/references.json`, the analyses in `docs/research/refs-*.md` and [`visual-dna.md`](../research/visual-dna.md)
 - Built and run for this review: the web app (`pnpm showcase`) and the Apple app on the iPhone 17 simulator (iOS 26.5) and on the Mac (`pnpm showcase:apple`, `--platform macos`)
 - Companions: the three direction-board screens, reviewed 2026-09-16 — [README.md § Reference-distance review](README.md#reference-distance-review); the gallery, reviewed 2026-09-22 — [reference-distance-gallery.md](reference-distance-gallery.md)
+- **Re-reviewed, the Icons screens only: 2026-09-23** — [§11](#11-re-review-of-the-icons-screens--2026-09-23). P4-2 fired §10 condition 2 by implementing `Icon`, and P4-D4 then reconciled the two screens. §11 carries their verdict, a correction to this review (SD-6) and the Icons clearance's own expiry conditions. Sections 1–10 stand as written on 2026-09-22, apart from pointers to §11.
 
 This is the **showcase half** of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. The gallery half closed on the same day and recorded in its §7 that the showcase half stayed open; this document is what closes it. Critic **C-16** flagged the ordering.
 
@@ -162,6 +163,8 @@ The chrome is the split view, the sidebar, the header, the axis controls and the
 
 ### 5.6 The icon grid
 
+*Superseded for both stacks by [§11](#11-re-review-of-the-icons-screens--2026-09-23) (2026-09-23). Kept as written. One statement below was wrong on the day it was written: the Apple screen did have a per-icon page (SD-6).*
+
 - **What it is.** 51 registry entries. Above them, on the web, four segmented controls — weight (thin 200 … heavy 800), style (each entry's default / outline / filled / duotone), box (xs 12 px … lg 24 px) and direction (ltr / rtl); on Apple, two `Picker`s (weight, and size as `lg · 24 pt`). Then a grid of tiles, each a glyph over its id: on the web a card per entry carrying the id, the token path, the category and the tags; on Apple a `LazyVGrid` at an adaptive 104 pt minimum with the id under the glyph. Above the grid, a weight ladder of one glyph at every weight and box. The whole screen is labelled **preview**, with a sentence saying that `Icon` is implemented on neither stack and that these are registry rows with a picture beside them, not a component.
 - **Nearest reference (of the eleven).** None. No shot shows an icon library.
 - **Nearest showcase of the genre — and this is the closest match in either app.** Apple's **SF Symbols** app and the **Phosphor** icon site: a weight control above a grid of glyph tiles with the name under each. Material Icons and the Font Awesome gallery are the same shape. A reader who knows any of those will recognise this layout immediately.
@@ -224,6 +227,8 @@ Five. None blocks this review; **SD-3** shapes what the clearance means, and **S
 
 ### SD-1 — Icons is the genre's own layout, and the thing to watch is drift towards a product, not the layout itself
 
+*Re-read on 2026-09-23 in [§11.4](#114-sd-1-revisited). The margin holds, and it now holds on both stacks. On this date it held on the web only, because the Apple screen had a per-icon sheet (SD-6).*
+
 **What.** A weight control above a grid of glyph tiles with the name under each is the shape of the SF Symbols app, the Phosphor site, Material Icons and the Font Awesome gallery. Prism's Icons screen has that shape on both stacks. It is the only screen in either app that a reader recognises before reading it.
 
 **Why it is not a copy.** Three reasons, in decreasing strength. First, it is the genre's *only* sensible layout: a set of glyphs at one cut, browsable, is a grid, and copyright does not reach a method of arrangement (ADR-0015's Context: 17 U.S.C. §102(b), *Cofemel*, *BSA*). Second, the screen is a registry table with a picture, not a browser — the affordances that constitute an icon site (search, filter, copy, download, detail page) are all absent, and what is there instead is Prism's registry schema: id, token path, category, tags, the binding the glyph came from, and a `preview` label saying `Icon` is implemented on neither stack. Third, the glyphs themselves are not near anything — they *are* Phosphor's, drawn from `@phosphor-icons/core` 2.1.1 under MIT, entered in `licenses/inventory.json` and covered in `docs/legal-checkpoint.md` §2.3. That is a licence position, and it is satisfied; it is not a reference-distance question and this review does not re-open it.
@@ -248,7 +253,7 @@ Five. None blocks this review; **SD-3** shapes what the clearance means, and **S
 
 **Action.** §10 states the expiry. The Phase 5 chrome ticket should carry a checkbox for re-running this review before any release that ships it.
 
-### SD-4 — Not a distance matter: in dark, the web app's sticky header is translucent and content scrolls through it
+### SD-4 — Not a distance matter: in dark, the web app's sticky header is translucent and content scrolls through it — **closed 2026-09-23** by P4-D4 ([§11.6](#116-findings-of-this-re-review))
 
 **What.** `.ds-sc-header` sets `background-color: var(--ds-color-bg-surface)` and nothing paints under it. In light that token resolves to `oklch(1 0 0)` and the header is opaque. In **dark** it resolves to `rgb(255 255 255 / 0.06)`, so the header is a 6 % white film over the page, and the token rows scrolling beneath it are legible through the axis bar on every screen of the app. Measured in the running app on 2026-09-22 at 1280 and at 375 CSS px.
 
@@ -328,10 +333,176 @@ Every screen in both apps. A "screen" is one page shape; where a shape is instan
 **It expires on any of these:**
 
 1. **Phase 5 rebuilds the chrome from real components** (`docs/showcase.md` §2; `Sidebar`, `TabBar`, `AdaptiveShell`). The chrome then stops being platform furniture and becomes a Prism composition. **SD-3.**
-2. **The Icons screen gains a browser affordance** — search, filter by category, copy-to-clipboard, copy-as-SVG, download, or a per-icon detail page — or `Icon` is implemented and the screen moves into Components. **SD-1.**
+2. **The Icons screen gains a browser affordance** — search, filter by category, copy-to-clipboard, copy-as-SVG, download, or a per-icon detail page — or `Icon` is implemented and the screen moves into Components. **SD-1.** — **Fired** when P4-2 implemented `Icon` (62a30cf). The Icons screens were re-reviewed on 2026-09-23 in [§11](#11-re-review-of-the-icons-screens--2026-09-23), and their clearance now expires on the conditions in §11.8, not on this one.
 3. **The web axis bar gains a viewport/device control or a canvas/docs tab pair.** **SD-2.**
 4. **A new staged example composes more than one component** — the first chart example from the data-viz wave, or a pattern example screen. This is the gallery review's **RD-1** condition, and it reaches the showcase too, because the showcase stages whatever the specs carry with no edit of its own.
 
 A new token group, a newly implemented component, a new single-component example or a new brand does **not** expire it: each of those is the same screen shape with different rows, which is the whole design of both apps.
 
 **It is not a legal opinion.** `docs/legal-checkpoint.md` §0 and §4.2 say what that would take and why nobody here can give it. This document says what the screens are and how far they sit from what the research recorded and from what the genre already looks like; it does not say what the owner is permitted to ship.
+
+---
+
+## 11. Re-review of the Icons screens — 2026-09-23
+
+- **Subject.** The Icons screen of `web/apps/showcase` (`src/sections/Icons.tsx`) and of `swift/Showcase` (`Screens/DSIconsScreen.swift`, on the iPhone and the Mac). Reviewed on `main` at `d084a0e` plus the P4-D4 change set, nine files that were still uncommitted in the working tree when this was written. `docs/showcase.md` §2, "The Icons screen", is the design of that change set.
+- **Why.** §10 condition 2 fired when P4-2 implemented `Icon` (62a30cf) and both grids began to be drawn by it. From then on, the 2026-09-22 verdict no longer covered these two screens, and `docs/legal-checkpoint.md` §5.2 recorded that the rule 3 review had to be re-run for them before any release that ships them. P4-D4 reconciled the two screens first, so this review reads the final screens once.
+- **Format.** The same as §§4–6. Each screen gets what it is, the nearest reference answered twice (§2), the families mixed and what differs, and then the same release question.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The screenshots of Prism's own screens taken for this review stayed in the session scratchpad, outside the repository, and none is committed (`docs/showcase.md` §5).
+
+### 11.1 Method
+
+Both apps were built from the working tree and run. Every value of each of the four controls was opened, and all four set together, in light and dark, at phone and desktop widths:
+
+- **iPhone.** Built with `pnpm showcase:apple --no-launch --work <scratch>` and installed on the iPhone 17 simulator (iOS 26.5). The simulator was already booted and was left as found. Twelve states per scheme were opened with the launch keys P4-D4 added: the top of the screen, the registry, the ladder, `size` sm and md, `weight` display at lg and at sm, `style` outline, filled and duotone, `direction` rtl, and all four set at once (md, display, filled, rtl). That is 24 screenshots. One tile was tapped, and nothing opened.
+- **Mac.** Built with `--platform macos`. The same 24 states were opened in the default 1280 × 880 pt window and captured by window id, so no other window could enter a frame. Every launch also passed `-DSShowcaseSection icons`. This Mac's `com.example.prism.showcase` defaults domain holds a persistent `DSShowcaseSection = foundations`, written by an earlier session. The app reads the section key from user defaults before it looks at the section a state key implies, so the persistent value wins. The first pass therefore opened Foundations on 22 of its 24 launches, the two that named the section being the exceptions. That is this machine's state, not the app's: a launch with no stale default opens Icons, as the iPhone did.
+- **Web.** Built with Vite into the scratchpad and served with `vite preview`, which is the build a consumer ships. It was driven in Playwright Chromium at **1440** and **375** CSS px, in light and dark, with the colour-scheme axis on `auto` and the scheme emulated. Each width and scheme was opened in ten states: default, sm, md, display, display at sm, outline, filled, duotone, rtl, and all four at once. Each state was opened in a fresh document. That gave 84 screenshots, plus a DOM count per state of cells, tags, links, buttons, inputs and pointer cursors. The rtl reading was also taken from a fresh `vite` dev server (SD-7).
+- `Package.resolved` was byte-identical after both Apple builds. In the working tree, this review changed this document, two roadmap rows and one paragraph of `docs/legal-checkpoint.md`, and nothing else.
+
+**What the counts say**, the same on every state, width and scheme:
+
+- 51 cells.
+- **0** links, and **0** buttons or focusable elements, inside a cell. **0** cells with a pointer cursor. **0** text inputs on the page.
+- 27 `fill: false → outline` tags under `filled`, and none in any other state.
+- Under rtl, `dir="rtl"` is on the grid alone.
+
+The web rail's Icons entry has no sub-items, and the route ignores anything after `#/icons`, so no URL names an entry. On Apple, no tile is a `Button` or carries a gesture, a tap does nothing, and no launch key names an entry.
+
+### 11.2 The web Icons screen
+
+- **What it is.** From the top:
+  - A title and a one-line lead: the entry count and the vendor package.
+  - A panel tagged `Icon`. It says that every glyph below is `Icon` with `tone: primary`, at the axes set here; that the spec examples are on Components; that the ladder is registry data; and that *"nothing here acts on one icon: a cell is the registry's row with a picture"*.
+  - *Icon's axes*: four segmented rows. `size` offers sm · 16px, md · 20px and lg · 24px. `weight` offers control · icon.weight and display · icon.weight-display. `style` offers entry default, outline, filled and duotone. `direction` offers ltr and rtl. Under them is one note per axis, with counts taken from the registry: 27 of 51 entries are `fill: false`, 6 are marked `rtlMirror`, and the flip count is measured.
+  - *The registry*: 51 cards. At 1440 px they are five across, each 208 × 200 px, with a 12 px gap, an 8 px radius, a 6 % ink tint and no border. At 375 px there is one per row. Each card has a 24 px glyph centred at the top. Under it, left-aligned, are the id in bold mono, the token path, the categories, the tags, and one mono line with the default style, the Phosphor binding and the `fill: false` and `mirrors in rtl` marks.
+  - *Registry data: the ladder*: `action.add` at six rungs, four boxes and three styles, tagged `registry`.
+- **Nearest reference (of the eleven).** Still no icon library. The nearest single move is the factor grid of the finance monitor desktop 27597487: six white cards at a 12 px gutter, each opened by an icon row with a title under it.
+  - What the two share: equal cards on a 12 px gutter, with an icon above a word.
+  - Where the cards differ: the factor card is a metric card. Its middle is empty by design. It has a 40 px ring icon at the leading edge, a solid arrow button at the trailing edge, a numeral at the bottom left and a mini-chart at the bottom right, at a 28 px radius. The registry card has a 24 px glyph centred at the top. It has no numeral, no chart and no arrow, and no empty middle, because it is full of text. Its radius is 8 px, on a tint.
+  - A grid of equal cards is an arrangement, not an expression.
+- **Nearest icon browser of the genre (from recollection).** The **Phosphor** site, which publishes the glyph set this screen draws. Its page has a search field, a weight menu that treats fill and duotone as weights, a size slider and a colour picker, above a grid of named glyph tiles. Clicking a tile opens a panel for copying the name, the SVG or a code snippet, or for downloading the glyph. Material Symbols and Lucide's customiser are the same shape. Material Symbols has a filter rail (fill, weight, grade and optical size), a search, a grid, and a side panel with code and downloads.
+- **Families mixed.** The genre's grid and its customiser row (weight, style, size); the finance monitor 27597487's card grid, as a single move; and Prism's registry schema and measured notes. No reference family is mixed in.
+- **What differs.**
+  - Everything the genre does *to one glyph* is absent. There is no search, no filter or category rail, no selection, no copy, no download, no detail panel and no URL per glyph.
+  - The customiser's ranges are `Icon`'s props, not the vendor's. There are two weights, named by their tokens, where Phosphor offers six. There are three boxes, named by their sizes, where Phosphor offers a slider. There is no colour control.
+  - Two controls have no counterpart in the genre as this reviewer recalls it. *Entry default* passes each registry entry's own `defaultStyle`. The direction switch changes the grid, and the screen measures and prints what it did.
+  - The notes say what a control fails to do as plainly as what it does. The 27 entries that do not change under `filled` are tagged. Duotone is each stack's own drawing and has not been audited. The flip count under rtl is measured, and tagged `warn` when it falls short (SD-7).
+  - A card leads with Prism's id. The vendor's name comes last, on the fifth line, after the token path, the categories and the tags.
+  - At 375 px the grid is a single column of these cards: a list of registry rows with a glyph at the top of each. That is further from the genre than the desktop layout.
+- **What changed since 2026-09-22.** Only ranges and labels.
+  - On 2026-09-22 the screen already had four controls: weight (six rungs), style (including each entry's default), box (four sizes) and direction. Its cards already carried the id, the token path, the category, the tags, the default style and the Phosphor name (§5.6).
+  - Since then, `Icon` draws the grid. The ranges shrank to `Icon`'s props, and the six rungs and four boxes moved into the labelled ladder. The `preview` tag gave way to the `Icon` tag and the "nothing here acts on one icon" sentence. The `fill: false` tag and the notes were added.
+- **Verdict.** **Not a copy.** As on 2026-09-22, the screen has the genre's layout and none of the genre's per-glyph affordances.
+
+### 11.3 The Apple Icons screen — iPhone and Mac
+
+- **What it is.** One `DSScreen` on both devices:
+  - The resolved-context strip.
+  - A block headed *"51 registry entries, each drawn by Icon"*, whose note is the web panel's text, nearly word for word.
+  - *Icon's axes*: four segmented `Picker`s under their names, with the three axis notes under them. Size offers sm · 16 pt, md · 20 pt and lg · 24 pt. Weight offers control and display. Style offers entry default, outline, filled and duotone. Direction offers ltr and rtl.
+  - *The registry*: two tiles across on the iPhone, seven across in the Mac window beside the sidebar. A tile is a rounded rectangle at `radius.tile` (16 pt) on `bg.surface`, with a hairline border. It has a 48 pt glyph row with `DSIcon` centred in it. Under that, left-aligned and kept left to right under rtl, are the id, the label key, the tags, and one line with the default style, the binding and the marks. The binding is an SF Symbol name, or an image set for the two trend entries that Phosphor draws. The Apple app is an Apple user interface, which is where ADR-0013 rule 5 lets such a name appear.
+  - The ladder: `action.add` at six rungs, four boxes and three styles. Each is labelled with what the binding draws: *plain symbol*, *fill variant*, *hierarchical*, or *…: no filled drawing*.
+- **Nearest reference (of the eleven).** None as a composition. There are two single moves:
+  - **On the Mac**, the factor grid of the finance monitor 27597487, as for the web, with the same differences.
+  - **On the iPhone**, the two-column tiles of the bottle tracker 27699907. Among them is the one tile in the reference set that is a glyph on a tile: its clear-glass add tile, a `+` alone in a capsule. The registry's first entry is also `action.add`, a `+` at the top of a tile, so the resemblance needs ruling out. The reference tile is glass. It is a capsule whose corner radius is about 48 % of its height. It is a control, and one of four tiles that fill a viewport, beside vivid gradient tiles with dot-matrix numerals, delta pills and sparklines. The registry tile is an opaque rectangle at 16 pt. It is inert, one of 51 in a scrolling list, with a small glyph over four lines of text. A `+` is nobody's expression.
+- **Nearest icon browser of the genre (from recollection).** Apple's **SF Symbols** app. The Mac view is now the closest single view in either app: a sidebar, a title bar, and a grid of Apple's own symbols with their names printed on the tiles, under a weight control and a style control. The app itself has a sidebar of symbol categories and collections, and a toolbar with a search field, a weight menu and a rendering-mode control. Its grid shows symbols in square wells with one name under each, and an inspector shows the selected symbol. A symbol can be selected, copied and exported.
+- **Families mixed.** The genre's grid and customiser; Apple's split view (§4.2); and Prism's registry schema. No reference family is mixed in.
+- **What differs.**
+  - The sidebar is the app's six sections, the same on every screen. It is not a list of categories or collections, and it filters nothing.
+  - There is no search field, no selection, no inspector, no copy and no export.
+  - The controls sit in the page, each under its name with a note, not in a toolbar.
+  - A tile is not a well with one name under the glyph. It leads with Prism's id and carries three more lines, with the vendor's name on the last.
+  - There are 51 entries in registry order, not thousands grouped by category.
+  - The screen opens with the resolved-context strip, as every Apple screen does (§4.2).
+- **What changed since 2026-09-22.** This is the one screen that moved both ways.
+  - Towards the genre: the Apple screen gained `style` and `direction` pickers, so both stacks now carry the genre's customiser trio of size, weight and style. And each tile now prints its binding, which on this stack is Apple's own name for the symbol.
+  - Away from the genre: the per-icon detail sheet is gone (SD-6). No tile is a button, no launch key names an entry, and the facts the sheet held are now on every tile. The weight and size pickers shrank from the registry's six rungs and four boxes to `Icon`'s two weights and three sizes, and the rest moved into the labelled ladder.
+- **Verdict.** **Not a copy**, on the iPhone or on the Mac. The Mac view is the closest either app comes to a well-known product: it has the genre's silhouette and none of that product's parts.
+
+### 11.4 SD-1, revisited
+
+SD-1 cleared Icons as "a registry table with a picture": no search, filter, copy, download or detail page. It recorded the layout as the genre's own, and it made an icon-browser affordance an expiry condition. Four things have changed since.
+
+1. **`Icon` draws the glyphs.** The screens are now compositions of a Prism component, which is what rule 3 is about. The glyphs are the same vendor drawings as before: SF Symbols through `DSIcon` on Apple, Phosphor through `Icon` on the web, now at `Icon`'s boxes and weights. On its own, this moves no distance, because the layout and the glyphs are what they were. It does retire one of SD-1's reasons, the `preview` label. On both stacks, the lead's *"nothing here acts on one icon"* now says what the screen is instead.
+2. **The controls.** The web's four controls were cleared on 2026-09-22 and have only narrowed since. The Apple screen gained `style` and `direction`.
+   - `style` is one of the genre's customiser controls. Phosphor's weight menu includes fill and duotone, and the SF Symbols app has rendering modes and fill variants. On Apple this is a real step towards the genre's toolbar.
+   - `direction` has no counterpart in the genre, as recalled.
+   - P4-D4 argued that each is one of `Icon`'s own axes, sets the whole grid at once, and neither finds, selects nor exports an entry. That argument is right, and it is the line SD-1 already drew: SD-1 listed what acts on *one* glyph, not what re-renders all of them.
+3. **The Apple detail sheet.** It was there on 2026-09-22, so SD-1's premise was wrong for Apple on that day (SD-6). It is gone. The margin SD-1 describes now exists on both stacks for the first time.
+4. **The tiles.** The Apple tile went from a glyph over its id to a glyph over the registry row. That row includes the vendor's name for the glyph, which is the one line of the tile that is the genre's own caption. The web card already carried it. Neither tile leads with it.
+
+**Does the margin hold? Yes, and on firmer ground than on 2026-09-22.** Every affordance SD-1 names is absent from both stacks: search, filter, copy, copy-as-SVG, download and a per-icon page. That was not true of Apple on 2026-09-22, and §11.1's counts and the tap on the iPhone show it for every state rather than asserting it. The control row is where the margin is thinner: it is now the genre's customiser on both stacks. So the distance no longer rests on the controls at all. It rests only on the fact that nothing acts on one entry. That margin is narrower, but nothing sits inside it, so no restoration is needed. §11.8 lists what would narrow it further.
+
+### 11.5 Is either screen close enough to one product that a reasonable person would call it a copy?
+
+| # | Screen | Copy? | Why | What would have to change |
+|---|---|---|---|---|
+| 14 | Web Icons, 1440 and 375 px (§11.2) | **No** | The genre's layout, cleared on 2026-09-22, now with narrower controls. No per-glyph affordance. Cards lead with Prism's id and carry the registry row. At 375 px the grid is a single column of registry rows. | Nothing, before a release. |
+| 15 | Apple Icons, iPhone (§11.3) | **No** | Registry tiles two across in a split view. No reference tile is near: the one glyph-on-a-tile in the set is a glass capsule control. The per-icon sheet is gone. | Nothing, before a release. |
+| 16 | Apple Icons, Mac (§11.3) | **No — and the closest single view in either app** | It has the SF Symbols app's silhouette: a sidebar, a grid of Apple's symbols with their names, and weight and style controls. It has none of that app's parts: no category sidebar, search, selection, inspector, copy or export. Its tiles are text-heavy and led by Prism's id. | Nothing, before a release. If the owner ever wants more room, the cheap change is to draw the registry block as the table SD-1 already calls it: one row per entry, with the glyph, id, label key, tags, default style, binding and marks as columns. That removes the genre's layout, not just its affordances, and moves no token, spec or baseline. |
+
+Rows 14–16 continue §6's numbering. §6 row 10 is superseded by them.
+
+### 11.6 Findings of this re-review
+
+#### SD-6 — Correction: on 2026-09-22 the Apple Icons screen had a per-icon page, and this review said it had none
+
+**What.** At 0ee722a, `DSIconsScreen` made every tile a `Button`. The button opened `DSIconDetail` in a sheet for that one entry, showing the registry's six-rung ladder, its four boxes and its facts. `swift/Showcase/README.md` also documented a `-DSShowcaseIcon` launch key that opened the sheet. Yet §5.6 and SD-1 described the screen as having "no per-icon detail page", and §6 row 10 as having "no detail page". The method in §3 opened Icons with the section key only. It never tapped a tile and never used that key.
+
+**Why it matters.** On the day of the clearance, SD-1's margin was one affordance short on Apple, so the Apple half of the 2026-09-22 Icons verdict rested on a false premise. That changes nothing that has shipped: P4-D4 removed the sheet and the key, and no release has been made (`docs/legal-checkpoint.md` §3.2).
+
+**Action.** Taken by P4-D4. This re-review tapped a tile on the iPhone, and read both stacks' sources for any gesture, button, link, route or launch key that names an entry (§11.1). The lesson for the next reviewer: open every launch key a screen documents, and touch what looks touchable.
+
+#### SD-7 — Not a distance matter: what the web's direction note measures depends on how the app is served
+
+**What.** Under rtl, measured the same way on 2026-09-23, the note reads **0 of 6** flipped in the Vite build and **6 of 6** under a fresh `vite` dev server.
+
+**Why.** `Glyph.css` writes `:dir(rtl)`. The dev server passes that selector through, and Chromium matches it. A build that targets Prism's Chrome 111 floor lowers it to `:lang()` selectors, which a `dir` attribute on its own never matches (`docs/showcase.md` §2, "The Icons screen"). So a reader running `pnpm showcase` sees an `ok` tag, a reader of the built app sees a `warn` tag, and both tags are true.
+
+**Whose.** The defect belongs to `@iiiivaska/prism-react`: Icon.yaml behavior 11 fails on the web for a consumer that targets the floor and sets only `dir`. `Text.css` uses the same selector for its fade.
+
+**Distance.** None. Mirrored or not, the grid is the same grid.
+
+#### SD-4 — closed by P4-D4
+
+`.ds-sc-header` now paints `--ds-color-bg-page` under a `--ds-color-bg-surface` layer (`web/apps/showcase/src/app.css`), as ADR-0030 §5.1 has a surface do. Read off the running build in dark, the header is `background-color: oklch(0.164 0.0065 271)` under a `rgba(255, 255, 255, 0.06)` gradient. At 1440 and 375 px, on every state opened, the grid scrolls under an opaque header.
+
+#### SD-8 — Outside this re-review, and flagged: §10 condition 4 may have fired with P4-4
+
+**What.** Condition 4 expires this document's clearance when a staged example composes more than one component. `IconButton.yaml`'s `with-badge` example is a secondary icon button with the notification glyph and a count Badge of 3 at its top-trailing corner. It composes `IconButton`, `Icon` and `Badge`, and both apps stage it with no edit of their own, because they stage every example of an implemented component.
+
+**Why it matters.** A notification glyph in a round button with a count is also part of the header tools cluster that §4.1 recorded as absent from the chrome ("no bell").
+
+**Scope.** This re-review covers the Icons screens only. It did not open the IconButton page, so it gives no verdict on it. Until someone does, this document's clearance does not cover that page. The same reviewer should also read the gallery review's condition for an example that composes more than one part (`reference-distance-gallery.md` §8).
+
+### 11.7 Coverage
+
+| Screen | Where | States opened | Section | Verdict |
+|---|---|---|---|---|
+| Icons, web | a Vite build (the `pnpm showcase:build` build, written to the scratchpad) served by `vite preview`, in Chromium | 10 states × 1440 / 375 px × light / dark; the rtl reading also under `vite` dev | §11.2 | not a copy |
+| Icons, Apple, iPhone | iPhone 17, iOS 26.5 | 12 states × light / dark; one tile tapped | §11.3 | not a copy |
+| Icons, Apple, Mac | `--platform macos`, 1280 × 880 pt window | 12 states × light / dark | §11.3 | not a copy; the closest single view in either app |
+
+Out of scope, with the reason:
+
+- **The `Icon` component page on Components**, which stages Icon's eleven spec examples. A newly implemented component does not expire this document (§10, last paragraph), and those are single-component examples.
+- **Every other screen of both apps.** They are covered by §§4–9 on the conditions in §10, which this section does not re-read. See SD-8 for one condition that may have fired.
+- **The glyphs themselves.** As in §9, they are a licence question and not a composition question.
+
+### 11.8 What the Icons clearance covers, and when it expires
+
+**It covers** the Icons screen of both apps as built on 2026-09-23 from `main` at `d084a0e` plus the P4-D4 change set: the web at 1440 and 375 px, Apple on the iPhone 17 (iOS 26.5) and on the Mac, in light and dark, in every state of the four controls. It finds neither screen a copy of any of the eleven reference shots, or of a well-known icon browser of the genre.
+
+**The rule 3 precondition is met again for the Icons screens.** A release that ships these two screens as reviewed now carries a reference-distance review of them, which closes the gap §10 condition 2 opened. This section does not re-read the rest of this document. Rule 3 asks for that before every release, and SD-8 names one of §10's conditions that may have fired.
+
+**The Icons clearance expires on any of these.** For these two screens, they replace §10 condition 2.
+
+1. **Either screen gains anything that acts on one entry**: a search field, a filter or category rail, selection, copying a name, glyph, SVG or code, a download or export, favourites, or a per-entry page, sheet, popover or inspector. A URL, route or launch argument that names an entry counts too. This is SD-1's list, plus the routes by which SD-6 slipped through.
+2. **The ladder follows a chosen entry** instead of the registry's first entry, or any tile becomes interactive. A ladder that follows a selection is the sheet back, as an inspector.
+3. **Either screen gains a control**, or the two screens stop having the same controls. This includes a fifth of `Icon`'s own axes, such as `tone`: a colour control is the last of the genre's customiser controls these screens lack.
+4. **A tile loses its registry row, or leads with the vendor's name for its glyph.** A glyph over one vendor name is the genre's tile.
+5. **§10 condition 1**: the chrome is rebuilt from `Sidebar`, `TabBar` and `AdaptiveShell`. On the Mac, that puts a Prism sidebar beside this grid.
+
+**It does not expire** when a registry entry is added, removed or re-bound, when a note is reworded, when SD-7 is fixed and the note reads 6 of 6 in a build, or when a brand, scheme or density is added.
+
+**It is not a legal opinion**, for the reasons §10 gives.

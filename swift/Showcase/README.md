@@ -61,11 +61,23 @@ open PrismShowcase.app --args -DSShowcaseComponent Surface -DSShowcaseDensity co
 ```
 
 `DSShowcaseSection`, `DSShowcaseTokenGroup` (`sys.color`, `comp.button`), `DSShowcaseComponent`,
-`DSShowcaseExample` (`Card/solid-metric`), `DSShowcaseIcon`, `DSShowcaseAxes` (open the axis sheet), and one per
+`DSShowcaseExample` (`Card/solid-metric`), `DSShowcaseAxes` (open the axis sheet), and one per
 axis: `DSShowcaseBrand`, `DSShowcaseColorScheme`, `DSShowcaseDensity`, `DSShowcaseModality`,
 `DSShowcaseIncreasedContrast`, `DSShowcaseReduceTransparency`, `DSShowcaseReduceMotion`, `DSShowcaseBoldText`,
 `DSShowcaseDynamicType`. Every key absent is every axis on **auto**, which passes nothing and lets the OS and the
 device decide — which is what a plain launch gives.
+
+The Icons screen's four controls have keys of their own, spelled as the web's controls print them:
+`DSShowcaseIconSize` (`sm`, `md`, `lg`), `DSShowcaseIconWeight` (`control`, `display`), `DSShowcaseIconStyle`
+(`default`, `outline`, `filled`, `duotone`) and `DSShowcaseIconDirection` (`ltr`, `rtl`), plus
+`DSShowcaseIconsBlock` (`registry`, `ladder`), which opens the screen scrolled to that block. Each implies the Icons
+section. They name a state of the screen, never an icon: the screen has no per-icon page (`docs/showcase.md` §2,
+"The Icons screen").
+
+```sh
+xcrun simctl launch "iPhone 17" com.example.prism.showcase \
+  -DSShowcaseIconStyle filled -DSShowcaseIconDirection rtl -DSShowcaseIconsBlock registry
+```
 
 ## What it measures rather than claims
 
@@ -87,8 +99,10 @@ resolves them.
 
 The frame — the sidebar, the toolbar, the sheets — is plain SwiftUI, not Prism: `Sidebar` and `TabBar` are
 specified and unimplemented and `AdaptiveShell` is a pattern with no implementation, so an app cannot yet be
-framed in Prism. Everything inside a screen is the real thing. The Icons screen draws each registry entry with
-`DSIcon`, and only its detail sheet's weight ladder and four boxes, which reach further than Icon's props, are drawn
-from the binding the registry itself names, labelled as registry data. watchOS is out
+framed in Prism. Everything inside a screen is the real thing. The Icons screen is the web's Icons screen: the same
+four controls (size, weight, style, direction), every registry entry drawn with `DSIcon` beside its registry row,
+and the registry's ladder of rungs, boxes and styles for one entry, which reaches further than Icon's props and so
+is drawn from the binding the registry itself names, labelled as registry data. An entry with no filled drawing says
+so on its tile when `filled` draws its outline (ADR-0035). Nothing on it acts on one icon. watchOS is out
 of scope for the app (the owner asked for macOS and iOS); the `watch` density is still switchable inside it, and
 the screens are `#if os(iOS) || os(macOS)` so the target still compiles for the watch in CI.
