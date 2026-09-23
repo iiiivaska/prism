@@ -118,6 +118,7 @@
         "web": true,
         "apple": false
       },
+      "fill": false,
       "since": "0.1.0",
       "web": {
         "phosphor": "caret-left"
@@ -139,6 +140,7 @@
         "web": false,
         "apple": false
       },
+      "fill": false,
       "since": "0.1.0",
       "web": {
         "phosphor": "check-circle"

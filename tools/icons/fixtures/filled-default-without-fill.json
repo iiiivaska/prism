@@ -116,15 +116,14 @@
       ],
       "rtlMirror": {
         "web": true,
-        "apple": true
+        "apple": false
       },
-      "fill": false,
       "since": "0.1.0",
       "web": {
         "phosphor": "caret-left"
       },
       "apple": {
-        "symbol": "arrow.up.forward"
+        "symbol": "chevron.backward"
       }
     },
     "status.success": {
@@ -141,6 +140,7 @@
         "apple": false
       },
       "defaultStyle": "filled",
+      "fill": false,
       "since": "0.1.0",
       "web": {
         "phosphor": "check-circle"

@@ -135,6 +135,7 @@
         "tags": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }, "description": "Search terms an agent looks an icon up by (critic C-22, C-24): synonyms and the vendor metaphors, never a vendor name to render" },
         "rtlMirror": { "$ref": "#/$defs/rtlMirror" },
         "defaultStyle": { "enum": ["outline", "filled", "duotone"] },
+        "fill": { "const": false, "description": "The entry has no filled drawing: `style: filled` draws its outline, in the requested weight, on both stacks (ADR-0035). Required when the SF Symbol has no `.fill` variant available at the floor, and reported when it has one (tools/icons-apple); never beside `defaultStyle: filled` (icons:validate). Absent means `filled` draws Phosphor's fill cut and the symbol's fill variant" },
         "since": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
         "deprecated": {
           "type": "object",

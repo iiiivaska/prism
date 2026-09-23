@@ -27,7 +27,7 @@ import DSTokens
 /// one element per control, named by the control, with no glyph beside it.
 @MainActor
 @Suite(
-    "Icon in the accessibility tree on the simulator (Icon.yaml v1)",
+    "Icon in the accessibility tree on the simulator (Icon.yaml v2)",
     .serialized,
     .enabled(if: DSAccessibilityAutomation.isAvailable, DSAccessibilityAutomation.unavailableComment)
 )

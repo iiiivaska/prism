@@ -1,6 +1,6 @@
 # ADR-0013: Icons through a semantic registry
 
-- Status: accepted (decisions 2 and 5 amended by [ADR-0019](0019-web-runtime-contract.md): the React wrapper is `Icon` and the TypeScript map is `iconRegistry`)
+- Status: accepted (decisions 2 and 5 amended by [ADR-0019](0019-web-runtime-contract.md): the React wrapper is `Icon` and the TypeScript map is `iconRegistry`; decision 4 amended by [ADR-0035](0035-filled-on-both-stacks-or-neither.md): an entry whose SF Symbol has no fill variant is marked `fill: false` and draws its outline for `filled` on both stacks)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #13
 

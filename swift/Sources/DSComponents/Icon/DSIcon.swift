@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Icon: one glyph from the icon registry, named by its semantic id (`spec/components/Icon.yaml`, specVersion 1).
+/// Icon: one glyph from the icon registry, named by its semantic id (`spec/components/Icon.yaml`, specVersion 2).
 ///
 ///     DSIcon(.actionSettings)
 ///     DSIcon(.statusWarning, size: .sm, style: .filled, tone: .warning)
@@ -21,8 +21,10 @@ import DSTokens
 ///    only at `lg` — below it the size wins and the regular rung renders (behavior 3).
 ///  - Under Bold Text the rung steps one up the registry's ladder, once (behavior 4). macOS has no Bold Text setting.
 ///  - `style: filled` draws the symbol's fill variant and `duotone` renders hierarchically; both take the weight and
-///    the Bold Text step (behaviors 5 and 6). The style defaults to `outline` whatever the registry entry's
-///    `defaultStyle` says: the spec's prop is the default, and no Prism stack reads the registry's.
+///    the Bold Text step (behaviors 5 and 6). An entry the registry marks `fill: false` has no fill variant, so
+///    `filled` draws its outline, on both stacks (`DSIconAppearance.drawnStyle(_:for:)`, ADR-0035). The style defaults
+///    to `outline` whatever the registry entry's `defaultStyle` says: the spec's prop is the default, and no Prism
+///    stack reads the registry's.
 ///  - The tone resolves against the material the enclosing `DSSurfaceView` publishes and, on the scheme's glass, the
 ///    backdrop kind; on vivid, inverse, accent, light glass and glass every tone takes that material's own foreground.
 ///    A nil tone is `inherit`: no colour is set and the glyph takes the foreground around it (behaviors 7–9).
@@ -105,6 +107,7 @@ public struct DSIcon: View {
     @ViewBuilder
     private func glyph(box: CGFloat, rung: DSIconWeight) -> some View {
         let registry = DSIconAppearance.registrySize(size)
+        let style = DSIconAppearance.drawnStyle(style, for: name)
         if let symbol = name.symbol {
             DSSymbolImage(
                 systemName: symbol, box: box, pointSize: registry.pointSize, scale: registry.scale,

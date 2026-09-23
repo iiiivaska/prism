@@ -16,7 +16,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0010](0010-platform-tiers-density-modality.md) | Platform tiers; density and modality as token dimensions | accepted (amended by 0019, 0021, 0022, 0024, 0029) |
 | [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023, 0032) |
 | [0012](0012-layers-and-v1-scope.md) | Five layers and the v1 scope | accepted |
-| [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019) |
+| [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019, 0035) |
 | [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028, 0031) |
 | [0015](0015-references-inspiration-only.md) | References are inspiration only | accepted |
 | [0016](0016-name-and-prefix.md) | Name Prism, prefix `ds` | accepted (amended by 0018, 0019) |
@@ -38,6 +38,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0032](0032-component-owned-strings.md) | Component-owned strings: Prism speaks the caller's words, and the icon registry's label is never a name (amends 0011) | accepted |
 | [0033](0033-control-outlines-are-hairlines.md) | A control's outline is a hairline, and the contrast it owes belongs to its colour: Button binds `border.hairline`, as the signed-off board draws it | accepted |
 | [0034](0034-badge-slots-hold-a-badge.md) | A badge slot holds a Badge, not a view, and its host speaks the badge: the host draws it hidden and reads its words in the same render | accepted |
+| [0035](0035-filled-on-both-stacks-or-neither.md) | A glyph is filled on both stacks or on neither: an entry whose SF Symbol has no fill variant is marked `fill: false` and draws its outline for `filled` (amends 0013) | accepted |
 
 ## Template
 

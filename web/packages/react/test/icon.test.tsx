@@ -1,12 +1,13 @@
 /// <reference types="node" />
 /**
- * Icon (spec/components/Icon.yaml, specVersion 1).
+ * Icon (spec/components/Icon.yaml, specVersion 2).
  *
  * - Icon.css binds what Icon.yaml binds: every tone on every material a Surface can publish, and on the
  *   scheme's glass every backdrop kind, read through a small cascade so each cell is checked as it wins on
  *   the element; the three boxes, which are the same in every density (behavior 10).
  * - The weight: `tokens.root.weight` and behavior 3's size rule through ./weight.ts, the twin of
- *   `DSIconAppearance.effectiveWeight(_:size:)`, and the style cuts that replace it on the web (behavior 6).
+ *   `DSIconAppearance.effectiveWeight(_:size:)`, and the style cuts that replace it on the web (behavior 6),
+ *   except where the entry has no filled drawing and `filled` is its outline (`drawnStyle`, ADR-0035).
  * - `motion`: a glyph that replaces another fades in over `motion.symbolChange`, and at `reduceMotion`'s
  *   instant under Reduce Motion (Glyph.css); the first drawing is no replacement. The fade itself is
  *   measured on a real element by web/apps/gallery/test/components.browser.test.tsx.
@@ -46,7 +47,7 @@ import {
 } from "../src/index.ts";
 import { isIconExposed } from "../src/icon/Icon.tsx";
 import { glyphs } from "../src/icon/glyphs.ts";
-import { cutForWeight, effectiveGlyphWeight, glyphCut, tokenValue, weightToken } from "../src/icon/weight.ts";
+import { cutForWeight, drawnStyle, effectiveGlyphWeight, glyphCut, tokenValue, weightToken } from "../src/icon/weight.ts";
 import { Cascade } from "./cascade.ts";
 import { allAtRules, flattenRules, parseCss } from "./css.ts";
 import { cell, cssVariable, loadSpec, propValues, type Binding } from "./spec.ts";
@@ -106,8 +107,8 @@ function staged(example: (typeof spec.examples)[number]): string {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Icon.yaml specVersion 1", () => {
-    expect(spec.specVersion).toBe(1);
+  it("is Icon.yaml specVersion 2", () => {
+    expect(spec.specVersion).toBe(2);
     expect([...glyphSizes]).toEqual(propValues(spec, "size"));
     expect([...glyphWeights]).toEqual(propValues(spec, "weight"));
     expect(Object.keys(iconStyles)).toEqual(propValues(spec, "style"));
@@ -235,7 +236,38 @@ describe("the weight (tokens.root.weight, behaviors 3 and 6)", () => {
       ["display", "lg", "duotone", "duotone"],
     ];
     for (const [weight, size, style, cut] of cases) {
-      expect(pathOf(html(<Icon name="object.sparkle" size={size} weight={weight} style={style} />)), `${weight} ${size} ${style}`).toBe(phosphorPath("object.sparkle", cut));
+      expect(pathOf(html(<Icon name="object.lock" size={size} weight={weight} style={style} />)), `${weight} ${size} ${style}`).toBe(phosphorPath("object.lock", cut));
+    }
+  });
+});
+
+describe("a style the entry can draw (behavior 6, ADR-0035)", () => {
+  const entries = Object.entries(iconRegistry) as [IconName, (typeof iconRegistry)[IconName]][];
+  const unfilled = entries.filter(([, entry]) => !entry.fill).map(([name]) => name);
+
+  it("draws `filled` as the outline for exactly the entries the registry marks `fill: false`", () => {
+    for (const [name, entry] of entries) {
+      expect(drawnStyle(name, "filled"), name).toBe(entry.fill ? "filled" : "outline");
+      expect(drawnStyle(name, "outline"), name).toBe("outline");
+      expect(drawnStyle(name, "duotone"), name).toBe("duotone");
+    }
+    // The drift ADR-0035 closes: Phosphor's fill cut of the check is a solid square with the tick knocked out, a
+    // checked Checkbox, where Apple draws a bare tick. No entry that is filled by default lacks a fill.
+    expect(unfilled).toContain("status.check");
+    expect(entries.filter(([, entry]) => entry.defaultStyle === "filled" && !entry.fill)).toEqual([]);
+  });
+
+  it("renders an entry with no filled drawing in its weight's cut, never Phosphor's fill", () => {
+    for (const name of unfilled) {
+      expect(pathOf(html(<Icon name={name} style="filled" />)), name).toBe(phosphorPath(name, "regular"));
+      expect(pathOf(html(<Icon name={name} size="lg" weight="display" style="filled" />)), name).toBe(phosphorPath(name, "thin"));
+      expect(pathOf(html(<Icon name={name} style="filled" />)), name).not.toBe(phosphorPath(name, "fill"));
+    }
+  });
+
+  it("renders Phosphor's fill cut for every entry that has a filled drawing", () => {
+    for (const [name, entry] of entries) {
+      if (entry.fill) expect(pathOf(html(<Icon name={name} size="lg" weight="display" style="filled" />)), name).toBe(phosphorPath(name, "fill"));
     }
   });
 });

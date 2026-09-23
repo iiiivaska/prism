@@ -3,7 +3,7 @@
 import { describe, expect, test } from "vitest";
 import { renderAll, renderSwiftEnum, renderTokensStudio, renderWebRegistry, renderXcassets, reactComponent, swiftCase } from "./codegen.ts";
 import { loadCatalog } from "./phosphor.ts";
-import { loadRegistry } from "./registry.ts";
+import { hasFill, loadRegistry } from "./registry.ts";
 import { REPO_ROOT } from "./validate.ts";
 
 const catalog = loadCatalog();
@@ -48,6 +48,15 @@ describe("iconRegistry (web)", () => {
     expect(web.contents).not.toContain("apple");
   });
 
+  test("says which entries have no filled drawing, so Icon draws their outline for `filled` (ADR-0035)", () => {
+    for (const [id, icon] of Object.entries(registry.icons)) {
+      expect(web.contents, id).toMatch(new RegExp(`${JSON.stringify(id).replaceAll(".", "\\.")}: \\{[^\\n]*, fill: ${hasFill(icon)}, since:`));
+    }
+    expect(web.contents).toContain('"status.check": { phosphor: "check"');
+    expect(web.contents).toMatch(/"status\.check": \{[^\n]*, fill: false,/);
+    expect(web.contents).toMatch(/"status\.warning": \{[^\n]*, fill: true,/);
+  });
+
   test("exports the map under the name ADR-0019 §6 fixed", () => {
     expect(web.contents).toContain("export const iconRegistry:");
     expect(web.contents).not.toContain("dsIcons");
@@ -67,6 +76,16 @@ describe("DSIconName (Swift)", () => {
       if (icon.apple.symbol !== undefined) expect(swift.contents).toContain(`case .${swiftCase(id)}: ${JSON.stringify(icon.apple.symbol)}`);
       if (icon.apple.custom !== undefined) expect(swift.contents).toContain(`case .${swiftCase(id)}: ${JSON.stringify(icon.apple.custom)}`);
     }
+  });
+
+  test("lists exactly the entries with no filled drawing in `hasFill` (ADR-0035)", () => {
+    const unfilled = Object.entries(registry.icons)
+      .filter(([, icon]) => !hasFill(icon))
+      .map(([id]) => id)
+      .sort()
+      .map((id) => `.${swiftCase(id)}`);
+    expect(unfilled).toContain(".statusCheck");
+    expect(swift.contents).toContain(`    public var hasFill: Bool {\n        switch self {\n        case ${unfilled.join(", ")}: false\n        default: true\n`);
   });
 
   test("resolves a numeric weight token to a weight name (critic C-23)", () => {

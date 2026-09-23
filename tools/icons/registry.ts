@@ -66,6 +66,8 @@ export interface Icon {
   readonly tags: readonly string[];
   readonly rtlMirror?: RtlMirror;
   readonly defaultStyle?: StyleName;
+  /** `false`: the entry has no filled drawing, so `filled` draws its outline on both stacks (ADR-0035). */
+  readonly fill?: false;
   readonly since: string;
   readonly deprecated?: { readonly since: string; readonly replacedBy: string };
   readonly web: { readonly phosphor: string };
@@ -105,6 +107,15 @@ export function warning(code: string, where: string, message: string): Issue {
 /** An icon's mirror flags; an absent `rtlMirror` means neither stack flips. */
 export function mirrorOf(icon: Icon): RtlMirror {
   return icon.rtlMirror ?? { web: false, apple: false };
+}
+
+/**
+ * Whether `style: filled` draws a filled glyph for the entry: Phosphor's fill cut on the web, the symbol's
+ * fill variant on Apple. False when the registry marks the entry `fill: false`, because its SF Symbol has
+ * none; `filled` then draws the outline on both stacks (ADR-0035).
+ */
+export function hasFill(icon: Icon): boolean {
+  return icon.fill !== false;
 }
 
 /** The image-set stem of a Phosphor-derived Apple binding, `<custom>.<cut>`. */

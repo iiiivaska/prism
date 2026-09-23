@@ -121,7 +121,7 @@ public enum DSIconName: String, CaseIterable, Hashable, Sendable {
         case .actionEdit: "pencil"
         case .actionExpand: "arrow.up.left.and.arrow.down.right"
         case .actionFilter: "slider.horizontal.3"
-        case .actionLocate: "location"
+        case .actionLocate: "dot.scope"
         case .actionPause: "pause"
         case .actionPlay: "play"
         case .actionRefresh: "arrow.clockwise"
@@ -243,6 +243,16 @@ public enum DSIconName: String, CaseIterable, Hashable, Sendable {
         switch self {
         case .actionPause, .actionPlay, .statusDanger, .statusInfo, .statusOnline, .statusSuccess, .statusWarning: .filled
         default: .outline
+        }
+    }
+
+    /// Whether `style: filled` draws a filled glyph: the symbol's fill variant, or the image set's fill cut. False for an
+    /// entry with no filled drawing, whose symbol has no fill variant: `DSIcon` then draws its outline for `filled`,
+    /// as the web draws the weight's cut (ADR-0035).
+    public var hasFill: Bool {
+        switch self {
+        case .actionAdd, .actionCollapse, .actionEdit, .actionExpand, .actionFilter, .actionLocate, .actionRefresh, .actionRemove, .actionSearch, .actionZoomIn, .actionZoomOut, .navBack, .navClose, .navDown, .navForward, .navMenu, .navMore, .navOpen, .navSidebar, .navUp, .objectCalendar, .objectChart, .objectGps, .objectMapPin, .objectSignal, .objectSparkle, .statusCheck: false
+        default: true
         }
     }
 

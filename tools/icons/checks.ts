@@ -5,7 +5,7 @@
 //
 // Rule codes are stable: they are printed with every line and asserted by checks.test.ts.
 
-import { PHOSPHOR_CUTS, WEIGHT_NAMES, error, mirrorOf, warning, type Issue, type PhosphorCut, type Registry } from "./registry.ts";
+import { PHOSPHOR_CUTS, WEIGHT_NAMES, error, hasFill, mirrorOf, warning, type Issue, type PhosphorCut, type Registry } from "./registry.ts";
 import type { Catalog } from "./phosphor.ts";
 
 /**
@@ -153,6 +153,15 @@ export function checkRegistryRules(registry: Registry): readonly Issue[] {
     }
     if (icon.tags.includes(icon.web.phosphor) && icon.tags.length === 1) {
       issues.push(warning("tags/thin", id, "the only tag repeats the Phosphor name; tags are the synonyms an agent searches by (critic C-22)"));
+    }
+    if (icon.defaultStyle === "filled" && !hasFill(icon)) {
+      issues.push(
+        error(
+          "style/default-without-fill",
+          id,
+          "defaultStyle is filled but the entry is marked `fill: false`, so `filled` draws its outline on both stacks (ADR-0035); bind a symbol that has a fill variant, or change the default style",
+        ),
+      );
     }
     const mirror = mirrorOf(icon);
     const { symbol, custom, minOS, fallback } = icon.apple;

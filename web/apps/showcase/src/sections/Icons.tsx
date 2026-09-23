@@ -47,9 +47,16 @@ const sizeNames = Object.keys(iconSizes) as IconSize[];
 /** The token each of Icon's weights binds (Icon.yaml `tokens.root.weight`). */
 const weightTokens: Readonly<Record<GlyphWeight, string>> = { control: "icon.weight", display: "icon.weight-display" };
 
-/** The Phosphor cut a registry weight and a style select: the style wins when it names one (ADR-0013 decision 4). */
-function cutFor(weight: IconWeight, style: IconStyle): string {
-  return iconStyles[style] ?? iconWeights[weight].phosphor;
+/**
+ * The Phosphor cut an entry, a registry weight and a style select: the style wins when it names one (ADR-0013
+ * decision 4), except `filled` on an entry with no filled drawing, which is the weight's cut (ADR-0035).
+ */
+function styleCut(name: IconName, style: IconStyle): string | null {
+  return style === "filled" && !iconRegistry[name].fill ? null : iconStyles[style];
+}
+
+function cutFor(name: IconName, weight: IconWeight, style: IconStyle): string {
+  return styleCut(name, style) ?? iconWeights[weight].phosphor;
 }
 
 /** One cut of the registry's binding, as data: the ladder, not the component. */
@@ -145,7 +152,8 @@ export function Icons(): ReactNode {
         </div>
         <p className="ds-sc-note">
           <code>display</code> draws only at <code>lg</code>; at <code>sm</code> and <code>md</code> Icon renders the control cut (Icon.yaml behavior
-          3). A filled or duotone glyph has one cut on the web, so the weight changes nothing there (behavior 6). The spec&apos;s style default is{" "}
+          3). A filled or duotone glyph has one cut on the web, so the weight changes nothing there (behavior 6), except on an entry the registry marks{" "}
+          <code>fill: false</code>, whose <code>filled</code> is its outline on both stacks (ADR-0035). The spec&apos;s style default is{" "}
           <code>outline</code>; &ldquo;each entry&apos;s default&rdquo; passes the registry&apos;s <code>defaultStyle</code> as the prop.
         </p>
       </Panel>
@@ -190,7 +198,7 @@ export function Icons(): ReactNode {
           <div className="ds-sc-ladder">
             {weightNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <RegistryCut name={ladderIcon} cut={cutFor(name, "outline")} px={32} />
+                <RegistryCut name={ladderIcon} cut={cutFor(ladderIcon, name, "outline")} px={32} />
                 <code className="ds-sc-path">
                   {name} · {iconWeights[name].number} · {iconWeights[name].phosphor}
                 </code>
@@ -200,7 +208,7 @@ export function Icons(): ReactNode {
           <div className="ds-sc-ladder">
             {sizeNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <RegistryCut name={ladderIcon} cut={cutFor("regular", "outline")} px={iconSizes[name]} />
+                <RegistryCut name={ladderIcon} cut={cutFor(ladderIcon, "regular", "outline")} px={iconSizes[name]} />
                 <code className="ds-sc-path">
                   {name} · {iconSizes[name]}px
                 </code>
@@ -210,9 +218,9 @@ export function Icons(): ReactNode {
           <div className="ds-sc-ladder">
             {styleNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <RegistryCut name={ladderIcon} cut={cutFor("regular", name)} px={32} />
+                <RegistryCut name={ladderIcon} cut={cutFor(ladderIcon, "regular", name)} px={32} />
                 <code className="ds-sc-path">
-                  {name} · {iconStyles[name] ?? "the weight's cut"}
+                  {name} · {styleCut(ladderIcon, name) ?? (iconStyles[name] === null ? "the weight's cut" : "the weight's cut: no filled drawing")}
                 </code>
               </div>
             ))}

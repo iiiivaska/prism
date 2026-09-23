@@ -72,6 +72,8 @@ struct Registry: Decodable, Sendable {
         let tags: [String]
         let rtlMirror: RTLMirror?
         let defaultStyle: String?
+        /// `false` when the entry has no filled drawing (ADR-0035); absent means it has one.
+        let fill: Bool?
         let since: String
         let apple: Apple
     }

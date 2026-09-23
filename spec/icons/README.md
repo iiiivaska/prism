@@ -15,6 +15,7 @@ Weight is a token, not a vendor prop: `icon.weight` ∈ thin / light / regular /
 4. `rtlMirror` is **per platform**: `{ "web": true, "apple": false }`. The web flips the glyph under `dir="rtl"`; Apple flips it only when the system does not already, and a symbol the system mirrors — a `backward` / `forward` / `leading` / `trailing` name — must keep `apple: false` or the glyph flips twice. A left/right-named symbol is **not** mirrored by the system, even one CoreGlyphs' `legacy_flippable.plist` lists (measured on the iOS 26.5 simulator and on macOS: `arrow.up.right` draws its left-to-right pixels in a right-to-left layout), so a directional glyph binds the direction-relative symbol — `nav.open` is `arrow.up.forward` — or sets `apple: true`. A glyph the web flips and Apple neither flips nor auto-mirrors fails CI (critic C-24). Names do not tell everything: a few symbols carry a right-to-left drawing of their own that no name announces. `calendar` and `chart.xyaxis.line` draw mirrored, so `object.calendar` and `object.chart` set `rtlMirror.web` for the web to draw what Apple draws and keep `apple: false`, and both validators list the two names beside the direction-relative ones. `swift/Tests/DSSnapshotTests/DSIconBoxTests.swift` measures what every entry draws under RTL on the simulator, so a symbol that list misses fails there.
 5. SF Symbol names never appear in the web package, the gallery, the Tokens Studio export or Figma web frames. The generated web artifacts carry no Apple field at all, and `icons:validate` greps the web, gallery and export trees for every dotted symbol name.
 6. The registry version equals the system version; a `deprecated` entry carries `replacedBy`, which must be a live id.
+7. **A glyph is filled on both stacks or on neither** (ADR-0035). An entry whose SF Symbol has no `.fill` variant at the floor carries `"fill": false`, and `style: filled` then draws its outline on both stacks, in the requested weight: the web draws the weight's cut instead of Phosphor's `fill`, and Apple draws the plain symbol. Phosphor's fill cut of a stroke glyph is the glyph knocked out of a solid shape, so without the mark a filled `status.check` would be a checked Checkbox on the web and a bare tick on Apple. An entry filled by default must have a fill. The generated artifacts carry the mark as `iconRegistry[id].fill` and `DSIconName.hasFill`.
 
 ## Sources
 
@@ -35,7 +36,7 @@ Weight is a token, not a vendor prop: `icon.weight` ∈ thin / light / regular /
 - JSON Schema (Ajv 2020) against `registry.schema.json`;
 - every `web.phosphor` against the `icons` catalog of `@phosphor-icons/core` — an unknown name fails with the near names, a name Phosphor keeps only as an alias warns and names the canonical one;
 - the pinned Phosphor version against the installed one;
-- labels, duplicate `apple.custom` bindings, deprecations, the weight ladder and its Bold Text step, the style cuts, and rule 4's `rtlMirror` rules, which are name-based;
+- labels, duplicate `apple.custom` bindings, deprecations, the weight ladder and its Bold Text step, the style cuts, rule 4's `rtlMirror` rules, which are name-based, and rule 7's filled default without a fill;
 - `sys.icon.weight*` against the weight numbers and `ref.size.icon.*` against the px boxes, so a token change that outruns the registry fails (critic C-23);
 - rule 5 over `web/`, `gallery/`, `tokens/export/`, `spec/icons/generated/` and `docs/direction-board/`;
 - the generated artifacts, rendered and compared byte for byte with the committed files. `pnpm icons:build` writes them.
@@ -43,7 +44,7 @@ Weight is a token, not a vendor prop: `icon.weight` ∈ thin / light / regular /
 `swift run --package-path tools/icons-apple icons-validate spec/icons/registry.json` (macOS, CI `apple` job):
 
 - every `apple.symbol` and `fallback` against `CoreGlyphs.bundle/…/name_availability.plist` at the floor, with the year → release table, and `NSImage(systemSymbolName:)` as a runtime smoke test;
-- a filled-by-default icon whose `.fill` variant does not exist;
+- rule 7: an entry without `"fill": false` whose symbol (or `fallback`) has no `.fill` variant at the floor fails, and an entry marked `"fill": false` whose symbol has one is reported as a warning;
 - rule 4 again, by name (`legacy_flippable.plist` is not read: its left/right names are not mirrored);
 - the measured point size of every icon box (below);
 - that the committed `DSIconName` covers exactly the registry's ids;

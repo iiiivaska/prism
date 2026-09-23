@@ -1,5 +1,5 @@
 /**
- * `Icon` (spec/components/Icon.yaml, specVersion 1): one glyph from the icon registry, named by its
+ * `Icon` (spec/components/Icon.yaml, specVersion 2): one glyph from the icon registry, named by its
  * semantic id, in a square box.
  *
  * - The root is the anatomy's one part, the box: a `span` of `size.icon.sm`, `.md` or `.lg`, the same in
@@ -8,7 +8,9 @@
  * - `weight` is a cut, chosen in JavaScript from the brand table (./weight.ts): `control` binds
  *   `icon.weight` and `display` binds `icon.weight-display`, which draws only at `lg`; at `sm` and `md` it
  *   renders the control cut and nothing fails (behavior 3). A `filled` or `duotone` glyph has one cut on the
- *   web, so `weight` changes nothing there (behavior 6). The web has no Bold Text, so the cut never steps.
+ *   web, so `weight` changes nothing there (behavior 6), except for an entry the registry marks `fill: false`,
+ *   whose `filled` is its outline in the weight's cut, as Apple draws it (ADR-0035). The web has no Bold Text,
+ *   so the cut never steps.
  * - The material and the backdrop kind the enclosing Surface publishes are written as `data-ds-surface` and
  *   `data-ds-backdrop`, and `tone` as `data-ds-tone` (Button's pattern); Icon.css maps the three to
  *   `tokens.root.color`, so the glyph never reads the color scheme (behaviors 7 and 8). The glass fallback

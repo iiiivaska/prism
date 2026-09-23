@@ -53,7 +53,7 @@
       },
       "refresh": {
         "$type": "other",
-        "$value": "arrows-clockwise",
+        "$value": "arrow-clockwise",
         "$description": "icon.action.refresh — refresh, reload, sync, retry"
       },
       "remove": {
@@ -73,7 +73,7 @@
       },
       "share": {
         "$type": "other",
-        "$value": "share-network",
+        "$value": "export",
         "$description": "icon.action.share — share, export, send, upload"
       },
       "zoom-in": {

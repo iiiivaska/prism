@@ -56,13 +56,17 @@
 /// `badge` slot, which it reads into its own accessibility value through `strings.Badge.count`. IconButton.yaml marks
 /// watchOS `none` — the watch acts through Button and system chrome — so its row, like Divider's and Badge's, has no
 /// `watchos` key.
+///
+/// Icon 2 settles the filled style for a registry entry whose SF Symbol has no fill variant (ADR-0035): it draws its
+/// outline on both stacks, where the web used to draw Phosphor's fill cut. This target drew the plain symbol already,
+/// through SwiftUI's fallback, and now decides it itself (`DSIconAppearance.drawnStyle(_:for:)`), for image sets too.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
         "Button": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
-        "Icon": ["ios": 1, "ipados": 1, "macos": 1, "watchos": 1],
+        "Icon": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
         "IconButton": ["ios": 1, "ipados": 1, "macos": 1],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],

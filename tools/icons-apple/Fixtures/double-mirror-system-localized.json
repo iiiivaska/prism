@@ -25,8 +25,8 @@
     "lg": { "token": "ref.size.icon.lg", "px": 24, "sf": { "pointSize": 21, "scale": "medium" } }
   },
   "icons": {
-    "nav.back": { "label": "icon.nav.back", "categories": ["nav"], "tags": ["back", "previous"], "rtlMirror": { "web": true, "apple": false }, "since": "0.1.0", "web": { "phosphor": "caret-left" }, "apple": { "symbol": "chevron.backward" } },
-    "object.calendar": { "label": "icon.object.calendar", "categories": ["object"], "tags": ["calendar", "date"], "rtlMirror": { "web": true, "apple": true }, "since": "0.1.0", "web": { "phosphor": "calendar-blank" }, "apple": { "symbol": "calendar" } },
+    "nav.back": { "label": "icon.nav.back", "categories": ["nav"], "tags": ["back", "previous"], "rtlMirror": { "web": true, "apple": false }, "fill": false, "since": "0.1.0", "web": { "phosphor": "caret-left" }, "apple": { "symbol": "chevron.backward" } },
+    "object.calendar": { "label": "icon.object.calendar", "categories": ["object"], "tags": ["calendar", "date"], "rtlMirror": { "web": true, "apple": true }, "fill": false, "since": "0.1.0", "web": { "phosphor": "calendar-blank" }, "apple": { "symbol": "calendar" } },
     "status.success": { "label": "icon.status.success", "categories": ["status"], "tags": ["success", "ok"], "rtlMirror": { "web": false, "apple": false }, "defaultStyle": "filled", "since": "0.1.0", "web": { "phosphor": "check-circle" }, "apple": { "symbol": "checkmark.circle" } },
     "status.trend-up": { "label": "icon.status.trend-up", "categories": ["status", "data"], "tags": ["trend-up", "increase"], "rtlMirror": { "web": false, "apple": false }, "since": "0.1.0", "web": { "phosphor": "trend-up" }, "apple": { "custom": "ds.trend-up" } }
   }

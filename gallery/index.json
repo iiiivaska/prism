@@ -4921,7 +4921,7 @@
       "name": "Icon",
       "spec": "spec/components/Icon.yaml",
       "layer": "primitive",
-      "specVersion": 1,
+      "specVersion": 2,
       "support": {
         "ios": "full",
         "ipados": "full",

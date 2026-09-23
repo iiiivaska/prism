@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Icon.yaml` specVersion 1: the colour matrix keyed by the published material, the backdrop kind on
+/// `spec/components/Icon.yaml` specVersion 2: the colour matrix keyed by the published material, the backdrop kind on
 /// the scheme's glass and the tone; the box per size in every density; the two weights and behavior 3's rule between
 /// them; the motion cells; the frame fit that keeps every registry symbol inside its box; the examples as the spec
 /// writes them; and the accessibility of each one.
@@ -18,7 +18,7 @@ import DSTokens
 /// What the simulator actually publishes to VoiceOver for each example is measured by `DSIconAccessibilityTreeTests`,
 /// and what the glyphs draw — no ink outside the box, `display` below `lg` drawing `control` — by `DSIconBoxTests`,
 /// both in DSSnapshotTests.
-@Suite("Icon bindings (Icon.yaml v1)")
+@Suite("Icon bindings (Icon.yaml v2)")
 struct DSIconBindingTests {
     let spec: DSSpec
 
@@ -50,7 +50,7 @@ struct DSIconBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default`
     /// at every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 1)
+        #expect(try spec.specVersion == 2)
         #expect(try spec.propValues("size") == DSGlyphSize.allCases.map(\.rawValue))
         #expect(try spec.propValues("weight") == DSGlyphWeight.allCases.map(\.rawValue))
         #expect(try spec.propValues("style") == DSIconStyle.allCases.map(\.rawValue))
@@ -205,6 +205,34 @@ struct DSIconBindingTests {
         #expect(DSIconAppearance.effectiveWeight(.display, size: .lg) == .display)
         #expect(DSIconAppearance.effectiveWeight(.display, size: .md) == .control)
         #expect(DSIconAppearance.effectiveWeight(.display, size: .sm) == .control)
+    }
+
+    // MARK: - style
+
+    /// Behavior 6 and ADR-0035: `filled` draws a fill only for an entry that has one. For an entry the registry marks
+    /// `fill: false` it draws the outline, so the image-set path cannot draw a fill cut the web does not, and the
+    /// symbol path does not lean on SwiftUI's fallback; `outline` and `duotone` are never changed. The web's twin is
+    /// the `drawnStyle` block of `icon.test.tsx`.
+    @Test func filledIsDrawnOnlyWhereTheEntryHasAFill() {
+        for name in DSIconName.allCases {
+            #expect(DSIconAppearance.drawnStyle(.filled, for: name) == (name.hasFill ? .filled : .outline), "\(name.rawValue)")
+            #expect(DSIconAppearance.drawnStyle(.outline, for: name) == .outline, "\(name.rawValue)")
+            #expect(DSIconAppearance.drawnStyle(.duotone, for: name) == .duotone, "\(name.rawValue)")
+        }
+        // The drift ADR-0035 closes: the check has no fill variant, and Phosphor's fill cut of it is a checked box.
+        #expect(!DSIconName.statusCheck.hasFill)
+        #expect(DSIconName.allCases.filter { $0.defaultStyle == .filled && !$0.hasFill }.isEmpty)
+    }
+
+    /// `hasFill` is what this platform's SF Symbols say: an entry has a filled drawing exactly when its symbol has a
+    /// fill variant. `icons-validate` checks the same against `name_availability.plist` at the floor; this asks the
+    /// running system, the one `DSIcon` draws with.
+    @Test func hasFillIsWhatTheSymbolsSay() {
+        for name in DSIconName.allCases {
+            guard let symbol = name.symbol else { continue }
+            let fill = DSSymbol.frame(systemName: "\(symbol).fill", pointSize: 18, weight: 400, scale: .medium)
+            #expect((fill != nil) == name.hasFill, "\(name.rawValue): hasFill \(name.hasFill), fill variant \(fill == nil ? "absent" : "present")")
+        }
     }
 
     // MARK: - motion

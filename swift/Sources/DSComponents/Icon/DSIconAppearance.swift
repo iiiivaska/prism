@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Every value `spec/components/Icon.yaml` (specVersion 1) binds, as pure functions of the props, the material the
+/// Every value `spec/components/Icon.yaml` (specVersion 2) binds, as pure functions of the props, the material the
 /// enclosing Surface publishes and the token set, so the binding matrix runs on the host. `DSIcon` only draws what
 /// these return.
 ///
@@ -62,6 +62,18 @@ nonisolated enum DSIconAppearance {
     /// regular cut rather than nothing.
     static func rung(_ weight: DSGlyphWeight, _ tokens: DSTokenSet) -> DSIconWeight {
         DSIconWeight(number: Int(tokens[keyPath: weightToken(weight)])) ?? .regular
+    }
+
+    // MARK: - style
+
+    /// Behavior 6 and ADR-0035: the style a glyph is drawn in. `filled` draws the symbol's fill variant, or the image
+    /// set's fill cut, only for an entry that has a filled drawing; for an entry the registry marks `fill: false` — its
+    /// symbol has no fill variant — it draws the outline, at the requested weight, as the web draws the weight's cut
+    /// instead of Phosphor's fill. Without this SwiftUI would draw the plain symbol anyway, but an image set would draw
+    /// its fill cut, and the rule would live in a framework fallback rather than in Prism. The web's twin is
+    /// `drawnStyle` (`web/packages/react/src/icon/weight.ts`).
+    static func drawnStyle(_ style: DSIconStyle, for name: DSIconName) -> DSIconStyle {
+        style == .filled && !name.hasFill ? .outline : style
     }
 
     // MARK: - tokens.root.color

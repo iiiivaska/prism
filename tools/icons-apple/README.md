@@ -16,7 +16,8 @@ Flags: `--catalog <dir>` reads the SF Symbols catalog from another `CoreGlyphs.b
 | `sf/newer-than-floor` | the name exists but its availability year maps above the floor (year `2025.1` is OS 26.1, while the floor is 26.0) |
 | `sf/unverifiable` | a warning: a symbol declared `minOS` above the floor that this catalog cannot see; its validated fallback carries the render until the floor moves (critic C-21) |
 | `sf/min-os-below-floor`, `sf/min-os-on-custom`, `sf/fallback-equals-symbol` | the `minOS` / `fallback` pair itself |
-| `sf/fill-missing` | a filled-by-default icon whose `.fill` variant does not exist |
+| `sf/fill-missing` | an entry that has a filled drawing — no `"fill": false` — whose symbol, or its `fallback`, has no `.fill` variant available at the floor: Apple would draw the plain symbol where the web draws Phosphor's fill cut (ADR-0035) |
+| `sf/fill-declined` | a warning: an entry marked `"fill": false` whose symbol does have a `.fill` variant, so both stacks draw its outline for `filled` without needing to |
 | `sf/smoke` | `NSImage(systemSymbolName:)` is nil for a name the catalog lists |
 | `rtl/double-mirror` | `rtlMirror.apple` on a symbol the system already mirrors: a `backward` / `forward` / `leading` / `trailing` name, or one of the few symbols SF Symbols draws right to left by itself (`Checks.systemLocalized`: `calendar`, `chart.xyaxis.line`) |
 | `rtl/missing-mirror` | the web flips the glyph and Apple neither flips it nor auto-mirrors it. A left/right name counts as not mirrored even when CoreGlyphs' `legacy_flippable.plist` lists it: measured on the iOS 26.5 simulator and on macOS, `arrow.up.right` draws its left-to-right pixels in a right-to-left layout, so the tool does not read that list |
@@ -30,6 +31,8 @@ The Phosphor catalog, the schema and the codegen are the Node half (`pnpm icons:
 `Fixtures/` holds one legal registry per rule, each with a single deliberate fault, and `expectations.json` names the code each must trip. The tool runs that round **before** it validates the registry it was given, so the availability gate proves itself on every CI run: a fixture that stops failing fails the job. `valid.json` must pass, and `sf8-with-fallback.json` must pass with the `sf/unverifiable` warning.
 
 `missing-mirror-legacy-flippable.json` binds `arrow.up.right`, a name `legacy_flippable.plist` lists, to a glyph the web flips, and must still trip `rtl/missing-mirror`; `double-mirror.json` sets `rtlMirror.apple` on `arrow.up.forward`, which the system mirrors itself. `system-localized.json` binds `calendar`, whose name is not direction-relative but which the system draws mirrored, to a glyph the web flips, and must pass; `double-mirror-system-localized.json` sets `rtlMirror.apple` on it too, and must trip `rtl/double-mirror`.
+
+`fill-missing.json` binds a filled-by-default entry to a symbol with no fill variant, and `fill-undeclared.json` is `valid.json` with the `"fill": false` of its chevron removed; both must trip `sf/fill-missing`. Every other fixture marks its fill-less symbols `"fill": false`, so it carries only its own fault.
 
 `newer-than-floor.json` and `sf8-bad-fallback.json` use `air.conditioner`, a real symbol whose year is `2025.1` (OS 26.1). `sf8-only-symbol.json` and `sf8-with-fallback.json` use `person.badge.sparkles`, a name SF Symbols 7 does not carry: from a floor runner every post-floor symbol looks exactly like this, which is what makes the SF Symbols 8 policy checkable before OS 27 ships.
 

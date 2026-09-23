@@ -9,7 +9,7 @@
 // the output is byte-identical across runs and `icons:validate` can compare it with the committed
 // files. Ids are emitted in sorted order, never in document order.
 
-import { assetName, mirrorOf, PHOSPHOR_CUTS, SIZE_NAMES, STYLE_NAMES, WEIGHT_NAMES, type Icon, type Registry } from "./registry.ts";
+import { assetName, hasFill, mirrorOf, PHOSPHOR_CUTS, SIZE_NAMES, STYLE_NAMES, WEIGHT_NAMES, type Icon, type Registry } from "./registry.ts";
 import { assetFile, readAsset, readLicense, type Catalog } from "./phosphor.ts";
 import { requiredCuts } from "./checks.ts";
 
@@ -99,6 +99,11 @@ export function renderWebRegistry(registry: Registry, catalog: Catalog): OutputF
   lines.push("   * it: `Icon`'s `style` defaults to `outline` whatever this says (spec/components/Icon.yaml).");
   lines.push("   */");
   lines.push("  readonly defaultStyle: IconStyle;");
+  lines.push("  /**");
+  lines.push("   * Whether `style: filled` draws a filled glyph, Phosphor's fill cut. False for an entry with no filled drawing:");
+  lines.push("   * `Icon` then draws the weight's cut for `filled`, as Apple draws the plain symbol (ADR-0035).");
+  lines.push("   */");
+  lines.push("  readonly fill: boolean;");
   lines.push("  readonly since: string;");
   lines.push("  readonly deprecated?: { readonly since: string; readonly replacedBy: IconName };");
   lines.push("}");
@@ -136,6 +141,7 @@ export function renderWebRegistry(registry: Registry, catalog: Catalog): OutputF
       `tags: [${icon.tags.map(quote).join(", ")}]`,
       `rtlMirror: ${mirrorOf(icon).web}`,
       `defaultStyle: ${quote(icon.defaultStyle ?? "outline")}`,
+      `fill: ${hasFill(icon)}`,
       `since: ${quote(icon.since)}`,
     ];
     if (icon.deprecated) fields.push(`deprecated: { since: ${quote(icon.deprecated.since)}, replacedBy: ${quote(icon.deprecated.replacedBy)} }`);
@@ -226,6 +232,17 @@ export function renderSwiftEnum(registry: Registry): OutputFile {
     lines.push(`        case ${members.map((id) => `.${swiftCase(id)}`).join(", ")}: .${style}`);
   }
   lines.push("        default: .outline");
+  lines.push("        }");
+  lines.push("    }");
+  lines.push("");
+  lines.push("    /// Whether `style: filled` draws a filled glyph: the symbol's fill variant, or the image set's fill cut. False for an");
+  lines.push("    /// entry with no filled drawing, whose symbol has no fill variant: `DSIcon` then draws its outline for `filled`,");
+  lines.push("    /// as the web draws the weight's cut (ADR-0035).");
+  lines.push("    public var hasFill: Bool {");
+  lines.push("        switch self {");
+  const unfilled = ids.filter((id) => !hasFill(registry.icons[id] as Icon));
+  if (unfilled.length > 0) lines.push(`        case ${unfilled.map((id) => `.${swiftCase(id)}`).join(", ")}: false`);
+  lines.push("        default: true");
   lines.push("        }");
   lines.push("    }");
   lines.push("");

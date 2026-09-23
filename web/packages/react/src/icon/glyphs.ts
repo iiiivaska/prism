@@ -19,11 +19,11 @@ import { SlidersHorizontalIcon } from "@phosphor-icons/react/dist/csr/SlidersHor
 import { CrosshairIcon } from "@phosphor-icons/react/dist/csr/Crosshair";
 import { PauseIcon } from "@phosphor-icons/react/dist/csr/Pause";
 import { PlayIcon } from "@phosphor-icons/react/dist/csr/Play";
-import { ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowsClockwise";
+import { ArrowClockwiseIcon } from "@phosphor-icons/react/dist/csr/ArrowClockwise";
 import { MinusIcon } from "@phosphor-icons/react/dist/csr/Minus";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 import { GearSixIcon } from "@phosphor-icons/react/dist/csr/GearSix";
-import { ShareNetworkIcon } from "@phosphor-icons/react/dist/csr/ShareNetwork";
+import { ExportIcon } from "@phosphor-icons/react/dist/csr/Export";
 import { MagnifyingGlassPlusIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlassPlus";
 import { MagnifyingGlassMinusIcon } from "@phosphor-icons/react/dist/csr/MagnifyingGlassMinus";
 import { CaretLeftIcon } from "@phosphor-icons/react/dist/csr/CaretLeft";
@@ -72,11 +72,11 @@ export const glyphs: Readonly<Record<IconName, Icon>> = {
   "action.locate": CrosshairIcon,
   "action.pause": PauseIcon,
   "action.play": PlayIcon,
-  "action.refresh": ArrowsClockwiseIcon,
+  "action.refresh": ArrowClockwiseIcon,
   "action.remove": MinusIcon,
   "action.search": MagnifyingGlassIcon,
   "action.settings": GearSixIcon,
-  "action.share": ShareNetworkIcon,
+  "action.share": ExportIcon,
   "action.zoom-in": MagnifyingGlassPlusIcon,
   "action.zoom-out": MagnifyingGlassMinusIcon,
   "nav.back": CaretLeftIcon,

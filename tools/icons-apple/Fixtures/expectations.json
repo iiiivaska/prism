@@ -3,6 +3,7 @@
     "double-mirror.json": "rtl/double-mirror",
     "double-mirror-system-localized.json": "rtl/double-mirror",
     "fill-missing.json": "sf/fill-missing",
+    "fill-undeclared.json": "sf/fill-missing",
     "min-os-below-floor.json": "sf/min-os-below-floor",
     "min-os-on-custom.json": "sf/min-os-on-custom",
     "misspelled-symbol.json": "sf/unknown",

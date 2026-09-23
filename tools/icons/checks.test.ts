@@ -45,6 +45,7 @@ describe("fixtures", () => {
     ["label-mismatch.json", "label/mismatch"],
     ["weight-ladder.json", "weight/ladder"],
     ["bold-text-step.json", "weight/bold-text"],
+    ["filled-default-without-fill.json", "style/default-without-fill"],
     ["missing-tags.json", "schema"],
     ["both-apple-bindings.json", "schema"],
   ])("%s trips %s", (name, code) => {

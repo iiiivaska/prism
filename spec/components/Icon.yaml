@@ -1,6 +1,6 @@
 name: Icon
 layer: primitive
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
   One glyph from the icon registry, named by its semantic id. The spec owns the box, the stroke weight,
@@ -145,7 +145,7 @@ behavior:
   - "`weight: control` binds icon.weight, the regular cut every control, row and inline glyph uses; `weight: display` binds icon.weight-display and is allowed only at size.icon.lg, for a decorative or illustrative glyph (the registry's weight table). Asked for at `size: sm` or `md`, `display` resolves to `control` and renders the regular cut - a thin 16 px glyph is below the stroke the boundary tier needs, so the size wins over the weight and neither stack fails the call."
   - Under Bold Text on iOS, iPadOS and watchOS the registry steps the cut one rung up its ladder; macOS and the web have no such setting, so the glyph keeps its weight there (ADR-0021 §3).
   - "`style: filled` is reserved for status glyphs and for the selected item of a tab bar; everything else is `outline`, and `duotone` renders hierarchically on Apple."
-  - "A filled or duotone glyph has one cut on the web: the registry maps `filled` to Phosphor's `fill` and `duotone` to Phosphor's `duotone`, neither of which has per-weight variants, so `weight` changes nothing there. On Apple the fill and hierarchical variants still take the requested weight, and the Bold Text ladder still steps it. Both stacks therefore agree on the glyph and may differ by one stroke rung on a filled glyph under Bold Text; nothing keyed to weight is ever load-bearing on a filled glyph."
+  - "A filled or duotone glyph has one cut on the web: the registry maps `filled` to Phosphor's `fill` and `duotone` to Phosphor's `duotone`, neither of which has per-weight variants, so `weight` changes nothing there. On Apple the fill and hierarchical variants still take the requested weight, and the Bold Text ladder still steps it. Both stacks therefore agree on the glyph and may differ by one stroke rung on a filled glyph under Bold Text; nothing keyed to weight is ever load-bearing on a filled glyph. `filled` draws a fill only for an entry that has one: an entry the registry marks `fill: false`, whose SF Symbol has no fill variant, draws its outline for `filled` on both stacks, in the requested weight, and never Phosphor's `fill`, which would enclose a stroke glyph in a solid shape that Apple does not draw - a tick in a solid square is a checked Checkbox, and a chevron becomes a solid triangle (ADR-0035)."
   - A tone resolves against the material the enclosing Surface publishes, and on the scheme's glass also against the backdrop kind published with it; the component never reads the color scheme itself.
   - On vivid, inverse, accent, light glass and the scheme's glass every tone takes that material's own foreground - a status is carried there by the glyph's shape and the label beside it, never by color (ADR-0011 rule 4; visual-dna §11 anti-pattern 11).
   - "`tone: inherit` sets no color: the glyph takes the foreground of the text around it, which is how a glyph inside a Button, a ListRow or a Chip follows its label."
@@ -225,4 +225,4 @@ notes:
     are reserved for status and for one tab bar, as docs/research/component-inventory.md records for the
     Icon row. Tones follow the material table of ADR-0022 §3.1 as ADR-0029 §1.4 and ADR-0030 §3.4 amend
     it, so Icon and Text pick foregrounds the same way. Example ids are invented (ADR-0015 rule 3).
-  references: [docs/adr/0013-icon-registry.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md]
+  references: [docs/adr/0013-icon-registry.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0035-filled-on-both-stacks-or-neither.md]

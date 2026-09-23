@@ -6,7 +6,9 @@
 //   sf/unverifiable         a symbol declared with minOS above the floor that this catalog cannot see;
 //                           its fallback carries the render until the floor moves (ADR-0013, C-21)
 //   sf/min-os-*             the minOS / fallback pair itself
-//   sf/fill-missing         a filled-by-default icon whose `.fill` variant does not exist
+//   sf/fill-missing         an entry that has a filled drawing (no `fill: false`) whose symbol has no `.fill` variant
+//                           available at the floor, so Apple would draw the outline where the web draws a fill (ADR-0035)
+//   sf/fill-declined        a warning: an entry marked `fill: false` whose symbol does have a `.fill` variant
 //   sf/smoke                NSImage(systemSymbolName:) returns nil for a name the catalog knows
 //   rtl/double-mirror       rtlMirror.apple on a symbol the system already mirrors (a direction-relative name, or one
 //                           of the few it localizes for right to left by itself)
@@ -78,12 +80,7 @@ enum Checks {
                     issues.append(contentsOf: availability(fallback, id: id, field: "fallback", registry: registry, catalog: catalog, floor: floor, maxYear: maxYear, minOS: nil))
                 }
             }
-            if icon.defaultStyle == "filled", let variant = registry.styles["filled"]?.sf.variant, variant == "fill" {
-                let filled = "\(symbol).\(variant)"
-                if catalog.isKnown(symbol), !catalog.isKnown(filled) {
-                    issues.append(.error("sf/fill-missing", id, "defaultStyle is filled but \(filled) does not exist; bind a symbol that has a fill variant or change the default style"))
-                }
-            }
+            issues.append(contentsOf: fill(icon, id: id, symbols: [symbol] + (apple.fallback.map { [$0] } ?? []), registry: registry, catalog: catalog, floor: floor, maxYear: maxYear))
             if smokeTest, catalog.isKnown(symbol), minOS == nil, NSImage(systemSymbolName: symbol, accessibilityDescription: nil) == nil {
                 issues.append(.error("sf/smoke", id, "NSImage(systemSymbolName: \"\(symbol)\") is nil although the catalog lists the name"))
             }
@@ -97,6 +94,50 @@ enum Checks {
             }
         }
         return issues
+    }
+
+    /// ADR-0035: `style: filled` draws the symbol's fill variant on Apple and Phosphor's fill cut on the web, so an entry
+    /// that has a filled drawing needs the variant at the floor — without it SwiftUI draws the plain symbol while the web
+    /// draws a fill, which for a stroke glyph is another picture (a tick in a solid square is a checked Checkbox). Such an
+    /// entry is marked `fill: false` instead, and both stacks draw its outline. The fallback of a `minOS` symbol renders
+    /// below `minOS`, so it is held to the same rule.
+    private static func fill(
+        _ icon: Registry.Icon,
+        id: String,
+        symbols: [String],
+        registry: Registry,
+        catalog: SymbolCatalog,
+        floor: Double,
+        maxYear: Double
+    ) -> [Issue] {
+        guard let variant = registry.styles["filled"]?.sf.variant, variant != "none" else { return [] }
+        var issues: [Issue] = []
+        for symbol in symbols where catalog.isKnown(symbol) {
+            let filled = "\(symbol).\(variant)"
+            let available = isAvailable(filled, catalog: catalog, floor: floor, maxYear: maxYear)
+            if icon.fill == false {
+                if available {
+                    issues.append(
+                        .warning(
+                            "sf/fill-declined",
+                            id,
+                            "the entry is marked `fill: false`, but \(filled) exists at the floor; drop `fill: false` unless that variant draws another metaphor than Phosphor's fill cut (ADR-0035)"
+                        )
+                    )
+                }
+            } else if !available {
+                let reason = catalog.isKnown(filled) ? "is not available at the floor \(registry.sources.sfSymbols.osFloor)" : "does not exist"
+                let hint = icon.defaultStyle == "filled" ? "bind a symbol that has a fill variant, or change the default style" : "mark the entry `fill: false`, so both stacks draw its outline for `filled`"
+                issues.append(.error("sf/fill-missing", id, "\(filled) \(reason), so Apple would draw the outline where the web draws Phosphor's fill cut; \(hint) (ADR-0035)"))
+            }
+        }
+        return issues
+    }
+
+    /// Whether a symbol name is in the catalog at the floor on every platform Prism declares, and no newer than `maxYear`.
+    private static func isAvailable(_ symbol: String, catalog: SymbolCatalog, floor: Double, maxYear: Double) -> Bool {
+        guard let found = catalog.releases(of: symbol), SymbolCatalog.year(found.year) <= maxYear else { return false }
+        return SymbolCatalog.floorPlatforms.allSatisfy { platform in found.releases[platform].map { $0 <= floor } ?? false }
     }
 
     private static func availability(

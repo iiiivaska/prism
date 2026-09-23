@@ -159,11 +159,11 @@ extension DSShowcaseCatalog {
             layer: "primitive",
             summary: "One glyph from the icon registry, named by its semantic id. The spec owns the box, the stroke weight, the style and the tone; which vendor cut draws it — a Phosphor cut on the web, an SF Symbol or a generated image set on Apple — is the registry's business and never a component's or a call site's. A glyph is not a control: everything that acts is an IconButton or a row around one.",
             since: "0.1.0",
-            specVersion: 1,
+            specVersion: 2,
             specPath: "spec/components/Icon.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .full), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [("ios", 1), ("ipados", 1), ("macos", 1), ("watchos", 1)],
+            implemented: [("ios", 2), ("ipados", 2), ("macos", 2), ("watchos", 2)],
             platformNotes: [("watchos", "full, and the only reason this note exists is the Tier 3 list: Icon is one of the nine components ADR-0010 puts on the wrist, and every prop works there because the registry's Apple binding carries the wrist as it carries the phone (ADR-0013 rule 3). Guidance only: the watch's glanceable stack reaches for the sm and md boxes, and `weight: display` rarely earns its place on a 45 mm screen."), ("macos", "No Bold Text setting, so the weight ladder never steps (ADR-0021 §3); density is the lever that changes the control around the glyph, not the glyph."), ("web-desktop", "Phosphor cuts are bundled as SVG from the generated registry map; no SF Symbol name ever reaches the web package, the gallery or the token export (ADR-0013 rule 5).")],
             examples: [
                 DSSpecExample(id: "control-md", props: [("name", .string("action.settings")), ("size", .string("md")), ("tone", .string("primary"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),

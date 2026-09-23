@@ -1,6 +1,7 @@
 /**
  * The svg inside every Prism glyph box: one registry id (ADR-0013), in the Phosphor cut `useGlyphCut`
- * resolves from the weight, the size and the style (./weight.ts), mirrored under `dir="rtl"` when the
+ * resolves from the weight, the size and the style the entry can draw (`drawnStyle`, ./weight.ts: `filled`
+ * is the outline for an entry with no filled drawing, ADR-0035), mirrored under `dir="rtl"` when the
  * registry says so (ADR-0013 rule 4).
  *
  * It is internal, and it is only ever the child of `IconPart` (./Icon.tsx), the root box that `Icon`,
@@ -14,7 +15,7 @@ import type { ReactNode } from "react";
 import { iconRegistry, type IconName, type IconStyle } from "../generated/icons.ts";
 import { glyphs } from "./glyphs.ts";
 import type { GlyphSize, GlyphWeight } from "./options.ts";
-import { useGlyphCut } from "./weight.ts";
+import { drawnStyle, useGlyphCut } from "./weight.ts";
 
 export interface GlyphProps {
   readonly name: IconName;
@@ -27,7 +28,7 @@ export interface GlyphProps {
 
 export function Glyph(props: GlyphProps): ReactNode {
   const { name, size, weight, style, replaced = false } = props;
-  const cut = useGlyphCut(weight, size, style);
+  const cut = useGlyphCut(weight, size, drawnStyle(name, style));
   const Component = glyphs[name];
   return (
     <Component

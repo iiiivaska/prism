@@ -117,7 +117,7 @@ export {
 export { Divider, type DividerProps } from "./divider/Divider.tsx";
 export { dividerInsets, dividerOrientations, type DividerInset, type DividerOrientation } from "./divider/options.ts";
 
-/** Icon (spec/components/Icon.yaml, specVersion 1). */
+/** Icon (spec/components/Icon.yaml, specVersion 2). */
 export { Icon, type IconProps } from "./icon/Icon.tsx";
 export { glyphSizes, glyphTones, glyphWeights, type GlyphSize, type GlyphTone, type GlyphWeight } from "./icon/options.ts";
 
