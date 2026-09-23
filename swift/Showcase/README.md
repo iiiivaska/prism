@@ -87,7 +87,8 @@ resolves them.
 
 The frame — the sidebar, the toolbar, the sheets — is plain SwiftUI, not Prism: `Sidebar` and `TabBar` are
 specified and unimplemented and `AdaptiveShell` is a pattern with no implementation, so an app cannot yet be
-framed in Prism. Everything inside a screen is the real thing. `Icon` is implemented on neither stack, so the
-Icons screen previews each registry entry from the binding the registry itself names and says so. watchOS is out
+framed in Prism. Everything inside a screen is the real thing. The Icons screen draws each registry entry with
+`DSIcon`, and only its detail sheet's weight ladder and four boxes, which reach further than Icon's props, are drawn
+from the binding the registry itself names, labelled as registry data. watchOS is out
 of scope for the app (the owner asked for macOS and iOS); the `watch` density is still switchable inside it, and
 the screens are `#if os(iOS) || os(macOS)` so the target still compiles for the watch in CI.

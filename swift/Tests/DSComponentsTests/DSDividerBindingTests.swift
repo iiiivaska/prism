@@ -5,7 +5,7 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Divider.yaml` specVersion 1: the colour matrix keyed by the published material, the thickness and
+/// `spec/components/Divider.yaml` specVersion 2: the colour matrix keyed by the published material, the thickness and
 /// the inset per density, the examples as the spec writes them, and the accessibility of each one.
 ///
 /// **Every cell is read out of the spec** (`DSSpec`, `Generated/DSTokenKeyPaths.swift`), and each test says the
@@ -15,7 +15,7 @@ import DSTokens
 /// The accessibility outcome on Apple is not asserted here but measured: `DSDividerAccessibilityTreeTests` in
 /// DSSnapshotTests reads the tree the simulator publishes for every example. This suite holds the value the view applies
 /// to the spec — `isDecorative: false` is a separator on the web and nothing on Apple, which has no separator trait.
-@Suite("Divider bindings (Divider.yaml v1)")
+@Suite("Divider bindings (Divider.yaml v2)")
 struct DSDividerBindingTests {
     let spec: DSSpec
 
@@ -46,7 +46,7 @@ struct DSDividerBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default`
     /// at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 1)
+        #expect(try spec.specVersion == 2)
         #expect(try spec.propValues("orientation") == DSDividerOrientation.allCases.map(\.rawValue))
         #expect(try spec.propValues("inset") == DSDividerInset.allCases.map(\.rawValue))
         #expect(try propDefault("orientation") == DSDividerOrientation.horizontal.rawValue)

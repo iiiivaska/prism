@@ -1852,7 +1852,7 @@
       "name": "Divider",
       "spec": "spec/components/Divider.yaml",
       "layer": "primitive",
-      "specVersion": 1,
+      "specVersion": 2,
       "support": {
         "ios": "full",
         "ipados": "full",
@@ -3112,7 +3112,7 @@
             "light",
             "dark"
           ],
-          "props": "name: object.sparkle, size: lg, weight: display, tone: secondary",
+          "props": "name: object.map, size: lg, weight: display, tone: secondary",
           "cells": []
         },
         {

@@ -219,6 +219,55 @@ nonisolated public enum DSTextTone: String, CaseIterable, Hashable, Sendable {
     case primary, secondary, tertiary, dimmed, accent, success, warning, critical, info
 }
 
+/// A tone of `spec/components/Icon.yaml`. `inherit` is not here: it is the absence of a choice, as it is for
+/// `DSTextTone`, so a caller that wants a glyph to follow the text around it passes nil.
+///
+/// It lives beside `DSTextTone` because more than Icon reads it: Card's icon ring and open glyph take Icon's tones
+/// where Card binds no cell of its own, and its sparkline takes the primary one (`DSCardAppearance.action(on:)`), so
+/// the table is read, never copied. **Name.** The spec's prop is `tone`; the `Glyph` stem matches `DSGlyphSize` and
+/// `DSGlyphWeight`, whose `DSIcon*` names the registry's generated types already hold.
+nonisolated public enum DSGlyphTone: String, CaseIterable, Hashable, Sendable {
+    case primary, secondary, accent, success, warning, critical, info
+
+    /// Icon.yaml `tokens.root.color`: the tone on the material the enclosing Surface publishes and, on the scheme's
+    /// glass, the backdrop kind published with it (behaviors 7 and 8). On vivid, inverse, accent, light glass and the
+    /// scheme's glass every tone takes that material's own foreground — `secondary` alone keeps a quieter one on
+    /// accent and on the scheme's glass — because a status there is carried by the glyph's shape and the word beside
+    /// it, never by colour (ADR-0011 rule 4). Glass over no backdrop never publishes: Surface falls back to `raised`
+    /// (ADR-0022 §1.2 trigger 4), so that row takes the media cell, the way `DSTextTone` does.
+    public func color(on surface: DSSurfaceContext) -> KeyPath<DSTokenSet, Color> {
+        switch surface.material {
+        case .page, .solid, .raised, .nested:
+            switch self {
+            case .primary: \.color.iconPrimary
+            case .secondary: \.color.iconSecondary
+            case .accent: \.color.iconAccent
+            case .success: \.color.iconStatusSuccess
+            case .warning: \.color.iconStatusWarning
+            case .critical: \.color.iconStatusCritical
+            case .info: \.color.iconStatusInfo
+            }
+        case .vivid:
+            \.color.textOnVivid
+        case .inverse:
+            \.color.textOnInverse
+        case .accent:
+            switch self {
+            case .secondary: \.color.textOnAccentSecondary
+            case .primary, .accent, .success, .warning, .critical, .info: \.color.textOnAccent
+            }
+        case .glassLight:
+            \.color.textOnGlassLight
+        case .glass:
+            switch (self, surface.backdrop) {
+            case (.secondary, .map): \.color.textOnGlassFillSecondary
+            case (.secondary, .image), (.secondary, .vivid), (.secondary, .none): \.color.textOnGlassFillMediaSecondary
+            case (.primary, _), (.accent, _), (.success, _), (.warning, _), (.critical, _), (.info, _): \.color.textOnGlassFill
+            }
+        }
+    }
+}
+
 nonisolated extension DSSurfaceContext {
     /// The foreground token of a tone on this material (ADR-0022 §3.1, as ADR-0029 §1.4 and ADR-0030 §3.4 amend
     /// it). On vivid, light glass and inverse nothing is dimmed with alpha: hierarchy comes from size, so every

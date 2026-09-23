@@ -72,13 +72,20 @@ export interface IconEntry {
   readonly phosphor: string;
   /** The `@phosphor-icons/react` export that draws it. */
   readonly component: string;
-  /** i18n key of the accessibility label. */
+  /**
+   * The entry's stable id for its meaning, `icon.<id>`: for search, documentation and an app's own catalog. It
+   * is never an accessible name; an `Icon` is named only by its own `label` prop (ADR-0032 rule 6).
+   */
   readonly label: string;
   readonly categories: readonly string[];
   /** Search terms; an agent looks an icon up by tag or category, never by vendor name. */
   readonly tags: readonly string[];
   /** Flip the glyph under `dir="rtl"`. */
   readonly rtlMirror: boolean;
+  /**
+   * The style the registry suggests for the glyph, which a registry browser may show it in. No component reads
+   * it: `Icon`'s `style` defaults to `outline` whatever this says (spec/components/Icon.yaml).
+   */
   readonly defaultStyle: IconStyle;
   readonly since: string;
   readonly deprecated?: { readonly since: string; readonly replacedBy: IconName };
@@ -138,9 +145,9 @@ export const iconRegistry: Readonly<Record<IconName, IconEntry>> = {
   "nav.sidebar": { phosphor: "sidebar-simple", component: "SidebarSimpleIcon", label: "icon.nav.sidebar", categories: ["nav"], tags: ["sidebar", "panel", "drawer", "navigation"], rtlMirror: true, defaultStyle: "outline", since: "0.1.0" },
   "nav.up": { phosphor: "caret-up", component: "CaretUpIcon", label: "icon.nav.up", categories: ["nav"], tags: ["up", "collapse", "chevron-up", "caret-up"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.bus": { phosphor: "bus", component: "BusIcon", label: "icon.object.bus", categories: ["object", "transport"], tags: ["bus", "transit", "vehicle", "transport", "route"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
-  "object.calendar": { phosphor: "calendar-blank", component: "CalendarBlankIcon", label: "icon.object.calendar", categories: ["object"], tags: ["calendar", "date", "schedule", "day"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
+  "object.calendar": { phosphor: "calendar-blank", component: "CalendarBlankIcon", label: "icon.object.calendar", categories: ["object"], tags: ["calendar", "date", "schedule", "day"], rtlMirror: true, defaultStyle: "outline", since: "0.1.0" },
   "object.camera": { phosphor: "camera", component: "CameraIcon", label: "icon.object.camera", categories: ["object"], tags: ["camera", "photo", "capture", "snapshot"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
-  "object.chart": { phosphor: "chart-line", component: "ChartLineIcon", label: "icon.object.chart", categories: ["object", "data"], tags: ["chart", "graph", "analytics", "report", "line-chart"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
+  "object.chart": { phosphor: "chart-line", component: "ChartLineIcon", label: "icon.object.chart", categories: ["object", "data"], tags: ["chart", "graph", "analytics", "report", "line-chart"], rtlMirror: true, defaultStyle: "outline", since: "0.1.0" },
   "object.clock": { phosphor: "clock", component: "ClockIcon", label: "icon.object.clock", categories: ["object"], tags: ["clock", "time", "duration", "recent", "history"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.document": { phosphor: "file", component: "FileIcon", label: "icon.object.document", categories: ["object"], tags: ["document", "file", "page", "doc"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.eye": { phosphor: "eye", component: "EyeIcon", label: "icon.object.eye", categories: ["object"], tags: ["eye", "visible", "show", "preview", "watch"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
@@ -148,7 +155,7 @@ export const iconRegistry: Readonly<Record<IconName, IconEntry>> = {
   "object.gps": { phosphor: "broadcast", component: "BroadcastIcon", label: "icon.object.gps", categories: ["object", "connectivity"], tags: ["gps", "broadcast", "tracking", "telemetry", "radio"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.lock": { phosphor: "lock-simple", component: "LockSimpleIcon", label: "icon.object.lock", categories: ["object"], tags: ["lock", "secure", "private", "locked"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.map": { phosphor: "map-trifold", component: "MapTrifoldIcon", label: "icon.object.map", categories: ["object", "map"], tags: ["map", "route", "atlas", "geography"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
-  "object.map-pin": { phosphor: "map-pin", component: "MapPinIcon", label: "icon.object.map-pin", categories: ["object", "map"], tags: ["map-pin", "marker", "place", "location", "stop"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
+  "object.map-pin": { phosphor: "map-pin-simple", component: "MapPinSimpleIcon", label: "icon.object.map-pin", categories: ["object", "map"], tags: ["map-pin", "marker", "place", "location", "stop"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.notification": { phosphor: "bell", component: "BellIcon", label: "icon.object.notification", categories: ["object"], tags: ["notification", "bell", "alert", "reminder"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.signal": { phosphor: "wifi-high", component: "WifiHighIcon", label: "icon.object.signal", categories: ["object", "connectivity"], tags: ["signal", "wifi", "network", "connection", "reception"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },
   "object.sparkle": { phosphor: "sparkle", component: "SparkleIcon", label: "icon.object.sparkle", categories: ["object", "ai"], tags: ["sparkle", "ai", "magic", "assistant", "generate"], rtlMirror: false, defaultStyle: "outline", since: "0.1.0" },

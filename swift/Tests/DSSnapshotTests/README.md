@@ -1,7 +1,7 @@
 # DSSnapshotTests
 
-The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button, Card and
-Divider across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
+The SwiftUI half of roadmap P3-3's acceptance: a snapshot of every spec example of Surface, Text, Button, Card,
+Divider and Icon across the accessibility matrix, the equal-width figures of ADR-0021 §5 as assertions, and **every check that reads a
 component's pixels back** — because this is the target that runs where a Prism view really rasterizes.
 
 | File | What it holds |
@@ -15,6 +15,8 @@ component's pixels back** — because this is the target that runs where a Prism
 | `DSCardSimulatorPixelTests.swift` | What a Card draws for the Card.yaml v5 readings, read back as pixels: the open glyph of a card with no handler, that glyph centred in the `action.size` box at the padding corner (behavior 14), the tint over the page, the custom disc's fill per published material. iOS only. |
 | `DSTextFiguresRenderTests.swift` | That `numeric: tabular` renders at the role's own weight (ADR-0021 §5). iOS only. |
 | `DSDividerAccessibilityTreeTests.swift` | What a Divider publishes to VoiceOver, read off UIKit's accessibility tree rather than a render: no element for any example or either value of `isDecorative` (Divider.yaml `notes.platform.ios`), with controls that an unnamed element is found. It turns on the accessibility runtime's automation mode for each walk and restores it; a runtime without that switch skips the suite with the reason instead of failing it. iOS only. |
+| `DSIconAccessibilityTreeTests.swift` | What an Icon publishes to VoiceOver, read off the same tree with Divider's walk: `named-standalone` is one image named "Locked for editing", byte for byte the web's, and every other example, a glyph with no `label` and a labelled one marked decorative are no element, so an SF Symbol's own name never leaks. It also holds Button's and Card's trees, whose glyphs `DSIcon` now draws, to one element per control. Skipped with the reason where the runtime has no automation switch. iOS only. |
+| `DSIconBoxTests.swift` | What an Icon draws: every registry glyph, in every box, at `control` and at `display` in the `lg` box, standard and under Bold Text, draws no ink outside its box (Icon.yaml anatomy); `display` below `lg` draws the `control` cut's pixels (behavior 3); Bold Text and `filled` change the drawing. iOS only. |
 | `DSTextEqualWidthTests.swift` | ADR-0021 §5 as widths, not images. Runs on the host and on the simulator. |
 | `__Snapshots__/` | The baselines, and `provenance.json`, which says what recorded them. |
 
@@ -63,7 +65,8 @@ Every example renders in the schemes its spec declares (both unless it declares 
 density × the standard state and Increase Contrast, plus:
 
 - forced **Reduce Transparency** for every example that renders glass, and
-- forced **Bold Text** for every Text example.
+- forced **Bold Text** for every Text and Icon example — the components whose spec states a Bold Text rendering rule
+  (`DSSnapshotMatrix.boldTextComponents`).
 
 | Component | Examples | Baselines |
 |-----------|---------:|----------:|
@@ -72,9 +75,10 @@ density × the standard state and Increase Contrast, plus:
 | Button | 7 | 7×8 = **56** |
 | Card | 7 (2 glass, 1 light-only) | 6×8 + 1×4 + 2×4 = **60** |
 | Divider | 6 (1 glass) | 6×8 + 1×4 = **52** |
-| | **34** | **320** |
+| Icon | 11 (2 glass) | 11×8 + 11×4 + 2×4 = **140** |
+| | **45** | **460** |
 
-`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 320, so adding an example is a deliberate
+`DSSnapshotMatrixTests.theMatrixHasTheExpectedSizeAndUniqueNames` holds that 460, so adding an example is a deliberate
 change to this file and not a silent one. `theMatrixCoversEveryComponentTheManifestImplementsOnIOS` holds the
 hand-written `DSSnapshotMatrix.components` to the components `DSComponentsManifest` implements on iOS, so a component
 cannot land in the manifest without being snapshotted. Both tests run in the host `swift test`, which CI runs before
@@ -189,11 +193,46 @@ baseline does not get a changed render into that artifact either. `.github/scrip
 recorded path up in the commit the change is measured against, and it refuses the hand-back when a path is there. That
 commit bounds what it sees: a baseline deleted by an earlier push, and a baseline renamed with its example, still reach
 the artifact labelled as new, with the run red and the deletion in review, and the script's header ("Two known
-limits") gives the two `git log` commands that catch both before a hand-back is committed. To
-accept a render that changed on purpose, commit the comparison's `failure.png` from `snapshot-diffs-apple` over the
-baseline. Those are the bytes a recording would have written, and review then sees a changed baseline and not a
-deletion. To keep a set
-of your own in the meantime, use `DS_SNAPSHOT_DIR` (below); it carries its own stamp and does not touch `__Snapshots__`.
+limits") gives the two `git log` commands that catch both before a hand-back is committed. To keep a set of your own in
+the meantime, use `DS_SNAPSHOT_DIR` (below); it carries its own stamp and does not touch `__Snapshots__`.
+
+## Changing a committed baseline on purpose
+
+A change that moves what a component draws — a new glyph path, a token that moves a pixel — fails its comparison on
+both stacks, and that is the mechanism working: a comparing run never writes over a committed baseline, and the
+hand-back refuses a baseline that was written over, or deleted and recorded again. Each stack therefore has one
+sanctioned re-record, a `workflow_dispatch` input of `ci` named for the artifact it hands back, and it is the only way a
+committed baseline changes. Neither is reachable from a push or a pull request: the inputs exist only on a dispatch,
+and both default to off.
+
+| Stack | Dispatch `ci` with | Artifact | Unpack it over |
+|-------|--------------------|----------|----------------|
+| Apple (SwiftUI) | `update-snapshot-baselines-apple` | `snapshot-baselines-apple` | `swift/Tests/DSSnapshotTests/__Snapshots__/` |
+| Web (Playwright) | `update-vrt-baselines` | `vrt-baselines` | `web/apps/vrt/baselines/linux/` |
+
+The loop is the same on both:
+
+1. Push the change. Its run compares and goes red on exactly the images that moved; `snapshot-diffs-apple` and
+   `vrt-diffs` hold the reference, the failure and the difference of each. Look at them there first: this is the moment
+   anyone reviews those pixels with a reason to.
+2. Dispatch `ci` on the same ref with the stack's input, from the Actions tab or with
+   `gh workflow run ci.yml --ref <branch> -f update-snapshot-baselines-apple=true` (or `-f update-vrt-baselines=true`;
+   both at once is fine). The job records its whole folder over the committed set — the apple job with `XCODE_VERSION`
+   on the pinned simulator, `web-vrt` in the pinned Playwright image — skips the hand-back, uploads the folder whole,
+   and fails by design, naming the artifact.
+3. Unpack the artifact over the folder; `git status` then lists the baselines whose bytes changed. Review each against
+   the committed image (`git diff`, or the diffs of step 1) and commit only what the change meant to move. A `??` in
+   that list is a path in no commit, which the re-record hands back unchecked: look it up with the two `git log`
+   commands in `.github/scripts/baseline-handback.sh` ("Two known limits") before committing it, as for any hand-back.
+4. Commit them with `pnpm gallery:build` and `pnpm parity:report` re-run, as every commit that touches baselines must
+   (a stale gallery index or parity report turns `contracts` red, which skips both snapshot jobs), and push. The next
+   run compares against them.
+
+Never record into `__Snapshots__` locally: the owner's Xcode is 27 and CI's is 26.6, so a local set does not compare
+on CI (see above), and the web's Linux set cannot be written off Linux at all (`web/apps/vrt/playwright.config.ts`).
+Before this route existed, the Apple half was done by committing each comparison's `failure.png` from
+`snapshot-diffs-apple` over its baseline; the bytes are the same, but that is one image at a time, renamed by hand, and
+nothing in CI names it, so the re-record replaces it.
 
 ## Running
 
@@ -203,7 +242,7 @@ tests never see).
 
 | Variable | Effect |
 |----------|--------|
-| `DS_SNAPSHOT_RECORD=1` | Rewrite every baseline and pass. Without it the run compares; a missing baseline is recorded *and* fails, so a new example is reviewed before it becomes a baseline. |
+| `DS_SNAPSHOT_RECORD=1` | Rewrite every baseline and pass. Without it the run compares; a missing baseline is recorded *and* fails, so a new example is reviewed before it becomes a baseline. CI sets it while `__Snapshots__` holds no baseline and for the requested re-record (`update-snapshot-baselines-apple`, above); locally, set it only together with `DS_SNAPSHOT_DIR`. |
 | `DS_SNAPSHOT_DIR` | Read and write the baselines somewhere other than `__Snapshots__`. |
 | `DS_SNAPSHOT_ARTIFACTS` | Where a failing comparison leaves its reference, failure and difference images. CI points it at a directory on the runner and uploads that as `snapshot-diffs-apple`; the default is the simulator's temporary directory, which a runner discards with itself. |
 

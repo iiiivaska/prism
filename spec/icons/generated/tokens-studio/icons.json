@@ -197,7 +197,7 @@
       },
       "map-pin": {
         "$type": "other",
-        "$value": "map-pin",
+        "$value": "map-pin-simple",
         "$description": "icon.object.map-pin — map-pin, marker, place, location, stop"
       },
       "notification": {

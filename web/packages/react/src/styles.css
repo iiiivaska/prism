@@ -13,6 +13,7 @@
 @import "./surface/Surface.css";
 @import "./text/Text.css";
 @import "./icon/Glyph.css";
+@import "./icon/Icon.css";
 @import "./button/Button.css";
 @import "./card/Card.css";
 @import "./divider/Divider.css";

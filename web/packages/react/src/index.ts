@@ -105,9 +105,13 @@ export {
   type CardVariant,
 } from "./card/parts.ts";
 
-/** Divider (spec/components/Divider.yaml, specVersion 1). */
+/** Divider (spec/components/Divider.yaml, specVersion 2). */
 export { Divider, type DividerProps } from "./divider/Divider.tsx";
 export { dividerInsets, dividerOrientations, type DividerInset, type DividerOrientation } from "./divider/options.ts";
+
+/** Icon (spec/components/Icon.yaml, specVersion 1). */
+export { Icon, type IconProps } from "./icon/Icon.tsx";
+export { glyphSizes, glyphTones, glyphWeights, type GlyphSize, type GlyphTone, type GlyphWeight } from "./icon/options.ts";
 
 /**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component

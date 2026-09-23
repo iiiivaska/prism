@@ -128,6 +128,15 @@ nonisolated enum DSCardAppearance {
         material != .vivid
     }
 
+    /// `tokens.iconRing.iconSize`: the ring's glyph is Icon's `md` box, `size.icon.md`, drawn by `DSIcon` in Icon's
+    /// primary tone.
+    static let ringIconSize: DSGlyphSize = .md
+
+    /// `tokens.action.iconSize`: the open glyph and the custom disc's glyph are Icon's `sm` box, `size.icon.sm`, drawn
+    /// by `DSIcon` with the `inherit` tone, so each takes the colour its affordance sets (`action(on:)`,
+    /// `actionSolid(on:)`).
+    static let actionIconSize: DSGlyphSize = .sm
+
     // MARK: - action
 
     /// `tokens.action.color`: the open glyph's colour; a material without a cell takes Icon's `secondary` tone.

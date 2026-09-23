@@ -138,7 +138,7 @@ public enum DSIconName: String, CaseIterable, Hashable, Sendable {
         case .navHome: "house"
         case .navMenu: "line.3.horizontal"
         case .navMore: "ellipsis"
-        case .navOpen: "arrow.up.right"
+        case .navOpen: "arrow.up.forward"
         case .navSidebar: "sidebar.leading"
         case .navUp: "chevron.up"
         case .objectBus: "bus"
@@ -226,7 +226,8 @@ public enum DSIconName: String, CaseIterable, Hashable, Sendable {
         }
     }
 
-    /// i18n key of the accessibility label.
+    /// The entry's stable id for its meaning, `icon.<id>`: for search, documentation and an app's own catalog. It
+    /// is never an accessible name; `DSIcon` is named only by its own `label` (ADR-0032 rule 6).
     public var label: String { "icon.\(rawValue)" }
 
     /// Flip the glyph in a right-to-left layout. False for a symbol the system already mirrors (critic C-24).
@@ -236,7 +237,8 @@ public enum DSIconName: String, CaseIterable, Hashable, Sendable {
         }
     }
 
-    /// The style the icon renders when the caller names none.
+    /// The style the registry suggests for the glyph, which a registry browser may show it in. No component reads
+    /// it: `DSIcon`'s `style` defaults to `outline` whatever this says (spec/components/Icon.yaml).
     public var defaultStyle: DSIconStyle {
         switch self {
         case .actionPause, .actionPlay, .statusDanger, .statusInfo, .statusOnline, .statusSuccess, .statusWarning: .filled

@@ -19,6 +19,9 @@
  * and on a material in a Surface with no padding, because its `inset: content` is measured from the
  * container's edge.
  *
+ * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
+ * frame, and on a material in a Surface hugging the glyph.
+ *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
  * renders the component's interactive form). The one exception is a component whose API bundles several
@@ -30,6 +33,7 @@ import {
   Button,
   Card,
   Divider,
+  Icon,
   Surface,
   Text,
   iconRegistry,
@@ -39,6 +43,7 @@ import {
   type DividerOrientation,
   type DividerProps,
   type IconName,
+  type IconProps,
   type SurfaceMaterial,
   type SurfaceProps,
   type TextProps,
@@ -189,6 +194,42 @@ export function renderDividerExample(props: Readonly<Record<string, unknown>>, e
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card" padding="none">
       {rule}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * The row an `inherit-in-row` glyph sits in: its foreground is `color.text.primary`, ListRow.yaml's
+ * `title.color.default`, "the row's own foreground" the example describes, with no text of its own — the
+ * gallery's `RowForeground` and the SwiftUI harness's row, the same color.
+ */
+function RowForeground(props: { readonly children: ReactNode }): ReactNode {
+  return <div data-ds-sc-foreground="row">{props.children}</div>;
+}
+
+/**
+ * An Icon on its example's `surface`, staged exactly as `renderIconExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it: straight on the stage, with no card-sized frame, or
+ * inside a Surface of that material with `radius: card` and its default card padding, hugging the glyph,
+ * over `backdrop` when the material is glass. `tone: inherit` sits in the row foreground.
+ */
+export function renderIconExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const args = props as unknown as IconProps;
+  const glyph = args.tone === "inherit" ? (
+    <RowForeground>
+      <Icon {...args} />
+    </RowForeground>
+  ) : (
+    <Icon {...args} />
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{glyph}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, glyph)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      {glyph}
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

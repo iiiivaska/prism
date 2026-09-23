@@ -98,7 +98,7 @@ struct DSDividerExampleStage: View {
 /// empty space on either side of it, so a horizontal rule's frame is `size.card-min` × (2 × `size.row` + the
 /// hairline) — 200 × 89 in regular, 200 × 65 in compact — and a vertical one's is that turned on its side.
 ///
-/// The rule stretches along the frame, which is the definite cross size a vertical Divider needs (Divider.yaml
+/// The rule stretches along the frame, whose definite cross size is the length the Divider takes (Divider.yaml
 /// behavior 2). Every edge lands on a whole point, so at scale 1 the hairline is one row of pixels at full
 /// strength rather than two at half.
 struct DSExampleRuleFrame<Content: View>: View {

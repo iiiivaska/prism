@@ -11,8 +11,11 @@
  * Divider is staged by its own renderer (`renderDividerExample`): in a rule frame, and on a material in a
  * Surface with no padding, because its `inset: content` is measured from the container's edge.
  *
+ * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
+ * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph.
+ *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button and Card examples carry their strings in their props, and Divider
+ * (src/harness/content.ts); Button, Card and Icon examples carry their strings in their props, and Divider
  * draws none.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
@@ -26,6 +29,7 @@ import {
   Button,
   Card,
   Divider,
+  Icon,
   Surface,
   Text,
   iconRegistry,
@@ -36,6 +40,7 @@ import {
   type DividerOrientation,
   type DividerProps,
   type IconName,
+  type IconProps,
   type SurfaceMaterial,
   type SurfaceProps,
   type TextProps,
@@ -194,6 +199,41 @@ export function renderDividerExample(args: DividerProps, example: ExampleFields)
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card" padding="none">
       {rule}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * The row an `inherit-in-row` glyph sits in: its foreground is `color.text.primary`, ListRow.yaml's
+ * `title.color.default`, "the row's own foreground" the example describes, and it holds no text, so it adds
+ * nothing to what a screen reader is handed. The SwiftUI harness and the web showcase stage the same row.
+ */
+function RowForeground(props: { readonly children: ReactNode }): ReactNode {
+  return <div data-ds-gallery-foreground="row">{props.children}</div>;
+}
+
+/**
+ * An Icon on its example's `surface`, staged the same way in all four harnesses (the SwiftUI snapshots,
+ * both showcases and here): straight on the stage, with no card-sized frame, or inside a Surface of that
+ * material with `radius: card` and its default card padding, hugging the glyph, over `backdrop` when the
+ * material is glass. `tone: inherit` sits in the row foreground (`RowForeground`).
+ */
+export function renderIconExample(args: IconProps, example: ExampleFields): ReactElement {
+  const glyph = args.tone === "inherit" ? (
+    <RowForeground>
+      <Icon {...args} />
+    </RowForeground>
+  ) : (
+    <Icon {...args} />
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{glyph}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, glyph)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      {glyph}
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

@@ -26,6 +26,10 @@
  *   so an `open` card with no `onAction` draws no glyph and no control, under pointer and under touch
  *   alike, and its header is laid out as `action: none` lays it out. `DSCardAppearance.showsOpenGlyph`
  *   takes pressability the same way.
+ * - Every glyph is Icon's box (`IconPart`, Icon.yaml): the icon ring's at `size.icon.md` in Icon's
+ *   `primary` tone, the tone `DSCardIconRing` draws, and the action's at `size.icon.sm` with `tone:
+ *   inherit`, so it takes `action.color` or the disc's glyph color. None carries a `label`, so none is
+ *   read: the card's name and the custom action's `label` say what they mean.
  * - Hover and press are written only on a pressable card (`action: open` with a handler), which is what
  *   Card.yaml behavior 11 now says: "a card with nothing to press takes no hover cue". The Apple side
  *   reaches it through the shared rule of `DSControlAppearance.showsHover` ("hover exists only under
@@ -64,7 +68,7 @@ import { Button as AriaButton, Pressable, type PressEvent } from "react-aria-com
 import { readContext, useTokenContext, type Density, type ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import { isDevelopment } from "../env.ts";
 import { iconRegistry, type IconName } from "../generated/icons.ts";
-import { Glyph } from "../icon/Glyph.tsx";
+import { IconPart } from "../icon/Icon.tsx";
 import { Surface } from "../surface/Surface.tsx";
 import type { BackdropKind, VividSlot } from "../surface/resolve.ts";
 import { Text } from "../text/Text.tsx";
@@ -257,7 +261,7 @@ export function Card(props: CardProps): ReactNode {
         <div data-ds-slot="card-heading">
           {drawsIconRing && icon !== undefined ? (
             <span data-ds-slot="card-icon-ring">
-              <Glyph name={icon} slot="card-icon" />
+              <IconPart slot="card-icon" name={icon} size="md" tone="primary" />
             </span>
           ) : null}
           <Text role="headline" className="ds-card-title" truncation="ellipsis" maxLines={cardTitleLines}>
@@ -277,20 +281,20 @@ export function Card(props: CardProps): ReactNode {
         </div>
         {pressable ? (
           <span data-ds-slot="card-action" data-ds-action="open">
-            <Glyph name="nav.open" slot="card-action-glyph" />
+            <IconPart slot="card-action-glyph" name="nav.open" size="sm" tone="inherit" />
           </span>
         ) : null}
         {custom === null ? null : (
           <span data-ds-slot="card-action" data-ds-action="custom">
             {hasHandler ? (
               <AriaButton className="ds-card-action-button" data-ds-slot="card-action-button" aria-label={custom.label} onPress={onAction}>
-                <Glyph name={custom.icon} slot="card-action-glyph" />
+                <IconPart slot="card-action-glyph" name={custom.icon} size="sm" tone="inherit" />
               </AriaButton>
             ) : (
               // Nothing to press: the disc keeps its look and its name and is not a control, the way
               // `DSCardActionCircle` draws a `DSCardActionDisc` when its action is nil.
               <span className="ds-card-action-button" data-ds-slot="card-action-button" role="img" aria-label={custom.label}>
-                <Glyph name={custom.icon} slot="card-action-glyph" />
+                <IconPart slot="card-action-glyph" name={custom.icon} size="sm" tone="inherit" />
               </span>
             )}
           </span>

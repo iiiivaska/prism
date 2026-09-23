@@ -36,7 +36,7 @@ struct DSAboutScreen: View {
                         tone: .secondary
                     )
                     DSText(
-                        verbatim: "Icon is implemented on neither stack, so the Icons screen previews each registry entry from the binding the registry itself names, and says so.",
+                        verbatim: "The Icons screen is the registry, each entry drawn by Icon at Icon's own sizes and weights; the registry's six-rung ladder and four boxes reach further than Icon's props do, so its detail sheet draws those from the registry's binding and labels them as registry data. Icon's examples are on Components.",
                         role: .bodySm,
                         tone: .secondary
                     )

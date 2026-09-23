@@ -1,16 +1,17 @@
 /// <reference types="node" />
 /**
- * Divider (spec/components/Divider.yaml, specVersion 1).
+ * Divider (spec/components/Divider.yaml, specVersion 2).
  *
  * - Divider.css binds what Divider.yaml binds: the colour cell of every material a Surface can publish,
  *   read through a small cascade so each cell is checked as it wins on the element, the thickness along
  *   each orientation and the inset of each `inset` value, as padding inside the root.
  * - Server renders: a hidden `div` by default, React Aria's separator when `isDecorative` is false, the
  *   published material (the glass fallback included), no children, ScopeAttributes.
- * - `accessibility`: every spec example's role, hidden state and accessible name. The name is the empty
- *   string for all six, because the Divider composes no string; on Apple the same examples are no
- *   accessibility element at all, which swift/Tests/DSSnapshotTests/DSDividerAccessibilityTreeTests.swift
- *   reads off the tree the simulator publishes, so neither stack announces a name.
+ * - `accessibility`, as the spec writes it: no label, and one example, `semantic`, exposed. What each
+ *   example is handed to a screen reader as — its role and its accessible name — is read from the browser's
+ *   own accessibility tree, not from this markup: web/apps/gallery/test/accessibility.browser.test.tsx
+ *   renders every example's story in Chromium and reads the tree, the web twin of
+ *   swift/Tests/DSSnapshotTests/DSDividerAccessibilityTreeTests.swift, which reads the simulator's.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -59,8 +60,8 @@ function dividerTag(out: string): string {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Divider.yaml specVersion 1", () => {
-    expect(spec.specVersion).toBe(1);
+  it("is Divider.yaml specVersion 2", () => {
+    expect(spec.specVersion).toBe(2);
     expect([...dividerOrientations]).toEqual(propValues(spec, "orientation"));
     expect([...dividerInsets]).toEqual(propValues(spec, "inset"));
   });
@@ -249,44 +250,18 @@ describe("Divider renders", () => {
 
 /**
  * Divider.yaml `accessibility`: role none while `isDecorative` is true, separator otherwise, and
- * `label: none`. Every example's name is the empty string. The one difference between the stacks is the
- * role of `semantic`: the web exposes the line as a separator, and SwiftUI has no separator trait, so
- * `DSDivider` is never an accessibility element (Divider.yaml `notes.platform.ios`, ADR-0032), which
- * DSDividerAccessibilityTreeTests measures on the simulator for the same ids. Neither stack announces a
- * name.
+ * `label: none`. This suite holds the spec's side of it. The role and the name each example is handed to
+ * a screen reader as are read from Chromium's accessibility tree, not from a server render, by
+ * web/apps/gallery/test/accessibility.browser.test.tsx: `semantic` a separator with the empty name, every
+ * other example not in the tree at all. The one difference between the stacks is that role: SwiftUI has
+ * no separator trait, so `DSDivider` is never an accessibility element (Divider.yaml `notes.platform.ios`,
+ * ADR-0032), which DSDividerAccessibilityTreeTests measures on the simulator for the same ids. Neither
+ * stack announces a name.
  */
-describe("the accessible name and role of every spec example (Divider.yaml accessibility)", () => {
-  const names: Readonly<Record<string, string>> = {
-    horizontal: "",
-    "horizontal-inset": "",
-    vertical: "",
-    semantic: "",
-    "on-vivid": "",
-    "on-glass-over-map": "",
-  };
-
+describe("the accessibility the spec writes (Divider.yaml accessibility)", () => {
   it("says the Divider has no label", () => {
     expect(spec.accessibility?.label).toMatch(/^none\b/u);
     expect(spec.accessibility?.role).toContain("separator");
-  });
-
-  it("names every example with the empty string, exposes only the non-decorative one, and hides the rest", () => {
-    expect(spec.examples.map((example) => example.id)).toEqual(Object.keys(names));
-    const isDecorativeByDefault = spec.props.find((prop) => prop.name === "isDecorative")?.default;
-    for (const example of spec.examples) {
-      // The spec's props are YAML, so their shape is the spec's word; the render below is the check.
-      const props = example.props as unknown as DividerProps;
-      const isDecorative = (example.props["isDecorative"] ?? isDecorativeByDefault) as boolean;
-      const out = html(<Divider {...props} />);
-      const tag = rootTag(out);
-      expect(tag, example.id).toContain('data-ds-slot="divider"');
-      expect(tag.includes('aria-hidden="true"'), example.id).toBe(isDecorative);
-      expect(tag.includes('role="separator"'), example.id).toBe(!isDecorative);
-      for (const attribute of ["aria-label", "aria-labelledby", "title"]) expect(tag, `${example.id} ${attribute}`).not.toContain(`${attribute}=`);
-      // The separator role takes its name from the author alone, and there is none: no label, no text.
-      const text = out.replace(/<[^>]*>/gu, "");
-      expect(text, example.id).toBe(names[example.id]);
-    }
   });
 
   it("exposes exactly one example, semantic, as a separator", () => {

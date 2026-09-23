@@ -165,6 +165,10 @@ nonisolated enum DSButtonAppearance {
         }
     }
 
+    /// `tokens.leadingIcon.size` and `tokens.trailingIcon.size`: both icons are Icon's `md` box, `size.icon.md`, the
+    /// box every control carries (Icon.yaml behavior 10). `DSIcon` resolves the box from it.
+    static let iconSize: DSGlyphSize = .md
+
     // MARK: - Rules
 
     /// The largest Dynamic Type size the label and the height scale to (Button.yaml `accessibility.dynamicType`).

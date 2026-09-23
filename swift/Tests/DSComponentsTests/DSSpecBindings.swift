@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import Testing
 import DSCore
+import DSIcons
 import DSTokens
 @testable import DSComponents
 
@@ -27,6 +28,10 @@ extension DSButtonSize: DSSpecKey {}
 extension DSTextRole: DSSpecKey {}
 extension DSDividerOrientation: DSSpecKey {}
 extension DSDividerInset: DSSpecKey {}
+extension DSGlyphSize: DSSpecKey {}
+extension DSGlyphWeight: DSSpecKey {}
+extension DSGlyphTone: DSSpecKey {}
+extension DSIconStyle: DSSpecKey {}
 
 /// Something the spec says that the reader cannot turn into a binding: a part or property that is not there, a cell
 /// that names a token the Apple catalogue does not bind, a block of the wrong shape.

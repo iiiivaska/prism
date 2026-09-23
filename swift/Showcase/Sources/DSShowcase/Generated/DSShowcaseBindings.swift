@@ -9,6 +9,7 @@ extension DSShowcaseRenderers {
     static let generated: [String: any DSExampleRenderer] = [
         "Button": DSButtonRenderer(),
         "Divider": DSDividerRenderer(),
+        "Icon": DSIconRenderer(),
         "Surface": DSSurfaceRenderer(),
         "Text": DSTextRenderer(),
         "Card": DSCardRenderer(),

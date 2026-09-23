@@ -1,18 +1,18 @@
 /// <reference types="node" />
 /**
- * Discovery for the Icons screen (docs/showcase.md §1, §4): the drawing half of the registry.
+ * Discovery for the Icons screen (docs/showcase.md §1, §4): the registry's own cuts, as data.
  *
- * `Icon` (spec/components/Icon.yaml) is implemented on neither stack, and `Glyph` — the internal,
- * decorative glyph that Button and Card draw — is not exported by `@iiiivaska/prism-react`. So the
- * showcase cannot render a Prism component here, and it says so on the screen. What it *can* do
- * honestly is draw each registry entry from the registry's own binding: `iconRegistry[id].phosphor`
- * is the Phosphor name (ADR-0013 decision 2), and `@phosphor-icons/core` ships that name as one SVG
- * per cut. This plugin reads those files at build time and hands the markup over as
- * `virtual:prism/glyphs`.
+ * The Icons screen draws every registry entry with `Icon` (spec/components/Icon.yaml), the component, so
+ * this plugin no longer draws the registry. It serves only the ladder beside it: the registry rows that
+ * no Icon prop reaches — the six rungs of `iconWeights` where Icon takes two, the xs box where Icon takes
+ * sm to lg, and every style cut of one entry — which the screen labels as registry data, not as the
+ * component. `iconRegistry[id].phosphor` is the Phosphor name (ADR-0013 decision 2), and
+ * `@phosphor-icons/core` ships that name as one SVG per cut; this plugin reads those files at build time
+ * and hands the markup over as `virtual:prism/glyphs`.
  *
  * Which ids exist, and which Phosphor name each one binds, are read from the *generated* registry
  * (`web/packages/react/src/generated/icons.ts`, written by `pnpm icons:build` from
- * spec/icons/registry.json), so an id that lands in the registry is drawn here with no edit to the
+ * spec/icons/registry.json), so an id that lands in the registry is served here with no edit to the
  * app, and an id whose Phosphor asset is missing fails the build instead of rendering a blank box.
  */
 import { createRequire } from "node:module";

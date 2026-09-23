@@ -180,6 +180,9 @@ extension DSButtonAppearance {
 }
 
 /// The pill's content: the icons and the label, and the spinner that replaces the label while loading.
+///
+/// Each icon is a `DSIcon` at `DSButtonAppearance.iconSize` with the `inherit` tone, so it takes the pill's foreground
+/// the way the label does (Icon.yaml behavior 9), and with no `label`, so it is hidden: the button carries the name.
 private struct DSButtonContent: View {
     let label: DSTextContent
     let role: DSTextRole
@@ -210,11 +213,10 @@ private struct DSButtonContent: View {
 
     var body: some View {
         let tokens = ds.tokens
-        let iconBox = tokens.size.iconMd
         let spinner = tokens[keyPath: DSButtonAppearance.spinner(variant, on: ds.surface.material)]
         HStack(spacing: tokens.components.button.gap) {
             if let leadingIcon {
-                DSGlyph(leadingIcon, box: iconBox)
+                DSIcon(leadingIcon, size: DSButtonAppearance.iconSize, tone: nil)
             }
             DSText(content: label, role: role, tone: nil, trailing: nil, unit: nil, numeric: .auto, truncation: .ellipsis, maxLines: lines)
                 .opacity(isLoading ? 0 : 1)
@@ -226,7 +228,7 @@ private struct DSButtonContent: View {
                 }
                 .animation(ds.motion.presentation, value: isLoading)
             if let trailingIcon {
-                DSGlyph(trailingIcon, box: iconBox)
+                DSIcon(trailingIcon, size: DSButtonAppearance.iconSize, tone: nil)
             }
         }
     }

@@ -64,6 +64,14 @@
   padding-inline: var(--ds-size-row);
 }
 
+/*
+ * The row an `inherit-in-row` Icon sits in (renderIconExample): the row's own foreground, color.text.primary
+ * (ListRow.yaml title.color.default), which a glyph with tone: inherit takes.
+ */
+[data-ds-sc-foreground="row"] {
+  color: var(--ds-color-text-primary);
+}
+
 .ds-sc-grid {
   display: grid;
   grid-template-columns: repeat(2, var(--ds-size-card-min));

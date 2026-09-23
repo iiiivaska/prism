@@ -13,7 +13,8 @@ import { defineConfig } from "vitest/config";
  *   axe run failing the test on any violation (`parameters.a11y.test = "error"`, .storybook/preview.tsx);
  * - `browser`: the behaviour the Node suites cannot see — a client `<Theme>` (ADR-0019 rule 7's client
  *   half), Surface's glass fallback from a real `matchMedia` (ADR-0022 rule 1), Text's computed
- *   `font-synthesis` and the equal-width figures (ADR-0021 rules 5 and 8);
+ *   `font-synthesis` and the equal-width figures (ADR-0021 rules 5 and 8), and the role and accessible
+ *   name of every spec example as Chromium's own accessibility tree has them (test/accessibility.tsx);
  * - `node`: the generated stories against the specs.
  *
  * Every project renders `@iiiivaska/prism-react` from its source, not from its last build
@@ -93,6 +94,10 @@ export default defineConfig({
       },
       {
         extends: true,
+        // test/accessibility.browser.test.tsx mounts the generated stories, and a story with an action prop
+        // imports `fn` from storybook/test. Found only when that file loads, the dependency would be optimized
+        // mid-run, and Vite's reload fails the file on a cold cache, which is every CI run.
+        optimizeDeps: { include: ["storybook/test"] },
         test: { name: "browser", include: ["test/**/*.browser.test.tsx"], browser: chromium() },
       },
       {

@@ -1,0 +1,110 @@
+/*
+ * Icon (spec/components/Icon.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Icon writes data-ds-size, data-ds-surface and data-ds-backdrop (the material and the backdrop
+ * kind the enclosing Surface publishes) and data-ds-tone onto its root, the box, and this sheet maps them
+ * to the tokens Icon.yaml binds. The glyph inside fills the box and paints in its color (Glyph.css). It
+ * reads no axis attribute, no variant and no media query: size.icon.* is the same in every density
+ * (behavior 10), the glass fallback has already happened in React when this sheet sees
+ * data-ds-surface="raised", and forced colors override `color` itself, which the glyph fills with.
+ *
+ * `tone: inherit` writes no data-ds-tone, so no color rule matches and the box keeps the color of the text
+ * around it (behavior 9). Button and Card draw their glyphs through the same box and size it from their own
+ * part rules (Button.css, Card.css), which come later in styles.css and bind the same size.icon.* tokens.
+ */
+
+@layer ds.components {
+  .ds-icon {
+    display: block;
+    flex: none;
+  }
+
+  /* ---- root.size: the square box ---- */
+
+  .ds-icon[data-ds-size="sm"] {
+    inline-size: var(--ds-size-icon-sm);
+    block-size: var(--ds-size-icon-sm);
+  }
+
+  .ds-icon[data-ds-size="md"] {
+    inline-size: var(--ds-size-icon-md);
+    block-size: var(--ds-size-icon-md);
+  }
+
+  .ds-icon[data-ds-size="lg"] {
+    inline-size: var(--ds-size-icon-lg);
+    block-size: var(--ds-size-icon-lg);
+  }
+
+  /* ---- root.color.default: the tone on the page and the solid ladder ---- */
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="primary"] {
+    color: var(--ds-color-icon-primary);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="secondary"] {
+    color: var(--ds-color-icon-secondary);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="accent"] {
+    color: var(--ds-color-icon-accent);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="success"] {
+    color: var(--ds-color-icon-status-success);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="warning"] {
+    color: var(--ds-color-icon-status-warning);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="critical"] {
+    color: var(--ds-color-icon-status-critical);
+  }
+
+  .ds-icon:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"])[data-ds-tone="info"] {
+    color: var(--ds-color-icon-status-info);
+  }
+
+  /*
+   * ---- root.color on the media and the inverse materials: one foreground for every tone ----
+   * A status is carried there by the glyph's shape and the word beside it, never by color (behavior 8).
+   */
+
+  .ds-icon[data-ds-surface="vivid"][data-ds-tone] {
+    color: var(--ds-color-text-on-vivid);
+  }
+
+  .ds-icon[data-ds-surface="inverse"][data-ds-tone] {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-icon[data-ds-surface="accent"][data-ds-tone] {
+    color: var(--ds-color-text-on-accent);
+  }
+
+  /* After the accent rule it refines, at the same specificity. */
+  .ds-icon[data-ds-surface="accent"][data-ds-tone="secondary"] {
+    color: var(--ds-color-text-on-accent-secondary);
+  }
+
+  .ds-icon[data-ds-surface="glassLight"][data-ds-tone] {
+    color: var(--ds-color-text-on-glass-light);
+  }
+
+  /* ---- root.color.glass, keyed by the backdrop kind the glass declared ---- */
+
+  .ds-icon[data-ds-surface="glass"][data-ds-tone] {
+    color: var(--ds-color-text-on-glass-fill);
+  }
+
+  .ds-icon[data-ds-surface="glass"][data-ds-backdrop="map"][data-ds-tone="secondary"] {
+    color: var(--ds-color-text-on-glass-fill-secondary);
+  }
+
+  /* Glass over none never renders (Surface falls back to raised); it takes the media row, as Text does. */
+  .ds-icon[data-ds-surface="glass"]:is([data-ds-backdrop="image"], [data-ds-backdrop="vivid"], [data-ds-backdrop="none"])[data-ds-tone="secondary"] {
+    color: var(--ds-color-text-on-glass-fill-media-secondary);
+  }
+}

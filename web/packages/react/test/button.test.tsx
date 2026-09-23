@@ -223,11 +223,15 @@ describe("Button renders", () => {
     expect(out).toContain('data-disabled="true"');
   });
 
-  it("fullWidth, and icons in the brand table's cut", () => {
+  it("fullWidth, and icons drawn by Icon's box: md, the label's color, hidden, in the brand table's cut", () => {
     const out = html(<Button label="Filter" leadingIcon="action.filter" trailingIcon="nav.open" fullWidth onPress={noop} />);
     expect(out).toContain('data-ds-full-width=""');
-    expect(out).toMatch(/<svg [^>]*class="ds-glyph" data-ds-slot="button-leading-icon" data-ds-icon="action.filter"/);
-    expect(out).toMatch(/<svg [^>]*class="ds-glyph" data-ds-slot="button-trailing-icon" data-ds-icon="nav.open" data-ds-mirror=""/);
+    // The part is Icon's box under Button's part name; `tone: inherit` writes no data-ds-tone, so the glyph
+    // takes the label's foreground, and a glyph with no `label` is hidden (Icon.yaml behaviors 9 and 14).
+    expect(out).toMatch(/<span class="ds-icon" data-ds-slot="button-leading-icon" data-ds-icon="action.filter" data-ds-size="md" [^>]*aria-hidden="true"><svg [^>]*class="ds-glyph" data-ds-slot="icon-glyph">/);
+    expect(out).toMatch(/<span class="ds-icon" data-ds-slot="button-trailing-icon" data-ds-icon="nav.open" data-ds-size="md" [^>]*aria-hidden="true"><svg [^>]*class="ds-glyph" data-ds-slot="icon-glyph" data-ds-mirror="">/);
+    expect(out).not.toContain("data-ds-tone");
+    expect(out).not.toContain('role="img"');
     expect(out.indexOf("button-leading-icon")).toBeLessThan(out.indexOf("button-label"));
     expect(out.indexOf("button-label")).toBeLessThan(out.indexOf("button-trailing-icon"));
   });

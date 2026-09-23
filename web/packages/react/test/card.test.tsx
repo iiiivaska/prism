@@ -457,10 +457,14 @@ describe("Card renders", () => {
       errors.mockClear();
       html(<Card title="Queued" action={{ kind: "custom", icon: "action.pause", label: "Pause line 4" }} onAction={noop} />);
       expect(errors).not.toHaveBeenCalled();
-      // An id outside the registry has no glyph module to draw, so the render fails after saying which
-      // id it was; without the check the failure names React's element type instead.
-      expect(() => html(<Card title="Queued" action={{ kind: "custom", icon: "no.such.icon" as IconName, label: "Pause line 4" }} onAction={noop} />)).toThrow();
+      // An id outside the registry has no glyph to draw. The glyph is Icon's box, which never throws
+      // (Icon.yaml behavior 1: the types fail the build); it draws the disc with an empty box, and both the
+      // card and the box say which id it was.
+      const unknown = html(<Card title="Queued" action={{ kind: "custom", icon: "no.such.icon" as IconName, label: "Pause line 4" }} onAction={noop} />);
+      expect(unknown).toContain('aria-label="Pause line 4"');
+      expect(unknown).toMatch(/<span class="ds-icon" data-ds-slot="card-action-glyph" data-ds-icon="no.such.icon" [^>]*><\/span>/);
       expect(errors.mock.calls.flat().join(" ")).toContain("is not an id of the icon registry");
+      expect(errors.mock.calls.flat().join(" ")).toContain('Icon: "no.such.icon"');
     } finally {
       errors.mockRestore();
     }
@@ -488,6 +492,28 @@ describe("Card renders", () => {
     const off = html(<Card title="Sensor" icon="object.gps" hero={{ value: "37", unit: "%" }} />);
     expect(off).toContain("card-icon-ring");
     expect(off).toContain('data-ds-slot="text-unit"');
+  });
+
+  it("draws every glyph through Icon's box: the ring in Icon's primary tone, the action in the color around it", () => {
+    // One glyph path in the system (Icon.yaml): the ring's glyph is `size.icon.md` in the primary tone, which
+    // Icon.css resolves against the material the card publishes, as `DSCardIconRing` draws
+    // `DSGlyphTone.primary`; the action glyph is `size.icon.sm` with `tone: inherit`, so `action.color` and
+    // the disc's glyph color still reach it. None of them has a `label`, so all are hidden.
+    const glyphs = (out: string): string[] => [...out.matchAll(/<span (class="ds-icon"[^>]*)>/gu)].map((match) => match[1] ?? "");
+    const open = glyphs(html(<Card title="Sensor" caption="Active" icon="object.gps" onAction={noop} />));
+    expect(open).toHaveLength(2);
+    expect(open[0]).toContain('data-ds-slot="card-icon" data-ds-icon="object.gps" data-ds-size="md" data-ds-surface="solid"');
+    expect(open[0]).toContain('data-ds-tone="primary"');
+    expect(open[1]).toContain('data-ds-slot="card-action-glyph" data-ds-icon="nav.open" data-ds-size="sm"');
+    expect(open[1]).not.toContain("data-ds-tone");
+    const custom = glyphs(html(<Card title="Queued" action={pause} onAction={noop} />));
+    expect(custom).toHaveLength(1);
+    expect(custom[0]).toContain('data-ds-slot="card-action-glyph" data-ds-icon="action.pause" data-ds-size="sm"');
+    expect(custom[0]).not.toContain("data-ds-tone");
+    for (const glyph of [...open, ...custom]) {
+      expect(glyph).toContain('aria-hidden="true"');
+      expect(glyph).not.toContain("role=");
+    }
   });
 
   it("clamps the title to two lines and the caption to one, with an ellipsis (behavior 15)", () => {

@@ -1,5 +1,5 @@
 /*
- * Divider (spec/components/Divider.yaml, specVersion 1). Compiled into styles.css by
+ * Divider (spec/components/Divider.yaml, specVersion 2). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Divider writes data-ds-orientation, data-ds-inset and data-ds-surface (the material the
@@ -38,7 +38,10 @@
     padding-inline: var(--ds--divider-inset);
   }
 
-  /* Behavior 2: vertical stretches to the height of a parent with a definite cross size. */
+  /*
+   * Behavior 2: vertical runs the height of its row, a definite one through min-block-size and one that
+   * sizes to its tallest child through align-self: stretch; its own intrinsic height is only its insets.
+   */
   .ds-divider[data-ds-orientation="vertical"] {
     inline-size: var(--ds-border-hairline);
     min-block-size: 100%;

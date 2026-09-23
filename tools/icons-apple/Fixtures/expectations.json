@@ -1,15 +1,18 @@
 {
   "expected": {
     "double-mirror.json": "rtl/double-mirror",
+    "double-mirror-system-localized.json": "rtl/double-mirror",
     "fill-missing.json": "sf/fill-missing",
     "min-os-below-floor.json": "sf/min-os-below-floor",
     "min-os-on-custom.json": "sf/min-os-on-custom",
     "misspelled-symbol.json": "sf/unknown",
     "missing-mirror.json": "rtl/missing-mirror",
+    "missing-mirror-legacy-flippable.json": "rtl/missing-mirror",
     "newer-than-floor.json": "sf/newer-than-floor",
     "sf8-bad-fallback.json": "sf/newer-than-floor",
     "sf8-only-symbol.json": "sf/unknown",
     "sf8-with-fallback.json": "",
+    "system-localized.json": "",
     "valid.json": ""
   }
 }

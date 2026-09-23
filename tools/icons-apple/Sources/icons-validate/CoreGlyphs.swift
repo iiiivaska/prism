@@ -1,9 +1,12 @@
-// The SF Symbols catalog of the running system: `name_availability.plist` and `legacy_flippable.plist`
-// inside CoreGlyphs.bundle (docs/research/icons-tooling.md §4.2, verified 2026-09-08 and re-read here).
+// The SF Symbols catalog of the running system: `name_availability.plist` inside CoreGlyphs.bundle
+// (docs/research/icons-tooling.md §4.2, verified 2026-09-08 and re-read here).
 //
 //   symbols:          name -> year key ("2019", "2025.1")
 //   year_to_release:  year key -> { iOS, macOS, watchOS, tvOS, visionOS }
-//   legacy_flippable: the left/right-named symbols the system mirrors in a right-to-left layout
+//
+// The bundle's `legacy_flippable.plist` is deliberately not read: an app built with the current SDK does not mirror
+// the left/right-named symbols it lists in a right-to-left layout (measured; `Checks.autoMirrors`), so it cannot
+// say what the system mirrors.
 import Foundation
 
 struct SymbolCatalog: Sendable {
@@ -15,8 +18,6 @@ struct SymbolCatalog: Sendable {
     let releases: [String: [String: Double]]
     /// Year key -> the release strings as the plist writes them, for the messages.
     let releaseNames: [String: [String: String]]
-    /// Symbols the system already mirrors.
-    let flippable: Set<String>
     /// The newest year key this catalog knows, which bounds what it can verify.
     let newestYear: String
 
@@ -45,12 +46,6 @@ struct SymbolCatalog: Sendable {
                 return nil
             }
         }
-        let flippableURL = root.appending(path: "legacy_flippable.plist")
-        if FileManager.default.fileExists(atPath: flippableURL.path()), let list = try SymbolCatalog.plistArray(at: flippableURL) {
-            self.flippable = Set(list)
-        } else {
-            self.flippable = []
-        }
         self.newestYear = years.values.max { SymbolCatalog.year($0) < SymbolCatalog.year($1) } ?? "0"
     }
 
@@ -60,11 +55,6 @@ struct SymbolCatalog: Sendable {
             throw ValidationError("\(url.path()) is not a property-list dictionary")
         }
         return object
-    }
-
-    private static func plistArray(at url: URL) throws -> [String]? {
-        let data = try Data(contentsOf: url)
-        return try PropertyListSerialization.propertyList(from: data, format: nil) as? [String]
     }
 
     /// "2025.1" -> 2025.1; an unparsable key sorts last so it is never treated as old.

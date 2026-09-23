@@ -1,7 +1,7 @@
 // The registry rules `icons:validate` enforces on every platform (roadmap P2-2). Each rule is a pure
 // function over data the caller read, so the fixtures under tools/icons/fixtures exercise them
-// without a repository tree. The rules that need macOS — SF Symbols availability at the floor, the
-// NSImage smoke test and the CoreGlyphs mirroring table — live in tools/icons-apple.
+// without a repository tree. The rules that need macOS — SF Symbols availability at the floor and the
+// NSImage smoke test — live in tools/icons-apple, which checks rule 4's mirroring by name again.
 //
 // Rule codes are stable: they are printed with every line and asserted by checks.test.ts.
 
@@ -10,16 +10,38 @@ import type { Catalog } from "./phosphor.ts";
 
 /**
  * SF Symbol name parts that make a symbol direction-relative, so the system resolves it per layout
- * direction and an extra flip would undo it (critic C-24). The rest of the mirroring table is the
- * legacy flippable list, which only the macOS validator can read.
+ * direction and an extra flip would undo it (critic C-24). A left/right-named symbol is not mirrored
+ * by the system, even one CoreGlyphs' `legacy_flippable.plist` lists (measured on the iOS 26.5
+ * simulator and on macOS; tools/icons-apple `Checks.autoMirrors`).
  */
 const DIRECTIONAL_PARTS = ["backward", "forward", "leading", "trailing"];
+
+/**
+ * Symbols whose names are not direction-relative but which SF Symbols draws mirrored in a
+ * right-to-left layout anyway, because the catalog ships a right-to-left drawing for them: the day
+ * grid of `calendar` runs from the right, and `chart.xyaxis.line` puts its axes on the right. Measured
+ * on the iOS 26.5 simulator (swift/Tests/DSSnapshotTests/DSIconBoxTests.swift) and listed with a
+ * right-to-left rendition in CoreGlyphs' `Assets.car`, which only Xcode's `assetutil` can read, so
+ * the names are written out here and in tools/icons-apple `Checks.systemLocalized`. The registry
+ * entries that bind them set `rtlMirror.web` so that the web draws what Apple draws.
+ */
+const SYSTEM_LOCALIZED_SYMBOLS: ReadonlySet<string> = new Set(["calendar", "chart.xyaxis.line"]);
 
 /** `styles[*].phosphor` is either the weight cut placeholder or a real Phosphor cut. */
 const WEIGHT_CUT_PLACEHOLDER = "$weight";
 
 export function isDirectionalSymbol(name: string): boolean {
   return name.split(".").some((part) => DIRECTIONAL_PARTS.includes(part));
+}
+
+/**
+ * Whether the system draws a symbol mirrored in a right-to-left layout by itself: a direction-relative
+ * name, or one of `SYSTEM_LOCALIZED_SYMBOLS`. Rule 4 by name, on both halves: such a symbol keeps
+ * `rtlMirror.apple` false, and a glyph the web flips binds one of them or sets `rtlMirror.apple`. What
+ * each glyph actually draws is measured on the simulator by DSIconBoxTests.
+ */
+export function isSystemMirrored(name: string): boolean {
+  return isDirectionalSymbol(name) || SYSTEM_LOCALIZED_SYMBOLS.has(name);
 }
 
 /** The Phosphor cuts an image set is generated for: every cut a weight or a style can ask for. */
@@ -144,8 +166,17 @@ export function checkRegistryRules(registry: Registry): readonly Issue[] {
       }
     }
     if (symbol !== undefined) {
-      if (mirror.apple && isDirectionalSymbol(symbol)) {
-        issues.push(error("rtl/double-mirror", id, `${JSON.stringify(symbol)} is direction-relative and the system already resolves it per layout direction; rtlMirror.apple must be false`));
+      if (mirror.apple && isSystemMirrored(symbol)) {
+        issues.push(error("rtl/double-mirror", id, `the system already draws ${JSON.stringify(symbol)} mirrored in a right-to-left layout; rtlMirror.apple must be false`));
+      }
+      if (mirror.web && !mirror.apple && !isSystemMirrored(symbol)) {
+        issues.push(
+          error(
+            "rtl/missing-mirror",
+            id,
+            `the web flips this glyph but the system does not mirror ${JSON.stringify(symbol)} and rtlMirror.apple is false, so Apple draws it unmirrored; bind the backward/forward/leading/trailing symbol, or set rtlMirror.apple`,
+          ),
+        );
       }
       if (fallback === symbol) issues.push(error("apple/fallback-equals-symbol", id, `the fallback repeats ${JSON.stringify(symbol)}`));
       if (minOS !== undefined && Number(minOS) <= floor) {

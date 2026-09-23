@@ -31,7 +31,7 @@ beforeAll(async () => {
 
 describe("the source stylesheets (ADR-0019 rule 9, ADR-0025 rule 2)", () => {
   it("exist: the entry and one stylesheet per component", () => {
-    expect(sources.map((file) => relative(srcRoot, file))).toEqual(["button/Button.css", "card/Card.css", "divider/Divider.css", "icon/Glyph.css", "styles.css", "surface/Surface.css", "text/Text.css"]);
+    expect(sources.map((file) => relative(srcRoot, file))).toEqual(["button/Button.css", "card/Card.css", "divider/Divider.css", "icon/Glyph.css", "icon/Icon.css", "styles.css", "surface/Surface.css", "text/Text.css"]);
   });
 
   it.each(sources.map((file) => [relative(srcRoot, file), file] as const))("%s uses only ds-pointer and ds-touch, hover under ds-pointer, no sizes under a variant", (_name, file) => {
@@ -62,7 +62,7 @@ describe("the compiled styles.css (ADR-0019 rules 9 and 10)", () => {
 
   it("imports every component stylesheet, Card after the Surface it refines", () => {
     const imports = [...readFileSync(join(srcRoot, "styles.css"), "utf8").matchAll(/^@import "\.\/([^"]+)";$/gm)].map((match) => match[1]);
-    expect(imports).toEqual(["surface/Surface.css", "text/Text.css", "icon/Glyph.css", "button/Button.css", "card/Card.css", "divider/Divider.css"]);
+    expect(imports).toEqual(["surface/Surface.css", "text/Text.css", "icon/Glyph.css", "icon/Icon.css", "button/Button.css", "card/Card.css", "divider/Divider.css"]);
   });
 
   it("is plain CSS in @layer ds.components with no Tailwind banner or utility", () => {

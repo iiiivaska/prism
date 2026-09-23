@@ -205,7 +205,10 @@ struct DSButtonBindingTests {
         }
     }
 
-    /// `tokens.label.typography` and `tokens.leadingIcon.size` (`size.icon.md`, the control glyph box).
+    /// `tokens.label.typography` and `tokens.leadingIcon.size` / `tokens.trailingIcon.size` (`size.icon.md`, the
+    /// control glyph box). The icons are `DSIcon`s, so the box they take is Icon's own resolution of
+    /// `DSButtonAppearance.iconSize`, asked in every density: a control grows around its glyph, the glyph does not grow
+    /// with it (Icon.yaml behavior 10).
     @Test func labelAndIconCells() throws {
         for size in DSButtonSize.allCases {
             try spec.binds(size.labelRole.keyPath, at: "label.typography", size)
@@ -213,11 +216,13 @@ struct DSButtonBindingTests {
         let leading = try #require(try spec.dimension("leadingIcon.size"))
         let trailing = try #require(try spec.dimension("trailingIcon.size"))
         #expect(leading == trailing)
-        let tokens = Self.tokens()
-        #expect(tokens[keyPath: leading] == DSIconSize.md.box)
-        #expect(tokens.size.iconMd == DSIconSize.md.box)
-        #expect(DSGlyphGeometry.drawnSide(box: tokens.size.iconMd) == DSIconSize.md.pointSize)
-        #expect(DSGlyphGeometry.drawnSide(box: tokens.size.iconSm) == DSIconSize.sm.pointSize)
+        for density in DSDensity.allCases {
+            let tokens = Self.tokens(density: density)
+            let box = DSIconAppearance.box(DSButtonAppearance.iconSize, tokens.size)
+            try spec.binds(value: box, at: "leadingIcon.size", in: tokens)
+            try spec.binds(value: box, at: "trailingIcon.size", in: tokens)
+            #expect(box == DSIconSize.md.box, "\(density)")
+        }
     }
 
     /// `tokens.root.disabled.opacity` and `tokens.root.focus-visible.*`: the cells no appearance function returns,

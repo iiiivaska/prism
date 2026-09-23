@@ -1,17 +1,36 @@
 /*
- * The internal glyph (./Glyph.tsx). Compiled into styles.css by scripts/build-styles.ts. Its box and its
- * color belong to the component that owns the part (Button.css, Card.css); this sheet only makes the
- * svg a block in the owner's layout and mirrors the glyphs the registry marks `rtlMirror`.
+ * The glyph's svg (./Glyph.tsx), inside the box of ./Icon.css. Compiled into styles.css by
+ * scripts/build-styles.ts. The box is Icon's, or the part of Button or Card that draws one, and so is its
+ * color; this sheet only makes the svg fill that box, paint in the box's color, mirror the glyphs the
+ * registry marks `rtlMirror`, and fade in a glyph that replaces another.
+ *
+ * Icon.yaml `motion`: a glyph that replaces another (`data-ds-replaced`, set when the box's `name`
+ * changes) fades in over motion.duration.quick on motion.easing.out, the easing of a state change off the
+ * spring path (ADR-0023 §9). `reduceMotion: instant`: the replacement is decorative, so under Reduce Motion
+ * the crossfade flag turns the duration into motion.duration.instant and the new glyph is simply there.
  */
+
+@keyframes ds-glyph-replace {
+  from {
+    opacity: 0;
+  }
+}
 
 @layer ds.components {
   .ds-glyph {
     display: block;
-    flex: none;
+    inline-size: 100%;
+    block-size: 100%;
     fill: currentColor;
   }
 
   .ds-glyph[data-ds-mirror]:dir(rtl) {
     scale: -1 1;
+  }
+
+  .ds-glyph[data-ds-replaced] {
+    animation: ds-glyph-replace
+      calc(var(--ds-motion-duration-quick) * (1 - var(--ds-motion-presentation-crossfade)) + var(--ds-motion-duration-instant) * var(--ds-motion-presentation-crossfade))
+      var(--ds-motion-easing-out);
   }
 }

@@ -44,16 +44,22 @@ enum DSSnapshotMatrix {
     /// platform key).
     nonisolated static let platform = "ios"
     /// The components the manifest implements on iOS, in roadmap order: P3-3's four, then Phase 4's.
-    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider"]
+    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider", "Icon"]
     /// Both densities of the acceptance line: iOS's default and the pointer default.
     nonisolated static let densities: [DSDensity] = [.regular, .compact]
 
+    /// The components whose spec states a Bold Text rendering rule, and so whose every example is also snapshotted
+    /// under Bold Text: Text's weight (ADR-0021 §3) and Icon's rung, which steps one up the registry's ladder
+    /// (Icon.yaml behavior 4).
+    nonisolated static let boldTextComponents: Set<String> = ["Text", "Icon"]
+
     /// Every variant of one example: light/dark (as the example declares) × regular/compact × standard/Increase
-    /// Contrast, plus forced Reduce Transparency when the example renders glass and Bold Text when it is Text's.
+    /// Contrast, plus forced Reduce Transparency when the example renders glass and Bold Text when its spec states a
+    /// Bold Text rule (`boldTextComponents`).
     static func variants(of example: DSExample) -> [DSSnapshotVariant] {
         var accessibility: [DSSnapshotVariant.Accessibility?] = [nil, .increasedContrast]
         if example.hasGlass { accessibility.append(.reduceTransparency) }
-        if example.component == "Text" { accessibility.append(.boldText) }
+        if boldTextComponents.contains(example.component) { accessibility.append(.boldText) }
         return example.schemes.flatMap { scheme in
             densities.flatMap { density in
                 accessibility.map { DSSnapshotVariant(scheme: scheme, density: density, accessibility: $0) }
@@ -85,12 +91,12 @@ enum DSSnapshotMatrix {
 @MainActor
 @Suite("The P3-3 snapshot matrix and its file names")
 struct DSSnapshotMatrixTests {
-    /// 8 Surface, 6 Text, 7 Button, 7 Card and 6 Divider examples; one Card example is light only; 3 Surface, 1 Text,
-    /// 2 Card and 1 Divider examples render glass.
+    /// 8 Surface, 6 Text, 7 Button, 7 Card, 6 Divider and 11 Icon examples; one Card example is light only; 3 Surface,
+    /// 1 Text, 2 Card, 1 Divider and 2 Icon examples render glass.
     ///
     /// Surface 8×8 + 3×4 = 76, Text 6×8 + 1×4 + 6×4 = 76, Button 7×8 = 56, Card 6×8 + 1×4 + 2×4 = 60,
-    /// Divider 6×8 + 1×4 = 52.
-    static let expectedCount = 320
+    /// Divider 6×8 + 1×4 = 52, Icon 11×8 + 11×4 + 2×4 = 140.
+    static let expectedCount = 460
 
     @Test func theMatrixHasTheExpectedSizeAndUniqueNames() {
         let paths = DSSnapshotMatrix.allPaths
@@ -126,6 +132,10 @@ struct DSSnapshotMatrixTests {
         #expect(DSSnapshotMatrix.variants(of: text).map { $0.fileName(example: text.name) }.contains("data-tabular.ios.light.compact.bold-text.png"))
         let tinted = try #require(DSExamples.named("Card/tinted-focus"))
         #expect(DSSnapshotMatrix.variants(of: tinted).allSatisfy { $0.scheme == .light })
+        let icon = try #require(DSExamples.named("Icon/display-lg"))
+        let iconNames = DSSnapshotMatrix.variants(of: icon).map { $0.fileName(example: icon.name) }
+        #expect(iconNames.contains("display-lg.ios.dark.regular.bold-text.png"))
+        #expect(!iconNames.contains { $0.contains("reduce-transparency") })
     }
 
     /// Every committed PNG is one the matrix renders, so a renamed or removed example leaves no stale baseline.

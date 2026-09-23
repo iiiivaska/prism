@@ -1,10 +1,12 @@
 /// <reference types="node" />
 /**
- * The internal glyph behind Button's icons and Card's action and icon ring (ADR-0013):
+ * The internal svg inside every glyph box, Icon's and the ones Button and Card draw through `IconPart`
+ * (ADR-0013):
  *
  * - the Phosphor map covers the registry id for id, with the component the registry names;
  * - the cut comes from the brand table's `icon.weight` (ADR-0013 decision 4, ADR-0020 §6), and a glyph
- *   with no table fails instead of guessing.
+ *   with no table fails instead of guessing. Icon.yaml's own steps on top of it (behavior 3's size rule,
+ *   `display`, the style cuts) are held to the spec by test/icon.test.tsx.
  */
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -40,17 +42,19 @@ describe("the cut", () => {
     expect(tokenValue(tokens, "icon.weight", { colorScheme: "light", contrast: "standard", transparency: "standard", density: "compact", modality: "pointer", motion: "standard" })).toBe(tokens.table["icon.weight"].$value);
     const out = renderToStaticMarkup(
       <Theme tokens={tokens}>
-        <Glyph name="nav.open" slot="probe" />
+        <Glyph name="nav.open" size="md" weight="control" style="outline" />
       </Theme>,
     );
     const regular = renderToStaticMarkup(<Theme tokens={tokens}>{createElement(glyphs["nav.open"], { weight: cutForWeight(tokens.table["icon.weight"].$value) })}</Theme>);
     expect(out).toContain(/<path d="[^"]+"/.exec(regular)?.[0] ?? "missing");
     expect(out).toContain('aria-hidden="true"');
-    expect(out).toContain('data-ds-slot="probe"');
+    expect(out).toContain('focusable="false"');
+    expect(out).toContain('class="ds-glyph"');
+    expect(out).toContain('data-ds-slot="icon-glyph"');
     expect(out).toContain('data-ds-mirror=""');
   });
 
   it("fails without a brand table", () => {
-    expect(() => renderToStaticMarkup(<Glyph name="nav.open" slot="probe" />)).toThrow(/No brand table/);
+    expect(() => renderToStaticMarkup(<Glyph name="nav.open" size="md" weight="control" style="outline" />)).toThrow(/No brand table/);
   });
 });

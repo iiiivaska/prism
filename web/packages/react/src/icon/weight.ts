@@ -4,9 +4,22 @@
  * JavaScript, from the brand table the app hands to Prism (`<Theme tokens>` or `setBrandTokens()`,
  * ADR-0020 §6), resolved for `useTokenContext()`. The package imports no brand (rule 13), and a glyph
  * rendered without a table fails the way `useBrandTokens()` fails, instead of guessing a weight.
+ *
+ * Icon.yaml decides the cut in three steps, and `glyphCut` takes them in order:
+ *
+ * 1. Behavior 3: `display` is allowed only at `lg`; asked for at `sm` or `md` it resolves to `control`, so
+ *    the size wins over the weight and nothing fails (`effectiveGlyphWeight`, the twin of
+ *    `DSIconAppearance.effectiveWeight(_:size:)`).
+ * 2. `tokens.root.weight`: `control` binds `icon.weight` and `display` binds `icon.weight-display`
+ *    (`weightToken`), whose number picks the registry rung (`cutForWeight`).
+ * 3. Behavior 6: a `filled` or `duotone` glyph has one cut on the web, Phosphor's `fill` or `duotone`,
+ *    which replaces the weight's (`iconStyles`, the registry's style table).
+ *
+ * The web has no Bold Text setting, so the rung never steps here (behavior 4).
  */
 import { useBrandTokens, useTokenContext, type BrandTokens, type TokenContext } from "@iiiivaska/prism-tokens/react";
-import { iconWeights, type PhosphorCut } from "../generated/icons.ts";
+import { iconStyles, iconWeights, type IconStyle, type PhosphorCut } from "../generated/icons.ts";
+import type { GlyphSize, GlyphWeight } from "./options.ts";
 
 /** The shape every row of a `<brand>/tokens` table has (the generated `Entry`). */
 interface TableEntry {
@@ -49,19 +62,32 @@ export function cutForWeight(weight: number): PhosphorCut {
   return best.phosphor;
 }
 
-/** `control` is `icon.weight`, the cut of glyphs inside controls and cards; `display` is `icon.weight-display`. */
-export type GlyphWeight = "control" | "display";
+/** Behavior 3: `display` draws only at `lg`; at `sm` and `md` it is `control`. */
+export function effectiveGlyphWeight(weight: GlyphWeight, size: GlyphSize): GlyphWeight {
+  return size === "lg" ? weight : "control";
+}
 
 const WEIGHT_TOKEN: Readonly<Record<GlyphWeight, string>> = {
   control: "icon.weight",
   display: "icon.weight-display",
 };
 
-/** The Phosphor cut for a glyph weight, from the app's brand table. */
-export function useGlyphCut(weight: GlyphWeight = "control"): PhosphorCut {
-  const tokens = useBrandTokens();
-  const context = useTokenContext();
-  const value = tokenValue(tokens, WEIGHT_TOKEN[weight], context);
-  if (typeof value !== "number") throw new Error(`${WEIGHT_TOKEN[weight]} is not a number in the brand table.`);
+/** Icon.yaml `tokens.root.weight`: the token each weight binds. */
+export function weightToken(weight: GlyphWeight): string {
+  return WEIGHT_TOKEN[weight];
+}
+
+/** The Phosphor cut of a glyph: the style's own cut when it has one, else the cut of the weight's token. */
+export function glyphCut(weight: GlyphWeight, size: GlyphSize, style: IconStyle, tokens: BrandTokens, context: TokenContext): PhosphorCut {
+  const styled = iconStyles[style];
+  if (styled !== null && styled !== undefined) return styled;
+  const path = weightToken(effectiveGlyphWeight(weight, size));
+  const value = tokenValue(tokens, path, context);
+  if (typeof value !== "number") throw new Error(`${path} is not a number in the brand table.`);
   return cutForWeight(value);
+}
+
+/** The Phosphor cut for a glyph, from the app's brand table and the token context. */
+export function useGlyphCut(weight: GlyphWeight, size: GlyphSize, style: IconStyle): PhosphorCut {
+  return glyphCut(weight, size, style, useBrandTokens(), useTokenContext());
 }

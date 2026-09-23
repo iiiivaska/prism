@@ -12,9 +12,10 @@ import DSTokens
 ///
 /// The spec's `role` is none while `isDecorative` is true and a separator otherwise, where the platform has that role —
 /// the web. SwiftUI's traits carry no separator and ADR-0032 bars the Divider a word of its own, so the `semantic`
-/// example is the one sanctioned difference between the stacks: `role="separator"` with the empty name on the web
-/// (`web/packages/react/test/divider.test.tsx`), and no element here. Either way nothing announces a name, so the name
-/// is the empty string on both stacks for every example.
+/// example is the one sanctioned difference between the stacks: `role="separator"` with the empty name on the web, read
+/// off Chromium's accessibility tree for every example's story (`web/apps/gallery/test/accessibility.browser.test.tsx`),
+/// and no element here. Either way nothing announces a name, so the name is the empty string on both stacks for every
+/// example.
 ///
 /// **Why this reads the tree.** Hiding is not the same as not exposing: a shape under `.accessibilityHidden(false)` is
 /// an element of its own, with no label and no traits, and VoiceOver stops on it. The host suite
@@ -36,7 +37,7 @@ import DSTokens
 /// and no traits.
 @MainActor
 @Suite(
-    "Divider in the accessibility tree on the simulator (Divider.yaml v1)",
+    "Divider in the accessibility tree on the simulator (Divider.yaml v2)",
     .serialized,
     .enabled(if: DSAccessibilityAutomation.isAvailable, DSAccessibilityAutomation.unavailableComment)
 )
@@ -78,7 +79,7 @@ struct DSDividerAccessibilityTreeTests {
             for inset in DSDividerInset.allCases {
                 for isDecorative in [true, false] {
                     let divider = DSDivider(orientation: orientation, inset: inset, isDecorative: isDecorative)
-                    // A vertical Divider needs a parent with a definite cross size (behavior 2).
+                    // A frame gives the stack a definite cross size, which is the Divider's length (behavior 2).
                     let found = try Self.elements(around: HStack { divider }.frame(width: 200, height: 40))
                     #expect(
                         found.map(\.label) == Self.around,

@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Divider.yaml` (specVersion 1) binds, as pure functions of the material the enclosing
+/// Every value `spec/components/Divider.yaml` (specVersion 2) binds, as pure functions of the material the enclosing
 /// Surface publishes and the token set, so the binding matrix runs on the host. `DSDivider` only draws what these
 /// return.
 ///

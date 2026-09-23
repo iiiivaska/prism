@@ -1,16 +1,18 @@
 /**
- * `Divider` (spec/components/Divider.yaml, specVersion 1): one hairline that separates rows inside a
+ * `Divider` (spec/components/Divider.yaml, specVersion 2): one hairline that separates rows inside a
  * single container.
  *
  * - The line is `border.hairline` thick and runs the full length of its container: `horizontal` the
- *   width of a parent that stacks its children in a column, `vertical` the height of a parent with a
- *   definite cross size (behaviors 1 and 2). It has no length of its own, so it is never placed along
- *   its own axis: a horizontal Divider in a flex row gets no width, which SwiftUI would share out
- *   instead, so the spec keeps it out of rows.
- * - In a flex row with no height of its own, the row is as tall as its tallest column and a vertical
- *   rule stretches to that (`align-self: stretch`). SwiftUI's `HStack` takes all the height it is
- *   offered instead, so `DSDivider` asks for `.fixedSize(horizontal: false, vertical: true)` on such a
- *   row to lay it out as the web does.
+ *   width of a parent that stacks its children in a column, `vertical` the height of a parent that
+ *   stacks them in a row (behaviors 1 and 2). It has no length of its own and never decides its parent's:
+ *   its intrinsic length is zero plus its insets, so in a parent that sizes to its content (an inline
+ *   block or an inline flex column around a horizontal rule, a flex row with no height of its own around
+ *   a vertical one) it is as long as the longest other child (`align-self: stretch`, or a block's auto
+ *   width) and adds nothing but its insets. It is never placed along its own axis: a horizontal Divider
+ *   in a flex row gets no width, which SwiftUI would share out instead, so the spec keeps it out of rows.
+ * - SwiftUI's stacks take all the length a flexible child is offered, so `DSDivider` writes the parent
+ *   that sizes to its content as a stack under `fixedSize` on that axis, and gives the line an ideal
+ *   length of zero, so the two stacks lay it out alike (Divider.yaml `notes.platform.ios`).
  * - `inset: content` trims both ends by `space.card-padding` (behavior 3). The inset is padding inside
  *   the root, never a margin: the root still spans the container and only the painted line is shorter,
  *   so the Divider owns no margin (behavior 4) and a list lays it out like any other row. The same token

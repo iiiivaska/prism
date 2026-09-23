@@ -130,7 +130,7 @@
       "additionalProperties": false,
       "required": ["label", "categories", "tags", "since", "web", "apple"],
       "properties": {
-        "label": { "type": "string", "pattern": "^icon\\.[a-z]+(\\.[a-z0-9-]+)+$", "description": "i18n key for the accessibility label" },
+        "label": { "type": "string", "pattern": "^icon\\.[a-z]+(\\.[a-z0-9-]+)+$", "description": "The id of the entry's meaning, for the registry, search, documentation and an app's own catalog; never an accessible name: a component is named only by the label its caller passes (ADR-0032 rule 6)" },
         "categories": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" } },
         "tags": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" }, "description": "Search terms an agent looks an icon up by (critic C-22, C-24): synonyms and the vendor metaphors, never a vendor name to render" },
         "rtlMirror": { "$ref": "#/$defs/rtlMirror" },
@@ -185,7 +185,7 @@
     },
     "rtlMirror": {
       "type": "object",
-      "description": "Per platform (critic C-24): `web` flips the glyph under dir=rtl; `apple` flips it in a right-to-left layout and must stay false for a symbol the system already mirrors (a legacy flippable name, or a backward/forward/leading/trailing name), which tools/icons-apple checks against CoreGlyphs.",
+      "description": "Per platform (critic C-24): `web` flips the glyph under dir=rtl; `apple` flips it in a right-to-left layout and must stay false for a symbol the system already mirrors: a backward/forward/leading/trailing name, or one of the few symbols SF Symbols draws right to left by itself (calendar, chart.xyaxis.line); a left/right name is not mirrored by the system, even one CoreGlyphs lists as legacy flippable. Checked by icons:validate and tools/icons-apple, and measured by DSIconBoxTests.",
       "additionalProperties": false,
       "required": ["web", "apple"],
       "properties": {

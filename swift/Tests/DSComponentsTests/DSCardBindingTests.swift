@@ -393,6 +393,22 @@ struct DSCardBindingTests {
         #expect(size.iconSm == 16)
     }
 
+    /// `tokens.iconRing.iconSize` and `tokens.action.iconSize`, read out of the spec: the ring's glyph, the open glyph
+    /// and the custom disc's glyph are `DSIcon`s, so the box each takes is Icon's own resolution of
+    /// `DSCardAppearance.ringIconSize` and `actionIconSize`, asked in every density (Icon.yaml behavior 10).
+    @Test func glyphBoxCells() throws {
+        let spec = try DSSpec.component("Card")
+        for density in DSDensity.allCases {
+            let tokens = Self.tokens(density: density)
+            try spec.binds(
+                value: DSIconAppearance.box(DSCardAppearance.ringIconSize, tokens.size), at: "iconRing.iconSize", in: tokens
+            )
+            try spec.binds(
+                value: DSIconAppearance.box(DSCardAppearance.actionIconSize, tokens.size), at: "action.iconSize", in: tokens
+            )
+        }
+    }
+
     // MARK: - Motion
 
     /// `motion.press` is snappy and `motion.select` smooth; under Reduce Motion both crossfade over

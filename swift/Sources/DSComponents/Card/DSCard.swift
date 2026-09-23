@@ -582,8 +582,9 @@ private struct DSCardAnatomy<Content: View, Aside: View>: View {
             // one, which is what `renderedAction` already took out of `actionWidth`.
             if parts.isPressable {
                 // Behavior 14: the glyph is centred in the same `action.size` box the custom disc fills, so both
-                // affordances sit in one place and the header reserves one width for either.
-                DSGlyph(.navOpen, box: tokens.size.iconSm)
+                // affordances sit in one place and the header reserves one width for either. It inherits, and takes
+                // `tokens.action.color` from here.
+                DSIcon(.navOpen, size: DSCardAppearance.actionIconSize, tone: nil)
                     .foregroundStyle(tokens[keyPath: DSCardAppearance.action(on: surface)])
                     .frame(
                         width: DSCardAppearance.actionWidth(.open, tokens),
@@ -701,7 +702,7 @@ private struct DSCardLayers: View {
 }
 
 /// The icon ring: a `size.icon.ring` circle in a `color.border.hairline` hairline around a `size.icon.md` glyph in
-/// Icon's primary tone.
+/// Icon's primary tone, which `DSIcon` resolves against the published material itself.
 private struct DSCardIconRing: View {
     let icon: DSIconName
     private var ds = DSThemeValues()
@@ -712,8 +713,7 @@ private struct DSCardIconRing: View {
 
     var body: some View {
         let tokens = ds.tokens
-        DSGlyph(icon, box: tokens.size.iconMd)
-            .foregroundStyle(tokens[keyPath: DSGlyphTone.primary.color(on: ds.surface)])
+        DSIcon(icon, size: DSCardAppearance.ringIconSize, tone: .primary)
             .frame(width: tokens.size.iconRing, height: tokens.size.iconRing)
             .overlay {
                 Circle().strokeBorder(tokens.color.borderHairline, lineWidth: tokens.border.hairline)
@@ -737,7 +737,7 @@ private struct DSCardActionCircle: View {
     }
 
     var body: some View {
-        let glyphView = DSGlyph(glyph, box: ds.tokens.size.iconSm)
+        let glyphView = DSIcon(glyph, size: DSCardAppearance.actionIconSize, tone: nil)
         if let action {
             Button(action: action) { glyphView }
                 .buttonStyle(DSCardActionStyle())

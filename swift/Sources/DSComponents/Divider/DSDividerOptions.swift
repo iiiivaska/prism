@@ -4,10 +4,11 @@ import DSTokens
 
 /// The axis of a Divider: `spec/components/Divider.yaml` `props.orientation`. The raw value is the spec's spelling.
 ///
-/// `horizontal` stretches to the width of a parent that stacks its children in a column; `vertical` stretches to the
-/// height and needs a parent with a definite cross size. A Divider has no length of its own, so it is never placed along
-/// its own axis — a horizontal one as a sibling in an `HStack`, a vertical one in a `VStack` — where the web gives it
-/// no length and SwiftUI shares out the free space (Divider.yaml behavior 2).
+/// `horizontal` stretches to the width of a parent that stacks its children in a column, `vertical` to the height of
+/// one that stacks them in a row. A Divider has no length of its own: its length is the parent's cross size, and in a
+/// parent that sizes to its content (a stack under `fixedSize` on that axis) it adds nothing but its insets. It is never
+/// placed along its own axis — a horizontal one as a sibling in an `HStack`, a vertical one in a `VStack` — where the
+/// web gives it no length and SwiftUI shares out the free space (Divider.yaml behavior 2).
 nonisolated public enum DSDividerOrientation: String, CaseIterable, Hashable, Sendable {
     case horizontal, vertical
 }

@@ -65,7 +65,8 @@ export function About(): ReactNode {
             [
               "icons",
               <>
-                the generated registry and its Phosphor binding. <code>Icon</code> is implemented on neither stack; the glyphs are a preview.
+                the generated registry, each entry drawn by <code>Icon</code>, and its Phosphor binding for the ladder of cuts and boxes no Icon
+                prop reaches.
               </>,
             ],
             ["specimens", <code key="t">{Object.keys(tokensByType).sort().join(", ")}</code>],

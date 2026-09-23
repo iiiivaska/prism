@@ -1,5 +1,5 @@
 /**
- * Browser behaviour of Button, Card and Divider, in Vitest browser mode (Chromium): what the Node suites
+ * Browser behaviour of Button, Card, Divider and Icon, in Vitest browser mode (Chromium): what the Node suites
  * can only read from the stylesheets, computed on real elements.
  *
  * - Button.yaml behaviors 2, 3, 5 and 6: the hit region per modality with an unchanged visual box, the
@@ -17,8 +17,14 @@
  *   substitute fill, Card's selection crossfading over motion.duration.base.
  * - ADR-0021 rule 8: Button computes `font-synthesis: none`.
  * - Divider.yaml behaviors 1 to 5: one line of border.hairline that runs the length of its container,
+ *   and in a container that sizes to its content the length of the longest other child and nothing more,
  *   an `inset: content` that is card padding inside the root rather than a margin outside it, per
  *   density, and the colour of the material it sits on.
+ * - Icon.yaml behaviors 3, 7 to 12, the anatomy and `motion`: the square box of `size.icon.*`, the same in
+ *   every density, with the glyph filling it and never drawn outside it; the tone on the material it sits
+ *   on and `inherit` taking the color around it; the mirror under `dir="rtl"`; no event handler run and no
+ *   focus taken, even past the type; a changed `name` fading its new glyph in over motion.duration.quick,
+ *   and at once under Reduce Motion; Button's and Card's glyphs are the same box.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -33,7 +39,7 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
-import { Button, Card, Divider, Surface, Theme, cardUnitSeparator, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
+import { Button, Card, Divider, Icon, Surface, Theme, cardUnitSeparator, glyphSizes, type CardProps, type Density, type Modality, type Motion } from "@iiiivaska/prism-react";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -643,6 +649,57 @@ describe("Divider", () => {
     expect(Number.parseFloat(getComputedStyle(inset as HTMLElement).paddingBlockStart)).toBe(tokenPx(element, "--ds-space-card-padding"));
   });
 
+  /**
+   * Behavior 2's parent that sizes to its content: a shrink-to-fit column (an inline block, an inline flex
+   * column) for a horizontal rule, a flex row with no height of its own for a vertical one. The Divider is as
+   * long as the longest of the parent's other children and adds nothing to the parent but its two insets.
+   * swift/Tests/DSComponentsTests/DSDividerLengthTests.swift measures the same cases in SwiftUI, where the
+   * content-sized parent is a stack under `fixedSize` (Divider.yaml `notes.platform.ios`).
+   */
+  describe("in a parent that sizes to its content (behavior 2)", () => {
+    const parents = {
+      "inline block": { display: "inline-block" },
+      "inline flex column": { display: "inline-flex", flexDirection: "column" },
+      "flex row": { display: "flex", alignItems: "flex-start" },
+    } as const;
+    const cases = [
+      ["horizontal", "inline block"],
+      ["horizontal", "inline flex column"],
+      ["vertical", "flex row"],
+    ] as const;
+
+    async function laidOut(orientation: "horizontal" | "vertical", parent: keyof typeof parents, inset: "none" | "content", sibling: number): Promise<{ divider: number; parent: number; insets: number }> {
+      const other = orientation === "horizontal" ? { inlineSize: `${sibling}px`, blockSize: "8px" } : { inlineSize: "8px", blockSize: `${sibling}px` };
+      const element = await mount(
+        <div data-probe="parent" style={parents[parent]}>
+          <div style={other} />
+          <Divider orientation={orientation} inset={inset} />
+        </div>,
+      );
+      const length = (box: HTMLElement): number => (orientation === "horizontal" ? box.getBoundingClientRect().width : box.getBoundingClientRect().height);
+      const divider = find(element, ".ds-divider");
+      return { divider: length(divider), parent: length(find(element, '[data-probe="parent"]')), insets: inset === "content" ? 2 * tokenPx(element, "--ds-space-card-padding") : 0 };
+    }
+
+    it.each(cases.flatMap(([orientation, parent]) => (["none", "content"] as const).map((inset) => [orientation, parent, inset] as const)))(
+      "%s rule, %s parent, inset %s: as long as the longest other child",
+      async (orientation, parent, inset) => {
+        const measured = await laidOut(orientation, parent, inset, 120);
+        expect(measured.divider).toBe(120);
+        expect(measured.parent).toBe(120);
+      },
+    );
+
+    it.each(cases.flatMap(([orientation, parent]) => (["none", "content"] as const).map((inset) => [orientation, parent, inset] as const)))(
+      "%s rule, %s parent, inset %s: adds nothing to the parent but its insets",
+      async (orientation, parent, inset) => {
+        const measured = await laidOut(orientation, parent, inset, 1);
+        expect(measured.parent).toBe(Math.max(1, measured.insets));
+        expect(measured.divider).toBe(Math.max(1, measured.insets));
+      },
+    );
+  });
+
   it("takes the colour of the material it sits on (behavior 5)", async () => {
     const element = await mount(
       <>
@@ -673,5 +730,172 @@ describe("Divider", () => {
       expect(getComputedStyle(divider).backgroundColor, probe).toBe(tokenColor(divider, variable));
     }
     expect(tokenColor(element, "--ds-color-border-on-media")).not.toBe(tokenColor(element, "--ds-color-border-hairline"));
+  });
+});
+
+describe("Icon", () => {
+  const boxes = { sm: "--ds-size-icon-sm", md: "--ds-size-icon-md", lg: "--ds-size-icon-lg" } as const;
+
+  it("is a square box of size.icon.*, the same in every density, and the glyph fills it (behavior 10, anatomy)", async () => {
+    const measured: Record<string, number> = {};
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      const element = await mount(
+        <div style={{ display: "flex", alignItems: "flex-start" }}>
+          {glyphSizes.map((size) => (
+            <Icon key={size} name="object.gps" size={size} data-probe={size} />
+          ))}
+        </div>,
+        { density },
+      );
+      for (const size of glyphSizes) {
+        const box = find(element, `[data-probe="${size}"]`);
+        const rect = box.getBoundingClientRect();
+        const px = tokenPx(box, boxes[size]);
+        expect(rect.width, `${density} ${size}`).toBeCloseTo(px, 3);
+        expect(rect.height, `${density} ${size}`).toBeCloseTo(px, 3);
+        const svg = find(box, "svg").getBoundingClientRect();
+        expect([svg.x, svg.y, svg.width, svg.height], `${density} ${size}`).toEqual([rect.x, rect.y, rect.width, rect.height]);
+        measured[`${density} ${size}`] = rect.width;
+      }
+      await unmount();
+    }
+    for (const size of glyphSizes) {
+      expect(measured[`regular ${size}`], size).toBe(measured[`compact ${size}`]);
+      expect(measured[`comfortable ${size}`], size).toBe(measured[`compact ${size}`]);
+    }
+    expect([measured["compact sm"], measured["compact md"], measured["compact lg"]]).toEqual([16, 20, 24]);
+  });
+
+  it("paints its tone on the material it sits on, and inherit takes the color around it (behaviors 7 to 9)", async () => {
+    const element = await mount(
+      <>
+        <Icon name="object.gps" tone="secondary" data-probe="page" />
+        <Surface material="vivid" data-probe-surface="vivid">
+          <Icon name="object.gps" tone="warning" data-probe="vivid" />
+        </Surface>
+        <Surface material="glass" backdrop="map" data-probe-surface="glass">
+          <Icon name="object.gps" tone="secondary" data-probe="glass" />
+        </Surface>
+        <div style={{ color: "var(--ds-color-text-primary)" }}>
+          <Icon name="status.online" tone="inherit" data-probe="inherit" />
+        </div>
+      </>,
+    );
+    const expected = { page: "--ds-color-icon-secondary", vivid: "--ds-color-text-on-vivid", glass: "--ds-color-text-on-glass-fill-secondary", inherit: "--ds-color-text-primary" } as const;
+    for (const [probe, variable] of Object.entries(expected)) {
+      const box = find(element, `[data-probe="${probe}"]`);
+      const color = getComputedStyle(box).color;
+      expect(color, probe).toBe(tokenColor(box, variable));
+      // The glyph fills with the box's color.
+      expect(getComputedStyle(find(box, "path")).fill, probe).toBe(color);
+    }
+    expect(tokenColor(element, "--ds-color-icon-secondary")).not.toBe(tokenColor(element, "--ds-color-text-primary"));
+  });
+
+  it("mirrors a glyph the registry marks rtlMirror under dir=rtl, and no other (behavior 11)", async () => {
+    const element = await mount(
+      <div dir="rtl">
+        <Icon name="nav.open" data-probe="mirrored" />
+        <Icon name="action.settings" data-probe="plain" />
+      </div>,
+    );
+    expect(getComputedStyle(find(find(element, '[data-probe="mirrored"]'), "svg")).scale).toBe("-1 1");
+    expect(getComputedStyle(find(find(element, '[data-probe="plain"]'), "svg")).scale).toBe("none");
+  });
+
+  it("fades in the glyph of a changed name over motion.duration.quick, and replaces it at once under Reduce Motion (motion)", async () => {
+    const seconds = (variable: string): string =>
+      getComputedStyle(document.documentElement).getPropertyValue(variable).trim().replace(/^(\d+)ms$/, (_all, ms: string) => `${Number(ms) / 1000}s`);
+    for (const motion of ["standard", "reduce"] as const) {
+      const element = await mount(<Icon name="nav.open" data-probe="swap" />, { motion });
+      const first = find(find(element, '[data-probe="swap"]'), "svg");
+      // The first drawing is no replacement, so it does not fade.
+      expect(first.hasAttribute("data-ds-replaced"), motion).toBe(false);
+      expect(getComputedStyle(first).animationName, motion).toBe("none");
+      await act(async () => {
+        root?.render(
+          <Theme tokens={tokens} colorScheme="light" density="compact" modality="pointer" motion={motion}>
+            <Icon name="nav.back" data-probe="swap" />
+          </Theme>,
+        );
+        await Promise.resolve();
+      });
+      const box = find(element, '[data-probe="swap"]');
+      expect(box.getAttribute("data-ds-icon"), motion).toBe("nav.back");
+      const replaced = find(box, "svg");
+      expect(replaced, motion).not.toBe(first);
+      expect(replaced.hasAttribute("data-ds-replaced"), motion).toBe(true);
+      const style = getComputedStyle(replaced);
+      expect(style.animationName, motion).toBe("ds-glyph-replace");
+      expect(style.animationDuration, motion).toBe(motion === "reduce" ? seconds("--ds-motion-duration-instant") : seconds("--ds-motion-duration-quick"));
+      expect(style.animationDuration, motion).toBe(motion === "reduce" ? "0s" : "0.1s");
+      await unmount();
+    }
+  });
+
+  it("runs no event handler a caller casts past the type, and takes no focus: a glyph carries no gesture (behavior 12)", async () => {
+    // IconProps has no `on*` key, so this is an untyped caller. The control beside it — a plain span in the
+    // same tree with the same handlers — runs them, so the silence of the box is the component's.
+    const Loose = Icon as unknown as (props: Record<string, unknown>) => ReactNode;
+    const glyph = vi.fn();
+    const control = vi.fn();
+    const handlers = (handler: () => void): Record<string, () => void> => ({
+      onClick: handler,
+      onClickCapture: handler,
+      onPointerDown: handler,
+      onMouseDown: handler,
+      onKeyDown: handler,
+      onFocus: handler,
+    });
+    const element = await mount(
+      <>
+        <Loose name="object.lock" label="Locked for editing" data-probe="glyph" {...handlers(glyph)} />
+        <span data-probe="control" tabIndex={0} {...handlers(control)}>
+          Control
+        </span>
+      </>,
+    );
+    for (const [probe, handler] of [
+      ["glyph", glyph],
+      ["control", control],
+    ] as const) {
+      const box = find(element, `[data-probe="${probe}"]`);
+      await userEvent.click(box);
+      await act(async () => {
+        box.focus();
+        box.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", code: "Enter", bubbles: true, cancelable: true }));
+        await Promise.resolve();
+      });
+      if (probe === "glyph") {
+        expect(handler).not.toHaveBeenCalled();
+        expect(box.tabIndex).toBe(-1);
+        expect(document.activeElement).not.toBe(box);
+      } else {
+        expect(handler.mock.calls.length).toBeGreaterThanOrEqual(6);
+      }
+    }
+  });
+
+  it("is the box Button and Card draw their glyphs with, at their own sizes", async () => {
+    const element = await mount(
+      <>
+        <Button variant="secondary" label="Details" trailingIcon="nav.open" onPress={() => undefined} />
+        <Card title="Sensor" caption="Active" icon="object.gps" onAction={() => undefined} />
+      </>,
+      { modality: "touch" },
+    );
+    const parts = { "button-trailing-icon": "--ds-size-icon-md", "card-icon": "--ds-size-icon-md", "card-action-glyph": "--ds-size-icon-sm" } as const;
+    for (const [slot, variable] of Object.entries(parts)) {
+      const box = find(element, `.ds-icon[data-ds-slot="${slot}"]`);
+      const rect = box.getBoundingClientRect();
+      expect(rect.width, slot).toBeCloseTo(tokenPx(box, variable), 3);
+      expect(rect.height, slot).toBeCloseTo(tokenPx(box, variable), 3);
+      expect(find(box, "svg").getBoundingClientRect().width, slot).toBeCloseTo(rect.width, 3);
+    }
+    // The ring's glyph is Icon's primary tone, as Apple draws it; the button's takes the label's color.
+    const ring = find(element, '.ds-icon[data-ds-slot="card-icon"]');
+    expect(getComputedStyle(ring).color).toBe(tokenColor(ring, "--ds-color-icon-primary"));
+    const trailing = find(element, '.ds-icon[data-ds-slot="button-trailing-icon"]');
+    expect(getComputedStyle(trailing).color).toBe(getComputedStyle(find(element, ".ds-button")).color);
   });
 });

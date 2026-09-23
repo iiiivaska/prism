@@ -8,9 +8,10 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// The SwiftUI snapshots of roadmap P3-3: every spec example of Surface, Text, Button, Card and Divider (`DSExamples`,
-/// which the `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus forced Reduce
-/// Transparency for every glass example and Bold Text for every Text example (`DSSnapshotMatrix`).
+/// The SwiftUI snapshots of roadmap P3-3: every spec example of Surface, Text, Button, Card, Divider and Icon
+/// (`DSExamples`, which the `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus
+/// forced Reduce Transparency for every glass example and Bold Text for every Text and Icon example
+/// (`DSSnapshotMatrix`).
 ///
 /// README.md beside this file documents the naming, the pinned rendering, the tolerance and how to record.
 ///

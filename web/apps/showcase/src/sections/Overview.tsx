@@ -124,13 +124,13 @@ export function Overview(props: { readonly brandId: string }): ReactNode {
         title="Icons"
         note={
           <>
-            {Object.keys(iconRegistry).length} registry entries. <code>Icon</code> is implemented on neither stack, so the Icons screen draws
-            them from the registry&apos;s own Phosphor binding and labels them as a preview.
+            {Object.keys(iconRegistry).length} registry entries, which the Icons screen draws with <code>Icon</code>; its spec examples are on
+            Components.
           </>
         }
       >
         <p className="ds-sc-note">
-          <Tag tone="info">preview only</Tag>
+          <Tag tone="ok">drawn by Icon</Tag>
         </p>
       </Panel>
     </Screen>

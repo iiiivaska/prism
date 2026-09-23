@@ -84,13 +84,20 @@ export function renderWebRegistry(registry: Registry, catalog: Catalog): OutputF
   lines.push("  readonly phosphor: string;");
   lines.push("  /** The `@phosphor-icons/react` export that draws it. */");
   lines.push("  readonly component: string;");
-  lines.push("  /** i18n key of the accessibility label. */");
+  lines.push("  /**");
+  lines.push("   * The entry's stable id for its meaning, `icon.<id>`: for search, documentation and an app's own catalog. It");
+  lines.push("   * is never an accessible name; an `Icon` is named only by its own `label` prop (ADR-0032 rule 6).");
+  lines.push("   */");
   lines.push("  readonly label: string;");
   lines.push("  readonly categories: readonly string[];");
   lines.push("  /** Search terms; an agent looks an icon up by tag or category, never by vendor name. */");
   lines.push("  readonly tags: readonly string[];");
   lines.push("  /** Flip the glyph under `dir=\"rtl\"`. */");
   lines.push("  readonly rtlMirror: boolean;");
+  lines.push("  /**");
+  lines.push("   * The style the registry suggests for the glyph, which a registry browser may show it in. No component reads");
+  lines.push("   * it: `Icon`'s `style` defaults to `outline` whatever this says (spec/components/Icon.yaml).");
+  lines.push("   */");
   lines.push("  readonly defaultStyle: IconStyle;");
   lines.push("  readonly since: string;");
   lines.push("  readonly deprecated?: { readonly since: string; readonly replacedBy: IconName };");
@@ -191,7 +198,8 @@ export function renderSwiftEnum(registry: Registry): OutputFile {
   lines.push("        }");
   lines.push("    }");
   lines.push("");
-  lines.push("    /// i18n key of the accessibility label.");
+  lines.push("    /// The entry's stable id for its meaning, `icon.<id>`: for search, documentation and an app's own catalog. It");
+  lines.push("    /// is never an accessible name; `DSIcon` is named only by its own `label` (ADR-0032 rule 6).");
   lines.push("    public var label: String { \"icon.\\(rawValue)\" }");
   lines.push("");
   lines.push("    /// Flip the glyph in a right-to-left layout. False for a symbol the system already mirrors (critic C-24).");
@@ -207,7 +215,8 @@ export function renderSwiftEnum(registry: Registry): OutputFile {
   lines.push("        }");
   lines.push("    }");
   lines.push("");
-  lines.push("    /// The style the icon renders when the caller names none.");
+  lines.push("    /// The style the registry suggests for the glyph, which a registry browser may show it in. No component reads");
+  lines.push("    /// it: `DSIcon`'s `style` defaults to `outline` whatever this says (spec/components/Icon.yaml).");
   lines.push("    public var defaultStyle: DSIconStyle {");
   lines.push("        switch self {");
   for (const style of STYLE_NAMES) {

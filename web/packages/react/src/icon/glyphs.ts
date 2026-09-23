@@ -47,7 +47,7 @@ import { EyeSlashIcon } from "@phosphor-icons/react/dist/csr/EyeSlash";
 import { BroadcastIcon } from "@phosphor-icons/react/dist/csr/Broadcast";
 import { LockSimpleIcon } from "@phosphor-icons/react/dist/csr/LockSimple";
 import { MapTrifoldIcon } from "@phosphor-icons/react/dist/csr/MapTrifold";
-import { MapPinIcon } from "@phosphor-icons/react/dist/csr/MapPin";
+import { MapPinSimpleIcon } from "@phosphor-icons/react/dist/csr/MapPinSimple";
 import { BellIcon } from "@phosphor-icons/react/dist/csr/Bell";
 import { WifiHighIcon } from "@phosphor-icons/react/dist/csr/WifiHigh";
 import { SparkleIcon } from "@phosphor-icons/react/dist/csr/Sparkle";
@@ -100,7 +100,7 @@ export const glyphs: Readonly<Record<IconName, Icon>> = {
   "object.gps": BroadcastIcon,
   "object.lock": LockSimpleIcon,
   "object.map": MapTrifoldIcon,
-  "object.map-pin": MapPinIcon,
+  "object.map-pin": MapPinSimpleIcon,
   "object.notification": BellIcon,
   "object.signal": WifiHighIcon,
   "object.sparkle": SparkleIcon,

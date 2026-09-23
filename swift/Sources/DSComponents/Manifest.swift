@@ -37,12 +37,17 @@
 ///
 /// P4-1 adds Divider (`DSDivider`) on iOS, iPadOS and macOS. Divider.yaml marks watchOS `none`, so its row has no
 /// `watchos` key: one there would claim a platform the spec rules out, which the parity report fails as
-/// `manifest/unsupported` (ADR-0006 rule 4).
+/// `manifest/unsupported` (ADR-0006 rule 4). Divider 2 settles behavior 2 for a parent that sizes to its content: the
+/// line's ideal length is zero, so a stack under `fixedSize` on its cross axis is as long as its other children.
+///
+/// P4-2 adds Icon (`DSIcon`) on all four Apple platforms. Icon.yaml marks watchOS `full` — it is one of the nine
+/// components ADR-0010 puts on the wrist — so its row carries a `watchos` key, and every prop works there.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Button": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
-        "Divider": ["ios": 1, "ipados": 1, "macos": 1],
+        "Divider": ["ios": 2, "ipados": 2, "macos": 2],
+        "Icon": ["ios": 1, "ipados": 1, "macos": 1, "watchos": 1],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]

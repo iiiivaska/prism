@@ -28,7 +28,7 @@ it**, and where "what does Prism have today" is one screen instead of seven file
 |---|---|
 | `web/apps/showcase/` | `@iiiivaska/prism-showcase` (private): Vite + React app; `pnpm showcase`, `pnpm showcase:build`, `pnpm showcase:preview` |
 | `web/apps/showcase/plugins/catalog.ts` | the Vite plugin that reads the specs, the web manifest and the published token manifest, and serves them as `virtual:prism/catalog`, `virtual:prism/tokens` and `virtual:prism/brands`. The catalogue is **built, not committed**: there is no generated file on the web side and so nothing that can be stale |
-| `web/apps/showcase/plugins/glyphs.ts` | `virtual:prism/glyphs`: the registry's Phosphor binding, read from `@phosphor-icons/core` at build time |
+| `web/apps/showcase/plugins/glyphs.ts` | `virtual:prism/glyphs`: the registry's Phosphor cuts, read from `@phosphor-icons/core` at build time, for the Icons screen's ladder of registry data that no `Icon` prop reaches |
 | `web/apps/showcase/src/harness/` | the example harness — `renderers.tsx`, `content.ts`, `harness.css` — today a copy of `web/apps/gallery/src/harness/` with its prefix changed, so that the two stage an example identically. `web/packages/examples` is what turns the copy into one file |
 | `swift/Showcase/Sources/DSShowcase/` | new SwiftPM target and product `DSShowcase`: the screens, the example renderers and the three generated files |
 | `swift/Showcase/Sources/DSShowcase/Generated/DSShowcaseCatalog.swift` | generated: every spec, its support row, its implemented version, its examples |
@@ -122,7 +122,7 @@ names a symbol that does not exist yet, and the build fails until someone writes
   does not compile until that renderer exists. A renderer maps the spec's own `props` onto the
   component's public API, so an example the *spec* adds is staged with no edit at all, and only a prop
   no renderer knows needs a hand. That is the compile-time registry the platform needs, and it leaves
-  `DSComponents`' own `#if DEBUG` example sets, the snapshot harness and the 488 baselines alone.
+  `DSComponents`' own `#if DEBUG` example sets, the snapshot harness and the committed baselines alone.
 
 Writing one harness entry per component is not a new chore: the gallery's `RENDERERS` map and the
 Apple `DS<Name>Examples` file are already required by P3-4 and P3-3. The showcase reads the same
@@ -147,7 +147,7 @@ the app says so on its About screen. Phase 5 rebuilds the chrome from real compo
 |---|---|
 | Overview | brand, system version (`DSTokensInfo.version` / the tokens package's `version`), the effective context, counts: tokens by tier, components implemented / specified, icons |
 | Foundations | one screen per token group, in the order above; each specimen shows the path, the value, the CSS variable or the Swift member, and the description the manifest carries. Materials are shown through `Surface` over the synthetic map and image of the example harness, because Surface is what publishes them; motion specimens replay on tap |
-| Icons | the registry as data — id, label key, tags, default style, the weight ladder, the four boxes — with a preview drawn from the registry's own binding, labelled as a preview (see §4) |
+| Icons | the registry as data — id, label key, tags, default style — with every entry drawn by `Icon` at the size and weight picked above it; beside it the registry's weight ladder and four boxes, which reach further than `Icon`'s props, drawn from the registry's own binding and labelled as registry data (see §4). `Icon`'s spec examples are on Components |
 | Components | one page per component, its examples staged exactly as the gallery stages them, plus the spec summary, its version and support row |
 | About | what the chrome is, what the app reads, links to the spec, the parity report and the gallery |
 
@@ -247,14 +247,16 @@ Per component, four states, all from the catalogue:
 |---|---|
 | implemented at `specVersion` | the examples |
 | implemented behind the spec | the examples, plus "implements v3 of spec v5" and the parity link — the report's own `LAG` |
-| `platforms.<key>` is `full`/`adapted`, no manifest entry | "Specified, not implemented here yet", the spec summary, the example ids it will have, the spec link. Every one of the 53 unimplemented specs is a row, so the app never silently omits |
+| `platforms.<key>` is `full`/`adapted`, no manifest entry | "Specified, not implemented here yet", the spec summary, the example ids it will have, the spec link. Every one of the 51 unimplemented specs is a row, so the app never silently omits |
 | `platforms.<key>` is `none` | "Not on this platform, by design", with the reason from `notes.platform.<key>` when the spec gives one |
 
 The same rule applies to the foundations: a `ref` token shows a value on the web (it is a CSS variable)
 and on Apple says "primitive tier — no public API"; a token with `deprecated` set shows the
-replacement; the icon preview is labelled "drawn from the registry binding — `Icon`
-(`spec/components/Icon.yaml`) is implemented on neither stack", which stops being written the moment
-`Icon` enters a manifest and the catalogue moves it into Components.
+replacement; and on the Icons screen the registry's ladder — all six rungs and all four boxes, of which
+`Icon`'s props reach two rungs and three boxes — is labelled as registry data, not as the component. Until
+`Icon` entered both manifests (P4-2) the whole screen was such a preview, labelled "drawn from the
+registry binding — `Icon` is implemented on neither stack"; the catalogue then moved `Icon` into
+Components, and the grid is drawn by `Icon` itself.
 
 Patterns (`DashboardGrid`, `DetailScreen`, `AdaptiveShell`) get a section of their own that says they
 are contracts with no implementation and no snapshots, which is also what the gallery says.
@@ -318,8 +320,12 @@ and a second baseline set would be a second canon to keep green.
    Until then `web/apps/showcase/src/harness/` is a copy of it — same renderers, same sample copy,
    same stage CSS under a `ds-sc-` prefix — and each file says so in its header. The copy is the one
    piece of the web showcase that can drift, and moving the package is what removes it.
-3. **`Icon` is implemented on neither stack.** `Glyph` (web) and `DSGlyph` (Apple) are internal and
-   decorative, and `Icon` is in no manifest, so the 51 registry glyphs can only be previewed by the
-   showcase from the registry's own binding, labelled as such.
+3. ~~**`Icon` is implemented on neither stack.**~~ **Implemented in P4-2.** `Icon` is public on both
+   stacks and in both manifests, and Button and Card draw their glyphs through it, so the Icons screen
+   draws the 51 registry entries with the component and its spec examples are on Components. Only the
+   registry's ladder (every rung and box, where `Icon`'s props reach only some) is still drawn from the binding, and
+   labelled as registry data. The screen's reference-distance clearance
+   (`docs/direction-board/reference-distance-showcase.md` §10, condition 2) expired with it, and that
+   review is re-run as a task of its own.
 4. **watchOS is out of scope for the app.** The package supports it, the `watch` density is switchable
    inside the iOS and macOS app, and a watch *run* is not part of this.

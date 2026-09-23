@@ -8,7 +8,8 @@
 //   sf/min-os-*             the minOS / fallback pair itself
 //   sf/fill-missing         a filled-by-default icon whose `.fill` variant does not exist
 //   sf/smoke                NSImage(systemSymbolName:) returns nil for a name the catalog knows
-//   rtl/double-mirror       rtlMirror.apple on a symbol the system already mirrors
+//   rtl/double-mirror       rtlMirror.apple on a symbol the system already mirrors (a direction-relative name, or one
+//                           of the few it localizes for right to left by itself)
 //   rtl/missing-mirror      the web flips the glyph and Apple neither flips nor auto-mirrors it
 //   size/measured           the registry's SF point size does not fill its px box
 //   enum/stale              DSIconName.swift does not cover exactly the ids of the registry
@@ -24,8 +25,29 @@ enum Checks {
         name.split(separator: ".").contains { directionalParts.contains(String($0)) }
     }
 
-    static func autoMirrors(_ name: String, catalog: SymbolCatalog) -> Bool {
-        isDirectional(name) || catalog.flippable.contains(name)
+    /// Symbols whose names are not direction-relative but which SF Symbols draws mirrored in a right-to-left layout
+    /// anyway, because the catalog ships a right-to-left drawing for them: the day grid of `calendar` runs from the
+    /// right, and `chart.xyaxis.line` puts its axes on the right. Measured on the iOS 26.5 simulator by `DSIconBoxTests`
+    /// in the Prism package, and listed with a right-to-left rendition in CoreGlyphs' `Assets.car`, which only Xcode's
+    /// `assetutil` reads; the same two names are `SYSTEM_LOCALIZED_SYMBOLS` in tools/icons/checks.ts.
+    static let systemLocalized: Set<String> = ["calendar", "chart.xyaxis.line"]
+
+    /// Whether the system mirrors a symbol in a right-to-left layout on its own: a direction-relative name, or one of
+    /// `systemLocalized`.
+    ///
+    /// A left/right-named symbol is **not**, even when CoreGlyphs' `legacy_flippable.plist` lists it: whatever that
+    /// list once described, it is not what an app built with the current SDK draws. Measured with SwiftUI's
+    /// `Image(systemName:)` under `.layoutDirection(.rightToLeft)` on the iOS 26.5 simulator CI tests on and on macOS,
+    /// and with UIKit under `.forceRightToLeft`, `arrow.up.right` and `arrow.right` draw exactly their left-to-right
+    /// pixels, while `arrow.up.forward` and `chevron.backward` draw the mirrored ones. Trusting the list let `nav.open`
+    /// ship unmirrored on Apple while the web flipped it — the case `rtl/missing-mirror` exists to fail — so the
+    /// catalog no longer reads it (`Fixtures/missing-mirror-legacy-flippable.json`).
+    ///
+    /// A few symbols carry a right-to-left drawing of their own that no name and no plist announces; those the
+    /// registry binds are `systemLocalized`. `DSIconBoxTests` in the Prism package measures what every registry glyph
+    /// draws under RTL on the simulator, so a symbol this rule misses fails there.
+    static func autoMirrors(_ name: String) -> Bool {
+        isDirectional(name) || systemLocalized.contains(name)
     }
 
     /// Every symbol binding of the registry against the catalog, plus the mirroring table.
@@ -66,12 +88,12 @@ enum Checks {
                 issues.append(.error("sf/smoke", id, "NSImage(systemSymbolName: \"\(symbol)\") is nil although the catalog lists the name"))
             }
             let mirror = icon.rtlMirror ?? Registry.RTLMirror(web: false, apple: false)
-            let auto = autoMirrors(symbol, catalog: catalog)
+            let auto = autoMirrors(symbol)
             if mirror.apple, auto {
-                issues.append(.error("rtl/double-mirror", id, "\(symbol) is mirrored by the system in a right-to-left layout; rtlMirror.apple must be false or the glyph flips twice"))
+                issues.append(.error("rtl/double-mirror", id, "the system already mirrors \(symbol) in a right-to-left layout; rtlMirror.apple must be false or the glyph flips twice"))
             }
             if mirror.web, !mirror.apple, !auto {
-                issues.append(.error("rtl/missing-mirror", id, "the web flips this glyph but \(symbol) neither declares rtlMirror.apple nor is mirrored by the system; a directional icon flips on both stacks"))
+                issues.append(.error("rtl/missing-mirror", id, "the web flips this glyph but \(symbol) neither declares rtlMirror.apple nor is mirrored by the system (a backward/forward/leading/trailing name is, and the few symbols in Checks.systemLocalized); a directional icon flips on both stacks: bind the direction-relative symbol, or set rtlMirror.apple"))
             }
         }
         return issues

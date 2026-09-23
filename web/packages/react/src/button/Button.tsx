@@ -12,6 +12,8 @@
  *   hover stop, the label is hidden and a Spinner takes its place, and the accessibility label becomes
  *   "<label>, loading" (Button.yaml behavior 3).
  * - `isDisabled` removes the control from the focus order and lowers its opacity (behavior 4).
+ * - The icons are Icon's box (`IconPart`) at `size.icon.md` with `tone: inherit`, so they take the
+ *   label's foreground and are hidden from assistive technology: the button's name is its label alone.
  * - The press scale, the hit region, the hover overlay and the Reduce Motion substitute are CSS
  *   (Button.css), driven by the tokens and `--ds-motion-presentation-crossfade` (ADR-0023 §8.4).
  * - It accepts `ScopeAttributes` and forwards them, with every other DOM prop React Aria passes through,
@@ -21,7 +23,7 @@ import type { CSSProperties, ReactNode, Ref } from "react";
 import { Button as AriaButton, type ButtonProps as AriaButtonProps, type PressEvent } from "react-aria-components";
 import type { ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import type { IconName } from "../generated/icons.ts";
-import { Glyph } from "../icon/Glyph.tsx";
+import { IconPart } from "../icon/Icon.tsx";
 import { useSurfaceContext } from "../surface/context.ts";
 import type { ButtonSize, ButtonVariant } from "./variants.ts";
 
@@ -91,7 +93,7 @@ export function Button(props: ButtonProps): ReactNode {
       data-ds-surface={surface.material}
       data-ds-full-width={fullWidth ? "" : undefined}
     >
-      {leadingIcon === undefined ? null : <Glyph name={leadingIcon} slot="button-leading-icon" />}
+      {leadingIcon === undefined ? null : <IconPart slot="button-leading-icon" name={leadingIcon} size="md" tone="inherit" />}
       <span data-ds-slot="button-label">
         <span data-ds-slot="button-label-text">{label}</span>
         {isLoading ? (
@@ -101,7 +103,7 @@ export function Button(props: ButtonProps): ReactNode {
           </svg>
         ) : null}
       </span>
-      {trailingIcon === undefined ? null : <Glyph name={trailingIcon} slot="button-trailing-icon" />}
+      {trailingIcon === undefined ? null : <IconPart slot="button-trailing-icon" name={trailingIcon} size="md" tone="inherit" />}
     </AriaButton>
   );
 }

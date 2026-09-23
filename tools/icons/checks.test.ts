@@ -4,7 +4,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, test } from "vitest";
-import { checkAgainstCatalog, checkRegistryRules, checkSfNamesAbsent, checkTables, checkTokens, isDirectionalSymbol, requiredCuts } from "./checks.ts";
+import { checkAgainstCatalog, checkRegistryRules, checkSfNamesAbsent, checkTables, checkTokens, isDirectionalSymbol, isSystemMirrored, requiredCuts } from "./checks.ts";
 import { OWNED_ROOTS, PATHS } from "./config.ts";
 import { loadCatalog } from "./phosphor.ts";
 import { loadRegistry, validateSchema, type Issue, type Registry } from "./registry.ts";
@@ -39,6 +39,7 @@ describe("fixtures", () => {
     ["misspelled-phosphor.json", "phosphor/unknown"],
     ["version-drift.json", "phosphor/version"],
     ["directional-double-mirror.json", "rtl/double-mirror"],
+    ["missing-mirror.json", "rtl/missing-mirror"],
     ["custom-mirror-mismatch.json", "rtl/custom-mismatch"],
     ["duplicate-custom.json", "custom/duplicate"],
     ["label-mismatch.json", "label/mismatch"],
@@ -138,6 +139,44 @@ describe("mirroring", () => {
     ["circle", false],
   ])("%s is directional: %s", (name, expected) => {
     expect(isDirectionalSymbol(name)).toBe(expected);
+  });
+
+  test.each([
+    ["chevron.backward", true],
+    ["arrow.up.forward", true],
+    ["calendar", true],
+    ["chart.xyaxis.line", true],
+    ["arrow.up.right", false],
+    ["calendar.circle", false],
+    ["circle", false],
+  ])("%s is mirrored by the system: %s", (name, expected) => {
+    expect(isSystemMirrored(name)).toBe(expected);
+  });
+
+  /** valid.json with its first icon rebound to `symbol` and mirrored as `rtlMirror` says. */
+  function rebound(symbol: string, rtlMirror: { web: boolean; apple: boolean }): Registry {
+    const { registry } = fixture("valid.json");
+    if (registry === null) throw new Error("valid.json did not load");
+    const [id, icon] = Object.entries(registry.icons)[0] ?? [];
+    if (id === undefined || icon === undefined) throw new Error("valid.json has no icon");
+    return { ...registry, icons: { [id]: { ...icon, rtlMirror, apple: { symbol } } } };
+  }
+
+  function rtlCodes(registry: Registry): readonly string[] {
+    return codes(checkRegistryRules(registry)).filter((code) => code.startsWith("rtl/"));
+  }
+
+  test("a glyph the web flips may bind a symbol the system localizes for right to left, with rtlMirror.apple false", () => {
+    expect(rtlCodes(rebound("calendar", { web: true, apple: false }))).toEqual([]);
+    expect(rtlCodes(rebound("chart.xyaxis.line", { web: true, apple: false }))).toEqual([]);
+  });
+
+  test("setting rtlMirror.apple on a symbol the system localizes flips it twice", () => {
+    expect(rtlCodes(rebound("calendar", { web: true, apple: true }))).toEqual(["rtl/double-mirror"]);
+  });
+
+  test("a left/right name is not mirrored by the system, so the web flipping it alone fails", () => {
+    expect(rtlCodes(rebound("arrow.up.right", { web: true, apple: false }))).toEqual(["rtl/missing-mirror"]);
   });
 });
 

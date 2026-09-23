@@ -282,3 +282,56 @@ public struct DSDividerRenderer: DSExampleRenderer {
     /// `card`-padded Surface would put a second one around it.
     public func surfacePadding(for example: DSSpecExample) -> DSSurfacePadding { DSSurfacePadding.none }
 }
+
+// MARK: - Icon
+
+/// Icon.yaml's `name`, `size`, `weight`, `style`, `tone`, `label` and `isDecorative`, staged as every harness stages
+/// them: no frame of its own, so a page example is the glyph on the page, and an example that declares a material is
+/// the glyph inside a `card`-padded Surface that hugs it (the default `surfacePadding`). Icon declares no action.
+public struct DSIconRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        guard let name = example.icon("name") else { return nil }
+        let size: DSGlyphSize? = example.string("size") == nil ? .md : example.raw("size")
+        let weight: DSGlyphWeight? = example.string("weight") == nil ? .control : example.raw("weight")
+        let style: DSIconStyle? = example.string("style") == nil ? .outline : example.raw("style")
+        guard let size, let weight, let style else { return nil }
+        // `inherit` is the absence of a tone: nil sets no colour, and the glyph takes the row's foreground below.
+        let tone: DSGlyphTone?
+        switch example.string("tone") {
+        case nil: tone = .primary
+        case "inherit": tone = nil
+        case let written?:
+            guard let known = DSGlyphTone(rawValue: written) else { return nil }
+            tone = known
+        }
+        // A blank label names nothing, so it is no label: the glyph stays hidden rather than becoming an unnamed image.
+        let label = example.string("label").flatMap { $0.allSatisfy(\.isWhitespace) ? nil : LocalizedStringKey($0) }
+        // `isDecorative` defaults false in the spec, which is also `bool(_:)`'s default.
+        let icon = DSIcon(
+            name, size: size, weight: weight, style: style, tone: tone, label: label,
+            isDecorative: example.bool("isDecorative")
+        )
+        return tone == nil ? AnyView(DSRowForeground { icon }) : AnyView(icon)
+    }
+}
+
+/// The foreground of a row and nothing else of one: `color.text.primary`, ListRow.yaml's `title.color.default`, which
+/// an `inherit` glyph takes. The snapshot harness stages `inherit-in-row` in the same wrapper, and the web harnesses in
+/// `data-ds-sc-foreground="row"` and `data-ds-gallery-foreground="row"`. It draws no text, so it adds nothing to the
+/// accessibility tree.
+private struct DSRowForeground<Content: View>: View {
+    let content: Content
+    private var ds = DSThemeValues()
+
+    init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    var body: some View {
+        content.foregroundStyle(ds.tokens.color.textPrimary)
+    }
+}

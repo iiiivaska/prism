@@ -1,17 +1,41 @@
 /**
- * Icons: the registry as data, with a preview.
+ * Icons: the registry, drawn by `Icon`.
  *
- * `Icon` (spec/components/Icon.yaml) is implemented on neither stack, and the glyph that Button and
- * Card draw is internal and decorative, so this screen cannot render a Prism component and does not
- * pretend to. What it renders is drawn from the registry's own binding — `iconRegistry[id].phosphor`,
- * the Phosphor name ADR-0013 decision 2 gives it — and is labelled as a preview. The label stops
- * being true the moment `Icon` enters a manifest, and then the Components screen owns it.
+ * `Icon` (spec/components/Icon.yaml) is a component of `@iiiivaska/prism-react`, so its spec examples, with
+ * their materials and their one accessible name, are on the Components screen, staged as the gallery stages
+ * them. This screen is the registry itself: every entry drawn by the real `Icon`, with a control for each of
+ * Icon's own axes — its three boxes, its two weights, its three styles or the entry's `defaultStyle` passed
+ * as the prop — and a right-to-left direction, under which Icon's own stylesheet mirrors the glyphs the
+ * registry marks `rtlMirror`. Each glyph is `tone: primary` and carries no `label`, so it is hidden from
+ * assistive technology; the id, the documentation label and the tags beside it are the registry's rows.
  *
- * The weight ladder, the styles and the four boxes are the registry's own tables (`iconWeights`,
- * `iconStyles`, `iconSizes`), so a registry change moves this screen with no edit here.
+ * The ladder panel is registry data that no Icon prop reaches: the six rungs of `iconWeights`, the four
+ * boxes of `iconSizes` (xs is no Icon size) and the style cuts, drawn at build time from the registry's
+ * Phosphor binding (`virtual:prism/glyphs`, plugins/glyphs.ts) and labelled as the registry's, not as the
+ * component. A registry change moves both panels with no edit here.
+ *
+ * Landing `Icon` expired this screen's reference-distance clearance: P5-3 cleared it as a registry
+ * preview that no component drew (docs/direction-board/reference-distance-showcase.md §10, condition 2,
+ * finding SD-1), and the ADR-0015 rule 3 review has to be re-run for it before a release ships it. SD-1's
+ * do-not-drift note still holds: no search, filter, copy, download or new per-icon affordance.
  */
 import { useState, type ReactNode } from "react";
-import { iconRegistry, iconSizes, iconSource, iconStyles, iconWeights, type IconName, type IconSize, type IconStyle, type IconWeight } from "@iiiivaska/prism-react";
+import {
+  Icon,
+  glyphSizes,
+  glyphWeights,
+  iconRegistry,
+  iconSizes,
+  iconSource,
+  iconStyles,
+  iconWeights,
+  type GlyphSize,
+  type GlyphWeight,
+  type IconName,
+  type IconSize,
+  type IconStyle,
+  type IconWeight,
+} from "@iiiivaska/prism-react";
 import { glyphs } from "virtual:prism/glyphs";
 import { components } from "virtual:prism/catalog";
 import { Panel, Screen, Tag } from "../ui.tsx";
@@ -20,12 +44,16 @@ const weightNames = Object.keys(iconWeights) as IconWeight[];
 const styleNames = Object.keys(iconStyles) as IconStyle[];
 const sizeNames = Object.keys(iconSizes) as IconSize[];
 
-/** The Phosphor cut a weight and a style select: the style wins when it names one (ADR-0013 decision 4). */
+/** The token each of Icon's weights binds (Icon.yaml `tokens.root.weight`). */
+const weightTokens: Readonly<Record<GlyphWeight, string>> = { control: "icon.weight", display: "icon.weight-display" };
+
+/** The Phosphor cut a registry weight and a style select: the style wins when it names one (ADR-0013 decision 4). */
 function cutFor(weight: IconWeight, style: IconStyle): string {
   return iconStyles[style] ?? iconWeights[weight].phosphor;
 }
 
-function Glyph(props: { readonly name: string; readonly cut: string; readonly px: number; readonly mirror?: boolean }): ReactNode {
+/** One cut of the registry's binding, as data: the ladder, not the component. */
+function RegistryCut(props: { readonly name: string; readonly cut: string; readonly px: number }): ReactNode {
   const markup = glyphs[props.name]?.[props.cut];
   if (markup === undefined) return <span className="ds-sc-glyph-missing">?</span>;
   return (
@@ -35,17 +63,17 @@ function Glyph(props: { readonly name: string; readonly cut: string; readonly px
       height={props.px}
       role="presentation"
       className="ds-sc-glyph"
-      style={{ fill: "currentColor", transform: props.mirror === true ? "scaleX(-1)" : undefined }}
+      style={{ fill: "currentColor" }}
       dangerouslySetInnerHTML={{ __html: markup }}
     />
   );
 }
 
 export function Icons(): ReactNode {
-  const [weight, setWeight] = useState<IconWeight>("regular");
+  const [weight, setWeight] = useState<GlyphWeight>("control");
   const [style, setStyle] = useState<IconStyle | "default">("default");
-  const [size, setSize] = useState<IconSize>("lg");
-  const [mirror, setMirror] = useState(false);
+  const [size, setSize] = useState<GlyphSize>("lg");
+  const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
 
   const spec = components.find((candidate) => candidate.name === "Icon");
   const entries = Object.entries(iconRegistry) as [IconName, (typeof iconRegistry)[IconName]][];
@@ -56,29 +84,37 @@ export function Icons(): ReactNode {
       title="Icons"
       lead={
         <>
-          {entries.length} registry entries ({iconSource.package} {iconSource.version}). Each glyph below is drawn from the registry&apos;s own
-          Phosphor binding, not by a Prism component.
+          {entries.length} registry entries ({iconSource.package} {iconSource.version}), each drawn by <code>Icon</code>.
         </>
       }
     >
       <Panel>
         <p className="ds-sc-note">
-          <Tag tone="info">preview</Tag>{" "}
-          <code>Icon</code>
-          {spec === undefined ? "" : ` (spec/components/Icon.yaml, specVersion ${spec.specVersion})`} is implemented on neither stack — it is in
-          no implementation manifest — and the glyph that Button and Card draw is internal and always decorative. So these are the registry rows
-          with a picture beside them, not a component.
+          <Tag tone="ok">Icon</Tag> Every glyph in the registry panel is <code>Icon</code>
+          {spec === undefined ? "" : ` (spec/components/Icon.yaml, specVersion ${spec.specVersion})`} with <code>tone: primary</code>, at the box,
+          weight and style chosen here. Its spec examples, on their materials and with the one name a glyph can carry, are on the Components
+          screen. The ladder below is the registry&apos;s own data, which no Icon prop reaches.
         </p>
       </Panel>
 
-      <Panel title="Cut">
+      <Panel title="Icon's axes">
         <div className="ds-sc-controls">
+          <div className="ds-sc-axis">
+            <span className="ds-sc-axis-name">size</span>
+            <div className="ds-sc-segments">
+              {glyphSizes.map((name) => (
+                <button key={name} type="button" data-selected={size === name ? "" : undefined} onClick={() => { setSize(name); }}>
+                  {name} · {iconSizes[name]}px
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="ds-sc-axis">
             <span className="ds-sc-axis-name">weight</span>
             <div className="ds-sc-segments">
-              {weightNames.map((name) => (
+              {glyphWeights.map((name) => (
                 <button key={name} type="button" data-selected={weight === name ? "" : undefined} onClick={() => { setWeight(name); }}>
-                  {name} · {iconWeights[name].number}
+                  {name} · {weightTokens[name]}
                 </button>
               ))}
             </div>
@@ -97,35 +133,64 @@ export function Icons(): ReactNode {
             </div>
           </div>
           <div className="ds-sc-axis">
-            <span className="ds-sc-axis-name">box</span>
+            <span className="ds-sc-axis-name">direction</span>
             <div className="ds-sc-segments">
-              {sizeNames.map((name) => (
-                <button key={name} type="button" data-selected={size === name ? "" : undefined} onClick={() => { setSize(name); }}>
-                  {name} · {iconSizes[name]}px
+              {(["ltr", "rtl"] as const).map((name) => (
+                <button key={name} type="button" data-selected={direction === name ? "" : undefined} onClick={() => { setDirection(name); }}>
+                  {name}
                 </button>
               ))}
             </div>
           </div>
-          <div className="ds-sc-axis">
-            <span className="ds-sc-axis-name">direction</span>
-            <div className="ds-sc-segments">
-              <button type="button" data-selected={mirror ? undefined : ""} onClick={() => { setMirror(false); }}>
-                ltr
-              </button>
-              <button type="button" data-selected={mirror ? "" : undefined} onClick={() => { setMirror(true); }}>
-                rtl
-              </button>
+        </div>
+        <p className="ds-sc-note">
+          <code>display</code> draws only at <code>lg</code>; at <code>sm</code> and <code>md</code> Icon renders the control cut (Icon.yaml behavior
+          3). A filled or duotone glyph has one cut on the web, so the weight changes nothing there (behavior 6). The spec&apos;s style default is{" "}
+          <code>outline</code>; &ldquo;each entry&apos;s default&rdquo; passes the registry&apos;s <code>defaultStyle</code> as the prop.
+        </p>
+      </Panel>
+
+      <Panel title="The registry">
+        <div className="ds-sc-icon-grid" dir={direction}>
+          {entries.map(([name, entry]) => (
+            <div key={name} className="ds-sc-icon-cell">
+              <div className="ds-sc-icon-box">
+                <Icon name={name} size={size} weight={weight} style={style === "default" ? entry.defaultStyle : style} tone="primary" />
+              </div>
+              <code className="ds-sc-path" dir="ltr">
+                {name}
+              </code>
+              <span className="ds-sc-icon-meta ds-sc-mono" dir="ltr">
+                {entry.label}
+              </span>
+              <span className="ds-sc-icon-meta" dir="ltr">
+                {entry.categories.join(" · ")}
+              </span>
+              <span className="ds-sc-icon-meta ds-sc-dim" dir="ltr">
+                {entry.tags.join(", ")}
+              </span>
+              <span className="ds-sc-icon-meta ds-sc-mono ds-sc-dim" dir="ltr">
+                {entry.defaultStyle} · {entry.phosphor}
+                {entry.rtlMirror ? " · mirrors in rtl" : ""}
+              </span>
             </div>
-          </div>
+          ))}
         </div>
       </Panel>
 
       {ladderIcon === undefined ? null : (
-        <Panel title="The weight ladder" note={`Every weight of ${ladderIcon}, and every box, at the registry's own numbers.`}>
+        <Panel
+          title="Registry data: the ladder"
+          note={`Every rung, box and style cut the registry defines for ${ladderIcon}, drawn from its Phosphor binding. Icon reaches two rungs, three boxes and the three styles through its props; the rest is here as the registry's data, not as the component.`}
+        >
+          <p className="ds-sc-note">
+            <Tag tone="info">registry</Tag> These are the registry&apos;s own tables (<code>iconWeights</code>, <code>iconSizes</code>,{" "}
+            <code>iconStyles</code>), not <code>Icon</code>.
+          </p>
           <div className="ds-sc-ladder">
             {weightNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <Glyph name={ladderIcon} cut={cutFor(name, "outline")} px={32} />
+                <RegistryCut name={ladderIcon} cut={cutFor(name, "outline")} px={32} />
                 <code className="ds-sc-path">
                   {name} · {iconWeights[name].number} · {iconWeights[name].phosphor}
                 </code>
@@ -135,7 +200,7 @@ export function Icons(): ReactNode {
           <div className="ds-sc-ladder">
             {sizeNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <Glyph name={ladderIcon} cut={cutFor(weight, "outline")} px={iconSizes[name]} />
+                <RegistryCut name={ladderIcon} cut={cutFor("regular", "outline")} px={iconSizes[name]} />
                 <code className="ds-sc-path">
                   {name} · {iconSizes[name]}px
                 </code>
@@ -145,7 +210,7 @@ export function Icons(): ReactNode {
           <div className="ds-sc-ladder">
             {styleNames.map((name) => (
               <div key={name} className="ds-sc-ladder-cell">
-                <Glyph name={ladderIcon} cut={cutFor(weight, name)} px={32} />
+                <RegistryCut name={ladderIcon} cut={cutFor("regular", name)} px={32} />
                 <code className="ds-sc-path">
                   {name} · {iconStyles[name] ?? "the weight's cut"}
                 </code>
@@ -154,31 +219,6 @@ export function Icons(): ReactNode {
           </div>
         </Panel>
       )}
-
-      <Panel title="The registry">
-        <div className="ds-sc-icon-grid">
-          {entries.map(([name, entry]) => (
-            <div key={name} className="ds-sc-icon-cell">
-              <div className="ds-sc-icon-box">
-                <Glyph
-                  name={name}
-                  cut={cutFor(weight, style === "default" ? entry.defaultStyle : style)}
-                  px={iconSizes[size]}
-                  mirror={mirror && entry.rtlMirror}
-                />
-              </div>
-              <code className="ds-sc-path">{name}</code>
-              <span className="ds-sc-icon-meta ds-sc-mono">{entry.label}</span>
-              <span className="ds-sc-icon-meta">{entry.categories.join(" · ")}</span>
-              <span className="ds-sc-icon-meta ds-sc-dim">{entry.tags.join(", ")}</span>
-              <span className="ds-sc-icon-meta ds-sc-mono ds-sc-dim">
-                {entry.defaultStyle} · {entry.phosphor}
-                {entry.rtlMirror ? " · mirrors in rtl" : ""}
-              </span>
-            </div>
-          ))}
-        </div>
-      </Panel>
     </Screen>
   );
 }
