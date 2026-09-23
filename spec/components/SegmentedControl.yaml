@@ -72,14 +72,14 @@ tokens:
         image: material.glass.chip.blur
         vivid: material.glass.chip.blur
       vivid: material.glass.chip.blur
-      glass: material.glass.chip.blur
     saturate:
       page:
         map: material.glass.chip.saturate
         image: material.glass.chip.saturate
         vivid: material.glass.chip.saturate
       vivid: material.glass.chip.saturate
-      glass: material.glass.chip.saturate
+    fallbackBackground: color.bg.surface.raised
+    fallbackUnderlay: color.bg.page
     edgeColor: color.edge.highlight
     edgeStartAlpha:
       page:
@@ -176,7 +176,7 @@ behavior:
   - The selected segment is the one inverse solid in the group (ink on light, white on dark) and carries the opposite-colored label and glyph; every other segment is a hairline outline with a secondary label.
   - On a vivid surface the selected segment becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media) and the unselected outlines take color.border.on-media; on the scheme's glass the solid is color.bg.fill.inverse, which is already ink on light glass and white on smoked glass.
   - Over a map, imagery, a vivid surface or the scheme's glass the unselected segments render the glass chip and carry color.text.on-glass-fill, so the row reads as glass chips with one solid among them; the selected segment keeps its solid fill and never takes the chip.
-  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where a segment renders glass."
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where a segment renders glass. On the scheme's glass a segment draws the fill and the edge and no blur or saturation, so no chip blurs glass a second time (ADR-0036 §5)."
   - The hit region of each segment is the larger of its visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); the invisible extension never overlaps a neighbor, so a row keeps its gaps.
   - "Labels never wrap and never truncate: a segment that cannot show its whole label means the choice belongs in a Select. At most four segments."
   - "`isFullWidth` gives every segment the width of the widest, so the row keeps one rhythm; otherwise each segment is as wide as its content plus its padding."
@@ -198,7 +198,7 @@ accessibility:
   keyboard: arrow keys move the selection inside the group and wrap at its ends, Home and End move to the first and last segment, Tab enters and leaves the group as one stop, and the focus ring is color.border.focus at border.focus width outside the segment's pill
   dynamicType: labels scale with type.label.*; the segments grow with them up to the accessibility3 size and then the row wraps to a vertical stack rather than truncating a label
   contrast: the selected pair is color.text.on-inverse on color.bg.fill.inverse, and color.text.on-inverse-media on color.bg.fill.inverse-media on vivid; unselected labels are color.text.secondary, functional on page, surface and raised, and color.text.on-glass-fill on material.glass.chip over media; on an accent surface the unselected label is color.text.on-accent-secondary on color.bg.fill.accent; the hairline outline is decorative, because the label already identifies the segment
-  reduceTransparency: a glass parent resolves to the opaque raised fallback and the selected segment takes its default cell, comp.segmented-control.active.bg, which is what a raised surface publishes for it
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws an unselected segment that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; that segment publishes raised, so every part takes its default cell, color.border.hairline for the outline and the secondary tones for the label and glyph; the selected segment keeps its solid, and inside a glass parent, which falls back to raised itself, it takes its default cell, comp.segmented-control.active.bg
   reduceMotion: the incoming segment does not scale; the fill change crossfades to comp.segmented-control.active.bg over motion.duration.base with motion.easing.out, and nothing slides between segments
   voiceOver: each segment announces its label and whether it is selected; the group announces its own label once on entry
 

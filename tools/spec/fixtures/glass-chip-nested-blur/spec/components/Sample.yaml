@@ -1,0 +1,89 @@
+name: Sample
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture component. It exists only so that tools/spec/fixtures can break one rule at a time; it is
+  never implemented and never appears in the parity report.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+
+props:
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+
+states: [default]
+
+tokens:
+  root:
+    background:
+      default: color.bg.surface.raised
+      page:
+        default: color.bg.surface.raised
+        map: material.glass.chip
+      glass: material.glass.chip
+      glassLight: material.glass.chip
+    blur:
+      page:
+        map: material.glass.chip.blur
+      glass: material.glass.chip.blur
+    saturate:
+      page:
+        map: material.glass.chip.saturate
+      glassLight: material.glass.chip.saturate
+    fallbackBackground: color.bg.surface.raised
+    fallbackUnderlay: color.bg.page
+    radius: radius.control
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      default: color.text.primary
+      page:
+        default: color.text.primary
+        map: color.text.on-glass-fill
+      glass: color.text.on-glass-fill
+      glassLight: color.text.on-glass-light
+
+behavior:
+  - The fixture draws one pill as the glass chip over a map and on glass, with one label.
+  - The hit region is the larger of the visual size and size.hit on each axis.
+
+accessibility:
+  role: group
+  label: none; the fixture is a container
+  keyboard: not focusable
+  dynamicType: the label scales with type.label.*
+  contrast: the label pair is checked by tools/contrast
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws the pill as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the pill publishes raised, so every part takes its default cell
+  reduceMotion: nothing moves, so nothing is substituted
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: default-md
+    props: { size: md }
+  - id: over-map
+    props: { size: md }
+    surface: map

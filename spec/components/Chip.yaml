@@ -75,14 +75,14 @@ tokens:
         image: material.glass.chip.blur
         vivid: material.glass.chip.blur
       vivid: material.glass.chip.blur
-      glass: material.glass.chip.blur
     saturate:
       page:
         map: material.glass.chip.saturate
         image: material.glass.chip.saturate
         vivid: material.glass.chip.saturate
       vivid: material.glass.chip.saturate
-      glass: material.glass.chip.saturate
+    fallbackBackground: color.bg.surface.raised
+    fallbackUnderlay: color.bg.page
     edgeColor: color.edge.highlight
     edgeStartAlpha:
       page:
@@ -204,7 +204,7 @@ behavior:
   - "Selection is never carried by color alone: the stroke, the label tone and the accessibility state change together."
   - "Over media that ladder collapses, because every tone on a glass chip is color.text.on-glass-fill and every stroke is color.border.on-glass-fill or color.border.on-media: the 1 px step from border.hairline to border.strong would be the only cue. So over a map, imagery, a vivid surface or the scheme's glass a selected chip also renders status.check in the leading position, replacing the leading glyph it had, and the stroke still thickens."
   - Over a map, imagery, a vivid surface or the scheme's glass the chip renders the glass chip and carries color.text.on-glass-fill for its label and glyphs, because a chip is checked with its primary foreground only.
-  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
+  - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass. On the scheme's glass the chip draws the fill and the edge and no blur or saturation, so no chip blurs glass a second time (ADR-0036 §5)."
   - "On an accent surface the chip has no fill of its own: it sits on color.bg.fill.accent with color.text.on-accent-secondary for its label and glyphs and color.text.on-accent when selected, which are the pairs checked on that material."
   - The label never wraps and never truncates; a chip that cannot show its label is too long for a chip and belongs in a ListRow.
   - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region and its own name, and pressing it fires `onRemove` without firing `onPress`."
@@ -228,7 +228,7 @@ accessibility:
   keyboard: Space and Enter toggle or activate; Delete and Backspace remove a removable chip; Tab reaches the chip and then its remove control; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: the label scales with type.label.*; the chip grows with it, and a row of chips wraps to more lines instead of truncating
   contrast: the rest label is color.text.secondary and the selected label color.text.primary, both functional on color.bg.page, color.bg.surface and color.bg.surface.raised; over media both are color.text.on-glass-fill on material.glass.chip, and on an accent surface they are color.text.on-accent-secondary and color.text.on-accent on color.bg.fill.accent; the rest stroke is comp.chip.border.rest and is decorative, because the fill step and the label already identify the chip; the selected stroke is comp.chip.border.selected, which holds the 3:1 boundary tier on the three solid grounds, and over media the status.check glyph carries selection instead of the stroke
-  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback; the chip takes comp.chip.bg.rest and its hairline stroke back, drops the status.check glyph because the tone ladder is available again, and every tone returns to the solid family
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws the pill as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the pill publishes raised, so every part takes its default cell, the stroke returns to its hairline in comp.chip.border.rest and every tone to the solid family; and the chip drops the status.check glyph, which it shows only on a media ground, because the stroke and label ladder carries selection again
   reduceMotion: the press scale is replaced by a fill change to comp.chip.bg.pressed over motion.duration.base with motion.easing.out, and selection crossfades the stroke and the check glyph instead of scaling
   voiceOver: announces the label, then "selected" when it is, then its role; a removable chip announces its remove control as a separate element
 

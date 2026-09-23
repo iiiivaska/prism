@@ -1,5 +1,5 @@
 // spec:validate (roadmap P2-1; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
-// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rule 4).
+// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rule 4, ADR-0036 §10).
 //
 // Every spec/components/*.yaml is checked against spec/component.schema.json, and every
 // spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
@@ -33,6 +33,13 @@
 //   example/vivid-icon           a vivid example that sets an icon (ADR-0022 rule 8)
 //   example/tinted-scheme        a `tinted` example that does not declare light only
 //   example/vivid-grid           a 2×2 whose diagonals are not one slot pair
+//   glass-chip/fallback          a part whose `background` binds material.glass.chip does not state the chip's
+//                                fallback: `fallbackBackground: color.bg.surface.raised` over `fallbackUnderlay:
+//                                color.bg.page`, keyed as `background` is where it binds the chip, and a
+//                                reduceTransparency that names both of its settings (ADR-0036 §9.1); TopBar's
+//                                scroll edge is the one named exception until P4-D10
+//   glass-chip/nested-blur       material.glass.chip.blur or .saturate bound under a `glass` or `glassLight` key,
+//                                where a chip draws no backdrop filter (ADR-0036 §5)
 //
 // Token paths resolve through tools/tokens/api.ts `lookup()`, the same name grammar the rest of the
 // tooling uses; nothing here re-implements resolution.
@@ -56,10 +63,12 @@ import {
 // `error` and `sortDiagnostics` are the diagnostic constructors the token pipeline uses; api.ts
 // re-exports only the printers, so the shared shape comes from the module itself (ARCHITECTURE §4.2).
 import { error, formatDiagnostics, formatDiagnosticsJson, sortDiagnostics } from '../tokens/ir/diagnostics.ts';
-import { walkBindings } from './bindings.ts';
+import { statesOf, walkBindings } from './bindings.ts';
 import {
-  COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup, HAPTICS, LIGHT_GLASS_BACKDROPS,
-  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
+  BACKDROPS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup, DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK,
+  GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS, HAPTICS, LIGHT_GLASS_BACKDROPS,
+  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS, NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR,
+  STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -480,6 +489,7 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   }
 
   checkExamples(doc, spec, diagnostics);
+  checkGlassChip(doc, spec, name === '' ? base : name, diagnostics);
 }
 
 /** Ids for a public path or glob; [] when nothing matches. Resolution itself is tools/tokens's. */
@@ -566,6 +576,142 @@ function checkExamples(doc: SpecDoc, spec: Record<string, unknown>, diagnostics:
       }
     }
   });
+}
+
+/** One cell of a binding matrix, with the keys that reach it and what those keys are. */
+interface MatrixCell {
+  /** The token path the cell binds. */
+  readonly path: string;
+  /** Every key from the property down to the cell, as the spec writes them. */
+  readonly keys: readonly string[];
+  /** The keys at levels keyed by one of the spec's props, outermost first. */
+  readonly props: readonly string[];
+  /** The first key at a level keyed by the published material or backdrop kind; null when no level is. */
+  readonly ground: string | null;
+}
+
+/**
+ * Every cell of one binding. A level whose keys other than `default` are all published materials, or all
+ * backdrop kinds, is keyed by the ground; a level of `default` alone is keyed by nothing; any other level is
+ * keyed by a prop (spec/SCHEMA.md, "The binding-matrix grammar"; `matrix/axis` reports a level that is neither).
+ */
+function matrixCells(binding: unknown, keys: readonly string[] = [], props: readonly string[] = [], ground: string | null = null): MatrixCell[] {
+  if (typeof binding === 'string') return [{ path: binding, keys, props, ground }];
+  if (!isRecord(binding)) return [];
+  const named = Object.keys(binding).filter((k) => k !== DEFAULT_KEY);
+  const byGround = named.length > 0 && (named.every((k) => MATERIALS.includes(k)) || named.every((k) => BACKDROPS.includes(k)));
+  const byProp = named.length > 0 && !byGround;
+  return Object.entries(binding).flatMap(([key, child]) =>
+    matrixCells(child, [...keys, key], byProp ? [...props, key] : props, ground ?? (byGround ? key : null)));
+}
+
+/** The prop keys that reach a set of cells, each written `a.b`; `''` is a cell no prop keys. */
+function propKeyings(cells: readonly MatrixCell[]): Set<string> {
+  return new Set(cells.map((c) => c.props.join('.')));
+}
+
+/** Whether a set of prop keyings is one cell whatever the props. */
+function unkeyed(keyings: ReadonlySet<string>): boolean {
+  return keyings.size === 1 && keyings.has('');
+}
+
+/** A set of prop keyings as a diagnostic names it. */
+function under(keyings: ReadonlySet<string>): string {
+  return [...keyings].sort().map((k) => (k === '' ? 'no prop' : `\`${k}\``)).join(', ');
+}
+
+/** The chip's fallback as a hint names it: `color.bg.surface.raised over color.bg.page`. */
+const CHIP_FALLBACK = GLASS_CHIP_FALLBACK.map((f) => f.token).join(' over ');
+
+/**
+ * The glass chip's two corpus rules (ADR-0036 §10).
+ *
+ * `glass-chip/fallback` (§9.1, rule 10): a part whose `background` binds material.glass.chip, in any state, binds
+ * `fallbackBackground` and `fallbackUnderlay` on the part to the chip's fallback, keyed as `background` is keyed
+ * where it binds the chip and never by the ground, and the spec's `accessibility.reduceTransparency` names both
+ * settings the chip falls back under. The parts GLASS_CHIP_FALLBACK_EXCEPTIONS names are not held to it.
+ *
+ * `glass-chip/nested-blur` (§5, rule 6): no cell of any part binds the chip's blur or saturation under a `glass`
+ * or `glassLight` key.
+ */
+function checkGlassChip(doc: SpecDoc, spec: Record<string, unknown>, name: string, diagnostics: Diagnostic[]): void {
+  const tokens = spec['tokens'];
+  if (!isRecord(tokens)) return;
+  const states = statesOf(spec);
+  // The first part held to the fallback rule, which the reduceTransparency diagnostic names.
+  let held: string | null = null;
+  for (const [part, body] of Object.entries(tokens)) {
+    if (!isRecord(body)) continue;
+    // The part's own properties and those of its state blocks, each with the place it is written.
+    const properties = Object.entries(body).flatMap(([key, value]): { at: JsonPath; property: string; value: unknown }[] =>
+      states.has(key) && isRecord(value)
+        ? Object.entries(value).map(([property, cell]) => ({ at: ['tokens', part, key, property], property, value: cell }))
+        : [{ at: ['tokens', part, key], property: key, value }]);
+
+    for (const { at, value } of properties) {
+      for (const cell of matrixCells(value)) {
+        const nested = cell.keys.find((k) => NESTED_GLASS_KEYS.includes(k));
+        if (nested === undefined || !GLASS_CHIP_FILTERS.includes(cell.path)) continue;
+        const where = [...at, ...cell.keys];
+        diagnostics.push(error('glass-chip/nested-blur', `\`${where.join('.')}\` binds ${cell.path} under \`${nested}\``, {
+          file: doc.path, line: doc.lineOf(where),
+          hint: "a glass chip on the scheme's glass, on light glass or inside another glass chip draws its fill and edge and no backdrop filter (ADR-0036 §5): delete this cell and keep the fill and edge cells",
+        }));
+      }
+    }
+
+    const backgrounds = properties.filter((p) => p.property === 'background' && matrixCells(p.value).some((c) => c.path === GLASS_CHIP));
+    const first = backgrounds[0];
+    if (first === undefined || GLASS_CHIP_FALLBACK_EXCEPTIONS.some((e) => e.component === name && e.part === part)) continue;
+    held ??= part;
+    const chip = propKeyings(backgrounds.flatMap((p) => matrixCells(p.value)).filter((c) => c.path === GLASS_CHIP));
+    const bound = `\`${first.at.join('.')}\` binds ${GLASS_CHIP}`;
+    for (const { property, token } of GLASS_CHIP_FALLBACK) {
+      const at: JsonPath = ['tokens', part, property];
+      if (!(property in body)) {
+        diagnostics.push(error('glass-chip/fallback', `${bound}, and the part states no \`${property}\``, {
+          file: doc.path, line: doc.lineOf(first.at),
+          hint: `bind \`${property}: ${token}\` on the part${unkeyed(chip) ? '' : `, keyed under ${under(chip)} as \`background\` is`}: under the fallback the chip is ${CHIP_FALLBACK} (ADR-0036 §9.1)`,
+        }));
+        continue;
+      }
+      const cells = matrixCells(body[property]);
+      // A cell that is not a binding at all is the schema's and `matrix/axis`'s to report.
+      if (cells.length === 0) continue;
+      const grounded = cells.find((c) => c.ground !== null);
+      if (grounded !== undefined) {
+        diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` is keyed by the ground (\`${grounded.ground ?? ''}\`), and the chip falls back the same way on every ground`, {
+          file: doc.path, line: doc.lineOf(at),
+          hint: 'bind one token path, or key it only by the props `background` is keyed by where it binds the chip (ADR-0036 §2.3, §9.1)',
+        }));
+      }
+      for (const cell of cells) {
+        if (cell.path === token) continue;
+        const where = [...at, ...cell.keys];
+        diagnostics.push(error('glass-chip/fallback', `\`${where.join('.')}\` binds \`${cell.path}\`, and the chip's \`${property}\` is ${token}`, {
+          file: doc.path, line: doc.lineOf(where),
+          hint: `bind ${token}: the chip has one fallback, ${CHIP_FALLBACK} (ADR-0022 §1.1, ADR-0036 §2.3); a part that needs another is an amendment to ADR-0036, as roadmap P4-D10 records for TopBar`,
+        }));
+      }
+      const fallback = propKeyings(cells);
+      if (fallback.size === chip.size && [...fallback].every((k) => chip.has(k))) continue;
+      diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` ${unkeyed(fallback) ? 'answers whatever the props' : `is keyed under ${under(fallback)}`}, and \`background\` binds the chip ${unkeyed(chip) ? 'whatever the props' : `only under ${under(chip)}`}`, {
+        file: doc.path, line: doc.lineOf(at),
+        hint: `key \`${property}\` the way \`background\` is keyed where it binds the chip, as Toolbar keys its fallback under \`floating\` (ADR-0036 §9.1)`,
+      }));
+    }
+  }
+
+  const accessibility = spec['accessibility'];
+  const text = isRecord(accessibility) ? accessibility['reduceTransparency'] : undefined;
+  // A missing field is the schema's to report (ADR-0022 rule 9).
+  if (held === null || typeof text !== 'string') return;
+  const unnamed = GLASS_CHIP_SETTINGS.filter((setting) => !text.includes(setting));
+  if (unnamed.length === 0) return;
+  diagnostics.push(error('glass-chip/fallback', `\`tokens.${held}\` binds ${GLASS_CHIP} as its background, and \`accessibility.reduceTransparency\` does not name ${unnamed.join(' or ')}`, {
+    file: doc.path, line: doc.lineOf(['accessibility', 'reduceTransparency']),
+    hint: `say what ${GLASS_CHIP_SETTINGS.join(' and ')} do to the part: Prism's Surface module draws it as ${CHIP_FALLBACK} at the same radius, with blur, saturation and the inner edge dropped, and it publishes raised, so every part takes its default cell (ADR-0036 §9.1)`,
+  }));
 }
 
 /**

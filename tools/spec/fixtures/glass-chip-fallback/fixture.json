@@ -1,0 +1,9 @@
+{
+  "description": "Parts that bind material.glass.chip as their background without the chip's fallback: a missing fallbackBackground, a fallback keyed differently from the background, one keyed by the ground, TopBar's page-and-hairline cells on a part that is not TopBar's scroll edge, and a reduceTransparency that does not name Increase Contrast.",
+  "expect": [
+    {
+      "code": "glass-chip/fallback",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

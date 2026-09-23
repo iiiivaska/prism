@@ -1,0 +1,9 @@
+{
+  "description": "A part binds the glass chip's blur under `glass` and its saturation under `glassLight`, where a chip draws no backdrop filter.",
+  "expect": [
+    {
+      "code": "glass-chip/nested-blur",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

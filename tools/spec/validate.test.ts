@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, REPO_ROOT } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
-import { compGroup, NON_BINDABLE } from './config.ts';
+import { compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, pointerToPath, SchemaShapeError } from './schema.ts';
@@ -179,6 +179,8 @@ describe('fixtures', () => {
       'example/vivid-grid',
       'example/vivid-icon',
       'example/vivid-unit',
+      'glass-chip/fallback',
+      'glass-chip/nested-blur',
       'haptic/unknown',
       'matrix/axis',
       'prose/unknown',
@@ -203,6 +205,49 @@ describe('fixtures', () => {
       if (d.file?.endsWith('.yaml') === true) expect(d.line, `${d.code} carries a line`).toBeGreaterThan(0);
     }
   }, 60_000);
+});
+
+describe('the glass chip rules (ADR-0036 §10)', () => {
+  // Each fixture breaks its rule in every way the rule can be broken, one way per part, so every branch of the
+  // check is pinned here by its line and message, not only by the code the fixture block compares.
+  const run = async (name: string): Promise<string[]> => {
+    const c = specCases().find((x) => x.name === name);
+    if (c === undefined) throw new Error(`no fixture ${name}`);
+    const result = await runSpecValidate({ reader: caseReader(c), collected: await repoDictionary() });
+    return result.diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
+  };
+
+  test('glass-chip/fallback: a cell missing, keyed apart from the background, keyed by the ground or of the wrong token, and prose without both settings', async () => {
+    expect(await run('glass-chip-fallback')).toEqual([
+      '46 glass-chip/fallback `tokens.root.background` binds material.glass.chip, and the part states no `fallbackBackground`',
+      '59 glass-chip/fallback `tokens.track.fallbackBackground` answers whatever the props, and `background` binds the chip only under `floating`',
+      '61 glass-chip/fallback `tokens.track.fallbackUnderlay` is keyed by the ground (`page`), and the chip falls back the same way on every ground',
+      // TopBar's scroll edge, cell for cell, on a part that is not TopBar's: the exception names a part, not a shape.
+      '67 glass-chip/fallback `tokens.scrollEdge.background` binds material.glass.chip, and the part states no `fallbackUnderlay`',
+      "70 glass-chip/fallback `tokens.scrollEdge.fallbackBackground.soft` binds `color.bg.page`, and the chip's `fallbackBackground` is color.bg.surface.raised",
+      "71 glass-chip/fallback `tokens.scrollEdge.fallbackBackground.hard` binds `color.bg.page`, and the chip's `fallbackBackground` is color.bg.surface.raised",
+      '92 glass-chip/fallback `tokens.root` binds material.glass.chip as its background, and `accessibility.reduceTransparency` does not name Increase Contrast',
+    ]);
+  }, 60_000);
+
+  test("glass-chip/nested-blur: the recipe's blur under `glass` and its saturation under `glassLight`, and nothing else", async () => {
+    expect(await run('glass-chip-nested-blur')).toEqual([
+      '45 glass-chip/nested-blur `tokens.root.blur.glass` binds material.glass.chip.blur under `glass`',
+      '49 glass-chip/nested-blur `tokens.root.saturate.glassLight` binds material.glass.chip.saturate under `glassLight`',
+    ]);
+  }, 60_000);
+
+  test("TopBar's scroll edge is the one named exception, and it still excepts something (P4-D10)", () => {
+    expect(GLASS_CHIP_FALLBACK_EXCEPTIONS).toEqual([{ component: 'TopBar', part: 'scrollEdge', ticket: 'P4-D10' }]);
+    // The exception is recorded, not decided (ADR-0036 §9.5). The day TopBar's ticket settles P4-D10 these cells
+    // change, and the entry above goes with them rather than excepting a part that no longer needs it.
+    const path = 'spec/components/TopBar.yaml';
+    const tokens = loadSpec(path, fsReader(REPO_ROOT).readText(path)).value?.['tokens'] as Record<string, Record<string, unknown>> | undefined;
+    const scrollEdge = tokens?.['scrollEdge'] ?? {};
+    expect(scrollEdge['background']).toEqual({ soft: 'material.glass.chip', hard: 'material.glass.chip' });
+    expect(scrollEdge['fallbackBackground']).toEqual({ soft: 'color.bg.page', hard: 'color.bg.page' });
+    expect(scrollEdge['fallbackUnderlay']).toBeUndefined();
+  });
 });
 
 describe('the binding-matrix grammar', () => {

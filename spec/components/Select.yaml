@@ -113,6 +113,8 @@ tokens:
         image: material.glass.chip.saturate
         vivid: material.glass.chip.saturate
       vivid: material.glass.chip.saturate
+    fallbackBackground: color.bg.surface.raised
+    fallbackUnderlay: color.bg.page
     edgeColor: color.edge.highlight
     edgeStartAlpha:
       page:
@@ -264,7 +266,7 @@ accessibility:
   keyboard: Space, Enter and Down open the list; typing jumps to a matching option; Escape closes it and keeps the value; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: label, value, helper and error scale with their roles; the pill grows with the value up to the accessibility3 size and then clamps, and the value truncates rather than pushing the chevron out
   contrast: the placeholder is color.text.tertiary, functional below 24 px and 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and the edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control
-  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback; the trigger takes its color.border.boundary edge back and every tone returns to the solid family
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws a trigger that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the trigger publishes raised, so every part takes its default cell, the trigger takes its color.border.boundary edge back and every tone returns to the solid family
   reduceMotion: the chevron does not rotate; it is replaced at motion.duration.instant, and the ring, the stronger edge and the error row crossfade over motion.duration.base with motion.easing.out
   voiceOver: announces label, then the chosen value or "none chosen", then "pop-up button"; the open list is the platform's, with its own announcements
 

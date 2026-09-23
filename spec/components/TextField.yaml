@@ -127,6 +127,8 @@ tokens:
         image: material.glass.chip.saturate
         vivid: material.glass.chip.saturate
       vivid: material.glass.chip.saturate
+    fallbackBackground: color.bg.surface.raised
+    fallbackUnderlay: color.bg.page
     edgeColor: color.edge.highlight
     edgeStartAlpha:
       page:
@@ -280,7 +282,7 @@ accessibility:
   keyboard: Tab moves in and out and then onto the trailing action; Escape clears the value when `isClearable`; the focus ring is color.border.focus at border.focus width outside the pill, following radius.control
   dynamicType: label, value, helper and error scale with their roles; the box grows with the value up to the accessibility3 size and then wraps the rows below it, and nothing is clipped to keep the height
   contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the field has no fill of its own, its tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and its edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control
-  reduceTransparency: the glass chip resolves with its Surface to the opaque raised fallback, the field takes its color.border.boundary edge back and every tone returns to the solid family
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws a box that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the box publishes raised, so every part takes its default cell, the field takes its color.border.boundary edge back and every tone returns to the solid family
   reduceMotion: the focus ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place
   voiceOver: announces label, value or placeholder, then "required" and the helper text; on `isInvalid` the error message is announced once as the field's description
 

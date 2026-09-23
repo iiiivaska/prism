@@ -1,5 +1,5 @@
 // Paths and vocabularies spec:validate checks against (ADR-0006, ADR-0022 §3.1, ADR-0023 §8.4,
-// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rule 4). Everything here is a decision an ADR records; the
+// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rule 4, ADR-0036 §9). Everything here is a decision an ADR records; the
 // bindable categories are not, because ADR-0024 §5.3 makes the regex in spec/component.schema.json
 // their single copy (`bindableCategories()` in schema.ts reads it back).
 
@@ -68,6 +68,45 @@ export const VIVID_SLOT_PAIRS: readonly (readonly [string, string])[] = [
   ['1', '2'],
   ['3', '4'],
 ];
+
+/**
+ * The glass chip (ADR-0036 §2): the recipe a part binds as its `background` when the Surface module's chip shape
+ * draws that part. Avatar's and Chip's root, a SegmentedControl segment, Select's trigger, TextField's box,
+ * Toolbar's floating track, TabBar's capsule and TopBar's scroll edge bind it.
+ */
+export const GLASS_CHIP = 'material.glass.chip';
+
+/**
+ * The chip's fallback, in TabBar's vocabulary (ADR-0036 §2.3, §9.1): the part is drawn as `fallbackBackground`
+ * over `fallbackUnderlay`, the same on every ground, so each cell is keyed only the way `background` is keyed
+ * where it binds the chip (Toolbar's `floating`). The underlay is load-bearing: `color.bg.surface.raised` is
+ * white at α 0.09 in dark, and without the page under it the fallback is see-through over a map (ADR-0030 rule 6).
+ */
+export const GLASS_CHIP_FALLBACK: readonly { readonly property: string; readonly token: string }[] = [
+  { property: 'fallbackBackground', token: 'color.bg.surface.raised' },
+  { property: 'fallbackUnderlay', token: 'color.bg.page' },
+];
+
+/** The two settings a chip falls back under, which `accessibility.reduceTransparency` names (ADR-0036 §9.1). */
+export const GLASS_CHIP_SETTINGS: readonly string[] = ['Reduce Transparency', 'Increase Contrast'];
+
+/**
+ * The one named exception to `glass-chip/fallback` (ADR-0036 §9.5): TopBar's scroll edge binds `color.bg.page`
+ * with a hairline rule as its fallback, not the chip's. It is recorded, not decided: TopBar's own ticket either
+ * moves the spec to the chip's fallback or amends ADR-0036 (roadmap P4-D10), and this entry goes with it.
+ */
+export const GLASS_CHIP_FALLBACK_EXCEPTIONS: readonly { readonly component: string; readonly part: string; readonly ticket: string }[] = [
+  { component: 'TopBar', part: 'scrollEdge', ticket: 'P4-D10' },
+];
+
+/** The recipe's two filters: what a chip does not draw on glass (ADR-0036 §5). */
+export const GLASS_CHIP_FILTERS: readonly string[] = ['material.glass.chip.blur', 'material.glass.chip.saturate'];
+
+/**
+ * The keys a spec never binds a chip filter under: on the scheme's glass and on light glass a chip draws its fill
+ * and edge and no backdrop filter, so the two stacks draw one picture (ADR-0036 §5 and rule 6, ADR-0009 decision 3).
+ */
+export const NESTED_GLASS_KEYS: readonly string[] = ['glass', 'glassLight'];
 
 /** Kebab-case component name: the `comp.<component>` group a spec owns (ADR-0024 §5.2). */
 export function compGroup(name: string): string {
