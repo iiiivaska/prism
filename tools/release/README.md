@@ -100,9 +100,16 @@ Steps 3 to 8 are `.github/workflows/release.yml`; steps 1 and 2 are the author's
 that judges it: it packs with pnpm, reads the tarball back and checks that ADR-0031's `LICENSE` and
 `"license": "SEE LICENSE IN LICENSE"` are in it, that critic C-14's `spec/` is where the skill sends
 agents, that ADR-0021 §11's brand font files are in `@iiiivaska/prism-tokens`, that every `exports`
-subpath and `style` resolves to a file the tarball really carries, and that no `workspace:` or
-`catalog:` specifier was left for a consumer's installer. That is stronger than a notice list, and
-it is why the release workflow's file-list step is this one.
+subpath and `style` resolves to a file the tarball really carries, that no `workspace:` or
+`catalog:` specifier was left for a consumer's installer, and that no packed path looks like a sync
+conflict copy (`index 2.js`, `SCHEMA 2.md`, `README 2`), naming each one it finds. That last rule is
+for this checkout's home: it sits in iCloud-synced `~/Documents`, and iCloud writes such copies
+beside the files a build rewrites, inside the very folders `files` publishes. Every package build
+clears the folder it writes first — tsdown's `clean` empties `dist/`, `scripts/copy-spec.ts` removes
+`spec/` before it copies, and `pnpm tokens:build` prunes `src/generated/` of any file it did not write
+— but a copy can land after the build, so the tarball is where it is caught. CI packs from a clean
+clone, where none can exist. That is stronger than a notice list, and it is why the release
+workflow's file-list step is this one.
 
 `pnpm -r publish --dry-run` is a different and much thinner thing, and worth keeping only as that: it
 runs the publish path the release runs for real — the recursive filter selects the published

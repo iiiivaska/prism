@@ -2,8 +2,11 @@
 // and critic C-14 promise. The rules run against synthetic file lists, and once against this
 // repository — that last case needs the packages built (`pnpm -r build`), the way the visual-regression
 // fixture does; the `web` CI job builds before it tests.
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import { describe, expect, test } from 'vitest';
-import { checkPacked, exportTargets, main, parseArgs, runPack, tarballName, type Io, type Packed } from './pack.ts';
+import { checkPacked, exportTargets, isConflictCopy, main, packPackage, parseArgs, runPack, tarballName, type Io, type Packed } from './pack.ts';
 import { REPO_ROOT } from './targets.ts';
 
 function packed(name: string, files: readonly string[], manifest: Record<string, unknown> = MANIFEST): Packed {
@@ -96,6 +99,91 @@ describe('every published package', () => {
       './b.js',
       './c.js',
     ]);
+  });
+});
+
+describe('no published package ships a sync conflict copy', () => {
+  // The checkout lives in iCloud-synced ~/Documents, where iCloud writes "<name> 2.<ext>" beside a file a
+  // build rewrites, inside the folders `files` publishes. The first six are names it wrote in them, and
+  // `bin/tsdown 3` is the form it gave a file with no extension (in node_modules/.bin); the last two are the
+  // same rule for a two-digit number and for a copied folder.
+  const copies = [
+    'dist/index 2.js',
+    'dist/index.d 2.ts',
+    'dist/styles 2.css',
+    'spec/SCHEMA 2.md',
+    'spec/strings 2.yaml',
+    'spec/patterns/README 2.md',
+    'bin/tsdown 3',
+    'spec/components/Badge 12.yaml',
+    'dist/brands 2/prism/tokens.js',
+  ];
+  const genuine = [
+    'LICENSE',
+    'package.json',
+    'dist/index.js',
+    'dist/index.d.ts',
+    'dist/runtime-CkxfcHKn.js',
+    'dist/brands/prism-native/tokens.d.ts',
+    'src/generated/prism/fonts/onest/onest-wght.woff2',
+    'spec/components/Badge.yaml',
+    'spec/icons/registry.schema.json',
+    'dist/chunk-2.js',
+    'dist/v2.js',
+  ];
+
+  test('a name ending in a space and digits, before its extension or with none, is a copy; nothing else is', () => {
+    for (const path of copies) expect(isConflictCopy(path), path).toBe(true);
+    for (const path of genuine) expect(isConflictCopy(path), path).toBe(false);
+  });
+
+  test('fails naming every copy, and passes the same list without them', () => {
+    const rows = checkPacked(packed('p', [...BASE, 'dist/index 2.js', 'dist/index.d 2.ts']));
+    expect(status(rows, 'conflict')?.status).toBe('fail');
+    expect(status(rows, 'conflict')?.detail).toContain('"dist/index 2.js", "dist/index.d 2.ts" look like sync conflict copies');
+    const one = checkPacked(packed('p', [...BASE, 'spec/SCHEMA 2.md']));
+    expect(status(one, 'conflict')?.detail).toContain('"spec/SCHEMA 2.md" looks like a sync conflict copy');
+    expect(status(checkPacked(packed('p', BASE)), 'conflict')).toEqual({ package: 'p', check: 'conflict', status: 'pass', detail: 'no conflict copy among 4 file(s)' });
+  });
+
+  test('a copy in a folder `files` publishes reaches the tarball pnpm packs, and the check names it', () => {
+    // A real pack of a fixture package, not a synthetic list: the copy is only a failure if the packer
+    // would ship it, and `files: ["dist"]` does.
+    const root = mkdtempSync(join(tmpdir(), 'prism-pack-conflict-'));
+    try {
+      const write = (path: string, contents: string): void => {
+        mkdirSync(dirname(join(root, 'package', path)), { recursive: true });
+        writeFileSync(join(root, 'package', path), contents);
+      };
+      write(
+        'package.json',
+        JSON.stringify({
+          name: '@prism-fixture/conflict',
+          version: '0.0.0',
+          license: MANIFEST_LICENSE,
+          type: 'module',
+          files: ['dist'],
+          exports: { '.': { types: './dist/index.d.ts', default: './dist/index.js' }, './package.json': './package.json' },
+        }),
+      );
+      write('LICENSE', 'All rights reserved.\n');
+      write('dist/index.js', 'export const one = 1;\n');
+      write('dist/index.d.ts', 'export declare const one = 1;\n');
+      write('dist/index 2.js', 'export const one = 0;\n');
+
+      const withCopy = packPackage(join(root, 'package'), join(root, 'out'));
+      expect(withCopy.files).toContain('dist/index 2.js');
+      const rows = checkPacked(withCopy);
+      expect(rows.filter((r) => r.status === 'fail').map((r) => r.check)).toEqual(['conflict']);
+      expect(status(rows, 'conflict')?.detail).toContain('"dist/index 2.js" looks like a sync conflict copy');
+
+      rmSync(join(root, 'package', 'dist', 'index 2.js'));
+      const clean = packPackage(join(root, 'package'), join(root, 'out'));
+      expect(clean.files).toEqual(['dist/index.d.ts', 'dist/index.js', 'LICENSE', 'package.json']);
+      expect(checkPacked(clean).filter((r) => r.status === 'fail')).toEqual([]);
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });
 

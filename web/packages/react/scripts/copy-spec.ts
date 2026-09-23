@@ -28,6 +28,8 @@ const target = join(packageRoot, "spec");
 export const EXCLUDED = ["icons"];
 
 export function copySpec(): void {
+  // The whole folder goes first, so a contract removed from spec/, or a sync conflict copy of one
+  // ("SCHEMA 2.md"), never survives into the published copy.
   rmSync(target, { recursive: true, force: true });
   cpSync(source, target, {
     recursive: true,

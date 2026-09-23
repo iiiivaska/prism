@@ -22,6 +22,12 @@
 //                 pairs ids with SF Symbol names (ADR-0013 rule 5).
 //   fonts         ADR-0021 §11 and ADR-0031 rule 3: every brand @iiiivaska/prism-tokens serves ships
 //                 its fonts.css, its font files and the OFL text beside them.
+//   conflict      no packed path looks like a sync conflict copy ("index 2.js", "SCHEMA 2.md",
+//                 "README 2"): the checkout lives in iCloud-synced ~/Documents, and iCloud writes such
+//                 copies beside files a build rewrites, inside the very folders `files` publishes. The
+//                 builds clear dist/ and spec/ before they write (tsdown's `clean`, copy-spec.ts), but a
+//                 copy can land after a build, so the tarball is where it is caught. The failure names
+//                 every such file.
 //
 //   node release/pack.ts                 check every published package
 //   node release/pack.ts --list          also print every file each tarball carries
@@ -157,6 +163,16 @@ function under(files: readonly string[], prefix: string): string[] {
   return files.filter((f) => f.startsWith(prefix));
 }
 
+/**
+ * Whether a packed path looks like a copy a sync service wrote beside a file it could not merge: a
+ * segment whose stem — the name before its last extension, or the whole name when it has none — ends in
+ * a space and digits, which is how iCloud names them ("index 2.js", "index.d 2.ts", "README 2"). Every
+ * segment is read, so a copied folder ("components 2/") is caught with everything inside it.
+ */
+export function isConflictCopy(path: string): boolean {
+  return path.split('/').some((segment) => / \d+(\.[^.]*)?$/u.test(segment));
+}
+
 const EVERY_PACKAGE: readonly Rule[] = [
   {
     check: 'license',
@@ -207,6 +223,18 @@ const EVERY_PACKAGE: readonly Rule[] = [
         fail(`"style": ${style} is not in the tarball`);
       }
       return `${String(subpaths.length)} subpaths → ${String(resolved)} files`;
+    },
+  },
+  {
+    check: 'conflict',
+    run: (_manifest, files) => {
+      const copies = files.filter(isConflictCopy);
+      if (copies.length > 0) {
+        const named = copies.map((f) => JSON.stringify(f)).join(', ');
+        const what = copies.length === 1 ? 'looks like a sync conflict copy' : 'look like sync conflict copies';
+        fail(`${named} ${what} ("<name> <n>.<ext>"), which no build writes: delete and rebuild, or pack from a clean clone`);
+      }
+      return `no conflict copy among ${String(files.length)} file(s)`;
     },
   },
 ];
