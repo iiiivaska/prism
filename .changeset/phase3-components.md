@@ -1,0 +1,5 @@
+---
+"@iiiivaska/prism-react": patch
+---
+
+The first four components (Phase 3), which landed before changesets were written for components: `Surface`, `Text`, `Button` and `Card` on the web, and `DSSurfaceView`, `DSText`, `DSButton` and `DSCard` in SwiftUI, each at the version its spec in `spec/components/` names. `Surface` resolves the material every descendant reads — solid, raised, nested, inverse, accent, vivid and the one glass fallback of ADR-0022 — and publishes it, so a component inside it takes its colours from the ground it actually sits on. `Text` draws the type scale's roles with ADR-0021's weights, including the thin dark metric and the tabular figures route. `Button` is the pill in five variants and three sizes, with loading and disabled states and a label that is always its accessible name. `Card` is the tile with its title, caption, hero metric and one action (`open`, `custom` or `none`), solid, tinted, vivid or glass over a backdrop. The web runtime they sit on is ADR-0019's `<Theme>` and `data-ds-*` attributes; the Swift one is `DSTheme` in DSCore.

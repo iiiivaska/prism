@@ -1,0 +1,5 @@
+---
+"@iiiivaska/prism-react": patch
+---
+
+Badge (`spec/components/Badge.yaml` 1): `<Badge>` on the web and `DSBadge` in SwiftUI, a static mark that carries a count or an unread state, never a control: `variant` `count` or `dot`, `tone` `neutral`, `accent` or `critical`, `emphasis` `filled` or `outline`, and `count`, `max` (99) and `label`. A count is formatted by the locale formatter of where the badge renders, is tabular and is replaced when it changes, never rolled. Above `max` the badge draws the `strings.Badge.overflow` mark (`"99+"`) and still speaks the true count. `count: 0`, a missing count and anything that is not a whole number of at least 1 hide it. A badge with a `label` that stands alone is one element named by the `strings.Badge.count` sentence (`"128 open incidents"`); inside a host that reads it, such as IconButton's `badge`, it is hidden and the host speaks it. Badge applies no offset of its own; the host places it. The web package also exports `badgeVariants`, `badgeTones`, `badgeEmphases` and their types.
