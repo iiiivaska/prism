@@ -25,20 +25,21 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0019](0019-web-runtime-contract.md) | Web runtime contract: `data-ds-*` attributes, nesting and defaults (amends 0003, 0004, 0010, 0013, 0016) | accepted (amended by 0025, 0029) |
 | [0020](0020-brand-model.md) | Brand model: what a brand overrides and how brands reach each stack (amends 0002, 0003, 0004, 0007, 0008, 0024) | accepted (amended by 0029) |
 | [0021](0021-typography-rules.md) | Typography rules: thin weights, numerals, units and Dynamic Type (amends 0004, 0007, 0008, 0010, 0011) | accepted (amended by 0027, 0030) |
-| [0022](0022-materials-and-fallbacks.md) | Materials: glass and vivid under accessibility settings and on watch (amends 0004, 0009, 0010, 0011) | accepted (amended by 0025, 0029, 0030) |
+| [0022](0022-materials-and-fallbacks.md) | Materials: glass and vivid under accessibility settings and on watch (amends 0004, 0009, 0010, 0011) | accepted (amended by 0025, 0029, 0030, 0036) |
 | [0023](0023-motion-tokens.md) | Motion tokens: springs, settle, reduced motion and CSS easing (amends 0003, 0011) | accepted |
 | [0024](0024-token-source-conventions.md) | Token source conventions: references, semantic roles, gates and flavors (amends 0002, 0004, 0005, 0006, 0010, 0014) | accepted (§4.1 amended by 0020; §13.3 by 0027; §4.1, §6 and §9.5 by 0029; §6 and §9.1 by 0030) |
-| [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted |
+| [0025](0025-web-component-css-and-root-axes.md) | Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens (amends 0019, 0022) | accepted (amended by 0036) |
 | [0026](0026-figma-metadata-scope.md) | Figma metadata where Figma reads it; code syntax derived by the build (amends 0004, 0005) | accepted |
 | [0027](0027-font-emission-layout-and-manifest-names.md) | Font emission layout and manifest CSS names follow the build (amends 0021, 0024) | accepted |
 | [0028](0028-license-mit.md) | Prism is MIT-licensed (amends 0014) | superseded by 0031 |
-| [0029](0029-direction-board-sign-off.md) | Direction board sign-off (2026-09-15): glass follows the scheme, one-temperature vivid pairs, compact margin, watch density, ghost button (amends 0010, 0019, 0020, 0022, 0024) | accepted |
+| [0029](0029-direction-board-sign-off.md) | Direction board sign-off (2026-09-15): glass follows the scheme, one-temperature vivid pairs, compact margin, watch density, ghost button (amends 0010, 0019, 0020, 0022, 0024) | accepted (amended by 0036) |
 | [0030](0030-semantic-roles-from-the-direction-board.md) | Semantic roles found by the direction board: map, charts and solids on media, edges and bloom, tints, axis and watch type (amends 0007, 0021, 0022, 0024) | accepted |
 | [0031](0031-license-proprietary.md) | Prism is proprietary, all rights reserved; the license carries the requirement, not the visibility (supersedes 0028; amends 0014, 0018) | accepted |
 | [0032](0032-component-owned-strings.md) | Component-owned strings: Prism speaks the caller's words, and the icon registry's label is never a name (amends 0011) | accepted |
 | [0033](0033-control-outlines-are-hairlines.md) | A control's outline is a hairline, and the contrast it owes belongs to its colour: Button binds `border.hairline`, as the signed-off board draws it | accepted |
 | [0034](0034-badge-slots-hold-a-badge.md) | A badge slot holds a Badge, not a view, and its host speaks the badge: the host draws it hidden and reads its words in the same render | accepted |
 | [0035](0035-filled-on-both-stacks-or-neither.md) | A glyph is filled on both stacks or on neither: an entry whose SF Symbol has no fill variant is marked `fill: false` and draws its outline for `filled` (amends 0013) | accepted |
+| [0036](0036-glass-chip-and-backdrop.md) | The glass chip is a shape of the Surface module, and Backdrop declares the page over media: a component draws the part that binds `material.glass.chip` through an internal chip shape that resolves with Surface's triggers, samples only what lies under it and publishes its ground; `Backdrop` / `dsBackdrop(kind)` is the one public paint-free publisher (amends 0022, 0025, 0029) | accepted |
 
 ## Template
 

@@ -1,6 +1,6 @@
 # ADR-0025: Web component CSS and root axes: glass fallback in React, Reduce Motion through tokens
 
-- Status: accepted
+- Status: accepted (the decision's first sentence and rule 1 amended by [ADR-0036](0036-glass-chip-and-backdrop.md): the React Surface module, Surface and its chip shape, substitutes the glass fallback)
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #25
 - Amends: ADR-0019 (§4 item 6's closed uses, the Files-and-packages "Motion" bullet, rule 9 and the Alternatives bullets "A Surface that branches in React" and "Component CSS that never depends on an axis"), ADR-0022 (the Consequences "Safari" bullet)

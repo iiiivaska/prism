@@ -1,6 +1,6 @@
 # ADR-0029: Direction board sign-off (2026-09-15)
 
-- Status: accepted
+- Status: accepted (§1.5's third bullet amended by [ADR-0036](0036-glass-chip-and-backdrop.md): a component draws its glass chip through the Surface module's chip shape, and on the scheme's glass without blur or saturation)
 - Date: 2026-09-15
 - Decision record entry: docs/decisions.md #29
 - Amends: ADR-0010 (the density bullet: a fourth density, `watch`, is the watchOS default and `comfortable` stays an accessibility choice), ADR-0019 (§1's density values, fallback selectors and permutation count; §2's watchOS default density; §3's `WEB_RUNTIME` excerpt; rule 12's watchOS `platformDefault`), ADR-0020 (§1: the vivid gradient row lists nine ids, and every gradient restates `temperature`; §3: a role recipe's `$root` may alias a `sys.material.glass` appearance `$root`), ADR-0022 (§2.1: two role recipes, `fill` and `chip`, join the five appearance recipes; §3.1: the `glass` row of the tone table and the chips and cells bullet; §3.3: the backdrop sets and usage limits of the scheme's glass; §4.1 and rule 7: sixteen V2 geometries; §4.5: nine gradients; rules 4 and 5), ADR-0024 (§4.1: `temperature` joins the folded gradient keys; §6: the slot order and the pairing rule of the vivid slots; §9.5 and rule 10: 576 permutations)
