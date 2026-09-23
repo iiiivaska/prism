@@ -43,10 +43,10 @@
     }
   ],
   "counts": {
-    "images": 588,
-    "paired": 320,
+    "images": 816,
+    "paired": 460,
     "missing": 0,
-    "cells": 320
+    "cells": 460
   },
   "components": [
     {
@@ -3080,12 +3080,16 @@
         "web-touch": "full",
         "web-desktop": "full"
       },
-      "recorded": [],
+      "recorded": [
+        "ios",
+        "web-desktop",
+        "web-touch"
+      ],
       "counts": {
-        "images": 0,
-        "paired": 0,
+        "images": 228,
+        "paired": 140,
         "missing": 0,
-        "cells": 0
+        "cells": 140
       },
       "examples": [
         {
@@ -3095,7 +3099,260 @@
             "dark"
           ],
           "props": "name: action.settings, size: md, tone: primary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.regular.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "control-md.web-desktop.light.regular.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "control-md.web-touch.light.regular.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.regular.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.regular.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.compact.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "control-md.web-desktop.light.compact.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "control-md.web-touch.light.compact.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.compact.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.light.compact.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.regular.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "control-md.web-desktop.dark.regular.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "control-md.web-touch.dark.regular.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.regular.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.regular.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.compact.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "control-md.web-desktop.dark.compact.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "control-md.web-touch.dark.compact.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.compact.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "control-md.ios.dark.compact.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "corner-sm",
@@ -3104,7 +3361,260 @@
             "dark"
           ],
           "props": "name: nav.open, size: sm, tone: secondary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "corner-sm.web-touch.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "corner-sm.web-touch.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.light.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "corner-sm.web-touch.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "corner-sm.web-touch.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "corner-sm.ios.dark.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "display-lg",
@@ -3113,7 +3623,260 @@
             "dark"
           ],
           "props": "name: object.map, size: lg, weight: display, tone: secondary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.regular.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "display-lg.web-desktop.light.regular.png",
+                  "width": 152,
+                  "height": 152
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "display-lg.web-touch.light.regular.png",
+                  "width": 152,
+                  "height": 152
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.regular.increased-contrast.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.regular.bold-text.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.compact.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "display-lg.web-desktop.light.compact.png",
+                  "width": 152,
+                  "height": 152
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "display-lg.web-touch.light.compact.png",
+                  "width": 152,
+                  "height": 152
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.compact.increased-contrast.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.light.compact.bold-text.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.regular.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "display-lg.web-desktop.dark.regular.png",
+                  "width": 152,
+                  "height": 152
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "display-lg.web-touch.dark.regular.png",
+                  "width": 152,
+                  "height": 152
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.regular.increased-contrast.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.regular.bold-text.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.compact.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "display-lg.web-desktop.dark.compact.png",
+                  "width": 152,
+                  "height": 152
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "display-lg.web-touch.dark.compact.png",
+                  "width": 152,
+                  "height": 152
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.compact.increased-contrast.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "display-lg.ios.dark.compact.bold-text.png",
+                  "width": 72,
+                  "height": 72
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "status-filled",
@@ -3122,7 +3885,260 @@
             "dark"
           ],
           "props": "name: status.warning, size: sm, style: filled, tone: warning",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "status-filled.web-desktop.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "status-filled.web-touch.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "status-filled.web-desktop.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "status-filled.web-touch.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.light.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "status-filled.web-desktop.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "status-filled.web-touch.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "status-filled.web-desktop.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "status-filled.web-touch.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "status-filled.ios.dark.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "accent-mark",
@@ -3131,7 +4147,260 @@
             "dark"
           ],
           "props": "name: object.gps, size: sm, tone: accent",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "accent-mark.web-touch.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "accent-mark.web-touch.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.light.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "accent-mark.web-touch.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "accent-mark.web-touch.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "accent-mark.ios.dark.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "inherit-in-row",
@@ -3140,7 +4409,260 @@
             "dark"
           ],
           "props": "name: status.online, size: sm, tone: inherit",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-touch.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-touch.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.light.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-touch.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "inherit-in-row.web-touch.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "inherit-in-row.ios.dark.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "decorative",
@@ -3149,7 +4671,260 @@
             "dark"
           ],
           "props": "name: object.chart, size: md, isDecorative: true",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.regular.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.regular.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.light.regular.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.regular.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.regular.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.compact.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.compact.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.light.compact.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.compact.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.compact.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.regular.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.regular.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.dark.regular.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.regular.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.regular.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.compact.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.compact.png",
+                  "width": 148,
+                  "height": 148
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.dark.compact.png",
+                  "width": 148,
+                  "height": 148
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.compact.increased-contrast.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.compact.bold-text.png",
+                  "width": 68,
+                  "height": 68
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "named-standalone",
@@ -3158,7 +4933,260 @@
             "dark"
           ],
           "props": "name: object.lock, size: sm, tone: secondary, label: Locked for editing, isDecorative: false",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "named-standalone.web-touch.light.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "named-standalone.web-touch.light.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.light.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.regular.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "named-standalone.web-touch.dark.regular.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.regular.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.regular.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.compact.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "named-standalone.web-touch.dark.compact.png",
+                  "width": 144,
+                  "height": 144
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.compact.increased-contrast.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "named-standalone.ios.dark.compact.bold-text.png",
+                  "width": 64,
+                  "height": 64
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "on-vivid",
@@ -3167,7 +5195,260 @@
             "dark"
           ],
           "props": "name: nav.open, size: sm, tone: primary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.regular.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.png",
+                  "width": 192,
+                  "height": 192
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-vivid.web-touch.light.regular.png",
+                  "width": 192,
+                  "height": 192
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.regular.increased-contrast.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.regular.bold-text.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.compact.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.compact.png",
+                  "width": 176,
+                  "height": 176
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-vivid.web-touch.light.compact.png",
+                  "width": 176,
+                  "height": 176
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.compact.increased-contrast.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.light.compact.bold-text.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.regular.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.png",
+                  "width": 192,
+                  "height": 192
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-vivid.web-touch.dark.regular.png",
+                  "width": 192,
+                  "height": 192
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.regular.increased-contrast.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.regular.bold-text.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.compact.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.compact.png",
+                  "width": 176,
+                  "height": 176
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-vivid.web-touch.dark.compact.png",
+                  "width": 176,
+                  "height": 176
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.compact.increased-contrast.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-vivid.ios.dark.compact.bold-text.png",
+                  "width": 96,
+                  "height": 96
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "on-glass-over-map",
@@ -3176,7 +5457,336 @@
             "dark"
           ],
           "props": "name: object.map-pin, size: md, tone: secondary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.regular.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.png",
+                  "width": 292,
+                  "height": 292
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.png",
+                  "width": 292,
+                  "height": 292
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.regular.increased-contrast.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.regular.reduce-transparency.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.regular.bold-text.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.compact.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.png",
+                  "width": 276,
+                  "height": 276
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.png",
+                  "width": 276,
+                  "height": 276
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.compact.increased-contrast.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.compact.reduce-transparency.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.light.compact.bold-text.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.regular.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.png",
+                  "width": 292,
+                  "height": 292
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.png",
+                  "width": 292,
+                  "height": 292
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.regular.increased-contrast.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.regular.reduce-transparency.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.regular.bold-text.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.compact.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.png",
+                  "width": 276,
+                  "height": 276
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.png",
+                  "width": 276,
+                  "height": 276
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.compact.increased-contrast.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.compact.reduce-transparency.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-map.ios.dark.compact.bold-text.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "on-glass-light-over-image",
@@ -3185,7 +5795,336 @@
             "dark"
           ],
           "props": "name: action.play, size: md, tone: primary",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.regular.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.light.regular.png",
+                  "width": 292,
+                  "height": 292
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.light.regular.png",
+                  "width": 292,
+                  "height": 292
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.regular.increased-contrast.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.regular.reduce-transparency.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.regular.bold-text.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.compact.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.light.compact.png",
+                  "width": 276,
+                  "height": 276
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.light.compact.png",
+                  "width": 276,
+                  "height": 276
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.compact.increased-contrast.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.compact.reduce-transparency.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.light.compact.bold-text.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.regular.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.dark.regular.png",
+                  "width": 292,
+                  "height": 292
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.dark.regular.png",
+                  "width": 292,
+                  "height": 292
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.regular.increased-contrast.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.regular.reduce-transparency.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.regular.bold-text.png",
+                  "width": 116,
+                  "height": 116
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.compact.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.dark.compact.png",
+                  "width": 276,
+                  "height": 276
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.dark.compact.png",
+                  "width": 276,
+                  "height": 276
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.compact.increased-contrast.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.compact.reduce-transparency.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "bold-text",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-light-over-image.ios.dark.compact.bold-text.png",
+                  "width": 100,
+                  "height": 100
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         }
       ]
     },
