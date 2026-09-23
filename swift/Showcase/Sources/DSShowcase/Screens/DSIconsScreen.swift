@@ -27,8 +27,10 @@ import DSTokens
 /// names among the affordances that make an icon browser — so the sheet went, and what it showed moved onto the tile
 /// and into the ladder. SD-1's do-not-drift note holds: no search, filter, copy, download or per-icon affordance.
 ///
-/// **Landing `Icon` expired this screen's reference-distance clearance** (§10, condition 2): the ADR-0015 rule 3
-/// review has to be re-run for it before a release ships it.
+/// **Landing `Icon` expired this screen's reference-distance clearance** (§10, condition 2), and the ADR-0015 rule 3
+/// review was re-run for it on 2026-09-23, after P4-D4 (§11 of the same document): not a copy, on the iPhone or on the
+/// Mac. §11.8 says what expires that clearance: among other things, anything that acts on one entry, a new control, or
+/// this screen's controls parting from the web's.
 struct DSIconsScreen: View {
     @State private var size: DSGlyphSize
     @State private var weight: DSGlyphWeight
@@ -129,7 +131,8 @@ extension DSIconsScreen {
             + "icon: a tile is the registry's row with a picture."
     }
 
-    /// What each control does on this stack, from the registry rather than from a claim: the counts are counted.
+    /// What the weight, style and direction controls do on this stack, one note each, from the registry rather than
+    /// from a claim: the counts are counted. `size` has no note, as on the web.
     static var axisNotes: [String] {
         let entries = DSIconName.allCases
         let unfilled = entries.filter { !$0.hasFill }.count

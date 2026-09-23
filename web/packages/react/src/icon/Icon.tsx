@@ -1,5 +1,5 @@
 /**
- * `Icon` (spec/components/Icon.yaml, specVersion 2): one glyph from the icon registry, named by its
+ * `Icon` (spec/components/Icon.yaml, specVersion 3): one glyph from the icon registry, named by its
  * semantic id, in a square box.
  *
  * - The root is the anatomy's one part, the box: a `span` of `size.icon.sm`, `.md` or `.lg`, the same in

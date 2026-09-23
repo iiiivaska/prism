@@ -76,9 +76,11 @@ enum DSShowcaseLaunch {
 
     static var iconsBlock: IconsBlock? { string("DSShowcaseIconsBlock").flatMap(IconsBlock.init(rawValue:)) }
 
-    /// Whether any of the Icons screen's keys is set, which implies that section.
+    /// Whether any of the Icons screen's keys is set, which implies that section. `-DSShowcaseIconStyle default`
+    /// counts: it names the entry-default state, which `iconStyle` spells nil, as it spells an absent key.
     static var namesIconState: Bool {
-        iconSize != nil || iconWeight != nil || iconStyle != nil || iconDirection != nil || iconsBlock != nil
+        iconSize != nil || iconWeight != nil || iconStyle != nil || string("DSShowcaseIconStyle") == "default"
+            || iconDirection != nil || iconsBlock != nil
     }
 
     static var opensAxes: Bool { flag("DSShowcaseAxes") ?? false }

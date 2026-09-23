@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Every value `spec/components/Icon.yaml` (specVersion 2) binds, as pure functions of the props, the material the
+/// Every value `spec/components/Icon.yaml` (specVersion 3) binds, as pure functions of the props, the material the
 /// enclosing Surface publishes and the token set, so the binding matrix runs on the host. `DSIcon` only draws what
 /// these return.
 ///

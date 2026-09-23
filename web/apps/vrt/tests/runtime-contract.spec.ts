@@ -4,13 +4,17 @@
  * evaluated by a browser engine rather than by a simulator or a fake DOM, in Chromium, WebKit and
  * Firefox, with the touch path in a Chromium `hasTouch`/`isMobile` context.
  *
- * Two pages, both served by `serve.ts`:
+ * Three pages, all served by `serve.ts`:
  *
  * - `/runtime-contract/`, the fixture of `fixture/build.ts`: a consumer page over `@iiiivaska/prism-tokens`
  *   as `npm pack` publishes it, unpacked into `node_modules/` — not the workspace symlink. It carries
  *   P3-2's behavioural half: one document switches scheme, density and motion with no rebuild, computes
  *   a nested dark scope inside a light root, and loads the prism-native Inter from the package with the
  *   network disabled.
+ * - `/runtime-contract/direction/`, the same fixture's React app over the packed `@iiiivaska/prism-react`,
+ *   built by Vite at Prism's browser floor: right to left as a consumer's build ships it (Icon.yaml
+ *   behavior 11, Text.yaml's fade; P5-3 finding SD-7). The rtl reading of the showcase was 0 of 6 in a
+ *   build and 6 of 6 under a dev server, and every earlier rtl check ran under a dev server.
  * - the gallery's `Runtime/Contract` probe story, which carries ADR-0019 rule 7's client half: P3-2 could
  *   check `<Theme>` only on the server, because a client render needs a DOM runner it does not have.
  *
@@ -22,9 +26,11 @@
  * of `@iiiivaska/prism-react` (`test/exports.test.tsx`, `test/stylesheet.test.ts`) — and their rendered
  * result is what every screenshot in `stories.spec.ts` compares.
  */
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import { runtimeProjects } from "../matrix.ts";
-import { fixturePath } from "../fixture/build.ts";
+import { directionPath, fixturePath } from "../fixture/build.ts";
 
 /** ADR-0019 §1's attribute names, spelled here so the fixture's generated table is checked, not echoed. */
 const ATTRIBUTE = {
@@ -65,9 +71,15 @@ interface ProbeApi {
   mountRoot: (context: Context) => () => void;
 }
 
+interface DirectionApi {
+  /** The registry ids the page drew, from the packed package's own `iconRegistry`. */
+  readonly names: readonly string[];
+}
+
 declare global {
   var prism: FixtureApi | undefined;
   var prismProbe: ProbeApi | undefined;
+  var prismDirection: DirectionApi | undefined;
 }
 
 /** What this project's device reports, and therefore what the two root fallbacks must resolve to. */
@@ -268,6 +280,131 @@ test.describe("the packed package in a browser (P3-2's behavioural half)", () =>
     expect(served.some((url) => url.endsWith("/prism-native/fonts/inter/inter-wght.woff2"))).toBe(true);
     expect(blocked.filter((url) => url.includes("inter"))).toEqual([]);
   });
+});
+
+/**
+ * The icon registry (ADR-0013) as the repository holds it: the expectation, read apart from the packed
+ * package that draws it, so a registry the package drew wrong fails here as well.
+ */
+const registry = JSON.parse(readFileSync(resolve(import.meta.dirname, "..", "..", "..", "..", "spec", "icons", "registry.json"), "utf8")) as {
+  readonly icons: Readonly<Record<string, { readonly rtlMirror: { readonly web: boolean } }>>;
+};
+const registryNames = Object.keys(registry.icons).sort();
+const mirroredInRtl = registryNames.filter((name) => registry.icons[name]?.rtlMirror.web === true);
+
+/** The elements of the direction page a case may set `dir` on. A case may also set `lang` on `<html>`, which is otherwise `en`. */
+const DIRECTION_TARGETS = { html: "html", outer: "#outer", middle: "#middle", inner: "#inner", text: "#fade" } as const;
+
+interface DirectionCase {
+  readonly title: string;
+  readonly dir: Partial<Record<keyof typeof DIRECTION_TARGETS, string>>;
+  readonly lang?: string;
+  /** Whether the glyphs, which sit in `#inner` beside the Text and not in it, are drawn right to left. */
+  readonly glyphs: "ltr" | "rtl";
+  /** The side the fade of the one-line Text dims: its end, which is `right` in ltr and `left` in rtl. */
+  readonly fade: "left" | "right";
+}
+
+/**
+ * Each case sets `dir` only where it names one. The nested cases go four switches deep, which is as far as
+ * the stylesheet's nearest-`dir` selector is exact (web/packages/react/src/icon/Glyph.css).
+ */
+const DIRECTION_CASES: readonly DirectionCase[] = [
+  { title: "no dir anywhere", dir: {}, glyphs: "ltr", fade: "right" },
+  { title: 'lang="ar" with no dir: the direction is the dir attribute, never the language', dir: {}, lang: "ar", glyphs: "ltr", fade: "right" },
+  { title: 'dir="rtl" on <html>', dir: { html: "rtl" }, glyphs: "rtl", fade: "left" },
+  { title: 'dir="rtl" on a nested element, under dir="ltr" on <html>', dir: { html: "ltr", outer: "rtl" }, glyphs: "rtl", fade: "left" },
+  { title: 'dir="RTL" on a nested element, with no dir on <html>', dir: { inner: "RTL" }, glyphs: "rtl", fade: "left" },
+  { title: 'dir="ltr" on a nested element, under dir="rtl" on <html>', dir: { html: "rtl", outer: "ltr" }, glyphs: "ltr", fade: "right" },
+  { title: "rtl inside ltr inside rtl", dir: { html: "rtl", outer: "ltr", middle: "rtl" }, glyphs: "rtl", fade: "left" },
+  { title: "ltr inside rtl inside ltr inside rtl", dir: { html: "rtl", outer: "ltr", middle: "rtl", inner: "ltr" }, glyphs: "ltr", fade: "right" },
+  { title: "rtl inside ltr inside rtl inside ltr", dir: { html: "ltr", outer: "rtl", middle: "ltr", inner: "rtl" }, glyphs: "rtl", fade: "left" },
+  { title: 'dir="rtl" on the Text itself', dir: { text: "rtl" }, glyphs: "ltr", fade: "left" },
+  { title: 'dir="ltr" on the Text itself, under dir="rtl" on <html>', dir: { html: "rtl", text: "ltr" }, glyphs: "rtl", fade: "right" },
+];
+
+interface DirectionReading {
+  /** Every registry id the page drew, sorted. */
+  readonly drawn: readonly string[];
+  /** The ids whose svg computes `scale: -1 1`, sorted. */
+  readonly mirrored: readonly string[];
+  /** Any glyph whose `scale` is neither `none` nor `-1 1`, as `id: value`. */
+  readonly unexpected: readonly string[];
+  /** The side the Text's `mask-image` gradient runs to, or the computed value when it is not a side. */
+  readonly fade: string;
+}
+
+async function openDirection(page: Page): Promise<void> {
+  await page.goto(directionPath);
+  // Drawn, and the Text has measured its overflow: the fade is keyed on `data-ds-overflowing`.
+  await page.waitForFunction(
+    () =>
+      globalThis.prismDirection !== undefined &&
+      document.querySelectorAll("[data-ds-icon] > svg").length === globalThis.prismDirection.names.length &&
+      document.querySelector("#fade[data-ds-overflowing]") !== null,
+  );
+}
+
+async function setDirection(page: Page, { dir, lang }: DirectionCase): Promise<void> {
+  await page.evaluate(
+    ([targets, values, language]) => {
+      document.documentElement.setAttribute("lang", language);
+      for (const [key, selector] of Object.entries(targets)) {
+        const element = document.querySelector(selector);
+        if (element === null) throw new Error(`the direction page has no ${selector}`);
+        const value = values[key];
+        if (value === undefined) element.removeAttribute("dir");
+        else element.setAttribute("dir", value);
+      }
+    },
+    [DIRECTION_TARGETS, dir as Record<string, string | undefined>, lang ?? "en"] as const,
+  );
+}
+
+const readDirection = async (page: Page): Promise<DirectionReading> =>
+  page.evaluate(() => {
+    const drawn: string[] = [];
+    const mirrored: string[] = [];
+    const unexpected: string[] = [];
+    for (const box of document.querySelectorAll("[data-ds-icon]")) {
+      const name = box.getAttribute("data-ds-icon") ?? "";
+      const glyph = box.querySelector(":scope > svg");
+      const scale = glyph === null ? "no svg" : getComputedStyle(glyph).scale;
+      drawn.push(name);
+      if (scale === "-1 1") mirrored.push(name);
+      else if (scale !== "none") unexpected.push(`${name}: ${scale}`);
+    }
+    const text = document.querySelector("#fade");
+    const style = text === null ? null : getComputedStyle(text);
+    const mask = style === null ? "no #fade" : style.maskImage === "" || style.maskImage === "none" ? style.webkitMaskImage : style.maskImage;
+    return {
+      drawn: drawn.sort(),
+      mirrored: mirrored.sort(),
+      unexpected,
+      fade: /^linear-gradient\(to (left|right)\b/u.exec(mask)?.[1] ?? mask,
+    };
+  });
+
+test.describe("right to left in a floor-targeted build of the packed package (Icon behavior 11, Text's fade; SD-7)", () => {
+  test.beforeEach(async ({ page }) => {
+    await openDirection(page);
+  });
+
+  test("the page draws every registry entry, and the registry marks some for mirroring", async ({ page }) => {
+    expect([...(await page.evaluate(() => (globalThis.prismDirection as DirectionApi).names))].sort()).toEqual(registryNames);
+    expect(mirroredInRtl.length, "no entry is marked rtlMirror.web, so the mirror cases check nothing").toBeGreaterThan(0);
+  });
+
+  for (const directionCase of DIRECTION_CASES) {
+    test(directionCase.title, async ({ page }) => {
+      await setDirection(page, directionCase);
+      const reading = await readDirection(page);
+      expect(reading.drawn).toEqual(registryNames);
+      expect(reading.unexpected).toEqual([]);
+      expect(reading.mirrored, `mirrored under ${directionCase.glyphs}`).toEqual(directionCase.glyphs === "rtl" ? mirroredInRtl : []);
+      expect(reading.fade, "the side the fade dims").toBe(directionCase.fade);
+    });
+  }
 });
 
 test.describe("<Theme> on the client (ADR-0019 rule 7)", () => {

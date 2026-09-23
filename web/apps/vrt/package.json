@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Playwright over the gallery: visual regression for stories tagged vrt × scheme × density × viewport, and the web runtime contract in Chromium, WebKit and Firefox",
+  "description": "Playwright over the gallery: visual regression for stories tagged vrt × scheme × density × viewport, and the web runtime contract in Chromium, WebKit and Firefox over the packed packages, one page of it built by Vite at the browser floor",
   "scripts": {
     "test": "playwright test",
     "test:update": "playwright test --update-snapshots=all",
@@ -12,6 +12,7 @@
   "devDependencies": {
     "@playwright/test": "catalog:",
     "@types/node": "catalog:",
-    "typescript": "catalog:"
+    "typescript": "catalog:",
+    "vite": "catalog:"
   }
 }

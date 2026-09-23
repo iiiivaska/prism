@@ -1,7 +1,8 @@
 /**
- * The checks of ADR-0019 rule 9 as ADR-0025 §3 amends it, and the stylesheet half of rule 10 (names in
- * the global CSS namespace carry `ds`), as functions over a parsed stylesheet so the test can run them
- * on the package's stylesheets and prove each one on a failing fixture.
+ * The checks of ADR-0019 rule 9 as ADR-0025 §3 amends it, the stylesheet half of rule 10 (names in the
+ * global CSS namespace carry `ds`), and how a stylesheet may read the direction (P5-3 finding SD-7), as
+ * functions over a parsed stylesheet so the test can run them on the package's stylesheets and prove
+ * each one on a failing fixture.
  */
 import { allAtRules, flattenRules, parseCss, rightmostCompound, splitTopLevel, type CssAtRule } from "./css.ts";
 
@@ -172,4 +173,72 @@ export function compiledProblems(css: string): Problem[] {
     }
   }
   return problems;
+}
+
+/** The two `dir` values a Prism selector reads; `auto` and every other value set no direction (src/icon/Glyph.css). */
+const RTL = '[dir="rtl" i]';
+const LTR = '[dir="ltr" i]';
+
+/** How many changes of direction, from the first rtl down, `nearestRtlSelector()` follows exactly. */
+const DIRECTION_DEPTH = 4;
+
+/**
+ * The one form in which a Prism selector reads the direction (P5-3 finding SD-7): at or under an rtl, and
+ * not at or under an ltr under that rtl, unless an rtl under that ltr again, to `depth` changes — the
+ * nearest `dir` attribute's direction, written with nothing a build aimed at the browser floor rewrites
+ * (src/icon/Glyph.css). Built here from the two attribute selectors, so a copy in a stylesheet that drops,
+ * reorders or misspells a level does not match it.
+ */
+export function nearestRtlSelector(depth: number = DIRECTION_DEPTH): string {
+  const chain = (length: number): string => Array.from({ length }, (_, index) => (index % 2 === 0 ? RTL : LTR)).join(" ");
+  const atOrUnder = (length: number): string => `${chain(length)}, ${chain(length)} *`;
+  const unless = (length: number): string => (length > depth ? "" : `:not(:where(${atOrUnder(length)})${unless(length + 1)})`);
+  return `:is(${atOrUnder(1)})${unless(2)}`;
+}
+
+/** A selector with its whitespace as the compiled stylesheet spells it, so one written over several lines compares equal. */
+function normalizeSelector(selector: string): string {
+  return selector
+    .replace(/\s+/g, " ")
+    .replace(/\(\s/g, "(")
+    .replace(/\s\)/g, ")")
+    .replace(/\s*,\s*/g, ", ")
+    .trim();
+}
+
+/**
+ * SD-7's guard. No `:dir()` anywhere: Chrome has it only from 120, above Prism's floor of 111, and a
+ * build aimed at the floor rewrites it into `:is(:lang(ar), :lang(he), …)`, which a `dir` attribute never
+ * matches, so a consumer's build mirrored nothing. And every selector that reads `dir` reads it through
+ * `nearestRtlSelector()` and nothing else: with that form taken out, no `[dir` may remain, so neither a
+ * bare `[dir="rtl"]` ancestor, which an ltr element inside it does not stop, nor one written in front of
+ * the form passes.
+ */
+export function directionProblems(css: string): Problem[] {
+  const problems: Problem[] = [];
+  const tree = parseCss(css);
+  const pseudo = /:dir\(/i;
+  for (const at of allAtRules(tree)) {
+    if (pseudo.test(at.params)) problems.push({ check: "dir-pseudo", detail: `@${at.name} ${at.params}: :dir() (P5-3 finding SD-7)` });
+  }
+  const form = nearestRtlSelector();
+  for (const rule of flattenRules(tree)) {
+    for (const selector of rule.selectors) {
+      if (pseudo.test(selector)) {
+        problems.push({ check: "dir-pseudo", detail: `${selector}: :dir() is newer than Chrome 111, and a build aimed at the floor rewrites it into :lang(), which a dir attribute never matches (P5-3 finding SD-7)` });
+      } else if (/\[\s*dir\b/i.test(normalizeSelector(selector).split(form).join(""))) {
+        problems.push({ check: "dir-attribute", detail: `${selector}: reads dir other than through nearestRtlSelector(), the nearest dir attribute (src/icon/Glyph.css)` });
+      }
+    }
+  }
+  return problems;
+}
+
+/** The selectors that read the direction, each without the `nearestRtlSelector()` it carries. */
+export function directionReaders(css: string): string[] {
+  const form = nearestRtlSelector();
+  return flattenRules(parseCss(css))
+    .flatMap((rule) => rule.selectors.map(normalizeSelector))
+    .filter((selector) => selector.includes(form))
+    .map((selector) => selector.replace(form, ""));
 }

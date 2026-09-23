@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Icon: one glyph from the icon registry, named by its semantic id (`spec/components/Icon.yaml`, specVersion 2).
+/// Icon: one glyph from the icon registry, named by its semantic id (`spec/components/Icon.yaml`, specVersion 3).
 ///
 ///     DSIcon(.actionSettings)
 ///     DSIcon(.statusWarning, size: .sm, style: .filled, tone: .warning)

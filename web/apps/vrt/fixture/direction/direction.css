@@ -1,0 +1,30 @@
+/*
+  The stylesheet block agent/SKILL.md gives a consuming app, as fixtures/vite-app/src/app.css has it, for
+  the brand the fixture's other page loads, less the fonts, which nothing read here depends on. Vite
+  resolves each subpath through the packed package's `exports` map and ships them as one stylesheet,
+  minified and lowered for the browser floor fixture/build.ts names.
+*/
+@import "@iiiivaska/prism-tokens/brands/prism-native/tokens.css";
+@import "@iiiivaska/prism-tokens/motion.css";
+@import "@iiiivaska/prism-react/styles.css" layer(components);
+
+body {
+  margin: 0;
+  padding: var(--ds-space-4);
+  background-color: var(--ds-color-bg-page);
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-ui);
+}
+
+/* Every registry entry in a wrapping row. */
+.probe-glyphs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-4);
+}
+
+/* A box narrower than its one line of text, so the fade-truncated Text overflows and draws its fade. */
+.probe-line {
+  inline-size: var(--ds-space-card-padding);
+  margin-block-start: var(--ds-space-4);
+}

@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Icon.yaml` specVersion 2: the colour matrix keyed by the published material, the backdrop kind on
+/// `spec/components/Icon.yaml` specVersion 3: the colour matrix keyed by the published material, the backdrop kind on
 /// the scheme's glass and the tone; the box per size in every density; the two weights and behavior 3's rule between
 /// them; the motion cells; the frame fit that keeps every registry symbol inside its box; the examples as the spec
 /// writes them; and the accessibility of each one.
@@ -18,7 +18,7 @@ import DSTokens
 /// What the simulator actually publishes to VoiceOver for each example is measured by `DSIconAccessibilityTreeTests`,
 /// and what the glyphs draw — no ink outside the box, `display` below `lg` drawing `control` — by `DSIconBoxTests`,
 /// both in DSSnapshotTests.
-@Suite("Icon bindings (Icon.yaml v2)")
+@Suite("Icon bindings (Icon.yaml v3)")
 struct DSIconBindingTests {
     let spec: DSSpec
 
@@ -50,7 +50,7 @@ struct DSIconBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default`
     /// at every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 2)
+        #expect(try spec.specVersion == 3)
         #expect(try spec.propValues("size") == DSGlyphSize.allCases.map(\.rawValue))
         #expect(try spec.propValues("weight") == DSGlyphWeight.allCases.map(\.rawValue))
         #expect(try spec.propValues("style") == DSIconStyle.allCases.map(\.rawValue))

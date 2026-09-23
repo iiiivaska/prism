@@ -371,7 +371,19 @@
     );
   }
 
-  .ds-text[data-ds-truncation="fade"][data-ds-single-line][data-ds-overflowing]:dir(rtl) {
+  /*
+   * Under right to left the trailing third is on the left. The direction is the nearest `dir` attribute's,
+   * the Text's own included, read by the selector ../icon/Glyph.css explains and never with `:dir()`, which
+   * a build aimed at Prism's floor rewrites into `:lang()` selectors that `dir` never matches (P5-3
+   * finding SD-7).
+   */
+  .ds-text[data-ds-truncation="fade"][data-ds-single-line][data-ds-overflowing]:is([dir="rtl" i], [dir="rtl" i] *):not(
+    :where([dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] *):not(
+      :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] *):not(
+        :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i] *)
+      )
+    )
+  ) {
     -webkit-mask-image: linear-gradient(
       to left,
       var(--ds-color-edge-highlight) 67%,

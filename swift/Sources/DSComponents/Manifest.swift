@@ -60,13 +60,18 @@
 /// Icon 2 settles the filled style for a registry entry whose SF Symbol has no fill variant (ADR-0035): it draws its
 /// outline on both stacks, where the web used to draw Phosphor's fill cut. This target drew the plain symbol already,
 /// through SwiftUI's fallback, and now decides it itself (`DSIconAppearance.drawnStyle(_:for:)`), for image sets too.
+///
+/// Icon 3 narrows the web half of behavior 11 to what the web can read at its browser floor: an explicit `dir`
+/// attribute, exact through four nested changes of direction, with `dir="auto"` keeping the surrounding direction
+/// (P5-3 finding SD-7). This target reads the environment's `layoutDirection`, as it did at Icon 2, so nothing here
+/// changed.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
         "Button": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
-        "Icon": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+        "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "IconButton": ["ios": 1, "ipados": 1, "macos": 1],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],

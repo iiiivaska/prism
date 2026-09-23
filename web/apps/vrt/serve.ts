@@ -5,7 +5,8 @@
  *
  *   /                    web/apps/gallery/storybook-static (the stories the screenshots come from)
  *   /runtime-contract/   the packed-consumer fixture of fixture/build.ts, which this server builds
- *                        at startup so the runtime-contract spec needs no separate step
+ *                        at startup so the runtime-contract spec needs no separate step; its
+ *                        Vite-built direction page is at /runtime-contract/direction/
  *
  *   node serve.ts [port]   default 6007
  */
@@ -39,24 +40,24 @@ function mounts(): readonly { readonly prefix: string; readonly root: string }[]
   ];
 }
 
-/** The file a request path maps to, or null when it leaves every mounted root. */
+/** The file a request path maps to, or null when it leaves every mounted root. A folder path serves its index.html. */
 function fileFor(pathname: string): string | null {
   for (const { prefix, root } of mounts()) {
     if (!pathname.startsWith(prefix)) continue;
     const rest = pathname.slice(prefix.length);
-    const file = normalize(join(root, rest === "" ? "index.html" : rest));
+    const file = normalize(join(root, rest === "" || rest.endsWith("/") ? `${rest}index.html` : rest));
     if (!file.startsWith(root + sep)) return null;
     return existsSync(file) && statSync(file).isFile() ? file : null;
   }
   return null;
 }
 
-function serve(port: number): void {
+async function serve(port: number): Promise<void> {
   if (!existsSync(join(storybookStatic, "index.json"))) {
     console.error(`vrt: ${storybookStatic} has no index.json; run \`pnpm --filter @iiiivaska/prism-gallery build\` first`);
     process.exit(2);
   }
-  console.log(`vrt: built the runtime-contract fixture in ${buildFixture()}`);
+  console.log(`vrt: built the runtime-contract fixture in ${await buildFixture()}`);
   createServer((request, response) => {
     const pathname = decodeURIComponent(new URL(request.url ?? "/", "http://localhost").pathname);
     // `/runtime-contract` without the slash would resolve its relative URLs against `/`.
@@ -76,4 +77,4 @@ function serve(port: number): void {
   });
 }
 
-if (import.meta.main) serve(Number(process.argv[2] ?? "6007"));
+if (import.meta.main) await serve(Number(process.argv[2] ?? "6007"));

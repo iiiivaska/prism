@@ -29,7 +29,7 @@ export const implemented: ImplementedVersions = {
   Button: { "web-touch": 4, "web-desktop": 4 },
   Card: { "web-touch": 5, "web-desktop": 5 },
   Divider: { "web-touch": 2, "web-desktop": 2 },
-  Icon: { "web-touch": 2, "web-desktop": 2 },
+  Icon: { "web-touch": 3, "web-desktop": 3 },
   IconButton: { "web-touch": 1, "web-desktop": 1 },
   Surface: { "web-touch": 3, "web-desktop": 3 },
   Text: { "web-touch": 2, "web-desktop": 2 },

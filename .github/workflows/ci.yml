@@ -311,11 +311,12 @@ jobs:
           runtime: node@24
           cache: true
           require-lockfile: true
-      - name: Build the package the runtime-contract fixture packs # P3-4
+      - name: Build the packages the runtime-contract fixture packs # P3-4, P5-3 SD-7
         # This job takes storybook-static from the `web` job instead of building it, so no `dist/` exists
-        # here. web/apps/vrt/fixture/build.ts runs `npm pack` over @iiiivaska/prism-tokens, whose export
-        # map points `.` and `./react` at dist/, and serve.ts builds the fixture when it starts.
-        run: pnpm --filter @iiiivaska/prism-tokens build
+        # here. web/apps/vrt/fixture/build.ts runs `npm pack` over @iiiivaska/prism-tokens and
+        # @iiiivaska/prism-react, whose export maps point at dist/, and serve.ts builds the fixture when it
+        # starts, its direction page with Vite at the browser floor. pnpm builds the two in dependency order.
+        run: pnpm --filter @iiiivaska/prism-tokens --filter @iiiivaska/prism-react build
       - name: Compare, or record baselines when there are none or the run asks for them # P3-4
         id: vrt-mode
         shell: bash

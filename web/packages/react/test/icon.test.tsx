@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Icon (spec/components/Icon.yaml, specVersion 2).
+ * Icon (spec/components/Icon.yaml, specVersion 3).
  *
  * - Icon.css binds what Icon.yaml binds: every tone on every material a Surface can publish, and on the
  *   scheme's glass every backdrop kind, read through a small cascade so each cell is checked as it wins on
@@ -107,8 +107,8 @@ function staged(example: (typeof spec.examples)[number]): string {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Icon.yaml specVersion 2", () => {
-    expect(spec.specVersion).toBe(2);
+  it("is Icon.yaml specVersion 3", () => {
+    expect(spec.specVersion).toBe(3);
     expect([...glyphSizes]).toEqual(propValues(spec, "size"));
     expect([...glyphWeights]).toEqual(propValues(spec, "weight"));
     expect(Object.keys(iconStyles)).toEqual(propValues(spec, "style"));

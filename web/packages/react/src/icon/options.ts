@@ -1,5 +1,5 @@
 /**
- * The enums of spec/components/Icon.yaml (specVersion 2), spelled as the spec spells them, the twins of
+ * The enums of spec/components/Icon.yaml (specVersion 3), spelled as the spec spells them, the twins of
  * `DSGlyphSize`, `DSGlyphWeight` and `DSGlyphTone`. The stylesheet maps size and tone, with the material
  * the enclosing Surface publishes, to the tokens Icon.yaml binds, and ./weight.ts maps weight to a
  * Phosphor cut; test/icon.test.tsx reads the spec and checks all three, so none of them can drift.

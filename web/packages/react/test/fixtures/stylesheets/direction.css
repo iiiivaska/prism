@@ -1,0 +1,30 @@
+/*
+  Fails SD-7's guard four ways: `:dir()`, which a build aimed at the browser floor rewrites into `:lang()`;
+  a bare rtl ancestor, which an ltr element inside it does not stop; the nearest-dir chain one level
+  short, which an rtl inside that ltr does not restart; and the whole chain with a bare rtl ancestor in
+  front of it, which reads `dir` outside the chain, so a glyph whose own `dir` is its only rtl draws
+  unmirrored.
+*/
+@layer ds.components {
+  .ds-fixture:dir(rtl) {
+    scale: -1 1;
+  }
+
+  [dir="rtl"] .ds-fixture {
+    scale: -1 1;
+  }
+
+  .ds-fixture:is([dir="rtl" i], [dir="rtl" i] *):not(:where([dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] *)) {
+    scale: -1 1;
+  }
+
+  [dir="rtl"] .ds-fixture:is([dir="rtl" i], [dir="rtl" i] *):not(
+    :where([dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] *):not(
+      :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] *):not(
+        :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i] *)
+      )
+    )
+  ) {
+    scale: -1 1;
+  }
+}

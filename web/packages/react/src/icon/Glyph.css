@@ -24,7 +24,29 @@
     fill: currentColor;
   }
 
-  .ds-glyph[data-ds-mirror]:dir(rtl) {
+  /*
+   * Icon.yaml behavior 11: a glyph the registry marks `rtlMirror` flips under `dir="rtl"`. The direction is
+   * the nearest `dir` attribute's, read with attribute selectors and never with `:dir()`: Chrome has `:dir()`
+   * only from 120, above Prism's floor of 111, and a build aimed at the floor rewrites it into
+   * `:is(:lang(ar), :lang(he), …)`, which a `dir` attribute never matches, so a consumer's build drew no
+   * glyph mirrored (P5-3 finding SD-7). Nothing below is newer than the floor, so no build rewrites it.
+   *
+   * It reads: at or under an rtl, and not at or under an ltr that is under an rtl, unless that ltr has an
+   * rtl under it again, and so on. Each `:not(:where(…))` is one more change of direction, and the chain
+   * is exact through four of them (rtl, ltr, rtl, ltr, from the first rtl down); deeper nesting, which no
+   * page is likely to have, draws the glyph unmirrored. `i` matches the value in any case, as HTML does.
+   * Text's fade uses the same selector (../text/Text.css), and test/stylesheet.test.ts holds every `dir`
+   * selector in the package to it. `dir="auto"` sets nothing here: its direction comes from the text
+   * inside it, which no selector at the floor can read, so a glyph under it follows the `dir` around it,
+   * as it does under a missing or invalid value.
+   */
+  .ds-glyph[data-ds-mirror]:is([dir="rtl" i], [dir="rtl" i] *):not(
+    :where([dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] *):not(
+      :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] *):not(
+        :where([dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i], [dir="rtl" i] [dir="ltr" i] [dir="rtl" i] [dir="ltr" i] *)
+      )
+    )
+  ) {
     scale: -1 1;
   }
 

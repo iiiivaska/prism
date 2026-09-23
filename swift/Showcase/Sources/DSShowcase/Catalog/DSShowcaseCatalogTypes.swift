@@ -258,10 +258,10 @@ public enum DSShowcaseCatalog {
     /// Where a reader is sent for the paired snapshots.
     ///
     /// **Not `gallery/index.html`.** GitHub serves an HTML file under `/blob/` as its own source, so that link
-    /// opened a page of markup, and the `#<Name>` anchor the page really has could not fire in it. Publishing the
-    /// gallery is gated on a reference-distance review that has not happened, so there is no rendered copy to
-    /// link either. `gallery/README.md` is a page GitHub does render, and it is the page that says what the
-    /// gallery is and how to open it — from a checkout, or from the `gallery` artifact of any green CI run.
+    /// opened a page of markup, and the `#<Name>` anchor the page really has could not fire in it. Nothing publishes
+    /// a rendered copy of the gallery, so there is none to link either. `gallery/README.md` is a page GitHub does
+    /// render, and it is the page that says what the gallery is and how to open it — from a checkout, or from the
+    /// `gallery` artifact of any green CI run.
     public static var galleryLink: URL? { link("gallery/README.md") }
 
     /// The anchor inside the gallery page, which still means something in the two places the page is real: a

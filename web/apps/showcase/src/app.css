@@ -710,7 +710,8 @@ code,
   gap: var(--ds-space-3);
 }
 
-/* The notes that say what each control does sit below the controls, not against the last one. */
+/* The notes under the Icons controls (weight, style and direction; size has none) sit below the controls, not
+   against the last one. */
 .ds-sc-controls + .ds-sc-note {
   margin-block-start: var(--ds-space-4);
 }

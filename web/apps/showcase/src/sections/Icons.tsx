@@ -24,7 +24,9 @@
  * docs/direction-board/reference-distance-showcase.md names search, filter, copy, copy-as-SVG, download and
  * a per-icon page as what makes an icon browser, and the screen has none of them; the Apple screen's detail
  * sheet was such a page and went in P4-D4. Landing `Icon` expired this screen's reference-distance clearance
- * (§10, condition 2), and the ADR-0015 rule 3 review has to be re-run for it before a release ships it.
+ * (§10, condition 2), and the ADR-0015 rule 3 review was re-run for it on 2026-09-23, after P4-D4 (§11 of the
+ * same document): not a copy, at 1440 or at 375 px. §11.8 says what expires that clearance: among other
+ * things, anything that acts on one entry, a new control, or this screen's controls parting from Apple's.
  */
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {

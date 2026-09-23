@@ -73,8 +73,8 @@ export function argsFor(spec: CatalogSpec, example: CatalogExample): Record<stri
  *
  * The gallery link is **not** `gallery/index.html`: GitHub serves an HTML file under `/blob/` as its own
  * source, so that link opened a page of markup rather than the paired screens, and the `#<Name>` anchor
- * the page really carries could not fire inside it. Publishing those screens is gated on a
- * reference-distance review that has not happened, so there is no rendered copy to point at either.
+ * the page really carries could not fire inside it. Nothing publishes a rendered copy of those screens,
+ * so there is none to point at either.
  * `gallery/README.md` is a page GitHub does render, and it is the page that says what the gallery is and
  * how to open it. The anchor still means something where the page is real — a checkout, or the `gallery`
  * artifact of a green CI run — so it is printed as the path it is, beside the link.

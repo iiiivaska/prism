@@ -1,0 +1,5 @@
+---
+"@iiiivaska/prism-react": patch
+---
+
+Icon 3 (`spec/components/Icon.yaml`): a glyph whose registry entry mirrors in right to left (`rtlMirror.web`) now flips in a build aimed at Prism's browser floor. The stylesheet wrote `:dir(rtl)`, which Chrome has only from 120, above the floor of Chrome 111, and a build aimed at the floor rewrote it into `:lang()` selectors, so a `dir="rtl"` without a right-to-left `lang` flipped nothing. The package now reads the nearest `dir` attribute of `rtl` or `ltr` on the glyph or an ancestor, exact through four nested changes of direction, with selectors no such build rewrites. Icon.yaml now says what that reading leaves out, which `:dir()` covered in the browsers that have it: under `dir="auto"` a glyph keeps the surrounding direction rather than the one its text resolves to, a glyph under more than four nested changes of direction draws unmirrored, and a direction set without a `dir` attribute is not seen. Text's `fade` truncation finds its trailing edge the same way. SwiftUI is unchanged: `DSIcon` reads the environment's `layoutDirection`.
