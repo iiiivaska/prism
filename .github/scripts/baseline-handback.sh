@@ -2,10 +2,18 @@
 # The CI baseline hand-back (roadmap P3-3, P3-4): after a snapshot run, stage the baselines that run recorded, and only
 # those, for upload as an artifact, or refuse to. It is one script for both stacks, because the two halves of a
 # component land together and must hand back the same way. ci.yml's `apple` job runs it over the SwiftUI baselines and
-# `web-vrt` runs it over the Playwright ones, after every run but one. In compare mode both suites write a baseline only
-# where none exists, and each records its whole set only when its folder holds no baseline at all, so neither can
-# write over a committed one. The exception is the web's `workflow_dispatch` re-record (`update-vrt-baselines`), which
-# writes over the whole folder on purpose and is uploaded without this script.
+# `web-vrt` runs it over the Playwright ones, after every run but the one a person asks to re-record. In compare mode
+# both suites write a baseline only where none exists, and each records its whole set only when its folder holds no
+# baseline at all, so neither can write over a committed one.
+#
+# The exception is the sanctioned re-record, one `workflow_dispatch` input per stack, each named for the artifact it
+# hands back: `update-vrt-baselines` (web-vrt, `vrt-baselines`) and `update-snapshot-baselines-apple` (apple,
+# `snapshot-baselines-apple`). It is the one way to change a committed baseline on purpose, on either stack: the run
+# records the whole folder over the committed set, skips this script, uploads the folder whole and fails, and whoever
+# dispatched it unpacks the artifact over the folder and commits what git reports as changed, so review sees changed
+# baselines and never a deletion. Push and pull_request runs cannot reach it: the inputs exist only on a dispatch, and
+# both default to off. So everything this script is given comes from a run that compares, or from one that records
+# only because its folder is empty.
 #
 # The suite's exit code does not decide what may leave. Git does, together with the commit the change is measured
 # against (BASE):
@@ -18,7 +26,8 @@
 #                         deleted baseline is the one case the matrix's own tests cannot see:
 #                         `everyCommittedBaselineBelongsToTheMatrix` looks only for PNGs the matrix does not render.
 #   anything else         ` M`, ` D` and the rest: a committed baseline was written over or removed. No run this script
-#                         is given has a code path that does this, so it is refused.
+#                         is given has a code path that does this (the re-record that does is never given to it), so
+#                         it is refused.
 #   `??`, not a baseline  anything but a PNG or `provenance.json`. The artifact unpacks straight over the folder, so it
 #                         is refused.
 #
@@ -55,6 +64,8 @@
 #   STAGING         a path outside the checkout to stage the recorded files in; it is emptied first
 #   ARTIFACT        the name the upload step gives the staged files
 #   DIFFS           the name of the artifact in which a failed comparison leaves its images
+#   RERECORD        the workflow_dispatch input of this stack's sanctioned re-record, which the messages name as
+#                   the way to change a committed baseline on purpose
 #   BASE            the commit the change is measured against: the pull request's base, or the commit a push moved
 #                   the branch from. It is empty, or all zeros, when the event has none (workflow_dispatch, a push
 #                   that created the branch), and the default branch's tip is used instead
@@ -62,7 +73,7 @@
 #   GITHUB_WORKSPACE, GITHUB_OUTPUT, GITHUB_STEP_SUMMARY  set by the runner
 set -euo pipefail
 
-: "${BASELINES:?}" "${STAGING:?}" "${ARTIFACT:?}" "${DIFFS:?}" "${DEFAULT_BRANCH:?}"
+: "${BASELINES:?}" "${STAGING:?}" "${ARTIFACT:?}" "${DIFFS:?}" "${RERECORD:?}" "${DEFAULT_BRANCH:?}"
 : "${GITHUB_WORKSPACE:?}" "${GITHUB_OUTPUT:?}" "${GITHUB_STEP_SUMMARY:?}"
 BASE=${BASE:-}
 
@@ -149,12 +160,12 @@ fi
 
 if [ -n "$rewritten" ]; then
   printf 'Committed baselines this run wrote over:\n%s' "$rewritten"
-  echo "::error title=A committed baseline was rewritten::This run wrote over baselines that are already in the commit (listed above, with their git status). A component whose render changed has to fail its comparison, not replace its own reference, so nothing is handed back. See the '$DIFFS' artifact of this run for what it rendered."
+  echo "::error title=A committed baseline was rewritten::This run wrote over baselines that are already in the commit (listed above, with their git status). A component whose render changed has to fail its comparison, not replace its own reference, so nothing is handed back. See the '$DIFFS' artifact of this run for what it rendered. To change a committed baseline on purpose, dispatch ci with '$RERECORD', the sanctioned re-record, and commit what its '$ARTIFACT' artifact changes."
   problems=$((problems + 1))
 fi
 if [ -n "$rerecorded" ]; then
   printf 'Baselines that %s has, that this change deletes and that this run recorded again:\n%s' "$base" "$rerecorded"
-  echo "::error title=A deleted baseline was recorded again::This change deletes baselines that the commit it is measured against ($base) has, and this run recorded them again (listed above). A render that changed would reach the hand-back that way and look exactly like a new one, so nothing is handed back. Restore them from that commit. To accept a render that changed on purpose, commit the new image over the baseline instead, so that review sees a changed baseline rather than a deletion: a run that compares against the baseline leaves the new image in its '$DIFFS' artifact."
+  echo "::error title=A deleted baseline was recorded again::This change deletes baselines that the commit it is measured against ($base) has, and this run recorded them again (listed above). A render that changed would reach the hand-back that way and look exactly like a new one, so nothing is handed back. Restore them from that commit. To accept a render that changed on purpose, dispatch ci with '$RERECORD', the sanctioned re-record, and commit the new image over the baseline from its '$ARTIFACT' artifact, so that review sees a changed baseline rather than a deletion; a run that compares against the baseline shows what moved in its '$DIFFS' artifact first."
   problems=$((problems + 1))
 fi
 if [ -n "$unexpected" ]; then
