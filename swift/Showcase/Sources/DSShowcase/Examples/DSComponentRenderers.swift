@@ -436,3 +436,72 @@ public struct DSIconButtonRenderer: DSExampleRenderer {
         )
     }
 }
+
+// MARK: - Avatar
+
+/// Avatar.yaml's `name`, `image`, `size`, `hasRing` and `isDecorative`, staged as Badge and IconButton are in every
+/// harness: no frame of its own, so a page example is the avatar on the page, one on `map` or `image` is the avatar
+/// straight on that ground, which the stage declares, so its circle renders the glass chip, and one that declares a
+/// material is the avatar inside a `card`-padded Surface that hugs it (the default `surfacePadding`). Avatar declares no
+/// action, and its names are the spec's own, so there is no sample string here.
+///
+/// `image` is spec/SCHEMA.md's `portrait` fixture or nothing: an example never writes a file name or a URL, and the Apple
+/// avatar takes an already loaded `Image` rather than a source (Avatar.yaml `notes.platform.ios`), so an `image` written
+/// any other way is not staged rather than drawn as the initials in its place.
+public struct DSAvatarRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        let size: DSAvatarSize? = example.string("size") == nil ? .md : example.raw("size")
+        guard let size else { return nil }
+        var hasPortrait = false
+        if let written = example["image"] {
+            guard case .map(let pairs) = written, pairs.count == 1, written["fixture"]?.string == "portrait" else { return nil }
+            hasPortrait = true
+        }
+        // `hasRing` and `isDecorative` default false in the spec, which is also `bool(_:)`'s default.
+        return AnyView(
+            DSExampleAvatar(
+                name: example.string("name"),
+                hasPortrait: hasPortrait,
+                size: size,
+                hasRing: example.bool("hasRing"),
+                isDecorative: example.bool("isDecorative")
+            )
+        )
+    }
+}
+
+/// An avatar with an example's props, and the `portrait` fixture drawn in the colours of the context it renders in, as
+/// the snapshot harness draws it (`DSAvatarExampleAvatar`).
+struct DSExampleAvatar: View {
+    let name: String?
+    let hasPortrait: Bool
+    let size: DSAvatarSize
+    let hasRing: Bool
+    let isDecorative: Bool
+    private var ds = DSThemeValues()
+    /// The context the portrait's colours are resolved in: the scheme and contrast the page renders in.
+    @Environment(\.self) private var environment
+
+    // Written out: a private stored property makes the synthesized memberwise initializer private.
+    init(name: String?, hasPortrait: Bool, size: DSAvatarSize, hasRing: Bool, isDecorative: Bool) {
+        self.name = name
+        self.hasPortrait = hasPortrait
+        self.size = size
+        self.hasRing = hasRing
+        self.isDecorative = isDecorative
+    }
+
+    var body: some View {
+        DSAvatar(
+            name: name,
+            image: hasPortrait ? DSExamplePortrait.image(ds.tokens, in: environment) : nil,
+            size: size,
+            hasRing: hasRing,
+            isDecorative: isDecorative
+        )
+    }
+}

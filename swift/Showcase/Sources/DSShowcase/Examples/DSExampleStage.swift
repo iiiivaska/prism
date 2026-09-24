@@ -331,3 +331,43 @@ public struct DSExampleImage: View {
         }
     }
 }
+
+/// The `portrait` fixture of spec/SCHEMA.md ("Slot content in examples"): the one picture an example hands an image
+/// prop — Avatar's `image` — drawn from tokens, so the showcase, both galleries and the web showcase show the same
+/// portrait and no photograph of anyone. It is the showcase's own copy of the snapshot harness's `DSExamplePortrait`
+/// (`DSComponents/Examples`), which is `internal` and `#if DEBUG`, as the map and the image above are copies.
+///
+/// Back to front, in fractions of the side: the square in `color.chart.series.4`; the shoulders, an ellipse in
+/// `color.chart.series.3` whose bounding box runs from 0.1 to 0.9 across and from 0.68 to 1.32 down, so the bottom edge
+/// cuts its lower half; the head, a circle in `color.chart.series.2` whose bounding box runs from 0.3 to 0.7 across and
+/// from 0.22 to 0.62 down.
+nonisolated enum DSExamplePortrait {
+    /// The side the picture is drawn at, the web's viewBox; the image prop that holds it scales it to its own frame.
+    static let side: CGFloat = 100
+
+    /// The picture in the colours `tokens` resolve to in `environment`, resolved before the drawing, so the picture
+    /// does not depend on where the image is rendered.
+    @MainActor static func image(_ tokens: DSTokenSet, in environment: EnvironmentValues) -> Image {
+        drawn(
+            backdrop: Color(tokens.color.chartSeries4.resolve(in: environment)),
+            shoulders: Color(tokens.color.chartSeries3.resolve(in: environment)),
+            head: Color(tokens.color.chartSeries2.resolve(in: environment))
+        )
+    }
+
+    /// The picture in three resolved colours; the drawing closure captures only those and the side.
+    static func drawn(backdrop: Color, shoulders: Color, head: Color) -> Image {
+        let length = Self.side
+        return Image(size: CGSize(width: length, height: length)) { context in
+            context.fill(Path(CGRect(x: 0, y: 0, width: length, height: length)), with: .color(backdrop))
+            context.fill(
+                Path(ellipseIn: CGRect(x: 0.1 * length, y: 0.68 * length, width: 0.8 * length, height: 0.64 * length)),
+                with: .color(shoulders)
+            )
+            context.fill(
+                Path(ellipseIn: CGRect(x: 0.3 * length, y: 0.22 * length, width: 0.4 * length, height: 0.4 * length)),
+                with: .color(head)
+            )
+        }
+    }
+}

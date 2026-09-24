@@ -1,0 +1,155 @@
+/*
+ * Avatar (spec/components/Avatar.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Avatar's root is also the Surface module's glass chip (ADR-0036 §7): useSurfaceChip writes
+ * data-ds-surface-chip (glass, fallback, own or none), data-ds-surface-chip-flat, and data-ds-surface and
+ * data-ds-backdrop, the context the chip publishes: the ground the circle sits on, or raised under the fallback.
+ * surface/Surface.css paints the circle from them. This sheet never sets the root's background-color or
+ * background-image and names no glass recipe (ADR-0036 rule 2): it hands the chip Avatar's own cell,
+ * comp.avatar.bg, as --ds--surface-chip-own, and keys every other part on the published context, so the fallback
+ * reaches the initials, the glyph and the ring by construction (ADR-0036 §4). It reads no axis attribute and no
+ * preference query: the fallback has already happened in React, sizes follow density through the size.control.*
+ * tokens, and Reduce Motion shortens motion.duration.base by itself (motion.css).
+ *
+ * The root is the circle: a square of root.size at root.radius, which clips everything inside it. Inside it,
+ * bottom to top: the initials or the fallback glyph, centred; the image, which covers the circle and fades in over
+ * them once it has decoded; and the ring, an inset stroke of ring.width flush with the edge, so the layout never
+ * moves when it appears. Custom properties named --ds--avatar-* are this component's own (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  .ds-avatar {
+    /* root.background: the own cell, which the chip shape paints wherever Avatar asks it for its own fill. */
+    --ds--surface-chip-own: var(--ds-avatar-bg);
+    /* initials.color, fallbackIcon.color and ring.color: their `default` cells, which the rules below refine. */
+    --ds--avatar-initials: var(--ds-color-text-secondary);
+    --ds--avatar-icon: var(--ds-color-icon-secondary);
+    --ds--avatar-ring: var(--ds-avatar-ring);
+
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: var(--ds--avatar-size);
+    block-size: var(--ds--avatar-size);
+    margin: 0;
+    padding: 0;
+    border-radius: var(--ds-radius-control);
+    overflow: hidden;
+    vertical-align: middle;
+    user-select: none;
+  }
+
+  /* ---- root.size: the control height of each size, which follows density ---- */
+
+  .ds-avatar[data-ds-size="sm"] {
+    --ds--avatar-size: var(--ds-size-control-sm);
+  }
+
+  .ds-avatar[data-ds-size="md"] {
+    --ds--avatar-size: var(--ds-size-control-md);
+  }
+
+  .ds-avatar[data-ds-size="lg"] {
+    --ds--avatar-size: var(--ds-size-control-lg);
+  }
+
+  /*
+   * ---- initials.color, fallbackIcon.color and ring.color on the context the chip publishes ----
+   * The page over a map or an image, and the scheme's glass: the chip glass's foreground, and its ring.
+   */
+
+  .ds-avatar[data-ds-surface="page"]:is([data-ds-backdrop="map"], [data-ds-backdrop="image"]) {
+    --ds--avatar-initials: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-icon: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-ring: var(--ds-color-border-on-glass-fill);
+  }
+
+  .ds-avatar[data-ds-surface="glass"] {
+    --ds--avatar-initials: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-icon: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-ring: var(--ds-color-border-on-glass-fill);
+  }
+
+  /* The page over vivid, and a vivid Surface: the same foreground, and the ring of media (ADR-0030 §3.2). */
+  .ds-avatar:is([data-ds-surface="page"][data-ds-backdrop="vivid"], [data-ds-surface="vivid"]) {
+    --ds--avatar-initials: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-icon: var(--ds-color-text-on-glass-fill);
+    --ds--avatar-ring: var(--ds-color-border-on-media);
+  }
+
+  /* Accent: the circle has no fill of its own, and its initials and glyph take the lit tile's second tone. */
+  .ds-avatar[data-ds-surface="accent"] {
+    --ds--avatar-initials: var(--ds-color-text-on-accent-secondary);
+    --ds--avatar-icon: var(--ds-color-text-on-accent-secondary);
+  }
+
+  /* Inverse: no fill of its own either, and every part in the material's one foreground, the ring included. */
+  .ds-avatar[data-ds-surface="inverse"] {
+    --ds--avatar-initials: var(--ds-color-text-on-inverse);
+    --ds--avatar-icon: var(--ds-color-text-on-inverse);
+    --ds--avatar-ring: var(--ds-color-text-on-inverse);
+  }
+
+  /* ---- The parts ---- */
+
+  /*
+   * The initials: one line of the Text inside (initials.typography), which inherits this colour. They carry the
+   * role's own tracking and no more (behavior 3), and never wrap.
+   */
+  .ds-avatar > [data-ds-slot="avatar-initials"] {
+    display: flex;
+    color: var(--ds--avatar-initials);
+    white-space: nowrap;
+  }
+
+  /* The fallback glyph: Icon's box, at the size fallbackIcon.size names, taking this colour through tone: inherit. */
+  .ds-avatar > [data-ds-slot="avatar-fallback-icon"] {
+    color: var(--ds--avatar-icon);
+  }
+
+  /*
+   * The image: it covers the circle, clipped at image.radius, and fades in over the initials once it has decoded,
+   * over motion.imageLoad with motion.easing.out; under Reduce Motion the duration token itself is shorter
+   * (accessibility.reduceMotion). It sits above the chip, never between the chip and the media under it, so its
+   * opacity cuts no blur (ADR-0036 rule 13).
+   */
+  .ds-avatar > [data-ds-slot="avatar-image"] {
+    position: absolute;
+    inset: 0;
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    border-radius: var(--ds-radius-control);
+    opacity: 0;
+    transition: opacity var(--ds-motion-duration-base) var(--ds-motion-easing-out);
+  }
+
+  .ds-avatar > [data-ds-slot="avatar-image"][data-ds-loaded] {
+    opacity: 1;
+  }
+
+  /* The ring: ring.width in ring.color, drawn inside the circle and flush with its edge (behavior 6). */
+  .ds-avatar > [data-ds-slot="avatar-ring"] {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 var(--ds-border-strong) var(--ds--avatar-ring);
+    pointer-events: none;
+  }
+
+  /*
+   * Forced colors drop the fill, the chip and the ring's shadow, so the circle would vanish into Canvas: it keeps
+   * its shape as a CanvasText outline drawn inside it (Surface's idiom), and its initials take the system's text
+   * colour. Web only.
+   */
+  @media (forced-colors: active) {
+    .ds-avatar {
+      outline: var(--ds-border-hairline) solid CanvasText;
+      outline-offset: calc(var(--ds-border-hairline) * -1);
+    }
+  }
+}

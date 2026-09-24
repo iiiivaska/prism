@@ -25,6 +25,7 @@ export type WebPlatform = "web-touch" | "web-desktop";
 export type ImplementedVersions = Readonly<Record<string, Readonly<Partial<Record<WebPlatform, number>>>>>;
 
 export const implemented: ImplementedVersions = {
+  Avatar: { "web-touch": 1, "web-desktop": 1 },
   Badge: { "web-touch": 1, "web-desktop": 1 },
   Button: { "web-touch": 4, "web-desktop": 4 },
   Card: { "web-touch": 5, "web-desktop": 5 },

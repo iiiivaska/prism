@@ -15,11 +15,12 @@
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Badge, Icon, IconButton, Theme } from "@iiiivaska/prism-react";
+import { Avatar, Badge, Icon, IconButton, Theme } from "@iiiivaska/prism-react";
 // The host flag is internal to the package (IconButton sets it, roadmap P4-4), so it is imported from the
 // source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so this is the one context
 // the Badge above reads.
 import { BadgeHostContext } from "../../../packages/react/src/badge/host.ts";
+import * as avatarStories from "../src/stories/Avatar.stories.tsx";
 import * as badgeStories from "../src/stories/Badge.stories.tsx";
 import * as buttonStories from "../src/stories/Button.stories.tsx";
 import * as cardStories from "../src/stories/Card.stories.tsx";
@@ -326,5 +327,71 @@ describe("IconButton (IconButton.yaml accessibility)", () => {
     expect(await read(named({ variant: "dot" }))).toEqual([{ role: "button", name: "Open notifications" }]);
     expect(await read(named({ count: 0, label: "unread" }))).toEqual([{ role: "button", name: "Open notifications" }]);
     expect(await read(named({ count: 128, max: 99, label: "unread" }))).toEqual([{ role: "button", name: "Open notifications, 128 unread" }]);
+  });
+});
+
+/**
+ * Avatar.yaml `accessibility` and behaviors 11 and 12 (ADR-0032): an avatar with a non-blank `name` that is not
+ * decorative is one image named by that name, byte for byte, and every other avatar is not in the tree at all — no
+ * word is invented for the object.user glyph. The picture inside carries an empty `alt`
+ * (`notes.platform.web-desktop`), so it is never a second image of the same name, and the drawn initials are the
+ * image's own text, as a badge's digits are. Every name here is the one
+ * swift/Tests/DSSnapshotTests/DSAvatarAccessibilityTreeTests.swift reads off the simulator for the same id, where
+ * the element carries the image trait.
+ */
+describe("Avatar (Avatar.yaml accessibility)", () => {
+  const anna = [{ role: "image", name: "Anna Petrova" }] as const;
+  const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {
+    "image-md": anna,
+    "initials-md": anna,
+    "initials-one-word": [{ role: "image", name: "Northgate" }],
+    "fallback-icon": [],
+    ringed: anna,
+    "size-sm": anna,
+    "size-lg": anna,
+    decorative: [],
+    "ringed-over-map": anna,
+    "initials-over-map": anna,
+    "on-glass-over-image": anna,
+    // "Анна Петрова", written as its code points so the bytes compared are unambiguous: 23 bytes of UTF-8.
+    "russian-initials": [{ role: "image", name: "Анна Петрова" }],
+  };
+
+  it("names each example by its name, as the Apple suite does, and leaves the rest out", async () => {
+    expect(await examplesInTheTree(avatarStories)).toEqual(expected);
+  });
+
+  it("holds the drawn initials as the image's own text, and a hidden avatar leaves no text at all", async () => {
+    const initials = (text: string, name: string): TextRun[] => [{ text, in: { role: "image", name } }];
+    expect(await examplesTextInTheTree(avatarStories)).toEqual({
+      "image-md": initials("AP", "Anna Petrova"),
+      "initials-md": initials("AP", "Anna Petrova"),
+      "initials-one-word": initials("N", "Northgate"),
+      "fallback-icon": [],
+      ringed: initials("AP", "Anna Petrova"),
+      "size-sm": initials("AP", "Anna Petrova"),
+      "size-lg": initials("AP", "Anna Petrova"),
+      decorative: [],
+      "ringed-over-map": initials("AP", "Anna Petrova"),
+      "initials-over-map": initials("AP", "Anna Petrova"),
+      "on-glass-over-image": initials("AP", "Anna Petrova"),
+      "russian-initials": initials("АП", "Анна Петрова"),
+    });
+  });
+
+  // The cases no example stages: a blank name names nothing (Icon's rule, DSIconBindingTests.blankLabels), a name
+  // with no letter in it still names the avatar that draws the glyph, and a decorative avatar is left out whatever it
+  // holds. DSAvatarAccessibilityTreeTests holds Apple's tree to the same.
+  it("leaves out an avatar whose name is blank or which is decorative, and names one whose name has no letter", async () => {
+    const read = (node: ReactNode): Promise<AccessibleNode[]> => nodesInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    const text = (node: ReactNode): Promise<TextRun[]> => textInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    for (const blank of ["", "  ", "\t\n", " ", "　", "﻿"]) {
+      expect(await read(<Avatar name={blank} />), JSON.stringify(blank)).toEqual([]);
+      expect(await text(<Avatar name={blank} />), JSON.stringify(blank)).toEqual([]);
+    }
+    expect(await read(<Avatar name="Anna Petrova" isDecorative />)).toEqual([]);
+    expect(await text(<Avatar name="Anna Petrova" isDecorative />)).toEqual([]);
+    expect(await read(<Avatar name="4417" />)).toEqual([{ role: "image", name: "4417" }]);
+    expect(await text(<Avatar name="4417" />)).toEqual([]);
   });
 });

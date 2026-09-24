@@ -25,7 +25,8 @@ const manifestFile = join(repositoryRoot, "web", "packages", "react", "src", "ma
  *
  * A story's args are the example's props verbatim, so they are the spec's props — which are the
  * component's props for all but Card, whose API bundles `action`, `actionIcon` and `actionLabel` into
- * one `CardAction` (Card.yaml `action` licenses that). Icon's `style` is the spec's prop too: `IconProps`
+ * one `CardAction` (Card.yaml `action` licenses that), and Avatar, whose `image` an example writes as
+ * spec/SCHEMA.md's `portrait` fixture, which the harness draws (`AvatarExampleArgs`). Icon's `style` is the spec's prop too: `IconProps`
  * leaves React's inline `style` out, so `style: "filled"` reaches Icon as the value it is. `StoryObj<typeof meta>` reads its args off
  * `meta.component`, so a Card story typed that way cannot even carry `action: custom`; `args` names the
  * harness type that can, and the harness assembles the bundle (`cardArgs`).
@@ -37,6 +38,7 @@ interface Renderer {
 }
 
 const RENDERERS: Readonly<Record<string, Renderer>> = {
+  Avatar: { render: "renderAvatarExample", args: "AvatarExampleArgs" },
   Badge: { render: "renderBadgeExample" },
   Button: { render: "renderButtonExample" },
   Card: { render: "renderCardExample", args: "CardExampleArgs" },

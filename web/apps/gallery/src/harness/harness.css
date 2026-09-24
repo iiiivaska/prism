@@ -71,8 +71,9 @@ body {
 }
 
 /*
- * The box a Badge or an IconButton sits in inside a Surface (renderBadgeExample, renderIconButtonExample): a
- * flex box, so the Surface hugs the pill or the circle and no line box around an inline mark adds height to it.
+ * The box a Badge, an IconButton or an Avatar sits in inside a Surface (renderBadgeExample,
+ * renderIconButtonExample, renderAvatarExample): a flex box, so the Surface hugs the pill or the circle and no
+ * line box around an inline mark adds height to it.
  */
 .ds-gallery-mark {
   display: flex;

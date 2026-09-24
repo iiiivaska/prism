@@ -20,7 +20,7 @@ const examples = components.flatMap((component) => {
 
 describe("the gallery stories", () => {
   it("cover the components the react manifest declares", () => {
-    expect(components).toEqual(["Badge", "Button", "Card", "Divider", "Icon", "IconButton", "Surface", "Text"]);
+    expect(components).toEqual(["Avatar", "Badge", "Button", "Card", "Divider", "Icon", "IconButton", "Surface", "Text"]);
   });
 
   it("are what scripts/stories.ts generates from the specs", () => {

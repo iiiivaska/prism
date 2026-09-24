@@ -22,17 +22,19 @@
  * container's edge.
  *
  * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
- * frame, and on a material in a Surface hugging the glyph. Badge and IconButton are staged the same way
- * (`renderBadgeExample`, `renderIconButtonExample`).
+ * frame, and on a material in a Surface hugging the glyph. Badge, IconButton and Avatar are staged the same
+ * way (`renderBadgeExample`, `renderIconButtonExample`, `renderAvatarExample`).
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
- * renders the component's interactive form). The one exception is a component whose API bundles several
- * of the spec's props into one value, which an entry here assembles rather than spreads: Card's
- * `action`, `actionIcon` and `actionLabel` are the only such props today (`cardArgs`).
+ * renders the component's interactive form). Two exceptions: a component whose API bundles several of the
+ * spec's props into one value, which an entry here assembles rather than spreads — Card's `action`,
+ * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`) — and a fixture, which an entry
+ * draws: Avatar's `image: { fixture: portrait }` (./portrait.ts, spec/SCHEMA.md).
  */
 import type { ReactElement, ReactNode } from "react";
 import {
+  Avatar,
   Backdrop,
   Badge,
   Button,
@@ -43,6 +45,7 @@ import {
   Surface,
   Text,
   iconRegistry,
+  type AvatarProps,
   type BackdropKind,
   type ButtonProps,
   type CardProps,
@@ -59,6 +62,7 @@ import {
 } from "@iiiivaska/prism-react";
 import type { CatalogExample } from "../../plugins/catalog.ts";
 import { contentFor } from "./content.ts";
+import { isPortraitFixture, usePortrait } from "./portrait.ts";
 
 /**
  * The synthetic map or image an example sits on (harness.css), declared to the components on it with the package's
@@ -300,6 +304,40 @@ export function renderIconButtonExample(props: Readonly<Record<string, unknown>>
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-sc-mark">{button}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * An Avatar with its example's props, the `portrait` fixture drawn in the colours of the page's context. The props
+ * are read as `renderAvatarExample` in web/apps/gallery/src/harness/examples.tsx reads them.
+ */
+function AvatarExample(props: { readonly args: AvatarProps; readonly image: unknown }): ReactNode {
+  const portrait = usePortrait();
+  return <Avatar {...props.args} image={props.image === undefined ? undefined : typeof props.image === "string" ? props.image : portrait} />;
+}
+
+/**
+ * An Avatar on its example's `surface`, staged exactly as `renderAvatarExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it, which is Badge's staging: straight on the stage, with no
+ * card-sized frame, on the synthetic map or image declared with `Backdrop`, or inside a Surface of that material with
+ * `radius: card` and its default card padding, hugging the circle in a flex box (`ds-sc-mark`), over `backdrop` when
+ * the material is glass. An image prop that is neither a source nor the `portrait` fixture cannot be staged: the
+ * page says so, the web's reading of `DSAvatarRenderer` returning nil.
+ */
+export function renderAvatarExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const { image, ...rest } = props;
+  if (image !== undefined && typeof image !== "string" && !isPortraitFixture(image)) return <Unstageable example={example} />;
+  const args = rest as unknown as AvatarProps;
+  const avatar = <AvatarExample args={args} image={image} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{avatar}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, avatar)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-sc-mark">{avatar}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

@@ -61,7 +61,8 @@ const INTERNAL = [
  * The fewest props a component needs before it renders anything at all — the rest of this suite gives every
  * component two scope attributes and the string `content` as children, and nothing else.
  *
- * Most components draw their root element from that alone, which is why this map is short. Some cannot: Badge
+ * Most components draw their root element from that alone, which is why this map is short — Avatar with no
+ * props at all draws its circle and the object.user glyph, so it has no entry. Some cannot: Badge
  * renders nothing without a `count` (`variant: count` is its default and 0 hides the badge), and Icon,
  * IconButton and Chip have props their specs mark `required: true`. Without an entry such a component renders
  * no element, the assertion below fails, and the tempting repair is to drop the name into

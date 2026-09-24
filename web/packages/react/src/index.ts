@@ -132,6 +132,10 @@ export { badgeEmphases, badgeTones, badgeVariants, type BadgeEmphasis, type Badg
 export { IconButton, type IconButtonBadge, type IconButtonProps } from "./icon-button/IconButton.tsx";
 export { iconButtonSizes, iconButtonVariants, type IconButtonSize, type IconButtonVariant } from "./icon-button/options.ts";
 
+/** Avatar (spec/components/Avatar.yaml, specVersion 1): a circular portrait, its circle the Surface module's glass chip. */
+export { Avatar, type AvatarProps } from "./avatar/Avatar.tsx";
+export { avatarSizes, type AvatarSize } from "./avatar/options.ts";
+
 /**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component
  * that reads it is `Icon`, so both live in this package. Generated from spec/icons/registry.json by

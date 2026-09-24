@@ -13,21 +13,25 @@
  * Surface with no padding, because its `inset: content` is measured from the container's edge.
  *
  * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
- * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge
- * and IconButton are staged the same way (`renderBadgeExample`, `renderIconButtonExample`).
+ * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge,
+ * IconButton and Avatar are staged the same way (`renderBadgeExample`, `renderIconButtonExample`,
+ * `renderAvatarExample`).
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button, Card, Icon, Badge and IconButton examples carry their strings in their
- * props, and Divider draws none.
+ * (src/harness/content.ts); Button, Card, Icon, Badge, IconButton and Avatar examples carry their strings in
+ * their props, and Divider draws none. An image prop names spec/SCHEMA.md's `portrait` fixture, which the
+ * harness draws from tokens (src/harness/portrait.ts) and hands the component as its source.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
  * for every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
- * renders the component's interactive form). The one exception is a component whose API bundles several
- * of the spec's props into one value, which the renderer assembles rather than spreads: Card's `action`,
- * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`).
+ * renders the component's interactive form). Two exceptions: a component whose API bundles several of the
+ * spec's props into one value, which the renderer assembles rather than spreads — Card's `action`,
+ * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`) — and a fixture, which the
+ * renderer draws — Avatar's `image: { fixture: portrait }` (`AvatarExample`).
  */
 import type { ReactElement, ReactNode } from "react";
 import {
+  Avatar,
   Backdrop,
   Badge,
   Button,
@@ -38,6 +42,7 @@ import {
   Surface,
   Text,
   iconRegistry,
+  type AvatarProps,
   type BackdropKind,
   type BadgeProps,
   type ButtonProps,
@@ -54,6 +59,7 @@ import {
   type VividSlot,
 } from "@iiiivaska/prism-react";
 import { contentFor } from "./content.ts";
+import { isPortraitFixture, usePortrait, type PortraitFixture } from "./portrait.ts";
 
 /** The fields of a spec example beyond its props. */
 export interface ExampleFields {
@@ -289,6 +295,51 @@ export function renderIconButtonExample(args: IconButtonProps, example: ExampleF
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-gallery-mark">{button}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * Avatar.yaml's own props, which are Avatar's props but for `image`: an example writes it as spec/SCHEMA.md's
+ * `portrait` fixture, never as a source (roadmap P4-7), and `AvatarExample` draws the fixture and hands Avatar its
+ * `data:` URL. A generated story's args are the example's props verbatim, so they carry the fixture.
+ */
+export type AvatarExampleArgs = Omit<AvatarProps, "image"> & {
+  readonly image?: string | PortraitFixture;
+};
+
+/**
+ * An Avatar with its example's props, the `portrait` fixture drawn in the colours of the context it renders in. An
+ * image prop that names any other fixture cannot be staged, and throws the way `contentFor` throws: the gallery is the
+ * canon, and a story that cannot be staged is a defect to fix, not a picture to record.
+ */
+function AvatarExample(props: { readonly args: AvatarExampleArgs }): ReactNode {
+  const { image, ...rest } = props.args;
+  const portrait = usePortrait();
+  if (image !== undefined && typeof image !== "string" && !isPortraitFixture(image)) {
+    throw new Error(`An Avatar example's image is ${JSON.stringify(image)}: an example fills an image's source with { fixture: portrait } and nothing else (spec/SCHEMA.md, "Slot content in examples").`);
+  }
+  return <Avatar {...rest} image={image === undefined ? undefined : typeof image === "string" ? image : portrait} />;
+}
+
+/**
+ * An Avatar on its example's `surface`, staged the same way in all four harnesses (the SwiftUI snapshots, both
+ * showcases and here), which is Badge's and IconButton's staging: straight on the stage with no card-sized frame, on
+ * the synthetic map or image, which `GalleryGround` declares with the package's `Backdrop`, so the circle reads the
+ * page over that kind and renders the glass chip, or inside a Surface of that material with `radius: card` and its
+ * default card padding, hugging the circle in a flex box (`ds-gallery-mark`), over `backdrop` when the material is
+ * glass.
+ */
+export function renderAvatarExample(args: AvatarExampleArgs, example: ExampleFields): ReactElement {
+  const avatar = <AvatarExample args={args} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{avatar}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, avatar)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-gallery-mark">{avatar}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

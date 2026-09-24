@@ -11,8 +11,8 @@ import { formatJson, main, parseArgs, passed, renderReport, runParity } from './
 import { cellText, lagLine, summaryLine } from './render.ts';
 import { caseReader, emptyManifests, lagKeys, parityCases } from './test-support.ts';
 
-/** The components both stacks implement: the P3-3 and P3-4 slice, then Phase 4 wave 1 (roadmap P3-3, P3-4, P4-1, P4-2, P4-3, P4-4). */
-const SLICE = ['Badge', 'Button', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Card'] as const;
+/** The components both stacks implement: the P3-3 and P3-4 slice, then Phase 4 (roadmap P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7). */
+const SLICE = ['Avatar', 'Badge', 'Button', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Card'] as const;
 
 /** Console capture: the CLI prints, and a test reads what it printed. */
 function capture<T>(run: () => T): { value: T; out: string; err: string } {
@@ -69,11 +69,12 @@ describe('the repository', () => {
     }
   });
 
-  test('the slice is in parity on both stacks, and every other component row is pending (P3-3, P3-4, P4-1, P4-2, P4-3, P4-4)', () => {
+  test('the slice is in parity on both stacks, and every other component row is pending (P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7)', () => {
     const components = result.rows.filter((r) => r.kind !== null);
-    // Row order is layer then name, so the seven primitives come before the composite.
+    // Row order is layer then name, so the eight primitives come before the composite.
     expect(components.filter((r) => r.state === 'parity').map((r) => r.spec.name)).toEqual([...SLICE]);
-    expect([...new Set(components.map((r) => r.state))]).toEqual(['pending', 'parity']);
+    // Avatar, the first row, is in parity since P4-7, so `parity` is the first state met.
+    expect([...new Set(components.map((r) => r.state))]).toEqual(['parity', 'pending']);
     // A slice row carries its own `specVersion` in every cell the spec supports, and nothing where it
     // says `none` (Divider on watchOS: ADR-0006 rule 4); nothing else has an implementation.
     for (const row of components) {
@@ -82,7 +83,7 @@ describe('the repository', () => {
         expect(cell.implemented, `${row.spec.name} on ${cell.platform}`).toBe(expected);
       }
     }
-    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 45 in parity, 241 pending, 56 satisfied by `none`, 0 diagnostic(s)');
+    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 50 in parity, 236 pending, 56 satisfied by `none`, 0 diagnostic(s)');
   });
 
   test('a pattern is a contract-only row with its own table and no manifest cell (ADR-0012 rule 3)', () => {
@@ -106,7 +107,7 @@ describe('the repository', () => {
   test('the four manifests exist; the component pair carries the slice and the chart pair is empty', () => {
     expect(result.manifests.map((m) => m.file.path)).toEqual(MANIFESTS.map((m) => m.path));
     expect(result.manifests.every((m) => m.present)).toBe(true);
-    // Both stacks declare the same eight components; the charts manifests wait for data-viz wave 1.
+    // Both stacks declare the same nine components; the charts manifests wait for data-viz wave 1.
     expect(result.manifests.map((m) => [m.file.kind, m.entries])).toEqual(
       MANIFESTS.map((m) => [m.kind, m.kind === 'components' ? SLICE.length : 0]),
     );

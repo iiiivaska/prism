@@ -65,8 +65,14 @@
 /// attribute, exact through four nested changes of direction, with `dir="auto"` keeping the surrounding direction
 /// (P5-3 finding SD-7). This target reads the environment's `layoutDirection`, as it did at Icon 2, so nothing here
 /// changed.
+///
+/// P4-7 adds Avatar (`DSAvatar`) on iOS, iPadOS and macOS, the first component to draw a part through the Surface
+/// module's glass chip (`dsSurfaceChip`, ADR-0036): its circle is the chip, and its initials, fallback glyph and ring
+/// read the context the chip publishes. Avatar.yaml marks watchOS `none` — a wrist screen names a person in Text
+/// rather than picturing them — so its row, like Divider's, Badge's and IconButton's, has no `watchos` key.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
+        "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
         "Button": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],

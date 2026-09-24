@@ -36,6 +36,12 @@
  *   press, Reduce Motion included; the focus ring outside the circle; disabled; the badge `badge.offset` outside
  *   the top-trailing corner, in either writing direction, moving neither the circle nor the glyph; and no hint
  *   attribute on any root.
+ * - Avatar.yaml behaviors 1, 4 to 6, 8 and 13 and `accessibility.reduceTransparency`: a circle of
+ *   `size.control.*` per size and density that clips what it holds, and that neither the ring nor the image moves;
+ *   the image fading in over the initials once it has decoded, and a source that fails to load leaving the
+ *   initials; the glass chip over the map computing its blur, flat on the scheme's glass, and falling back to
+ *   `color.bg.surface.raised` over `color.bg.page` under Reduce Transparency, with the initials back in
+ *   `color.text.secondary`.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -51,6 +57,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import {
+  Avatar,
+  Backdrop,
   Badge,
   Button,
   Card,
@@ -63,11 +71,15 @@ import {
   glyphSizes,
   iconButtonSizes,
   iconButtonVariants,
+  avatarSizes,
   type CardProps,
+  type Contrast,
   type Density,
   type Modality,
   type Motion,
+  type Transparency,
 } from "@iiiivaska/prism-react";
+import { portraitSource } from "../src/harness/portrait.ts";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -78,6 +90,8 @@ interface Axes {
   readonly modality?: Modality;
   readonly motion?: Motion;
   readonly density?: Density;
+  readonly contrast?: Contrast;
+  readonly transparency?: Transparency;
 }
 
 async function mount(node: ReactNode, axes: Axes = {}): Promise<HTMLElement> {
@@ -86,7 +100,15 @@ async function mount(node: ReactNode, axes: Axes = {}): Promise<HTMLElement> {
   root = createRoot(host);
   await act(async () => {
     root?.render(
-      <Theme tokens={tokens} colorScheme="light" density={axes.density ?? "compact"} modality={axes.modality ?? "pointer"} motion={axes.motion ?? "standard"}>
+      <Theme
+        tokens={tokens}
+        colorScheme="light"
+        density={axes.density ?? "compact"}
+        modality={axes.modality ?? "pointer"}
+        motion={axes.motion ?? "standard"}
+        contrast={axes.contrast}
+        transparency={axes.transparency}
+      >
         {node}
       </Theme>,
     );
@@ -1327,5 +1349,149 @@ describe("IconButton", () => {
       }
       expect(button.querySelector("[title]")).toBeNull();
     }
+  });
+});
+
+describe("Avatar", () => {
+  const sizeToken = { sm: "--ds-size-control-sm", md: "--ds-size-control-md", lg: "--ds-size-control-lg" } as const;
+  /** spec/SCHEMA.md's `portrait` fixture, as the gallery draws it: an SVG the browser decodes. */
+  const portrait = portraitSource(tokens, { colorScheme: "light", contrast: "standard", transparency: "standard", density: "compact", modality: "pointer", motion: "standard" });
+  /** A source that names no picture a browser can decode. */
+  const broken = "data:image/png;base64,AAAA";
+
+  it("is a circle of size.control.* per size and density, whatever it holds, and neither the ring nor the image moves it (behaviors 4 to 6)", async () => {
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      const element = await mount(
+        <div style={{ display: "flex", gap: "8px" }}>
+          {avatarSizes.map((size) => (
+            <Avatar key={size} size={size} name="Anna Petrova" data-probe={`initials-${size}`} />
+          ))}
+          {avatarSizes.map((size) => (
+            <Avatar key={size} size={size} name="Anna Petrova" image={portrait} hasRing data-probe={`ringed-${size}`} />
+          ))}
+          {avatarSizes.map((size) => (
+            <Avatar key={size} size={size} data-probe={`glyph-${size}`} />
+          ))}
+        </div>,
+        { density },
+      );
+      for (const size of avatarSizes) {
+        const side = tokenPx(element, sizeToken[size]);
+        for (const probe of [`initials-${size}`, `ringed-${size}`, `glyph-${size}`]) {
+          const avatar = find(element, `[data-probe="${probe}"]`);
+          const rect = avatar.getBoundingClientRect();
+          expect([rect.width, rect.height], `${density} ${probe}`).toEqual([side, side]);
+          // radius.control on a square: a circle, which clips everything inside it.
+          expect(Number.parseFloat(getComputedStyle(avatar).borderTopLeftRadius), `${density} ${probe}`).toBeGreaterThanOrEqual(side / 2);
+          expect(getComputedStyle(avatar).overflow, `${density} ${probe}`).toBe("hidden");
+        }
+        // The ring and the image cover the circle exactly, and the ring is an inset stroke of border.strong.
+        const ringed = find(element, `[data-probe="ringed-${size}"]`);
+        const box = ringed.getBoundingClientRect();
+        for (const part of ["avatar-ring", "avatar-image"]) {
+          const rect = find(ringed, `[data-ds-slot="${part}"]`).getBoundingClientRect();
+          expect([rect.left, rect.top, rect.width, rect.height], `${density} ${size} ${part}`).toEqual([box.left, box.top, box.width, box.height]);
+        }
+        const strong = tokenPx(ringed, "--ds-border-strong");
+        expect(getComputedStyle(find(ringed, '[data-ds-slot="avatar-ring"]')).boxShadow, `${density} ${size}`).toMatch(new RegExp(` 0px 0px 0px ${String(strong)}px inset$`, "u"));
+        // The initials and the glyph are centred.
+        for (const [probe, part] of [
+          [`initials-${size}`, "avatar-initials"],
+          [`glyph-${size}`, "avatar-fallback-icon"],
+        ] as const) {
+          const avatar = find(element, `[data-probe="${probe}"]`).getBoundingClientRect();
+          const inner = find(element, `[data-probe="${probe}"] [data-ds-slot="${part}"]`).getBoundingClientRect();
+          expect(inner.left - avatar.left, `${density} ${probe}`).toBeCloseTo(avatar.right - inner.right, 0);
+          expect(inner.top - avatar.top, `${density} ${probe}`).toBeCloseTo(avatar.bottom - inner.bottom, 0);
+        }
+      }
+      await unmount();
+    }
+  });
+
+  it("fades the image in over the initials once it has decoded, covering the circle (behaviors 1 and 13)", async () => {
+    const element = await mount(<Avatar name="Anna Petrova" image={portrait} />);
+    const image = find(element, '[data-ds-slot="avatar-image"]') as HTMLImageElement;
+    await vi.waitFor(
+      () => {
+        expect(image.hasAttribute("data-ds-loaded")).toBe(true);
+      },
+      { timeout: 2000, interval: 20 },
+    );
+    expect(image.naturalWidth).toBeGreaterThan(0);
+    await settles(() => getComputedStyle(image).opacity, "1");
+    expect(getComputedStyle(image).transitionProperty).toBe("opacity");
+    expect(getComputedStyle(image).objectFit).toBe("cover");
+    // The initials stay under the picture, so it never replaces them with a flash.
+    expect(find(element, '[data-ds-slot="avatar-initials"]').textContent).toBe("AP");
+  });
+
+  it("drops a source that fails to load, leaving the initials, or the glyph when there is no name (behavior 1)", async () => {
+    const element = await mount(
+      <div>
+        <Avatar name="Anna Petrova" image={broken} data-probe="named" />
+        <Avatar image={broken} data-probe="nameless" />
+      </div>,
+    );
+    await vi.waitFor(
+      () => {
+        expect(element.querySelector('[data-ds-slot="avatar-image"]')).toBeNull();
+      },
+      { timeout: 2000, interval: 20 },
+    );
+    expect(find(element, '[data-probe="named"] [data-ds-slot="avatar-initials"]').textContent).toBe("AP");
+    expect(find(element, '[data-probe="nameless"] [data-ds-icon="object.user"]').getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("is the glass chip over the map, with its blur, flat on the scheme's glass, and its own fill on the page (behavior 8, ADR-0036)", async () => {
+    const element = await mount(
+      <div>
+        <Backdrop kind="map">
+          <Avatar name="Anna Petrova" data-probe="map" />
+        </Backdrop>
+        <Surface material="glass" backdrop="map">
+          <Avatar name="Anna Petrova" data-probe="glass" />
+        </Surface>
+        <Avatar name="Anna Petrova" data-probe="page" />
+      </div>,
+    );
+    const map = find(element, '[data-probe="map"]');
+    expect(map.getAttribute("data-ds-surface-chip")).toBe("glass");
+    const blur = tokenPx(map, "--ds-material-glass-chip-blur");
+    expect(getComputedStyle(map).backdropFilter).toBe(`blur(${String(blur)}px) saturate(1)`);
+    expect(map.querySelector('[data-ds-slot="surface-chip-edge"]')).not.toBeNull();
+    await settles(() => getComputedStyle(find(map, '[data-ds-slot="avatar-initials"]')).color, tokenColor(map, "--ds-color-text-on-glass-fill"));
+    const glass = find(element, '[data-probe="glass"]');
+    expect(glass.hasAttribute("data-ds-surface-chip-flat")).toBe(true);
+    expect(getComputedStyle(glass).backdropFilter).toBe("none");
+    const page = find(element, '[data-probe="page"]');
+    expect(page.getAttribute("data-ds-surface-chip")).toBe("own");
+    expect(getComputedStyle(page).backdropFilter).toBe("none");
+    await settles(() => getComputedStyle(page).getPropertyValue("--ds--surface-chip-fill").trim(), tokenColor(page, "--ds-avatar-bg"));
+    await settles(() => getComputedStyle(find(page, '[data-ds-slot="avatar-initials"]')).color, tokenColor(page, "--ds-color-text-secondary"));
+  });
+
+  it.each([
+    ["Reduce Transparency", { transparency: "reduce" }],
+    ["Increase Contrast", { contrast: "more" }],
+  ] as const)("falls back over the map under %s: raised over the page, no blur and no edge, and every part its default cell", async (_setting, axes) => {
+    const element = await mount(
+      <Backdrop kind="map">
+        <Avatar name="Anna Petrova" hasRing data-probe="initials" />
+        <Avatar data-probe="glyph" />
+      </Backdrop>,
+      axes,
+    );
+    const avatar = find(element, '[data-probe="initials"]');
+    expect(avatar.getAttribute("data-ds-surface-chip")).toBe("fallback");
+    expect([avatar.getAttribute("data-ds-surface"), avatar.getAttribute("data-ds-backdrop")]).toEqual(["raised", "none"]);
+    expect(getComputedStyle(avatar).backdropFilter).toBe("none");
+    expect(avatar.querySelector('[data-ds-slot="surface-chip-edge"]')).toBeNull();
+    await settles(() => getComputedStyle(avatar).backgroundColor, tokenColor(avatar, "--ds-color-bg-page"));
+    await settles(() => getComputedStyle(avatar).getPropertyValue("--ds--surface-chip-fill").trim(), tokenColor(avatar, "--ds-color-bg-surface-raised"));
+    await settles(() => getComputedStyle(find(avatar, '[data-ds-slot="avatar-initials"]')).color, tokenColor(avatar, "--ds-color-text-secondary"));
+    expect(getComputedStyle(find(avatar, '[data-ds-slot="avatar-ring"]')).boxShadow.startsWith(tokenColor(avatar, "--ds-avatar-ring"))).toBe(true);
+    const glyph = find(element, '[data-probe="glyph"]');
+    await settles(() => getComputedStyle(find(glyph, '[data-ds-slot="avatar-fallback-icon"]')).color, tokenColor(glyph, "--ds-color-icon-secondary"));
   });
 });

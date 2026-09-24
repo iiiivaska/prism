@@ -46,6 +46,13 @@ for (const story of stories) {
         await page.evaluate(async () => {
           await document.fonts.ready;
         });
+        // An example with an image — Avatar's `portrait` fixture, an SVG `data:` URL — is photographed once every image
+        // on the stage has decoded and two frames have passed, in which the component marks it loaded and its fade
+        // (fast-forwarded by `animations: "disabled"`) ends: never the frame before the picture arrives.
+        await stage.locator("img").evaluateAll(async (images) => {
+          await Promise.all(images.map((image) => (image as HTMLImageElement).decode()));
+          await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        });
         // `testInfo.project.name` is the viewport's spec platform key (matrix.ts), which is the name's `<platform>`.
         await expect(stage).toHaveScreenshot([story.title, `${story.name}.${testInfo.project.name}.${scheme}.${density}.png`], {
           maxDiffPixelRatio: maxDiffPixelRatio[family] ?? 0,
