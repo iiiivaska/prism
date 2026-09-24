@@ -22,7 +22,8 @@ brands/                  brand override folders (reference brand: prism/)
 spec/                    component contracts, icon and haptics registries, patterns
 swift/Sources/…          DSTokens (generated), DSCore, DSComponents, DSCharts
 swift/Tests/…            token/contrast tests, snapshot tests, __Snapshots__
-web/packages/…           prism-tokens, prism-react, prism-charts, prism-gallery
+web/packages/…           prism-tokens, prism-react, prism-charts
+web/apps/…               gallery (Storybook), vrt (Playwright), showcase: private, never published
 tools/                   token build (resolver driver, formats), contrast, parity, icons, spec validation
 gallery/                 living canon: rendered examples and paired snapshots
 docs/                    decisions, ADRs, research, roadmap

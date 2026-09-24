@@ -46,7 +46,7 @@ Canonical list of the founding decisions, taken with the owner on 2026-09-08 (#1
 ## Deliberately deferred
 
 - Figma plan and the moment Figma becomes a consumer (decision 5).
-- The exact "Signature" typeface: chosen from rendered comparisons during research, then recorded in ADR-008.
+- The exact "Signature" typeface: deferred to rendered comparisons during research, and since chosen. ADR-0008 decision 3 records Onest for `ui` and `display` and JetBrains Mono for `mono`.
 - SodaClone stays on macOS 15 until it is upgraded; Prism does not ship a macOS 15 fallback.
 
 ## Process rules that follow from the decisions

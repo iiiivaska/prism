@@ -48,7 +48,7 @@ Every component spec has a mandatory `accessibility` block: role, label source, 
 ## Consequences
 
 - Palettes are tuned to pass at the token level, so components inherit compliance; the a11y reconciliation of the reference palette lives in `docs/research/a11y-reconciliation.md`.
-- Increase Contrast gets its own token layer (`tokens/scheme/*/contrast-high.json`), not per-component branches.
+- Increase Contrast gets its own token layer (`tokens/sys/color/*-increased-contrast.tokens.json`), not per-component branches.
 
 ## Rules that follow
 

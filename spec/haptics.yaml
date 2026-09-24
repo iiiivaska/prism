@@ -1,4 +1,4 @@
-# Semantic haptics registry (ADR-0003 / ADR-0009 motion & feedback).
+# Semantic haptics registry (ADR-0003 puts haptics in DSCore; no ADR records this registry yet, critic G-19).
 # Components reference `haptic.<name>`; DSCore maps it per platform. Web has no haptics
 # (the Vibration API is unsuitable for UI feedback); the web binding is documented as none.
 # Apple facts verified 2026-09-08 against SensoryFeedback and WKHapticType docs

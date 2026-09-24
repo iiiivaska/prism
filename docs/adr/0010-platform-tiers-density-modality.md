@@ -27,7 +27,7 @@ Two runtime dimensions are first-class in tokens, resolved once at the root of t
 - **Density** — `compact` (desktop default), `regular` (touch default), `comfortable` (watch default and an accessibility choice). Affects `space.*`, `size.control.*`, `size.hit.*`, list row heights and type roles' line-heights through the density layer of `tokens/`.
 - **Input modality** — `pointer` or `touch`. Affects the presence of hover, minimum hit size (28 pt pointer / 44 pt touch), tooltip availability and focus-ring behavior. Detected at runtime (SwiftUI: environment + pointer interactions on iPadOS; web: `@media (hover: hover) and (pointer: fine)` plus a data attribute override).
 
-Platform remains a last-resort dimension (`tokens/platform/apple|web|watch`) for deltas that are truly platform-bound, such as "no blur on watch".
+Platform remains a last-resort dimension (`tokens/sys/platform/apple|web|watch.tokens.json`) for deltas that are truly platform-bound, such as "no blur on watch".
 
 ## Alternatives considered
 
