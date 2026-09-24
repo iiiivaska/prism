@@ -2,15 +2,16 @@
 /**
  * The stylesheet test of roadmap P3-4: ADR-0019 rule 9 as ADR-0025 §3 amends it, over the package's
  * source stylesheets and over the compiled styles.css, plus the stylesheet half of rule 10, the web
- * half of ADR-0022 rule 2, and the one way a stylesheet reads the direction (P5-3 finding SD-7). Every
- * check also fails on a fixture, so a check that silently stopped matching would show here.
+ * half of ADR-0022 rule 2 as ADR-0036 §10 amends it, and the one way a stylesheet reads the direction
+ * (P5-3 finding SD-7). Every check also fails on a fixture, so a check that silently stopped matching
+ * would show here.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildStyles, compileStyles, packageRoot } from "../scripts/build-styles.ts";
 import { flattenRules, parseCss } from "./css.ts";
-import { compiledProblems, compoundIsScoped, directionProblems, directionReaders, nearestRtlSelector, sourceProblems } from "./stylesheet.rules.ts";
+import { backdropFilterProblems, compiledProblems, compoundIsScoped, directionProblems, directionReaders, glassRecipeProblems, nearestRtlSelector, sourceProblems } from "./stylesheet.rules.ts";
 
 const srcRoot = join(packageRoot, "src");
 const fixtures = join(packageRoot, "test", "fixtures", "stylesheets");
@@ -42,9 +43,12 @@ describe("the source stylesheets (ADR-0019 rule 9, ADR-0025 rule 2)", () => {
     expect(directionProblems(readFileSync(file, "utf8"))).toEqual([]);
   });
 
-  it("names backdrop-filter only in the Surface stylesheet (ADR-0022 rule 2)", () => {
-    const offenders = sources.filter((file) => !file.endsWith(join("surface", "Surface.css")) && /backdrop-filter/.test(readFileSync(file, "utf8")));
-    expect(offenders).toEqual([]);
+  it.each(sources.map((file) => [relative(srcRoot, file), file] as const))("%s declares backdrop-filter only as surface/Surface.css, on its four glass selectors (ADR-0036 §10)", (name, file) => {
+    expect(backdropFilterProblems(readFileSync(file, "utf8"), name)).toEqual([]);
+  });
+
+  it.each(sources.map((file) => [relative(srcRoot, file), file] as const))("%s names a glass recipe variable only under surface/ (ADR-0036 §10)", (name, file) => {
+    expect(glassRecipeProblems(readFileSync(file, "utf8"), name)).toEqual([]);
   });
 
   it("sets font-synthesis: none on Text, Surface (and so Card) and Button (ADR-0021 §10)", () => {
@@ -108,6 +112,26 @@ describe("each check fails on its fixture", () => {
   it("names outside ds", () => {
     const checks = compiledProblems(source("foreign-names.css")).map((problem) => problem.check);
     expect(checks).toEqual(["layer-name", "global-name", "global-name", "global-name"]);
+  });
+
+  it("backdrop-filter declared outside surface/Surface.css, or there on a fifth selector (ADR-0036 §10)", () => {
+    const css = source("backdrop-filter.css");
+    // Outside the one stylesheet, the module's other files included, every declaration fails and nothing else does.
+    for (const file of ["chip/Chip.css", "surface/SurfaceChip.css"]) {
+      expect(backdropFilterProblems(css, file).map((problem) => problem.check), file).toEqual(["backdrop-filter", "backdrop-filter"]);
+    }
+    // In it, the allowed selectors pass, and the one other selector in a list fails.
+    const inSurface = backdropFilterProblems(css, "surface/Surface.css");
+    expect(inSurface.map((problem) => problem.check)).toEqual(["backdrop-filter-selector"]);
+    expect(inSurface[0]?.detail).toMatch(/^\.ds-fixture\[data-ds-material="glass"\]: -webkit-backdrop-filter on none of the four glass selectors/);
+  });
+
+  it("a glass recipe variable named outside surface/, and never the scrim (ADR-0036 §10)", () => {
+    const css = source("glass-recipe-variable.css");
+    const problems = glassRecipeProblems(css, "chip/Chip.css");
+    expect(problems.map((problem) => problem.check)).toEqual(["glass-recipe-variable", "glass-recipe-variable", "glass-recipe-variable"]);
+    expect(problems.map((problem) => /names (.*) outside/.exec(problem.detail)?.[1])).toEqual(["--ds-material-glass-chip", "--ds-material-glass-chip-blur", "--ds-material-glass-chip"]);
+    expect(glassRecipeProblems(css, "surface/Surface.css")).toEqual([]);
   });
 
   it(":dir(), a bare rtl ancestor, a short nearest-dir chain and a bare rtl ancestor in front of the whole chain, before compiling and after (SD-7)", async () => {

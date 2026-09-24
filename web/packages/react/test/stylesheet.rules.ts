@@ -1,8 +1,9 @@
 /**
  * The checks of ADR-0019 rule 9 as ADR-0025 §3 amends it, the stylesheet half of rule 10 (names in the
- * global CSS namespace carry `ds`), and how a stylesheet may read the direction (P5-3 finding SD-7), as
- * functions over a parsed stylesheet so the test can run them on the package's stylesheets and prove
- * each one on a failing fixture.
+ * global CSS namespace carry `ds`), how a stylesheet may read the direction (P5-3 finding SD-7), and the
+ * stylesheet half of ADR-0022 rule 2 as ADR-0036 §10 amends it (who declares `backdrop-filter` and who
+ * names a glass recipe variable), as functions over a parsed stylesheet so the test can run them on the
+ * package's stylesheets and prove each one on a failing fixture.
  */
 import { allAtRules, flattenRules, parseCss, rightmostCompound, splitTopLevel, type CssAtRule } from "./css.ts";
 
@@ -241,4 +242,89 @@ export function directionReaders(css: string): string[] {
     .flatMap((rule) => rule.selectors.map(normalizeSelector))
     .filter((selector) => selector.includes(form))
     .map((selector) => selector.replace(form, ""));
+}
+
+/** The one stylesheet that declares `backdrop-filter`, relative to `src/` (ADR-0036 §10). */
+const SURFACE_STYLESHEET = "surface/Surface.css";
+
+/** The Surface module's directory on the web, relative to `src/` (ADR-0036 §1). */
+const SURFACE_MODULE = "surface/";
+
+/**
+ * The four selectors of `surface/Surface.css` that may declare `backdrop-filter` (ADR-0036 §10): the
+ * scheme's glass and light glass of a Surface, and the chip's glass with and without its filter.
+ */
+const BACKDROP_FILTER_SELECTORS: readonly string[] = [
+  '.ds-surface[data-ds-material="glass"]',
+  '.ds-surface[data-ds-material="glassLight"]',
+  '.ds-surface-chip[data-ds-surface-chip="glass"]',
+  '.ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat]',
+];
+
+/** The property, prefixed or not; CSS property names are ASCII case-insensitive. */
+const BACKDROP_FILTER = /^(?:-webkit-)?backdrop-filter$/i;
+
+/**
+ * A glass recipe's variable: every `--ds-material-glass-*` name but the scrim, which text over media may
+ * use anywhere (ADR-0029 §1.7). The same names `lint:literals` rule `material/web-glass-recipe` reports.
+ */
+const GLASS_RECIPE_VARIABLE = /(?<![\w-])--ds-material-glass(?!\w)(?!-scrim(?![\w-]))[\w-]*/g;
+
+/** A stylesheet's path relative to `src/`, with forward slashes on every platform. */
+function sourcePath(file: string): string {
+  return file.replaceAll("\\", "/");
+}
+
+/**
+ * ADR-0036 §10, the first of the two declaration-level checks: only `surface/Surface.css` declares
+ * `backdrop-filter` or `-webkit-backdrop-filter`, and there only on `BACKDROP_FILTER_SELECTORS`, every
+ * selector of a list included. A value that names the property (a `transition`), an at-rule's condition
+ * and a comment declare nothing. `file` is the stylesheet's path relative to `src/`.
+ */
+export function backdropFilterProblems(css: string, file: string): Problem[] {
+  const path = sourcePath(file);
+  const problems: Problem[] = [];
+  for (const rule of flattenRules(parseCss(css))) {
+    for (const declaration of rule.declarations) {
+      if (!BACKDROP_FILTER.test(declaration.property)) continue;
+      if (path !== SURFACE_STYLESHEET) {
+        problems.push({
+          check: "backdrop-filter",
+          detail: `${path}: ${declaration.property} outside ${SURFACE_STYLESHEET}; a component's glass part blurs through the Surface module's chip shape (ADR-0036 §7, §10)`,
+        });
+        continue;
+      }
+      const selectors = rule.selectors.length === 0 ? ["(no selector)"] : rule.selectors.map(normalizeSelector);
+      for (const selector of selectors.filter((candidate) => !BACKDROP_FILTER_SELECTORS.includes(candidate))) {
+        problems.push({
+          check: "backdrop-filter-selector",
+          detail: `${selector}: ${declaration.property} on none of the four glass selectors of ${SURFACE_STYLESHEET} (ADR-0036 §10)`,
+        });
+      }
+    }
+  }
+  return problems;
+}
+
+/**
+ * ADR-0036 §10, the second check: no stylesheet outside `surface/` names a glass recipe variable, as a
+ * declaration's property or in its value. Comments are not read, and the scrim passes. `file` is the
+ * stylesheet's path relative to `src/`.
+ */
+export function glassRecipeProblems(css: string, file: string): Problem[] {
+  const path = sourcePath(file);
+  if (path.startsWith(SURFACE_MODULE)) return [];
+  const problems: Problem[] = [];
+  for (const rule of flattenRules(parseCss(css))) {
+    for (const declaration of rule.declarations) {
+      const text = `${declaration.property}: ${declaration.value}`;
+      const names = new Set([...text.matchAll(GLASS_RECIPE_VARIABLE)].map((match) => match[0]));
+      if (names.size === 0) continue;
+      problems.push({
+        check: "glass-recipe-variable",
+        detail: `${rule.selectors.join(", ") || "(no selector)"} { ${declaration.property} } names ${[...names].join(", ")} outside ${SURFACE_MODULE}; a component's own cell reaches its chip as --ds--surface-chip-own (ADR-0036 §7, §10)`,
+      });
+    }
+  }
+  return problems;
 }

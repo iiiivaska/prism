@@ -1,0 +1,5 @@
+/* The web half of ADR-0036 §10 covers every package under web/packages/*/src, not the React one alone:
+   a chart's tooltip takes its glass from a Surface too. `expect:` names the rule the line must trip. */
+.ds-chart-tooltip {
+  backdrop-filter: blur(var(--ds-material-glass-fill-blur)); /* expect: material/web-backdrop-filter, material/web-glass-recipe */
+}

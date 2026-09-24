@@ -11,7 +11,7 @@
 // One pattern table serves every kind, so no name is reported twice: `color`, `dimension` and `font`
 // (literal values), `motion` (ADR-0023 §12), `typography` (ADR-0021 §12), `runtime` (ADR-0019
 // rule 1, P1-5), `brand` (ADR-0020 rule 13, P3-2 web half, P3-1 Swift half) and `material`
-// (ADR-0022 rule 2, P3-1 Swift half, P3-4 `backdrop-filter`). `runtime` owns the six data-ds-* axis
+// (ADR-0022 rule 2 as ADR-0036 §10 amends it, P3-1 and P4-5). `runtime` owns the six data-ds-* axis
 // attributes, the preference and pointer media features (`prefers-reduced-motion` included) and
 // Tailwind's media-only variants (`dark:`, `contrast-more:`, `contrast-less:`, `motion-safe:`,
 // `motion-reduce:`, `pointer-*:`, `any-pointer-*:`) in class strings and `@variant` rules
@@ -20,10 +20,18 @@
 // contract. `brand` owns the brand-table and brand-stylesheet imports under
 // `web/packages/react/src` and `web/packages/charts/src`, the two packages that read brand values
 // through `brandTokens()` (ADR-0020 §6), plus the Swift half of rule 13 (`DSBrand.allCases` and
-// switching over a brand) under DSCore, DSComponents and DSCharts. `material` (ADR-0022 rule 2)
-// owns the Swift symbols outside `swift/Sources/DSCore/`: `glassEffect`, SwiftUI's `Material`,
-// `accessibilityReduceTransparency` and `colorSchemeContrast`. Its web half, `backdrop-filter`
-// outside the Surface module, joins the table in P3-4.
+// switching over a brand) under DSCore, DSComponents and DSCharts. `material` holds that only the
+// Surface module resolves and draws Prism glass (ADR-0036 §1): DSCore's resolvers, plus the drawing
+// in `swift/Sources/DSComponents/Surface/` on Apple and the directory `web/packages/react/src/surface/`
+// on the web; a component draws its glass part through the module's chip shape. On Apple it owns,
+// outside `swift/Sources/DSCore/`, `glassEffect`, SwiftUI's `Material`,
+// `accessibilityReduceTransparency`, `colorSchemeContrast` and a comparison with `.transparency`, and,
+// outside DSCore and the Surface directory, the backdrop's pixels and the glass recipes
+// (`DSBackdropSource`, `dsBackdropSource`, `DSGlassAppearance`, `DSGlassRecipe`, `.saturation(`,
+// `blurRadius`). On the web it owns, in CSS and script under `web/packages/*/src` outside the Surface
+// directory, `backdrop-filter` (`backdropFilter`, `WebkitBackdropFilter`), every `--ds-material-glass-*`
+// variable but the scrim, and a comparison with `transparency`, the `ds-reduce-transparency` variant
+// included.
 //
 //   node lint/literals.ts               scan this repository
 //   node lint/literals.ts --root <dir>  scan another tree with the same layout (tests)
@@ -82,6 +90,23 @@ const SWIFT_BRAND_TARGETS: readonly string[] = [
   "swift/Sources/DSComponents/",
   "swift/Sources/DSCharts/",
 ];
+
+/**
+ * The Surface module's drawing on Apple (ADR-0036 §1): with DSCore's resolvers, the one place that
+ * reads a backdrop's pixels and applies a glass recipe to them. It decides no fallback: only DSCore
+ * compares Prism's transparency context, for Surface and the chip alike (ADR-0036 §3).
+ */
+const SURFACE_MODULE_APPLE = "swift/Sources/DSComponents/Surface/";
+
+/** Every web package's sources: the web half of the `material` kind covers them all (ADR-0036 §10). */
+const WEB_PACKAGES: readonly string[] = ["web/packages/"];
+
+/**
+ * The Surface module on the web (ADR-0036 §1): `Surface`, its chip shape, `Backdrop`, the resolvers
+ * and `Surface.css`. It alone names `backdrop-filter` or a glass recipe variable, and it alone compares
+ * Prism's transparency context, in the one function Surface and the chip share.
+ */
+const SURFACE_MODULE_WEB = "web/packages/react/src/surface/";
 
 type Language = "swift" | "css" | "script";
 type Scope = "sources" | "tests";
@@ -206,6 +231,21 @@ const MEDIA_VARIANTS = String.raw`(?:dark|contrast-more|contrast-less|motion-saf
  * for a brand subpath after it rather than for the package alone.
  */
 const TOKENS_PACKAGE = String.raw`(?:@[\w.-]+\/prism-tokens|\.{1,2}\/[\w./-]*?tokens)`;
+
+/**
+ * Swift's `.transparency` read off a value (`context.transparency`, `$0.transparency`,
+ * `policy().transparency`), and never the implicit member of another enum (`axis == .transparency`).
+ */
+const SWIFT_TRANSPARENCY = String.raw`(?<=[\w$)\]?!])\.transparency(?![\w$])`;
+
+/**
+ * `transparency` in TypeScript or JavaScript, bare or read off a value; never part of a longer name
+ * (`transparencyLevel`) or of a kebab-case one (`data-ds-transparency`, which `runtime` owns).
+ */
+const SCRIPT_TRANSPARENCY = String.raw`(?<![\w$-])transparency(?![\w$-])`;
+
+/** One operand of a comparison, on one line: names, member reads, calls, subscripts, `?.` and `!`. */
+const OPERAND = String.raw`[\w$.?!()\[\]]*`;
 
 const RULES: readonly Rule[] = [
   // ---- color, dimension, font: literal values (tokens/README.md, Rules 1) ----
@@ -516,8 +556,9 @@ const RULES: readonly Rule[] = [
     exempt: [DSCORE],
     pattern: /(?<![\w$])\.(?:ultraThin|thin|regular|thick|ultraThick)Material(?![\w$])|(?<![\w$.])Material(?![\w$])/g,
   },
-  // The two OS settings only Surface resolution may read (ADR-0022 §1.3): components take them from
-  // `DSTokenContext`, which previews and snapshots can force.
+  // The two OS settings only Surface resolution may read (ADR-0022 §1.3): everything else takes them
+  // from `DSTokenContext`, which previews and snapshots can force, and only DSCore compares its
+  // transparency (`material/swift-transparency-read` below).
   {
     id: "material/swift-reduce-transparency",
     kind: "material",
@@ -531,6 +572,81 @@ const RULES: readonly Rule[] = [
     languages: ["swift"],
     exempt: [DSCORE],
     pattern: /(?<![\w$])colorSchemeContrast(?![\w$])/g,
+  },
+
+  // ---- material, the Surface module (ADR-0036 §10): what only the module names, on both stacks ----
+  // The backdrop's pixels and the glass recipes that blur, saturate and tint them. DSCore builds the
+  // recipes and the Surface directory draws them; a component hands `dsSurfaceChip` its background
+  // table and never touches either, so its glass falls back with Surface's.
+  {
+    id: "material/swift-backdrop-pixels",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE, SURFACE_MODULE_APPLE],
+    pattern: /(?<![\w$])(?:DSBackdropSource|dsBackdropSource|DSGlassAppearance|DSGlassRecipe|blurRadius)(?![\w$])|\.saturation\s*\(/g,
+  },
+  // A comparison with Prism's transparency context: `==`, `!=` or `~=` on either side of
+  // `.transparency`, a `switch` over it, or a `case` pattern matched against it. The glass fallback is
+  // decided in DSCore, by one function for Surface and the chip (ADR-0036 §3), so not even the Surface
+  // directory compares it. The span reported is `.transparency`.
+  {
+    id: "material/swift-transparency-read",
+    kind: "material",
+    languages: ["swift"],
+    exempt: [DSCORE],
+    pattern: new RegExp(
+      [
+        String.raw`${SWIFT_TRANSPARENCY}(?=\s*(?:[!=]=|~=))`,
+        String.raw`(?<=(?:[!=]=|~=)\s*${OPERAND})${SWIFT_TRANSPARENCY}`,
+        String.raw`(?<=\bswitch\b[^{\n;]*)${SWIFT_TRANSPARENCY}(?=[^{\n;]*\{)`,
+        String.raw`(?<=\bcase\b[^:\n;{=]*=\s*${OPERAND})${SWIFT_TRANSPARENCY}`,
+      ].join("|"),
+      "g",
+    ),
+  },
+  // The backdrop filter, in CSS and in script: the property (`-webkit-` too), React's style keys, and
+  // the DOM's `webkitBackdropFilter` (tuned beyond ADR-0036 §10: the same property by the DOM's
+  // spelling). `Surface.css` holds the package's only ones; a component's glass part blurs through
+  // the chip shape, whose root carries the filter (ADR-0036 §7).
+  {
+    id: "material/web-backdrop-filter",
+    kind: "material",
+    languages: ["css", "script"],
+    only: WEB_PACKAGES,
+    exempt: [SURFACE_MODULE_WEB],
+    pattern: /(?<![\w$-])(?:-webkit-)?backdrop-filter(?![\w-])|(?<![\w$])(?:backdropFilter|[Ww]ebkitBackdropFilter)(?![\w$])/g,
+  },
+  // A glass recipe's variable: every `--ds-material-glass-*` name but the scrim, which text over media
+  // may use anywhere (ADR-0029 §1.7), and a bare `--ds-material-glass-` prefix that code completes. A
+  // component's own cell reaches the chip as `--ds--surface-chip-own`.
+  {
+    id: "material/web-glass-recipe",
+    kind: "material",
+    languages: ["css", "script"],
+    only: WEB_PACKAGES,
+    exempt: [SURFACE_MODULE_WEB],
+    pattern: /(?<![\w-])--ds-material-glass(?!\w)(?!-scrim(?![\w-]))[\w-]*/g,
+  },
+  // A comparison with Prism's transparency context: `===`, `!==`, `==` or `!=` on either side of
+  // `transparency`, or a `switch` over it. In a stylesheet or a class string the same comparison is
+  // the `ds-reduce-transparency` variant (tuned beyond ADR-0036 §10: `runtime` owns the attribute and
+  // the media feature, and nothing else checks the variant in script). The fallback is `resolve.ts`'s
+  // one function, for Surface and the chip alike (ADR-0036 §3).
+  {
+    id: "material/web-transparency-read",
+    kind: "material",
+    languages: ["css", "script"],
+    only: WEB_PACKAGES,
+    exempt: [SURFACE_MODULE_WEB],
+    pattern: new RegExp(
+      [
+        String.raw`${SCRIPT_TRANSPARENCY}(?=\s*[!=]==?)`,
+        String.raw`(?<=[!=]==?\s*${OPERAND})${SCRIPT_TRANSPARENCY}`,
+        String.raw`(?<=\bswitch\s*\([^{;\n]*)${SCRIPT_TRANSPARENCY}`,
+        String.raw`(?<![\w-])ds-reduce-transparency(?![\w-])`,
+      ].join("|"),
+      "g",
+    ),
   },
 ];
 
@@ -546,7 +662,8 @@ const GUIDANCE: Readonly<Record<LiteralKind, string>> = {
   typography: "take weights and type from the type roles; only DSCore builds fonts (ADR-0021 §12)",
   runtime: "take attribute names and media queries from the generated runtime.ts (webRuntime) and switch CSS with the generated ds-* variants (ADR-0019 rule 1)",
   brand: "read brand values through brandTokens() or useBrandTokens(), and on Apple through DSTokenSet and DSBrand.faces; no Prism target switches over DSBrand (ADR-0020 rule 13)",
-  material: "only Surface resolves materials: DSCore draws Prism's glass from the recipe and reads the accessibility settings, and components take the material from the published context (ADR-0022 rule 2)",
+  material:
+    "only the Surface module resolves and draws Prism glass: on Apple DSCore reads the accessibility settings, compares the transparency context and builds the recipes, and swift/Sources/DSComponents/Surface/ reads the backdrop pixels; on the web only src/surface/ compares the transparency context, names the recipe variables and declares backdrop-filter; a component draws its glass part through the chip shape (dsSurfaceChip, useSurfaceChip) and takes the material from the published context (ADR-0022 rule 2, ADR-0036 §10)",
 };
 
 /**

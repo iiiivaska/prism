@@ -84,7 +84,7 @@ describe.each([
   ["typography", "ADR-0021 §12", 8],
   ["runtime", "ADR-0019 rule 1", 6],
   ["brand", "ADR-0020 rule 13", 5],
-  ["material", "ADR-0022 rule 2", 4],
+  ["material", "ADR-0036 §10", 9],
 ] as const)("kind %s (%s)", (kind, reference, patterns) => {
   const hit = join(fixtures, kind, "hit");
   const miss = join(fixtures, kind, "miss");
@@ -158,6 +158,9 @@ describe("scanSource", () => {
     ["@media (pointer:coarse) { a { opacity: 1 } }", ".css", "runtime"],
     ['const c = cn("lg:dark:bg-ds-page");', ".ts", "runtime"],
     ["a { @variant any-pointer-coarse { opacity: 1 } }", ".css", "runtime"],
+    ["if context.transparency != .reduced { return }", ".swift", "material"],
+    ["guard case .standard = tokens.context.transparency else { return }", ".swift", "material"],
+    ["let mirror = pixels.content.saturation(recipe.saturate)", ".swift", "material"],
   ])("flags %j", (source, extension, kind) => {
     expect(scanSource(source, extension).map((finding) => finding.kind)).toContain(kind);
   });
@@ -197,6 +200,13 @@ describe("scanSource", () => {
     [".html-root { font-size: var(--x); }", ".css"],
     ["font-weight: var(--ds-type-body-md-font-weight);", ".css"],
     ["const boldness = item.fontWeight;", ".ts"],
+    // material: a forced context, an assignment, another enum's case and another axis compare no
+    // transparency, and the public dsBackdrop hands pixels down without naming them
+    ["let forced = DSTokenContext(colorScheme: .light, transparency: .reduced)", ".swift"],
+    ["self.transparency = transparency", ".swift"],
+    ["if axis == .transparency { return }", ".swift"],
+    ["let hairline = context.contrast == .increased", ".swift"],
+    ["chip.dsBackdrop(.map) { DSExampleMap() }", ".swift"],
   ])("ignores %j", (source, extension) => {
     expect(scanSource(source, extension)).toEqual([]);
   });
@@ -239,6 +249,63 @@ describe("scanSource", () => {
     ]) {
       expect(scanSource(source, ".ts", "web/packages/react/src/Surface.tsx"), source).toEqual([]);
     }
+  });
+
+  it("keeps glass inside the Surface module: DSCore and its Surface directory on Apple, src/surface/ on the web (ADR-0036 §10)", () => {
+    const rules = (source: string, extension: string, file: string, scope?: "tests"): string[] => scanSource(source, extension, file, scope).map((f) => f.rule);
+    const pixels = "let recipe = DSGlassAppearance.chip.recipe(tokens.material)";
+    const compare = "let reduced = tokens.context.transparency == .reduced";
+    expect(rules(pixels, ".swift", "swift/Sources/DSCore/DSSurface.swift")).toEqual([]);
+    expect(rules(pixels, ".swift", "swift/Sources/DSComponents/Surface/DSSurfaceChip.swift")).toEqual([]);
+    for (const file of ["swift/Sources/DSComponents/Chip/DSChip.swift", "swift/Sources/DSComponents/SurfaceKit/Kit.swift", "swift/Sources/DSCharts/Chart.swift"]) {
+      expect(rules(pixels, ".swift", file), file).toEqual(["material/swift-backdrop-pixels"]);
+    }
+    // The fallback is DSCore's alone: the Surface directory draws glass but compares nothing.
+    expect(rules(compare, ".swift", "swift/Sources/DSCore/DSSurface.swift")).toEqual([]);
+    expect(rules(compare, ".swift", "swift/Sources/DSComponents/Surface/DSSurfaceChip.swift")).toEqual(["material/swift-transparency-read"]);
+    // The suites build recipes and compare the context on purpose; no material rule reads swift/Tests.
+    expect(rules(`${pixels}\n${compare}`, ".swift", "swift/Tests/DSCoreTests/DSSurfaceChipResolutionTests.swift", "tests")).toEqual([]);
+
+    const css = "a { backdrop-filter: blur(var(--ds-material-glass-chip-blur)); }";
+    const script = 'const reduced = useTokenContext().transparency === "reduce";';
+    expect(rules(css, ".css", "web/packages/react/src/surface/Surface.css")).toEqual([]);
+    expect(rules(script, ".ts", "web/packages/react/src/surface/resolve.ts")).toEqual([]);
+    // Every package, and a directory whose name only starts like the module's.
+    for (const dir of ["web/packages/react/src/chip", "web/packages/react/src/surfaces", "web/packages/charts/src", "web/packages/tokens/src/runtime"]) {
+      expect(rules(css, ".css", `${dir}/x.css`), dir).toEqual(["material/web-backdrop-filter", "material/web-glass-recipe"]);
+      expect(rules(script, ".ts", `${dir}/x.ts`), dir).toEqual(["material/web-transparency-read"]);
+    }
+  });
+
+  it("reports a comparison with transparency and the glass names on the web, not a read, the runtime's names or the scrim", () => {
+    const file = "web/packages/react/src/chip/Chip.tsx";
+    const rules = (source: string): string[] => scanSource(source, ".tsx", file).map((f) => f.rule);
+    for (const source of [
+      'const reduced = "reduce" !== context.transparency;',
+      "switch (context.transparency) {",
+      'const opaque = <span className="ds-reduce-transparency:ds-chip-opaque" />;',
+    ]) {
+      expect(rules(source), source).toEqual(["material/web-transparency-read"]);
+    }
+    for (const source of ['el.style.webkitBackdropFilter = "none";', 'const style = { WebkitBackdropFilter: "none" };', 'el.style.setProperty("-webkit-backdrop-filter", "none");']) {
+      expect(rules(source), source).toEqual(["material/web-backdrop-filter"]);
+    }
+    expect(rules("const name = `--ds-material-glass-${recipe}`;")).toEqual(["material/web-glass-recipe"]);
+    expect(rules('const tint = "var(--ds-material-glass-scrim-strong)";')).toEqual(["material/web-glass-recipe"]);
+    for (const source of [
+      "const { contrast, transparency } = useTokenContext();",
+      'const key = [contrast, transparency].join(" ");',
+      'if (axis === "transparency") return;',
+      'type Axes = Pick<TokenContext, "contrast" | "transparency">;',
+      "const pick = (transparency: string) => transparency;",
+      'const scrim = "linear-gradient(transparent, var(--ds-material-glass-scrim))";',
+      'const own = { "--ds--surface-chip-own": "var(--ds-color-bg-surface-raised)", "--ds--chip-backdrop-filter": "none" };',
+    ]) {
+      expect(rules(source), source).toEqual([]);
+    }
+    // The runtime kind owns the dataset key and the media feature, and material does not report them again.
+    expect(rules('const reduced = element.dataset.dsTransparency === "reduce";')).toEqual(["runtime/dataset"]);
+    expect(rules('const query = matchMedia("(prefers-reduced-transparency: reduce)");')).toEqual(["runtime/media-preference"]);
   });
 
   it("reports runtime-owned names once, under the runtime kind and never under motion (ADR-0023 §12)", () => {

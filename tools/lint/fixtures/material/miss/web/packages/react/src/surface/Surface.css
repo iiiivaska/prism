@@ -1,0 +1,17 @@
+/* The Surface module on the web, web/packages/react/src/surface/, is the one place a stylesheet declares
+   backdrop-filter and names a glass recipe (ADR-0036 §1, §10), so the lines that fail in any other
+   directory pass here. `miss:` names the rule that must not trip. */
+@layer ds.components {
+  .ds-surface-chip {
+    transition: backdrop-filter var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing); /* miss: material/web-backdrop-filter */
+  }
+
+  .ds-surface-chip[data-ds-surface-chip="glass"] {
+    --ds--surface-chip-fill: var(--ds-material-glass-chip); /* miss: material/web-glass-recipe */
+    backdrop-filter: blur(var(--ds-material-glass-chip-blur)) saturate(var(--ds-material-glass-chip-saturate)); /* miss: material/web-backdrop-filter, material/web-glass-recipe */
+  }
+
+  .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
+    backdrop-filter: none; /* miss: material/web-backdrop-filter */
+  }
+}

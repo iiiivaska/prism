@@ -1,0 +1,22 @@
+/*
+  Fails ADR-0036 §10's first check. Anywhere but surface/Surface.css both declarations fail: only that
+  stylesheet declares backdrop-filter. As surface/Surface.css the second still fails once, for the
+  selector in its list that is none of the four glass selectors. The transition that names the
+  property, the @supports condition and this comment declare nothing.
+*/
+@layer ds.components {
+  .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
+    backdrop-filter: none;
+  }
+
+  .ds-surface[data-ds-material="glass"],
+  .ds-fixture[data-ds-material="glass"] {
+    -webkit-backdrop-filter: none;
+  }
+
+  @supports (backdrop-filter: none) {
+    .ds-fixture {
+      transition: backdrop-filter var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing);
+    }
+  }
+}

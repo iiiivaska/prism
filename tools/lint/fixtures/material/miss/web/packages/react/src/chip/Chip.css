@@ -1,0 +1,19 @@
+/* A component's stylesheet beside its chip shape (ADR-0036 §7): its own cell reaches the chip as
+   --ds--surface-chip-own, its fades name no filter, and the scrim is the one glass variable it may name
+   (ADR-0029 §1.7). `miss:` names the rule the line must not trip. */
+@layer ds.components {
+  .ds-chip {
+    --ds--surface-chip-own: var(--ds-color-bg-surface-raised); /* miss: material/web-glass-recipe */
+    transition: opacity var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing); /* miss: material/web-backdrop-filter */
+
+    @variant ds-pointer { /* miss: material/web-transparency-read */
+      &[data-hovered] {
+        --ds--surface-chip-own: var(--ds-color-bg-surface-nested);
+      }
+    }
+  }
+
+  .ds-chip > [data-ds-slot="chip-scrim"] {
+    background-image: linear-gradient(transparent, var(--ds-material-glass-scrim)); /* miss: material/web-glass-recipe */
+  }
+}
