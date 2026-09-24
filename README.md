@@ -2,7 +2,7 @@
 
 Prism is a brand-agnostic, multi-platform design system: one W3C DTCG token source, one machine-readable component spec, two implementations (SwiftUI for iOS / iPadOS / macOS / watchOS 26+, React + TypeScript + Tailwind v4 for web), one version.
 
-Status: Phase 0 bootstrap done: pnpm workspace, lint, typecheck, build and test, and a CI matrix whose steps switch on as tools land. The token pipeline (Phase 1) is next. See `docs/` for the decision record, research and the roadmap.
+Status: Phase 4, breadth by layer, is in progress. Phases 0 to 3 are done: the bootstrap, the token pipeline, the contracts and their checks, and the Surface, Text, Button and Card slice on both stacks. Components now land in waves, and most of the 57 specs are still contracts only: `agent/SKILL.md` lists what is implemented, and `tools/parity/report.md` shows it per platform. `docs/roadmap.md` has the plan and what each ticket landed, and `docs/` the decision record and the research.
 
 Code prefix: `ds` (`DSButton`, `--ds-color-bg-surface`). npm scope: `@iiiivaska/prism-*`.
 

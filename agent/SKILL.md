@@ -10,19 +10,29 @@ Prism is a token-driven, brand-agnostic design system with two implementations: 
 ## The five rules
 
 1. **Never write a raw value.** No hex colors, no `px`/`pt` numbers for spacing or radius, no font names, no durations. Use tokens. Swift: the `DSTokenSet` members DSCore provides (`tokens.color.textPrimary`, `tokens.space.step4`, `tokens.typography.bodyMd`); web: `var(--ds-color-text-primary)`, Tailwind `text-ds-primary`, `p-ds-4`, `type-ds-body-md`. Never re-brand in the app: do not override `--ds-*` variables, and add no custom colors or fonts. A new look is a new brand in Prism.
-2. **Never invent a component.** If the inventory below lacks what you need, compose existing components or stop and report the gap; do not hand-roll a card, a pill, a chart.
+2. **Never invent a component.** Use only what the inventory below lists as implemented. If none of it does what you need, compose implemented components or stop and report the gap; do not hand-roll a card, a pill, a chart, or a component that is only specified.
 3. **Never reference an icon by vendor name.** Use registry ids: `DSIcon(.actionAdd)` / `<Icon name="action.add" />`. The registry is `spec/icons/registry.json`.
 4. **Respect surfaces.** Content sits on `solid`, `vivid` or `glass` surfaces. Glass only over an image, a map or a vivid surface: a glass Surface declares it with `backdrop`; content that sits straight on your own map, photo or gradient declares it with `<Backdrop kind="map">` or `.dsBackdrop(.map) { … }`; text over media belongs on a glass Surface; never glass on glass. Glass follows the color scheme by itself: one role, `material.glass.fill`, is light glass in light and smoked glass in dark, and chips, controls and status cells over media take `material.glass.chip` with the primary tone only. Never read the scheme to pick a material — for a dark photograph in a light app, scope the region to dark (`data-ds-color-scheme="dark"`, `.environment(\.colorScheme, .dark)`). Surface itself renders glass as an opaque raised surface under Reduce Transparency, Increase Contrast and on watchOS; never read or branch on those settings yourself (ADR-0022). System chrome (toolbars, tab bars, sheets) is native and not styled by you.
 5. **Accessibility is not optional.** Every icon-only control has a label; every status has icon + text; text pairs come only from tokens (they are pre-checked for contrast); weights come only from `type.*` roles: never set a font weight, italic or font size in code (thin exists only in `type.metric.xl` in dark, ADR-0021).
 
 ## Inventory (v1)
 
-- **Primitives**: Text, Icon, Surface, Button, IconButton, Toggle, Checkbox, Radio, Slider, TextField, TextArea, Select, SegmentedControl, Chip, Badge, Avatar, Divider, ProgressBar, ProgressRing, Spinner, Skeleton, Tooltip.
-- **Composites**: ListRow, Card (solid | vivid | glass | tinted), StatCard, StatusPill, FormField, SearchField, PillTabs, Stepper, Timeline, Toast, Banner, Alert, Dialog, Sheet, Popover, Menu, TabBar, TopBar, Toolbar, EmptyState, Pagination. Desktop only: Sidebar, Table, CommandPalette, ContextMenu.
-- **Data-viz**: StatTile, Sparkline, RingGauge, LineChart, AreaChart (v1); BarChart, Legend, ChartTooltip, TimelineScrubber, ArcGauge, DeltaIndicator (v1.1).
-- **Patterns** (recipes, see `spec/patterns/`): dashboard grid, detail screen, adaptive shells (stack / split / sidebar).
+Only the **Implemented** column exists in code. A name in the **Specified only** column is a contract in `spec/` that no stack has built yet: there is nothing to import, and you must not build it in the app — report it as a gap (below). Per platform, each stack's manifest is the authority: `DSComponentsManifest.implemented` and `DSChartsManifest.implemented` in Swift, `implemented` from `@iiiivaska/prism-react` and `@iiiivaska/prism-charts` on the web. A platform whose spec marks a component `none` never gets it (Divider, Badge and IconButton on watchOS, for example).
+
+<!-- Maintainers: the ticket that lands a component on both stacks moves its name from "Specified only" to "Implemented" in its layer's row, keeping both cells alphabetical, in the same change as the manifests. One line changes. -->
+
+| Layer | Implemented on both stacks | Specified only (a contract, no code yet) |
+|---|---|---|
+| Primitives | Badge, Button, Divider, Icon, IconButton, Surface, Text | Avatar, Checkbox, Chip, ProgressBar, ProgressRing, Radio, SegmentedControl, Select, Skeleton, Slider, Spinner, TextArea, TextField, Toggle, Tooltip |
+| Composites | Card (solid, vivid, glass, tinted) | Alert, Banner, CommandPalette, ContextMenu, Dialog, EmptyState, FormField, ListRow, Menu, Pagination, PillTabs, Popover, SearchField, Sheet, Sidebar, StatCard, StatusPill, Stepper, TabBar, Table, Timeline, Toast, Toolbar, TopBar |
+| Data-viz (`DSCharts`, `@iiiivaska/prism-charts`) | — | AreaChart, ChartContainer, DeltaBadge, HeroNumber, LineChart, RangeBand, ReferenceLine, RingGauge, Sparkline, StatTile |
+| Patterns (recipes, `spec/patterns/`) | — | AdaptiveShell (stack, split, sidebar), DashboardGrid, DetailScreen |
+
+Sidebar, Table, CommandPalette and ContextMenu are the desktop tier: `none` on iPhone and Apple Watch. Planned for v1.1 and not specified yet: BarChart, Legend, ChartTooltip, TimelineScrubber, ArcGauge.
 
 ## Choosing between similar components
+
+Most of the names below are specified only today. The choice still holds; when the right component is not implemented yet, report the gap instead of building it.
 
 - Action → **Button**. Navigation to another screen → **ListRow** or a link; never a Button.
 - One number with a label → **StatTile** (adds sparkline / delta). A number inside richer content → **StatCard**.
@@ -64,7 +74,7 @@ Never read Reduce Motion yourself (`accessibilityReduceMotion`, `prefers-reduced
 
 ## When something is missing
 
-Report the gap with the name of the closest existing component and what it lacks. Do not fork a component into the app. Gaps are filed against the Prism spec, where the change starts.
+Report the gap with the name of the closest existing component and what it lacks. A component that is specified but not implemented is a gap too: name its spec, `spec/components/<Name>.yaml`. Do not fork a component into the app. Gaps are filed against the Prism spec, where the change starts.
 
 ## Setting up a consuming app
 
