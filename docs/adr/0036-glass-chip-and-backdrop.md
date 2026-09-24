@@ -1,6 +1,6 @@
 # ADR-0036: The glass chip is a shape of the Surface module, and Backdrop declares the page over media
 
-- Status: accepted
+- Status: accepted (§3 steps 1, 5 and 8, the scope of §5, the flag's names in §7 and the public API table, §8.2's and §8.3's "clears the flag", and rules 3 and 6 amended by [ADR-0037](0037-chip-inside-a-chip.md): a chip hands its content an enclosure instead of the flag; a chip inside any other chip draws no backdrop filter, and inside a chip that renders its own cell or its fallback it has no media under it)
 - Date: 2026-09-23
 - Decision record entry: docs/decisions.md #36
 - Amends: ADR-0022 (rule 1; rule 2 and its "Checked by"; §1.3's last bullet; the sentence of §1.6 that keeps the fallback "inside Surface"; §3.1's chips bullet), ADR-0025 (the decision's first sentence and rule 1), ADR-0029 (§1.5's third bullet)
