@@ -116,3 +116,10 @@ examples:
     props: { icon: avatar.sm }
   - id: icon-mapping
     props: { icon: { avatar: { size: sm } } }
+  - id: image-fixture
+    props: { label: { fixture: portrait } }
+    description: a string that is an image's source takes spec/SCHEMA.md's image fixture, so this passes
+  - id: image-fixture-unknown
+    props: { label: { fixture: headshot } }
+  - id: image-fixture-parameters
+    props: { label: { fixture: portrait, size: sm } }

@@ -36,7 +36,8 @@
 //                                P4-D3 still owes, BOOLEAN_NAMES_OWED, pass until each is renamed
 //   example/prop                 an example sets a prop its spec does not declare, or a value its type does not allow:
 //                                a boolean, number or string of that type, one of an enum's values, an id of the icon
-//                                registry for an icon (spec/SCHEMA.md, "Examples and snapshots")
+//                                registry for an icon (spec/SCHEMA.md, "Examples and snapshots"); a string also takes
+//                                SCHEMA's image fixture, `{ fixture: portrait }` (IMAGE_FIXTURES)
 //   example/light-glass-backdrop light glass over something other than an image or a map
 //   example/vivid-unit           a vivid example whose hero carries the unit (V3)
 //   example/vivid-icon           a vivid example that sets an icon (ADR-0022 rule 8)
@@ -80,8 +81,8 @@ import { statesOf, walkBindings } from './bindings.ts';
 import {
   BACKDROPS, BOOLEAN_NAMES_OWED, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
   DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
-  HAPTICS, ICON_REGISTRY, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS, NESTED_GLASS_KEYS,
-  NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
+  HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS,
+  NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -652,7 +653,8 @@ function declaredProps(spec: Record<string, unknown>): Map<string, Record<string
  * snapshots"), so an example sets only props its spec declares, with values their types allow — what a pattern's
  * composition was already held to (roadmap P4-D3 (3)). A prop no stack can take, or a value it cannot hold, would reach
  * a story, a snapshot and the showcase on both stacks. `slot` and `data` props take the forms of "Slot content in
- * examples", and every `action` prop gets the galleries' own handler, so none of the three is read here. Whether an
+ * examples", and every `action` prop gets the galleries' own handler, so none of the three is read here; a `string`
+ * that is an image's source takes that section's image fixture, which the galleries draw (IMAGE_FIXTURES). Whether an
  * example sets every `required` prop is a second question, which this check does not ask.
  */
 function checkExampleProps(doc: SpecDoc, spec: Record<string, unknown>, name: string, icons: ReadonlySet<string> | null, diagnostics: Diagnostic[]): void {
@@ -950,7 +952,7 @@ function propValueProblem(prop: Record<string, unknown>, value: unknown, icons: 
   const type = prop['type'];
   if (type === 'boolean') return typeof value === 'boolean' ? null : `is a boolean, not ${JSON.stringify(value)}`;
   if (type === 'number') return typeof value === 'number' ? null : `is a number, not ${JSON.stringify(value)}`;
-  if (type === 'string') return typeof value === 'string' ? null : `is a string, not ${JSON.stringify(value)}`;
+  if (type === 'string') return typeof value === 'string' || isImageFixture(value) ? null : `is a string, not ${JSON.stringify(value)}`;
   if (type === 'icon' && icons !== null) return typeof value === 'string' && icons.has(value) ? null : `is an icon of ${ICON_REGISTRY}, not ${JSON.stringify(value)}`;
   if (type === 'enum' && Array.isArray(prop['values'])) {
     const allowed = prop['values'].filter((v): v is string => typeof v === 'string');
@@ -960,6 +962,14 @@ function propValueProblem(prop: Record<string, unknown>, value: unknown, icons: 
     return bad.length === 0 ? null : `has no value ${bad.map((v) => `\`${String(v)}\``).join(', ')} (${allowed.join(', ')})`;
   }
   return null;
+}
+
+/**
+ * Whether a value is one of spec/SCHEMA.md's image fixtures, written as SCHEMA writes it: `{ fixture: <name> }` and
+ * nothing else, so a fixture that takes parameters, or one SCHEMA does not document, is no image.
+ */
+function isImageFixture(value: unknown): boolean {
+  return isRecord(value) && Object.keys(value).length === 1 && typeof value['fixture'] === 'string' && IMAGE_FIXTURES.includes(value['fixture']);
 }
 
 /** ADR-0024 §5.5: every comp token is bound by its component's spec, and every comp group has one. */

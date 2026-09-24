@@ -3,7 +3,7 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
-import { BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
+import { BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, pointerToPath, SchemaShapeError } from './schema.ts';
@@ -135,10 +135,14 @@ describe('the contract spec/SCHEMA.md states in prose', () => {
     expect(problems).toEqual([]);
   });
 
-  test('slot fixtures in examples are the ones spec/SCHEMA.md documents', () => {
-    const documented = new Set(['text', 'list', 'form', 'readout', 'buttonRow', 'pager']);
+  test('fixtures in examples are the ones spec/SCHEMA.md documents, the image fixture only as an image source', () => {
+    // spec/SCHEMA.md, "Slot content in examples": six fixtures fill a slot or a data prop, and `portrait` alone fills
+    // a `string` prop that is an image's source (roadmap P4-7), written straight under that prop.
+    const slot = new Set(['text', 'list', 'form', 'readout', 'buttonRow', 'pager']);
+    const image = new Set(IMAGE_FIXTURES);
     const problems: string[] = [];
     let fixtures = 0;
+    let images = 0;
     const walk = (v: unknown, where: string): void => {
       if (Array.isArray(v)) {
         v.forEach((item) => walk(item, where));
@@ -148,15 +152,28 @@ describe('the contract spec/SCHEMA.md states in prose', () => {
       const record = v as Record<string, unknown>;
       if ('fixture' in record) {
         fixtures++;
-        if (typeof record['fixture'] !== 'string' || !documented.has(record['fixture'])) problems.push(`${where}: fixture ${JSON.stringify(record['fixture'])}`);
+        const name = record['fixture'];
+        if (typeof name !== 'string' || !(slot.has(name) || image.has(name))) problems.push(`${where}: fixture ${JSON.stringify(name)}`);
       }
       for (const child of Object.values(record)) walk(child, where);
     };
     for (const { path, value } of specs) {
-      for (const example of records(value['examples'])) walk(example['props'], `${path} ${String(example['id'])}`);
+      const types = new Map(records(value['props']).map((p) => [p['name'], p['type']]));
+      for (const example of records(value['examples'])) {
+        const where = `${path} ${String(example['id'])}`;
+        walk(example['props'], where);
+        for (const [prop, given] of Object.entries(records([example['props']])[0] ?? {})) {
+          const name = typeof given === 'object' && given !== null && !Array.isArray(given) ? (given as Record<string, unknown>)['fixture'] : undefined;
+          if (typeof name !== 'string' || !image.has(name)) continue;
+          images++;
+          if (types.get(prop) !== 'string') problems.push(`${where}: the image fixture \`${name}\` fills \`${prop}\`, which is not a string prop`);
+        }
+      }
     }
     expect(problems).toEqual([]);
     expect(fixtures).toBeGreaterThan(0);
+    // Avatar's portraits, so the image half is not vacuous.
+    expect(images).toBeGreaterThan(0);
   });
 });
 
@@ -329,6 +346,10 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
       // Avatar would be written into an icon slot.
       '116 example/prop example `icon-value`: `Sample.icon` is an icon of spec/icons/registry.json, not "avatar.sm"',
       '118 example/prop example `icon-mapping`: `Sample.icon` is an icon of spec/icons/registry.json, not {"avatar":{"size":"sm"}}',
+      // A string takes spec/SCHEMA.md's image fixture (`image-fixture`, line 120, passes), written as SCHEMA writes it: a
+      // fixture SCHEMA does not document is not one, and neither is the portrait with a parameter it does not take.
+      '123 example/prop example `image-fixture-unknown`: `Sample.label` is a string, not {"fixture":"headshot"}',
+      '125 example/prop example `image-fixture-parameters`: `Sample.label` is a string, not {"fixture":"portrait","size":"sm"}',
       // A pattern's examples are read against the pattern's own props.
       '92 example/prop example `fixed-columns` sets `columns`, which SamplePattern does not declare',
     ]);

@@ -288,9 +288,15 @@ An example fills a `slot` prop, or a `data` prop that holds components, in one o
 | `buttonRow` | `count`, 1 or 2 | `count` Buttons at `size: md`: the last is `variant: primary` with `label: "Primary action"`, and with a count of 2 the first is `variant: secondary` with `label: "Secondary action"` |
 | `pager` | `label` | one Pagination with `kind: range`, `size: sm` and that `label` |
 
+**An image's source is not a slot, and takes one fixture of its own.** A `string` prop that is an image's source — Avatar's `image` — is written `{ fixture: portrait }`, never as a file name or a URL: a name would be an asset each gallery had to invent for itself, and the pair would never match (roadmap P4-7).
+
+| `fixture` | Parameters | Renders |
+|-----------|------------|---------|
+| `portrait` | none | a square picture as wide as the part it fills, which each gallery draws from tokens and hands the component as its image (a SwiftUI `Image` on Apple, an SVG `data:` URL on the web). Back to front: the whole square in `color.chart.series.4`; the shoulders, an ellipse in `color.chart.series.3` whose bounding box runs from 10 % to 90 % of the side across and from 68 % to 132 % down, so the bottom edge cuts its lower half; the head, a circle in `color.chart.series.2` whose bounding box runs from 30 % to 70 % across and from 22 % to 62 % down. The colours resolve in the example's scheme, as the synthetic map's do. It carries no text and no name of its own: the component names the image from its own props |
+
 Children a fixture renders stack with the slot's own `gap`. A fixture is gallery content only: it names no prop value an app passes, and a pattern's examples follow spec/patterns/README.md.
 
-**An example sets only what its spec declares.** Both galleries hand an example's `props` to the component as written, so `spec:validate` holds each one to a declared prop and a value its type allows (`example/prop`): a boolean, a number or a string of that type, one of an enum's `values` (each item, for a list), and an id of the icon registry for an `icon` prop. A `slot` or `data` prop takes the forms above, and an `action` prop the galleries' own handler, so their values are not read. A pattern's examples are held to the pattern's own props.
+**An example sets only what its spec declares.** Both galleries hand an example's `props` to the component as written, so `spec:validate` holds each one to a declared prop and a value its type allows (`example/prop`): a boolean, a number or a string of that type (for a string that is an image's source, the `portrait` fixture above), one of an enum's `values` (each item, for a list), and an id of the icon registry for an `icon` prop. A `slot` or `data` prop takes the forms above, and an `action` prop the galleries' own handler, so their values are not read. A pattern's examples are held to the pattern's own props.
 
 Examples render in both schemes, so `spec:validate` holds them to five rules:
 

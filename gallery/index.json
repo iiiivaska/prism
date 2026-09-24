@@ -76,7 +76,7 @@
             "light",
             "dark"
           ],
-          "props": "name: Anna Petrova, image: portrait, size: md",
+          "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, size: md",
           "cells": []
         },
         {
@@ -112,7 +112,7 @@
             "light",
             "dark"
           ],
-          "props": "name: Anna Petrova, image: portrait, hasRing: true",
+          "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, hasRing: true",
           "cells": []
         },
         {
@@ -130,7 +130,7 @@
             "light",
             "dark"
           ],
-          "props": "name: Anna Petrova, image: portrait, size: lg",
+          "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, size: lg",
           "cells": []
         },
         {
@@ -139,7 +139,7 @@
             "light",
             "dark"
           ],
-          "props": "name: Anna Petrova, image: portrait, isDecorative: true",
+          "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, isDecorative: true",
           "cells": []
         },
         {
@@ -148,7 +148,16 @@
             "light",
             "dark"
           ],
-          "props": "name: Anna Petrova, image: portrait, hasRing: true",
+          "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, hasRing: true",
+          "cells": []
+        },
+        {
+          "id": "initials-over-map",
+          "schemes": [
+            "light",
+            "dark"
+          ],
+          "props": "name: Anna Petrova, size: md",
           "cells": []
         },
         {

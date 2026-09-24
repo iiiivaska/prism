@@ -1,5 +1,5 @@
 {
-  "description": "Examples set a prop the spec does not declare, and a value of the wrong type for a boolean, number, string, enum and icon prop; a slot's fixture form and a named handler are left to the galleries. A pattern's example is held to the pattern's own props.",
+  "description": "Examples set a prop the spec does not declare, and a value of the wrong type for a boolean, number, string, enum and icon prop; a slot's fixture form and a named handler are left to the galleries, and a string takes spec/SCHEMA.md's image fixture and nothing else written as a fixture. A pattern's example is held to the pattern's own props.",
   "expect": [
     {
       "code": "example/prop",

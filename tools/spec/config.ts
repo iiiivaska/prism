@@ -127,6 +127,13 @@ export const NESTED_GLASS_KEYS: readonly string[] = ['glass', 'glassLight'];
 export const BOOLEAN_VERBS: readonly string[] = ['is', 'has', 'shows', 'clamps'];
 
 /**
+ * The fixtures spec/SCHEMA.md writes for a `string` prop that is an image's source ("Slot content in examples"): an
+ * example writes Avatar's `image` as `{ fixture: portrait }`, never as a file name or a URL, and each gallery draws the
+ * picture from tokens (roadmap P4-7). `example/prop` takes one of these, written as SCHEMA writes it, for a string.
+ */
+export const IMAGE_FIXTURES: readonly string[] = ['portrait'];
+
+/**
  * The words a boolean's name never holds after its verb: a name never states a negation (`isNotReady`, `hasNoBorder`);
  * it names the condition that is true, and the default says which way the component starts (spec/SCHEMA.md).
  */
