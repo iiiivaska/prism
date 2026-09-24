@@ -6,8 +6,8 @@
  * - ADR-0022 rule 1 and ADR-0025 rule 1 on the client: Surface falls back from glass when the OS asks for
  *   more contrast or less transparency, back again when it stops, and an explicit `<Theme>` choice wins.
  * - ADR-0036 §3 and §7 on the client: the glass chip shape resolves again whenever anything it reads
- *   changes — what its part asks for, the ground, the enclosing chip, the gate, the publication, and
- *   Prism's contrast and transparency — which only a mounted tree that re-renders can show.
+ *   changes — what its part asks for, the ground, its enclosure (ADR-0037 §1), the gate, the publication,
+ *   and Prism's contrast and transparency — which only a mounted tree that re-renders can show.
  * - ADR-0023 rule 9: under a forced reduced context Surface drops blur and depth at once and crossfades
  *   its fill; Text schedules no animation at all.
  * - ADR-0021 rule 8: Text computes `font-synthesis: none`.
@@ -29,9 +29,10 @@ import { Surface, Text, Theme, mountRoot, readContext, useTokenContext, webRunti
 // The chip shape, its resolver and the two contexts it reads are internal to the package (ADR-0036 §7), so they
 // are imported from the source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so these
 // are the contexts the hook reads and the resolver it calls.
-import { InsideGlassChipContext, SurfaceContext, type SurfaceContextValue } from "../../../packages/react/src/surface/context.ts";
+import { SurfaceChipEnclosureContext, SurfaceContext, type SurfaceContextValue } from "../../../packages/react/src/surface/context.ts";
 import {
   resolveSurfaceChip,
+  type SurfaceChipEnclosure,
   type SurfaceChipFill,
   type SurfaceChipGate,
   type SurfaceChipPublication,
@@ -254,7 +255,7 @@ describe("the glass chip shape on the client (ADR-0036 §3, §7)", () => {
   interface ChipInputs {
     readonly fill: SurfaceChipFill;
     readonly ground: SurfaceContextValue;
-    readonly insideGlassChip: boolean;
+    readonly enclosure: SurfaceChipEnclosure;
     readonly gate: SurfaceChipGate;
     readonly publishes: SurfaceChipPublication;
   }
@@ -270,18 +271,18 @@ describe("the glass chip shape on the client (ADR-0036 §3, §7)", () => {
     function ChipProbe(props: { readonly fill: SurfaceChipFill; readonly gate: SurfaceChipGate; readonly publishes: SurfaceChipPublication }): ReactNode {
       const { fill, gate, publishes } = props;
       const ground = useContext(SurfaceContext);
-      const insideGlassChip = useContext(InsideGlassChipContext);
+      const enclosure = useContext(SurfaceChipEnclosureContext);
       const { contrast, transparency } = useTokenContext();
       const chip = useSurfaceChip(() => fill, { gate, publishes });
-      renders.push({ resolution: chip.resolution, expected: resolveSurfaceChip(fill, ground, { insideGlassChip, gate, publishes }, { contrast, transparency }) });
+      renders.push({ resolution: chip.resolution, expected: resolveSurfaceChip(fill, ground, { enclosure, gate, publishes }, { contrast, transparency }) });
       return <span {...chip.rootProps} />;
     }
     const tree = (inputs: ChipInputs): ReactNode => (
       <Theme>
         <SurfaceContext.Provider value={inputs.ground}>
-          <InsideGlassChipContext.Provider value={inputs.insideGlassChip}>
+          <SurfaceChipEnclosureContext.Provider value={inputs.enclosure}>
             <ChipProbe fill={inputs.fill} gate={inputs.gate} publishes={inputs.publishes} />
-          </InsideGlassChipContext.Provider>
+          </SurfaceChipEnclosureContext.Provider>
         </SurfaceContext.Provider>
       </Theme>
     );
@@ -292,7 +293,7 @@ describe("the glass chip shape on the client (ADR-0036 §3, §7)", () => {
     };
 
     // A glass chip on the page over a map: it renders the recipe and blurs.
-    let inputs: ChipInputs = { fill: "glass", ground: { material: "page", backdrop: "map", depth: 0 }, insideGlassChip: false, gate: "content", publishes: "ground" };
+    let inputs: ChipInputs = { fill: "glass", ground: { material: "page", backdrop: "map", depth: 0 }, enclosure: "none", gate: "content", publishes: "ground" };
     await mount(tree(inputs));
     expect(last().resolution).toEqual(last().expected);
     expect(last().resolution.blursBackdrop).toBe(true);
@@ -315,7 +316,8 @@ describe("the glass chip shape on the client (ADR-0036 §3, §7)", () => {
     const steps: readonly (readonly [string, () => Promise<void>])[] = [
       ["the ground: the page over no media, where glass falls back", () => rerender({ ground: { material: "page", backdrop: "none", depth: 0 } })],
       ["the gate: chrome, which needs no media", () => rerender({ gate: "chrome" })],
-      ["an enclosing glass chip, which drops the blur", () => rerender({ insideGlassChip: true })],
+      ["the enclosure translucent, inside a chip that renders glass or nothing, which drops the blur", () => rerender({ enclosure: "translucent" })],
+      ["the enclosure opaque, inside a chip that renders its own cell or its fallback, which the chip hands on", () => rerender({ enclosure: "opaque" })],
       ["the publication: raised", () => rerender({ publishes: "raised" })],
       ["what the part asks for: its own cell", () => rerender({ fill: "own" })],
       ["what the part asks for: glass again", () => rerender({ fill: "glass" })],

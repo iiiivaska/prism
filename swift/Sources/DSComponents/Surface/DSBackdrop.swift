@@ -23,8 +23,8 @@ private struct DSSurfaceGeometryKey: EnvironmentKey {
     static let defaultValue: DSSurfaceGeometry? = nil
 }
 
-private struct DSInsideGlassChipKey: EnvironmentKey {
-    static let defaultValue = false
+private struct DSSurfaceChipEnclosureKey: EnvironmentKey {
+    static let defaultValue = DSSurfaceChipEnclosure.none
 }
 
 extension EnvironmentValues {
@@ -40,14 +40,20 @@ extension EnvironmentValues {
         set { self[DSSurfaceGeometryKey.self] = newValue }
     }
 
-    /// Whether a glass chip encloses this view (ADR-0036 §3 step 8). A glass chip sets it for its content when it
-    /// renders the recipe, or when a glass chip encloses it, and a glass chip inside then draws the recipe's fill and
-    /// edge without blurring anything (ADR-0036 §5): the pixels it would blur are the ones the enclosing chip already
-    /// blurred. `dsBackdrop(_:_:)` clears it, because the media it hands down are new pixels. Surface neither reads nor
-    /// writes it.
-    var dsInsideGlassChip: Bool {
-        get { self[DSInsideGlassChipKey.self] }
-        set { self[DSInsideGlassChipKey.self] = newValue }
+    /// What encloses this view, up to the nearest `dsBackdrop(_:_:)` (ADR-0037 §1, in place of ADR-0036 §3 step 8's
+    /// flag): `.none` where no chip encloses it, `.translucent` where chips enclose it and none of them renders its own
+    /// cell or its fallback, and `.opaque` where one of them does.
+    ///
+    /// `dsSurfaceChip` sets it for its content to the enclosure its resolution hands on,
+    /// `DSSurfaceChipResolution.encloses`, and a glass chip inside reads it. Inside any other chip, a glass chip draws
+    /// the recipe's fill and edge without blurring anything, and in an `.opaque` enclosure it has no media under it, so
+    /// glass asked for under the `content` gate falls back (ADR-0037 §2). Chromium's backdrop filter would read the
+    /// enclosing chip's paint, which the mirror cannot see, so a nested chip samples nothing on either stack.
+    /// `dsBackdrop(_:_:)` sets `.none` for every kind, `.none` included, because the pixels it hands down are new
+    /// media. Surface neither reads nor writes it.
+    var dsSurfaceChipEnclosure: DSSurfaceChipEnclosure {
+        get { self[DSSurfaceChipEnclosureKey.self] }
+        set { self[DSSurfaceChipEnclosureKey.self] = newValue }
     }
 }
 
@@ -77,7 +83,7 @@ extension View {
     /// a Surface inside a `dsBackdrop` publishes its own. The modifier reads no setting; under the glass fallback a
     /// Surface ignores the pixels. `.none` is not media: it logs at debug level, publishes nothing and still hands the
     /// pixels down. Either way the glass chips of Prism's components inside blur these pixels, even where the modifier
-    /// sits inside another component's glass chip (ADR-0036 §3 step 8).
+    /// sits inside another component's chip: it hands its content the enclosure `.none` (ADR-0037 §1).
     ///
     /// - Parameters:
     ///   - kind: what the app draws under this view: `.image`, `.map` or `.vivid`. Name the media actually drawn;
@@ -117,7 +123,7 @@ private struct DSBackdropModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         declared(content)
-            .environment(\.dsInsideGlassChip, false)
+            .environment(\.dsSurfaceChipEnclosure, DSSurfaceChipEnclosure.none)
             .dsBackdropSource(backdrop, space: space, size: size)
             .background { backdrop }
             .onGeometryChange(for: CGSize.self, of: \.size) { size = $0 }

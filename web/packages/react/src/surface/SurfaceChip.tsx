@@ -25,12 +25,12 @@
  *   elevation (`data-ds-elevation`).
  * - `SurfaceChipEdge` is the recipe's 1 px edge, first among the root's children, whenever glass renders.
  * - `SurfaceChipScope` hands the host's other parts the published context, with the parent's `depth`, and
- *   tells them whether a glass chip encloses them.
+ *   the enclosure the chip resolved for its content (ADR-0037 §1), which a chip among those parts reads.
  */
 import { useContext, useEffect, useMemo, type ReactNode } from "react";
 import { useTokenContext } from "@iiiivaska/prism-tokens/react";
 import { isDevelopment } from "../env.ts";
-import { InsideGlassChipContext, SurfaceContext, useSurfaceContext, type SurfaceContextValue } from "./context.ts";
+import { SurfaceChipEnclosureContext, SurfaceContext, useSurfaceContext, type SurfaceContextValue } from "./context.ts";
 import {
   resolveSurfaceChip,
   type BackdropKind,
@@ -74,29 +74,30 @@ export interface SurfaceChip {
 }
 
 /**
- * Resolves the host's glass chip: reads the ground, whether a glass chip encloses it and Prism's contrast
- * and transparency (`useTokenContext()`, never an attribute or a media query, ADR-0025 rule 1), and
- * resolves with `resolveSurfaceChip`. Glass asked for on a ground with no media is logged in development,
- * as Surface logs its own.
+ * Resolves the host's glass chip: reads the ground, the enclosure (ADR-0037 §1) and Prism's contrast and
+ * transparency (`useTokenContext()`, never an attribute or a media query, ADR-0025 rule 1), and resolves
+ * with `resolveSurfaceChip`. Glass asked for with no media under it — on a ground with no media, or inside
+ * a chip that renders its own cell or its fallback — is logged in development, as Surface logs its own.
  */
 export function useSurfaceChip(background: SurfaceChipBackground, options: UseSurfaceChipOptions = {}): SurfaceChip {
   const { gate = "content", publishes = "ground", elevation = "flat" } = options;
   const ground = useSurfaceContext();
-  const insideGlassChip = useContext(InsideGlassChipContext);
+  const enclosure = useContext(SurfaceChipEnclosureContext);
   const { contrast, transparency } = useTokenContext();
   const requested = background(ground);
   const resolution = useMemo(
-    () => resolveSurfaceChip(requested, ground, { insideGlassChip, gate, publishes }, { contrast, transparency }),
-    [requested, ground, insideGlassChip, gate, publishes, contrast, transparency],
+    () => resolveSurfaceChip(requested, ground, { enclosure, gate, publishes }, { contrast, transparency }),
+    [requested, ground, enclosure, gate, publishes, contrast, transparency],
   );
 
   useEffect(() => {
     if (resolution.hasInvalidBackdrop && isDevelopment()) {
+      const where = enclosure === "opaque" ? "inside a chip that renders its own cell or its fallback" : `on ${ground.material} over "${ground.backdrop}"`;
       console.debug(
-        `Surface chip: glass on ${ground.material} over "${ground.backdrop}" has no media under it; glass renders only over image, map or vivid, so it falls back to color.bg.surface.raised over color.bg.page (ADR-0036 §3).`,
+        `Surface chip: glass ${where} has no media under it; glass renders only over image, map or vivid, so it falls back to color.bg.surface.raised over color.bg.page (ADR-0036 §3, ADR-0037 §2).`,
       );
     }
-  }, [resolution.hasInvalidBackdrop, ground.material, ground.backdrop]);
+  }, [resolution.hasInvalidBackdrop, enclosure, ground.material, ground.backdrop]);
 
   const { published } = resolution;
   return {
@@ -120,15 +121,15 @@ export function SurfaceChipEdge(props: { readonly chip: SurfaceChip }): ReactNod
 
 /**
  * Hands the host's other parts what the chip publishes (ADR-0036 §4): the ground, or `(raised, none)`
- * under the fallback or on request, with the parent's `depth` — a chip adds none. It also tells them that
- * a glass chip encloses them when this one renders the recipe or is itself enclosed (§3 step 8).
+ * under the fallback or on request, with the parent's `depth` — a chip adds none. It also hands them the
+ * enclosure the chip resolved, `resolution.encloses` (ADR-0037 §1): `opaque` when this chip renders its own
+ * cell or its fallback or is itself in an `opaque` enclosure, `translucent` otherwise.
  */
 export function SurfaceChipScope(props: { readonly chip: SurfaceChip; readonly children?: ReactNode }): ReactNode {
   const { chip, children } = props;
-  const enclosing = useContext(InsideGlassChipContext);
   return (
     <SurfaceContext.Provider value={chip.published}>
-      <InsideGlassChipContext.Provider value={chip.resolution.rendered === "glass" || enclosing}>{children}</InsideGlassChipContext.Provider>
+      <SurfaceChipEnclosureContext.Provider value={chip.resolution.encloses}>{children}</SurfaceChipEnclosureContext.Provider>
     </SurfaceContext.Provider>
   );
 }

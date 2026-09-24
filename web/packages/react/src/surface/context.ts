@@ -13,7 +13,7 @@
  * parent's `depth`. The context object is not exported, so no other code can publish without painting.
  */
 import { createContext, useContext } from "react";
-import type { BackdropKind, SurfaceMaterial } from "./resolve.ts";
+import type { BackdropKind, SurfaceChipEnclosure, SurfaceMaterial } from "./resolve.ts";
 
 export interface SurfaceContextValue {
   /** The material the nearest Surface renders; `page` outside any Surface and under a `Backdrop`. */
@@ -35,10 +35,17 @@ export function useSurfaceContext(): SurfaceContextValue {
 }
 
 /**
- * Whether a glass chip encloses this point (ADR-0036 §3 step 8): a chip sets it for its content when it
- * renders the recipe, or when a glass chip encloses it, and a glass chip inside then draws the recipe's
- * fill and edge with no backdrop filter (ADR-0036 §5), so glass is never blurred on glass. `Backdrop`
- * clears it, because it declares new media under its children; Surface neither reads nor writes it.
+ * What encloses this point, up to the nearest `Backdrop` (ADR-0037 §1, in place of ADR-0036 §3 step 8's
+ * flag): `none` where no chip encloses it, `translucent` where chips enclose it and none of them renders its
+ * own cell or its fallback, and `opaque` where one of them does.
+ *
+ * - `SurfaceChipScope` provides the enclosure its chip resolved, `resolution.encloses`.
+ * - A chip inside any other chip draws the recipe's fill and edge with no backdrop filter, and in an
+ *   `opaque` enclosure it has no media under it, so glass asked for under the `content` gate falls back
+ *   (ADR-0037 §2). So a nested chip samples nothing, and draws one picture on both stacks.
+ * - `Backdrop` provides `none`, because it declares new media under its children. Surface neither reads nor
+ *   writes it.
+ *
  * Internal: the package does not export it.
  */
-export const InsideGlassChipContext = createContext(false);
+export const SurfaceChipEnclosureContext = createContext<SurfaceChipEnclosure>("none");

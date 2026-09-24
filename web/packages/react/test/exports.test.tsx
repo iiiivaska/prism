@@ -54,7 +54,7 @@ const INTERNAL = [
   "useSurfaceChip",
   "SurfaceChipScope",
   "SurfaceChipEdge",
-  "InsideGlassChipContext",
+  "SurfaceChipEnclosureContext",
 ] as const;
 
 /**

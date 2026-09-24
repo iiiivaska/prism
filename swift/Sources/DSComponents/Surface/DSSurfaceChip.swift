@@ -31,14 +31,15 @@ extension View {
     /// shape for the one part whose `background` binds `material.glass.chip`, Avatar's circle and Chip's pill among
     /// them. Only Prism's components call it; an app gets a glass chip by using the component that draws one.
     ///
-    /// It reads the ground (`DSThemeValues.surface`), whether a glass chip encloses it and the backdrop pixels, and
-    /// resolves through `DSSurface.resolveChip`, with Surface's four triggers. Behind the view, in its own box and
-    /// shape, it draws one of four renderings (`DSSurfaceChipLayers`):
+    /// It reads the ground (`DSThemeValues.surface`), its enclosure (`dsSurfaceChipEnclosure`, ADR-0037 §1) and the
+    /// backdrop pixels, and resolves through `DSSurface.resolveChip`, with Surface's four triggers. Behind the view, in
+    /// its own box and shape, it draws one of four renderings (`DSSurfaceChipLayers`):
     ///  - **glass**: the backdrop under the shape, saturated and blurred by `DSGlassAppearance.chip`'s recipe and
     ///    mirrored at the shape's edges as Chromium does (`DSBackdropMirrorEdge.inBounds`), then the recipe's fill and
-    ///    its 1 px edge on Surface's 135° ramp; on the scheme's glass, on light glass or inside another glass chip, the
-    ///    fill and the edge only (ADR-0036 §5);
-    ///  - **fallback**, on the watch, under Reduce Transparency, under Increase Contrast or over no media:
+    ///    its 1 px edge on Surface's 135° ramp; on the scheme's glass, on light glass (ADR-0036 §5) or inside any other
+    ///    chip (ADR-0037 §2), the fill and the edge only;
+    ///  - **fallback**, on the watch, under Reduce Transparency, under Increase Contrast or over no media — which is
+    ///    also what lies under a chip inside a chip that renders its own cell or its fallback (ADR-0037 §2):
     ///    `color.bg.surface.raised` over `color.bg.page`, with no blur, no edge and no top edge, and never `inverse`;
     ///  - **own**: the component's own cell;
     ///  - **none**: nothing.
@@ -46,9 +47,11 @@ extension View {
     /// It adds no padding, never reads or sets the concentric geometry (`dsSurfaceGeometry`), never hands its pixels
     /// down, and publishes to the view it modifies the ground the part sits on, or `(raised, none)` under the fallback
     /// or when `publishes` is `raised`, so every other part of the component takes its cell from that (ADR-0036 §4). It
-    /// also tells the view whether a glass chip encloses it, which a chip inside reads (ADR-0036 §3 step 8). Apply it to
-    /// the child view that draws the component's other parts, so they read what it publishes. With the component's
-    /// `background(on:)`, its spec's table as a `(DSSurfaceContext) -> DSSurfaceChipCell`:
+    /// also hands the view the enclosure its resolution names, `encloses`, which a chip inside reads (ADR-0037 §1):
+    /// `.opaque` when it renders its own cell or its fallback, or sits in an `.opaque` enclosure itself, and
+    /// `.translucent` otherwise. Apply it to the child view that draws the component's other parts, so they read what
+    /// it publishes. With the component's `background(on:)`, its spec's table as a
+    /// `(DSSurfaceContext) -> DSSurfaceChipCell`:
     ///
     ///     parts
     ///         .frame(width: side, height: side)
@@ -85,7 +88,7 @@ private struct DSSurfaceChipModifier<ChipShape: InsettableShape>: ViewModifier {
     let publishes: DSSurfaceChipPublication
 
     private var ds = DSThemeValues()
-    @Environment(\.dsInsideGlassChip) private var insideGlassChip
+    @Environment(\.dsSurfaceChipEnclosure) private var enclosure
     @Environment(\.dsBackdropSource) private var backdropSource
 
     // Written out: a private stored property makes the synthesized memberwise initializer private, which Swift 6.3
@@ -107,7 +110,7 @@ private struct DSSurfaceChipModifier<ChipShape: InsettableShape>: ViewModifier {
         let ground = ds.surface
         let cell = background(ground)
         let resolution = DSSurface.resolveChip(
-            cell.fill, on: ground, insideGlassChip: insideGlassChip, gate: gate, publishes: publishes, tokens: tokens
+            cell.fill, on: ground, enclosure: enclosure, gate: gate, publishes: publishes, tokens: tokens
         )
         #if DEBUG
         if resolution.blursBackdrop, backdropSource == nil {
@@ -118,7 +121,7 @@ private struct DSSurfaceChipModifier<ChipShape: InsettableShape>: ViewModifier {
         #endif
         return content
             .dsSurfaceContext(resolution.published)
-            .environment(\.dsInsideGlassChip, resolution.rendered == .glass || insideGlassChip)
+            .environment(\.dsSurfaceChipEnclosure, resolution.encloses)
             .background {
                 DSSurfaceChipLayers(
                     resolution: resolution,

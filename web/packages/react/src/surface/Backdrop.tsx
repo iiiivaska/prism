@@ -9,15 +9,15 @@
  * - It passes `depth` through unchanged, so a Surface inside it takes the same concentric radius, `data-ds-depth`
  *   and `data-ds-nested` as without it.
  * - The nearest publisher wins: inside a Surface, a `Backdrop` overrides the context for its subtree.
- * - It clears the enclosing-chip flag (`InsideGlassChipContext`, ADR-0036 §3 step 8): the media it declares are
- *   new, so a Prism component's glass chip inside blurs them even when a glass chip encloses the `Backdrop`.
+ * - It hands its children the enclosure `none` (`SurfaceChipEnclosureContext`, ADR-0037 §1): the media it declares
+ *   are new, so a Prism component's glass chip inside blurs them even when another chip encloses the `Backdrop`.
  * - `none` is not a kind here: a reset inside a vivid or glass Surface would hand its children the wrong family.
  *
  * With `Surface`, it is one of the two public publishers of a surface context (ADR-0022 rule 1, ADR-0036). Like
  * `Theme`, it is a context provider, which is ADR-0019 rule 8's exception for a component with no element of its own.
  */
 import { useContext, useEffect, useMemo, type ReactNode } from "react";
-import { InsideGlassChipContext, SurfaceContext, useSurfaceContext, type SurfaceContextValue } from "./context.ts";
+import { SurfaceChipEnclosureContext, SurfaceContext, useSurfaceContext, type SurfaceContextValue } from "./context.ts";
 import { isDevelopment } from "../env.ts";
 
 export interface BackdropProps {
@@ -42,7 +42,7 @@ const KINDS: ReadonlySet<string> = new Set(["image", "map", "vivid"]);
 export function Backdrop(props: BackdropProps): ReactNode {
   const { kind, children } = props;
   const parent = useSurfaceContext();
-  const insideGlassChip = useContext(InsideGlassChipContext);
+  const enclosure = useContext(SurfaceChipEnclosureContext);
   const valid = KINDS.has(kind);
 
   useEffect(() => {
@@ -57,10 +57,10 @@ export function Backdrop(props: BackdropProps): ReactNode {
     () => (valid ? { material: "page", backdrop: kind, depth: parent.depth } : parent),
     [valid, kind, parent],
   );
-  // An ignored kind declares nothing, so the enclosing-chip flag passes through with the parent's context.
+  // An ignored kind declares nothing, so the parent's enclosure passes through with the parent's context.
   return (
     <SurfaceContext.Provider value={published}>
-      <InsideGlassChipContext.Provider value={valid ? false : insideGlassChip}>{children}</InsideGlassChipContext.Provider>
+      <SurfaceChipEnclosureContext.Provider value={valid ? "none" : enclosure}>{children}</SurfaceChipEnclosureContext.Provider>
     </SurfaceContext.Provider>
   );
 }

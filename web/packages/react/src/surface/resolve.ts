@@ -161,6 +161,18 @@ export type SurfaceChipPublication = "ground" | "raised";
 export type SurfaceChipRendering = "glass" | "fallback" | "own" | "none";
 
 /**
+ * What encloses a point, up to the nearest `Backdrop` (ADR-0037 §1): what a chip reads, and what it hands
+ * its content as `encloses`.
+ *
+ * - `none`: no chip encloses it. The default, and what `Backdrop` hands its children.
+ * - `translucent`: chips enclose it, and none of them renders its own cell or its fallback.
+ * - `opaque`: at least one chip that encloses it renders its own cell or its fallback. A component's own cell
+ *   is paint, not media, whatever its alpha.
+ */
+export const surfaceChipEnclosures = ["none", "translucent", "opaque"] as const;
+export type SurfaceChipEnclosure = (typeof surfaceChipEnclosures)[number];
+
+/**
  * The context a chip reads as its ground and the one it publishes: `SurfaceContextValue` (context.ts),
  * field for field. It is spelled out here so that this file imports nothing from the React side of the
  * module — context.ts takes its types from here, not the other way round — and `test/surface-chip.test.tsx`
@@ -172,7 +184,7 @@ export interface SurfaceChipContext {
   readonly depth: number;
 }
 
-/** Everything a glass chip draws and publishes (ADR-0036 §3), with DSCore's `DSSurfaceChipResolution` fields. */
+/** Everything a glass chip draws and publishes (ADR-0036 §3, ADR-0037 §2), with DSCore's `DSSurfaceChipResolution` fields. */
 export interface SurfaceChipResolution {
   /** The context the component read, which the chip sits on. */
   readonly ground: SurfaceChipContext;
@@ -183,16 +195,17 @@ export interface SurfaceChipResolution {
   /** The scheme's chip recipe, `material.glass.chip`, when glass renders; null otherwise. */
   readonly glass: "chip" | null;
   /**
-   * Whether the recipe blurs and saturates the backdrop. False when glass does not render, and when it
-   * renders on the scheme's glass, on light glass or inside another glass chip, where a chip draws the
-   * recipe's fill and edge only (ADR-0036 §5).
+   * Whether the recipe blurs and saturates the backdrop. False when glass does not render, when it renders
+   * on the scheme's glass or on light glass (ADR-0036 §5), and when any other chip encloses it (ADR-0037
+   * §2): there a chip draws the recipe's fill and edge only.
    */
   readonly blursBackdrop: boolean;
   /** True when glass was asked for and replaced by the fallback. */
   readonly isGlassFallback: boolean;
   /**
-   * True when glass was asked for under the `content` gate on a ground with no media: reported whatever
-   * the other triggers, as a Surface's is, and logged in development.
+   * True when glass was asked for under the `content` gate with no media under the chip — a ground with no
+   * media, or an `opaque` enclosure: reported whatever the other triggers, as a Surface's is, and logged in
+   * development.
    */
   readonly hasInvalidBackdrop: boolean;
   /** Paint `color.bg.page` under the chip: exactly under the fallback (ADR-0030 rule 6). */
@@ -202,21 +215,30 @@ export interface SurfaceChipResolution {
    * for `raised`, and the ground otherwise. `depth` is always the ground's: a chip adds no depth.
    */
   readonly published: SurfaceChipContext;
+  /**
+   * The enclosure the chip hands its content (ADR-0037 §1, §2 step 3), which `SurfaceChipScope` provides:
+   * `opaque` when it renders its own cell or its fallback, or reads `opaque` itself; `translucent` when it
+   * renders the recipe or nothing.
+   */
+  readonly encloses: SurfaceChipEnclosure;
 }
 
-/** Where the chip's resolution comes from besides the ground: the enclosing chip, the gate and the publication. */
+/** Where the chip's resolution comes from besides the ground: its enclosure, the gate and the publication. */
 export interface SurfaceChipOptions {
-  /** Whether a glass chip encloses this one (`InsideGlassChipContext`). */
-  readonly insideGlassChip: boolean;
+  /** What encloses the chip, up to the nearest `Backdrop` (`SurfaceChipEnclosureContext`, ADR-0037 §1). */
+  readonly enclosure: SurfaceChipEnclosure;
   readonly gate: SurfaceChipGate;
   readonly publishes: SurfaceChipPublication;
 }
 
 /**
- * ADR-0036 §3 step 1: the media kind under a chip on `ground`. The page and the two glasses sit on the
- * backdrop they declare; vivid is media of its own; every other material is opaque paint.
+ * ADR-0036 §3 step 1, as ADR-0037 §2 amends it: the media kind under a chip on `ground` in `enclosure`.
+ * Inside a chip that renders its own cell or its fallback there is none, whatever the ground: that cell is
+ * paint. Otherwise the page and the two glasses sit on the backdrop they declare, vivid is media of its own,
+ * and every other material is opaque paint.
  */
-function chipMedia(ground: Pick<SurfaceChipContext, "material" | "backdrop">): BackdropKind {
+function chipMedia(ground: Pick<SurfaceChipContext, "material" | "backdrop">, enclosure: SurfaceChipEnclosure): BackdropKind {
+  if (enclosure === "opaque") return "none";
   switch (ground.material) {
     case "page":
     case "glass":
@@ -238,19 +260,19 @@ function chipMedia(ground: Pick<SurfaceChipContext, "material" | "backdrop">): B
  * DSCore's `DSSurface.resolveChip`, from the component's answer for its ground and nothing else: the
  * component hands over no recipe, colour, setting or fallback.
  *
- * 1. The media under the chip is the ground's backdrop on `page`, `glass` and `glassLight`, `vivid` on
- *    `vivid`, and none on every other material.
- * 2. Glass asked for under the `content` gate on a ground with no media is an invalid backdrop.
+ * 1. The media under the chip is none in an `opaque` enclosure (ADR-0037 §2). Otherwise it is the ground's
+ *    backdrop on `page`, `glass` and `glassLight`, `vivid` on `vivid`, and none on every other material.
+ * 2. Glass asked for under the `content` gate with no media under it is an invalid backdrop.
  * 3. Glass asked for falls back through `glassFallsBack`, the function `resolveSurface` uses: under Reduce
  *    Transparency, under Increase Contrast, or over an invalid backdrop.
  * 4. The recipe is `"chip"` when glass renders.
- * 5. It blurs the backdrop unless the ground is the scheme's glass or light glass, or a glass chip
- *    encloses this one.
+ * 5. It blurs the backdrop only in the enclosure `none`, and not on the scheme's glass or light glass: inside
+ *    any other chip, and on glass, it draws the recipe's fill and edge alone.
  * 6. `color.bg.page` is painted under the chip exactly under the fallback.
  * 7. The chip publishes `(raised, none)` under the fallback or when asked to, and the ground otherwise,
  *    with the ground's `depth`.
- *
- * Step 8, the enclosing-chip flag the chip hands its content, is `SurfaceChipScope`'s.
+ * 8. The chip hands its content `encloses`: `opaque` when it renders its own cell or its fallback, or reads
+ *    `opaque`; `translucent` otherwise. `SurfaceChipScope` provides it.
  */
 export function resolveSurfaceChip(
   requested: SurfaceChipFill,
@@ -258,9 +280,9 @@ export function resolveSurfaceChip(
   options: SurfaceChipOptions,
   context: Pick<TokenContext, "contrast" | "transparency">,
 ): SurfaceChipResolution {
-  const { insideGlassChip, gate, publishes } = options;
+  const { enclosure, gate, publishes } = options;
   const asksForGlass = requested === "glass";
-  const hasInvalidBackdrop = asksForGlass && gate === "content" && chipMedia(ground) === "none";
+  const hasInvalidBackdrop = asksForGlass && gate === "content" && chipMedia(ground, enclosure) === "none";
   const isGlassFallback = asksForGlass && glassFallsBack(context, hasInvalidBackdrop);
   const rendered: SurfaceChipRendering = asksForGlass ? (isGlassFallback ? "fallback" : "glass") : requested;
   const rendersGlass = rendered === "glass";
@@ -269,10 +291,11 @@ export function resolveSurfaceChip(
     requested,
     rendered,
     glass: rendersGlass ? "chip" : null,
-    blursBackdrop: rendersGlass && !isGlassMaterial(ground.material) && !insideGlassChip,
+    blursBackdrop: rendersGlass && enclosure === "none" && !isGlassMaterial(ground.material),
     isGlassFallback,
     hasInvalidBackdrop,
     paintsPage: isGlassFallback,
     published: isGlassFallback || publishes === "raised" ? { material: "raised", backdrop: "none", depth: ground.depth } : ground,
+    encloses: enclosure === "opaque" || rendered === "own" || rendered === "fallback" ? "opaque" : "translucent",
   };
 }
