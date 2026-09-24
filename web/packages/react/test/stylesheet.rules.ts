@@ -277,9 +277,13 @@ function sourcePath(file: string): string {
 
 /**
  * ADR-0036 §10, the first of the two declaration-level checks: only `surface/Surface.css` declares
- * `backdrop-filter` or `-webkit-backdrop-filter`, and there only on `BACKDROP_FILTER_SELECTORS`, every
- * selector of a list included. A value that names the property (a `transition`), an at-rule's condition
- * and a comment declare nothing. `file` is the stylesheet's path relative to `src/`.
+ * `backdrop-filter` or `-webkit-backdrop-filter`, in any case, and there only on
+ * `BACKDROP_FILTER_SELECTORS`, every selector of a list included; a declaration with no selector fails
+ * as `(no selector)`. The path must be that one exactly, not a `Surface.css` in another directory. A
+ * value that names the property (a `transition`), a custom property whose name ends in it, an at-rule's
+ * condition and a comment declare nothing. An `@apply` of a Tailwind backdrop utility declares the
+ * property only after the compile, so this check does not see it; `lint:literals` reports it in the
+ * source. `file` is the stylesheet's path relative to `src/`.
  */
 export function backdropFilterProblems(css: string, file: string): Problem[] {
   const path = sourcePath(file);
@@ -308,8 +312,11 @@ export function backdropFilterProblems(css: string, file: string): Problem[] {
 
 /**
  * ADR-0036 §10, the second check: no stylesheet outside `surface/` names a glass recipe variable, as a
- * declaration's property or in its value. Comments are not read, and the scrim passes. `file` is the
- * stylesheet's path relative to `src/`.
+ * declaration's property or in its value. Comments are not read, and the scrim passes, but not a name
+ * longer than the scrim's. `surface/` is the module's own directory at the root of `src/`, not a
+ * `surfaces/` beside it or a `surface/` further down. An at-rule's prelude is not read either
+ * (`@container style(--ds-material-glass-chip: …)`); `lint:literals` reports a recipe variable there.
+ * `file` is the stylesheet's path relative to `src/`.
  */
 export function glassRecipeProblems(css: string, file: string): Problem[] {
   const path = sourcePath(file);

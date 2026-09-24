@@ -1,12 +1,15 @@
 /*
-  Fails ADR-0036 §10's first check. Anywhere but surface/Surface.css both declarations fail: only that
-  stylesheet declares backdrop-filter. As surface/Surface.css the second still fails once, for the
-  selector in its list that is none of the four glass selectors. The transition that names the
-  property, the @supports condition and this comment declare nothing.
+  Fails ADR-0036 §10's first check. Anywhere but surface/Surface.css all four declarations fail: only that
+  stylesheet declares backdrop-filter, and a property name in capitals declares it too. As
+  surface/Surface.css two still fail: the selector in the second rule's list that is none of the four glass
+  selectors, and the declaration with no selector at all, which a browser drops. The transition that names
+  the property, a custom property whose name ends in it, the @supports condition and this comment declare
+  nothing.
 */
 @layer ds.components {
   .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
     backdrop-filter: none;
+    Backdrop-Filter: none;
   }
 
   .ds-surface[data-ds-material="glass"],
@@ -15,7 +18,10 @@
   }
 
   @supports (backdrop-filter: none) {
+    backdrop-filter: none;
+
     .ds-fixture {
+      --ds--fixture-backdrop-filter: none;
       transition: backdrop-filter var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing);
     }
   }

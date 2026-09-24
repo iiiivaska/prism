@@ -200,12 +200,13 @@ describe("scanSource", () => {
     [".html-root { font-size: var(--x); }", ".css"],
     ["font-weight: var(--ds-type-body-md-font-weight);", ".css"],
     ["const boldness = item.fontWeight;", ".ts"],
-    // material: a forced context, an assignment, another enum's case and another axis compare no
-    // transparency, and the public dsBackdrop hands pixels down without naming them
+    // material: a forced context, an assignment, another enum's case, another axis and a longer name
+    // compare no transparency, and the public dsBackdrop hands pixels down without naming them
     ["let forced = DSTokenContext(colorScheme: .light, transparency: .reduced)", ".swift"],
     ["self.transparency = transparency", ".swift"],
     ["if axis == .transparency { return }", ".swift"],
     ["let hairline = context.contrast == .increased", ".swift"],
+    ["let high = 1 == style.transparencyLevel", ".swift"],
     ["chip.dsBackdrop(.map) { DSExampleMap() }", ".swift"],
   ])("ignores %j", (source, extension) => {
     expect(scanSource(source, extension)).toEqual([]);
@@ -298,12 +299,15 @@ describe("scanSource", () => {
       'if (axis === "transparency") return;',
       'type Axes = Pick<TokenContext, "contrast" | "transparency">;',
       "const pick = (transparency: string) => transparency;",
+      "const high = 1 === settings.transparencyLevel;",
       'const scrim = "linear-gradient(transparent, var(--ds-material-glass-scrim))";',
       'const own = { "--ds--surface-chip-own": "var(--ds-color-bg-surface-raised)", "--ds--chip-backdrop-filter": "none" };',
     ]) {
       expect(rules(source), source).toEqual([]);
     }
-    // The runtime kind owns the dataset key and the media feature, and material does not report them again.
+    // The runtime kind owns the attribute, the dataset key and the media feature, and material does not
+    // report them again.
+    expect(rules('const reduced = attributes["data-ds-transparency"] === "reduce";')).toEqual(["runtime/attribute"]);
     expect(rules('const reduced = element.dataset.dsTransparency === "reduce";')).toEqual(["runtime/dataset"]);
     expect(rules('const query = matchMedia("(prefers-reduced-transparency: reduce)");')).toEqual(["runtime/media-preference"]);
   });

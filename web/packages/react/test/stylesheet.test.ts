@@ -114,24 +114,34 @@ describe("each check fails on its fixture", () => {
     expect(checks).toEqual(["layer-name", "global-name", "global-name", "global-name"]);
   });
 
-  it("backdrop-filter declared outside surface/Surface.css, or there on a fifth selector (ADR-0036 §10)", () => {
+  it("backdrop-filter declared outside surface/Surface.css, or there on a fifth selector or none (ADR-0036 §10)", () => {
     const css = source("backdrop-filter.css");
-    // Outside the one stylesheet, the module's other files included, every declaration fails and nothing else does.
-    for (const file of ["chip/Chip.css", "surface/SurfaceChip.css"]) {
-      expect(backdropFilterProblems(css, file).map((problem) => problem.check), file).toEqual(["backdrop-filter", "backdrop-filter"]);
+    // Outside the one stylesheet every declaration fails and nothing else does: the module's other files, a
+    // Surface.css in another directory, the path in another directory or in another case.
+    for (const file of ["chip/Chip.css", "surface/SurfaceChip.css", "chip/Surface.css", "chip/surface/Surface.css", "surface/surface.css"]) {
+      expect(backdropFilterProblems(css, file).map((problem) => problem.check), file).toEqual(["backdrop-filter", "backdrop-filter", "backdrop-filter", "backdrop-filter"]);
     }
-    // In it, the allowed selectors pass, and the one other selector in a list fails.
+    // In it, the allowed selectors pass; the one other selector in a list and the declaration with none fail.
     const inSurface = backdropFilterProblems(css, "surface/Surface.css");
-    expect(inSurface.map((problem) => problem.check)).toEqual(["backdrop-filter-selector"]);
+    expect(inSurface.map((problem) => problem.check)).toEqual(["backdrop-filter-selector", "backdrop-filter-selector"]);
     expect(inSurface[0]?.detail).toMatch(/^\.ds-fixture\[data-ds-material="glass"\]: -webkit-backdrop-filter on none of the four glass selectors/);
+    expect(inSurface[1]?.detail).toMatch(/^\(no selector\): backdrop-filter on none of the four glass selectors/);
+    // A path with the platform's own separators is the same stylesheet.
+    expect(backdropFilterProblems(css, "surface\\Surface.css")).toEqual(inSurface);
   });
 
   it("a glass recipe variable named outside surface/, and never the scrim (ADR-0036 §10)", () => {
     const css = source("glass-recipe-variable.css");
-    const problems = glassRecipeProblems(css, "chip/Chip.css");
-    expect(problems.map((problem) => problem.check)).toEqual(["glass-recipe-variable", "glass-recipe-variable", "glass-recipe-variable"]);
-    expect(problems.map((problem) => /names (.*) outside/.exec(problem.detail)?.[1])).toEqual(["--ds-material-glass-chip", "--ds-material-glass-chip-blur", "--ds-material-glass-chip"]);
-    expect(glassRecipeProblems(css, "surface/Surface.css")).toEqual([]);
+    const names = ["--ds-material-glass-chip", "--ds-material-glass-chip-blur", "--ds-material-glass-chip", "--ds-material-glass-scrim-strong"];
+    // Outside the module, a directory whose name only starts like it and one that holds a surface/ of its own included.
+    for (const file of ["chip/Chip.css", "surfaces/Surfaces.css", "chip/surface/Chip.css"]) {
+      const problems = glassRecipeProblems(css, file);
+      expect(problems.map((problem) => problem.check), file).toEqual(names.map(() => "glass-recipe-variable"));
+      expect(problems.map((problem) => /names (.*) outside/.exec(problem.detail)?.[1]), file).toEqual(names);
+    }
+    for (const file of ["surface/Surface.css", "surface\\Surface.css"]) {
+      expect(glassRecipeProblems(css, file), file).toEqual([]);
+    }
   });
 
   it(":dir(), a bare rtl ancestor, a short nearest-dir chain and a bare rtl ancestor in front of the whole chain, before compiling and after (SD-7)", async () => {

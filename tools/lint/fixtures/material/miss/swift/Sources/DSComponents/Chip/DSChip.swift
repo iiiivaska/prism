@@ -28,6 +28,13 @@ enum DSChipAppearance {
 
     /// A forced context names transparency as an argument, which compares nothing.
     static let reduced = DSTokenContext(colorScheme: .light, transparency: .reduced) // miss: material/swift-transparency-read
+
+    /// A parameter named `transparency` that is handed on, and a key path to it, compare nothing either.
+    static func forced(_ scheme: DSColorScheme, transparency: DSTransparency) -> DSTokenContext { // miss: material/swift-transparency-read
+        DSTokenContext(colorScheme: scheme, transparency: transparency) // miss: material/swift-transparency-read
+    }
+
+    static let transparencyPath = \DSTokenContext.transparency // miss: material/swift-transparency-read
 }
 
 #Preview {

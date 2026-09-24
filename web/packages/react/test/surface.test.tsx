@@ -8,9 +8,11 @@
  *   `transparency="reduce"`). The client half, with a real `matchMedia`, runs in the gallery's browser
  *   suite.
  * - The stylesheet binds what Surface.yaml binds, cell by cell.
- * - The glass chip block of the same stylesheet (ADR-0036 §7) reads the recipe the chip specs bind, draws
- *   no backdrop filter when flat, and paints the fallback as `color.bg.page` under
- *   `color.bg.surface.raised` with no top edge. `test/surface-chip.test.tsx` has the chip's resolution.
+ * - The glass chip block of the same stylesheet holds every declaration ADR-0036 §7 names: it sits in
+ *   `@layer ds.components`, reads the recipe the chip specs bind, draws no backdrop filter when flat, paints
+ *   the fallback as `color.bg.page` under `color.bg.surface.raised` with no top edge, registers its two
+ *   fills as `<color>` and crossfades them on Surface's timings, and draws Surface's masked edge over its
+ *   positioned root. `test/surface-chip.test.tsx` has the chip's resolution.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -21,7 +23,8 @@ import { Theme, type TokenContext } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
 import { Surface, useSurfaceContext } from "../src/index.ts";
 import { backdropKinds, resolveSurface, surfaceElevation, surfaceElevations, surfaceMaterials, type BackdropKind, type SurfaceMaterial } from "../src/surface/resolve.ts";
-import { flattenRules, parseCss } from "./css.ts";
+import { declarationsOf } from "./cascade.ts";
+import { allAtRules, flattenRules, parseCss, splitTopLevel } from "./css.ts";
 import { cell, cssVariable, loadSpec, propValues } from "./spec.ts";
 
 const spec = loadSpec("Surface");
@@ -256,7 +259,8 @@ describe("Surface.css binds what Surface.yaml binds", () => {
 });
 
 describe("Surface.css draws the glass chip (ADR-0036 §7)", () => {
-  const rules = flattenRules(parseCss(readFileSync(join(packageRoot, "src", "surface", "Surface.css"), "utf8")));
+  const sheet = parseCss(readFileSync(join(packageRoot, "src", "surface", "Surface.css"), "utf8"));
+  const rules = flattenRules(sheet);
   const chipRules = rules.filter((rule) => rule.selectors.some((selector) => selector.includes(".ds-surface-chip")));
   // The two specs wave 1b implements through the chip shape; seven more bind the same recipe.
   const chipSpecs = [loadSpec("Avatar"), loadSpec("Chip")];
@@ -266,10 +270,28 @@ describe("Surface.css draws the glass chip (ADR-0036 §7)", () => {
     return values.at(-1)?.value;
   }
 
+  /** The descriptors of the `@property` rule that registers `name`; undefined when no rule does. */
+  function registration(name: string): Record<string, string> | undefined {
+    const rule = allAtRules(sheet).find((at) => at.name === "property" && at.params === name);
+    return rule === undefined ? undefined : Object.fromEntries((rule.children ?? []).flatMap((node) => (node.kind === "decl" ? [[node.property, node.value] as const] : [])));
+  }
+
   const chip = (rendering: string): string => `.ds-surface-chip[data-ds-surface-chip="${rendering}"]`;
   const flat = '.ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat]';
   const edge = '.ds-surface-chip > [data-ds-slot="surface-chip-edge"]';
   const bound = (path: string | undefined): string | undefined => (path === undefined ? undefined : `var(${cssVariable(path)})`);
+  const squeeze = (value: string | undefined): string => (value ?? "").replaceAll(/\s+/gu, " ").trim();
+
+  it("sits in @layer ds.components, as Surface's own rules do", () => {
+    // Unlayered, the chip's rules would win over every layered rule, a host's own and an app's alike,
+    // whatever their specificity and order.
+    expect(chipRules.flatMap((rule) => rule.selectors)).toContain(".ds-surface-chip");
+    const unlayered = chipRules.filter((rule) => {
+      const [outermost] = rule.atRules;
+      return outermost?.name !== "layer" || outermost.params !== "ds.components";
+    });
+    expect(unlayered.flatMap((rule) => rule.selectors)).toEqual([]);
+  });
 
   it("reads material.glass.chip's fill, blur, saturate, edge.start and edge.end, the cells the chip specs bind on media", () => {
     for (const spec of chipSpecs) {
@@ -340,13 +362,49 @@ describe("Surface.css draws the glass chip (ADR-0036 §7)", () => {
     expect(declared(`.ds-surface-chip[data-ds-elevation="${value}"]`, "--ds--surface-chip-shadow")).toBe(declared(`.ds-surface[data-ds-elevation="${value}"]`, "--ds--surface-shadow"));
   });
 
-  it("crossfades its two fills and transitions its blur on Surface's timings (ADR-0023 §8.4)", () => {
+  it("draws flat's shadow until the host hands it an elevation, as Surface does", () => {
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-shadow")).toBe(bound(cell(spec.tokens["root"]?.["shadow"], "flat")));
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-shadow")).toBe(declared(".ds-surface", "--ds--surface-shadow"));
+  });
+
+  it("registers its two fills as <color>, as Surface registers its own, so that they crossfade", () => {
+    // An unregistered custom property does not interpolate: the root's transition would name two properties
+    // that cannot animate, and a change of rendering would snap from glass to the fallback, not crossfade.
+    for (const [chipFill, surfaceFill] of [
+      ["--ds--surface-chip-fill", "--ds--surface-fill"],
+      ["--ds--surface-chip-under", "--ds--surface-under"],
+    ] as const) {
+      expect(registration(chipFill), chipFill).toEqual({ syntax: '"<color>"', inherits: "false", "initial-value": "transparent" });
+      expect(registration(chipFill), chipFill).toEqual(registration(surfaceFill));
+    }
+  });
+
+  it("crossfades its two fills and transitions its shadow and blur on Surface's timings (ADR-0023 §8.4)", () => {
     expect(declared(".ds-surface-chip", "--ds--surface-chip-crossfade-duration")).toBe(declared(".ds-surface", "--ds--surface-crossfade-duration"));
     expect(declared(".ds-surface-chip", "--ds--surface-chip-geometry-duration")).toBe(declared(".ds-surface", "--ds--surface-geometry-duration"));
-    const transition = declared(".ds-surface-chip", "transition") ?? "";
-    expect(transition).toMatch(/--ds--surface-chip-fill var\(--ds--surface-chip-crossfade-duration\) var\(--ds-motion-spring-smooth-easing\)/);
-    expect(transition).toMatch(/--ds--surface-chip-under var\(--ds--surface-chip-crossfade-duration\) var\(--ds-motion-spring-smooth-easing\)/);
-    expect(transition).toMatch(/backdrop-filter var\(--ds--surface-chip-geometry-duration\) var\(--ds-motion-spring-smooth-easing\)/);
+    // The fills crossfade; the shadow and the blur take the geometry timing, as a Surface's do where no Card
+    // retimes its shadow.
+    expect(splitTopLevel(squeeze(declared(".ds-surface-chip", "transition")))).toEqual([
+      "--ds--surface-chip-fill var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing)",
+      "--ds--surface-chip-under var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing)",
+      "box-shadow var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing)",
+      "backdrop-filter var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing)",
+    ]);
+  });
+
+  it("draws Surface's masked edge over the whole of its positioned root, with the recipe's two alphas for Surface's", () => {
+    // The edge is absolutely positioned at inset 0, so the root is its containing block: without
+    // `position: relative` the ring would trace the host's nearest positioned ancestor instead of the chip.
+    expect(declared(".ds-surface-chip", "position")).toBe("relative");
+    // Surface's edge part, declaration for declaration: over the whole shape, behind the content and inert,
+    // the border.hairline ring the two masks cut out of the 135° ramp.
+    const surfaceEdge = declarationsOf(rules, '.ds-surface > [data-ds-slot="surface-edge"]');
+    const chipEdge = declarationsOf(rules, edge);
+    const squeezed = (declarations: Record<string, string>): Record<string, string> => Object.fromEntries(Object.entries(declarations).map(([property, value]) => [property, squeeze(value)]));
+    const recipe = (value: string): string =>
+      value.replaceAll("var(--ds--surface-edge-start)", bound("material.glass.chip.edge.start") ?? "").replaceAll("var(--ds--surface-edge-end)", bound("material.glass.chip.edge.end") ?? "");
+    expect(Object.keys(chipEdge).sort()).toEqual(["background-image", "border-radius", "inset", "mask-clip", "mask-composite", "mask-image", "mask-origin", "padding", "pointer-events", "position", "z-index"]);
+    expect(squeezed(chipEdge)).toEqual(Object.fromEntries(Object.entries(squeezed(surfaceEdge)).map(([property, value]) => [property, recipe(value)])));
   });
 
   it("puts the edge behind the host's content and hides it under forced colours", () => {

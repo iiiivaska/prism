@@ -172,18 +172,44 @@ struct DSSurfaceChipResolutionTests {
         }
     }
 
-    /// The convenience a component calls takes the context from the token set it already holds, as Surface's does.
+    /// The convenience a component calls takes the context from the token set it already holds, as Surface's does, and
+    /// hands every other argument through as given: its defaults are the other overload's, and so is its answer for each
+    /// value of the enclosing-chip flag, the gate, the publication and the watch. `dsSurfaceChip` calls this overload, so
+    /// a flag dropped here would blur a glass chip inside another (§5).
     @Test func theTokenSetOverloadResolvesTheSame() {
         for context in [DSTokenContext(), DSTokenContext(contrast: .increased), DSTokenContext(transparency: .reduced)] {
             let tokens = DSTokenSet(context)
-            for ground in [DSSurfaceContext(material: .page, backdrop: .map), DSSurfaceContext(material: .glass, backdrop: .image)] {
+            let grounds = [
+                DSSurfaceContext(material: .page, backdrop: .map), DSSurfaceContext(material: .glass, backdrop: .image), .root,
+            ]
+            for ground in grounds {
                 #expect(
                     DSSurface.resolveChip(.glass, on: ground, tokens: tokens, isWatch: false)
                         == DSSurface.resolveChip(
                             .glass, on: ground, insideGlassChip: false, gate: .content, publishes: .ground,
                             context: context, tokens: tokens.material, isWatch: false
-                        )
+                        ),
+                    "\(ground): the defaults"
                 )
+                for enclosed in [false, true] {
+                    for gate in DSSurfaceChipGate.allCases {
+                        for publishes in DSSurfaceChipPublication.allCases {
+                            for isWatch in [false, true] {
+                                #expect(
+                                    DSSurface.resolveChip(
+                                        .glass, on: ground, insideGlassChip: enclosed, gate: gate, publishes: publishes,
+                                        tokens: tokens, isWatch: isWatch
+                                    )
+                                        == DSSurface.resolveChip(
+                                            .glass, on: ground, insideGlassChip: enclosed, gate: gate, publishes: publishes,
+                                            context: context, tokens: tokens.material, isWatch: isWatch
+                                        ),
+                                    "\(ground), enclosed \(enclosed), gate \(gate), publishes \(publishes), watch \(isWatch)"
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }

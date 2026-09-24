@@ -1,7 +1,7 @@
 // spec:validate (roadmap P2-1): the repository's specs validate, every fixture fails with exactly the
 // diagnostic it declares, and the grammar helpers behave on their own.
 import { beforeAll, describe, expect, test } from 'vitest';
-import { fsReader, REPO_ROOT } from '../tokens/api.ts';
+import { fsReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import { compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
@@ -210,12 +210,12 @@ describe('fixtures', () => {
 describe('the glass chip rules (ADR-0036 §10)', () => {
   // Each fixture breaks its rule in every way the rule can be broken, one way per part, so every branch of the
   // check is pinned here by its line and message, not only by the code the fixture block compares.
-  const run = async (name: string): Promise<string[]> => {
+  const diagnose = async (name: string): Promise<readonly Diagnostic[]> => {
     const c = specCases().find((x) => x.name === name);
     if (c === undefined) throw new Error(`no fixture ${name}`);
-    const result = await runSpecValidate({ reader: caseReader(c), collected: await repoDictionary() });
-    return result.diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
+    return (await runSpecValidate({ reader: caseReader(c), collected: await repoDictionary() })).diagnostics;
   };
+  const run = async (name: string): Promise<string[]> => (await diagnose(name)).map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
 
   test('glass-chip/fallback: a cell missing, keyed apart from the background, keyed by the ground or of the wrong token, and prose without both settings', async () => {
     expect(await run('glass-chip-fallback')).toEqual([
@@ -227,6 +227,34 @@ describe('the glass chip rules (ADR-0036 §10)', () => {
       "70 glass-chip/fallback `tokens.scrollEdge.fallbackBackground.soft` binds `color.bg.page`, and the chip's `fallbackBackground` is color.bg.surface.raised",
       "71 glass-chip/fallback `tokens.scrollEdge.fallbackBackground.hard` binds `color.bg.page`, and the chip's `fallbackBackground` is color.bg.surface.raised",
       '92 glass-chip/fallback `tokens.root` binds material.glass.chip as its background, and `accessibility.reduceTransparency` does not name Increase Contrast',
+    ]);
+  }, 60_000);
+
+  test('glass-chip/fallback in state blocks: the chip bound only in a state, and fallback cells a state rebinds', async () => {
+    const diagnostics = await diagnose('glass-chip-fallback-states');
+    expect(diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`)).toEqual([
+      // `field` binds the chip only in `readonly`, so a state block alone holds the part to the rule.
+      '47 glass-chip/fallback `tokens.field.readonly.background` binds material.glass.chip, and the part states no `fallbackUnderlay`',
+      // `pill` and `track` bind the right cells on the part, and a state rebinds one with the wrong token (in a
+      // matrix, on `track`), by the ground, or keyed apart from the background. `pill.selected` restates both cells as
+      // the part binds them, and is not reported.
+      "61 glass-chip/fallback `tokens.pill.pressed.fallbackBackground` binds `color.bg.fill.neutral.subtle`, and the chip's `fallbackBackground` is color.bg.surface.raised",
+      '67 glass-chip/fallback `tokens.pill.readonly.fallbackUnderlay` is keyed by the ground (`page`), and the chip falls back the same way on every ground',
+      "83 glass-chip/fallback `tokens.track.pressed.fallbackUnderlay.floating` binds `color.bg.surface`, and the chip's `fallbackUnderlay` is color.bg.page",
+      '85 glass-chip/fallback `tokens.track.selected.fallbackBackground` answers whatever the props, and `background` binds the chip only under `floating`',
+      // `strip` binds the chip under `floating` on the part and under `inline` in `readonly`, so its fallback is keyed
+      // by both: `fallbackBackground` is, `fallbackUnderlay` is not.
+      '95 glass-chip/fallback `tokens.strip.fallbackUnderlay` is keyed under `floating`, and `background` binds the chip only under `floating`, `inline`',
+      // The prose rule names the first part held, and that is `field`, whose chip only a state binds.
+      '121 glass-chip/fallback `tokens.field` binds material.glass.chip as its background, and `accessibility.reduceTransparency` does not name Reduce Transparency',
+    ]);
+    // A state that binds no fallback keeps the part's, so the fix for a state's cell is to delete it, and only a
+    // state's cell is told so.
+    expect(diagnostics.flatMap((d) => (d.hint?.startsWith('delete ') === true ? [`${d.line ?? 0} ${d.hint.split(':')[0] ?? ''}`] : []))).toEqual([
+      '61 delete `pressed.fallbackBackground`',
+      '67 delete `readonly.fallbackUnderlay`',
+      '83 delete `pressed.fallbackUnderlay`',
+      '85 delete `selected.fallbackBackground`',
     ]);
   }, 60_000);
 

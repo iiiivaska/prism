@@ -2,9 +2,9 @@
  * The glass chip shape of the Surface module (ADR-0036 §2 to §7), internal to the package.
  *
  * - ADR-0036 rule 3: the whole resolution table — what the component asks for × the ground's material ×
- *   its backdrop kind × gate × publication × enclosed × contrast × transparency, 3,456 rows — against an
- *   independent statement of §3. It is DSCore's `DSSurfaceChipResolutionTests` without the watch, which
- *   the web never runs on.
+ *   its backdrop kind × gate × publication × enclosed × contrast × transparency, 3,456 rows, over grounds
+ *   whose depth varies down the table — against an independent statement of §3. It is DSCore's
+ *   `DSSurfaceChipResolutionTests` without the watch, which the web never runs on.
  * - The chip and Surface fall back together, for every contrast, transparency and kind, on every ground:
  *   one function evaluates the triggers for both (`glassFallsBack`).
  * - A server-rendered probe host, a component that draws its root through the chip shape as Avatar and
@@ -40,9 +40,6 @@ const publications: readonly SurfaceChipPublication[] = ["ground", "raised"];
 const contrasts: readonly TokenContext["contrast"][] = ["standard", "more"];
 const transparencies: readonly TokenContext["transparency"][] = ["standard", "reduce"];
 
-/** The ground's depth in the table: a chip adds none, so `published.depth` must stay this. */
-const DEPTH = 2;
-
 interface Row {
   readonly requested: SurfaceChipFill;
   readonly material: SurfaceMaterial;
@@ -52,9 +49,15 @@ interface Row {
   readonly enclosed: boolean;
   readonly contrast: TokenContext["contrast"];
   readonly transparency: TokenContext["transparency"];
+  /**
+   * The ground's depth: 0, 1 and 2 in turn down the table, not an axis. A chip adds none, so
+   * `published.depth` must stay this whichever context the chip publishes; a resolver that wrote a depth
+   * of its own, a constant one included, fails every row whose ground has another.
+   */
+  readonly depth: number;
 }
 
-const rows: readonly Row[] = surfaceChipFills.flatMap((requested) =>
+const combinations: readonly Omit<Row, "depth">[] = surfaceChipFills.flatMap((requested) =>
   surfaceMaterials.flatMap((material) =>
     backdropKinds.flatMap((backdrop) =>
       gates.flatMap((gate) =>
@@ -69,6 +72,8 @@ const rows: readonly Row[] = surfaceChipFills.flatMap((requested) =>
     ),
   ),
 );
+
+const rows: readonly Row[] = combinations.map((combination, index) => ({ ...combination, depth: index % 3 }));
 
 /** ADR-0036 §3 step 1, written out: the page and the two glasses sit on their backdrop, vivid is media, the rest is paint. */
 function expectedMedia(material: SurfaceMaterial, backdrop: BackdropKind): BackdropKind {
@@ -100,14 +105,14 @@ function expected(row: Row): Expected {
     blursBackdrop: rendered === "glass" && !onGlass && !row.enclosed,
     published:
       isGlassFallback || row.publishes === "raised"
-        ? { material: "raised", backdrop: "none", depth: DEPTH }
-        : { material: row.material, backdrop: row.backdrop, depth: DEPTH },
+        ? { material: "raised", backdrop: "none", depth: row.depth }
+        : { material: row.material, backdrop: row.backdrop, depth: row.depth },
     contentEnclosed: rendered === "glass" || row.enclosed,
   };
 }
 
-function ground(row: Pick<Row, "material" | "backdrop">): SurfaceContextValue {
-  return { material: row.material, backdrop: row.backdrop, depth: DEPTH };
+function ground(row: Pick<Row, "material" | "backdrop" | "depth">): SurfaceContextValue {
+  return { material: row.material, backdrop: row.backdrop, depth: row.depth };
 }
 
 describe("the chip's resolution table (ADR-0036 rule 3)", () => {
@@ -118,7 +123,13 @@ describe("the chip's resolution table (ADR-0036 rule 3)", () => {
 
   it("has 3,456 rows: DSCore's 6,912 without the watch", () => {
     expect(rows.length).toBe(3456);
-    expect(new Set(rows.map((row) => JSON.stringify(row))).size).toBe(3456);
+    expect(new Set(combinations.map((combination) => JSON.stringify(combination))).size).toBe(3456);
+    // At every depth, some rows publish (raised, none) and some the ground.
+    for (const depth of [0, 1, 2]) {
+      const publishesRaised = rows.filter((row) => row.depth === depth).map((row) => expected(row).isGlassFallback || row.publishes === "raised");
+      expect(publishesRaised, `depth ${String(depth)}`).toContain(true);
+      expect(publishesRaised, `depth ${String(depth)}`).toContain(false);
+    }
   });
 
   it.each(rows)(
@@ -220,7 +231,7 @@ describe("a host drawn through the chip shape, rendered on the server (ADR-0036 
 
   it.each(groups)("asks for $requested on $material over $backdrop, through <Theme contrast transparency>, in every gate, publication and enclosure", ({ requested, material, backdrop }) => {
     for (const row of rows.filter((candidate) => candidate.requested === requested && candidate.material === material && candidate.backdrop === backdrop)) {
-      const label = `gate ${row.gate}, publishes ${row.publishes}, enclosed ${String(row.enclosed)}, ${row.contrast}, ${row.transparency}`;
+      const label = `depth ${String(row.depth)}, gate ${row.gate}, publishes ${row.publishes}, enclosed ${String(row.enclosed)}, ${row.contrast}, ${row.transparency}`;
       const html = renderToStaticMarkup(
         <Theme contrast={row.contrast} transparency={row.transparency}>
           <SurfaceContext.Provider value={ground(row)}>
@@ -245,7 +256,7 @@ describe("a host drawn through the chip shape, rendered on the server (ADR-0036 
       expect(parts(html), label).toEqual(want.rendered === "glass" ? ["surface-chip-edge"] : []);
       if (want.rendered === "glass") expect(html, label).toMatch(/^<span[^>]*><span data-ds-slot="surface-chip-edge" aria-hidden="true"><\/span>/);
       // The context a child reads, with the ground's depth, and whether a glass chip encloses it.
-      expect(probe(html), label).toBe(`${want.published.material} ${want.published.backdrop} ${DEPTH} ${want.contentEnclosed ? "enclosed" : "open"}`);
+      expect(probe(html), label).toBe(`${want.published.material} ${want.published.backdrop} ${String(row.depth)} ${want.contentEnclosed ? "enclosed" : "open"}`);
     }
   });
 

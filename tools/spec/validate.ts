@@ -33,11 +33,12 @@
 //   example/vivid-icon           a vivid example that sets an icon (ADR-0022 rule 8)
 //   example/tinted-scheme        a `tinted` example that does not declare light only
 //   example/vivid-grid           a 2×2 whose diagonals are not one slot pair
-//   glass-chip/fallback          a part whose `background` binds material.glass.chip does not state the chip's
-//                                fallback: `fallbackBackground: color.bg.surface.raised` over `fallbackUnderlay:
-//                                color.bg.page`, keyed as `background` is where it binds the chip, and a
-//                                reduceTransparency that names both of its settings (ADR-0036 §9.1); TopBar's
-//                                scroll edge is the one named exception until P4-D10
+//   glass-chip/fallback          a part whose `background` binds material.glass.chip, on the part or in a state
+//                                block, does not state the chip's fallback: `fallbackBackground:
+//                                color.bg.surface.raised` over `fallbackUnderlay: color.bg.page` on the part, keyed
+//                                as `background` is where it binds the chip, the same cells in any state block
+//                                that rebinds them, and a reduceTransparency that names both of its settings
+//                                (ADR-0036 §9.1); TopBar's scroll edge is the one named exception until P4-D10
 //   glass-chip/nested-blur       material.glass.chip.blur or .saturate bound under a `glass` or `glassLight` key,
 //                                where a chip draws no backdrop filter (ADR-0036 §5)
 //
@@ -626,10 +627,12 @@ const CHIP_FALLBACK = GLASS_CHIP_FALLBACK.map((f) => f.token).join(' over ');
 /**
  * The glass chip's two corpus rules (ADR-0036 §10).
  *
- * `glass-chip/fallback` (§9.1, rule 10): a part whose `background` binds material.glass.chip, in any state, binds
- * `fallbackBackground` and `fallbackUnderlay` on the part to the chip's fallback, keyed as `background` is keyed
- * where it binds the chip and never by the ground, and the spec's `accessibility.reduceTransparency` names both
- * settings the chip falls back under. The parts GLASS_CHIP_FALLBACK_EXCEPTIONS names are not held to it.
+ * `glass-chip/fallback` (§9.1, rule 10): a part whose `background` binds material.glass.chip, on the part or in a
+ * state block, binds `fallbackBackground` and `fallbackUnderlay` on the part to the chip's fallback, keyed as
+ * `background` is keyed where it binds the chip and never by the ground, and the spec's
+ * `accessibility.reduceTransparency` names both settings the chip falls back under. A state block keeps the part's
+ * cells unless it binds its own, so a state block that rebinds either cell is held to the same token and keying:
+ * the chip has one fallback in every state. The parts GLASS_CHIP_FALLBACK_EXCEPTIONS names are not held to it.
  *
  * `glass-chip/nested-blur` (§5, rule 6): no cell of any part binds the chip's blur or saturation under a `glass`
  * or `glassLight` key.
@@ -667,38 +670,44 @@ function checkGlassChip(doc: SpecDoc, spec: Record<string, unknown>, name: strin
     const chip = propKeyings(backgrounds.flatMap((p) => matrixCells(p.value)).filter((c) => c.path === GLASS_CHIP));
     const bound = `\`${first.at.join('.')}\` binds ${GLASS_CHIP}`;
     for (const { property, token } of GLASS_CHIP_FALLBACK) {
-      const at: JsonPath = ['tokens', part, property];
       if (!(property in body)) {
         diagnostics.push(error('glass-chip/fallback', `${bound}, and the part states no \`${property}\``, {
           file: doc.path, line: doc.lineOf(first.at),
           hint: `bind \`${property}: ${token}\` on the part${unkeyed(chip) ? '' : `, keyed under ${under(chip)} as \`background\` is`}: under the fallback the chip is ${CHIP_FALLBACK} (ADR-0036 §9.1)`,
         }));
-        continue;
       }
-      const cells = matrixCells(body[property]);
-      // A cell that is not a binding at all is the schema's and `matrix/axis`'s to report.
-      if (cells.length === 0) continue;
-      const grounded = cells.find((c) => c.ground !== null);
-      if (grounded !== undefined) {
-        diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` is keyed by the ground (\`${grounded.ground ?? ''}\`), and the chip falls back the same way on every ground`, {
+      // The part's cell, and the cell of every state block that rebinds it, each held to the same token and keying.
+      for (const { at, value } of properties.filter((p) => p.property === property)) {
+        const cells = matrixCells(value);
+        // A cell that is not a binding at all is the schema's and `matrix/axis`'s to report.
+        if (cells.length === 0) continue;
+        // A state block that binds no fallback keeps the part's, so a state's own cell is at best a copy of it, and the
+        // fix for a wrong one is to delete it.
+        const inState = at.length > 3
+          ? `delete \`${at.slice(2).join('.')}\`: a state block that binds no \`${property}\` keeps the part's, and the chip has one fallback, ${CHIP_FALLBACK}, in every state (ADR-0022 §1.1, ADR-0036 §9.1)`
+          : null;
+        const grounded = cells.find((c) => c.ground !== null);
+        if (grounded !== undefined) {
+          diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` is keyed by the ground (\`${grounded.ground ?? ''}\`), and the chip falls back the same way on every ground`, {
+            file: doc.path, line: doc.lineOf(at),
+            hint: inState ?? 'bind one token path, or key it only by the props `background` is keyed by where it binds the chip (ADR-0036 §2.3, §9.1)',
+          }));
+        }
+        for (const cell of cells) {
+          if (cell.path === token) continue;
+          const where = [...at, ...cell.keys];
+          diagnostics.push(error('glass-chip/fallback', `\`${where.join('.')}\` binds \`${cell.path}\`, and the chip's \`${property}\` is ${token}`, {
+            file: doc.path, line: doc.lineOf(where),
+            hint: inState ?? `bind ${token}: the chip has one fallback, ${CHIP_FALLBACK} (ADR-0022 §1.1, ADR-0036 §2.3); a part that needs another is an amendment to ADR-0036, as roadmap P4-D10 records for TopBar`,
+          }));
+        }
+        const fallback = propKeyings(cells);
+        if (fallback.size === chip.size && [...fallback].every((k) => chip.has(k))) continue;
+        diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` ${unkeyed(fallback) ? 'answers whatever the props' : `is keyed under ${under(fallback)}`}, and \`background\` binds the chip ${unkeyed(chip) ? 'whatever the props' : `only under ${under(chip)}`}`, {
           file: doc.path, line: doc.lineOf(at),
-          hint: 'bind one token path, or key it only by the props `background` is keyed by where it binds the chip (ADR-0036 §2.3, §9.1)',
+          hint: inState ?? `key \`${property}\` the way \`background\` is keyed where it binds the chip, as Toolbar keys its fallback under \`floating\` (ADR-0036 §9.1)`,
         }));
       }
-      for (const cell of cells) {
-        if (cell.path === token) continue;
-        const where = [...at, ...cell.keys];
-        diagnostics.push(error('glass-chip/fallback', `\`${where.join('.')}\` binds \`${cell.path}\`, and the chip's \`${property}\` is ${token}`, {
-          file: doc.path, line: doc.lineOf(where),
-          hint: `bind ${token}: the chip has one fallback, ${CHIP_FALLBACK} (ADR-0022 §1.1, ADR-0036 §2.3); a part that needs another is an amendment to ADR-0036, as roadmap P4-D10 records for TopBar`,
-        }));
-      }
-      const fallback = propKeyings(cells);
-      if (fallback.size === chip.size && [...fallback].every((k) => chip.has(k))) continue;
-      diagnostics.push(error('glass-chip/fallback', `\`${at.join('.')}\` ${unkeyed(fallback) ? 'answers whatever the props' : `is keyed under ${under(fallback)}`}, and \`background\` binds the chip ${unkeyed(chip) ? 'whatever the props' : `only under ${under(chip)}`}`, {
-        file: doc.path, line: doc.lineOf(at),
-        hint: `key \`${property}\` the way \`background\` is keyed where it binds the chip, as Toolbar keys its fallback under \`floating\` (ADR-0036 §9.1)`,
-      }));
     }
   }
 

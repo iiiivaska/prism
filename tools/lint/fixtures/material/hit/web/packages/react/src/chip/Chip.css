@@ -1,12 +1,14 @@
 /* One line per web pattern of ADR-0036 §10 in a component's stylesheet, outside the Surface module;
    `expect:` names the rule the line must trip. This chip blurs, tints and falls back on its own, where
-   the chip shape's block in Surface.css paints its root. */
+   the chip shape's block in Surface.css paints its root. An `@apply` of a Tailwind backdrop utility
+   declares the filter after the compile. */
 @layer ds.components {
   .ds-chip {
     --ds--chip-fill: var(--ds-material-glass-chip); /* expect: material/web-glass-recipe */
     backdrop-filter: blur(var(--ds-material-glass-chip-blur)); /* expect: material/web-backdrop-filter, material/web-glass-recipe */
     -webkit-backdrop-filter: none; /* expect: material/web-backdrop-filter */
     transition: backdrop-filter var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing); /* expect: material/web-backdrop-filter */
+    @apply backdrop-saturate-150; /* expect: material/web-backdrop-filter */
 
     @variant ds-reduce-transparency { /* expect: material/web-transparency-read */
       --ds--chip-fill: var(--ds-color-bg-surface-raised);
