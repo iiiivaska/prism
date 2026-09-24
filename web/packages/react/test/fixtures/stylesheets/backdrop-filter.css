@@ -2,9 +2,9 @@
   Fails ADR-0036 §10's first check. Anywhere but surface/Surface.css all four declarations fail: only that
   stylesheet declares backdrop-filter, and a property name in capitals declares it too. As
   surface/Surface.css two still fail: the selector in the second rule's list that is none of the four glass
-  selectors, and the declaration with no selector at all, which a browser drops. The transition that names
-  the property, a custom property whose name ends in it, the @supports condition and this comment declare
-  nothing.
+  selectors, written over two lines and named on one, and the declaration with no selector at all, which a
+  browser drops. The transition that names the property, a custom property whose name ends in it, a
+  property whose name only starts like it, the @supports condition and this comment declare nothing.
 */
 @layer ds.components {
   .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
@@ -13,7 +13,8 @@
   }
 
   .ds-surface[data-ds-material="glass"],
-  .ds-fixture[data-ds-material="glass"] {
+  .ds-fixture[data-ds-material="glass"]
+    > [data-ds-slot="fixture-part"] {
     -webkit-backdrop-filter: none;
   }
 
@@ -22,6 +23,7 @@
 
     .ds-fixture {
       --ds--fixture-backdrop-filter: none;
+      backdrop-filters: none;
       transition: backdrop-filter var(--ds-motion-duration-base) var(--ds-motion-spring-smooth-easing);
     }
   }

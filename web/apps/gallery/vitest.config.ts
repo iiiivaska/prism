@@ -12,9 +12,10 @@ import { defineConfig } from "vitest/config";
  * - `storybook`: every story as a Vitest browser-mode test in Playwright Chromium, with the a11y addon's
  *   axe run failing the test on any violation (`parameters.a11y.test = "error"`, .storybook/preview.tsx);
  * - `browser`: the behaviour the Node suites cannot see — a client `<Theme>` (ADR-0019 rule 7's client
- *   half), Surface's glass fallback from a real `matchMedia` (ADR-0022 rule 1), Text's computed
- *   `font-synthesis` and the equal-width figures (ADR-0021 rules 5 and 8), and the role and accessible
- *   name of every spec example as Chromium's own accessibility tree has them (test/accessibility.tsx);
+ *   half), Surface's glass fallback from a real `matchMedia` (ADR-0022 rule 1), the glass chip shape
+ *   resolving again whenever an input it reads changes (ADR-0036 §7), Text's computed `font-synthesis`
+ *   and the equal-width figures (ADR-0021 rules 5 and 8), and the role and accessible name of every spec
+ *   example as Chromium's own accessibility tree has them (test/accessibility.tsx);
  * - `node`: the generated stories against the specs.
  *
  * Every project renders `@iiiivaska/prism-react` from its source, not from its last build

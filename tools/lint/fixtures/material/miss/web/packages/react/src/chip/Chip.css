@@ -1,6 +1,7 @@
 /* A component's stylesheet beside its chip shape (ADR-0036 §7): its own cell reaches the chip as
    --ds--surface-chip-own, its fades name no filter, and the scrim is the one glass variable it may name
-   (ADR-0029 §1.7). `miss:` names the rule the line must not trip. */
+   (ADR-0029 §1.7). A variable whose name only starts or ends like a recipe's is not one. `miss:` names
+   the rule the line must not trip. */
 @layer ds.components {
   .ds-chip {
     --ds--surface-chip-own: var(--ds-color-bg-surface-raised); /* miss: material/web-glass-recipe */
@@ -15,5 +16,7 @@
 
   .ds-chip > [data-ds-slot="chip-scrim"] {
     background-image: linear-gradient(transparent, var(--ds-material-glass-scrim)); /* miss: material/web-glass-recipe */
+    border-color: var(--ds-material-glassy); /* miss: material/web-glass-recipe */
+    outline-color: var(--ds--chip-ring--ds-material-glass-chip); /* miss: material/web-glass-recipe */
   }
 }

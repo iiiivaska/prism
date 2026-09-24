@@ -1,5 +1,5 @@
 {
-  "description": "Parts that bind material.glass.chip where a state block is in play: the chip bound only inside `readonly`, with a fallback cell missing; fallback cells a state block rebinds with the wrong token, keyed by the ground, or keyed apart from the background; a part fallback keyed apart from where a state binds the chip; and a reduceTransparency that does not name Reduce Transparency, on a spec whose first chip is bound only in a state. A state that restates the fallback as the part binds it is not reported.",
+  "description": "Parts that bind material.glass.chip where a state block is in play: the chip bound only inside `readonly`, with a fallback cell missing on the part and bound with the wrong token in that state, which is still read; fallback cells a state block rebinds with the wrong token, keyed by the ground, or keyed apart from the background; a part fallback keyed apart from where a state binds the chip; and a reduceTransparency that does not name Reduce Transparency, on a spec whose first chip is bound only in a state. A state that restates the fallback as the part binds it is not reported.",
   "expect": [
     {
       "code": "glass-chip/fallback",

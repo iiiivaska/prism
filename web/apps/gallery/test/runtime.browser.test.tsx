@@ -5,6 +5,9 @@
  *   returns what `readContext()` returns and re-renders on every `watchContext` event.
  * - ADR-0022 rule 1 and ADR-0025 rule 1 on the client: Surface falls back from glass when the OS asks for
  *   more contrast or less transparency, back again when it stops, and an explicit `<Theme>` choice wins.
+ * - ADR-0036 §3 and §7 on the client: the glass chip shape resolves again whenever anything it reads
+ *   changes — what its part asks for, the ground, the enclosing chip, the gate, the publication, and
+ *   Prism's contrast and transparency — which only a mounted tree that re-renders can show.
  * - ADR-0023 rule 9: under a forced reduced context Surface drops blur and depth at once and crossfades
  *   its fill; Text schedules no animation at all.
  * - ADR-0021 rule 8: Text computes `font-synthesis: none`.
@@ -19,10 +22,22 @@ import "@iiiivaska/prism-tokens/brands/prism/fonts.css";
 import "@iiiivaska/prism-tokens/motion.css";
 import "@iiiivaska/prism-react/styles.css";
 
-import { act, type ReactNode } from "react";
+import { act, useContext, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import { Surface, Text, Theme, mountRoot, readContext, useTokenContext, webRuntime, type TextRole, type TokenContext } from "@iiiivaska/prism-react";
+// The chip shape, its resolver and the two contexts it reads are internal to the package (ADR-0036 §7), so they
+// are imported from the source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so these
+// are the contexts the hook reads and the resolver it calls.
+import { InsideGlassChipContext, SurfaceContext, type SurfaceContextValue } from "../../../packages/react/src/surface/context.ts";
+import {
+  resolveSurfaceChip,
+  type SurfaceChipFill,
+  type SurfaceChipGate,
+  type SurfaceChipPublication,
+  type SurfaceChipResolution,
+} from "../../../packages/react/src/surface/resolve.ts";
+import { useSurfaceChip } from "../../../packages/react/src/surface/SurfaceChip.tsx";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -231,6 +246,89 @@ describe("Surface's glass fallback on the client (ADR-0022 rule 1, ADR-0025 rule
     });
     await settle();
     expect(material(element)).toBe("inverse");
+  });
+});
+
+describe("the glass chip shape on the client (ADR-0036 §3, §7)", () => {
+  /** What the chip shape reads besides Prism's contrast and transparency, which come from the OS here. */
+  interface ChipInputs {
+    readonly fill: SurfaceChipFill;
+    readonly ground: SurfaceContextValue;
+    readonly insideGlassChip: boolean;
+    readonly gate: SurfaceChipGate;
+    readonly publishes: SurfaceChipPublication;
+  }
+
+  /** One render of the probe: what `useSurfaceChip` handed back, and what the resolver answers for that render's inputs. */
+  interface ChipRender {
+    readonly resolution: SurfaceChipResolution;
+    readonly expected: SurfaceChipResolution;
+  }
+
+  it("resolves again whenever an input it reads changes, one input at a time (useSurfaceChip's memo)", async () => {
+    const renders: ChipRender[] = [];
+    function ChipProbe(props: { readonly fill: SurfaceChipFill; readonly gate: SurfaceChipGate; readonly publishes: SurfaceChipPublication }): ReactNode {
+      const { fill, gate, publishes } = props;
+      const ground = useContext(SurfaceContext);
+      const insideGlassChip = useContext(InsideGlassChipContext);
+      const { contrast, transparency } = useTokenContext();
+      const chip = useSurfaceChip(() => fill, { gate, publishes });
+      renders.push({ resolution: chip.resolution, expected: resolveSurfaceChip(fill, ground, { insideGlassChip, gate, publishes }, { contrast, transparency }) });
+      return <span {...chip.rootProps} />;
+    }
+    const tree = (inputs: ChipInputs): ReactNode => (
+      <Theme>
+        <SurfaceContext.Provider value={inputs.ground}>
+          <InsideGlassChipContext.Provider value={inputs.insideGlassChip}>
+            <ChipProbe fill={inputs.fill} gate={inputs.gate} publishes={inputs.publishes} />
+          </InsideGlassChipContext.Provider>
+        </SurfaceContext.Provider>
+      </Theme>
+    );
+    const last = (): ChipRender => {
+      const render = renders.at(-1);
+      if (render === undefined) throw new Error("the probe never rendered");
+      return render;
+    };
+
+    // A glass chip on the page over a map: it renders the recipe and blurs.
+    let inputs: ChipInputs = { fill: "glass", ground: { material: "page", backdrop: "map", depth: 0 }, insideGlassChip: false, gate: "content", publishes: "ground" };
+    await mount(tree(inputs));
+    expect(last().resolution).toEqual(last().expected);
+    expect(last().resolution.blursBackdrop).toBe(true);
+
+    const rerender = async (change: Partial<ChipInputs>): Promise<void> => {
+      inputs = { ...inputs, ...change };
+      await act(async () => {
+        root?.render(tree(inputs));
+        await Promise.resolve();
+      });
+    };
+    const setting = async (axis: "contrast" | "transparency", on: boolean): Promise<void> => {
+      await act(async () => {
+        query(axis).set(on);
+        await Promise.resolve();
+      });
+    };
+    // Each step changes one input and moves the resolution, so a memo that did not list that input would hand the
+    // previous resolution back, and the step fails.
+    const steps: readonly (readonly [string, () => Promise<void>])[] = [
+      ["the ground: the page over no media, where glass falls back", () => rerender({ ground: { material: "page", backdrop: "none", depth: 0 } })],
+      ["the gate: chrome, which needs no media", () => rerender({ gate: "chrome" })],
+      ["an enclosing glass chip, which drops the blur", () => rerender({ insideGlassChip: true })],
+      ["the publication: raised", () => rerender({ publishes: "raised" })],
+      ["what the part asks for: its own cell", () => rerender({ fill: "own" })],
+      ["what the part asks for: glass again", () => rerender({ fill: "glass" })],
+      ["Increase Contrast on", () => setting("contrast", true)],
+      ["Increase Contrast off", () => setting("contrast", false)],
+      ["Reduce Transparency on", () => setting("transparency", true)],
+    ];
+    for (const [name, step] of steps) {
+      const before = last().expected;
+      await step();
+      expect(last().expected, `${name} moves the resolution`).not.toEqual(before);
+      expect(last().resolution, name).toEqual(last().expected);
+    }
   });
 });
 

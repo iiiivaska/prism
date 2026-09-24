@@ -15,8 +15,8 @@ import DSTokens
 ///   Before the blur, the crop is mirrored about every edge and corner, again and again, until the band is covered; the
 ///   blur reads those reflections as far out as its kernel has weight, not whatever lies past the band (§6 step 2); and
 ///   the mirror paints nothing outside its shape (step 5).
-/// - On the scheme's glass, on light glass and inside another glass chip, a glass chip draws the recipe's fill and edge
-///   and no mirror (§5).
+/// - On the scheme's glass, on light glass and inside another glass chip, a glass chip draws the recipe's fill and edge,
+///   the edge with the colour, alphas and width the tokens give it, and no mirror (§5).
 /// - The chip's fallback paints `color.bg.surface.raised` over `color.bg.page`, in both schemes.
 ///
 /// **Why this is a simulator suite.** The chip's colours, and those of the glass it sits on, are `Colors.xcassets`
@@ -362,6 +362,31 @@ struct DSSurfaceChipRenderTests {
         }
     }
 
+    /// The recipe's fill with the recipe's edge over it, in the chip's frame and shape: all a glass chip that draws no
+    /// mirror draws. The edge is the one ADR-0036 §7 names, with the values the tokens give it: `color.edge.highlight`,
+    /// from the recipe's `edge.start` alpha to its `edge.end`, `border.hairline` wide, on a ramp across the chip's own
+    /// frame. It is drawn by `DSGlassEdge`, Surface's edge, whose ramp and stroke every glass Surface baseline holds; what
+    /// this side pins is what the chip hands it. The tokens decide both sides of the comparison, so no value is restated.
+    struct RecipeFillAndEdge: View {
+        private var ds = DSThemeValues()
+
+        init() {}
+
+        var body: some View {
+            let recipe = DSGlassAppearance.chip.recipe(ds.tokens.material)
+            let size = DSSurfaceChipRenderTests.pill
+            ZStack(alignment: .topLeading) {
+                Capsule(style: .circular).fill(recipe.fill)
+                DSGlassEdge(
+                    shape: Capsule(style: .circular), color: ds.tokens.color.edgeHighlight, start: recipe.edgeStart,
+                    end: recipe.edgeEnd, lineWidth: ds.tokens.border.hairline, size: size
+                )
+            }
+            .frame(width: size.width, height: size.height, alignment: .topLeading)
+            .compositingGroup()
+        }
+    }
+
     /// `content` in `enclosure`: a glass or light glass Surface over the image, a glass chip 12 pt larger than the pill
     /// on every side, or nothing.
     @ViewBuilder
@@ -398,8 +423,13 @@ struct DSSurfaceChipRenderTests {
     ///     values apart; without one, the two renders are identical byte for byte, and that is what is asked.
     ///  2. **Its fill.** More than 1.5 pt from its outline, the render equals the same enclosure with the recipe's fill
     ///     alone in the chip's place, within 1 code value.
-    ///  3. **Its edge.** Within 1.5 pt of the outline, it differs from the fill alone by more than that: the edge is
-    ///     there.
+    ///  3. **Its edge, as the tokens give it.** Within 1.5 pt of the outline, it differs from the fill alone by more
+    ///     than that, 9 to 10 code values in light and 34 to 44 in dark: the edge is there, and the reading below can see
+    ///     it. And at every pixel, the outline's included, the render equals the same enclosure with `RecipeFillAndEdge`
+    ///     in the chip's place, within 1 code value (measured 0): the edge is `color.edge.highlight`, from `edge.start` to
+    ///     `edge.end` on a ramp across the chip's own frame, `border.hairline` wide. An edge handed its alphas swapped,
+    ///     one alpha for both, another colour, half the width or its frame turned on its side misses that by 2 to 45
+    ///     code values (measured on the iOS 26.5 simulator); a wider one also reaches past 1.5 pt and fails reading 2.
     ///
     /// The control: on the page over the same image the chip does blur, and the pixels it is handed show. So reading 1
     /// can see a mirror, and the passes above are the rule's.
@@ -417,19 +447,24 @@ struct DSSurfaceChipRenderTests {
             let handedWhite = try #require(Self.render(Self.glassChip(handed: white), in: enclosure, scheme: scheme))
             let handedBlack = try #require(Self.render(Self.glassChip(handed: black), in: enclosure, scheme: scheme))
             let fillAlone = try #require(Self.render(RecipeFill(), in: enclosure, scheme: scheme))
+            let fillAndEdge = try #require(Self.render(RecipeFillAndEdge(), in: enclosure, scheme: scheme))
 
             let moved = zip(handedWhite, handedBlack).filter { $0 != $1 }.count
             #expect(moved == 0, "\(enclosure) in \(scheme): \(moved) bytes move with the pixels handed to the chip, so it mirrors them")
 
-            var offOutline = 0, onOutline = 0
+            var offOutline = 0, onOutline = 0, fromTheRecipe = 0
             for pixel in 0..<(handedWhite.count / 4) {
                 // The largest difference over red, green and blue, written out as a loop: Swift 6.3 (Xcode 26.6, the
                 // CI pin) cannot type-check it as one expression, `(0..<3).map { … }.max() ?? 0`, in reasonable time.
                 var difference = 0
+                var edgeDifference = 0
                 for channel in 0..<3 {
                     let offset = pixel * 4 + channel
-                    difference = max(difference, abs(Int(handedWhite[offset]) - Int(fillAlone[offset])))
+                    let drawn = Int(handedWhite[offset])
+                    difference = max(difference, abs(drawn - Int(fillAlone[offset])))
+                    edgeDifference = max(edgeDifference, abs(drawn - Int(fillAndEdge[offset])))
                 }
+                fromTheRecipe = max(fromTheRecipe, edgeDifference)
                 if abs(Self.distance(x: pixel % width, y: pixel / width, toCapsuleIn: frame)) > 1.5 {
                     offOutline = max(offOutline, difference)
                 } else {
@@ -438,6 +473,7 @@ struct DSSurfaceChipRenderTests {
             }
             #expect(offOutline <= 1, "\(enclosure) in \(scheme): off its outline the chip differs from the recipe's fill alone by up to \(offOutline)")
             #expect(onOutline > 1, "\(enclosure) in \(scheme): on its outline the chip draws only what the fill alone draws, so no edge")
+            #expect(fromTheRecipe <= 1, "\(enclosure) in \(scheme): the chip differs from the recipe's fill and edge by up to \(fromTheRecipe), so its edge is not the recipe's")
         }
 
         let onThePageWhite = try #require(Self.render(Self.glassChip(handed: white), in: .page, scheme: scheme))

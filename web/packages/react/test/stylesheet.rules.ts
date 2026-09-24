@@ -279,11 +279,12 @@ function sourcePath(file: string): string {
  * ADR-0036 §10, the first of the two declaration-level checks: only `surface/Surface.css` declares
  * `backdrop-filter` or `-webkit-backdrop-filter`, in any case, and there only on
  * `BACKDROP_FILTER_SELECTORS`, every selector of a list included; a declaration with no selector fails
- * as `(no selector)`. The path must be that one exactly, not a `Surface.css` in another directory. A
- * value that names the property (a `transition`), a custom property whose name ends in it, an at-rule's
- * condition and a comment declare nothing. An `@apply` of a Tailwind backdrop utility declares the
- * property only after the compile, so this check does not see it; `lint:literals` reports it in the
- * source. `file` is the stylesheet's path relative to `src/`.
+ * as `(no selector)`, and a selector is compared, and named, as the compiled stylesheet spells it, on
+ * one line. The path must be that one exactly, not a `Surface.css` in another directory. A value that
+ * names the property (a `transition`), a custom property whose name ends in it, a property whose name
+ * only starts like it, an at-rule's condition and a comment declare nothing. An `@apply` of a Tailwind
+ * backdrop utility declares the property only after the compile, so this check does not see it;
+ * `lint:literals` reports it in the source. `file` is the stylesheet's path relative to `src/`.
  */
 export function backdropFilterProblems(css: string, file: string): Problem[] {
   const path = sourcePath(file);
@@ -312,11 +313,12 @@ export function backdropFilterProblems(css: string, file: string): Problem[] {
 
 /**
  * ADR-0036 §10, the second check: no stylesheet outside `surface/` names a glass recipe variable, as a
- * declaration's property or in its value. Comments are not read, and the scrim passes, but not a name
- * longer than the scrim's. `surface/` is the module's own directory at the root of `src/`, not a
- * `surfaces/` beside it or a `surface/` further down. An at-rule's prelude is not read either
- * (`@container style(--ds-material-glass-chip: …)`); `lint:literals` reports a recipe variable there.
- * `file` is the stylesheet's path relative to `src/`.
+ * declaration's property or in its value, and each problem names every variable of its declaration once.
+ * Comments are not read, and the scrim passes, but not a name longer than the scrim's; a variable whose
+ * name only starts or ends like a recipe's is not one. `surface/` is the module's own directory at the
+ * root of `src/`, not a `surfaces/` beside it, a `surface/` further down or a `Surface.css` elsewhere.
+ * An at-rule's prelude is not read either (`@container style(--ds-material-glass-chip: …)`);
+ * `lint:literals` reports a recipe variable there. `file` is the stylesheet's path relative to `src/`.
  */
 export function glassRecipeProblems(css: string, file: string): Problem[] {
   const path = sourcePath(file);

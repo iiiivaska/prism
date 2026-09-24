@@ -2,7 +2,8 @@
 // the rule the line must trip. This chip draws its glass itself: it reads the backdrop's pixels, builds
 // the recipe, saturates and blurs, and decides its own fallback, where `dsSurfaceChip` does all of it.
 // Each spelling a pattern names has a line of its own: every operator on either side, every value
-// `.transparency` is read off, every kind of operand, a member read off it and a parameter by its name.
+// `.transparency` is read off, every kind of operand, a member read off it and one read off that, and a
+// parameter by its name.
 import SwiftUI
 import DSCore
 import DSTokens
@@ -87,9 +88,13 @@ struct DSChip: View {
         ]
     }
 
-    /// A member read off it.
+    /// A member read off it, and one read off that.
     private var reducedByName: Bool {
         ds.tokens.context.transparency.rawValue == "reduced" // expect: material/swift-transparency-read
+    }
+
+    private var reducedByInitial: Bool {
+        ds.tokens.context.transparency.rawValue.first == "r" // expect: material/swift-transparency-read
     }
 
     /// A parameter named `transparency`: the component picks its own fallback.

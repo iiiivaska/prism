@@ -48,6 +48,7 @@ tokens:
         page:
           default: color.bg.surface.raised
           map: material.glass.chip
+      fallbackUnderlay: color.bg.surface
   pill:
     background:
       default: color.bg.surface.raised

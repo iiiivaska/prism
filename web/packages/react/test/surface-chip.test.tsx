@@ -11,6 +11,10 @@
  *   Chip will, through `<Theme contrast transparency>`: its root's attributes, its edge part, the context
  *   a child reads with `depth` passed through, and the enclosing-chip flag set inside and cleared by
  *   `Backdrop` (ADR-0036 rule 5). The Apple twin is `DSSurfaceChipTests`' environment probes.
+ *
+ * A server renders each tree once, so what only a re-render shows — `useSurfaceChip` resolving again
+ * whenever an input it reads changes, every one of them listed in its memo — is checked on the client, in
+ * `web/apps/gallery/test/runtime.browser.test.tsx`.
  */
 import { useContext, type ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";

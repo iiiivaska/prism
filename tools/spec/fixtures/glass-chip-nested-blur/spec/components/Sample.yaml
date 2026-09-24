@@ -28,7 +28,7 @@ props:
     values: [sm, md]
     default: md
 
-states: [default]
+states: [default, pressed]
 
 tokens:
   root:
@@ -50,6 +50,11 @@ tokens:
     fallbackBackground: color.bg.surface.raised
     fallbackUnderlay: color.bg.page
     radius: radius.control
+    pressed:
+      blur:
+        page:
+          map: material.glass.chip.blur
+        glass: material.glass.chip.blur
   label:
     typography:
       sm: type.label.sm

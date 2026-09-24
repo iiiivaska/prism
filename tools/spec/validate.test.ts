@@ -1,7 +1,7 @@
 // spec:validate (roadmap P2-1): the repository's specs validate, every fixture fails with exactly the
 // diagnostic it declares, and the grammar helpers behave on their own.
 import { beforeAll, describe, expect, test } from 'vitest';
-import { fsReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
+import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import { compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
@@ -235,33 +235,57 @@ describe('the glass chip rules (ADR-0036 §10)', () => {
     expect(diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`)).toEqual([
       // `field` binds the chip only in `readonly`, so a state block alone holds the part to the rule.
       '47 glass-chip/fallback `tokens.field.readonly.background` binds material.glass.chip, and the part states no `fallbackUnderlay`',
+      // A cell missing on the part stops nothing: the state cells are still read, and `readonly` binds the wrong token.
+      "51 glass-chip/fallback `tokens.field.readonly.fallbackUnderlay` binds `color.bg.surface`, and the chip's `fallbackUnderlay` is color.bg.page",
       // `pill` and `track` bind the right cells on the part, and a state rebinds one with the wrong token (in a
       // matrix, on `track`), by the ground, or keyed apart from the background. `pill.selected` restates both cells as
       // the part binds them, and is not reported.
-      "61 glass-chip/fallback `tokens.pill.pressed.fallbackBackground` binds `color.bg.fill.neutral.subtle`, and the chip's `fallbackBackground` is color.bg.surface.raised",
-      '67 glass-chip/fallback `tokens.pill.readonly.fallbackUnderlay` is keyed by the ground (`page`), and the chip falls back the same way on every ground',
-      "83 glass-chip/fallback `tokens.track.pressed.fallbackUnderlay.floating` binds `color.bg.surface`, and the chip's `fallbackUnderlay` is color.bg.page",
-      '85 glass-chip/fallback `tokens.track.selected.fallbackBackground` answers whatever the props, and `background` binds the chip only under `floating`',
+      "62 glass-chip/fallback `tokens.pill.pressed.fallbackBackground` binds `color.bg.fill.neutral.subtle`, and the chip's `fallbackBackground` is color.bg.surface.raised",
+      '68 glass-chip/fallback `tokens.pill.readonly.fallbackUnderlay` is keyed by the ground (`page`), and the chip falls back the same way on every ground',
+      "84 glass-chip/fallback `tokens.track.pressed.fallbackUnderlay.floating` binds `color.bg.surface`, and the chip's `fallbackUnderlay` is color.bg.page",
+      '86 glass-chip/fallback `tokens.track.selected.fallbackBackground` answers whatever the props, and `background` binds the chip only under `floating`',
       // `strip` binds the chip under `floating` on the part and under `inline` in `readonly`, so its fallback is keyed
       // by both: `fallbackBackground` is, `fallbackUnderlay` is not.
-      '95 glass-chip/fallback `tokens.strip.fallbackUnderlay` is keyed under `floating`, and `background` binds the chip only under `floating`, `inline`',
+      '96 glass-chip/fallback `tokens.strip.fallbackUnderlay` is keyed under `floating`, and `background` binds the chip only under `floating`, `inline`',
       // The prose rule names the first part held, and that is `field`, whose chip only a state binds.
-      '121 glass-chip/fallback `tokens.field` binds material.glass.chip as its background, and `accessibility.reduceTransparency` does not name Reduce Transparency',
+      '122 glass-chip/fallback `tokens.field` binds material.glass.chip as its background, and `accessibility.reduceTransparency` does not name Reduce Transparency',
     ]);
     // A state that binds no fallback keeps the part's, so the fix for a state's cell is to delete it, and only a
-    // state's cell is told so.
+    // state's cell is told so; where the part states none, its own diagnostic says to bind it there.
     expect(diagnostics.flatMap((d) => (d.hint?.startsWith('delete ') === true ? [`${d.line ?? 0} ${d.hint.split(':')[0] ?? ''}`] : []))).toEqual([
-      '61 delete `pressed.fallbackBackground`',
-      '67 delete `readonly.fallbackUnderlay`',
-      '83 delete `pressed.fallbackUnderlay`',
-      '85 delete `selected.fallbackBackground`',
+      '51 delete `readonly.fallbackUnderlay`',
+      '62 delete `pressed.fallbackBackground`',
+      '68 delete `readonly.fallbackUnderlay`',
+      '84 delete `pressed.fallbackUnderlay`',
+      '86 delete `selected.fallbackBackground`',
     ]);
   }, 60_000);
 
-  test("glass-chip/nested-blur: the recipe's blur under `glass` and its saturation under `glassLight`, and nothing else", async () => {
+  test("glass-chip/fallback: a part's cell that binds nothing is the schema's to report, and the state cells after it are still read", async () => {
+    const c = specCases().find((x) => x.name === 'glass-chip-fallback-states');
+    if (c === undefined) throw new Error('no fixture glass-chip-fallback-states');
+    const path = 'spec/components/Sample.yaml';
+    const fixture = caseReader(c);
+    // `pill` states its fallbackBackground as `{}`, which binds nothing, and its `pressed` block then rebinds the cell
+    // with the wrong token.
+    const cell = '    fallbackBackground: color.bg.surface.raised\n    fallbackUnderlay: color.bg.page\n    radius: radius.control\n    pressed:\n';
+    const text = fixture.readText(path).replace(cell, cell.replace('color.bg.surface.raised', '{}'));
+    expect(text).not.toBe(fixture.readText(path));
+    const empty = (await runSpecValidate({ reader: overlayReader(fixture, memoryReader({ [path]: text })), collected: await repoDictionary() })).diagnostics;
+    const chip = (diagnostics: readonly Diagnostic[]): string[] => diagnostics.filter((d) => d.code === 'glass-chip/fallback').map((d) => `${d.line ?? 0} ${d.message}`);
+    expect([...new Set(empty.filter((d) => d.code !== 'glass-chip/fallback').map((d) => `${d.line ?? 0} ${d.code}`))]).toEqual(['58 spec/schema']);
+    // The chip check reports what it reports on the fixture as written, the state's wrong token included.
+    expect(chip(empty)).toEqual(chip(await diagnose('glass-chip-fallback-states')));
+    expect(chip(empty)).toContain("62 `tokens.pill.pressed.fallbackBackground` binds `color.bg.fill.neutral.subtle`, and the chip's `fallbackBackground` is color.bg.surface.raised");
+  }, 60_000);
+
+  test("glass-chip/nested-blur: the recipe's blur under `glass` and its saturation under `glassLight`, on the part and in a state block, and nothing else", async () => {
     expect(await run('glass-chip-nested-blur')).toEqual([
       '45 glass-chip/nested-blur `tokens.root.blur.glass` binds material.glass.chip.blur under `glass`',
       '49 glass-chip/nested-blur `tokens.root.saturate.glassLight` binds material.glass.chip.saturate under `glassLight`',
+      // A state block's cells are read as the part's are: the blur under `glass` in `pressed` is reported, and the
+      // same blur over a map beside it is not.
+      '57 glass-chip/nested-blur `tokens.root.pressed.blur.glass` binds material.glass.chip.blur under `glass`',
     ]);
   }, 60_000);
 

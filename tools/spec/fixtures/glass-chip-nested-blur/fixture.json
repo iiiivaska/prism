@@ -1,5 +1,5 @@
 {
-  "description": "A part binds the glass chip's blur under `glass` and its saturation under `glassLight`, where a chip draws no backdrop filter.",
+  "description": "A part binds the glass chip's blur under `glass` and its saturation under `glassLight`, where a chip draws no backdrop filter, and its `pressed` state block binds the blur under `glass` again, beside the same blur over a map, which is allowed.",
   "expect": [
     {
       "code": "glass-chip/nested-blur",

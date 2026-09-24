@@ -1,19 +1,25 @@
 /*
   Fails ADR-0036 §10's second check anywhere outside surface/: a component's stylesheet names a glass
-  recipe variable as a property, in a custom property of its own, and twice in one value, where the
-  Surface module's chip block paints the part that binds the recipe. The scrim may be named anywhere, but
-  a name longer than the scrim's fails, and this comment's --ds-material-glass-chip is not read. Under
-  surface/ the same sheet passes.
+  recipe variable as a property, in a custom property of its own, and twice in one value beside another
+  recipe, where the Surface module's chip block paints the part that binds the recipe. The scrim may be
+  named anywhere, but a name longer than the scrim's fails, joined to it by a dash or by a letter. A
+  variable whose name only starts like a recipe's is not one, nor one whose name ends like it after a
+  letter or a dash, and this comment's --ds-material-glass-chip is not read. Under surface/ the same sheet
+  passes.
 */
 @layer ds.components {
   .ds-fixture {
     --ds-material-glass-chip: var(--ds-color-bg-surface-raised);
     --ds--fixture-blur: var(--ds-material-glass-chip-blur);
-    background-image: linear-gradient(var(--ds-material-glass-chip), var(--ds-material-glass-chip));
+    background-image: linear-gradient(var(--ds-material-glass-chip), var(--ds-material-glass-fill), var(--ds-material-glass-chip));
   }
 
   .ds-fixture > [data-ds-slot="fixture-scrim"] {
     background-image: linear-gradient(transparent, var(--ds-material-glass-scrim));
     border-color: var(--ds-material-glass-scrim-strong);
+    color: var(--ds-material-glass-scrimmy);
+    outline-color: var(--ds-material-glassy);
+    --ds--fixture-ring: var(--ds--fixture--ds-material-glass-chip);
+    --ds--fixture-edge: var(---ds-material-glass-chip);
   }
 }

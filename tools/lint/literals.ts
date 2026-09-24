@@ -694,6 +694,9 @@ const RULES: readonly Rule[] = [
   //    Calls also build, forward and cache a context (`icon/weight.ts` keys a cache on it), and one line
   //    does not tell them apart.
   //  - A key path applied by a subscript: `context[keyPath: \.transparency] == .reduced`.
+  //  - A property wrapper's storage or projection read through its value: `_transparency.wrappedValue == .reduced`,
+  //    `$transparency.wrappedValue == .reduced`. The patterns read `_` and `$` as part of a name, so that a longer
+  //    name (`edge_transparency`, `edge$transparency`) is never taken for the context's.
   //  - A comparison split across lines, or an operand whose call or subscript holds another one.
   //  - A name split across a concatenation: `"backdrop" + "-filter"`, `"--ds-material-" + "glass-chip"`.
   //  - An upper-case property, `BACKDROP-FILTER`. The React package's stylesheet test reads property

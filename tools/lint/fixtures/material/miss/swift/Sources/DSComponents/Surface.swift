@@ -1,6 +1,7 @@
 // The counterpart of each material pattern (ADR-0022 rule 2); `miss:` names the rule it must not
 // trip. A component reads the material from the context its Surface published and never the OS
 // settings or Prism's transparency (ADR-0036 §10), and Prism's own material names are not SwiftUI's.
+// A name that only starts like a setting's is another name.
 import SwiftUI
 import DSCore
 import DSTokens
@@ -17,6 +18,12 @@ struct SurfaceFixture: View {
     }
 
     var material: DSSurfaceMaterial { .glass }
+
+    /// UIKit's notification that the setting changed carries no value, so observing it reads nothing; the read
+    /// that would follow is `isReduceTransparencyEnabled`, which the pattern reports.
+    var transparencyChanges: NotificationCenter.Publisher {
+        NotificationCenter.default.publisher(for: UIAccessibility.reduceTransparencyStatusDidChangeNotification) // miss: material/swift-reduce-transparency
+    }
 
     func edge(_ contrast: DSContrast) -> some View { Rectangle().frame(height: 1) }
 }

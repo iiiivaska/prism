@@ -187,14 +187,14 @@ The reason: a host that switched its part from the recipe to its own cell on pre
 
 - **Own cells on media paint no page under them.** ADR-0036 §3 step 6 paints the page only under the fallback. ADR-0030 rule 6 asks a tint that carries text or a glyph over media to paint the page under its tint.
   - TextField's read-only box is the first such cell: `color.bg.fill.neutral.subtle` is α 0.06 over a map.
-  - TextField's ticket decides it. §1 already treats the cell as opaque paint for what nests inside it.
+  - TextField's ticket decides it (roadmap P4-D13). §1 already treats the cell as opaque paint for what nests inside it.
 
 ### Documents that follow
 
 With this decision:
 - `docs/decisions.md` row 37, and the inline note on row 36;
 - the ADR index, and ADR-0036's status line;
-- the roadmap row P4-8.
+- the roadmap rows P4-8 and P4-D13.
 
 With P4-8:
 - the doc comments that describe the flag, in `DSSurface.swift`, `DSSurfaceChip.swift`, `DSBackdrop.swift`, `resolve.ts`, `context.ts`, `SurfaceChip.tsx` and `Backdrop.tsx`.
