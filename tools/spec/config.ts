@@ -1,7 +1,7 @@
-// Paths and vocabularies spec:validate checks against (ADR-0006, ADR-0022 §3.1, ADR-0023 §8.4,
-// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rule 4, ADR-0036 §9). Everything here is a decision an ADR records; the
-// bindable categories are not, because ADR-0024 §5.3 makes the regex in spec/component.schema.json
-// their single copy (`bindableCategories()` in schema.ts reads it back).
+// Paths and vocabularies spec:validate checks against (ADR-0006, ADR-0013, ADR-0022 §3.1, ADR-0023 §8.4,
+// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rules 4 and 6, ADR-0036 §9, spec/SCHEMA.md). Everything here is a
+// decision an ADR or spec/SCHEMA.md records; the bindable categories are not, because ADR-0024 §5.3 makes the regex in
+// spec/component.schema.json their single copy (`bindableCategories()` in schema.ts reads it back).
 
 /** Repository-relative layout of the contract. */
 export const SPEC_DIR = 'spec';
@@ -19,6 +19,12 @@ export const HAPTICS = `${SPEC_DIR}/haptics.yaml`;
  * may name, with the placeholders its English default fills.
  */
 export const STRINGS = `${SPEC_DIR}/strings.yaml`;
+/**
+ * The icon registry (ADR-0013). A prop of `type: icon` takes one of its ids, and each entry's `label` is a key of the
+ * form `icon.<id>` (ADR-0032 rule 6) that prose may name. `icon` is also a sys category (`icon.weight`), so the prose
+ * check reads a word in that namespace against the registry's labels before it reads it as a token path.
+ */
+export const ICON_REGISTRY = `${SPEC_DIR}/icons/registry.json`;
 
 /**
  * `sys` categories that no spec may bind (ADR-0024 §5.3). Every other category the dictionary holds
@@ -107,6 +113,51 @@ export const GLASS_CHIP_FILTERS: readonly string[] = ['material.glass.chip.blur'
  * and edge and no backdrop filter, so the two stacks draw one picture (ADR-0036 §5 and rule 6, ADR-0009 decision 3).
  */
 export const NESTED_GLASS_KEYS: readonly string[] = ['glass', 'glassLight'];
+
+/**
+ * The verbs a boolean prop's name opens with (spec/SCHEMA.md, "One meaning, one name, one polarity"). A boolean is named
+ * for the condition that is true, as a statement whose subject is the component, so its name is a verb in the third
+ * person followed by what it says: `is` for a condition of the component (`isSelected`), `has` for something it has or
+ * lacks (`hasNext`), `shows` for a part the flag draws (`showsClose`), and, for a behavior the component performs, that
+ * behavior's own verb. `clamps` is SCHEMA's example of the last (`clampsOverflow`, not `clampOverflow`), and the form
+ * RingGauge's owed rename takes. The list is closed, because a word that ends in -s is not therefore a verb (`focusRing`,
+ * `statusIcon`, `glassFill` are bare nouns): a behavior verb joins it in the change that first names a prop with it,
+ * the way a new sys category is classified in the change that adds it.
+ */
+export const BOOLEAN_VERBS: readonly string[] = ['is', 'has', 'shows', 'clamps'];
+
+/**
+ * The words a boolean's name never holds after its verb: a name never states a negation (`isNotReady`, `hasNoBorder`);
+ * it names the condition that is true, and the default says which way the component starts (spec/SCHEMA.md).
+ */
+export const BOOLEAN_NEGATIONS: readonly string[] = ['Not', 'No', 'Non'];
+
+/**
+ * The boolean props still named against that rule, as `<spec name>.<prop>`: the twenty-nine that the spec-consistency
+ * pass of 2026-09-22 found and nothing has renamed yet (roadmap P4-D3 (1), grouped as it groups them).
+ * `prop/boolean-name` lets exactly these through. The list only shrinks: a name leaves it in the change that renames the
+ * prop, which is the next change to its spec, in place where nothing implements it and with a `specVersion` bump on both
+ * stacks where something does, and validate.test.ts fails on an entry that no longer names a boolean the rule rejects,
+ * and on one the pass did not record. A new prop follows the rule from its first commit and never joins it.
+ */
+export const BOOLEAN_NAMES_OWED: readonly string[] = [
+  // The imperative `show`, where the rule's verb is `shows`.
+  'ProgressBar.showValue', 'ProgressRing.showValue', 'Slider.showValue', 'DeltaBadge.showIcon', 'Pagination.showPageNumbers',
+  // A bare adjective for a condition, which takes `is…`.
+  'HeroNumber.live', 'StatCard.live', 'StatTile.live', 'LineChart.scrollable', 'Skeleton.animated',
+  // A bare noun for a part, which takes `has…` or `shows…`.
+  'AreaChart.grid', 'LineChart.grid', 'ListRow.leader', 'RangeBand.bookends', 'Slider.ticks', 'Sparkline.extremes', 'Table.stickyHeader',
+  // A verb or noun for a behavior, which takes the third person.
+  'RingGauge.clampOverflow', 'TextArea.autoGrow', 'Spinner.delay',
+  // In the patterns, a bare noun for a region the pattern draws.
+  'AdaptiveShell.topBar', 'AdaptiveShell.commandPalette', 'DashboardGrid.tileGroup', 'DashboardGrid.band',
+  'DetailScreen.readout', 'DetailScreen.actionBar', 'DetailScreen.hero',
+  // A bare participle, and a second name for the `Sidebar.isCollapsed` it forwards.
+  'AdaptiveShell.sidebarCollapsed',
+  // A bare adjective where Card, Chip and IconButton say `isSelected`, in an implemented component: its rename is a
+  // `specVersion` bump on both stacks, which Surface's next bump takes (roadmap P4-D8).
+  'Surface.selected',
+];
 
 /** Kebab-case component name: the `comp.<component>` group a spec owns (ADR-0024 §5.2). */
 export function compGroup(name: string): string {

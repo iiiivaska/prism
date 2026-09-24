@@ -1,0 +1,13 @@
+{
+  "description": "Examples set a prop the spec does not declare, and a value of the wrong type for a boolean, number, string, enum and icon prop; a slot's fixture form and a named handler are left to the galleries. A pattern's example is held to the pattern's own props.",
+  "expect": [
+    {
+      "code": "example/prop",
+      "file": "spec/components/Sample.yaml"
+    },
+    {
+      "code": "example/prop",
+      "file": "spec/patterns/SamplePattern.yaml"
+    }
+  ]
+}

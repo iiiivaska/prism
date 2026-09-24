@@ -31,6 +31,8 @@ props:
     type: enum
     values: [sm, md]
     default: md
+  - name: hero
+    type: data
 
 states: [default, pressed]
 

@@ -1,0 +1,9 @@
+{
+  "description": "Prose names icon registry label keys, one as an alternation and one as a glob, beside a token of the icon category, and two words in the label namespace that are neither.",
+  "expect": [
+    {
+      "code": "prose/unknown",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

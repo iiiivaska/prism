@@ -31,10 +31,6 @@ props:
     type: enum
     values: [sm, md]
     default: md
-  - name: material
-    type: enum
-    values: [solid, glassLight]
-    default: solid
 
 states: [default, pressed]
 
@@ -58,6 +54,9 @@ tokens:
 behavior:
   - The fixture draws one surface with one label and nothing else.
   - The hit region is the larger of the visual size and size.hit on each axis.
+  - "The fixture's glyph is the registry entry whose label key is icon.nav.back, drawn at icon.weight; the label key is documentation and never a name (ADR-0032 rule 6)."
+  - Its two status twins are icon.status.warning|danger, and every icon.nav.* label is a navigation glyph.
+  - A mistyped key, icon.nav.bakc, and a key no entry has, icon.gauge.needle, resolve to nothing.
 
 motion:
   press: motion.spring.snappy
@@ -84,5 +83,6 @@ usage:
 examples:
   - id: solid
     props: { variant: solid, size: md }
-  - id: light-glass
-    props: { material: glassLight }
+  - id: glass-over-map
+    props: { variant: glass }
+    surface: map

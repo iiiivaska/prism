@@ -25,7 +25,7 @@ anatomy:
 props:
   - name: variant
     type: enum
-    values: [solid, glass]
+    values: [solid, glass, tinted]
     default: solid
   - name: size
     type: enum

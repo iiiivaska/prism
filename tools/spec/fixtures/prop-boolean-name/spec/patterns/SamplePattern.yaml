@@ -29,6 +29,13 @@ anatomy:
 props:
   - name: title
     type: string
+  - name: showsDetail
+    type: boolean
+    default: true
+  - name: sidebar
+    type: boolean
+    default: true
+    description: a bare noun for a region the pattern draws, as the patterns' owed names are
 
 states: [default, loading]
 
@@ -55,7 +62,7 @@ rules:
 
 composition:
   - component: Card
-    props: { variant: frosted, isSelected: "no", elevation: 2, actionIcon: avatar.sm, actionLabel: 24 }
+    props: { variant: solid, isSelected: false }
     forwards: title, caption, hero
     where: every grid cell
   - component: DetailScreen

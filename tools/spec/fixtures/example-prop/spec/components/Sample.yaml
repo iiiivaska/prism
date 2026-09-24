@@ -21,6 +21,9 @@ schemes: [light, dark]
 anatomy:
   - part: root
   - part: label
+  - part: content
+    optional: true
+    slot: true
 
 props:
   - name: variant
@@ -31,10 +34,19 @@ props:
     type: enum
     values: [sm, md]
     default: md
-  - name: material
-    type: enum
-    values: [solid, glassLight]
-    default: solid
+  - name: label
+    type: string
+  - name: count
+    type: number
+  - name: isOn
+    type: boolean
+    default: false
+  - name: icon
+    type: icon
+  - name: content
+    type: slot
+  - name: onPress
+    type: action
 
 states: [default, pressed]
 
@@ -83,6 +95,24 @@ usage:
 
 examples:
   - id: solid
-    props: { variant: solid, size: md }
-  - id: light-glass
-    props: { material: glassLight }
+    props: { variant: solid, size: md, label: "Sample", count: 3, isOn: false, icon: nav.back }
+  - id: glass-over-map
+    props: { variant: glass }
+    surface: map
+  - id: open-types
+    props: { content: { fixture: text, lines: 2 }, onPress: true }
+    description: a slot takes the forms of spec/SCHEMA.md and an action the galleries' own handler, so neither value is read
+  - id: undeclared
+    props: { variant: solid, tone: accent }
+  - id: enum-value
+    props: { variant: frosted, size: [sm, lg] }
+  - id: boolean-value
+    props: { isOn: "yes" }
+  - id: number-value
+    props: { count: "12" }
+  - id: string-value
+    props: { label: 24 }
+  - id: icon-value
+    props: { icon: avatar.sm }
+  - id: icon-mapping
+    props: { icon: { avatar: { size: sm } } }

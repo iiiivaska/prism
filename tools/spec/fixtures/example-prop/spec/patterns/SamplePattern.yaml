@@ -55,7 +55,7 @@ rules:
 
 composition:
   - component: Card
-    props: { variant: frosted, isSelected: "no", elevation: 2, actionIcon: avatar.sm, actionLabel: 24 }
+    props: { variant: solid, isSelected: false }
     forwards: title, caption, hero
     where: every grid cell
   - component: DetailScreen
@@ -88,6 +88,9 @@ usage:
 examples:
   - id: four-columns
     props: { title: "Sample" }
+  - id: fixed-columns
+    props: { title: "Sample", columns: 4 }
+    description: a pattern's examples are held to its own props, as a component's are
 
 notes:
   platform:

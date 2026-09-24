@@ -31,10 +31,37 @@ props:
     type: enum
     values: [sm, md]
     default: md
-  - name: material
+  - name: isCompact
+    type: boolean
+    default: false
+  - name: hasRing
+    type: boolean
+    default: false
+  - name: showsClose
+    type: boolean
+    default: true
+  - name: clampsOverflow
+    type: boolean
+    default: true
+  - name: showValue
+    type: boolean
+    default: false
+  - name: live
+    type: boolean
+    default: false
+  - name: focusRing
+    type: boolean
+    default: true
+  - name: isNotReady
+    type: boolean
+    default: false
+  - name: hasNoBorder
+    type: boolean
+    default: false
+  - name: stickyHeader
     type: enum
-    values: [solid, glassLight]
-    default: solid
+    values: [static, sticky]
+    default: static
 
 states: [default, pressed]
 
@@ -84,5 +111,6 @@ usage:
 examples:
   - id: solid
     props: { variant: solid, size: md }
-  - id: light-glass
-    props: { material: glassLight }
+  - id: glass-over-map
+    props: { variant: glass }
+    surface: map

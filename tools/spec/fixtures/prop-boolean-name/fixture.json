@@ -1,0 +1,13 @@
+{
+  "description": "Boolean props named with the imperative `show`, a bare adjective, a noun that ends in -s and two negations, beside names that hold the rule and a non-boolean the rule does not read; a pattern's region switch named with a bare noun.",
+  "expect": [
+    {
+      "code": "prop/boolean-name",
+      "file": "spec/components/Sample.yaml"
+    },
+    {
+      "code": "prop/boolean-name",
+      "file": "spec/patterns/SamplePattern.yaml"
+    }
+  ]
+}

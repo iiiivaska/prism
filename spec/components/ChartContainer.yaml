@@ -63,6 +63,9 @@ props:
   - name: hero
     type: data
     description: HeroNumber props; the value the chart is about
+  - name: action
+    type: slot
+    description: one control in the header's trailing corner, a period pager or a range chip row; never a filter for a set of charts
   - name: caption
     type: string
   - name: tableView

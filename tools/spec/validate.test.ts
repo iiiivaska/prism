@@ -3,12 +3,12 @@
 import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
-import { compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
+import { BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, NON_BINDABLE } from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, pointerToPath, SchemaShapeError } from './schema.ts';
-import { caseReader, repoDictionary, specCases, triples } from './test-support.ts';
-import { main, passed, runSpecValidate } from './validate.ts';
+import { caseReader, FIXTURES, repoDictionary, specCases, triples } from './test-support.ts';
+import { booleanNameProblem, main, passed, runSpecValidate } from './validate.ts';
 
 const COMPONENT_SCHEMA = 'spec/component.schema.json';
 
@@ -175,6 +175,7 @@ describe('fixtures', () => {
       'composition/prop',
       'composition/unknown',
       'example/light-glass-backdrop',
+      'example/prop',
       'example/tinted-scheme',
       'example/vivid-grid',
       'example/vivid-icon',
@@ -183,6 +184,7 @@ describe('fixtures', () => {
       'glass-chip/nested-blur',
       'haptic/unknown',
       'matrix/axis',
+      'prop/boolean-name',
       'prose/unknown',
       'spec/file-name',
       'spec/no-schema',
@@ -300,6 +302,152 @@ describe('the glass chip rules (ADR-0036 §10)', () => {
     expect(scrollEdge['fallbackBackground']).toEqual({ soft: 'color.bg.page', hard: 'color.bg.page' });
     expect(scrollEdge['fallbackUnderlay']).toBeUndefined();
   });
+});
+
+describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
+  // Each fixture breaks its rule every way it can be broken, one way per example or prop, beside the forms the rule
+  // lets through, so every branch is pinned by its line and message.
+  const diagnose = async (name: string, remove: readonly string[] = []): Promise<readonly Diagnostic[]> => {
+    const c = specCases().find((x) => x.name === name);
+    if (c === undefined) throw new Error(`no fixture ${name}`);
+    const reader = remove.length === 0 ? caseReader(c) : overlayReader(fsReader(REPO_ROOT), fsReader(`${FIXTURES}${c.name}`), remove);
+    return (await runSpecValidate({ reader, collected: await repoDictionary() })).diagnostics;
+  };
+  const run = async (name: string, remove: readonly string[] = []): Promise<string[]> =>
+    (await diagnose(name, remove)).map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
+
+  test('example/prop: a prop the spec does not declare, and a value of the wrong type for each closed type; slot and action values are not read', async () => {
+    expect(await run('example-prop')).toEqual([
+      '106 example/prop example `undeclared` sets `tone`, which Sample does not declare',
+      // A list sets a multi-value enum, and each of its items is read.
+      '108 example/prop example `enum-value`: `Sample.size` has no value `lg` (sm, md)',
+      '108 example/prop example `enum-value`: `Sample.variant` has no value `frosted` (solid, glass)',
+      '110 example/prop example `boolean-value`: `Sample.isOn` is a boolean, not "yes"',
+      '112 example/prop example `number-value`: `Sample.count` is a number, not "12"',
+      '114 example/prop example `string-value`: `Sample.label` is a string, not 24',
+      // An icon is an id of the registry: a name that reads like one is not, and neither is a mapping, which is how an
+      // Avatar would be written into an icon slot.
+      '116 example/prop example `icon-value`: `Sample.icon` is an icon of spec/icons/registry.json, not "avatar.sm"',
+      '118 example/prop example `icon-mapping`: `Sample.icon` is an icon of spec/icons/registry.json, not {"avatar":{"size":"sm"}}',
+      // A pattern's examples are read against the pattern's own props.
+      '92 example/prop example `fixed-columns` sets `columns`, which SamplePattern does not declare',
+    ]);
+  }, 60_000);
+
+  test('composition/prop reads a value it fixes the way example/prop reads an example: an icon and a string are held too', async () => {
+    expect((await run('composition-prop')).filter((d) => d.includes('`Card.action'))).toEqual([
+      '58 composition/prop `Card.actionIcon` is an icon of spec/icons/registry.json, not "avatar.sm"',
+      '58 composition/prop `Card.actionLabel` is a string, not 24',
+    ]);
+  }, 60_000);
+
+  test("Chip's md-with-avatar names no Avatar, so it passes; an Avatar written in without a prop for it is P4-8's first defect, and fails", async () => {
+    // P4-8 settles its defect (1) by giving the leading slot a prop that can carry the Avatar, or by deleting the
+    // example. Either way this line changes, and this test goes with it: the check then holds the prop P4-8 declares.
+    const path = 'spec/components/Chip.yaml';
+    const repo = fsReader(REPO_ROOT);
+    const text = repo.readText(path);
+    const props = 'props: { label: "Anna Petrova", size: md }';
+    expect(text).toContain(`- id: md-with-avatar\n    ${props}`);
+    const written = async (example: string): Promise<string[]> => {
+      const reader = overlayReader(repo, memoryReader({ [path]: text.replace(props, example) }));
+      return (await runSpecValidate({ reader, collected: await repoDictionary() })).diagnostics.map((d) => `${d.code} ${d.message}`);
+    };
+    // Into `leadingIcon`, which is `type: icon`.
+    expect(await written('props: { label: "Anna Petrova", size: md, leadingIcon: { avatar: { name: "Anna Petrova", size: sm } } }')).toEqual([
+      'example/prop example `md-with-avatar`: `Chip.leadingIcon` is an icon of spec/icons/registry.json, not {"avatar":{"name":"Anna Petrova","size":"sm"}}',
+    ]);
+    // Into a prop Chip does not declare.
+    expect(await written('props: { label: "Anna Petrova", size: md, avatar: { name: "Anna Petrova", size: sm } }')).toEqual([
+      'example/prop example `md-with-avatar` sets `avatar`, which Chip does not declare',
+    ]);
+  }, 60_000);
+
+  test('prop/boolean-name: the imperative `show`, a bare adjective, a noun that ends in -s and two negations; the four verbs, and a non-boolean, pass', async () => {
+    const diagnostics = await diagnose('prop-boolean-name');
+    expect(diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`)).toEqual([
+      "46 prop/boolean-name boolean prop `showValue` opens with the imperative `show`, and the rule's verb is `shows`: a name is a statement about the component, never an instruction",
+      // `live` is owed as HeroNumber's, StatCard's and StatTile's, never as a word: the allowance names a spec's prop.
+      '49 prop/boolean-name boolean prop `live` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+      // The verbs are a closed list, because a noun can end in -s too.
+      '52 prop/boolean-name boolean prop `focusRing` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+      '55 prop/boolean-name boolean prop `isNotReady` states a negation (`Not`)',
+      '58 prop/boolean-name boolean prop `hasNoBorder` states a negation (`No`)',
+      // A pattern's props are held to the rule as a component's are: a bare noun for a region it draws.
+      '35 prop/boolean-name boolean prop `sidebar` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+    ]);
+    expect(diagnostics[0]?.hint).toBe('rename it `showsValue` (spec/SCHEMA.md, "One meaning, one name, one polarity")');
+  }, 60_000);
+
+  test('the owed boolean names only shrink: each is one the pass recorded, and each still names a boolean the rule rejects', () => {
+    // The twenty-nine the spec-consistency pass of 2026-09-22 recorded (roadmap P4-D3 (1)), as it recorded them.
+    // BOOLEAN_NAMES_OWED is what is left of them: it loses a name in the change that renames the prop, and gains none.
+    const recorded = [
+      'ProgressBar.showValue', 'ProgressRing.showValue', 'Slider.showValue', 'DeltaBadge.showIcon', 'Pagination.showPageNumbers',
+      'HeroNumber.live', 'StatCard.live', 'StatTile.live', 'LineChart.scrollable', 'Skeleton.animated',
+      'AreaChart.grid', 'LineChart.grid', 'ListRow.leader', 'RangeBand.bookends', 'Slider.ticks', 'Sparkline.extremes', 'Table.stickyHeader',
+      'RingGauge.clampOverflow', 'TextArea.autoGrow', 'Spinner.delay',
+      'AdaptiveShell.topBar', 'AdaptiveShell.commandPalette', 'DashboardGrid.tileGroup', 'DashboardGrid.band',
+      'DetailScreen.readout', 'DetailScreen.actionBar', 'DetailScreen.hero', 'AdaptiveShell.sidebarCollapsed',
+      'Surface.selected',
+    ];
+    expect(recorded).toHaveLength(29);
+    const reader = fsReader(REPO_ROOT);
+    const types = new Map<string, unknown>();
+    for (const dir of ['spec/components', 'spec/patterns']) {
+      for (const entry of reader.list(dir).filter((e) => !e.dir && e.name.endsWith('.yaml'))) {
+        const path = `${dir}/${entry.name}`;
+        const value = loadSpec(path, reader.readText(path)).value ?? {};
+        for (const prop of Array.isArray(value['props']) ? (value['props'] as unknown[]) : []) {
+          if (typeof prop === 'object' && prop !== null && 'name' in prop && 'type' in prop) types.set(`${String(value['name'])}.${String(prop.name)}`, prop.type);
+        }
+      }
+    }
+    const problems: string[] = [];
+    for (const owed of BOOLEAN_NAMES_OWED) {
+      const prop = owed.split('.')[1] ?? '';
+      if (!recorded.includes(owed)) problems.push(`${owed} is no name P4-D3 recorded: a new prop follows the rule and never joins the list`);
+      if (!types.has(owed)) problems.push(`${owed} names no prop: it was renamed, so remove it from BOOLEAN_NAMES_OWED`);
+      else if (types.get(owed) !== 'boolean') problems.push(`${owed} is no boolean now: remove it from BOOLEAN_NAMES_OWED`);
+      else if (booleanNameProblem(prop) === null) problems.push(`${owed} holds the rule now: remove it from BOOLEAN_NAMES_OWED`);
+    }
+    expect(problems).toEqual([]);
+    expect(new Set(BOOLEAN_NAMES_OWED).size).toBe(BOOLEAN_NAMES_OWED.length);
+  });
+
+  test('the naming rule reads the verb and the words after it, and nothing else', () => {
+    for (const name of ['isSelected', 'isOn', 'isReadOnly', 'hasNext', 'showsClose', 'clampsOverflow']) expect(booleanNameProblem(name), name).toBeNull();
+    // A verb alone says nothing; an imperative, a modal, a verb outside the list and a noun that ends in -s are no
+    // statement about the component.
+    for (const name of ['is', 'shows', 'show', 'showValue', 'canDismiss', 'hidesClose', 'statusIcon', 'selected']) expect(booleanNameProblem(name), name).not.toBeNull();
+    // A negation anywhere after the verb, and only a whole word: `Note` and `Notch` are not `No` or `Not`.
+    expect(booleanNameProblem('isNonBlocking')?.message).toBe('states a negation (`Non`)');
+    expect(booleanNameProblem('showsLabelNot')?.message).toBe('states a negation (`Not`)');
+    expect(booleanNameProblem('hasNote')).toBeNull();
+    expect(booleanNameProblem('hasNotch')).toBeNull();
+  });
+
+  test("prose/unknown: the registry's label keys, one by one, as an alternation and as a glob, are no token paths; a word there that is neither is reported", async () => {
+    const diagnostics = await diagnose('prose-icon-label');
+    expect(diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`)).toEqual([
+      '59 prose/unknown prose names `icon.gauge.needle`, which resolves to no token and is no label key of spec/icons/registry.json',
+      '59 prose/unknown prose names `icon.nav.bakc`, which resolves to no token and is no label key of spec/icons/registry.json',
+    ]);
+    // The fix names the nearest label keys beside the nearest tokens.
+    expect(diagnostics.map((d) => (d.hint ?? '').split('?')[0])).toEqual([
+      'name a token or a label key: `icon.` names a token of that category or the label key of an entry of spec/icons/registry.json',
+      'did you mean `icon.nav.back`, `icon.nav.down`, `icon.nav.home`',
+    ]);
+    // Without the registry the same prose is read as token paths alone, and every label key is reported: the misreading
+    // that let a key resolve to nothing in Icon.yaml (ADR-0032). `icon.weight` is a token either way.
+    expect(await run('prose-icon-label', ['spec/icons/registry.json'])).toEqual([
+      '57 prose/unknown prose names `icon.nav.back`, which resolves to no token',
+      '58 prose/unknown prose names `icon.nav.*`, which resolves to no token',
+      '58 prose/unknown prose names `icon.status.warning|danger`, which resolves to no token',
+      '59 prose/unknown prose names `icon.gauge.needle`, which resolves to no token',
+      '59 prose/unknown prose names `icon.nav.bakc`, which resolves to no token',
+    ]);
+  }, 60_000);
 });
 
 describe('the binding-matrix grammar', () => {

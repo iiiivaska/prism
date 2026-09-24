@@ -1,5 +1,5 @@
 {
-  "description": "The pattern sets a Card variant Card does not list, a string on a boolean prop and a prop Card does not declare.",
+  "description": "The pattern sets a Card variant Card does not list, a string on a boolean prop, a prop Card does not declare, an icon the registry does not hold and a number on a string prop.",
   "expect": [
     { "code": "composition/prop", "file": "spec/patterns/SamplePattern.yaml" }
   ]

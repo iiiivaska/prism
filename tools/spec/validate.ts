@@ -1,5 +1,5 @@
-// spec:validate (roadmap P2-1; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
-// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rule 4, ADR-0036 §10).
+// spec:validate (roadmap P2-1 and P4-D3; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
+// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rules 4 and 6, ADR-0036 §10, spec/SCHEMA.md).
 //
 // Every spec/components/*.yaml is checked against spec/component.schema.json, and every
 // spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
@@ -19,7 +19,9 @@
 //   comp/orphan                  a comp token of this component that its spec does not bind
 //   comp/no-spec                 a comp group with no spec file
 //   prose/unknown                a token path in behavior, accessibility, usage or notes (and a pattern's
-//                                layout, rules or composition) that does not resolve
+//                                layout, rules or composition) that does not resolve; a word in the icon registry's
+//                                label namespace (`icon.<id>`, ADR-0032 rule 6) is read as a label key first, since
+//                                `icon` is a token category too, and is reported only when it is neither
 //   category/unclassified        a sys category that is neither in the schema regex nor in NON_BINDABLE
 //   haptic/unknown               a haptics binding that spec/haptics.yaml does not declare
 //   strings/unknown              prose names a `strings.<Component>.<name>` key that spec/strings.yaml does not declare
@@ -28,6 +30,13 @@
 //                                default that its `placeholders` do not declare (ADR-0032 rule 4)
 //   composition/unknown          a pattern composes a name with no spec in spec/components/ or spec/patterns/
 //   composition/prop             a pattern sets a prop the composed spec does not declare, or a value its type does not allow
+//   prop/boolean-name            a boolean prop whose name is not a verb of BOOLEAN_VERBS in the third person and a word
+//                                after it (`isSelected`, `hasNext`, `showsClose`, `clampsOverflow`), or one that states a
+//                                negation (spec/SCHEMA.md, "One meaning, one name, one polarity"); the names roadmap
+//                                P4-D3 still owes, BOOLEAN_NAMES_OWED, pass until each is renamed
+//   example/prop                 an example sets a prop its spec does not declare, or a value its type does not allow:
+//                                a boolean, number or string of that type, one of an enum's values, an id of the icon
+//                                registry for an icon (spec/SCHEMA.md, "Examples and snapshots")
 //   example/light-glass-backdrop light glass over something other than an image or a map
 //   example/vivid-unit           a vivid example whose hero carries the unit (V3)
 //   example/vivid-icon           a vivid example that sets an icon (ADR-0022 rule 8)
@@ -64,12 +73,15 @@ import {
 // `error` and `sortDiagnostics` are the diagnostic constructors the token pipeline uses; api.ts
 // re-exports only the printers, so the shared shape comes from the module itself (ARCHITECTURE §4.2).
 import { error, formatDiagnostics, formatDiagnosticsJson, sortDiagnostics } from '../tokens/ir/diagnostics.ts';
+// `lookup()`'s grammar and its nearest-name ranking over any set of ids; api.ts applies them to the dictionary only,
+// and the icon registry's label keys are read with the same grammar, so no second one is written here.
+import { findIds, suggest } from '../tokens/ir/lookup.ts';
 import { statesOf, walkBindings } from './bindings.ts';
 import {
-  BACKDROPS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup, DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK,
-  GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS, HAPTICS, LIGHT_GLASS_BACKDROPS,
-  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS, NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR,
-  STRINGS, VIVID_SLOT_PAIRS,
+  BACKDROPS, BOOLEAN_NAMES_OWED, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
+  DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
+  HAPTICS, ICON_REGISTRY, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS, NESTED_GLASS_KEYS,
+  NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -175,6 +187,7 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
 
   const haptics = loadHaptics(reader, HAPTICS, diagnostics);
   const strings = loadStrings(reader, STRINGS, diagnostics);
+  const icons = loadIcons(reader, ICON_REGISTRY, diagnostics);
 
   const specs: { doc: SpecDoc; value: Record<string, unknown> }[] = [];
   for (const path of yamlFiles(reader, COMPONENTS_DIR)) {
@@ -221,7 +234,7 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
   const categories = categoriesOf(ids);
   for (const { doc, value } of specs) {
     schemaDiagnostics(validateComponent, COMPONENT_SCHEMA, doc, value, diagnostics);
-    checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, diagnostics, bound, kind: 'component' });
+    checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, icons, diagnostics, bound, kind: 'component' });
   }
   if (validatePattern !== null) {
     // A pattern may compose a component or another pattern (DashboardGrid places a DetailScreen).
@@ -229,8 +242,8 @@ export async function runSpecValidate(opts: SpecValidateOptions = {}): Promise<S
     for (const { doc, value } of [...specs, ...patterns]) composable.set(specName(doc, value), value);
     for (const { doc, value } of patterns) {
       schemaDiagnostics(validatePattern, PATTERN_SCHEMA, doc, value, diagnostics);
-      checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, diagnostics, bound, kind: 'pattern' });
-      checkComposition(doc, value, composable, diagnostics);
+      checkSpec(doc, value, { bundle, bindable, categories, haptics, strings, icons, diagnostics, bound, kind: 'pattern' });
+      checkComposition(doc, value, composable, icons, diagnostics);
     }
   }
 
@@ -259,6 +272,41 @@ function loadHaptics(reader: SourceReader, path: string, diagnostics: Diagnostic
     return null;
   }
   return new Set(Object.keys(table));
+}
+
+/** What spec:validate reads from the icon registry (ADR-0013, ADR-0032 rule 6). */
+interface IconRegistry {
+  /** Every entry's id: the values a prop of `type: icon` takes. */
+  readonly ids: ReadonlySet<string>;
+  /** Every entry's `label`, a key of the form `icon.<id>` that prose may name and that is no token path. */
+  readonly labels: ReadonlySet<string>;
+  /** The first segment of every label (`icon`): a prose word there is read as a label key before a token path. */
+  readonly namespaces: ReadonlySet<string>;
+}
+
+/**
+ * The icon registry's ids and label keys; null when the file is absent or unreadable, and then icon values and label
+ * keys go unchecked. The registry's own rules are `icons:validate`'s; this reads only what the specs name from it.
+ */
+function loadIcons(reader: SourceReader, path: string, diagnostics: Diagnostic[]): IconRegistry | null {
+  if (!reader.exists(path)) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(reader.readText(path)) as unknown;
+  } catch (e) {
+    diagnostics.push(error('spec/parse', e instanceof Error ? e.message : String(e), {
+      file: path, hint: 'the icon registry must parse, or no icon prop and no label key can be checked; `pnpm icons:validate` checks the rest of it',
+    }));
+    return null;
+  }
+  const entries = isRecord(parsed) ? parsed['icons'] : undefined;
+  if (!isRecord(entries)) {
+    diagnostics.push(error('spec/parse', 'the icon registry has no `icons` mapping', { file: path, hint: 'declare each entry under `icons` (spec/icons/README.md)' }));
+    return null;
+  }
+  const labels = new Set<string>();
+  for (const entry of Object.values(entries)) if (isRecord(entry) && typeof entry['label'] === 'string') labels.add(entry['label']);
+  return { ids: new Set(Object.keys(entries)), labels, namespaces: new Set([...labels].map((l) => l.split('.')[0] ?? '')) };
 }
 
 /** A strings key as a spec names it: `strings.<Component>.<name>`, the component in PascalCase (ADR-0032 rule 3). */
@@ -368,6 +416,8 @@ interface SpecContext {
   readonly haptics: ReadonlySet<string> | null;
   /** spec/strings.yaml: key → the placeholders its entry declares; null when the table does not parse. */
   readonly strings: ReadonlyMap<string, ReadonlySet<string>> | null;
+  /** The icon registry's ids and label keys; null when it is absent or does not parse. */
+  readonly icons: IconRegistry | null;
   readonly diagnostics: Diagnostic[];
   /** comp group → the ids its spec binds. */
   readonly bound: Map<string, Set<string>>;
@@ -483,14 +533,22 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   if (ctx.strings !== null) checkStrings(doc, spec, ctx.strings, proseFields, diagnostics);
 
   for (const hit of proseTokenPaths(spec, ctx.categories, proseFields)) {
+    // The registry's label keys share the `icon` category's namespace and are no token paths (ADR-0032 rule 6), so a
+    // word there is read as a label key first. Read as a token path alone, a key resolves to nothing, and a check that
+    // cannot tell the two apart is how a key that nothing resolves went unnoticed in Icon.yaml (roadmap P4-D3 (3)).
+    const icons = ctx.icons !== null && ctx.icons.namespaces.has(hit.text.split('.')[0] ?? '') ? ctx.icons : null;
+    if (icons !== null && findIds(icons.labels, hit.text).length > 0) continue;
     if (resolveIds(ctx.bundle, hit.text).length > 0) continue;
-    diagnostics.push(error('prose/unknown', `prose names \`${hit.text}\`, which resolves to no token`, {
-      file: doc.path, line: doc.lineOf(hit.at), hint: suggestion(ctx.bundle, hit.text),
+    diagnostics.push(error('prose/unknown', `prose names \`${hit.text}\`, which resolves to no token${icons === null ? '' : ` and is no label key of ${ICON_REGISTRY}`}`, {
+      file: doc.path, line: doc.lineOf(hit.at), hint: icons === null ? suggestion(ctx.bundle, hit.text) : labelSuggestion(ctx.bundle, icons, hit.text),
     }));
   }
 
+  const named = name === '' ? base : name;
+  checkBooleanNames(doc, spec, named, diagnostics);
+  checkExampleProps(doc, spec, named, ctx.icons?.ids ?? null, diagnostics);
   checkExamples(doc, spec, diagnostics);
-  checkGlassChip(doc, spec, name === '' ? base : name, diagnostics);
+  checkGlassChip(doc, spec, named, diagnostics);
 }
 
 /** Ids for a public path or glob; [] when nothing matches. Resolution itself is tools/tokens's. */
@@ -503,14 +561,126 @@ function resolveIds(bundle: IRBundle, path: string): readonly string[] {
   }
 }
 
-/** `lookup`'s own nearest-name suggestions, as the diagnostic's fix. */
-function suggestion(bundle: IRBundle, path: string): string {
+/** `lookup`'s own nearest names for a path that resolves to nothing; [] when it has none. */
+function nearTokens(bundle: IRBundle, path: string): readonly string[] {
   try {
     lookup(bundle, path);
   } catch (e) {
-    if (e instanceof LookupError && e.suggestions.length > 0) return `did you mean ${e.suggestions.map((s) => `\`${s}\``).join(', ')}?`;
+    if (e instanceof LookupError) return e.suggestions;
   }
-  return 'name a token of the built dictionary (tokens/README.md lists them)';
+  return [];
+}
+
+/** `lookup`'s own nearest-name suggestions, as the diagnostic's fix. */
+function suggestion(bundle: IRBundle, path: string): string {
+  const near = nearTokens(bundle, path);
+  return near.length > 0 ? `did you mean ${near.map((s) => `\`${s}\``).join(', ')}?` : 'name a token of the built dictionary (tokens/README.md lists them)';
+}
+
+/** The fix for a word in the label namespace that is neither a token nor a label key: the nearest of both. */
+function labelSuggestion(bundle: IRBundle, icons: IconRegistry, path: string): string {
+  const near = [...nearTokens(bundle, path), ...suggest(icons.labels, path)];
+  const namespace = `\`${path.split('.')[0] ?? ''}.\` names a token of that category or the label key of an entry of ${ICON_REGISTRY}`;
+  return near.length > 0 ? `did you mean ${near.map((s) => `\`${s}\``).join(', ')}? (${namespace})` : `name a token or a label key: ${namespace}`;
+}
+
+/** Why a boolean prop's name breaks the naming rule, and the fix. */
+export interface BooleanNameProblem {
+  /** Follows "boolean prop `<name>`". */
+  readonly message: string;
+  readonly hint: string;
+}
+
+const NAMING_RULE = 'spec/SCHEMA.md, "One meaning, one name, one polarity"';
+
+/**
+ * Whether a boolean prop's name holds spec/SCHEMA.md's "One meaning, one name, one polarity": a statement whose subject
+ * is the component, so a verb of BOOLEAN_VERBS in the third person and a word after it (`isSelected`, `hasNext`,
+ * `showsClose`, `clampsOverflow`), with no negation after the verb (`isNotReady`). Null when it holds. The rule's other
+ * halves, one name for one meaning and one polarity across specs, are a reader's to check.
+ */
+export function booleanNameProblem(name: string): BooleanNameProblem | null {
+  const [verb = '', ...rest] = name.split(/(?=[A-Z])/);
+  if (verb === 'show' && rest.length > 0) {
+    return {
+      message: "opens with the imperative `show`, and the rule's verb is `shows`: a name is a statement about the component, never an instruction",
+      hint: `rename it \`shows${rest.join('')}\` (${NAMING_RULE})`,
+    };
+  }
+  if (!BOOLEAN_VERBS.includes(verb) || rest.length === 0) {
+    return {
+      message: `is not a verb of the rule (${BOOLEAN_VERBS.map((v) => `\`${v}…\``).join(', ')}) followed by what it says, so it does not state what is true of the component`,
+      hint: `name the condition that is true, with the component as its subject: \`is<Adjective>\` for a condition (\`isSelected\`), \`has<Thing>\` for something it has or lacks (\`hasNext\`), \`shows<Part>\` for a part the flag draws (\`showsClose\`), or a behavior's own verb in the third person (\`clampsOverflow\`), which joins BOOLEAN_VERBS in tools/spec/config.ts if it is new (${NAMING_RULE})`,
+    };
+  }
+  const negation = rest.find((word) => BOOLEAN_NEGATIONS.includes(word));
+  if (negation === undefined) return null;
+  return {
+    message: `states a negation (\`${negation}\`)`,
+    hint: `name the condition that is true (\`isReady\`, not \`isNotReady\`), and let the default say which way the component starts (${NAMING_RULE})`,
+  };
+}
+
+/**
+ * `prop/boolean-name`: every boolean prop a spec declares holds the naming rule, except the names roadmap P4-D3 still
+ * owes (BOOLEAN_NAMES_OWED), each until the change that renames it.
+ */
+function checkBooleanNames(doc: SpecDoc, spec: Record<string, unknown>, name: string, diagnostics: Diagnostic[]): void {
+  const props = spec['props'];
+  if (!Array.isArray(props)) return;
+  props.forEach((prop, i) => {
+    if (!isRecord(prop) || prop['type'] !== 'boolean' || typeof prop['name'] !== 'string') return;
+    const problem = booleanNameProblem(prop['name']);
+    if (problem === null || BOOLEAN_NAMES_OWED.includes(`${name}.${prop['name']}`)) return;
+    diagnostics.push(error('prop/boolean-name', `boolean prop \`${prop['name']}\` ${problem.message}`, {
+      file: doc.path, line: doc.lineOf(['props', i, 'name']), hint: problem.hint,
+    }));
+  });
+}
+
+/** A spec's declared props, by name. */
+function declaredProps(spec: Record<string, unknown>): Map<string, Record<string, unknown>> {
+  const declared = new Map<string, Record<string, unknown>>();
+  for (const prop of Array.isArray(spec['props']) ? spec['props'] : []) {
+    if (isRecord(prop) && typeof prop['name'] === 'string') declared.set(prop['name'], prop);
+  }
+  return declared;
+}
+
+/**
+ * `example/prop`: both galleries hand an example's props to the component as written (spec/SCHEMA.md, "Examples and
+ * snapshots"), so an example sets only props its spec declares, with values their types allow — what a pattern's
+ * composition was already held to (roadmap P4-D3 (3)). A prop no stack can take, or a value it cannot hold, would reach
+ * a story, a snapshot and the showcase on both stacks. `slot` and `data` props take the forms of "Slot content in
+ * examples", and every `action` prop gets the galleries' own handler, so none of the three is read here. Whether an
+ * example sets every `required` prop is a second question, which this check does not ask.
+ */
+function checkExampleProps(doc: SpecDoc, spec: Record<string, unknown>, name: string, icons: ReadonlySet<string> | null, diagnostics: Diagnostic[]): void {
+  const examples = spec['examples'];
+  if (!Array.isArray(examples)) return;
+  const declared = declaredProps(spec);
+  examples.forEach((example, i) => {
+    if (!isRecord(example) || !isRecord(example['props'])) return;
+    const id = typeof example['id'] === 'string' ? example['id'] : String(i);
+    for (const [key, value] of Object.entries(example['props'])) {
+      const where = { file: doc.path, line: doc.lineOf(['examples', i, 'props', key]) };
+      const prop = declared.get(key);
+      if (prop === undefined) {
+        diagnostics.push(error('example/prop', `example \`${id}\` sets \`${key}\`, which ${name} does not declare`, {
+          ...where,
+          hint: declared.size === 0
+            ? `${name} declares no props: declare \`${key}\` first, or take it out of the example`
+            : `set one of ${[...declared.keys()].join(', ')}, or declare \`${key}\` first: no stack can take a prop its spec does not declare (spec/SCHEMA.md, "Examples and snapshots")`,
+        }));
+        continue;
+      }
+      const problem = propValueProblem(prop, value, icons);
+      if (problem === null) continue;
+      diagnostics.push(error('example/prop', `example \`${id}\`: \`${name}.${key}\` ${problem}`, {
+        ...where, hint: `set a value ${name}'s \`${key}\` prop allows, or change the prop first (spec/SCHEMA.md, "Examples and snapshots")`,
+      }));
+    }
+  });
 }
 
 /** The example rules ADR-0022 rule 8, ADR-0029 §2.5 and ADR-0030 §8 and rule 10 give spec:validate. */
@@ -733,6 +903,7 @@ function checkComposition(
   doc: SpecDoc,
   pattern: Record<string, unknown>,
   composable: ReadonlyMap<string, Record<string, unknown>>,
+  icons: IconRegistry | null,
   diagnostics: Diagnostic[],
 ): void {
   const composition = pattern['composition'];
@@ -749,10 +920,7 @@ function checkComposition(
       }));
       return;
     }
-    const declared = new Map<string, Record<string, unknown>>();
-    for (const prop of Array.isArray(target['props']) ? target['props'] : []) {
-      if (isRecord(prop) && typeof prop['name'] === 'string') declared.set(prop['name'], prop);
-    }
+    const declared = declaredProps(target);
     const props = isRecord(item['props']) ? item['props'] : {};
     for (const [key, value] of Object.entries(props)) {
       const where = { file: doc.path, line: doc.lineOf([...at, 'props', key]) };
@@ -763,7 +931,7 @@ function checkComposition(
         }));
         continue;
       }
-      const problem = propValueProblem(prop, value);
+      const problem = propValueProblem(prop, value, icons?.ids ?? null);
       if (problem !== null) {
         diagnostics.push(error('composition/prop', `\`${name}.${key}\` ${problem}`, {
           ...where, hint: `set a value ${name}'s \`${key}\` prop allows`,
@@ -773,11 +941,17 @@ function checkComposition(
   });
 }
 
-/** Why a fixed value does not fit a declared prop, or null when it does. Only closed types are checked. */
-function propValueProblem(prop: Record<string, unknown>, value: unknown): string | null {
+/**
+ * Why a value an example sets or a composition fixes does not fit a declared prop, or null when it does. Only closed
+ * types are checked: a `slot` or `data` prop takes spec/SCHEMA.md's slot forms, an `action` prop the galleries' handler,
+ * and an `icon` prop goes unchecked when the registry could not be read (`icons` null).
+ */
+function propValueProblem(prop: Record<string, unknown>, value: unknown, icons: ReadonlySet<string> | null): string | null {
   const type = prop['type'];
   if (type === 'boolean') return typeof value === 'boolean' ? null : `is a boolean, not ${JSON.stringify(value)}`;
   if (type === 'number') return typeof value === 'number' ? null : `is a number, not ${JSON.stringify(value)}`;
+  if (type === 'string') return typeof value === 'string' ? null : `is a string, not ${JSON.stringify(value)}`;
+  if (type === 'icon' && icons !== null) return typeof value === 'string' && icons.has(value) ? null : `is an icon of ${ICON_REGISTRY}, not ${JSON.stringify(value)}`;
   if (type === 'enum' && Array.isArray(prop['values'])) {
     const allowed = prop['values'].filter((v): v is string => typeof v === 'string');
     // A list value sets a multi-value enum (Sheet's `detents: [peek, medium]`): each item must be allowed.
