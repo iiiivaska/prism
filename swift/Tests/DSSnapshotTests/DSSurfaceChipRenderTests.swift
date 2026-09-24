@@ -423,7 +423,13 @@ struct DSSurfaceChipRenderTests {
 
             var offOutline = 0, onOutline = 0
             for pixel in 0..<(handedWhite.count / 4) {
-                let difference = (0..<3).map { abs(Int(handedWhite[pixel * 4 + $0]) - Int(fillAlone[pixel * 4 + $0])) }.max() ?? 0
+                // The largest difference over red, green and blue, written out as a loop: Swift 6.3 (Xcode 26.6, the
+                // CI pin) cannot type-check it as one expression, `(0..<3).map { … }.max() ?? 0`, in reasonable time.
+                var difference = 0
+                for channel in 0..<3 {
+                    let offset = pixel * 4 + channel
+                    difference = max(difference, abs(Int(handedWhite[offset]) - Int(fillAlone[offset])))
+                }
                 if abs(Self.distance(x: pixel % width, y: pixel / width, toCapsuleIn: frame)) > 1.5 {
                     offOutline = max(offOutline, difference)
                 } else {
