@@ -9,7 +9,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0003](0003-two-implementations-swiftui-react.md) | Two implementations: SwiftUI and React; minimum OS 26 | accepted (amended by 0019, 0020, 0023) |
 | [0004](0004-dtcg-tokens-style-dictionary.md) | Single DTCG token source built by Style Dictionary | accepted (amended by 0019, 0020, 0021, 0022, 0024, 0026) |
 | [0005](0005-figma-deferred.md) | Figma deferred, Figma-ready from day one | accepted (amended by 0024, 0026) |
-| [0006](0006-spec-contract-and-parity.md) | Component spec as versioned contract; parity report; one system version | accepted (amended by 0024) |
+| [0006](0006-spec-contract-and-parity.md) | Component spec as versioned contract; parity report; one system version | accepted (amended by 0024, 0038) |
 | [0007](0007-dataviz-first-class.md) | Data-viz is a first-class module | accepted (amended by 0020, 0021, 0030) |
 | [0008](0008-typography-slots-and-presets.md) | Three font slots, Native and Signature presets, Cyrillic mandatory | accepted (amended by 0020, 0021) |
 | [0009](0009-materials-in-layers.md) | Materials in layers: native chrome, solid / vivid / glass content | accepted (amended by 0022) |
@@ -17,7 +17,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0011](0011-accessibility-tiers-ci.md) | Accessibility in tiers, enforced in CI | accepted (amended by 0021, 0022, 0023, 0032) |
 | [0012](0012-layers-and-v1-scope.md) | Five layers and the v1 scope | accepted |
 | [0013](0013-icon-registry.md) | Icons through a semantic registry | accepted (amended by 0019, 0035) |
-| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028, 0031) |
+| [0014](0014-monorepo-and-distribution.md) | Monorepo with Package.swift at root; SPM tags; GitHub Packages | accepted (amended by 0018, 0024, 0028, 0031, 0038) |
 | [0015](0015-references-inspiration-only.md) | References are inspiration only | accepted |
 | [0016](0016-name-and-prefix.md) | Name Prism, prefix `ds` | accepted (amended by 0018, 0019) |
 | [0017](0017-blueprint-first.md) | First deliverable is a blueprint, in English | accepted |
@@ -41,6 +41,7 @@ One file per decision, numbered to match `docs/decisions.md`. An ADR is never ed
 | [0035](0035-filled-on-both-stacks-or-neither.md) | A glyph is filled on both stacks or on neither: an entry whose SF Symbol has no fill variant is marked `fill: false` and draws its outline for `filled` (amends 0013) | accepted |
 | [0036](0036-glass-chip-and-backdrop.md) | The glass chip is a shape of the Surface module, and Backdrop declares the page over media: a component draws the part that binds `material.glass.chip` through an internal chip shape that resolves with Surface's triggers, samples only what lies under it and publishes its ground; `Backdrop` / `dsBackdrop(kind)` is the one public paint-free publisher (amends 0022, 0025, 0029) | accepted (§3, §5, §7, §8.2, §8.3 and rules 3 and 6 amended by 0037) |
 | [0037](0037-chip-inside-a-chip.md) | A chip inside another chip samples nothing, and inside a component's own cell it has no media: a chip hands its content an enclosure (`none`, `translucent` or `opaque`) instead of ADR-0036's glass-chip flag; an enclosed chip draws no backdrop filter, and under a chip that renders its own cell or its fallback, glass falls back (amends 0036) | accepted |
+| [0038](0038-version-authority.md) | The version authority: Changesets computes the number over the fixed group, `VERSION` records it, and `release:stamp` writes every other copy the ledger lists, which `release:check` holds together; `Package.swift` and the skill carry none, and of the registries only the icon registry does (amends 0006, 0014) | accepted |
 
 ## Template
 

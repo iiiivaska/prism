@@ -24,8 +24,9 @@ Why not `VERSION` alone, as ADR-0014 wrote it? Because a human choosing the next
 the thing Changesets exists to remove, and because the number has to be derivable from the pending
 changesets before the release runs (the workflow's confirmation input compares against
 `release:stamp --plan`). ADR-0014's rule — "`VERSION` is the only place the number lives" — survives
-as what it was protecting: `VERSION` is the only place anything *reads* it from, and no copy of it is
-ever edited by hand. ADR-0014's sentence itself wants the amendment this README records.
+as what it was protecting: one number, recorded in one file, and no copy of it ever edited by hand.
+ADR-0038 records this decision as the amendment of ADR-0014's sentence, and of ADR-0006 decision 5's
+"the registries": only the icon registry carries the number.
 
 Why not the published manifests alone? Because `VERSION` is what a person, a shell script, a Swift
 build and `tokens:diff`'s tag lookup can read without a JSON parser and without knowing which of the

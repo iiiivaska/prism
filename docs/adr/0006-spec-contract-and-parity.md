@@ -1,6 +1,6 @@
 # ADR-0006: Component spec as versioned contract; parity report; one system version
 
-- Status: accepted (the major-bump consequence amended by [ADR-0024](0024-token-source-conventions.md) §14 while the version is 0.x)
+- Status: accepted (the major-bump consequence amended by [ADR-0024](0024-token-source-conventions.md) §14 while the version is 0.x; decision 5's "the registries" amended by [ADR-0038](0038-version-authority.md): only the icon registry carries the system version, and the haptics registry's `version` is its own)
 - Date: 2026-09-08
 - Decision record entry: docs/decisions.md #6
 
