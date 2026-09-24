@@ -6,6 +6,9 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { afterEach, describe, expect, test } from 'vitest';
+import { checkSfNamesAbsent } from '../icons/checks.ts';
+import { loadRegistry } from '../icons/registry.ts';
+import { changesetFiles } from '../tokens/diff/changesets.ts';
 import { main, parseArgs, runStamp, type Io, type StampArgs } from './stamp.ts';
 import { DERIVED, publishedPackages, REPO_ROOT, tagFor, versionOfTag } from './targets.ts';
 
@@ -273,5 +276,15 @@ describe('this repository', () => {
   test('VERSION is what the published packages carry', () => {
     const version = readFileSync(join(REPO_ROOT, 'VERSION'), 'utf8').trim();
     for (const p of publishedPackages(REPO_ROOT)) expect(p.version).toBe(version);
+  });
+
+  test('no pending changeset names an SF Symbol, or `pnpm icons:build` would stop release:version (ADR-0013 rule 5)', () => {
+    // `changeset version` writes every changeset into the CHANGELOG.md of a web package, and the step
+    // after the stamp scans `web/` for SF Symbol names. Here the words fail the change that wrote them.
+    const { registry } = loadRegistry(REPO_ROOT);
+    if (registry === null) throw new Error('spec/icons/registry.json did not load');
+    const dir = join(REPO_ROOT, '.changeset');
+    const pending = changesetFiles(dir).map((file) => ({ path: `.changeset/${file}`, text: readFileSync(join(dir, file), 'utf8') }));
+    expect(checkSfNamesAbsent(registry, pending).map((issue) => `${issue.where}: ${issue.message}`)).toEqual([]);
   });
 });
