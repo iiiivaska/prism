@@ -8,6 +8,9 @@
  *   `transparency="reduce"`). The client half, with a real `matchMedia`, runs in the gallery's browser
  *   suite.
  * - The stylesheet binds what Surface.yaml binds, cell by cell.
+ * - The glass chip block of the same stylesheet (ADR-0036 §7) reads the recipe the chip specs bind, draws
+ *   no backdrop filter when flat, and paints the fallback as `color.bg.page` under
+ *   `color.bg.surface.raised` with no top edge. `test/surface-chip.test.tsx` has the chip's resolution.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -249,5 +252,107 @@ describe("Surface.css binds what Surface.yaml binds", () => {
     expect(declared(".ds-surface", "--ds--surface-shadow-duration")).toBe("var(--ds--surface-geometry-duration)");
     expect(declared(".ds-surface", "--ds--surface-scale-duration")).toBe("var(--ds--surface-geometry-duration)");
     expect(transition).toMatch(/--ds--surface-fill var\(--ds--surface-crossfade-duration\)/);
+  });
+});
+
+describe("Surface.css draws the glass chip (ADR-0036 §7)", () => {
+  const rules = flattenRules(parseCss(readFileSync(join(packageRoot, "src", "surface", "Surface.css"), "utf8")));
+  const chipRules = rules.filter((rule) => rule.selectors.some((selector) => selector.includes(".ds-surface-chip")));
+  // The two specs wave 1b implements through the chip shape; seven more bind the same recipe.
+  const chipSpecs = [loadSpec("Avatar"), loadSpec("Chip")];
+
+  function declared(selector: string, property: string): string | undefined {
+    const values = rules.filter((rule) => rule.selectors.includes(selector)).flatMap((rule) => rule.declarations.filter((declaration) => declaration.property === property));
+    return values.at(-1)?.value;
+  }
+
+  const chip = (rendering: string): string => `.ds-surface-chip[data-ds-surface-chip="${rendering}"]`;
+  const flat = '.ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat]';
+  const edge = '.ds-surface-chip > [data-ds-slot="surface-chip-edge"]';
+  const bound = (path: string | undefined): string | undefined => (path === undefined ? undefined : `var(${cssVariable(path)})`);
+
+  it("reads material.glass.chip's fill, blur, saturate, edge.start and edge.end, the cells the chip specs bind on media", () => {
+    for (const spec of chipSpecs) {
+      const root = spec.tokens["root"];
+      expect(cell(root?.["background"], "page", "map"), spec.name).toBe("material.glass.chip");
+      expect(cell(root?.["blur"], "page", "map"), spec.name).toBe("material.glass.chip.blur");
+      expect(cell(root?.["saturate"], "page", "map"), spec.name).toBe("material.glass.chip.saturate");
+      expect(cell(root?.["edgeStartAlpha"], "page", "map"), spec.name).toBe("material.glass.chip.edge.start");
+      expect(cell(root?.["edgeEndAlpha"], "page", "map"), spec.name).toBe("material.glass.chip.edge.end");
+      expect(cell(root?.["edgeColor"]), spec.name).toBe("color.edge.highlight");
+    }
+    expect(declared(chip("glass"), "--ds--surface-chip-fill")).toBe(bound("material.glass.chip"));
+    expect(declared(chip("glass"), "backdrop-filter")).toBe(`blur(${bound("material.glass.chip.blur")}) saturate(${bound("material.glass.chip.saturate")})`);
+    const ramp = declared(edge, "background-image") ?? "";
+    expect(ramp).toContain(`${bound("material.glass.chip.edge.start")}`);
+    expect(ramp).toContain(`${bound("material.glass.chip.edge.end")}`);
+    expect(ramp).toContain(bound("color.edge.highlight"));
+    // Surface's edge geometry: 135°, the end alpha from 75 %, a ring of border.hairline.
+    expect(ramp.replaceAll(/\s+/gu, " ")).toMatch(/^linear-gradient\( 135deg, .* 0%, .* 75% \)$/);
+    expect(declared(edge, "padding")).toBe(bound("border.hairline"));
+    expect(declared(edge, "border-radius")).toBe("inherit");
+    // Those five are the only recipe variables the chip reads: no grain, no bloom, no other recipe.
+    const names = new Set(chipRules.flatMap((rule) => rule.declarations.flatMap((declaration) => [...declaration.value.matchAll(/--ds-material-glass-[\w-]+/g)].map((match) => match[0]))));
+    expect([...names].sort()).toEqual(
+      ["material.glass.chip", "material.glass.chip.blur", "material.glass.chip.edge.end", "material.glass.chip.edge.start", "material.glass.chip.saturate"].map(cssVariable).sort(),
+    );
+  });
+
+  it("is backdrop-filter: none when flat, where the chip specs bind no blur or saturation (glass on glass, §5)", () => {
+    for (const spec of chipSpecs) {
+      expect(cell(spec.tokens["root"]?.["background"], "glass"), spec.name).toBe("material.glass.chip");
+      expect(cell(spec.tokens["root"]?.["blur"], "glass"), spec.name).toBeUndefined();
+      expect(cell(spec.tokens["root"]?.["saturate"], "glass"), spec.name).toBeUndefined();
+    }
+    expect(declared(flat, "backdrop-filter")).toBe("none");
+    // The chip block's only backdrop filters are the recipe's and the flat one's.
+    const filtered = chipRules.filter((rule) => rule.declarations.some((declaration) => declaration.property === "backdrop-filter"));
+    expect(filtered.flatMap((rule) => rule.selectors).sort()).toEqual([chip("glass"), flat].sort());
+  });
+
+  it("paints color.bg.page under color.bg.surface.raised under the fallback, the cells every chip spec binds, with no top edge", () => {
+    for (const spec of chipSpecs) {
+      expect(cell(spec.tokens["root"]?.["fallbackUnderlay"]), spec.name).toBe("color.bg.page");
+      expect(cell(spec.tokens["root"]?.["fallbackBackground"]), spec.name).toBe("color.bg.surface.raised");
+    }
+    expect(declared(chip("fallback"), "--ds--surface-chip-under")).toBe(bound("color.bg.page"));
+    expect(declared(chip("fallback"), "--ds--surface-chip-fill")).toBe(bound("color.bg.surface.raised"));
+    // The underlay is the background colour, painted under the fill's gradient layer, as Surface paints its own.
+    expect(declared(".ds-surface-chip", "background-color")).toBe("var(--ds--surface-chip-under)");
+    expect(declared(".ds-surface-chip", "background-image")).toBe("linear-gradient(var(--ds--surface-chip-fill), var(--ds--surface-chip-fill))");
+    // No top edge: the root's shadow is the elevation alone, and nothing in the chip block names Surface's raised edge.
+    expect(declared(".ds-surface-chip", "box-shadow")).toBe("var(--ds--surface-chip-shadow)");
+    expect(declared(chip("fallback"), "box-shadow")).toBeUndefined();
+    expect(declared(chip("fallback"), "backdrop-filter")).toBeUndefined();
+    const text = chipRules.flatMap((rule) => rule.declarations.map((declaration) => `${declaration.property}: ${declaration.value}`)).join("\n");
+    expect(text).not.toContain("--ds-color-edge-raised");
+    expect(text).not.toContain("--ds--surface-top-edge");
+  });
+
+  it("paints the component's own cell from --ds--surface-chip-own, and nothing for none", () => {
+    expect(declared(chip("own"), "--ds--surface-chip-fill")).toBe("var(--ds--surface-chip-own)");
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-fill")).toBe("transparent");
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-under")).toBe("transparent");
+    expect(chipRules.filter((rule) => rule.selectors.includes(chip("none")))).toEqual([]);
+  });
+
+  it.each(propValues(spec, "elevation"))("draws elevation %s as Surface draws its own", (value) => {
+    expect(declared(`.ds-surface-chip[data-ds-elevation="${value}"]`, "--ds--surface-chip-shadow")).toBe(declared(`.ds-surface[data-ds-elevation="${value}"]`, "--ds--surface-shadow"));
+  });
+
+  it("crossfades its two fills and transitions its blur on Surface's timings (ADR-0023 §8.4)", () => {
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-crossfade-duration")).toBe(declared(".ds-surface", "--ds--surface-crossfade-duration"));
+    expect(declared(".ds-surface-chip", "--ds--surface-chip-geometry-duration")).toBe(declared(".ds-surface", "--ds--surface-geometry-duration"));
+    const transition = declared(".ds-surface-chip", "transition") ?? "";
+    expect(transition).toMatch(/--ds--surface-chip-fill var\(--ds--surface-chip-crossfade-duration\) var\(--ds-motion-spring-smooth-easing\)/);
+    expect(transition).toMatch(/--ds--surface-chip-under var\(--ds--surface-chip-crossfade-duration\) var\(--ds-motion-spring-smooth-easing\)/);
+    expect(transition).toMatch(/backdrop-filter var\(--ds--surface-chip-geometry-duration\) var\(--ds-motion-spring-smooth-easing\)/);
+  });
+
+  it("puts the edge behind the host's content and hides it under forced colours", () => {
+    expect(declared(".ds-surface-chip", "isolation")).toBe("isolate");
+    expect(declared(edge, "z-index")).toBe("-1");
+    const forced = rules.filter((rule) => rule.atRules.some((at) => at.name === "media" && at.params.includes("forced-colors")) && rule.selectors.includes(edge));
+    expect(forced.flatMap((rule) => rule.declarations).find((declaration) => declaration.property === "display")?.value).toBe("none");
   });
 });

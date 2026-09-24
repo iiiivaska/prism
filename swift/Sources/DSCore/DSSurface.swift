@@ -422,9 +422,154 @@ nonisolated public enum DSSurface: Sendable {
     /// Reduce Transparency, Increase Contrast, or a backdrop that cannot carry glass (`invalidBackdrop`, which the
     /// caller decides and logs).
     ///
-    /// This is the one place the four are evaluated. Surface's resolution asks it, and ADR-0036 §3 has the glass
-    /// chip's resolution ask it too, so the two fallbacks cannot drift apart.
+    /// This is the one place the four are evaluated. Surface's resolution asks it, and so does the glass chip's
+    /// (`resolveChip`, ADR-0036 §3), so the two fallbacks cannot drift apart.
     private static func glassFallsBack(isWatch: Bool, context: DSTokenContext, invalidBackdrop: Bool) -> Bool {
         isWatch || context.transparency == .reduced || context.contrast == .increased || invalidBackdrop
+    }
+}
+
+// MARK: - The glass chip (ADR-0036 §2 to §7)
+
+/// What a component asks of the one part it draws through the glass chip shape, on the ground that part reads
+/// (ADR-0036 §2.2): the spec's cell for that part's `background` on this ground, and nothing more. `glass` is the
+/// cell that binds `material.glass.chip`; `own` is any other cell, which the component names itself; `none` is no
+/// fill.
+nonisolated package enum DSSurfaceChipFill: String, CaseIterable, Hashable, Sendable {
+    case glass, own, none
+}
+
+/// Whether the backdrop trigger applies to a glass chip (ADR-0036 §2.2, §3 step 2). `content`, the default, applies
+/// it: glass asked for on a ground with no media falls back, as a Surface's does. `chrome` is for bars that exist to
+/// show the page through them; there the backdrop is never invalid, and only the other three triggers apply.
+nonisolated package enum DSSurfaceChipGate: String, CaseIterable, Hashable, Sendable {
+    case content, chrome
+}
+
+/// What a glass chip publishes to the component's other parts (ADR-0036 §4). `ground`, the default, publishes the
+/// ground the chip sits on, so a part keys on the media under the glass. `raised` is for bars whose items are checked
+/// on `raised`. Under the fallback a chip publishes `raised` either way.
+nonisolated package enum DSSurfaceChipPublication: String, CaseIterable, Hashable, Sendable {
+    case ground, raised
+}
+
+/// What a glass chip draws (ADR-0036 §2.3): the recipe; the fallback, `color.bg.surface.raised` over
+/// `color.bg.page`; the component's own cell; or nothing.
+nonisolated package enum DSSurfaceChipRendering: String, CaseIterable, Hashable, Sendable {
+    case glass, fallback, own, none
+}
+
+/// Everything a glass chip draws and publishes (ADR-0036 §3). The web's `SurfaceChipResolution`
+/// (`web/packages/react/src/surface/resolve.ts`) has the same fields, so the two tables read side by side.
+nonisolated package struct DSSurfaceChipResolution: Hashable, Sendable {
+    /// The context the component read, which the chip sits on.
+    package let ground: DSSurfaceContext
+    /// What the component asked for on that ground.
+    package let requested: DSSurfaceChipFill
+    /// What the chip draws.
+    package let rendered: DSSurfaceChipRendering
+    /// `DSGlassAppearance.chip`'s recipe when glass renders; nil otherwise.
+    package let glass: DSGlassRecipe?
+    /// Whether the recipe blurs and saturates the backdrop under the chip. False when glass does not render, and when
+    /// it renders on the scheme's glass, on light glass or inside another glass chip, where a chip draws the recipe's
+    /// fill and edge only (ADR-0036 §5).
+    package let blursBackdrop: Bool
+    /// True when glass was asked for and replaced by the fallback.
+    package let isGlassFallback: Bool
+    /// True when glass was asked for under the `content` gate on a ground with no media. Reported whatever the other
+    /// triggers, as `DSSurfaceResolution.hasInvalidBackdrop` is, and logged at debug level.
+    package let hasInvalidBackdrop: Bool
+    /// Paint `color.bg.page` under the chip: exactly under the fallback (ADR-0030 rule 6).
+    package let paintsPage: Bool
+    /// What the component's other parts read: `(raised, none)` under the fallback or when the component asks for
+    /// `raised`, and the ground otherwise.
+    package let published: DSSurfaceContext
+}
+
+nonisolated extension DSSurface {
+    /// The convenience a component uses: the context and the material values come from one token set, as
+    /// `resolve(material:backdrop:selected:tokens:isWatch:)` does for a Surface.
+    package static func resolveChip(
+        _ requested: DSSurfaceChipFill,
+        on ground: DSSurfaceContext,
+        insideGlassChip: Bool = false,
+        gate: DSSurfaceChipGate = .content,
+        publishes: DSSurfaceChipPublication = .ground,
+        tokens: DSTokenSet,
+        isWatch: Bool = DSPlatform.isWatch
+    ) -> DSSurfaceChipResolution {
+        resolveChip(
+            requested, on: ground, insideGlassChip: insideGlassChip, gate: gate, publishes: publishes,
+            context: tokens.context, tokens: tokens.material, isWatch: isWatch
+        )
+    }
+
+    /// Resolves the one part of a Prism component that binds `material.glass.chip` (ADR-0036 §3), from the component's
+    /// answer for its ground and nothing else: the component hands over no recipe, colour, setting or fallback.
+    ///
+    /// 1. The media under the chip is the ground's backdrop on `page`, `glass` and `glassLight`, `vivid` on `vivid`, and
+    ///    none on every other material.
+    /// 2. Glass asked for under the `content` gate on a ground with no media is an invalid backdrop, logged at debug
+    ///    level as Surface logs its own.
+    /// 3. Glass asked for falls back through the one function Surface's resolution uses (`glassFallsBack`): on the
+    ///    watch, under Reduce Transparency, under Increase Contrast, or over an invalid backdrop.
+    /// 4. The recipe is `DSGlassAppearance.chip`'s when glass renders.
+    /// 5. It blurs the backdrop unless the ground is the scheme's glass or light glass, or a glass chip encloses this
+    ///    one.
+    /// 6. `color.bg.page` is painted under the chip exactly under the fallback.
+    /// 7. The chip publishes `(raised, none)` under the fallback or when asked to, and the ground otherwise.
+    ///
+    /// Step 8 of ADR-0036 §3, the enclosing-chip flag the chip hands its content, is the drawing's (`dsSurfaceChip`),
+    /// since the flag is an environment value of DSComponents.
+    package static func resolveChip(
+        _ requested: DSSurfaceChipFill,
+        on ground: DSSurfaceContext,
+        insideGlassChip: Bool = false,
+        gate: DSSurfaceChipGate = .content,
+        publishes: DSSurfaceChipPublication = .ground,
+        context: DSTokenContext,
+        tokens: DSTokenSet.Material,
+        isWatch: Bool = DSPlatform.isWatch
+    ) -> DSSurfaceChipResolution {
+        let asksForGlass = requested == .glass
+        let media = chipMedia(on: ground)
+        let invalidBackdrop = asksForGlass && gate == .content && !media.allowsGlass
+        if invalidBackdrop {
+            log.debug(
+                "A glass chip on \(ground.material.rawValue, privacy: .public) over \(ground.backdrop.rawValue, privacy: .public) has no media under it; glass renders only over image, map or vivid, so it falls back to color.bg.surface.raised over color.bg.page (ADR-0036 §3)."
+            )
+        }
+        let fallback =
+            asksForGlass && glassFallsBack(isWatch: isWatch, context: context, invalidBackdrop: invalidBackdrop)
+
+        let rendered: DSSurfaceChipRendering
+        switch requested {
+        case .glass: rendered = fallback ? .fallback : .glass
+        case .own: rendered = .own
+        case .none: rendered = .none
+        }
+        let rendersGlass = rendered == .glass
+
+        return DSSurfaceChipResolution(
+            ground: ground,
+            requested: requested,
+            rendered: rendered,
+            glass: rendersGlass ? DSGlassAppearance.chip.recipe(tokens) : nil,
+            blursBackdrop: rendersGlass && !ground.material.isGlass && !insideGlassChip,
+            isGlassFallback: fallback,
+            hasInvalidBackdrop: invalidBackdrop,
+            paintsPage: fallback,
+            published: fallback || publishes == .raised ? DSSurfaceContext(material: .raised) : ground
+        )
+    }
+
+    /// ADR-0036 §3 step 1: the media kind under a chip on `ground`. The page, the scheme's glass and light glass sit on
+    /// the backdrop they declare; vivid is media of its own; every other material is opaque paint.
+    private static func chipMedia(on ground: DSSurfaceContext) -> DSBackdropKind {
+        switch ground.material {
+        case .page, .glass, .glassLight: ground.backdrop
+        case .vivid: .vivid
+        case .solid, .raised, .nested, .inverse, .accent: .none
+        }
     }
 }

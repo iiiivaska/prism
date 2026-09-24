@@ -23,6 +23,10 @@ private struct DSSurfaceGeometryKey: EnvironmentKey {
     static let defaultValue: DSSurfaceGeometry? = nil
 }
 
+private struct DSInsideGlassChipKey: EnvironmentKey {
+    static let defaultValue = false
+}
+
 extension EnvironmentValues {
     /// The nearest backdrop a glass Surface can blur: from `dsBackdrop(_:_:)`, or from the enclosing opaque Surface.
     var dsBackdropSource: DSBackdropSource? {
@@ -34,6 +38,16 @@ extension EnvironmentValues {
     var dsSurfaceGeometry: DSSurfaceGeometry? {
         get { self[DSSurfaceGeometryKey.self] }
         set { self[DSSurfaceGeometryKey.self] = newValue }
+    }
+
+    /// Whether a glass chip encloses this view (ADR-0036 §3 step 8). A glass chip sets it for its content when it
+    /// renders the recipe, or when a glass chip encloses it, and a glass chip inside then draws the recipe's fill and
+    /// edge without blurring anything (ADR-0036 §5): the pixels it would blur are the ones the enclosing chip already
+    /// blurred. `dsBackdrop(_:_:)` clears it, because the media it hands down are new pixels. Surface neither reads nor
+    /// writes it.
+    var dsInsideGlassChip: Bool {
+        get { self[DSInsideGlassChipKey.self] }
+        set { self[DSInsideGlassChipKey.self] = newValue }
     }
 }
 
@@ -62,7 +76,8 @@ extension View {
     /// nearest publisher wins, so a `dsBackdrop` inside a Surface overrides the Surface's context for its subtree, and
     /// a Surface inside a `dsBackdrop` publishes its own. The modifier reads no setting; under the glass fallback a
     /// Surface ignores the pixels. `.none` is not media: it logs at debug level, publishes nothing and still hands the
-    /// pixels down.
+    /// pixels down. Either way the glass chips of Prism's components inside blur these pixels, even where the modifier
+    /// sits inside another component's glass chip (ADR-0036 §3 step 8).
     ///
     /// - Parameters:
     ///   - kind: what the app draws under this view: `.image`, `.map` or `.vivid`. Name the media actually drawn;
@@ -102,6 +117,7 @@ private struct DSBackdropModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         declared(content)
+            .environment(\.dsInsideGlassChip, false)
             .dsBackdropSource(backdrop, space: space, size: size)
             .background { backdrop }
             .onGeometryChange(for: CGSize.self, of: \.size) { size = $0 }

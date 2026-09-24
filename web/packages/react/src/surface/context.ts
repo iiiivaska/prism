@@ -7,9 +7,10 @@
  * is decided in React: the fill and every foreground switch together. Surface also writes it onto its
  * own element as `data-ds-material` and `data-ds-backdrop`, for its stylesheet and for tests.
  *
- * `Backdrop` is the one other provider (ADR-0036 §8): it publishes the page over the media kind an app
- * paints itself, and passes `depth` through. The context object is not exported, so no other code can
- * publish without painting.
+ * `Backdrop` is the one other public provider (ADR-0036 §8): it publishes the page over the media kind an
+ * app paints itself, and passes `depth` through. Inside the package the glass chip shape provides it too
+ * (`SurfaceChipScope`, ADR-0036 §4): the ground its part sits on, or `raised` under its fallback, with the
+ * parent's `depth`. The context object is not exported, so no other code can publish without painting.
  */
 import { createContext, useContext } from "react";
 import type { BackdropKind, SurfaceMaterial } from "./resolve.ts";
@@ -32,3 +33,12 @@ export const SurfaceContext = createContext<SurfaceContextValue>(rootSurfaceCont
 export function useSurfaceContext(): SurfaceContextValue {
   return useContext(SurfaceContext);
 }
+
+/**
+ * Whether a glass chip encloses this point (ADR-0036 §3 step 8): a chip sets it for its content when it
+ * renders the recipe, or when a glass chip encloses it, and a glass chip inside then draws the recipe's
+ * fill and edge with no backdrop filter (ADR-0036 §5), so glass is never blurred on glass. `Backdrop`
+ * clears it, because it declares new media under its children; Surface neither reads nor writes it.
+ * Internal: the package does not export it.
+ */
+export const InsideGlassChipContext = createContext(false);

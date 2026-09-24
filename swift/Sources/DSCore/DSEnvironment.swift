@@ -114,8 +114,9 @@ extension View {
 
     /// Publishes a surface context to descendants: Prism's own writer, `package` since ADR-0036 §8.4. It is called by
     /// the two public publishers, `DSSurfaceView` (the context `DSSurface.resolve` produces) and `dsBackdrop(_:_:)`
-    /// (the page over the declared kind), and by a Prism composite whose spec publishes a material it does not paint
-    /// (ADR-0036 rule 9).
+    /// (the page over the declared kind); by the Surface module's internal glass chip, `dsSurfaceChip`, which hands a
+    /// component's other parts the context `DSSurface.resolveChip` produces (ADR-0036 §4); and by a Prism composite
+    /// whose spec publishes a material it does not paint (ADR-0036 rule 9).
     package func dsSurfaceContext(_ context: DSSurfaceContext) -> some View {
         environment(\.dsSurfaceContext, context)
     }

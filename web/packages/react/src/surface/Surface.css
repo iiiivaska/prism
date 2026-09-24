@@ -15,6 +15,10 @@
  * Paint order inside the isolated root: its background (the page under solid, raised and nested, then
  * the material fill), the backdrop blur of glass, then the aria-hidden parts at z-index -1 in DOM
  * order (bloom, vivid fill, glass bloom, grain, edge), then the content.
+ *
+ * The same module's glass chip (ADR-0036 §7) is the last block: `.ds-surface-chip`, the root of a Prism
+ * component whose part binds material.glass.chip. It holds the package's only backdrop-filter outside
+ * `.ds-surface`, and its custom properties are named --ds--surface-chip-*.
  */
 
 /* The two fills animate as colors on a material change (motion.spring.smooth). */
@@ -25,6 +29,19 @@
 }
 
 @property --ds--surface-under {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+/* The glass chip's two fills animate as colors too, on Surface's timing (ADR-0036 §7). */
+@property --ds--surface-chip-fill {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--surface-chip-under {
   syntax: "<color>";
   inherits: false;
   initial-value: transparent;
@@ -372,6 +389,106 @@
     mask-composite: exclude;
   }
 
+  /*
+   * ---- The glass chip (ADR-0036 §2 to §7) ----
+   *
+   * The one part of a Prism component whose background binds material.glass.chip — Avatar's circle, Chip's
+   * pill — drawn on the component's own root. React resolves it (resolveSurfaceChip) and writes onto that
+   * root data-ds-surface-chip (glass, fallback, own or none), data-ds-surface-chip-flat (glass that draws no
+   * backdrop filter, ADR-0036 §5), data-ds-surface and data-ds-backdrop (what the chip publishes) and
+   * data-ds-elevation. The fallback has already happened in React when this sheet sees "fallback".
+   *
+   * A component never sets the root's background-color or background-image and never names a
+   * --ds-material-glass-* variable: this block paints the root, and the component's own cell reaches it as
+   * --ds--surface-chip-own. Paint order inside the isolated root: the page under the fallback
+   * (background-color), the fill (background-image), the recipe's edge at z-index -1, then the content.
+   * No padding, depth, concentric radius or grain of Surface's reaches it, and it draws no top edge.
+   */
+  .ds-surface-chip {
+    --ds--surface-chip-fill: transparent;
+    --ds--surface-chip-under: transparent;
+    --ds--surface-chip-shadow: var(--ds-elevation-0);
+    /* Surface's two timings, word for word: the fills crossfade, the blur and the shadow are geometry. */
+    --ds--surface-chip-crossfade-duration: calc(
+      var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+    --ds--surface-chip-geometry-duration: calc(var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)));
+
+    position: relative;
+    isolation: isolate;
+    background-color: var(--ds--surface-chip-under);
+    background-image: linear-gradient(var(--ds--surface-chip-fill), var(--ds--surface-chip-fill));
+    box-shadow: var(--ds--surface-chip-shadow);
+    transition:
+      --ds--surface-chip-fill var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      --ds--surface-chip-under var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing),
+      backdrop-filter var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing);
+  }
+
+  /* The scheme's chip glass: material.glass.chip's fill, blur and saturation (ADR-0029 §1.2). */
+  .ds-surface-chip[data-ds-surface-chip="glass"] {
+    --ds--surface-chip-fill: var(--ds-material-glass-chip);
+    backdrop-filter: blur(var(--ds-material-glass-chip-blur)) saturate(var(--ds-material-glass-chip-saturate));
+  }
+
+  /* On the scheme's glass, on light glass or inside another glass chip: the fill and edge, no filter (§5). */
+  .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
+    backdrop-filter: none;
+  }
+
+  /* The fallback: color.bg.surface.raised over color.bg.page, with no top edge (ADR-0022 §1.1, ADR-0030 rule 6). */
+  .ds-surface-chip[data-ds-surface-chip="fallback"] {
+    --ds--surface-chip-under: var(--ds-color-bg-page);
+    --ds--surface-chip-fill: var(--ds-color-bg-surface-raised);
+  }
+
+  /* The component's own cell, which its stylesheet sets. */
+  .ds-surface-chip[data-ds-surface-chip="own"] {
+    --ds--surface-chip-fill: var(--ds--surface-chip-own);
+  }
+
+  /* root.shadow, from the elevation.* tokens, as Surface draws its own. */
+  .ds-surface-chip[data-ds-elevation="flat"] {
+    --ds--surface-chip-shadow: var(--ds-elevation-0);
+  }
+
+  .ds-surface-chip[data-ds-elevation="raised"] {
+    --ds--surface-chip-shadow: var(--ds-elevation-1);
+  }
+
+  .ds-surface-chip[data-ds-elevation="floating"] {
+    --ds--surface-chip-shadow: var(--ds-elevation-2);
+  }
+
+  .ds-surface-chip[data-ds-elevation="overlay"] {
+    --ds--surface-chip-shadow: var(--ds-elevation-3);
+  }
+
+  /*
+   * The recipe's 1 px inner edge, Surface's: a 135° gradient in color.edge.highlight from the recipe's start
+   * alpha at 0 % to its end alpha at 75 %, cut to a ring of border.hairline. React renders it only when glass
+   * renders.
+   */
+  .ds-surface-chip > [data-ds-slot="surface-chip-edge"] {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+    padding: var(--ds-border-hairline);
+    background-image: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--ds-color-edge-highlight) calc(var(--ds-material-glass-chip-edge-start) * 100%), transparent) 0%,
+      color-mix(in oklab, var(--ds-color-edge-highlight) calc(var(--ds-material-glass-chip-edge-end) * 100%), transparent) 75%
+    );
+    mask-image: linear-gradient(var(--ds-color-edge-highlight) 0 0), linear-gradient(var(--ds-color-edge-highlight) 0 0);
+    mask-clip: content-box, border-box;
+    mask-origin: content-box, border-box;
+    mask-composite: exclude;
+  }
+
   /* Forced colors paint no fills or shadows, so the shape keeps a system-colored outline instead. */
   @media (forced-colors: active) {
     .ds-surface {
@@ -381,7 +498,8 @@
 
     .ds-surface > [data-ds-slot="surface-bloom"],
     .ds-surface > [data-ds-slot="surface-grain"],
-    .ds-surface > [data-ds-slot="surface-edge"] {
+    .ds-surface > [data-ds-slot="surface-edge"],
+    .ds-surface-chip > [data-ds-slot="surface-chip-edge"] {
       display: none;
     }
   }
