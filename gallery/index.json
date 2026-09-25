@@ -6013,7 +6013,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Anna Petrova, size: md",
+          "props": "label: Anna Petrova, size: md, avatar: {\"name\":\"Anna Petrova\"}",
           "cells": []
         },
         {

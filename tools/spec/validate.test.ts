@@ -362,24 +362,35 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
     ]);
   }, 60_000);
 
-  test("Chip's md-with-avatar names no Avatar, so it passes; an Avatar written in without a prop for it is P4-8's first defect, and fails", async () => {
-    // P4-8 settles its defect (1) by giving the leading slot a prop that can carry the Avatar, or by deleting the
-    // example. Either way this line changes, and this test goes with it: the check then holds the prop P4-8 declares.
+  test("Chip's md-with-avatar carries its Avatar through the `avatar` slot P4-8 declared, and the check holds it to that prop", async () => {
+    // P4-8 settled its defect (1) by giving the leading position a prop that carries the Avatar, a `slot` whose
+    // anatomy names Avatar (Chip.yaml `avatar`, as ADR-0034 types a Badge slot). The example writes the Avatar there,
+    // and the two ways of writing it in without that prop still fail: into `leadingIcon`, and into a prop Chip does not
+    // declare. Without the declaration the example fails too, so the prop is what licenses it.
     const path = 'spec/components/Chip.yaml';
     const repo = fsReader(REPO_ROOT);
     const text = repo.readText(path);
-    const props = 'props: { label: "Anna Petrova", size: md }';
+    const props = 'props: { label: "Anna Petrova", size: md, avatar: { name: "Anna Petrova" } }';
     expect(text).toContain(`- id: md-with-avatar\n    ${props}`);
-    const written = async (example: string): Promise<string[]> => {
-      const reader = overlayReader(repo, memoryReader({ [path]: text.replace(props, example) }));
+    const start = text.indexOf('  - name: avatar\n    type: slot\n');
+    const end = text.indexOf('  - name: trailingIcon\n');
+    expect(start).toBeGreaterThan(0);
+    expect(end).toBeGreaterThan(start);
+    const written = async (changed: string): Promise<string[]> => {
+      const reader = overlayReader(repo, memoryReader({ [path]: changed }));
       return (await runSpecValidate({ reader, collected: await repoDictionary() })).diagnostics.map((d) => `${d.code} ${d.message}`);
     };
+    expect(await written(text)).toEqual([]);
     // Into `leadingIcon`, which is `type: icon`.
-    expect(await written('props: { label: "Anna Petrova", size: md, leadingIcon: { avatar: { name: "Anna Petrova", size: sm } } }')).toEqual([
-      'example/prop example `md-with-avatar`: `Chip.leadingIcon` is an icon of spec/icons/registry.json, not {"avatar":{"name":"Anna Petrova","size":"sm"}}',
+    expect(await written(text.replace(props, 'props: { label: "Anna Petrova", size: md, leadingIcon: { name: "Anna Petrova" } }'))).toEqual([
+      'example/prop example `md-with-avatar`: `Chip.leadingIcon` is an icon of spec/icons/registry.json, not {"name":"Anna Petrova"}',
     ]);
     // Into a prop Chip does not declare.
-    expect(await written('props: { label: "Anna Petrova", size: md, avatar: { name: "Anna Petrova", size: sm } }')).toEqual([
+    expect(await written(text.replace(props, 'props: { label: "Anna Petrova", size: md, leadingAvatar: { name: "Anna Petrova" } }'))).toEqual([
+      'example/prop example `md-with-avatar` sets `leadingAvatar`, which Chip does not declare',
+    ]);
+    // The example as written, with the slot's declaration taken out of `props`.
+    expect(await written(text.slice(0, start) + text.slice(end))).toEqual([
       'example/prop example `md-with-avatar` sets `avatar`, which Chip does not declare',
     ]);
   }, 60_000);
