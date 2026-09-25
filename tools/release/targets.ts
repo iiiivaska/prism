@@ -1,4 +1,4 @@
-// The version ledger (roadmap P3-6, critic C-15; ADR-0006 rule 1, ADR-0014, ADR-0024 §14).
+// The version ledger (roadmap P3-6, critic C-15; ADR-0006 rule 1, ADR-0014, ADR-0024 §14, ADR-0038).
 //
 // One number describes the whole system, and it is written down in more than one file because npm,
 // SwiftPM and the generated code each need it in their own syntax. C-15 asked which of those copies
@@ -8,15 +8,19 @@
 //   Changesets computes the number `changeset version` writes the three published manifests
 //   VERSION records it             `stamp.ts` derives it from the fixed group and writes it
 //   every other copy is derived    `stamp.ts` writes it from VERSION
+//   generated code follows         `release:version` runs each generator after the stamp
 //   the tag names it               `v<VERSION>`, the SPM tag and the release tag
 //
 // So: no file here is edited by hand, and `stamp.ts --check` is what keeps that true.
 //
 // `SOURCES` are the manifests Changesets owns: this tool only reads them, and fails when they
 // disagree, because a fixed group that has stopped moving them together is exactly the drift C-15
-// warns about. `DERIVED` are the copies this tool writes. `NOT_THE_SYSTEM_VERSION` is the other half
-// of the answer — the `version` fields in this repository that are *not* the system version, listed
-// so the question is not re-opened by the next reader who greps for `0.1.0`.
+// warns about. `DERIVED` are the copies this tool writes. `REGENERATED` are the copies a generator
+// writes from a derived one, which `release:version` runs after the stamp; this tool reads them.
+// `NOT_THE_SYSTEM_VERSION` is the other half of the answer — the `version` fields in this repository
+// that are *not* the system version, listed so the question is not re-opened by the next reader who
+// greps for `0.1.0`. ADR-0038 rule 3 holds the four together: a file that carries the number is in
+// one of them, and `stamp.test.ts` searches the tree for one that is in none.
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -208,26 +212,35 @@ export function fixedGroupIssues(root: string = REPO_ROOT, names: readonly strin
 
 /**
  * The copies `stamp.ts` writes from `VERSION`. Every one of them is a place a reader or a consumer
- * meets the number: the private manifests keep `pnpm` honest, `DSTokensInfo.version` is what a Swift
- * consumer reads, the tokens package exports the same number to JavaScript, and the icon registry's
- * `version` is documented as the system version in `spec/icons/registry.schema.json`. The licence
- * inventory's own `prism` item is the system too: it records which Prism the third-party list belongs
- * to (ADR-0031 §4), so it is stamped rather than left to drift.
+ * meets the number: the private manifests keep `pnpm` honest (every workspace manifest that carries a
+ * `version` and is not published is here, which `unlistedManifests` enforces), `DSTokensInfo.version`
+ * is what a Swift consumer reads and what `DSCoreTests` expects `DSCoreInfo.version` to pass through,
+ * the tokens package exports the same number to JavaScript, and the icon registry's `version` is
+ * documented as the system version in `spec/icons/registry.schema.json`. The licence inventory's own
+ * `prism` item is the system too: it records which Prism the third-party list belongs to (ADR-0031
+ * §4), so it is stamped rather than left to drift.
  *
- * Stamping the registry changes generated code (`DSIconName.registryVersion`,
- * `iconRegistryVersion`), so the release runs `pnpm icons:build` after the stamp; CI's own
- * stale-output gate then proves the regeneration happened.
+ * Stamping the registry and `VERSION` changes generated code, so the release runs the generators of
+ * `REGENERATED` after the stamp.
  */
 export const DERIVED: readonly VersionCarrier[] = [
   VERSION_FILE,
   jsonManifest('package.json', 'the private workspace root manifest'),
   jsonManifest('tools/package.json', 'the private tools package'),
   jsonManifest('web/apps/gallery/package.json', 'the private gallery app'),
+  // Private and not in Changesets' `ignore`: `changeset version` skips a private package, so the stamp
+  // is its only writer (ADR-0038, Consequences (a)).
+  jsonManifest('web/apps/showcase/package.json', 'the private web showcase app'),
   jsonManifest('web/apps/vrt/package.json', 'the private visual-regression app'),
   pattern(
     'swift/Sources/DSTokens/DSTokens.swift',
     'DSTokensInfo.version, what a SwiftPM consumer reads',
     /^(\s*public static let version = ")(\d+\.\d+\.\d+)(")/mu,
+  ),
+  pattern(
+    'swift/Tests/DSCoreTests/PlaceholderTests.swift',
+    'the version DSCoreTests expects `DSCoreInfo.version` to read from DSTokens',
+    /(#expect\(DSCoreInfo\.version == ")(\d+\.\d+\.\d+)("\))/u,
   ),
   pattern(
     'web/packages/tokens/src/index.ts',
@@ -239,6 +252,52 @@ export const DERIVED: readonly VersionCarrier[] = [
     'licenses/inventory.json',
     "the `prism` item's version: the system this inventory ships with (ADR-0031 §4)",
     /^(\s*\{ "id": "prism",.*?"version": ")(\d+\.\d+\.\d+)(")/mu,
+  ),
+];
+
+/** A copy of the version that a generator writes from a `DERIVED` file. This tool reads it and never writes it. */
+export interface GeneratedCopy {
+  /** Repository-relative, with forward slashes. */
+  readonly path: string;
+  /** One line: what in this file carries the version, and where the generator takes it from. */
+  readonly what: string;
+  /** The version the file carries, or null when the file does not carry one where it should. */
+  readonly read: (text: string) => string | null;
+  /** The step of `release:version` that rewrites it, run after `pnpm release:stamp`. */
+  readonly by: string;
+}
+
+function generated(path: string, what: string, source: RegExp, by: string): GeneratedCopy {
+  const { read } = pattern(path, what, source);
+  return { path, what, read, by };
+}
+
+/**
+ * ADR-0038 rule 3's second kind of copy: generated from a derived one by a step of `release:version`,
+ * which runs each `by` after the stamp. `stamp.ts --check` reads them like any copy, so the release
+ * job's check at the confirmed version fails on one its generator did not rewrite; `stamp.test.ts`
+ * renders each generator over a stamped tree and holds this list to exactly the files that move.
+ */
+export const REGENERATED: readonly GeneratedCopy[] = [
+  generated(
+    'swift/Sources/DSIcons/Generated/DSIconName.swift',
+    '`DSIconName.registryVersion`, from the icon registry',
+    /^(\s*public static let registryVersion = ")(\d+\.\d+\.\d+)(")/mu,
+    'pnpm icons:build',
+  ),
+  generated(
+    'web/packages/react/src/generated/icons.ts',
+    'the `iconRegistryVersion` the react package exports, from the icon registry',
+    /^(export const iconRegistryVersion = ")(\d+\.\d+\.\d+)(")/mu,
+    'pnpm icons:build',
+  ),
+  // `release:version` did not run this generator until ADR-0038 found the catalogue left behind
+  // (Consequences (b)).
+  generated(
+    'swift/Showcase/Sources/DSShowcase/Generated/DSTokenCatalog.swift',
+    "`DSTokenCatalog.version`, the Apple showcase's copy of `VERSION`",
+    /^(\s*public static let version = ")(\d+\.\d+\.\d+)(")/mu,
+    'pnpm showcase:apple:generate',
   ),
 ];
 
@@ -254,9 +313,38 @@ export const NOT_THE_SYSTEM_VERSION: readonly { readonly path: string; readonly 
   { path: 'spec/icons/registry.json', what: 'icons[].since: the system version an icon first shipped in; never restamped' },
   { path: 'spec/components/*.yaml', what: 'specVersion: the contract version of one component (ADR-0006 rule 2)' },
   { path: 'spec/components/*.yaml', what: 'since: the system version a component first shipped in; never restamped' },
+  { path: 'spec/patterns/*.yaml', what: 'specVersion and since: the same two fields for a pattern; never restamped' },
+  {
+    path: 'swift/Showcase/Sources/DSShowcase/Generated/DSShowcaseCatalog.swift',
+    what: "since: each spec's `since`, copied by `pnpm showcase:apple:generate`; never restamped",
+  },
+  { path: 'web/packages/react/src/generated/icons.ts', what: "since: each icon's `since`, copied by `pnpm icons:build`; never restamped" },
   { path: 'spec/haptics.yaml', what: 'version: the haptics registry version' },
   { path: 'web/packages/*/src/manifest.ts', what: '`implemented`: the spec version each stack implements (ADR-0006 rule 2)' },
   { path: 'pnpm-workspace.yaml', what: 'catalog: third-party dependency ranges' },
 ];
+
+/**
+ * ADR-0038 rule 3 over the workspace: a package manifest that carries a top-level `version` is a
+ * published source, an entry of `DERIVED` or an entry of `NOT_THE_SYSTEM_VERSION`. The published
+ * manifests are discovered, but the private ones are listed by hand, so this is what stops the next app
+ * from arriving the way the web showcase did — carrying `0.1.0`, listed nowhere, and left behind by
+ * every release (ADR-0038, Consequences (a)).
+ */
+export function unlistedManifests(root: string, published: readonly PublishedPackage[]): string[] {
+  const listed = new Set([...published.map((p) => p.manifest.path), ...DERIVED.map((c) => c.path)]);
+  const issues: string[] = [];
+  for (const dir of workspaceDirs(root)) {
+    const path = `${dir}/package.json`;
+    // `matchesPackage` is Changesets' glob, and a ledger path is the same kind: `*` stays in one segment.
+    if (listed.has(path) || NOT_THE_SYSTEM_VERSION.some((n) => matchesPackage(n.path, path))) continue;
+    const manifest = JSON.parse(readFileSync(join(root, path), 'utf8')) as PackageManifest;
+    if (manifest.version === undefined) continue;
+    issues.push(
+      `${path} carries "version": ${JSON.stringify(manifest.version)}, but tools/release/targets.ts lists it in neither DERIVED nor NOT_THE_SYSTEM_VERSION, so no release would move it (ADR-0038 rule 3)`,
+    );
+  }
+  return issues;
+}
 
 export { StampError };

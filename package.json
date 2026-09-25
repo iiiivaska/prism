@@ -45,7 +45,7 @@
     "showcase:preview": "pnpm --filter @iiiivaska/prism-showcase preview",
     "vrt": "pnpm --filter @iiiivaska/prism-vrt test",
     "vrt:update": "pnpm --filter @iiiivaska/prism-vrt run test:update",
-    "release:version": "changeset version && pnpm release:stamp && pnpm icons:build && pnpm install --lockfile-only"
+    "release:version": "changeset version && pnpm release:stamp && pnpm icons:build && pnpm showcase:apple:generate && pnpm install --lockfile-only"
   },
   "devDependencies": {
     "@changesets/cli": "catalog:",

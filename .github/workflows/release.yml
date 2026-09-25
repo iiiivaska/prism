@@ -293,14 +293,18 @@ jobs:
       - name: Version, stamp and regenerate (critic C-15)
         # `changeset version` computes the number over the fixed group and writes the three published
         # manifests; `release:stamp` records it in VERSION and writes every derived copy from there;
-        # `icons:build` follows the registry version into the generated constants.
+        # `icons:build` follows the registry version into the generated constants, and
+        # `showcase:apple:generate` follows VERSION into the Apple showcase's token catalogue (ADR-0038).
         run: pnpm release:version
       - name: The tree is stamped to exactly the version this run confirmed
+        # Every copy in the ledger (tools/release/targets.ts), the regenerated ones among them: a copy
+        # whose generator did not run is still at the old version, and this fails before any commit.
         run: node tools/release/stamp.ts --check --version ${{ needs.plan.outputs.version }}
       - name: Rebuild and re-verify at the release version
         # The stamp touched generated inputs (the icon registry's version), so the generated outputs
         # are checked again rather than the git status: `icons:validate` and `tokens:check` fail on
-        # anything the stamp left stale, and the packs are re-audited at the new version.
+        # anything the stamp left stale, and the packs are re-audited at the new version. No test runs
+        # here; the version check above is what reads the Apple showcase's regenerated catalogue.
         run: |
           set -euo pipefail
           pnpm -r build

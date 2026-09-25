@@ -1,10 +1,13 @@
-// release:stamp / release:check (roadmap P3-6, critic C-15; ADR-0006 rule 1, ADR-0014, ADR-0024 §14).
+// release:stamp / release:check (roadmap P3-6, critic C-15; ADR-0006 rule 1, ADR-0014, ADR-0024 §14,
+// ADR-0038).
 //
 // The one step between `changeset version` and a tag. Changesets computes the number and writes it
 // into the published manifests; this tool takes it from there, records it in `VERSION` and writes
-// every derived copy from it (`tools/release/targets.ts` is the ledger). `--check` is the same walk
-// without writing, and it is what keeps a hand-edited copy from reaching a tag: `stamp.test.ts` runs
-// it against this repository, so drift fails `pnpm test` and therefore CI.
+// every derived copy from it (`tools/release/targets.ts` is the ledger). The copies a generator writes
+// from a derived one (`REGENERATED`) are read, never written: `release:version` runs their generators
+// after the stamp. `--check` is the same walk without writing, and it is what keeps a hand-edited or
+// un-regenerated copy from reaching a tag: `stamp.test.ts` runs it against this repository, so drift
+// fails `pnpm test` and therefore CI, and the release job runs it at the version it confirmed.
 //
 //   node release/stamp.ts                 stamp every derived copy from the fixed group's version
 //   node release/stamp.ts --check         report drift and exit 1; write nothing
@@ -19,8 +22,9 @@
 //   --allow-major      permit a pending `major` changeset while the version is 0.x (ADR-0024 §14
 //                      shifts a major to a minor below 1.0, so going to 1.0.0 is an owner decision)
 //
-// Exit codes: 0 done (or nothing to do), 1 drift under `--check`, a disagreement in the fixed group,
-// a published package outside it, or a `major` while 0.x; 2 usage error.
+// Exit codes: 0 done (or nothing to do), 1 drift under `--check` (a derived copy or a regenerated one),
+// a disagreement in the fixed group, a published package outside it, a workspace manifest outside the
+// ledger, or a `major` while 0.x; 2 usage error.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { declaredBumpDetail } from '../tokens/diff/changesets.ts';
@@ -30,12 +34,13 @@ import {
   fixedGroupIssues,
   NOT_THE_SYSTEM_VERSION,
   publishedPackages,
+  REGENERATED,
   REPO_ROOT,
   StampError,
   tagFor,
+  unlistedManifests,
   VERSION_PATTERN,
   type PublishedPackage,
-  type VersionCarrier,
 } from './targets.ts';
 
 export type Mode = 'write' | 'check' | 'plan' | 'ledger';
@@ -85,6 +90,8 @@ export interface CarrierRow {
   readonly found: string | null;
   readonly wanted: string;
   readonly status: 'ok' | 'stale' | 'missing';
+  /** The step of `release:version` that writes a regenerated copy; null for a copy this tool stamps. */
+  readonly by: string | null;
 }
 
 export interface StampResult {
@@ -102,7 +109,7 @@ export interface StampResult {
   readonly exitCode: number;
 }
 
-function read(root: string, carrier: VersionCarrier): string {
+function read(root: string, carrier: { readonly path: string }): string {
   return readFileSync(join(root, carrier.path), 'utf8');
 }
 
@@ -135,6 +142,7 @@ export function runStamp(args: StampArgs): StampResult {
   const group = groupVersion(packages);
   errors.push(...group.errors);
   errors.push(...fixedGroupIssues(args.root, packages.map((p) => p.name)));
+  errors.push(...unlistedManifests(args.root, packages));
 
   if (args.version !== null && group.version !== null && args.version !== group.version) {
     errors.push(
@@ -176,25 +184,44 @@ export function runStamp(args: StampArgs): StampResult {
       try {
         text = read(args.root, carrier);
       } catch {
-        rows.push({ path: carrier.path, what: carrier.what, found: null, wanted: version, status: 'missing' });
+        rows.push({ path: carrier.path, what: carrier.what, found: null, wanted: version, status: 'missing', by: null });
         errors.push(`${carrier.path}: not found`);
         continue;
       }
       const found = carrier.read(text);
       if (found === null) {
-        rows.push({ path: carrier.path, what: carrier.what, found: null, wanted: version, status: 'missing' });
+        rows.push({ path: carrier.path, what: carrier.what, found: null, wanted: version, status: 'missing', by: null });
         errors.push(`${carrier.path}: ${carrier.what} is not there to stamp`);
         continue;
       }
       if (found === version) {
-        rows.push({ path: carrier.path, what: carrier.what, found, wanted: version, status: 'ok' });
+        rows.push({ path: carrier.path, what: carrier.what, found, wanted: version, status: 'ok', by: null });
         continue;
       }
-      rows.push({ path: carrier.path, what: carrier.what, found, wanted: version, status: 'stale' });
+      rows.push({ path: carrier.path, what: carrier.what, found, wanted: version, status: 'stale', by: null });
       if (args.mode === 'write') {
         writeFileSync(join(args.root, carrier.path), carrier.write(text, version), 'utf8');
         written.push(carrier.path);
       }
+    }
+    // Read after the stamp, so a write run reports what it left to the generators that run next in
+    // `release:version`; stale is drift only under `--check`, where nothing runs next.
+    for (const copy of REGENERATED) {
+      let text: string;
+      try {
+        text = read(args.root, copy);
+      } catch {
+        rows.push({ path: copy.path, what: copy.what, found: null, wanted: version, status: 'missing', by: copy.by });
+        errors.push(`${copy.path}: not found; \`${copy.by}\` writes it`);
+        continue;
+      }
+      const found = copy.read(text);
+      if (found === null) {
+        rows.push({ path: copy.path, what: copy.what, found: null, wanted: version, status: 'missing', by: copy.by });
+        errors.push(`${copy.path}: ${copy.what} is not there to read; \`${copy.by}\` writes it, and the ledger must say where`);
+        continue;
+      }
+      rows.push({ path: copy.path, what: copy.what, found, wanted: version, status: found === version ? 'ok' : 'stale', by: copy.by });
     }
   }
 
@@ -228,6 +255,7 @@ export function render(result: StampResult): string[] {
     for (const p of result.packages) lines.push(`    source      ${p.name} ${p.version ?? '?'}`);
     lines.push('  recorded in   VERSION');
     for (const carrier of DERIVED.slice(1)) lines.push(`    derived     ${carrier.path} — ${carrier.what}`);
+    for (const copy of REGENERATED) lines.push(`    regenerated ${copy.path} — ${copy.what}, by \`${copy.by}\` after the stamp`);
     lines.push('  released as   ' + (result.tag ?? 'v<VERSION>'));
     lines.push('');
     lines.push('Not the system version:');
@@ -245,10 +273,20 @@ export function render(result: StampResult): string[] {
   for (const row of result.rows) {
     const mark = row.status === 'ok' ? 'ok     ' : row.status === 'stale' ? 'stale  ' : 'missing';
     const detail = row.status === 'ok' ? row.found ?? '' : `${row.found ?? '—'} → ${row.wanted}`;
-    lines.push(`  ${mark} ${row.path}  ${detail}`);
+    const writer = row.status !== 'ok' && row.by !== null ? `  (\`${row.by}\` writes it)` : '';
+    lines.push(`  ${mark} ${row.path}  ${detail}${writer}`);
   }
   if (result.written.length > 0) lines.push(`stamped ${String(result.written.length)} file(s)`);
+  const next = regenerators(result.rows);
+  if (result.mode === 'write' && next.length > 0) {
+    lines.push(`left to the next steps of \`pnpm release:version\`: ${next.map((by) => `\`${by}\``).join(', then ')}`);
+  }
   return lines;
+}
+
+/** The generators whose copies a result found stale or missing, in ledger order, each once. */
+function regenerators(rows: readonly CarrierRow[]): string[] {
+  return [...new Set(rows.flatMap((r) => (r.status !== 'ok' && r.by !== null ? [r.by] : [])))];
 }
 
 export function main(argv: readonly string[], io: Io = defaultIo): number {
@@ -271,7 +309,10 @@ export function main(argv: readonly string[], io: Io = defaultIo): number {
   else for (const line of render(result)) io.out(line);
   for (const error of result.errors) io.err(`release:stamp: ${error}`);
   if (args.mode === 'check' && result.exitCode !== 0 && result.errors.length === 0) {
-    io.err('release:stamp: run `pnpm release:stamp` and commit the result; no copy of the version is edited by hand');
+    // The steps of `release:version` that would bring the stale copies back, in the order it runs them.
+    const stamp = result.rows.some((r) => r.status !== 'ok' && r.by === null) ? ['pnpm release:stamp'] : [];
+    const steps = [...stamp, ...regenerators(result.rows)].map((step) => `\`${step}\``).join(', then ');
+    io.err(`release:stamp: run ${steps} and commit the result; no copy of the version is edited by hand`);
   }
   return result.exitCode;
 }
