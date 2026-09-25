@@ -185,7 +185,7 @@ struct DSAvatarBindingTests {
         let materials = Set(DSSurfaceMaterial.allCases.map(\.rawValue) + ["default"])
         let backdrops = Set(DSBackdropKind.allCases.map(\.rawValue) + ["default"])
         for path in Self.contextPaths {
-            for pair in try #require(spec.binding(path).mapValue, "\(path) is not a matrix").pairs {
+            for pair in try #require(try spec.binding(path).mapValue, "\(path) is not a matrix").pairs {
                 #expect(materials.contains(pair.key), "\(path) is keyed by \(pair.key)")
                 if let inner = pair.value.mapValue {
                     #expect(Set(inner.keys).isSubset(of: backdrops), "\(path).\(pair.key) is keyed by \(inner.keys)")
@@ -425,9 +425,9 @@ struct DSAvatarBindingTests {
     /// inverse, where the circle has no fill and the parts take the inverse pair (behavior, "On an accent or an inverse
     /// surface").
     @Test func underAForcedSettingEveryPartIsItsDefaultCell() throws {
-        let initials = try #require(spec.color("initials.color", "default"))
-        let glyph = try #require(spec.color("fallbackIcon.color", "default"))
-        let ring = try #require(spec.color("ring.color", "default"))
+        let initials = try #require(try spec.color("initials.color", "default"))
+        let glyph = try #require(try spec.color("fallbackIcon.color", "default"))
+        let ring = try #require(try spec.color("ring.color", "default"))
         func expectDefaults(_ published: DSSurfaceContext, _ comment: String) {
             #expect(DSAvatarAppearance.initialsColor(on: published) == initials, "\(comment)")
             #expect(DSAvatarAppearance.fallbackIconColor(on: published) == glyph, "\(comment)")
