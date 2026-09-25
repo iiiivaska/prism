@@ -2,7 +2,9 @@
 
 A changeset is how a change says what it does to consumers. Write one in the same commit as the
 change: `pnpm changeset`, pick the packages, pick the bump, describe the change in the words a
-consumer reading the changelog needs.
+consumer reading the changelog needs. Those words become the CHANGELOG.md of a web package, so they
+name no SF Symbol (ADR-0013 rule 5): `pnpm icons:build` would stop the release on one, and
+`tools/release/stamp.test.ts` fails the changeset first.
 
 ## The fixed group
 
@@ -40,5 +42,6 @@ every derived copy from there, and the tag `v<VERSION>` is what SwiftPM consumer
 `tools/release/README.md` has the whole order and the C-15 decision behind it.
 
 `access` in `config.json` is Changesets' own default for a publish it never performs here: the release
-workflow passes `--access` from the repository's `PACKAGE_VISIBILITY` variable, which is the ADR-0018
-decision the owner still owes.
+workflow passes `--access` from the repository's `PACKAGE_VISIBILITY` variable. That variable records a
+decision already taken: ADR-0031 (decision 6) keeps the packages on GitHub Packages public, so it
+holds `public`.

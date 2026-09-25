@@ -1,8 +1,8 @@
 name: release
 
 # Roadmap P3-6; ADR-0014 (one tag = one version, SPM by tag, npm on GitHub Packages), ADR-0018
-# (repository and package visibility), ADR-0031 (proprietary, a LICENSE in every package), ADR-0024 §14 (the
-# pre-1.0 bump policy), critic C-15 (the version authority).
+# (repository and package visibility), ADR-0031 (proprietary, a LICENSE in every package, and the packages
+# stay public), ADR-0024 §14 (the pre-1.0 bump policy), critic C-15 and ADR-0038 (the version authority).
 #
 # Two entrances, and only one of them can release:
 #
@@ -23,11 +23,11 @@ name: release
 # side effects — `packages: write` publishes to GitHub Packages under the same owner, `contents: write`
 # pushes the release commit and the tag — so no repository secret has to exist for a release to work.
 #
-# Before the first real run, the owner still owes three things; `release` fails fast on each:
-#   * the ADR-0015 legal checkpoint (ADR-0031 rule 5), recorded as the `LEGAL_CHECKPOINT` variable;
-#   * the GitHub Packages visibility decision of ADR-0018 ("private, free" re-checked here), recorded
-#     as `PACKAGE_VISIBILITY`;
-#   * the `release` environment itself, with the owner as a required reviewer.
+# Before the first real run, the owner still owes one thing, and `release` fails fast on it: the
+# ADR-0015 legal checkpoint (ADR-0031 rule 5), recorded as the `LEGAL_CHECKPOINT` variable. The other
+# two this list once held are settled (roadmap P3-6). The GitHub Packages visibility is public: ADR-0031
+# (decision 6) decided it, the `PACKAGE_VISIBILITY` variable records it, and `release` still fails fast
+# when that variable is missing. The `release` environment exists.
 
 on:
   push:
@@ -269,7 +269,7 @@ jobs:
           runtime: node@24
           cache: true
           require-lockfile: true
-      - name: The owner's two open decisions (ADR-0015 legal checkpoint, ADR-0018 visibility)
+      - name: The owner's legal checkpoint (ADR-0015) and the package visibility ADR-0031 decided
         env:
           LEGAL_CHECKPOINT: ${{ vars.LEGAL_CHECKPOINT }}
           PACKAGE_VISIBILITY: ${{ vars.PACKAGE_VISIBILITY }}
@@ -282,7 +282,7 @@ jobs:
           case "${PACKAGE_VISIBILITY:-}" in
             private|public) : ;;
             *)
-              echo "::error::ADR-0018 leaves the GitHub Packages visibility to this ticket. Set the repository variable PACKAGE_VISIBILITY to 'private' or 'public' and record the choice in ADR-0018."
+              echo "::error::the repository variable PACKAGE_VISIBILITY must record the GitHub Packages visibility. ADR-0031 (decision 6) keeps the packages public: set it to 'public'."
               exit 1
               ;;
           esac
