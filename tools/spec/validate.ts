@@ -830,7 +830,7 @@ function checkGlassChip(doc: SpecDoc, spec: Record<string, unknown>, name: strin
         const where = [...at, ...cell.keys];
         diagnostics.push(error('glass-chip/nested-blur', `\`${where.join('.')}\` binds ${cell.path} under \`${nested}\``, {
           file: doc.path, line: doc.lineOf(where),
-          hint: "a glass chip on the scheme's glass, on light glass or inside another glass chip draws its fill and edge and no backdrop filter (ADR-0036 §5): delete this cell and keep the fill and edge cells",
+          hint: "a glass chip on the scheme's glass, on light glass or inside any other chip draws its fill and edge and no backdrop filter (ADR-0036 §5, as ADR-0037 §2 amends it): delete this cell and keep the fill and edge cells",
         }));
       }
     }

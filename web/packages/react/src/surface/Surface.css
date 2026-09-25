@@ -433,7 +433,7 @@
     backdrop-filter: blur(var(--ds-material-glass-chip-blur)) saturate(var(--ds-material-glass-chip-saturate));
   }
 
-  /* On the scheme's glass, on light glass or inside another glass chip: the fill and edge, no filter (§5). */
+  /* On the scheme's glass, on light glass or inside any other chip: the fill and edge, no filter (§5, ADR-0037 §2). */
   .ds-surface-chip[data-ds-surface-chip="glass"][data-ds-surface-chip-flat] {
     backdrop-filter: none;
   }
