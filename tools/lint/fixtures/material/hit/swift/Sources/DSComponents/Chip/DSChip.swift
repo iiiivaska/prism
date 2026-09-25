@@ -60,6 +60,7 @@ struct DSChip: View {
     /// The other operators, on either side of it.
     private var operators: [Bool] {
         [
+            ds.tokens.context.transparency != .standard, // expect: material/swift-transparency-read
             ds.tokens.context.transparency ~= .reduced, // expect: material/swift-transparency-read
             .reduced == ds.tokens.context.transparency, // expect: material/swift-transparency-read
             .reduced ~= ds.tokens.context.transparency, // expect: material/swift-transparency-read

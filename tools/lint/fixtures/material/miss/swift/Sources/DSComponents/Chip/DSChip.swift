@@ -1,8 +1,8 @@
 // A component beside the Surface module's chip shape (ADR-0036 §2, §7): the chip hands `dsSurfaceChip`
 // its background table and reads what the shape publishes, so it names no backdrop pixels or glass
 // recipe and compares no transparency. `miss:` names the rule the line must not trip. The last lines are
-// near misses, each at a boundary of the transparency pattern: a longer name, and a switch the line only
-// names.
+// near misses, each at a boundary of the transparency pattern: a longer name, another enum's case, and a
+// switch the line only names.
 import SwiftUI
 import DSCore
 import DSTokens
@@ -43,6 +43,11 @@ enum DSChipAppearance {
     static func isClear(_ layer: DSChipLayerStyle) -> Bool {
         layer.edge_transparency == 0 // miss: material/swift-transparency-read
             && layer.edge$transparency == 0 // miss: material/swift-transparency-read
+    }
+
+    /// Another enum's case by that name is not the context's transparency: nothing is read off a value.
+    static func isTransparencyAxis(_ axis: DSContextAxisFixture) -> Bool {
+        axis == .transparency // miss: material/swift-transparency-read
     }
 
     /// A message that names a switch over transparency is not one: no brace follows it.

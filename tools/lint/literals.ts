@@ -24,12 +24,13 @@
 // Surface module resolves and draws Prism glass (ADR-0036 §1): DSCore's resolvers, plus the drawing
 // in `swift/Sources/DSComponents/Surface/` on Apple and the directory `web/packages/react/src/surface/`
 // on the web; a component draws its glass part through the module's chip shape. On Apple it owns,
-// outside `swift/Sources/DSCore/`, Apple's glass and blur materials (`glassEffect`, SwiftUI's
-// `Material`, and their UIKit and AppKit names), the Reduce Transparency and Increase Contrast settings
-// (`accessibilityReduceTransparency`, `colorSchemeContrast`, their UIKit and AppKit names, and Prism's
-// policy flag) and a comparison with transparency, and, outside DSCore and the Surface directory, the
-// backdrop's pixels and the glass recipes (`DSBackdropSource`, `dsBackdropSource`, `DSGlassAppearance`,
-// `DSGlassRecipe`, `.saturation(`, `blurRadius`). On the web it owns, in CSS and script under
+// outside `swift/Sources/DSCore/`, Apple's glass and blur materials (`glassEffect` and SwiftUI's glass
+// button styles, SwiftUI's `Material` and its bar material, and the UIKit and AppKit names of both), the
+// Reduce Transparency and Increase Contrast settings (`accessibilityReduceTransparency`, `colorSchemeContrast`,
+// their UIKit and AppKit names, and Prism's policy flag) and a comparison with transparency, and,
+// outside DSCore and the Surface directory, the backdrop's pixels and the glass recipes
+// (`DSBackdropSource`, `dsBackdropSource`, `DSGlassAppearance`, `DSGlassRecipe`, `.saturation(`,
+// `blurRadius`). On the web it owns, in CSS and script under
 // `web/packages/*/src` outside the Surface directory, `backdrop-filter` (`backdropFilter`,
 // `WebkitBackdropFilter`, Tailwind's backdrop utilities), every glass recipe but the scrim by its
 // `--ds-material-glass-*` variable or its token path, and a comparison with `transparency`, the
@@ -262,6 +263,21 @@ const SCRIPT_TAIL = String.raw`(?:["']\])?!?`;
  * `tokens[keyPath: \.context].transparency`, `lookup("chip").transparency`).
  */
 const OPERAND = String.raw`(?:[\w$.?!]|\([^()\n]*\)|\[[^\[\]\n]*\])*`;
+
+/**
+ * Where an implicit member takes its type from a Swift call's own parameter (`.buttonStyle(.glass)`, `.fill(.bar)`):
+ * right after the call's `(`, after a comma, or as a branch of a ternary or of `??` (`.fill(isChrome ? shading : .bar)`),
+ * on one line. A call or a subscript between the `(` and the member ends it, since the member is then that one's
+ * argument. A label's colon is not a ternary's, which follows a space, and the `?` of `chart?.bar` is not one either.
+ */
+const SWIFT_ARGUMENT = String.raw`\s*\((?:[^()\[\]\n]*(?:,|\s\?\??|\s:))?\s*`;
+
+/**
+ * SwiftUI's calls that take a `ShapeStyle` argument, where `.bar` is SwiftUI's bar material: the shapes' fills and
+ * strokes, the view modifiers that paint one, and `AnyShapeStyle`. With a `.` before them or none (a modifier a
+ * component calls on itself), and never the end of a longer name.
+ */
+const SHAPE_STYLE_CALLS = String.raw`(?<![\w$])(?:fill|stroke|strokeBorder|background|backgroundStyle|foregroundStyle|overlay|border|tint|toolbarBackground|presentationBackground|containerBackground|AnyShapeStyle)`;
 
 const RULES: readonly Rule[] = [
   // ---- color, dimension, font: literal values (tokens/README.md, Rules 1) ----
@@ -557,25 +573,42 @@ const RULES: readonly Rule[] = [
   // decides the fallback before a recipe exists (ADR-0022 §2.4); native chrome keeps `DS_GLASS`.
   // Tuned beyond rule 2's list, the same material by its other names: `GlassEffectContainer`, UIKit's
   // `UIGlassEffect` and `UIGlassContainerEffect`, AppKit's `NSGlassEffectView` and
-  // `NSGlassEffectContainerView`.
+  // `NSGlassEffectContainerView`, and SwiftUI's glass button styles: `GlassButtonStyle`,
+  // `GlassProminentButtonStyle` and `.glassProminent` by name, and `.glass` where a button style takes it
+  // (`.buttonStyle(.glass)`), since Prism's own material and chip cell are `.glass` too.
   {
     id: "material/swift-glass-effect",
     kind: "material",
     languages: ["swift"],
     exempt: [DSCORE],
-    pattern: /(?<![\w$])(?:glassEffect|GlassEffectContainer|UIGlassEffect|UIGlassContainerEffect|NSGlassEffectView|NSGlassEffectContainerView)(?![\w$])/g,
+    pattern: new RegExp(
+      [
+        String.raw`(?<![\w$])(?:glassEffect|GlassEffectContainer|UIGlassEffect|UIGlassContainerEffect|NSGlassEffectView|NSGlassEffectContainerView|GlassButtonStyle|GlassProminentButtonStyle|glassProminent)(?![\w$])`,
+        String.raw`(?<=(?<![\w$])buttonStyle${SWIFT_ARGUMENT})\.glass(?![\w$])`,
+      ].join("|"),
+      "g",
+    ),
   },
-  // SwiftUI's `Material`: the bare type and the five system materials, and, tuned beyond rule 2's list,
-  // the same blur materials by UIKit's and AppKit's names (`UIVisualEffectView`, `UIBlurEffect`,
-  // `UIVibrancyEffect`, `NSVisualEffectView`). `DSSurfaceMaterial` and `DSTokenSet.Material` are Prism's
-  // own names and are not reported.
+  // SwiftUI's `Material`: the type, bare or qualified (`SwiftUI.Material`), the five system materials,
+  // and the bar material where one of SwiftUI's calls that take a `ShapeStyle` takes it (`.fill(.bar)`,
+  // `.background(.bar, in: shape)`; `Material.bar` is the type's), and, tuned beyond rule 2's list, the
+  // same blur materials by UIKit's and AppKit's names (`UIVisualEffectView`, `UIBlurEffect`,
+  // `UIVibrancyEffect`, `NSVisualEffectView`). Prism's own names are not reported: `DSSurfaceMaterial`,
+  // `DSTokenSet.Material`, and another `.bar`, such as a chart's mark or a member read off a value.
   {
     id: "material/swift-material",
     kind: "material",
     languages: ["swift"],
     exempt: [DSCORE],
-    pattern:
-      /(?<![\w$])\.(?:ultraThin|thin|regular|thick|ultraThick)Material(?![\w$])|(?<![\w$.])Material(?![\w$])|(?<![\w$])(?:UIVisualEffectView|UIBlurEffect|UIVibrancyEffect|NSVisualEffectView)(?![\w$])/g,
+    pattern: new RegExp(
+      [
+        String.raw`(?<![\w$])\.(?:ultraThin|thin|regular|thick|ultraThick)Material(?![\w$])`,
+        String.raw`(?<![\w$])(?<!DSTokenSet\.)Material(?![\w$])`,
+        String.raw`(?<=${SHAPE_STYLE_CALLS}${SWIFT_ARGUMENT})\.bar(?![\w$])`,
+        String.raw`(?<![\w$])(?:UIVisualEffectView|UIBlurEffect|UIVibrancyEffect|NSVisualEffectView)(?![\w$])`,
+      ].join("|"),
+      "g",
+    ),
   },
   // The two OS settings only Surface resolution may read (ADR-0022 §1.3): everything else takes them
   // from `DSTokenContext`, which previews and snapshots can force, and only DSCore compares its
@@ -697,7 +730,13 @@ const RULES: readonly Rule[] = [
   //  - A property wrapper's storage or projection read through its value: `_transparency.wrappedValue == .reduced`,
   //    `$transparency.wrappedValue == .reduced`. The patterns read `_` and `$` as part of a name, so that a longer
   //    name (`edge_transparency`, `edge$transparency`) is never taken for the context's.
-  //  - A comparison split across lines, or an operand whose call or subscript holds another one.
+  //  - A comparison or a call split across lines (`.background(` and `.bar` on two), or an operand whose call
+  //    or subscript holds another one.
+  //  - An implicit `.glass` or `.bar` that takes its type from a call the patterns do not list: a helper with a
+  //    generic button-style or `ShapeStyle` parameter (`styled(.glass)`), an opaque result
+  //    (`var style: some ShapeStyle { .bar }`) or `GraphicsContext`'s `.style(.bar)`. Prism's own material and
+  //    chip cell are `.glass` too, and a chart's mark may be `.bar`, so only the call says which is Apple's; the
+  //    types, `GlassButtonStyle` and `Material`, are seen wherever they are named.
   //  - A name split across a concatenation: `"backdrop" + "-filter"`, `"--ds-material-" + "glass-chip"`.
   //  - An upper-case property, `BACKDROP-FILTER`. The React package's stylesheet test reads property
   //    names case-insensitively.

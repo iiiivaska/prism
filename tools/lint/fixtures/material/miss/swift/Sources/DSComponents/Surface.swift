@@ -1,7 +1,9 @@
 // The counterpart of each material pattern (ADR-0022 rule 2); `miss:` names the rule it must not
 // trip. A component reads the material from the context its Surface published and never the OS
-// settings or Prism's transparency (ADR-0036 §10), and Prism's own material names are not SwiftUI's.
-// A name that only starts like a setting's is another name.
+// settings or Prism's transparency (ADR-0036 §10), and Prism's own material names are not SwiftUI's:
+// neither its token set's `Material` nor its `.glass`, which a button style of Prism's takes as its own
+// argument. A name that only starts like a setting's or like `.glass` (a button style of Prism's), or only
+// ends like `buttonStyle`, is another name.
 import SwiftUI
 import DSCore
 import DSTokens
@@ -18,6 +20,16 @@ struct SurfaceFixture: View {
     }
 
     var material: DSSurfaceMaterial { .glass }
+
+    var recipeTokens: DSTokenSet.Material { ds.tokens.material } // miss: material/swift-material
+
+    var buttons: some View {
+        VStack {
+            Button("Chip") {}.buttonStyle(DSChipButtonStyleFixture(on: .glass)) // miss: material/swift-glass-effect
+            Button("Chip style") {}.buttonStyle(.glassChip) // miss: material/swift-glass-effect
+            Button("Helper") {}._buttonStyle(.glass) // miss: material/swift-glass-effect
+        }
+    }
 
     /// UIKit's notification that the setting changed carries no value, so observing it reads nothing; the read
     /// that would follow is `isReduceTransparencyEnabled`, which the pattern reports.
