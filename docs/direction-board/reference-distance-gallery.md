@@ -11,6 +11,7 @@
 - **Reviewed again: 2026-09-26**, in [§10](#10-review-of-avatars-examples--2026-09-26). P4-7's baselines (`5522846`) put Avatar's twelve examples in the gallery, outside this clearance by §9.9 condition 3 until a dated section read them. §10 reads all 204 images, and none is a copy. It adds two findings. RD-9: on Apple every example staged on the synthetic map sits where the route turns, and Avatar's two map examples put a bare round mark there, which makes them among the gallery's nearest images to a reference's map. RD-10: `Sidebar.yaml`'s `rail` example specifies the rail whose avatar is `Avatar/ringed`'s nearest reference. §10.8 adds a seventh expiry condition, and §10.9 says how the next component's section follows. Sections 1–9 stand as written, apart from pointers to §10.
 - **Reviewed again: 2026-09-26**, in [§11](#11-review-of-chips-examples--2026-09-26). P4-8's baselines (`5b1663c`) put Chip's thirteen examples in the gallery, and `md-with-avatar` fills a slot with an Avatar. §11 reads all 224 images, and none is a copy. It adds two findings. RD-11: `md-with-avatar` has the traffic console's plate chip's anatomy, with a person in it. RD-12: `identifier-copy`'s "B-4417" puts the gallery's fleet unit number in a vehicle-style identifier; a cheap relabel is recommended, and not taken. §11.9 names `md-with-avatar` beside `with-badge` in condition 4, extends condition 7 and adds condition 8.
 - **Reviewed again: 2026-09-26**, in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). P4-D9's baselines (`29b5490`) added 144 web Reduce Transparency images: new variants of 18 named examples, which §9.9 condition 3 covers with a sentence added to each group. §12 reads all 144 beside their Apple twins. None is a copy, and none moves an earlier verdict: the fallback removes the glass the references' map screens are built from. §12.5 reads the one image that asks a second look, `Avatar/initials-over-map` in light, whose disc becomes near-white.
+- **Reviewed again: 2026-09-26**, in [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26). RD-12 was taken: `e56272f` relabelled `Chip/identifier-copy` "INV-209316", which fired showcase §13.8 condition 8, and CI re-recorded its 16 images, which fired §9.9 condition 6. §13 reads the 16 beside the images they replace. Only the label and the pill's width changed, none is a copy, and RD-12 is closed.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -940,6 +941,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **Genre: the test RD-2 item 3 applies.** The number is 4417, the invented unit number of `Card/glass-vehicle` ("Unit 4417"), which RD-2 item 3 places in shot 27220417's own subject matter. With a one-letter prefix it reads as a fleet identifier, and the reference's vehicles are identified by a word or a letter followed by four or five digits. The copy distance is clean: the string is invented, the reference's identifiers are on the denylist, and `lint:reference-copy` passes. The genre distance is the thinnest in the Chip set. RD-12.
 - **Verdict.** **Not a copy**, and the nearest of the thirteen in genre.
 
+*Pointer added 2026-09-26: this group describes "B-4417". RD-12 was taken at `e56272f`, and the example now reads "INV-209316", an invoice number. [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26) reads its 16 re-recorded images. The genre bullet above no longer applies to it, and row 35's verdict becomes a plain "No".*
+
 #### 11.5.3 Over the map — `on-map`, `selected-on-map`: 2 examples, 40 images
 
 - **What it is.** The pill straight on the synthetic map, where it renders the glass chip: "Depots" after a map pin in `on-map`, and "Depots" selected in `selected-on-map`, where the check a chip selected over media draws takes the leading slot. Every tone on the pill collapses to the glass foreground. On Apple the light pill decodes `(217, 219, 223)` with an ink label and stroke, and the dark one `(42, 44, 49)` with a white label. Under Increase Contrast and Reduce Transparency the pill falls back to the raised step inside a hairline, and the selected chip drops its check.
@@ -1006,7 +1009,7 @@ Rows 31–43 continue §10.5's numbering, one row per example.
 
 **What would help. Cheap, and not required.** Relabel the example with an identifier outside the fleet genre, one that no other example uses, such as an order, invoice or batch number. That is one `Chip.yaml` example edit. It moves 16 baselines (8 Apple, 8 web) through the sanctioned re-record route, and condition 6 then asks for them to be compared as §9.1 compared the 104. Doing it with RD-2 item 3's re-subjecting of `glass-vehicle` would remove the gallery's only shared fleet identifier. It is not taken here: this ticket changes no spec and no component.
 
-*Pointer added 2026-09-26: RD-12 is taken. The commit that adds this pointer relabels `identifier-copy` "INV-209316", an invoice number that no other example uses. Its shape keeps it out of §11.5.2's genre as well as its word: a document prefix and six digits, where the reference names a vehicle by a word or a letter with four or five digits, and neither the shipping console's numbered chip nor the incident console's hash. TextField's and ListRow's "B-4417", which no stack implements, becomes the batch number "318204", so no example puts the fleet unit number in a vehicle-style identifier any more. `Card/glass-vehicle`'s "Unit 4417" and the other 4417s stand, and remain RD-2 item 3's to decide. Both showcase apps show the new label from this commit, which fires showcase §13.8 condition 8. The 16 images, 8 Apple and 8 web, keep "B-4417" until CI re-records them. §9.9 condition 6 then asks for a dated section that reads the new images beside the old ones, as §9.1 read the 104, and that section answers both conditions.*
+*Pointer added 2026-09-26: RD-12 is taken. The commit that adds this pointer relabels `identifier-copy` "INV-209316", an invoice number that no other example uses. Its shape keeps it out of §11.5.2's genre as well as its word: a document prefix and six digits, where the reference names a vehicle by a word or a letter with four or five digits, and neither the shipping console's numbered chip nor the incident console's hash. TextField's and ListRow's "B-4417", which no stack implements, becomes the batch number "318204", so no example puts the fleet unit number in a vehicle-style identifier any more. `Card/glass-vehicle`'s "Unit 4417" and the other 4417s stand, and remain RD-2 item 3's to decide. Both showcase apps show the new label from this commit, which fires showcase §13.8 condition 8. The 16 images, 8 Apple and 8 web, keep "B-4417" until CI re-records them. §9.9 condition 6 then asks for a dated section that reads the new images beside the old ones, as §9.1 read the 104, and that section answers both conditions. It is [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26): none of the 16 is a copy, and RD-12 is closed.*
 
 ### 11.8 Coverage
 
@@ -1153,3 +1156,102 @@ With them the gallery review covers all 1748 images: the 1604 that §§3 and 9�
 **It is not a legal opinion**, for the reasons §8 gives.
 
 The next section's verdict rows start at 62, and its findings at RD-13.
+
+---
+
+## 13. Re-review of the identifier chip after RD-12's relabel — 2026-09-26
+
+- **Subject.** The **16 re-recorded images** of `Chip/identifier-copy`:
+  - 8 Apple: `ios`, light and dark, regular and compact, each with its `increased-contrast` twin;
+  - 8 web: `web-desktop` and `web-touch`, in the same four cells.
+
+  `e56272f` relabelled the example "INV-209316", taking RD-12. CI run 36247333811 on `e56272f` re-recorded the 16, and the commit that adds this section commits them. The gallery still holds 1748 images in 872 cells, 0 missing, and 92 examples of 10 components (`gallery/index.json`, `counts`).
+- **Why.** Two conditions fired, and this section answers both.
+  - §9.9 condition 6: the re-record changes what the example draws, its label.
+  - Showcase §13.8 condition 8, from `e56272f` on: both apps show the new label from that commit. The condition *"is answered when a dated section of the gallery review reads the change"*, and this change fills no slot.
+- **Format.** §12's, adapted to a re-record: what changed (§13.1), how the images were read (§13.2), what they draw (§13.3), the verdict (§13.4), and whether anything moves an earlier verdict or finding (§13.5).
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops and page captures made for this section stayed in the session scratchpad, and none is committed.
+
+### 13.1 What changed since §12's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| `identifier-copy` relabelled "INV-209316", and "B-4417" retired from TextField's and ListRow's examples, which no stack implements (RD-12) | `e56272f` | 0 | — |
+| The 16 images that relabel re-recorded | run 36247333811, and this section's commit | 16 | yes, as "B-4417" (§11.5.2) |
+
+A diff over both baseline roots, from `7593770` (the commit that added §12) to this section's commit, modifies these 16 images and adds or removes none. The run compared 864 of Apple's other PNGs, and its provenance file, byte-identical with the tree. On the web it rewrote every baseline, as `--update-snapshots=all` does. Five `Avatar/ringed-over-map` Reduce Transparency images came back different from the committed ones, by 3 to 7 pixels each. No channel moved by more than 4 code values, and every difference sits in a spot of at most 5 × 6 px just outside the ring. That is antialiasing below the comparison's threshold, of the kind §12.2 found between that example's two web platforms. Those five were not committed, so the images §12 read are the ones in the tree.
+
+The other commits since §12 add no image:
+- `62cdf5b` and `25821ba` edit specs that no stack implements, and Chip's prose;
+- `364a8e8` teaches the web VRT to photograph Increase Contrast on `web-desktop` at regular density. Its images are new variants of named examples, `identifier-copy`'s two among them, drawn with the new label, and condition 3 covers them when they land;
+- `0abafaf` changes Button's and IconButton's pressed fill, which no example photographs;
+- `ac0d910` to `5694283` change CI and the Apple showcase app.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 did not fire. No example is new, and no new variant has an image yet, so the 92 that §9.8, §10.7 and §11.8 name are still the whole list.
+- Conditions 4 and 5 did not fire. `identifier-copy` fills no slot, and no badge or button moved.
+- Condition 6 fired for the 16, and this section answers it.
+- Condition 7 did not fire. `identifier-copy` stands on the page, not on the map.
+- Condition 8 did not fire. The relabel moves the identifier chip away from the plate chip: it has no letter disc, no vehicle's number and no truncation, and no vehicle drawing, card or table surrounds it.
+
+### 13.2 Method
+
+- **Every image, old beside new.** All 16 were opened on two contact sheets, one per stack, each new image beside the committed one it replaces, one row per scheme, density and variant. Apple's sheet was at 2× nearest-neighbour and the web's at 1×. A third sheet set Apple's standard image beside `web-desktop`'s, at 2×, for each scheme and density. The light regular pills were opened at 4×, on Apple beside their `increased-contrast` twins, for the old images and the new alike.
+- **Decoded, not read by eye.** For each image: its size and the pill's box, meaning every pixel more than 2 code values from the stage's corner. Along the pill's middle band: the spans where the label and the glyph put ink. Then the pill's fill, its stroke and the label's strongest ink, old against new. Every size and colour below is decoded.
+- **Byte comparisons.** `web-touch` is byte-identical to `web-desktop` in all four pairs, as the images they replace were.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, from the working tree after `pnpm gallery:build`, as §10.2 did. All 1748 images decode. `identifier-copy`'s article pairs the 16 under "label: INV-209316, trailingIcon: action.copy". Apple's images are 162 × 80 and 162 × 76 px, and the web's 240 × 160 and 240 × 156. Its web Increase Contrast figures still read "not in this matrix".
+- **The references.** Those §11.5.2 names: the shipping console 27658472's number chip, the incident console 27571204's copy-id affordance and the traffic console's plate chip. The denylist's identifiers were read too.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 684 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 13.3 What the new images draw
+
+- **The pill.** "INV-209316" and the trailing `action.copy` glyph in the raised sm pill, alone on the page, as "B-4417" was. The pill is 114 × 32 on Apple (114 × 28 at compact) and 112 × 32 on the web (112 × 28), where both drew 86 × 32 (86 × 28). The stages keep their margins, 24 px on Apple and 64 px on the web. So Apple's image grows from 134 to 162 px wide and the web's from 214 to 240, and no height changes.
+- **The tones do not move.** Each was decoded at the same point in the old image and the new:
+  - on Apple in light, the fill is (247, 248, 250), the stroke (224, 225, 227) and the label's ink (92, 96, 104);
+  - under Increase Contrast in light, the stroke deepens to (177, 178, 180) and the label to (64, 68, 76);
+  - in dark the fill is (35, 36, 38), with the stroke at (53, 54, 55) and the label at (176, 176, 177), or (90, 91, 92) and (211, 211, 212) under Increase Contrast;
+  - the web decodes the same fill and label in light, and (35, 35, 38) with a (172, 172, 173) label in dark.
+
+  The one difference is a single code value in the web's dark stroke. It is sampled at the middle of a wider pill, so it lands on another antialiased pixel.
+- **The two stacks.** Both draw the label with 66 px of ink. The whole 2-point difference between the pills is in where that ink sits:
+  - Apple's label ink starts 13 pt inside the pill and ends 9 pt before the glyph;
+  - the web's starts 12 px in and ends 8 px before the glyph.
+
+  The insets were the same before. The old label's ink was 38 wide on Apple and 40 on the web, and with those insets both came to 86-point pills. The glyph is each stack's registry binding, as in §11.5.2: the SF symbol on Apple, and Phosphor's two squares on the web.
+
+### 13.4 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Row 62 continues §12.4's numbering.
+
+| # | Example (group) | Copy? | Why |
+|---|---|---|---|
+| 62 | `Chip/identifier-copy` (§11.5.2), its 16 re-recorded images | **No, and RD-12 is closed** | An invoice number with a copy glyph, alone on the page. The pairing of an identifier with a copy glyph is still a grammar two consoles share. Its content is now a document's number, not the gallery's fleet unit in a vehicle-style identifier. |
+
+**Summary.** None of the 16 is close enough to one product that a reasonable person would call it a copy. Each draws what the image it replaces drew, with another label.
+
+### 13.5 Does anything here move an earlier verdict or finding?
+
+- **Row 35 and §11.5.2.** §11.5.2's genre bullet was about "B-4417". The reference names its vehicles by a word or a letter with four or five digits (§11.5.2). "INV-209316" is a document prefix with six. Of the two copy-glyph identifiers, the shipping console's is a container's number and the incident console's a hash; neither is an invoice. Row 35's verdict becomes a plain **No**, and `identifier-copy` is no longer the nearest of the thirteen in genre. §11.5.2 carries a pointer.
+- **RD-12.** Closed. No example puts the fleet unit number in an identifier chip. In the gallery's images, "4417" is now only `Card/glass-vehicle`'s and `Card/glass-selected`'s "Unit 4417".
+- **RD-2 item 3.** Stands. RD-12 noted that the relabel, together with re-subjecting `glass-vehicle`, would remove the gallery's only shared fleet identifier. Card's unit number is no longer shared, and whether `glass-vehicle` keeps its genre is still that item's call.
+- **RD-11 and condition 8.** Untouched: `md-with-avatar` did not change, and the identifier chip moved away from the plate chip.
+- **RD-9 and condition 7.** Untouched: `identifier-copy` is not on the map.
+
+### 13.6 Coverage
+
+| Component | Example | Re-recorded images | Group |
+|---|---|---|---|
+| Chip | `identifier-copy` | 16: 8 Apple, 8 web | §11.5.2 |
+
+With them the gallery review covers all 1748 images: the 1732 that §§3 and 9–12 read, as they still are, and these 16.
+
+### 13.7 What this clearance covers, and when it expires
+
+**It covers** the gallery at the commit that adds this section: all 1748 images, 92 examples and 10 components. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires on §9.9's conditions, as §10.8, §11.9 and §12.7 read them.** The web Increase Contrast images that `364a8e8` begins to record are condition 3's new variants when they land, `identifier-copy`'s two among them.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next section's verdict rows start at 63, and its findings at RD-13.

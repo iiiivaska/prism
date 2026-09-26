@@ -6804,19 +6804,19 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.light.regular.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 80
                 },
                 "web-desktop": {
                   "state": "present",
                   "file": "identifier-copy.web-desktop.light.regular.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 160
                 },
                 "web-touch": {
                   "state": "present",
                   "file": "identifier-copy.web-touch.light.regular.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 160
                 }
               }
@@ -6829,7 +6829,7 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.light.regular.increased-contrast.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 80
                 },
                 "web-desktop": {
@@ -6848,19 +6848,19 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.light.compact.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 76
                 },
                 "web-desktop": {
                   "state": "present",
                   "file": "identifier-copy.web-desktop.light.compact.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 156
                 },
                 "web-touch": {
                   "state": "present",
                   "file": "identifier-copy.web-touch.light.compact.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 156
                 }
               }
@@ -6873,7 +6873,7 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.light.compact.increased-contrast.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 76
                 },
                 "web-desktop": {
@@ -6892,19 +6892,19 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.dark.regular.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 80
                 },
                 "web-desktop": {
                   "state": "present",
                   "file": "identifier-copy.web-desktop.dark.regular.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 160
                 },
                 "web-touch": {
                   "state": "present",
                   "file": "identifier-copy.web-touch.dark.regular.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 160
                 }
               }
@@ -6917,7 +6917,7 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.dark.regular.increased-contrast.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 80
                 },
                 "web-desktop": {
@@ -6936,19 +6936,19 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.dark.compact.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 76
                 },
                 "web-desktop": {
                   "state": "present",
                   "file": "identifier-copy.web-desktop.dark.compact.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 156
                 },
                 "web-touch": {
                   "state": "present",
                   "file": "identifier-copy.web-touch.dark.compact.png",
-                  "width": 214,
+                  "width": 240,
                   "height": 156
                 }
               }
@@ -6961,7 +6961,7 @@
                 "ios": {
                   "state": "present",
                   "file": "identifier-copy.ios.dark.compact.increased-contrast.png",
-                  "width": 134,
+                  "width": 162,
                   "height": 76
                 },
                 "web-desktop": {
