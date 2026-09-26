@@ -13,16 +13,18 @@ on:
       # leaves both off unless someone turns one on, and no workflow of this repository dispatches this one.
       update-vrt-baselines:
         # P3-4: web-vrt rewrites the Linux baselines that fail comparison, and records any that are missing, instead
-        # of failing on them (--update-snapshots=changed), uploads the folder as the `vrt-baselines` artifact and
-        # fails, so that someone commits what moved.
+        # of failing on them (--update-snapshots=changed). When any moved, it uploads the folder as the
+        # `vrt-baselines` artifact and fails, listing them, so that someone commits them; when none did, it passes
+        # with a notice and uploads nothing.
         description: Record the web visual regression baselines in the Playwright image
         type: boolean
         default: false
       update-snapshot-baselines-apple:
         # P3-3, the twin of the input above, added ahead of P4-2 (whose glyph path moves committed Button and Card
         # baselines on purpose): the apple job records every SwiftUI baseline with XCODE_VERSION on the pinned
-        # simulator instead of comparing, uploads the whole __Snapshots__ folder as the `snapshot-baselines-apple`
-        # artifact and fails, so that someone reviews what moved and commits it.
+        # simulator instead of comparing. When any came out different, it uploads the whole __Snapshots__ folder as
+        # the `snapshot-baselines-apple` artifact and fails, listing them, so that someone reviews what moved and
+        # commits it; when none did, it passes with a notice and uploads nothing.
         description: Record the SwiftUI snapshot baselines with the pinned Xcode and simulator
         type: boolean
         default: false
@@ -395,7 +397,7 @@ jobs:
         #   - `workflow_dispatch` with `update-vrt-baselines` (`requested`), the sanctioned re-record and the web twin
         #     of the apple job's `update-snapshot-baselines-apple`. Its =changed writes over the committed baselines
         #     that fail comparison on purpose, so this step, which would refuse every one of them, is skipped, and the
-        #     folder goes out whole through the recording upload below.
+        #     folder goes out whole through the recording upload below when anything moved.
         #
         # Like the apple job's hand-back, this step is reached only through a green `contracts`: this job needs `web`,
         # which needs `contracts`, and the apple job's step of the same name says what that asks of a landing commit.
@@ -422,6 +424,32 @@ jobs:
           name: vrt-baselines
           path: ${{ runner.temp }}/vrt-baselines
           if-no-files-found: error
+      - name: Ask for the recorded baselines to be committed
+        # Only after a complete requested re-record: a failed one has already failed the job with its own message,
+        # and a recording `vrt-mode` fell back to is the hand-back's to report, which says what it staged or why it
+        # refused. The re-record writes only what failed its comparison or had no baseline, so git status over the
+        # folder is what it moved: ` M` rewritten, `??` recorded. This step fails the job and lists them, or, when git
+        # reports nothing, passes with a notice and sets `moved=false`, and the upload below then hands back nothing.
+        id: vrt-ask
+        if: steps.vrt-record.outcome == 'success' && steps.vrt-mode.outputs.requested == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The hand-back adds this before it reads git, and this run skips the hand-back: the container runs as root
+          # over a workspace the runner's user created, and git refuses that workspace without it.
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          moved=$(git status --porcelain --untracked-files=all -- web/apps/vrt/baselines/linux)
+          if [ -z "$moved" ]; then
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Nothing moved::This run was dispatched with update-vrt-baselines, and every screenshot matched its committed Linux baseline (--update-snapshots=changed), so it rewrote nothing, recorded nothing and uploaded nothing: there is nothing to commit."
+            exit 0
+          fi
+          echo "moved=true" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$moved"
+          count=$(printf '%s\n' "$moved" | grep -c '')
+          list=$(printf '%s\n' "$moved" | sed -e 's/%/%25/g' -e 's|web/apps/vrt/baselines/linux/||' | awk '{ printf "%s%%0A", $0 }')
+          echo "::error title=VRT baselines re-recorded where they changed::This run was dispatched with update-vrt-baselines, so it compared every screenshot with its Linux baseline, rewrote the baselines that failed the comparison, recorded any that were missing, and left every other one as committed (--update-snapshots=changed). $count baseline(s) moved, listed below as git status reports them (M rewritten, ?? recorded). Download the 'vrt-baselines' artifact of this run and unpack it over web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>[.<variant>].png, the platform being web-desktop or web-touch). git status then lists the same files: review each one against the committed image (git diff, or the previous comparing run's 'vrt-diffs' artifact), check any path in no commit with the two git log commands in .github/scripts/baseline-handback.sh, commit what the change meant to move, and push; the next run compares against them.%0A$list"
+          exit 1
       - name: Upload the recorded baselines
         # `always()`: a recording run that stopped part-way — a runtime-contract regression in this
         # container, a screenshot timeout, a crashed worker — still hands back the images it did write.
@@ -429,28 +457,21 @@ jobs:
         # no diagnostics, and the operator would have nothing to act on. `warn` rather than `error` for
         # the same reason: the step that failed has already said why, and a second red X over an empty
         # folder would only bury it. Only the requested re-record uploads the folder unchecked; a recording
-        # `vrt-mode` fell back to leaves through the hand-back above, after the script has checked it.
-        if: always() && steps.vrt-mode.outputs.requested == 'true'
+        # `vrt-mode` fell back to leaves through the hand-back above, after the script has checked it. It
+        # stays home only when the step above found that nothing moved (`moved=false`): the folder is then
+        # the commit's own. After a recording that stopped, that step does not run, and the folder goes out.
+        if: always() && steps.vrt-mode.outputs.requested == 'true' && steps.vrt-ask.outputs.moved != 'false'
         uses: actions/upload-artifact@v7
         with:
           name: vrt-baselines
           path: web/apps/vrt/baselines/linux
           if-no-files-found: warn
-      - name: Ask for the recorded baselines to be committed
-        # Only after a complete requested re-record: a failed one has already failed the job with its own message,
-        # and a recording `vrt-mode` fell back to is the hand-back's to report, which says what it staged or why it
-        # refused.
-        if: steps.vrt-record.outcome == 'success' && steps.vrt-mode.outputs.requested == 'true'
-        shell: bash
-        run: |
-          echo "::error title=VRT baselines re-recorded where they changed::This run was dispatched with update-vrt-baselines, so it compared every screenshot with its Linux baseline, rewrote the baselines that failed the comparison, recorded any that were missing, and left every other one as committed (--update-snapshots=changed). Download the 'vrt-baselines' artifact of this run and unpack it over web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>[.<variant>].png, the platform being web-desktop or web-touch). git status then lists the baselines this run rewrote or added: review each one against the committed image (git diff, or the previous comparing run's 'vrt-diffs' artifact), check any path in no commit with the two git log commands in .github/scripts/baseline-handback.sh, commit what the change meant to move, and push; the next run compares against them."
-          exit 1
       - uses: actions/upload-artifact@v7
         # Either mode: a compare run's diffs and traces, or what a recording run left behind when it
-        # stopped. After a complete recording the job fails by design — the step above for a requested
-        # re-record, the hand-back for any other — and this folder holds only an `-actual` copy of each
-        # baseline the run wrote: for a requested re-record, exactly those it rewrote or added, so nothing
-        # when nothing moved, which `ignore` passes over in silence.
+        # stopped. After a complete recording that wrote anything the job fails by design — the Ask step
+        # for a requested re-record, the hand-back for any other — and this folder then holds only an
+        # `-actual` copy of each baseline the run wrote. A requested re-record that moved nothing passes,
+        # and this step does not run.
         if: failure()
         with:
           name: vrt-diffs
@@ -559,7 +580,8 @@ jobs:
         #     mode the one write is the `!exists` branch), and one whose baseline differs fails without writing;
         #   - record the whole set and fail, while `__Snapshots__` holds none;
         #   - record the whole set over the committed one, when a person dispatched `update-snapshot-baselines-apple`.
-        #     This step then passes, and the job fails further down, once the folder is uploaded.
+        #     This step then passes, and the job fails further down if any baseline moved, with the folder uploaded;
+        #     if none did, the job passes with a notice.
         #
         # In the first two the step after this one hands back what was written, so a baseline is reviewed and committed
         # before it becomes the reference; the third hands back the whole folder unchecked. xcodebuild hands
@@ -654,6 +676,30 @@ jobs:
           name: snapshot-baselines-apple
           path: ${{ runner.temp }}/snapshot-baselines-apple
           if-no-files-found: error
+      - name: Ask for the recorded baselines to be committed # P3-3
+        # Only after a complete requested re-record, as in `web-vrt`: a failed one has already failed the job with its
+        # own message, and the recording `snapshot-mode` falls back to says what to do in the snapshot step itself.
+        # The suite rewrote every baseline, and the renders are a pure function of the view and the pins, so git
+        # status over the folder is what moved: ` M` rewritten, `??` recorded. As in `web-vrt`, this step fails the
+        # job and lists them, or, when git reports nothing, passes with a notice and sets `moved=false`, and the
+        # upload below then hands back nothing.
+        id: apple-ask
+        if: steps.swiftui-snapshots.outcome == 'success' && steps.snapshot-mode.outputs.requested == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          moved=$(git status --porcelain --untracked-files=all -- swift/Tests/DSSnapshotTests/__Snapshots__)
+          if [ -z "$moved" ]; then
+            echo "moved=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Nothing moved::This run was dispatched with update-snapshot-baselines-apple and recorded every SwiftUI snapshot baseline with Xcode $XCODE_VERSION, and each one, provenance.json too, came out byte-identical to the committed one, so it uploaded nothing: there is nothing to commit."
+            exit 0
+          fi
+          echo "moved=true" >> "$GITHUB_OUTPUT"
+          printf '%s\n' "$moved"
+          count=$(printf '%s\n' "$moved" | grep -c '')
+          list=$(printf '%s\n' "$moved" | sed -e 's/%/%25/g' -e 's|swift/Tests/DSSnapshotTests/__Snapshots__/||' | awk '{ printf "%s%%0A", $0 }')
+          echo "::error title=SwiftUI baselines recorded, not compared::This run was dispatched with update-snapshot-baselines-apple, so it recorded every SwiftUI snapshot baseline with Xcode $XCODE_VERSION instead of comparing, and $count file(s) came out different from the committed ones, listed below as git status reports them (M rewritten, ?? recorded). Download the 'snapshot-baselines-apple' artifact of this run and unpack it over swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.ios.<scheme>.<density>[.<variant>].png, beside provenance.json). git status then lists the same files: review each one against the committed image (git diff, or the previous comparing run's 'snapshot-diffs-apple' artifact), check any path in no commit with the two git log commands in .github/scripts/baseline-handback.sh, commit what the change meant to move, and push; the next run compares against them.%0A$list"
+          exit 1
       - name: Upload the recorded baselines # P3-3
         # The requested re-record's hand-back, the twin of the `web-vrt` step of the same name: the whole __Snapshots__
         # folder, provenance.json included, with every baseline the suite rewrote over the committed one. The renders
@@ -662,26 +708,19 @@ jobs:
         # suite of this target failing, a crashed simulator — still hands back what it wrote; `warn` rather than
         # `error`, because the step that failed has already said why. Only the requested re-record reaches this step,
         # so only a person's dispatch uploads a committed baseline written over, and nothing checks it but the review
-        # of what it holds.
-        if: always() && steps.snapshot-mode.outputs.requested == 'true'
+        # of what it holds. As in `web-vrt`, it stays home only when the step above found that nothing moved
+        # (`moved=false`).
+        if: always() && steps.snapshot-mode.outputs.requested == 'true' && steps.apple-ask.outputs.moved != 'false'
         uses: actions/upload-artifact@v7
         with:
           name: snapshot-baselines-apple
           path: swift/Tests/DSSnapshotTests/__Snapshots__
           if-no-files-found: warn
-      - name: Ask for the recorded baselines to be committed # P3-3
-        # Only after a complete requested re-record, as in `web-vrt`: a failed one has already failed the job with its
-        # own message, and the recording `snapshot-mode` falls back to says what to do in the snapshot step itself.
-        if: steps.swiftui-snapshots.outcome == 'success' && steps.snapshot-mode.outputs.requested == 'true'
-        shell: bash
-        run: |
-          echo "::error title=SwiftUI baselines recorded, not compared::This run was dispatched with update-snapshot-baselines-apple, so it recorded every SwiftUI snapshot baseline with Xcode $XCODE_VERSION instead of comparing. Download the 'snapshot-baselines-apple' artifact of this run and unpack it over swift/Tests/DSSnapshotTests/__Snapshots__/ (so the files sit at __Snapshots__/<Component>/<example-id>.ios.<scheme>.<density>[.<variant>].png, beside provenance.json). git status then lists the baselines whose bytes changed: review each one against the committed image (git diff, or the previous comparing run's 'snapshot-diffs-apple' artifact), check any path in no commit with the two git log commands in .github/scripts/baseline-handback.sh, commit what the change meant to move, and push; the next run compares against them."
-          exit 1
       - name: Upload what a failing comparison rendered # P3-3
         # The apple job's `vrt-diffs`: the reference, the failure and the difference image the suite writes for every
         # comparison that failed (TEST_RUNNER_DS_SNAPSHOT_ARTIFACTS above). Empty on a run that recorded instead of
-        # comparing, which `ignore` passes over in silence; a requested re-record fails by design one step up and
-        # reaches here with nothing in it.
+        # comparing, which `ignore` passes over in silence; a requested re-record that moved anything fails by design
+        # above and reaches here with nothing in it, and one that moved nothing passes, so this step does not run.
         if: failure()
         uses: actions/upload-artifact@v7
         with:

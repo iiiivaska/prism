@@ -10,11 +10,12 @@
 # hands back: `update-vrt-baselines` (web-vrt, `vrt-baselines`) and `update-snapshot-baselines-apple` (apple,
 # `snapshot-baselines-apple`). It is the one way to change a committed baseline on purpose, on either stack: the run
 # records over the committed set (apple the whole folder, whose renders are byte-stable; web-vrt only the baselines that
-# fail comparison, and any that are missing, with --update-snapshots=changed), skips this script, uploads the folder
-# whole and fails, and whoever dispatched it unpacks the artifact over the folder and commits what git reports as
-# changed, so review sees changed baselines and never a deletion. Push and pull_request runs cannot reach it: the
-# inputs exist only on a dispatch, and both default to off. So everything this script is given comes from a run that
-# compares, or from one that records only because its folder is empty.
+# fail comparison, and any that are missing, with --update-snapshots=changed) and skips this script. When git reports
+# anything moved, the run uploads the folder whole and fails, listing what moved, and whoever dispatched it unpacks the
+# artifact over the folder and commits what git reports as changed, so review sees changed baselines and never a
+# deletion; when nothing moved, it passes with a notice and uploads nothing. Push and pull_request runs cannot reach
+# it: the inputs exist only on a dispatch, and both default to off. So everything this script is given comes from a
+# run that compares, or from one that records only because its folder is empty.
 #
 # The suite's exit code does not decide what may leave. Git does, together with the commit the change is measured
 # against (BASE):

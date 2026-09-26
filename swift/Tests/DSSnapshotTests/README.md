@@ -236,7 +236,8 @@ The loop is the same on both:
    comparison, plus any that are missing (`--update-snapshots=changed`): a Chromium render can differ from its baseline
    by a few pixels of anti-aliasing below the threshold the comparison allows, and a rewrite of every file brought that
    noise back as changes nobody made. A move below that threshold therefore passes and is not re-recorded either. Each
-   job skips the hand-back, uploads the folder whole, and fails by design, naming the artifact.
+   job skips the hand-back. When any baseline moved, it uploads the folder whole and fails by design, naming the
+   artifact and listing what moved; when none did, it passes with a "Nothing moved" notice and uploads nothing.
 3. Unpack the artifact over the folder; `git status` then lists the baselines whose bytes changed. Review each against
    the committed image (`git diff`, or the diffs of step 1) and commit only what the change meant to move. A `??` in
    that list is a path in no commit, which the re-record hands back unchecked: look it up with the two `git log`
