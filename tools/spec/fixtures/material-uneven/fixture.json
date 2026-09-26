@@ -1,0 +1,6 @@
+{
+  "description": "Three colour-bearing parts key `inverse`, `accent` and `glassLight` one part each, one of them only in a state block, and `materials` names one of the parts that do not key `accent`. A matrix keyed by the `tone` prop's `accent` value is a prop, not the material, and a part that binds no colour is not held.",
+  "expect": [
+    { "code": "material/uneven", "file": "spec/components/Sample.yaml" }
+  ]
+}

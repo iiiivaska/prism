@@ -56,6 +56,11 @@ tokens:
     typography: type.label.sm
     color: comp.tooltip.text
 
+materials:
+  inverse: "`root` and `label` read no material: the chip floats above the layer that publishes one and is the inverse solid on every ground (behavior), so its one pair, color.text.on-inverse on color.bg.fill.inverse, is the pair that renders. Over an inverse ground the chip is the ground's colour, and elevation.3 alone sets it apart; the label keeps its pair (ADR-0040 §6)."
+  accent: "`root` and `label` read no material: the chip floats above the layer that publishes one and is the inverse solid on every ground (behavior), so its one pair, color.text.on-inverse on color.bg.fill.inverse, is the pair that renders. Over the lit tile the chip is the inverse solid, which the label's pair does not depend on (ADR-0040 §6)."
+  glassLight: "`root` and `label` read no material: the chip floats above the layer that publishes one and is the inverse solid on every ground (behavior), so its one pair, color.text.on-inverse on color.bg.fill.inverse, is the pair that renders. Over light glass the chip stays opaque and never becomes glass (ADR-0040 §6)."
+
 behavior:
   - "A Tooltip is rendered only while the modality flag `interaction.tooltip` is 1, which is pointer modality. Under touch the component renders nothing at all, and neither stack ships a long-press substitute."
   - "What replaces it on touch: the name is already the trigger's accessibility label, and a control whose glyph alone does not say what it does carries a visible label beside or under it. An affordance that only a hovering pointer can discover is an anti-pattern (visual-dna §11 anti-pattern 31), so no information may exist in a Tooltip and nowhere else."
@@ -122,4 +127,4 @@ notes:
     web-touch: "`none`. Same reason as iOS; the modality flag decides, not the user agent."
     macos: "`full`; with Increase Contrast the trigger's focus ring uses the system colour, as Button.yaml already states."
   design: "The chip is the inverse solid of docs/research/visual-dna.md §1 principle 9 and §4.7 — the one highest-contrast element in a group — which is why it uses `color.bg.fill.inverse` rather than a surface step that would disappear over imagery. Its radius, padding and elevation come from §1 principle 2 (inner 8), §6.1 (`space.3` 8 and `space.2` 6) and §7.2 level 3 (popovers and floating readouts). The 150 ms fade with `motion.easing.out` is the tooltip cue of §9.2. The pointer-only rule is ADR-0010's modality dimension and its rule 2, and the ban on hover-only affordances is §11 anti-pattern 31. `size.card.min` (200 px) is reused as the chip's maximum width: Prism has no tooltip-width token, and a chip wider than the smallest card would stop being a label. docs/research/component-inventory.md records 0 of 11 sightings; the nearest is the desktop ChartTooltip, which is a different component. Example strings are invented (ADR-0015 rule 3)."
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0040-materials-a-part-keys.md]

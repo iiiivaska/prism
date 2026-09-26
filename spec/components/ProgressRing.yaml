@@ -63,14 +63,22 @@ tokens:
     strokeMin: comp.progress-ring.stroke-min
   track:
     color:
-      default: comp.progress-ring.track
+      page: comp.progress-ring.track
+      solid: comp.progress-ring.track
+      raised: comp.progress-ring.track
+      nested: comp.progress-ring.track
       vivid: color.chart.on-media.grid
       glass: color.chart.on-glass-fill.grid
+      glassLight: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
   arc:
     color:
       default: comp.progress-ring.arc
       vivid: color.bg.fill.inverse-media
       glass: comp.progress-ring.arc
+      glassLight: comp.progress-ring.arc
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
   value:
     typography: type.data
     color:
@@ -79,6 +87,9 @@ tokens:
       accent: color.text.on-accent
       glassLight: color.text.on-glass-light
       glass: color.text.on-glass-fill
+
+materials:
+  inverse: "`track` is not drawn on inverse, where the one foreground would make it the arc's colour; an indeterminate ring there turns as a Spinner does (ADR-0040 §5)."
 
 behavior:
   - The determinate ring is closed, because it shows a fraction of a whole (dataviz-design.md §3 E24). The arc starts at the top and runs clockwise, with round caps, so a value just above 0 shows a dot rather than a sliver.
@@ -89,6 +100,7 @@ behavior:
   - "The inner numeral is the whole percent with no sign and no unit: at control size E25's unit rule (40 to 50 % of the numeral) would ask for a 6 px glyph. A unit, and anything else the reader needs in words, sits in the Text beside the ring. The numeral is `type.data`, which is tabular (ADR-0021 §5), so it does not jitter as the ring fills; it replaces its value and never counts up (Text.yaml)."
   - The ring never carries a second colour for a threshold. Bands and qualitative ranges belong to RingGauge, and a status is carried by an icon and a label, never by recolouring the arc.
   - On a surface that publishes `vivid` the arc flips to the white solid `color.bg.fill.inverse-media` over a `color.chart.on-media.grid` track; on the scheme's glass it keeps `comp.progress-ring.arc`, which is the inverse solid ADR-0030 §3.1 already makes right there (ink on light glass, white on smoke), over the glass grid.
+  - "The ring is a meter and not a chart, so on `glassLight`, `inverse` and `accent`, which hold no chart family (ADR-0030 rule 3), it binds no chart role there: the track and the arc are marks in the material's own tones (ADR-0040 §5). On light glass the arc keeps `comp.progress-ring.arc` over a `color.border.on-glass-fill` track, as on the scheme's glass; on an accent surface the arc knocks out to `color.text.on-accent` over a `color.text.on-accent-secondary` track; on an inverse surface the arc is `color.text.on-inverse` and the track is not drawn, because the material has one foreground, so there an indeterminate ring turns as a Spinner does and `label` names the work."
   - "On a surface that publishes `vivid` the ring draws no numeral: `type.data` is 13 px, and outside the Card header block `color.text.on-vivid` is checked only at 24 px and above (ADR-0022 V1 and V2). `showsValue` is ignored there and the enclosing Card's caption carries the words, the way it carries the hero's unit (ADR-0030 §8)."
   - Reaching 1 plays no haptic. The haptics registry allows at most one haptic per user action and none on a programmatic state change.
   - The ring is a readout, never a control. A ring the user can drag is a Slider, and a ring that opens something sits inside a Button.
@@ -105,7 +117,7 @@ accessibility:
   traits: [updatesFrequently]
   keyboard: not focusable and not a tab stop; the ring is a readout and the control that started the work keeps the focus
   dynamicType: the ring's diameter does not scale, because it belongs to the control family; the inner numeral scales with `type.data` and, once it would pass 45 % of the diameter, it is dropped and the value is read from the Text beside the ring instead of shrinking or clipping
-  contrast: "the arc against the track is a mark that carries meaning, so it holds the 3:1 boundary tier of ADR-0011 while it is drawn at full strength; `comp.progress-ring.arc` is `color.bg.fill.inverse` (ink in light, white in dark) over `comp.progress-ring.track`, which is `color.bg.fill.neutral.subtle`, 17.0:1 in light. On vivid the white solid `color.bg.fill.inverse-media` against every gradient sample is ADR-0022's V1. The static ring an indeterminate variant shows under Reduce Motion is dimmed to `opacity.dimmed-row` and is decoration at that point: it carries no tier, which is why the label and the text beside the ring carry the state there. `value` is functional text below 24 px and follows the tones of Text on the published material, which is why it is not drawn on vivid"
+  contrast: "the arc against the track is a mark that carries meaning, so it holds the 3:1 boundary tier of ADR-0011 while it is drawn at full strength; `comp.progress-ring.arc` is `color.bg.fill.inverse` (ink in light, white in dark) over `comp.progress-ring.track`, which is `color.bg.fill.neutral.subtle`, 17.0:1 in light. On vivid the white solid `color.bg.fill.inverse-media` against every gradient sample is ADR-0022's V1. On accent the arc `color.text.on-accent` and the track `color.text.on-accent-secondary` are functional pairs on `color.bg.fill.accent`, and on inverse the arc is `color.text.on-inverse` on `color.bg.fill.inverse`; on light glass the track `color.border.on-glass-fill` is decorative, as on the scheme's glass (ADR-0030 §3.2, ADR-0040 §5). The static ring an indeterminate variant shows under Reduce Motion is dimmed to `opacity.dimmed-row` and is decoration at that point: it carries no tier, which is why the label and the text beside the ring carry the state there. `value` is functional text below 24 px and follows the tones of Text on the published material, which is why it is not drawn on vivid"
   voiceOver: "a determinate ring exposes the fraction as a percent from 0 to 100 (`aria-valuemin` 0, `aria-valuemax` 100, `aria-valuenow` the rounded percent on web; `accessibilityValue` on Apple). An indeterminate ring sets no value at all (`aria-valuenow` absent, an indeterminate `Gauge` on Apple), so a screen reader says busy rather than a number"
   reduceTransparency: not applicable — the ring renders no glass of its own; when the enclosing Surface falls back from glass to `raised`, the ring takes its `default` cells with it
   reduceMotion: "the indeterminate rotation is an ambient loop and does not run (ADR-0023 §8.4, `instant`): the ring draws its complete circumference in `comp.progress-ring.arc` at `opacity.dimmed-row` and the work is named by the accessibility label and by the text beside it. A determinate arc keeps `motion.spring.smooth` for in-place movement, which carries no bounce and settles in 440 ms under Reduce Motion, and the inner numeral never counts up"
@@ -150,4 +162,4 @@ notes:
     watchos: "`adapted`. Determinate only, `size` lg; the ring maps to SwiftUI's circular Gauge, and dataviz-design.md §3 H47 keeps the wrist glanceable. On the watch vivid resolves to solid and glass takes the opaque `raised` fallback (Surface.yaml), so only the `default` cells apply. The watch density gives `size.control.lg` 44 px, whose 45 % cap is 19.8 px, so `type.data` still fits inside; the 4 px stroke floor is stricter than E25's 2 pt watch minimum, which is safe."
     macos: identical to iOS; the ring has no hover state, because it is not interactive.
   design: "The ring geometry is dataviz-design.md §3 E24 (closed for a fraction of a whole, the 270 degree open sweep otherwise), E25 (stroke ratio with a 4 px floor, round caps, the value inside at 45 % of the diameter) and E26 (no hue for thresholds), with the stroke ratio at ADR-0030 §2.5's 0.05. E25's 45 % cap is what keeps the inner numeral at `type.data` rather than a metric role: no control diameter in any density leaves room for `type.metric.md`, and the hung unit of §1 principle 4 belongs to the Text beside the ring, not inside it. The inverse-solid arc and the white flip on media are docs/research/visual-dna.md §1 principle 9 and §4.7, and the control diameters are ADR-0024 §7. docs/research/component-inventory.md records ProgressRing with 0 of 11 sightings and on ADR-0010's Tier 3 list, so the form comes from the rulebook rather than from a shot. Example strings are invented (ADR-0015 rule 3)."
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

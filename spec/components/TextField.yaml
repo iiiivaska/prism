@@ -108,6 +108,8 @@ tokens:
         image: color.text.on-glass-fill-media-secondary
         vivid: color.text.on-glass-fill-media-secondary
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   box:
     background:
       page:
@@ -152,6 +154,8 @@ tokens:
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.border.on-glass-fill
     borderWidth: border.hairline
     radius: radius.control
     height:
@@ -191,6 +195,8 @@ tokens:
       vivid: color.text.on-glass-fill
       glass: color.text.on-glass-fill
       accent: color.text.on-accent
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   placeholder:
     color:
       default: color.text.tertiary
@@ -202,6 +208,8 @@ tokens:
       vivid: color.text.on-glass-fill
       glass: color.text.on-glass-fill
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   leadingIcon:
     size: size.icon.md
     color:
@@ -214,6 +222,8 @@ tokens:
       vivid: color.text.on-glass-fill
       glass: color.text.on-glass-fill
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   trailingAction:
     size: size.icon.lg
     radius: radius.control
@@ -228,6 +238,8 @@ tokens:
       vivid: color.text.on-glass-fill
       glass: color.text.on-glass-fill
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   helper:
     typography: type.caption
     color:
@@ -237,6 +249,8 @@ tokens:
         image: color.text.on-glass-fill-media-secondary
         vivid: color.text.on-glass-fill-media-secondary
       accent: color.text.on-accent-secondary
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
   errorMessage:
     typography: type.caption
     gap: space.2
@@ -245,10 +259,14 @@ tokens:
       default: color.text.critical
       glass: color.text.on-glass-fill
       accent: color.text.on-accent
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
     iconColor:
       default: color.icon.status.critical
       glass: color.text.on-glass-fill
       accent: color.text.on-accent
+      inverse: color.text.on-inverse
+      glassLight: color.text.on-glass-light
 
 behavior:
   - The label is programmatically tied to the input (`for`/`id` on web, an accessibility label on Apple); a field with no visible label carries an explicit one, and the placeholder never stands in for it.
@@ -257,6 +275,7 @@ behavior:
   - Over a map, imagery or a vivid surface the field renders as one glass chip and carries color.text.on-glass-fill for every tone, because a chip is checked with its primary foreground only; the label, helper and error rows are not drawn there.
   - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass."
   - "A field that needs a label over media or on a vivid surface goes inside a glass or solid Card, where the enclosing Surface publishes its material and the quieter tones follow it. A label, helper or error row is never drawn on vivid: color.text.on-vivid is checked at 24 px and above, and these rows are caption and label sizes (ADR-0030 §8)."
+  - "On an inverse surface, which carries one foreground, every tone of the field is color.text.on-inverse and its edge takes the same tone, a functional pair on color.bg.fill.inverse, so no ink value lands on an ink ground; the error row keeps its glyph and loses its hue, as on glass. On light glass the tones are color.text.on-glass-light and the edge color.border.on-glass-fill, the scheme's glass grammar with light glass's one tone (ADR-0040 §2, §3)."
   - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
   - The error row pairs the status.danger glyph with the message, so the state never rests on color alone; the caret takes the input's own color.
   - "`isReadOnly` keeps the value selectable and focusable and draws color.bg.fill.neutral.subtle over whatever fill the box already has, so over media the veil sits on the glass chip rather than replacing it; `isDisabled` lowers the whole field to opacity.disabled and removes it from the focus order."
@@ -281,7 +300,7 @@ accessibility:
   traits: [textField]
   keyboard: Tab moves in and out and then onto the trailing action; Escape clears the value when `isClearable`; the focus ring is color.border.focus at border.focus width outside the pill, following radius.control
   dynamicType: label, value, helper and error scale with their roles; the box grows with the value up to the accessibility3 size and then wraps the rows below it, and nothing is clipped to keep the height
-  contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the field has no fill of its own, its tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and its edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control
+  contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the field has no fill of its own, its tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and its edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control; on an inverse surface every tone and the edge are color.text.on-inverse on color.bg.fill.inverse, and on light glass the tones are color.text.on-glass-light on material.glass.light.fill, checked against light glass's backdrops, with color.border.on-glass-fill decorative there as on the scheme's glass (ADR-0030 §3.2, ADR-0040)
   reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws a box that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the box publishes raised, so every part takes its default cell, the field takes its color.border.boundary edge back and every tone returns to the solid family
   reduceMotion: the focus ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place
   voiceOver: announces label, value or placeholder, then "required" and the helper text; on `isInvalid` the error message is announced once as the field's description
@@ -359,4 +378,4 @@ notes:
     a recorded divergence from the board, which P5-1 redraws with the edge rather than reopening, and
     TextArea, Select and SearchField keep the same box. Tabular figures on a typed number are ADR-0021 §5
     and §2.4 of the visual DNA. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

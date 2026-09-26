@@ -46,10 +46,10 @@ props:
     description: the filled fraction, clamped to 0 through 1
   - name: secondaryValue
     type: number
-    description: an optional second fraction drawn after the fill against the same whole (the split bar); ignored on vivid and on the scheme's glass
+    description: an optional second fraction drawn after the fill against the same whole (the split bar); ignored off the solid family - on vivid, on the scheme's glass, on light glass, on inverse and on accent
   - name: target
     type: number
-    description: an optional target fraction, drawn as one tick
+    description: an optional target fraction, drawn as one tick; not drawn on light glass, on inverse or on accent, which hold no chart role (behavior)
   - name: label
     type: string
     description: what is being measured; required unless a neighbouring Text already names it
@@ -67,23 +67,37 @@ tokens:
     height: comp.progress-bar.height
     radius: radius.control
     color:
-      default: comp.progress-bar.track
+      page: comp.progress-bar.track
+      solid: comp.progress-bar.track
+      raised: comp.progress-bar.track
+      nested: comp.progress-bar.track
       vivid: color.chart.on-media.grid
       glass: color.chart.on-glass-fill.grid
+      glassLight: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
   fill:
     color:
       default: comp.progress-bar.fill
       vivid: color.bg.fill.inverse-media
       glass: comp.progress-bar.fill
+      glassLight: comp.progress-bar.fill
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
     radius: radius.control
   segment:
     color:
-      default: comp.progress-bar.fill-secondary
+      page: comp.progress-bar.fill-secondary
+      solid: comp.progress-bar.fill-secondary
+      raised: comp.progress-bar.fill-secondary
+      nested: comp.progress-bar.fill-secondary
     gap: space.1
     radius: radius.control
   marker:
     color:
-      default: color.chart.target
+      page: color.chart.target
+      solid: color.chart.target
+      raised: color.chart.target
+      nested: color.chart.target
       vivid: color.chart.on-media.reference
       glass: color.chart.on-glass-fill.reference
     width: border.strong
@@ -108,6 +122,11 @@ tokens:
       glassLight: color.text.on-glass-light
       glass: color.text.on-glass-fill
 
+materials:
+  inverse: "`track` is not drawn on inverse, where the one foreground would make it the fill's colour. `segment` and `marker` are not drawn there: the split bar's comparison length and the target tick are chart roles, and ADR-0030 rule 3 gives the material no chart family (ADR-0040 §5)."
+  accent: "`segment` and `marker` are not drawn there: the split bar's comparison length and the target tick are chart roles, and ADR-0030 rule 3 gives the material no chart family (ADR-0040 §5)."
+  glassLight: "`segment` and `marker` are not drawn there: the split bar's comparison length and the target tick are chart roles, and ADR-0030 rule 3 gives the material no chart family (ADR-0040 §5)."
+
 behavior:
   - "`value` is a fraction clamped to 0 through 1; the track keeps its full length at every value and only the fill grows. The bar always takes the full width of the slot the layout gives it; it has no intrinsic width of its own."
   - The track is a pill of `radius.control` and `comp.progress-bar.height` (4 px, the minimum gauge stroke of dataviz-design.md §3 E25); the root is the column that stacks the optional label row over it, and only the track carries that height. The fill's ends stay round at every value, so a value just above 0 shows a dot rather than a sliver.
@@ -117,6 +136,7 @@ behavior:
   - "`showsValue` renders `value` as a whole percent followed by `%` at the same size, one string in the `value` part (`62 %`) — not a hung unit, which belongs to the metric roles. `type.data` is tabular, because a progress value changes while it is visible (ADR-0021 §5). The readout replaces its value and never counts up (Text.yaml). A product that needs another unit puts it in a neighbouring Text and leaves `showsValue` false."
   - The bar has no intrinsic margin. Its distance from the label row is `space.3` (8 px); everything outside the component belongs to the layout.
   - On a surface that publishes `vivid` the fill flips to the white solid `color.bg.fill.inverse-media` over a `color.chart.on-media.grid` track; on the scheme's glass it keeps `comp.progress-bar.fill`, which is the inverse solid ADR-0030 §3.1 already makes right there (ink on light glass, white on smoke), over the glass grid. A bar is never drawn on a vivid gradient's lightest stop or over its bloom.
+  - "The bar is a meter and not a chart, so on `glassLight`, `inverse` and `accent`, which hold no chart family (ADR-0030 rule 3), it binds no chart role there: the split `segment` and the `target` tick are not drawn, and the track and the fill are marks in the material's own tones (ADR-0040 §5). On light glass the fill keeps `comp.progress-bar.fill` over a `color.border.on-glass-fill` track, as on the scheme's glass; on an accent surface the fill knocks out to `color.text.on-accent`, the lit tile's ink, over a `color.text.on-accent-secondary` track; on an inverse surface the fill is `color.text.on-inverse` and the track is not drawn, because the material has one foreground and a track in it would be the fill's colour. `label` or `showsValue` carries the whole there, and the target in words."
   - "On a surface that publishes `vivid` the component draws neither `label` nor the readout. Both sit below 24 px, where `color.text.on-vivid` is checked only inside the Card header block (ADR-0022 V2), and the large tier covers only 24 px and above (V1). The work is named by the enclosing Card's title and caption instead, the way the hero's unit is (ADR-0030 §8); `label` still supplies the accessibility name."
   - Progress that completes plays no haptic. The haptics registry allows at most one haptic per user action and none on a programmatic state change, and a bar reaching 1 is programmatic.
   - The component is never interactive. A bar the user can move is a Slider, and a bar that opens something is a row with a Button.
@@ -132,7 +152,7 @@ accessibility:
   traits: [updatesFrequently]
   keyboard: not focusable and not a tab stop; the bar is a readout, and the control that started the work keeps the focus
   dynamicType: the track's height does not scale; `label` scales with `type.label.sm` and `value` with `type.data`, and the readout wraps below the label instead of shrinking the bar
-  contrast: "the filled length against the track is a mark that carries meaning, so it holds the 3:1 boundary tier of ADR-0011; `comp.progress-bar.fill` is `color.bg.fill.inverse` (ink in light, white in dark) over `comp.progress-bar.track`, which is `color.bg.fill.neutral.subtle` (6 % over the surface), 17.0:1 in light. On vivid the white solid `color.bg.fill.inverse-media` against every gradient sample is ADR-0022's V1. `label` and `value` are functional text below 24 px and follow the tones of Text on the published material, which is why neither is drawn on vivid: outside the Card header block `color.text.on-vivid` is checked only at 24 px and above"
+  contrast: "the filled length against the track is a mark that carries meaning, so it holds the 3:1 boundary tier of ADR-0011; `comp.progress-bar.fill` is `color.bg.fill.inverse` (ink in light, white in dark) over `comp.progress-bar.track`, which is `color.bg.fill.neutral.subtle` (6 % over the surface), 17.0:1 in light. On vivid the white solid `color.bg.fill.inverse-media` against every gradient sample is ADR-0022's V1. On accent the fill `color.text.on-accent` and the track `color.text.on-accent-secondary` are functional pairs on `color.bg.fill.accent`, and on inverse the fill is `color.text.on-inverse` on `color.bg.fill.inverse`; on light glass the track `color.border.on-glass-fill` is decorative, as on the scheme's glass (ADR-0030 §3.2, ADR-0040 §5). `label` and `value` are functional text below 24 px and follow the tones of Text on the published material, which is why neither is drawn on vivid: outside the Card header block `color.text.on-vivid` is checked only at 24 px and above"
   voiceOver: "the role exposes the fraction as a percent from 0 to 100 (`aria-valuemin` 0, `aria-valuemax` 100, `aria-valuenow` the rounded percent on web; `accessibilityValue` on Apple). `secondaryValue` and `target` are not exposed as values: a split bar announces the primary length, and a target belongs in the label or in neighbouring text"
   reduceTransparency: not applicable — the bar renders no glass of its own; when the enclosing Surface falls back from glass to `raised`, the bar takes its `default` cells with it
   reduceMotion: the fill keeps `motion.spring.smooth` for in-place movement, which carries no bounce and settles in 440 ms under Reduce Motion (ADR-0023 §8.2); nothing scales, blurs or changes depth, the readout never counts up, and the bar carries no pulse, shimmer or marching dash to suppress
@@ -179,4 +199,4 @@ notes:
     macos: identical to iOS; the bar has no hover state, because it is not interactive.
     ipados: identical to iOS; the bar does not change with the pointer.
   design: "The bar's form is docs/research/component-inventory.md's two ProgressBar sightings, both segmented (a two-segment split bar and a split progress pill with a boundary marker), read through docs/research/visual-dna.md §1 principle 2 (pill grammar), principle 3 (the accent is attention, never an active state), principle 9 (the inverse solid carries the one active thing) and principle 10 (charts are hairline instruments). The 4 px thickness is dataviz-design.md §3 E25's minimum gauge stroke and the target tick is its E27. The references' glow on the split bar is dropped under visual-dna §11 anti-pattern 5. Example strings are invented (ADR-0015 rule 3)."
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

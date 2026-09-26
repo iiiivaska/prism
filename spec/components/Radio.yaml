@@ -67,6 +67,9 @@ tokens:
       default: color.border.strong
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
     borderWidth: border.strong
     radius: radius.control
     size: comp.radio.size
@@ -74,16 +77,23 @@ tokens:
       background:
         default: comp.radio.bg.selected
         vivid: color.bg.fill.inverse-media
-        glass: color.bg.fill.inverse-media
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
   dot:
     size: comp.radio.dot.size
     radius: radius.control
     color:
       default: comp.radio.dot.fill
       vivid: color.text.on-inverse-media
-      glass: color.text.on-inverse-media
+      inverse: color.bg.fill.inverse
+      accent: color.bg.fill.accent
   label:
     typography: type.body.md
+
+materials:
+  inverse: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the inverse fill both are the fill's own colour and neither shows, the gap ADR-0040 §4 records for every component that draws them."
+  accent: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the dark lit tile the ring is white at 2.30:1, the gap ADR-0040 §4 records."
+  glassLight: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). `dot` keeps its default cell, comp.radio.dot.fill on the circle's default inverse solid: light glass takes the solid of the scheme's glass (ADR-0030 §3.1, ADR-0040 §2)."
 
 behavior:
   - A tap on the circle or on its label selects this option and fires `onSelect` with `value`; selecting one option deselects its siblings, and a selected option is never turned off by tapping it again.
@@ -91,7 +101,8 @@ behavior:
   - "Unselected draws the outline only - color.border.strong at border.strong width, no fill. Selected fills the circle with comp.radio.bg.selected and draws the dot in comp.radio.dot.fill, so exactly one circle in the group is a solid (visual-dna §1 principle 9)."
   - The hit region is the larger of the row and size.hit on each axis (28 pt under pointer, 44 pt under touch); the 20 px circle never grows with modality, the region around it does (ADR-0024 §7.3).
   - The circle leads and the label trails, with space.3 between them; the label is a Text of role body-md and tone primary, so it resolves its own foreground against the material the enclosing Surface publishes. The circle stays aligned to the label's first line when the label wraps.
-  - On a vivid surface, and on the scheme's glass, the outline takes color.border.on-media or color.border.on-glass-fill and the selected circle becomes the white solid (color.bg.fill.inverse-media) with an ink dot (color.text.on-inverse-media).
+  - "On a vivid surface the outline takes color.border.on-media and the selected circle becomes the white solid (color.bg.fill.inverse-media) with an ink dot (color.text.on-inverse-media). On the scheme's glass and on light glass the outline takes color.border.on-glass-fill and the selected circle stays the inverse solid of its default cells: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1)."
+  - "On an inverse or an accent surface, which carry their own foreground, the circle is drawn in it (ADR-0040 §3): the outline is color.text.on-inverse or color.text.on-accent-secondary, and the selected circle knocks out - it fills with color.text.on-inverse or color.text.on-accent and its dot takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent - so a selected circle never vanishes into an inverse ground."
   - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Radio with no visible label therefore stays off vivid and off the scheme's glass, where an unselected circle would be nothing but a decorative ring."
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities, and replaces the hover overlay rather than stacking with it.
   - "Pressed never touches the circle's own fill: the selected option keeps comp.radio.bg.selected while the finger is down, so the chosen option never reads as cleared mid-press."
@@ -113,8 +124,8 @@ accessibility:
   traits: [button]
   keyboard: the group takes one tab stop; the arrow keys move the selection between options and wrap at the ends; Space selects the focused option; the focus ring is color.border.focus at border.focus width around the row
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the circle keeps comp.radio.size and the row grows with the label
-  contrast: the selected circle is color.text.on-inverse on color.bg.fill.inverse and, over media, color.text.on-inverse-media on color.bg.fill.inverse-media; the outline of an unselected circle is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid and on the scheme's glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the circle is what identifies the control there, which is why a label-less Radio is not placed on those materials
-  reduceTransparency: not applicable (Radio draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the circle renders its default cells
+  contrast: the selected circle is color.text.on-inverse on color.bg.fill.inverse, on vivid color.text.on-inverse-media on color.bg.fill.inverse-media, and knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and color.bg.fill.accent on color.text.on-accent, functional pairs that also hold the circle against the ground; the outline on inverse and accent is color.text.on-inverse or color.text.on-accent-secondary on the material's fill, functional too (ADR-0040 §3); the outline of an unselected circle is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid, on the scheme's glass and on light glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the circle is what identifies the control there, which is why a label-less Radio is not placed on those materials
+  reduceTransparency: not applicable (Radio draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the circle renders its default cells, and a selected glass Surface falls back to inverse, where the circle knocks out (behavior)
   reduceMotion: the dot does not scale in; it crossfades to comp.radio.dot.fill over motion.duration.base with motion.easing.out while the circle's fill crossfades to comp.radio.bg.selected in the same time, and nothing bounces
 
 usage:
@@ -164,4 +175,4 @@ notes:
     docs/research/visual-dna.md §1 principle 9 and §4.7, at the circle radius of §1 principle 2. The dot
     is 8 px (space.3) rather than a glyph, because a single choice is a mark, not a symbol. Example
     strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

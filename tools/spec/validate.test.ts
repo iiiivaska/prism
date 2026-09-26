@@ -1,14 +1,17 @@
 // spec:validate (roadmap P2-1): the repository's specs validate, every fixture fails with exactly the
 // diagnostic it declares, and the grammar helpers behave on their own.
 import { beforeAll, describe, expect, test } from 'vitest';
-import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic } from '../tokens/api.ts';
+import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic, type IRBundle, type SourceReader } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
-import { BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, NON_BINDABLE } from './config.ts';
+import {
+  BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, MATERIAL_PUBLISHERS, MATERIALS_OWED, MATERIALS_SETTLED,
+  NON_BINDABLE,
+} from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
 import { bindableCategories, pointerToPath, SchemaShapeError } from './schema.ts';
 import { caseReader, FIXTURES, repoDictionary, specCases, triples } from './test-support.ts';
-import { booleanNameProblem, main, passed, runSpecValidate } from './validate.ts';
+import { booleanNameProblem, main, passed, runSpecValidate, unevenMaterials } from './validate.ts';
 
 const COMPONENT_SCHEMA = 'spec/component.schema.json';
 
@@ -200,6 +203,7 @@ describe('fixtures', () => {
       'glass-chip/fallback',
       'glass-chip/nested-blur',
       'haptic/unknown',
+      'material/uneven',
       'matrix/axis',
       'prop/boolean-name',
       'prose/unknown',
@@ -319,6 +323,70 @@ describe('the glass chip rules (ADR-0036 §10)', () => {
     expect(scrollEdge['fallbackBackground']).toEqual({ soft: 'color.bg.page', hard: 'color.bg.page' });
     expect(scrollEdge['fallbackUnderlay']).toBeUndefined();
   });
+});
+
+describe('the materials a part keys (ADR-0040 §6)', () => {
+  const diagnose = async (reader: SourceReader): Promise<string[]> =>
+    (await runSpecValidate({ reader, collected: await repoDictionary() })).diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
+  const bundle = async (): Promise<IRBundle> => {
+    const collected = (await repoDictionary()).bundle;
+    if (collected === null) throw new Error('the repository dictionary did not build');
+    return collected;
+  };
+  const load = (path: string, text: string): Record<string, unknown> => loadSpec(path, text).value ?? {};
+
+  test('material/uneven: each material keyed by one part, one only in a state block, and a statement that names one of two parts', async () => {
+    const c = specCases().find((x) => x.name === 'material-uneven');
+    if (c === undefined) throw new Error('no fixture material-uneven');
+    expect(await diagnose(caseReader(c))).toEqual([
+      // `mark` keys light glass only in its `selected` block: a state's colours are the part's, and are read.
+      '41 material/uneven `mark` keys `glassLight`, and `materials.glassLight` does not name `root`, `label`',
+      // `mark` keys the `accent` value of its `tone` prop, which is a prop and not the material, and `icon` binds no
+      // colour, so it is held to nothing.
+      '46 material/uneven `root` keys `inverse`, and `materials.inverse` does not name `label`, `mark`',
+      // A statement is read part by part: it names `root` and not `mark`, and the diagnostic points at it.
+      '64 material/uneven `label` keys `accent`, and `materials.accent` does not name `mark`',
+    ]);
+  }, 60_000);
+
+  test('a settled spec is held on every part: Spinner without its light-glass cell fails, and passes once it states the absence', async () => {
+    const path = 'spec/components/Spinner.yaml';
+    const repo = fsReader(REPO_ROOT);
+    const cell = '      glassLight: color.text.on-glass-light\n';
+    const text = repo.readText(path);
+    expect(text).toContain(cell);
+    expect(MATERIALS_SETTLED).toContain('Spinner');
+    const without = text.replace(cell, '');
+    // A diagnostic about a part points at its value: the line after `arc:`, where its first property starts.
+    const arc = without.split('\n').indexOf('  arc:') + 2;
+    expect(await diagnose(overlayReader(repo, memoryReader({ [path]: without })))).toEqual([
+      `${arc} material/uneven no colour-bearing part keys \`glassLight\`, and \`materials.glassLight\` does not name \`arc\``,
+    ]);
+    // Keyed on no part, the material is a decision only a settled spec is asked to state.
+    expect(unevenMaterials(load(path, without), await bundle(), false)).toEqual([]);
+    expect(unevenMaterials(load(path, without), await bundle(), true)).toEqual([{ material: 'glassLight', keyed: [], unnamed: ['arc'] }]);
+    expect(without).not.toContain('\nmaterials:');
+    const stated = without.replace('\nbehavior:\n', '\nmaterials:\n  glassLight: "`arc` is not drawn on light glass, in this test only."\n\nbehavior:\n');
+    expect(await diagnose(overlayReader(repo, memoryReader({ [path]: stated })))).toEqual([]);
+  }, 60_000);
+
+  test('the owed specs only shrink: each is a component spec that still keys a material unevenly, and none is settled', async () => {
+    const repo = fsReader(REPO_ROOT);
+    const owed = MATERIALS_OWED.map((o) => o.component);
+    expect(new Set(owed).size).toBe(owed.length);
+    expect(new Set(MATERIALS_SETTLED).size).toBe(MATERIALS_SETTLED.length);
+    expect(owed.filter((name) => MATERIALS_SETTLED.includes(name) || MATERIAL_PUBLISHERS.includes(name))).toEqual([]);
+    for (const name of [...MATERIALS_SETTLED, ...MATERIAL_PUBLISHERS]) expect(repo.exists(`spec/components/${name}.yaml`), name).toBe(true);
+    const problems: string[] = [];
+    for (const { component, owner } of MATERIALS_OWED) {
+      const path = `spec/components/${component}.yaml`;
+      if (!repo.exists(path)) problems.push(`${component} has no spec: remove it from MATERIALS_OWED`);
+      else if (unevenMaterials(load(path, repo.readText(path)), await bundle(), false).length === 0) {
+        problems.push(`${component} keys its materials evenly now (${owner}): remove it from MATERIALS_OWED, or move it to MATERIALS_SETTLED`);
+      }
+    }
+    expect(problems).toEqual([]);
+  }, 60_000);
 });
 
 describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
@@ -574,7 +642,7 @@ describe('prose paths', () => {
     expect(expandPath('elevation.0…2')).toEqual(['elevation.0', 'elevation.1', 'elevation.2']);
   });
 
-  test('only behavior, accessibility, usage and notes are read', () => {
+  test('only behavior, accessibility, usage, notes and materials are read', () => {
     const hits = proseTokenPaths(
       {
         summary: 'binds color.text.dimmed',
@@ -582,10 +650,11 @@ describe('prose paths', () => {
         accessibility: { reduceMotion: 'a dip to opacity.disabled' },
         usage: { do: ['Use radius.card.'], dont: [] },
         notes: { design: 'see docs/research/visual-dna.md' },
+        materials: { inverse: '`track` is color.text.on-inverse there.' },
       },
       categories,
     );
-    expect(hits.map((h) => h.text)).toEqual(['color.text.primary', 'opacity.disabled', 'radius.card']);
+    expect(hits.map((h) => h.text)).toEqual(['color.text.primary', 'opacity.disabled', 'radius.card', 'color.text.on-inverse']);
     expect(hits[0]?.at).toEqual(['behavior', 0]);
   });
 

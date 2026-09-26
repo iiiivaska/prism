@@ -59,11 +59,17 @@ tokens:
       ringWidth: border.focus
   track:
     background:
-      default: comp.toggle.track.off
+      page: comp.toggle.track.off
+      solid: comp.toggle.track.off
+      raised: comp.toggle.track.off
+      nested: comp.toggle.track.off
     border:
       default: color.border.strong
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
     borderWidth: border.strong
     radius: radius.control
     height: comp.toggle.height
@@ -72,20 +78,30 @@ tokens:
       background:
         default: comp.toggle.track.on
         vivid: color.bg.fill.inverse-media
-        glass: color.bg.fill.inverse-media
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
   knob:
     background:
       default: comp.toggle.knob.off
       vivid: color.text.on-vivid
       glass: color.text.on-glass-fill
+      glassLight: color.text.on-glass-light
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
     radius: radius.control
     selected:
       background:
         default: comp.toggle.knob.on
         vivid: color.text.on-inverse-media
-        glass: color.text.on-inverse-media
+        inverse: color.bg.fill.inverse
+        accent: color.bg.fill.accent
   label:
     typography: type.body.md
+
+materials:
+  inverse: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the inverse fill both are the fill's own colour and neither shows, the gap ADR-0040 §4 records for every component that draws them."
+  accent: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the dark lit tile the ring is white at 2.30:1, the gap ADR-0040 §4 records."
+  glassLight: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4)."
 
 behavior:
   - A tap anywhere in the row - label included - flips the value and fires `onChange` once; a horizontal drag that starts on the track carries the knob and commits on release.
@@ -95,7 +111,8 @@ behavior:
   - The hit region is the larger of the row and size.hit on each axis (28 pt under pointer, 44 pt under touch); the track's own box never grows with modality (ADR-0024 §7.3).
   - The label leads and the control trails, with space.3 between them; the label is a Text of role body-md and tone primary, so it resolves its own foreground against the material the enclosing Surface publishes.
   - A Toggle applies its change immediately. It never sits behind a Save button, and a change that cannot be applied at once is a Checkbox inside a form.
-  - On a vivid surface, and on the scheme's glass, the on track becomes the white solid (color.bg.fill.inverse-media) with the opposite-colored knob (color.text.on-inverse-media); the off track drops its neutral wash - it has no cell there, so it draws no fill at all, the ghost grammar of ADR-0029 §3.3 - and shows as an outline in color.border.on-media or color.border.on-glass-fill with the knob in that material's own foreground, color.text.on-vivid or color.text.on-glass-fill.
+  - "On a vivid surface the on track becomes the white solid (color.bg.fill.inverse-media) with the opposite-colored knob (color.text.on-inverse-media). On the scheme's glass and on light glass it stays the inverse solid of its default cells, comp.toggle.track.on under comp.toggle.knob.on: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1). Off the solid surface ladder the off track drops its neutral wash - `track.background` has no cell there and no `default`, so it draws no fill at all, the ghost grammar of ADR-0029 §3.3 - and shows as an outline in color.border.on-media or color.border.on-glass-fill with the knob in that material's own foreground, color.text.on-vivid, color.text.on-glass-fill or color.text.on-glass-light."
+  - "On an inverse or an accent surface, which carry their own foreground, the switch is drawn in it (ADR-0040 §3). Off, the track is an outline in color.text.on-inverse, or color.text.on-accent-secondary, around a knob of the same tone, color.text.on-inverse or color.text.on-accent-secondary. On, the track knocks out: it fills with the material's primary foreground, color.text.on-inverse or color.text.on-accent, and the knob takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent. So the on track never vanishes into an inverse ground, and on the dark lit tile it is ink, not a white solid at 2.30:1."
   - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Toggle with no visible label therefore stays off vivid and off the scheme's glass, where nothing but the ring would say a control is there."
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities and replaces the hover overlay rather than stacking with it, so the row never tints twice.
   - "`isDisabled` lowers opacity to opacity.disabled, removes the control from the focus order and ignores taps; a switch that cannot move is better replaced by a sentence saying why."
@@ -117,8 +134,8 @@ accessibility:
   traits: [toggle]
   keyboard: Space flips the switch; Enter does not activate it; the focus ring is color.border.focus at border.focus width around the row, following radius.control on the track when the row has no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs, so the row grows while the track keeps comp.toggle.height
-  contrast: the on track is color.text.on-inverse on color.bg.fill.inverse and, over media, color.text.on-inverse-media on color.bg.fill.inverse-media; the off track's outline is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, and comp.toggle.knob.off aliases color.icon.secondary, the color.text.secondary ramp step, which passes on those three grounds. On vivid and on the scheme's glass the knob takes color.text.on-vivid or color.text.on-glass-fill, both checked against every backdrop those materials may meet; the rings there (color.border.on-media, color.border.on-glass-fill) are decorative and have no pair of their own, so the label carries the control (ADR-0030 §3.2)
-  reduceTransparency: not applicable (Toggle draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the switch renders its default cells
+  contrast: the on track is color.text.on-inverse on color.bg.fill.inverse, on vivid color.text.on-inverse-media on color.bg.fill.inverse-media, and knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and color.bg.fill.accent on color.text.on-accent, each a functional pair against the ground too (color.text.on-inverse on color.bg.fill.inverse, color.text.on-accent on color.bg.fill.accent); the off track's outline is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, and comp.toggle.knob.off aliases color.icon.secondary, the color.text.secondary ramp step, which passes on those three grounds. On vivid, on the scheme's glass and on light glass the knob takes color.text.on-vivid, color.text.on-glass-fill or color.text.on-glass-light, each checked against every backdrop those materials may meet; the rings there (color.border.on-media, color.border.on-glass-fill) are decorative and have no pair of their own, so the label carries the control (ADR-0030 §3.2). On inverse and accent the outline and the off knob are color.text.on-inverse or color.text.on-accent-secondary on the material's fill, functional pairs (ADR-0040 §3)
+  reduceTransparency: not applicable (Toggle draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the switch renders its default cells, and a selected glass Surface falls back to inverse, where the switch knocks out (behavior)
   reduceMotion: the knob keeps its bound spring, which is in-place movement and does not overshoot under Reduce Motion; the track's fill change crossfades to comp.toggle.track.on over motion.duration.base with motion.easing.out, and nothing scales or blurs
 
 usage:
@@ -169,4 +186,4 @@ notes:
     ADR-0029 §3.3, the pill is §1 principle 2, the 4 px knob inset is the smallest step of the §6.1
     rhythm, and the track height is size.control.sm so a switch sits in the one control family of §1
     principle 13. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

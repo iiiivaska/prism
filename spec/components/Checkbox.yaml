@@ -65,6 +65,9 @@ tokens:
       default: color.border.strong
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
     borderWidth: border.strong
     radius: comp.checkbox.radius
     size: comp.checkbox.size
@@ -72,15 +75,22 @@ tokens:
       background:
         default: comp.checkbox.bg.selected
         vivid: color.bg.fill.inverse-media
-        glass: color.bg.fill.inverse-media
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
   mark:
     size: size.icon.sm
     color:
       default: comp.checkbox.mark
       vivid: color.text.on-inverse-media
-      glass: color.text.on-inverse-media
+      inverse: color.bg.fill.inverse
+      accent: color.bg.fill.accent
   label:
     typography: type.body.md
+
+materials:
+  inverse: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the inverse fill both are the fill's own colour and neither shows, the gap ADR-0040 §4 records for every component that draws them."
+  accent: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). On the dark lit tile the ring is white at 2.30:1, the gap ADR-0040 §4 records."
+  glassLight: "`root` draws only the row's hover and pressed overlay, color.bg.fill.neutral.subtle, and the focus ring, color.border.focus, which no material keys (ADR-0040 §4). `mark` keeps its default cell, comp.checkbox.mark on the box's default inverse solid: light glass takes the solid of the scheme's glass (ADR-0030 §3.1, ADR-0040 §2)."
 
 behavior:
   - A tap on the box or on its label changes the value and fires `onChange` once with the new value.
@@ -89,7 +99,8 @@ behavior:
   - A tap from `mixed` goes to `on`; only the caller sets `mixed`, which reports that some of the values it summarises are on.
   - The hit region is the larger of the row and size.hit on each axis (28 pt under pointer, 44 pt under touch); the 20 px box never grows with modality, the region around it does (ADR-0024 §7.3).
   - The box leads and the label trails, with space.3 between them; the label is a Text of role body-md and tone primary, so it resolves its own foreground against the material the enclosing Surface publishes. The box stays aligned to the label's first line when the label wraps.
-  - On a vivid surface, and on the scheme's glass, the outline takes color.border.on-media or color.border.on-glass-fill and the filled box becomes the white solid (color.bg.fill.inverse-media) with an ink glyph (color.text.on-inverse-media).
+  - "On a vivid surface the outline takes color.border.on-media and the filled box becomes the white solid (color.bg.fill.inverse-media) with an ink glyph (color.text.on-inverse-media). On the scheme's glass and on light glass the outline takes color.border.on-glass-fill and the filled box stays the inverse solid of its default cells: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1)."
+  - "On an inverse or an accent surface, which carry their own foreground, the box is drawn in it (ADR-0040 §3): the outline is color.text.on-inverse or color.text.on-accent-secondary, and the filled box knocks out - it fills with color.text.on-inverse or color.text.on-accent and its glyph takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent - so a checked box never vanishes into an inverse ground."
   - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Checkbox with no visible label therefore stays off vivid and off the scheme's glass, where an unchecked box would be nothing but a decorative ring."
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities, and replaces the hover overlay rather than stacking with it.
   - "Pressed never touches the box's own fill, whatever the value: an on or mixed box keeps comp.checkbox.bg.selected while the finger is down, so a checked box never reads as empty mid-press."
@@ -112,8 +123,8 @@ accessibility:
   traits: [toggle]
   keyboard: Space changes the value; Enter does not; the focus ring is color.border.focus at border.focus width around the row, and around the box at comp.checkbox.radius when there is no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the box keeps comp.checkbox.size and the row grows with the label
-  contrast: the filled box is color.text.on-inverse on color.bg.fill.inverse and, over media, color.text.on-inverse-media on color.bg.fill.inverse-media; the outline of an unchecked box is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid and on the scheme's glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the box is what identifies the control there, which is why a label-less Checkbox is not placed on those materials
-  reduceTransparency: not applicable (Checkbox draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the box renders its default cells
+  contrast: the filled box is color.text.on-inverse on color.bg.fill.inverse, on vivid color.text.on-inverse-media on color.bg.fill.inverse-media, and knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and color.bg.fill.accent on color.text.on-accent, functional pairs that also hold the box against the ground; the outline on inverse and accent is color.text.on-inverse or color.text.on-accent-secondary on the material's fill, functional too (ADR-0040 §3); the outline of an unchecked box is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid, on the scheme's glass and on light glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the box is what identifies the control there, which is why a label-less Checkbox is not placed on those materials
+  reduceTransparency: not applicable (Checkbox draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the box renders its default cells, and a selected glass Surface falls back to inverse, where the box knocks out (behavior)
   reduceMotion: the mark does not scale in; it crossfades to comp.checkbox.mark over motion.duration.base with motion.easing.out while the box's fill crossfades to comp.checkbox.bg.selected in the same time, and nothing bounces
 
 usage:
@@ -164,4 +175,4 @@ notes:
     control is a pill or a circle", made so that a checkbox and a radio are not the same silhouette. The
     glyphs are registry ids (ADR-0013): status.check and action.remove. Example strings are invented
     (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

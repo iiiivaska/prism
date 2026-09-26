@@ -111,12 +111,8 @@ tokens:
     pressed:
       overlay: color.bg.fill.neutral.subtle
     selected:
-      background:
-        default: comp.pagination.current.bg
-        glass: color.bg.fill.inverse-media
-      color:
-        default: comp.pagination.current.text
-        glass: color.text.on-inverse-media
+      background: comp.pagination.current.bg
+      color: comp.pagination.current.text
     focus-visible:
       ring: color.border.focus
       ringWidth: border.focus
@@ -160,7 +156,7 @@ accessibility:
   traits: [button]
   keyboard: "Tab reaches the previous control, the numbered buttons and the next control in reading order; Enter and Space activate; in the expanded layout the arrow keys move between numbers and Home and End jump to the first and last page. The focus ring is color.border.focus at border.focus width outside each control, following radius.control"
   dynamicType: the readout and the numbers scale with their roles; the row grows from the readout's reserved width and, at the accessibility3 size, drops the numbered buttons back to the plain readout rather than wrapping or truncating the label
-  contrast: "the readout is color.text.primary and a resting number color.text.secondary, both functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the current page is comp.pagination.current.text on comp.pagination.current.bg, which is color.text.on-inverse on color.bg.fill.inverse (19.30:1), and on the scheme's glass color.text.on-inverse-media on color.bg.fill.inverse-media, the same white solid IconButton takes there. Both pairs are in tokens/contrast-pairs.json. The ellipsis is color.text.tertiary, functional on the same three grounds, and it carries no meaning a reader needs. The two controls carry IconButton's own pairs"
+  contrast: "the readout is color.text.primary and a resting number color.text.secondary, both functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the current page is comp.pagination.current.text on comp.pagination.current.bg, which is color.text.on-inverse on color.bg.fill.inverse (19.30:1), on the scheme's glass as well, where the inverse solid is ink on light glass and white on smoke and IconButton's solid is the same (ADR-0030 §3.1, ADR-0040 §1). The pair is in tokens/contrast-pairs.json. The ellipsis is color.text.tertiary, functional on the same three grounds, and it carries no meaning a reader needs. The two controls carry IconButton's own pairs"
   reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass, the current page takes comp.pagination.current.bg and every tone returns to the solid family
   reduceMotion: nothing slides between numbers in either motion context; the readout crossfades to its new value over motion.duration.base with motion.easing.out, the current page's fill crossfades instead of scaling, and the controls' press scale is replaced by IconButton's pressed fill
   voiceOver: "the readout is announced politely when it changes (\"6 to 12 June\", \"Page 3 of 12\") without moving focus; the two controls announce what they move to, and the numbered buttons announce their number and whether they are current"
@@ -234,3 +230,4 @@ notes:
     - docs/adr/0023-motion-tokens.md
     - docs/adr/0024-token-source-conventions.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md
+    - docs/adr/0040-materials-a-part-keys.md

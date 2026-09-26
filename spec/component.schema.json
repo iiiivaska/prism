@@ -83,6 +83,17 @@
         "additionalProperties": { "$ref": "#/$defs/binding" }
       }
     },
+    "materials": {
+      "type": "object",
+      "description": "What the spec states for a published material that one of its colour-bearing parts does not key (ADR-0040 §6): per material, a sentence that names each such part in backticks and says what it draws there. spec:validate (`material/uneven`) reads it.",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "inverse": { "type": "string", "minLength": 10 },
+        "accent": { "type": "string", "minLength": 10 },
+        "glassLight": { "type": "string", "minLength": 10 }
+      }
+    },
     "behavior": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 10 } },
     "motion": {
       "type": "object",

@@ -1,0 +1,89 @@
+name: Sample
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture component. It exists only so that tools/spec/fixtures can break one rule at a time; it is
+  never implemented and never appears in the parity report.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+  - part: mark
+  - part: icon
+
+props:
+  - name: size
+    type: enum
+    values: [sm, md]
+    default: md
+  - name: tone
+    type: enum
+    values: [neutral, accent]
+    default: neutral
+
+states: [default, selected]
+
+tokens:
+  root:
+    background:
+      default: color.bg.surface.raised
+      inverse: color.text.on-inverse
+    radius: radius.control
+  label:
+    typography:
+      sm: type.label.sm
+      md: type.label.md
+    color:
+      default: color.text.primary
+      accent: color.text.on-accent
+  mark:
+    color:
+      neutral: color.text.secondary
+      accent: color.text.accent
+    selected:
+      color:
+        default: color.text.on-inverse
+        glassLight: color.text.on-glass-light
+  icon:
+    size: size.icon.md
+
+materials:
+  accent: "`root` draws no fill of its own on accent: the lit tile is its ground."
+
+behavior:
+  - The fixture draws one pill with a label and a mark, and an icon that carries no colour of its own.
+  - The hit region is the larger of the visual size and size.hit on each axis.
+
+accessibility:
+  role: group
+  label: none; the fixture is a container
+  keyboard: not focusable
+  dynamicType: the label scales with type.label.*
+  contrast: the label pair is checked by tools/contrast
+  reduceTransparency: nothing in the fixture is translucent
+  reduceMotion: nothing moves, so nothing is substituted
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: default-md
+    props: { size: md }
+  - id: accent-tone
+    props: { size: md, tone: accent }

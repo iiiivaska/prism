@@ -79,22 +79,29 @@ tokens:
       opacity: opacity.disabled
   track:
     background:
-      default: comp.slider.track.bg
+      page: comp.slider.track.bg
+      solid: comp.slider.track.bg
+      raised: comp.slider.track.bg
+      nested: comp.slider.track.bg
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+      accent: color.text.on-accent-secondary
     height: comp.slider.track.height
     radius: radius.control
   fill:
     background:
       default: comp.slider.fill
       vivid: color.bg.fill.inverse-media
-      glass: color.bg.fill.inverse-media
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
     radius: radius.control
   thumb:
     background:
       default: comp.slider.thumb.fill
       vivid: color.bg.fill.inverse-media
-      glass: color.bg.fill.inverse-media
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent
     size: comp.slider.thumb.size
     radius: radius.control
     hover:
@@ -111,11 +118,18 @@ tokens:
       default: comp.slider.tick
       vivid: color.border.on-media
       glass: color.border.on-glass-fill
+      glassLight: color.border.on-glass-fill
+      inverse: color.text.on-inverse
+      accent: color.text.on-accent-secondary
     width: border.hairline
   label:
     typography: type.label.md
   valueLabel:
     typography: type.metric.md
+
+materials:
+  inverse: "`track` draws nothing on inverse: the material has one foreground, and an unfilled track in it would be the fill's colour, so the fill, the thumb and the readout carry the value, and `ticks`, where shown, mark the range (ADR-0040 §3)."
+  glassLight: "`fill` and `thumb` keep their default cells on light glass, the inverse solid, ink in light and white in dark: light glass takes the solid of the scheme's glass (ADR-0030 §3.1, ADR-0040 §2)."
 
 behavior:
   - Dragging the thumb moves the value and fires `onChange` continuously; `onChangeEnd` fires once on release. A tap or click anywhere on the track moves the thumb to that point and fires both.
@@ -128,7 +142,8 @@ behavior:
   - "Keyboard: the arrow keys move one step, Home and End jump to `min` and `max`, and Page Up and Page Down move ten steps. A Slider with no `step` takes one hundredth of its range as the keyboard step (dataviz-design §3 rule 43, the scrubber's keyboard grammar). Every keyboard move fires `onChange` and then `onChangeEnd`, because a key press is a whole gesture."
   - "`showsValue` renders the current value beside the label as a Text of role metric-md with tabular figures and `unit` hung beside it; live values are tabular so the row does not jitter (visual-dna §4.2 and §11 anti-pattern 18). The readout is trailing in the label row and never wraps or truncates: the label takes the width that is left and wraps, so a long label grows the row downwards and the number keeps its place on the first line."
   - "While dragging, the same string is also drawn over the thumb, space.2 above the track, so a finger does not hide it. It is an addition, not a move - the readout in the label row stays where it is, nothing reflows, and under pointer modality, where nothing covers the thumb, the floating copy is not drawn at all."
-  - On a vivid surface, and on the scheme's glass, the fill and the thumb become the white solid (color.bg.fill.inverse-media) and the unfilled track takes color.border.on-media or color.border.on-glass-fill.
+  - "On a vivid surface the fill and the thumb become the white solid (color.bg.fill.inverse-media) and the unfilled track takes color.border.on-media. On the scheme's glass and on light glass they stay the inverse solid of their default cells, ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1), and the unfilled track and the ticks take color.border.on-glass-fill."
+  - "On an accent surface the fill and the thumb knock out to color.text.on-accent, the lit tile's ink, and the unfilled track and the ticks take color.text.on-accent-secondary (ADR-0040 §3). On an inverse surface the fill and the thumb take color.text.on-inverse and the ticks the same tone; the unfilled track draws nothing there, because the material has one foreground and a track in it would be the fill's colour, so the fill, the thumb and the readout carry the value."
   - Hover is pointer-only and draws a halo of color.bg.fill.neutral.subtle around the thumb, spreading the bound haloSpread (space.3) beyond it on every side; the same halo marks the dragging state on both modalities. Touch never shows a hover state (ADR-0010 rule 2).
   - "`isDisabled` lowers opacity to opacity.disabled, removes the control from the focus order and ignores drags; the value stays visible, because a disabled slider still reports what it holds."
   - The value does not animate while a finger or a pointer is on the thumb - the thumb tracks the gesture directly. A value changed from code settles on motion.spring.interactive, and a value replaced outright changes over motion.duration.quick.
@@ -152,8 +167,8 @@ accessibility:
   traits: [adjustable]
   keyboard: the thumb is the one tab stop; the arrow keys move one step, Home and End jump to the ends, Page Up and Page Down move ten steps; the focus ring is color.border.focus at border.focus width around the thumb's circle, following radius.control, and the thumb keeps its halo while focus is on it
   dynamicType: the label and the readout scale with type.label.md and type.metric.md and the row grows with them; the track and the thumb keep their token sizes, so the control never loses its geometry
-  contrast: "comp.slider.track.bg aliases color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, so the unfilled range is legible on its own; the fill and the thumb are color.bg.fill.inverse, the scheme's opposite end, over those same three grounds, and color.bg.fill.inverse-media over media, whose pair with color.text.on-inverse-media is in the same file and whose note records the solid as V1 against every vivid sample (ADR-0030 §3.1). On vivid and on the scheme's glass the unfilled track takes color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative - the white fill and the readout carry the value there, not the empty range. The value is never carried by the fill alone: the readout states it in text (ADR-0011)"
-  reduceTransparency: not applicable (Slider draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the control renders its default cells
+  contrast: "comp.slider.track.bg aliases color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, so the unfilled range is legible on its own; the fill and the thumb are color.bg.fill.inverse, the scheme's opposite end, over those same three grounds, and color.bg.fill.inverse-media over media, whose pair with color.text.on-inverse-media is in the same file and whose note records the solid as V1 against every vivid sample (ADR-0030 §3.1). On vivid, on the scheme's glass and on light glass the unfilled track takes color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative - the solid fill and the readout carry the value there, not the empty range. On accent the fill and the thumb are color.text.on-accent on color.bg.fill.accent and the track color.text.on-accent-secondary on it, and on inverse the fill, the thumb and the ticks are color.text.on-inverse on color.bg.fill.inverse, all functional pairs (ADR-0040 §3). The value is never carried by the fill alone: the readout states it in text (ADR-0011)"
+  reduceTransparency: not applicable (Slider draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the control renders its default cells, and a selected glass Surface falls back to inverse, where the inverse cells apply (behavior)
   reduceMotion: the thumb keeps tracking the gesture, which is movement inside an active gesture; a programmatic change moves the thumb on its bound spring, which does not overshoot, and the halo crossfades in over motion.duration.base with motion.easing.out instead of scaling. The readout never counts up (ADR-0023 §8.4)
 
 usage:
@@ -208,4 +223,4 @@ notes:
     the tabular readout is §4.2 with §11 anti-pattern 18. The 4 px track height is the smallest step of
     the §6.1 rhythm - the references give no thickness of their own - and the 2x halo radius is stated
     as space.3 beyond the thumb rather than as a value. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]

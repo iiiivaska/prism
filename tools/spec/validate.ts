@@ -51,6 +51,10 @@
 //                                (ADR-0036 §9.1); TopBar's scroll edge is the one named exception until P4-D10
 //   glass-chip/nested-blur       material.glass.chip.blur or .saturate bound under a `glass` or `glassLight` key,
 //                                where a chip draws no backdrop filter (ADR-0036 §5)
+//   material/uneven              a colour-bearing part with no cell for `inverse`, `accent` or `glassLight` that
+//                                `materials.<material>` does not name, where another part keys that material, or on
+//                                any part of a spec whose materials P4-10 settled, MATERIALS_SETTLED (ADR-0040 §6);
+//                                the specs MATERIALS_OWED records pass until they are settled
 //
 // Token paths resolve through tools/tokens/api.ts `lookup()`, the same name grammar the rest of the
 // tooling uses; nothing here re-implements resolution.
@@ -81,8 +85,9 @@ import { statesOf, walkBindings } from './bindings.ts';
 import {
   BACKDROPS, BOOLEAN_NAMES_OWED, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
   DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
-  HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIALS,
-  NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, STRINGS, VIVID_SLOT_PAIRS,
+  HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS,
+  MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, NESTED_GLASS_KEYS, NON_BINDABLE,
+  PATTERN_SCHEMA, PATTERNS_DIR, STATED_MATERIALS, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -550,6 +555,9 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   checkExampleProps(doc, spec, named, ctx.icons?.ids ?? null, diagnostics);
   checkExamples(doc, spec, diagnostics);
   checkGlassChip(doc, spec, named, diagnostics);
+  if (ctx.kind === 'component') {
+    checkMaterials(doc, spec, named, ctx.bundle, diagnostics);
+  }
 }
 
 /** Ids for a public path or glob; [] when nothing matches. Resolution itself is tools/tokens's. */
@@ -893,6 +901,86 @@ function checkGlassChip(doc: SpecDoc, spec: Record<string, unknown>, name: strin
     file: doc.path, line: doc.lineOf(['accessibility', 'reduceTransparency']),
     hint: `say what ${GLASS_CHIP_SETTINGS.join(' and ')} do to the part: Prism's Surface module draws it as ${CHIP_FALLBACK} at the same radius, with blur, saturation and the inner edge dropped, and it publishes raised, so every part takes its default cell (ADR-0036 §9.1)`,
   }));
+}
+
+/** Whether a bound path is a colour: a `color` or `gradient` token, or a glass recipe, whose `$root` is its fill. */
+function isColourPath(bundle: IRBundle, path: string): boolean {
+  const tokens = bundle.permutations.values().next().value?.tokens;
+  if (tokens === undefined) return false;
+  return resolveIds(bundle, path).some((id) => {
+    const type = tokens.get(id)?.type;
+    return type === 'color' || type === 'gradient';
+  });
+}
+
+/**
+ * The colour-bearing parts of a spec: every part with a cell, on the part or in one of its state blocks, that binds a
+ * colour. For each, the published materials among STATED_MATERIALS that key one of those cells as its ground, so a
+ * prop value that shares a material's name (Badge's `accent` tone) is not read as the material.
+ */
+function colourParts(spec: Record<string, unknown>, bundle: IRBundle): Map<string, Set<string>> {
+  const out = new Map<string, Set<string>>();
+  const tokens = spec['tokens'];
+  if (!isRecord(tokens)) return out;
+  const states = statesOf(spec);
+  for (const [part, body] of Object.entries(tokens)) {
+    if (!isRecord(body)) continue;
+    const values = Object.entries(body).flatMap(([key, value]) => (states.has(key) && isRecord(value) ? Object.values(value) : [value]));
+    const cells = values.flatMap((value) => matrixCells(value)).filter((cell) => isColourPath(bundle, cell.path));
+    if (cells.length === 0) continue;
+    out.set(part, new Set(STATED_MATERIALS.filter((m) => cells.some((cell) => cell.ground === m))));
+  }
+  return out;
+}
+
+/** One material a spec keys unevenly: the parts that key it, and the parts that neither key it nor are named. */
+export interface UnevenMaterial {
+  readonly material: string;
+  readonly keyed: readonly string[];
+  readonly unnamed: readonly string[];
+}
+
+/**
+ * The materials among STATED_MATERIALS that a spec leaves undecided on some colour-bearing part: a part that neither
+ * keys the material nor is named, in backticks, by `materials.<material>`. Unless `settled`, a material that no part
+ * keys is not read, so only parts that disagree are reported. Neither list is consulted here: validate.test.ts reads an
+ * owed spec through it as though it were settled.
+ */
+export function unevenMaterials(spec: Record<string, unknown>, bundle: IRBundle, settled: boolean): UnevenMaterial[] {
+  const parts = colourParts(spec, bundle);
+  const stated = isRecord(spec['materials']) ? spec['materials'] : {};
+  return STATED_MATERIALS.flatMap((material) => {
+    const keyed = [...parts].filter(([, keys]) => keys.has(material)).map(([part]) => part);
+    const missing = [...parts.keys()].filter((part) => !keyed.includes(part));
+    if (missing.length === 0 || (!settled && keyed.length === 0)) return [];
+    const statement = stated[material];
+    const text = typeof statement === 'string' ? statement : '';
+    const unnamed = missing.filter((part) => !text.includes(`\`${part}\``));
+    return unnamed.length === 0 ? [] : [{ material, keyed, unnamed }];
+  });
+}
+
+/**
+ * `material/uneven` (ADR-0040 §6): on `inverse`, `accent` and `glassLight` a colour-bearing part keys the material or
+ * the spec's `materials.<material>` names it (in backticks) and says what the part does there. Every spec is held to it
+ * wherever it keys a material on some parts and not on others; a spec of MATERIALS_SETTLED is held to it on every
+ * part, so keying a material on none is a decision it states. MATERIALS_OWED lets the recorded specs through, and
+ * MATERIAL_PUBLISHERS are not read: their matrices key their own `material` prop.
+ */
+function checkMaterials(doc: SpecDoc, spec: Record<string, unknown>, name: string, bundle: IRBundle, diagnostics: Diagnostic[]): void {
+  if (MATERIAL_PUBLISHERS.includes(name) || MATERIALS_OWED.some((o) => o.component === name)) return;
+  const stated = isRecord(spec['materials']) ? spec['materials'] : {};
+  for (const { material, keyed, unnamed } of unevenMaterials(spec, bundle, MATERIALS_SETTLED.includes(name))) {
+    const list = unnamed.map((part) => `\`${part}\``).join(', ');
+    const message = keyed.length === 0
+      ? `no colour-bearing part keys \`${material}\`, and \`materials.${material}\` does not name ${list}`
+      : `${keyed.map((part) => `\`${part}\``).join(', ')} ${keyed.length === 1 ? 'keys' : 'key'} \`${material}\`, and \`materials.${material}\` does not name ${list}`;
+    diagnostics.push(error('material/uneven', message, {
+      file: doc.path,
+      line: doc.lineOf(typeof stated[material] === 'string' ? ['materials', material] : ['tokens', unnamed[0] ?? '']),
+      hint: `give ${list} ${/^[aeiou]/.test(material) ? 'an' : 'a'} \`${material}\` cell, or name each in \`materials.${material}\` with what it draws there: the material's foreground, the knocked-out solid, no ground of its own, or nothing (ADR-0040)`,
+    }));
+  }
 }
 
 /**

@@ -1,5 +1,5 @@
 // Token paths in spec prose (ADR-0024 §5.2): the string values of `behavior`, `accessibility`,
-// `usage` and `notes` are read word by word with trailing punctuation stripped, and every word that
+// `usage`, `notes` and `materials` (ADR-0040 §6) are read word by word with trailing punctuation stripped, and every word that
 // is a token path or glob under §13.2's grammar must resolve. The grammar is the one
 // tools/tokens/docs.test.ts applies to the living documents, restricted to what prose can contain:
 // a path starts with `ref.`, `sys.` or `comp.`, or with a `sys` category, and a segment may use
@@ -7,8 +7,8 @@
 // extension other than `.md` are not candidates, so a spec can still name a file or show what is
 // invalid.
 
-/** The four prose fields (ADR-0024 §5.2). */
-export const PROSE_FIELDS: readonly string[] = ['behavior', 'accessibility', 'usage', 'notes'];
+/** The four prose fields of ADR-0024 §5.2, and the statements of `materials` (ADR-0040 §6), which are prose too. */
+export const PROSE_FIELDS: readonly string[] = ['behavior', 'accessibility', 'usage', 'notes', 'materials'];
 
 /**
  * A pattern's prose adds the recipe (spec/patterns/README.md): `layout` names its gaps and minimums by

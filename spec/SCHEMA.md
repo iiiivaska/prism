@@ -128,7 +128,7 @@ A binding is either a public `sys` path in a spec-bindable category, written wit
 
 - **Bindable categories:** `color`, `type`, `space`, `size`, `radius`, `border`, `elevation`, `opacity`, `motion`, `material`, `gradient`, `chart`, `stroke`, `icon`, `z`. Not bindable: `shadow` (the elevation levels are the role), `font` (families reach components through `type.*` roles) and `interaction` (modality flags that component code reads). The `motion` block is narrower still (below).
 - **Component tokens** are declared in `tokens/comp/<component>.tokens.json`, each a whole-value alias of one `sys` token. One exists only for a choice the component makes, where the role's name does not already say what the cell is (`comp.button.primary.bg.rest` → `color.bg.fill.inverse`); when the role's name is the cell's meaning, the spec binds the role (Text `tone: secondary` → `color.text.secondary`). Every component token is bound by its spec.
-- **Prose resolves.** Token paths in `behavior`, `accessibility`, `usage` and `notes` must exist, like the bindings. `spec:validate` (P2-1) checks all of this; `tokens/README.md` lists the names. The `label` key of an icon registry entry shares the `icon` category's namespace and is no token path: prose that names one is read against `spec/icons/registry.json` first (ADR-0032 rule 6).
+- **Prose resolves.** Token paths in `behavior`, `accessibility`, `usage`, `notes` and `materials` must exist, like the bindings. `spec:validate` (P2-1) checks all of this; `tokens/README.md` lists the names. The `label` key of an icon registry entry shares the `icon` category's namespace and is no token path: prose that names one is read against `spec/icons/registry.json` first (ADR-0032 rule 6).
 
 ### The binding-matrix grammar
 
@@ -148,6 +148,20 @@ A property's value is a token path or a **matrix**. Every key of one matrix come
 - **A material cell applies to the published material.** A glass Card under the fallback therefore renders the `raised` (or `solid`) cells, and a part with no cell for the published material takes its tone from Text.
 
 `spec:validate` (P2-1) checks the axes, every path and every component token; `spec/component.schema.json` checks the shapes.
+
+### The materials a part does not key
+
+`inverse`, `accent` and `glassLight` are where a `default` cell goes wrong unnoticed: an inverse solid lands on the inverse ground, ink text on ink. So a spec decides them for every part that carries colour (ADR-0040):
+
+- **Cells, by kind of part.** Text and glyphs take the material's foreground: `color.text.on-inverse`; `color.text.on-accent`, or `color.text.on-accent-secondary` for a secondary or tertiary tone; `color.text.on-glass-light`. Rings, outlines, ticks and tracks take `color.text.on-inverse`, `color.text.on-accent-secondary`, or on light glass `color.border.on-glass-fill`, decorative there as on the scheme's glass. The solid knocks out on the two opaque materials: its fill is the material's primary foreground and what it carries is the material's fill (`color.text.on-inverse` under `color.bg.fill.inverse`, `color.text.on-accent` under `color.bg.fill.accent`); on light glass it keeps its default cells, as on the scheme's glass (ADR-0030 §3.1). A part's own opaque ground is not drawn on `inverse` or `accent`, and a tinted part paints `color.bg.page` under its tint.
+- **Or a stated absence.** Where a colour-bearing part keys none of a material, the spec says what the part does there in `materials.<material>`, naming the part in backticks:
+
+```yaml
+materials:
+  inverse: "`track` draws nothing on inverse: the material has one foreground, and a track in it would be the fill's colour. The fill and the thumb carry the value."
+```
+
+`spec:validate` (`material/uneven`) fails a spec where one colour-bearing part keys a material and another neither keys it nor is named, and, for the specs whose materials are settled, any colour-bearing part that is neither. A part is held as a whole: a colour cell in one of its state blocks makes it colour-bearing, and a cell keyed by the material in any of its properties or states keys it. The interaction layers, the hover and pressed washes, the focus ring and a field's state edges, are keyed by no material (ADR-0040 §4), so a part that draws only those is named in `materials`.
 
 ## Behavior
 

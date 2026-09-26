@@ -40,6 +40,57 @@ export const NON_BINDABLE: readonly string[] = ['shadow', 'font', 'interaction']
  */
 export const MATERIALS: readonly string[] = ['page', 'solid', 'raised', 'nested', 'inverse', 'vivid', 'glass', 'glassLight', 'accent'];
 
+/**
+ * The three published materials a part keys or a spec states it does not (ADR-0040 §6): opaque `inverse` and `accent`,
+ * which carry their own foreground, and light glass. A part that keys none of them takes its `default` cell there,
+ * which is how an inverse solid landed on an inverse ground unnoticed (roadmap P4-10).
+ */
+export const STATED_MATERIALS: readonly string[] = ['inverse', 'accent', 'glassLight'];
+
+/**
+ * Specs that publish a material rather than sit on one: their matrices are keyed by their own `material` prop, whose
+ * values share the published materials' names, so `material/uneven` does not read them (Surface.yaml).
+ */
+export const MATERIAL_PUBLISHERS: readonly string[] = ['Surface'];
+
+/**
+ * The specs whose materials P4-10 settled (ADR-0040): each colour-bearing part keys `inverse`, `accent` and
+ * `glassLight`, or `materials` names it. `material/uneven` holds these to every part; every other spec only to parts
+ * that key a material unevenly. The list only grows: roadmap P4-27 adds the composites and data-viz parts it settles,
+ * and an implemented spec joins with the change that states its materials.
+ */
+export const MATERIALS_SETTLED: readonly string[] = [
+  'Checkbox', 'ProgressBar', 'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton', 'Slider', 'Spinner',
+  'TextArea', 'TextField', 'Toggle', 'Tooltip',
+];
+
+/**
+ * Specs that key a material on some colour-bearing parts and not on others, and state nothing, recorded rather than
+ * settled (ADR-0040 §7): the implemented specs whose gap waits for their next change, and the composite and data-viz
+ * layer that roadmap P4-27 settles. `material/uneven` lets exactly these through; validate.test.ts fails on an entry
+ * that keys its materials evenly now, so the list only shrinks.
+ */
+export const MATERIALS_OWED: readonly { readonly component: string; readonly owner: string }[] = [
+  // Implemented; decided in their ticket and stated in behavior, not yet in a `materials` block.
+  { component: 'Avatar', owner: 'the next change to Avatar.yaml (P4-7 decided it: no fill on inverse or accent)' },
+  { component: 'Card', owner: 'the next change to Card.yaml (P4-D5: the custom disc is the inverse solid on an inverse ground)' },
+  { component: 'Chip', owner: 'the next change to Chip.yaml (P4-8 decided it: no fill on inverse or accent)' },
+  // The composite and data-viz layer (roadmap P4-27).
+  { component: 'Alert', owner: 'P4-27' },
+  { component: 'Banner', owner: 'P4-27' },
+  { component: 'ChartContainer', owner: 'P4-27' },
+  { component: 'DeltaBadge', owner: 'P4-27' },
+  { component: 'EmptyState', owner: 'P4-27' },
+  { component: 'ListRow', owner: 'P4-27' },
+  { component: 'PillTabs', owner: 'P4-27' },
+  { component: 'RingGauge', owner: 'P4-27' },
+  { component: 'Sidebar', owner: 'P4-27' },
+  { component: 'StatusPill', owner: 'P4-27' },
+  { component: 'Stepper', owner: 'P4-27' },
+  { component: 'Timeline', owner: 'P4-27' },
+  { component: 'TopBar', owner: 'P4-27' },
+];
+
 /** The backdrop kind a Surface publishes beside its material (ADR-0029 §1.4); the second glass axis. */
 export const BACKDROPS: readonly string[] = ['none', 'image', 'map', 'vivid'];
 
