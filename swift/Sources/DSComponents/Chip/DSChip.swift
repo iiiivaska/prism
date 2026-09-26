@@ -41,8 +41,9 @@ import DSTokens
 ///    concentric with the pill's leading end.
 ///  - `isRemovable` takes the trailing position: the pill draws nav.close there, and a second button laid over that
 ///    glyph is the remove control, its own element with a `size.hit` region and a round focus ring, named by the app's
-///    `strings.Chip.remove` template filled with the label (ADR-0032). It fires `onRemove` without firing `onPress`, and
-///    Delete and Backspace on the chip fire it too. A `trailingIcon` given with it is not drawn.
+///    `strings.Chip.remove` template filled with the label (ADR-0032) and read after the chip (`DSChipRemoveOrder`). It
+///    fires `onRemove` without firing `onPress`, and Delete and Backspace on the chip fire it too. A `trailingIcon` given
+///    with it is not drawn.
 ///  - `isDisabled` lowers the pill to `opacity.disabled` and takes it and its remove control out of input and the focus
 ///    order. The focus ring is `color.border.focus` at `border.focus` outside the pill.
 ///
@@ -199,8 +200,10 @@ public struct DSChip: View {
             .overlay(alignment: .trailing) {
                 if let name = removeName(locale: locale, strings: strings) {
                     DSChipRemoveControl(name: name, size: size, action: onRemove ?? {})
+                        .accessibilitySortPriority(DSChipRemoveOrder.removeControlPriority)
                 }
             }
+            .modifier(DSChipRemoveOrder(isRemovable: isRemovable))
             .disabled(isDisabled)
         } else {
             // A static label: the pill and its parts, one element of text, with no role and no press.
@@ -487,6 +490,33 @@ private struct DSChipRemoveKey: ViewModifier {
             content
         }
         #endif
+    }
+}
+
+/// `accessibility.keyboard` and `voiceOver`: a removable chip is read as the chip and then its remove control, as the web
+/// reads its two buttons. The remove control is laid over the pill, and SwiftUI vends an overlay's element before the
+/// view it overlays (iOS 26.5, CI run 36207346174), so the order is set rather than left to the layout: the removable
+/// chip is a container of its two elements (`accessibilityElement(children: .contain)`), and inside it the remove
+/// control sorts after the chip's button, which keeps the default priority. The container scopes the priority to those
+/// two: without it the remove control would sort after every element at its level, the rest of the screen included.
+/// Accessibility only: no pixel, name or trait changes, and neither does the keyboard focus order, which the focus
+/// system takes from the layout.
+private struct DSChipRemoveOrder: ViewModifier {
+    /// Below the chip's button, which keeps SwiftUI's default of 0.
+    static let removeControlPriority: Double = -1
+
+    let isRemovable: Bool
+
+    init(isRemovable: Bool) {
+        self.isRemovable = isRemovable
+    }
+
+    func body(content: Content) -> some View {
+        if isRemovable {
+            content.accessibilityElement(children: .contain)
+        } else {
+            content
+        }
     }
 }
 
