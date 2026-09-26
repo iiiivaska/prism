@@ -87,6 +87,7 @@ export const OnVivid: Story = {
 /** IconButton.yaml example `on-glass-over-map` */
 export const OnGlassOverMap: Story = {
   name: "on-glass-over-map",
+  tags: ["glass"],
   args: {"variant":"primary","size":"md","glyph":"action.locate","label":"Center on the vehicle"},
   ...example({"id":"on-glass-over-map","surface":"glass","backdrop":"map"}),
 };

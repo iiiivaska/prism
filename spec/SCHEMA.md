@@ -260,7 +260,7 @@ Every example is rendered by both stacks under one name, so a pair is found by n
 | `<platform>` | a **platform key of this file's `platforms` block** — the target that rasterized the image: `ios`, `ipados`, `macos`, `watchos`, `web-desktop`, `web-touch` | Apple: `DSSnapshotMatrix.platform`; web: the Playwright project name (`web/apps/vrt/matrix.ts`) |
 | `<scheme>` | `light`, `dark`; only the schemes the example declares | both |
 | `<density>` | `regular`, `compact` (ADR-0010) | both |
-| `<variant>` | one forced accessibility state, absent in the standard state: `increased-contrast`, `reduce-transparency`, `bold-text` | Apple only today; the web matrix records no variant |
+| `<variant>` | one forced accessibility state, absent in the standard state: `increased-contrast`, `reduce-transparency`, `bold-text` | Apple: all three; web: `reduce-transparency` only, for each example that renders glass, as Apple records it |
 
 The platform segment is a platform key and never a stack name, so a column of the gallery is a column of the parity report and a second Apple target (a macOS render beside the iOS one) needs no rename. Today Apple records `ios` (iPhone 17, `swift/Tests/DSSnapshotTests/README.md`) and the web records `web-desktop` and `web-touch` (`web/apps/vrt/playwright.config.ts`); a cell missing on one side is a *missing pair*, and a variant the other stack's matrix does not record is not.
 

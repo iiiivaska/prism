@@ -78,6 +78,7 @@ export const Decorative: Story = {
 /** Avatar.yaml example `ringed-over-map`: over media the ring takes color.border.on-glass-fill so it stays visible on the ground */
 export const RingedOverMap: Story = {
   name: "ringed-over-map",
+  tags: ["glass"],
   args: {"name":"Anna Petrova","image":{"fixture":"portrait"},"hasRing":true},
   ...example({"id":"ringed-over-map","surface":"map","description":"over media the ring takes color.border.on-glass-fill so it stays visible on the ground"}),
 };
@@ -85,6 +86,7 @@ export const RingedOverMap: Story = {
 /** Avatar.yaml example `initials-over-map`: no portrait covers the circle over media, so the glass chip itself is photographed, with the initials in color.text.on-glass-fill */
 export const InitialsOverMap: Story = {
   name: "initials-over-map",
+  tags: ["glass"],
   args: {"name":"Anna Petrova","size":"md"},
   ...example({"id":"initials-over-map","surface":"map","description":"no portrait covers the circle over media, so the glass chip itself is photographed, with the initials in color.text.on-glass-fill"}),
 };
@@ -92,6 +94,7 @@ export const InitialsOverMap: Story = {
 /** Avatar.yaml example `on-glass-over-image` */
 export const OnGlassOverImage: Story = {
   name: "on-glass-over-image",
+  tags: ["glass"],
   args: {"name":"Anna Petrova","hasRing":true},
   ...example({"id":"on-glass-over-image","surface":"glass","backdrop":"image"}),
 };

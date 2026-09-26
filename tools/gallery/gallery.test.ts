@@ -9,7 +9,7 @@ import { fsReader, memoryReader, REPO_ROOT, type SourceReader } from '../tokens/
 import { PLATFORMS } from '../parity/config.ts';
 import { runParity } from '../parity/report.ts';
 import { collect, type Gallery } from './collect.ts';
-import { INDEX_HTML, INDEX_JSON, PLATFORM_ORDER, SOURCES } from './config.ts';
+import { INDEX_HTML, INDEX_JSON, PLATFORM_ORDER, SOURCES, VARIANTS } from './config.ts';
 import { buildGallery, main, parseArgs } from './build.ts';
 import { memoryImages, pngSize, type PixelSize } from './images.ts';
 import { cellKey, formatName, isParsed, parseName } from './name.ts';
@@ -130,8 +130,15 @@ describe('both harnesses write the settled name', () => {
     const names = [...matrix.matchAll(/\{ name: "([^"]+)", width:/gu)].map((match) => match[1]);
     expect(names).toEqual(['web-desktop', 'web-touch']);
     for (const name of names) expect(PLATFORMS).toContain(name);
-    // The screenshot's name is built from the project name, so the two cannot drift apart.
-    expect(read('web/apps/vrt/tests/stories.spec.ts')).toContain('`${story.name}.${testInfo.project.name}.${scheme}.${density}.png`');
+    // The screenshot's name is built from the project name, so the two cannot drift apart, and a forced state is its last
+    // segment, spelt as the gallery spells the Apple image it pairs with (P4-D9).
+    const spec = read('web/apps/vrt/tests/stories.spec.ts');
+    expect(spec).toContain('`${story.name}.${testInfo.project.name}.${scheme}.${density}${suffix}.png`');
+    expect(spec).toContain('const suffix = variant === null ? "" : `.${variant}`;');
+    const declared = /export type Variant = ([^;]+);/u.exec(matrix)?.[1] ?? '';
+    const variants = [...declared.matchAll(/"([^"]+)"/gu)].map((match) => match[1]);
+    expect(variants).toEqual(['reduce-transparency']);
+    for (const variant of variants) expect(VARIANTS).toContain(variant);
   });
 
   test('spec/SCHEMA.md states the rule the two of them implement', () => {

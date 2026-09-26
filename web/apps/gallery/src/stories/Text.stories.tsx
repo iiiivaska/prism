@@ -50,6 +50,7 @@ export const OnVivid: Story = {
 /** Text.yaml example `on-glass-over-map`: the scheme's glass over a map, where the secondary tone is color.text.on-glass-fill-secondary */
 export const OnGlassOverMap: Story = {
   name: "on-glass-over-map",
+  tags: ["glass"],
   args: {"role":"caption","tone":"secondary"},
   ...example({"id":"on-glass-over-map","surface":"glass","backdrop":"map","description":"the scheme's glass over a map, where the secondary tone is color.text.on-glass-fill-secondary"}),
 };

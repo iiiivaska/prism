@@ -25,8 +25,10 @@ export type Density = (typeof DENSITIES)[number];
 
 /**
  * The forced accessibility states a snapshot name may carry as its last segment; absent is the standard
- * state. The Apple matrix records all three (swift/Tests/DSSnapshotTests/README.md); the web matrix
- * records none, which the index says in words rather than counting as a missing pair.
+ * state. The Apple matrix records all three (swift/Tests/DSSnapshotTests/README.md). The web matrix
+ * records `reduce-transparency`, for the examples that render glass, as Apple does (web/apps/vrt/matrix.ts,
+ * roadmap P4-D9), and neither of the other two, which the index says in words rather than counting as a
+ * missing pair.
  */
 export const VARIANTS = ['increased-contrast', 'reduce-transparency', 'bold-text'] as const;
 export type Variant = (typeof VARIANTS)[number];

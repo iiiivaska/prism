@@ -1,11 +1,14 @@
 /**
  * The visual regression matrix (ADR-0003 web stack, roadmap P3-4): every story tagged `vrt` in
- * storybook-static, in each color scheme × density, in each viewport project of playwright.config.ts.
+ * storybook-static, in each color scheme × density, in each viewport project of playwright.config.ts,
+ * plus forced Reduce Transparency for every story that renders glass (roadmap P4-D9).
  *
  * Scheme and density reach the story as `<Theme>` props through Storybook globals; modality is pinned
  * per viewport project, and contrast, transparency and motion to their standard values, so a baseline
- * never depends on the machine's settings. A story restricted to one scheme carries the tag `schemes-light` or `schemes-dark`
- * (written by the gallery's story generator from the example's `schemes`).
+ * never depends on the machine's settings. A forced state (`variantsFor`) changes one of those pins, through
+ * `<Theme>` as well, never through a media query. The gallery's story generator writes the tags this reads from
+ * the spec: `schemes-light` or `schemes-dark` on a story restricted to one scheme, from the example's `schemes`,
+ * and `glass` on one that renders glass (web/apps/gallery/scripts/stories.ts, `rendersGlass`).
  */
 export const schemes = ["light", "dark"] as const;
 export type Scheme = (typeof schemes)[number];
@@ -77,6 +80,23 @@ export const runtimeProjects: readonly RuntimeProject[] = [
  */
 export const maxDiffPixelRatio: Readonly<Record<string, number>> = {};
 
-export function globalsFor(scheme: Scheme, density: Density, modality: Modality): string {
-  return [`colorScheme:${scheme}`, `density:${density}`, `modality:${modality}`, "contrast:standard", "transparency:standard", "motion:standard"].join(";");
+/**
+ * A forced accessibility state, the last segment of a baseline's name (spec/SCHEMA.md, "Examples and snapshots"),
+ * which the gallery pairs with the Apple image of the same name. The web records one of Apple's three.
+ */
+export type Variant = "reduce-transparency";
+
+/**
+ * The states a story is photographed in: the standard one (null), and forced Reduce Transparency when it renders
+ * glass, which is where the Apple matrix forces it too (`DSSnapshotMatrix.variants(of:)`, `hasGlass`). Under it glass
+ * falls back to `raised` over the page (ADR-0022 §1.2, ADR-0036 §9.1): the only picture of that fallback the web takes.
+ * Increase Contrast, which Apple records for every example, and Bold Text are not recorded here.
+ */
+export function variantsFor(tags: readonly string[]): readonly (Variant | null)[] {
+  return tags.includes("glass") ? [null, "reduce-transparency"] : [null];
+}
+
+export function globalsFor(scheme: Scheme, density: Density, modality: Modality, variant: Variant | null = null): string {
+  const transparency = variant === "reduce-transparency" ? "reduce" : "standard";
+  return [`colorScheme:${scheme}`, `density:${density}`, `modality:${modality}`, "contrast:standard", `transparency:${transparency}`, "motion:standard"].join(";");
 }

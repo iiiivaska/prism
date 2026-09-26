@@ -53,8 +53,9 @@ harness cannot drift out of the pairing quietly.
 - **A cell with no image says which kind of nothing it is.** `missing` (red) is a real gap: that platform records this
   component and this state, but not this cell. `not recorded here` means the platform has no snapshot of the component
   at all — the parity report says how far its implementation is. `not in this matrix` means the platform's matrix has
-  no image with that forced state anywhere, so there is nothing to compare; the web records no accessibility variants,
-  and counting those as gaps would invent 158 of them.
+  no image with that forced state anywhere, so there is nothing to compare. The web records one forced state,
+  `reduce-transparency`, for the examples that render glass, as Apple does; it records neither `increased-contrast`
+  nor `bold-text`, and counting those as gaps would invent two for every such Apple image.
 - **Every component spec has an anchor**, including the ones no stack has recorded yet, so a link from the parity
   report always lands somewhere. Pattern specs have no pairs yet: their example screens are Phase 4.
 - The toolbar filters by scheme and density, hides the forced states, and shows only the cells with a missing pair.

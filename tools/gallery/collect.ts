@@ -8,8 +8,8 @@
 //   not-recorded   this platform has no image of this component at all (nobody has implemented or
 //                  recorded it there yet; the parity row says which)
 //   out-of-matrix  this platform's matrix records no image with this variant anywhere, so there is
-//                  nothing to compare — the web matrix has no Increase Contrast axis, and pretending it
-//                  did would report 158 false gaps
+//                  nothing to compare — the web matrix has no Increase Contrast or Bold Text axis, and
+//                  pretending it did would report two false gaps for every such Apple image
 //
 // That distinction is the honest half of "missing pairs are called out, not hidden": a gap is named as a
 // gap, and a difference between the two matrices is named as that.

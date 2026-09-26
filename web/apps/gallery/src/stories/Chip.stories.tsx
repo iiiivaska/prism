@@ -80,6 +80,7 @@ export const MdWithAvatar: Story = {
 /** Chip.yaml example `on-map`: over a map the chip renders the glass chip recipe and carries the primary glass foreground only */
 export const OnMap: Story = {
   name: "on-map",
+  tags: ["glass"],
   args: {"label":"Depots","leadingIcon":"object.map-pin"},
   ...example({"id":"on-map","surface":"map","description":"over a map the chip renders the glass chip recipe and carries the primary glass foreground only"}),
 };
@@ -87,6 +88,7 @@ export const OnMap: Story = {
 /** Chip.yaml example `selected-on-map`: over media selection adds status.check in the leading slot, because every tone on the chip is one glass foreground */
 export const SelectedOnMap: Story = {
   name: "selected-on-map",
+  tags: ["glass"],
   args: {"label":"Depots","isSelected":true},
   ...example({"id":"selected-on-map","surface":"map","description":"over media selection adds status.check in the leading slot, because every tone on the chip is one glass foreground"}),
 };
@@ -94,6 +96,7 @@ export const SelectedOnMap: Story = {
 /** Chip.yaml example `on-vivid` */
 export const OnVivid: Story = {
   name: "on-vivid",
+  tags: ["glass"],
   args: {"label":"Yield"},
   ...example({"id":"on-vivid","surface":"vivid"}),
 };
@@ -101,6 +104,7 @@ export const OnVivid: Story = {
 /** Chip.yaml example `on-glass-over-image` */
 export const OnGlassOverImage: Story = {
   name: "on-glass-over-image",
+  tags: ["glass"],
   args: {"label":"In service"},
   ...example({"id":"on-glass-over-image","surface":"glass","backdrop":"image"}),
 };

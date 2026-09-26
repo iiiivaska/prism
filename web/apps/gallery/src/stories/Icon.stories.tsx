@@ -85,6 +85,7 @@ export const OnVivid: Story = {
 /** Icon.yaml example `on-glass-over-map` */
 export const OnGlassOverMap: Story = {
   name: "on-glass-over-map",
+  tags: ["glass"],
   args: {"name":"object.map-pin","size":"md","tone":"secondary"},
   ...example({"id":"on-glass-over-map","surface":"glass","backdrop":"map"}),
 };
@@ -92,6 +93,7 @@ export const OnGlassOverMap: Story = {
 /** Icon.yaml example `on-glass-light-over-image` */
 export const OnGlassLightOverImage: Story = {
   name: "on-glass-light-over-image",
+  tags: ["glass"],
   args: {"name":"action.play","size":"md","tone":"primary"},
   ...example({"id":"on-glass-light-over-image","surface":"glassLight","backdrop":"image"}),
 };

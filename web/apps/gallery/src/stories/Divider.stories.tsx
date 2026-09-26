@@ -57,6 +57,7 @@ export const OnVivid: Story = {
 /** Divider.yaml example `on-glass-over-map` */
 export const OnGlassOverMap: Story = {
   name: "on-glass-over-map",
+  tags: ["glass"],
   args: {"orientation":"horizontal","inset":"content"},
   ...example({"id":"on-glass-over-map","surface":"glass","backdrop":"map"}),
 };

@@ -85,6 +85,7 @@ export const OnVivid: Story = {
 /** Badge.yaml example `on-glass-over-map` */
 export const OnGlassOverMap: Story = {
   name: "on-glass-over-map",
+  tags: ["glass"],
   args: {"variant":"count","tone":"critical","count":2,"label":"open incidents"},
   ...example({"id":"on-glass-over-map","surface":"glass","backdrop":"map"}),
 };

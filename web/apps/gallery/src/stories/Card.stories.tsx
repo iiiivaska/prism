@@ -45,6 +45,7 @@ export const VividPair: Story = {
 /** Card.yaml example `glass-vehicle` */
 export const GlassVehicle: Story = {
   name: "glass-vehicle",
+  tags: ["glass"],
   args: {"variant":"glass","backdrop":"image","title":"Unit 4417","caption":"21.11.2026, 14:05:22"},
   ...example({"id":"glass-vehicle","surface":"image"}),
 };
@@ -52,6 +53,7 @@ export const GlassVehicle: Story = {
 /** Card.yaml example `glass-selected` */
 export const GlassSelected: Story = {
   name: "glass-selected",
+  tags: ["glass"],
   args: {"variant":"glass","backdrop":"image","title":"Unit 4417","isSelected":true},
   ...example({"id":"glass-selected","surface":"image"}),
 };

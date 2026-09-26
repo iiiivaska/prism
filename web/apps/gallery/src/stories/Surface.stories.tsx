@@ -43,6 +43,7 @@ export const VividPair: Story = {
 /** Surface.yaml example `glass-over-map` */
 export const GlassOverMap: Story = {
   name: "glass-over-map",
+  tags: ["glass"],
   args: {"material":"glass","backdrop":"map","radius":"card","elevation":"overlay"},
   ...example({"id":"glass-over-map","surface":"map"}),
 };
@@ -50,6 +51,7 @@ export const GlassOverMap: Story = {
 /** Surface.yaml example `glass-light-over-image` */
 export const GlassLightOverImage: Story = {
   name: "glass-light-over-image",
+  tags: ["glass"],
   args: {"material":"glassLight","backdrop":"image","radius":"card"},
   ...example({"id":"glass-light-over-image","surface":"image"}),
 };
@@ -57,6 +59,7 @@ export const GlassLightOverImage: Story = {
 /** Surface.yaml example `glass-selected` */
 export const GlassSelected: Story = {
   name: "glass-selected",
+  tags: ["glass"],
   args: {"material":"glass","backdrop":"image","radius":"card","selected":true},
   ...example({"id":"glass-selected","surface":"image"}),
 };

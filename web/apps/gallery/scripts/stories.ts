@@ -4,8 +4,8 @@
  * every component `@iiiivaska/prism-react` declares in its manifest, from spec/components/<Component>.yaml.
  * The story's export name is the example id in PascalCase, so its Storybook id is `<component>--<example-id>`
  * (P3-5's `<Component>/<exampleId>`); its args are the example's props; the harness renders the rest of the
- * example (surface, backdrop, grid). Every story is tagged `vrt`, and an example limited to one scheme also
- * `schemes-<scheme>`.
+ * example (surface, backdrop, grid). Every story is tagged `vrt`, an example limited to one scheme also
+ * `schemes-<scheme>`, and an example that renders glass also `glass` (`rendersGlass`).
  *
  *   node scripts/stories.ts          write src/stories
  *   node scripts/stories.ts --check  exit 1 if src/stories differs from the specs (run by test/stories.test.ts)
@@ -51,7 +51,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   Text: { render: "renderTextExample" },
 };
 
-interface SpecExample {
+export interface SpecExample {
   readonly id: string;
   readonly props?: Readonly<Record<string, unknown>>;
   readonly surface?: string;
@@ -61,10 +61,20 @@ interface SpecExample {
   readonly description?: string;
 }
 
-interface Spec {
+export interface SpecProp {
+  readonly name: string;
+  readonly type: string;
+  readonly required?: boolean;
+  readonly values?: readonly string[];
+  readonly default?: unknown;
+}
+
+export interface Spec {
   readonly name: string;
   readonly specVersion: number;
-  readonly props?: readonly { readonly name: string; readonly type: string; readonly required?: boolean }[];
+  readonly props?: readonly SpecProp[];
+  /** The binding matrix of every part (spec/SCHEMA.md, "Token bindings"). */
+  readonly tokens?: Readonly<Record<string, unknown>>;
   readonly examples: readonly SpecExample[];
 }
 
@@ -98,7 +108,7 @@ export function exportName(exampleId: string): string {
     .join("");
 }
 
-function loadSpec(component: string): Spec {
+export function loadSpec(component: string): Spec {
   return parse(readFileSync(join(repositoryRoot, "spec", "components", `${component}.yaml`), "utf8")) as Spec;
 }
 
@@ -110,13 +120,91 @@ function exampleFields(example: SpecExample): Record<string, unknown> {
   return fields;
 }
 
+function isRecord(value: unknown): value is Readonly<Record<string, unknown>> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** The two glass materials (spec/SCHEMA.md): the scheme's glass and light glass. */
+const GLASS_MATERIALS: readonly string[] = ["glass", "glassLight"];
+
+/** The keys of a binding matrix's two ground axes: the published material, and the backdrop kind beside it (spec/SCHEMA.md). */
+const MATERIALS: readonly string[] = ["page", "solid", "raised", "nested", "inverse", "vivid", "glass", "glassLight", "accent"];
+const BACKDROPS: readonly string[] = ["none", "image", "map", "vivid"];
+
+/** The recipe a part binds as its `background` where the Surface module draws that part as the glass chip (ADR-0036 §2). */
+const GLASS_CHIP = "material.glass.chip";
+
+/** What a component is staged on: the material the Surface around it publishes, and that Surface's backdrop kind. */
+interface Ground {
+  readonly material: string;
+  readonly backdrop: string;
+}
+
 /**
- * An example that renders in one scheme only (`schemes: [light]`, spec/SCHEMA.md) carries the tag
- * `schemes-<scheme>`, which the visual regression suite reads from index.json.
+ * The ground the harness stages an example's component on (src/harness/examples.tsx): the page, over the synthetic map or
+ * image that `surface` names and `GalleryGround` declares, or a Surface of the material `surface` names, over the example's
+ * `backdrop`.
  */
-function schemeTags(example: SpecExample): string[] {
+function groundOf(example: SpecExample): Ground {
+  const surface = example.surface ?? "page";
+  if (surface === "map" || surface === "image") return { material: "page", backdrop: surface };
+  return { material: surface, backdrop: surface === "page" ? "none" : (example.backdrop ?? "none") };
+}
+
+/**
+ * The key an example reaches at one level of a binding matrix (spec/SCHEMA.md, "The binding-matrix grammar"): the
+ * published material or the backdrop kind of its ground, or the value it gives the enum prop whose values key the level,
+ * else that prop's default. Undefined where no axis keys the level.
+ */
+function axisKey(keys: readonly string[], ground: Ground, spec: Spec, example: SpecExample): string | undefined {
+  if (keys.length === 0) return undefined;
+  if (keys.every((key) => MATERIALS.includes(key))) return ground.material;
+  if (keys.every((key) => BACKDROPS.includes(key))) return ground.backdrop;
+  const prop = spec.props?.find((candidate) => candidate.type === "enum" && keys.every((key) => candidate.values?.includes(key) === true));
+  const value = prop === undefined ? undefined : (example.props?.[prop.name] ?? prop.default);
+  return typeof value === "string" ? value : undefined;
+}
+
+/** The cell of a binding matrix an example reaches on its ground, one level at a time, taking `default` where its key has no cell. */
+function cellOn(binding: unknown, ground: Ground, spec: Spec, example: SpecExample): unknown {
+  if (!isRecord(binding)) return binding;
+  const key = axisKey(Object.keys(binding).filter((name) => name !== "default"), ground, spec, example);
+  return cellOn(key !== undefined && key in binding ? binding[key] : binding["default"], ground, spec, example);
+}
+
+/**
+ * Whether an example renders glass, and so is also photographed under forced Reduce Transparency, under which the glass
+ * falls back (roadmap P4-D9; ADR-0022 §1.2, ADR-0036 §9.1). It is ADR-0036's `hasGlass`, "renders a glass recipe", which
+ * the Apple matrix reads off each example (`DSExample.hasGlass`, swift/Tests/DSSnapshotTests/DSSnapshotMatrix.swift),
+ * read here from the spec:
+ *
+ * - the example sits inside a glass Surface: its `surface` is `glass` or `glassLight`;
+ * - it draws glass itself: its own material, which spec:validate reads from `material` or else `variant`, is one of
+ *   those two (Surface's and Card's glass examples); or
+ * - some part's `background` binds the glass chip, `material.glass.chip`, on the ground the example is staged on (Avatar
+ *   and Chip over the map, and Chip on vivid).
+ *
+ * The gallery pairs by name, so the two stacks photograph the same set: test/stories.test.ts holds this one to the Apple
+ * matrix's, and once both have recorded the variant an example in one set alone is a missing pair to `tools/gallery`.
+ */
+export function rendersGlass(spec: Spec, example: SpecExample): boolean {
+  if (example.surface !== undefined && GLASS_MATERIALS.includes(example.surface)) return true;
+  const props = example.props ?? {};
+  const own = typeof props["material"] === "string" ? props["material"] : props["variant"];
+  if (typeof own === "string" && GLASS_MATERIALS.includes(own)) return true;
+  const ground = groundOf(example);
+  return Object.values(spec.tokens ?? {}).some((part) => isRecord(part) && cellOn(part["background"], ground, spec, example) === GLASS_CHIP);
+}
+
+/**
+ * The story's own tags, which the visual regression suite reads from index.json (web/apps/vrt/matrix.ts):
+ * `schemes-<scheme>` for an example that renders in one scheme only (`schemes: [light]`, spec/SCHEMA.md), and `glass`
+ * for one that renders glass (`rendersGlass`), which is also photographed under forced Reduce Transparency.
+ */
+function storyTags(spec: Spec, example: SpecExample): string[] {
   const schemes = example.schemes ?? [];
-  return schemes.length === 1 ? [`  tags: ${JSON.stringify(schemes.map((scheme) => `schemes-${scheme}`))},`] : [];
+  const tags = [...(schemes.length === 1 ? schemes.map((scheme) => `schemes-${scheme}`) : []), ...(rendersGlass(spec, example) ? ["glass"] : [])];
+  return tags.length === 0 ? [] : [`  tags: ${JSON.stringify(tags)},`];
 }
 
 export function renderStories(component: string): string {
@@ -158,7 +246,7 @@ export function renderStories(component: string): string {
       `/** ${component}.yaml example \`${example.id}\`${example.description === undefined ? "" : `: ${example.description.replaceAll("*/", "* /")}`} */`,
       `export const ${exportName(example.id)}: Story = {`,
       `  name: ${JSON.stringify(example.id)},`,
-      ...schemeTags(example),
+      ...storyTags(spec, example),
       `  args: ${JSON.stringify(example.props ?? {})},`,
       `  ...example(${JSON.stringify(exampleFields(example))}),`,
       "};",
