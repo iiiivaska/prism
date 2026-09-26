@@ -7,9 +7,10 @@
 //   missing        this platform records this component and this variant, but not this cell — a real gap
 //   not-recorded   this platform has no image of this component at all (nobody has implemented or
 //                  recorded it there yet; the parity row says which)
-//   out-of-matrix  this platform's matrix records no image with this variant anywhere, so there is
-//                  nothing to compare — the web matrix has no Increase Contrast or Bold Text axis, and
-//                  pretending it did would report two false gaps for every such Apple image
+//   out-of-matrix  this platform's matrix records no image with this variant anywhere, or records it at
+//                  other densities only (config.ts, VARIANT_DENSITIES), so there is nothing to compare —
+//                  the web matrix records no Bold Text, and Increase Contrast on web-desktop at regular
+//                  density only, and pretending otherwise would report false gaps for every such Apple image
 //
 // That distinction is the honest half of "missing pairs are called out, not hidden": a gap is named as a
 // gap, and a difference between the two matrices is named as that.
@@ -19,7 +20,7 @@ import { error } from '../tokens/ir/diagnostics.ts';
 import { readSpecs, type SpecRow } from '../parity/specs.ts';
 import type { Support } from '../parity/config.ts';
 import {
-  DENSITIES, GALLERY_DIR, PLATFORM_ORDER, SCHEMES, SOURCES, VARIANTS,
+  DENSITIES, GALLERY_DIR, PLATFORM_ORDER, SCHEMES, SOURCES, VARIANT_DENSITIES, VARIANTS,
   type Density, type Platform, type Scheme, type Variant,
 } from './config.ts';
 import type { ImageStore, PixelSize } from './images.ts';
@@ -274,7 +275,10 @@ export function collect({ reader, images }: CollectOptions): Gallery {
                 expected++;
               } else if (!recorded.includes(platform)) {
                 platforms.set(platform, { kind: 'not-recorded' });
-              } else if (variant !== null && variantPlatforms.get(variant)?.has(platform) !== true) {
+              } else if (
+                variant !== null &&
+                (variantPlatforms.get(variant)?.has(platform) !== true || VARIANT_DENSITIES[variant]?.[platform]?.includes(density) === false)
+              ) {
                 platforms.set(platform, { kind: 'out-of-matrix' });
               } else {
                 platforms.set(platform, { kind: 'missing' });

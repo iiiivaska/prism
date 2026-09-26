@@ -26,12 +26,28 @@ export type Density = (typeof DENSITIES)[number];
 /**
  * The forced accessibility states a snapshot name may carry as its last segment; absent is the standard
  * state. The Apple matrix records all three (swift/Tests/DSSnapshotTests/README.md). The web matrix
- * records `reduce-transparency`, for the examples that render glass, as Apple does (web/apps/vrt/matrix.ts,
- * roadmap P4-D9), and neither of the other two, which the index says in words rather than counting as a
- * missing pair.
+ * (web/apps/vrt/matrix.ts) records two: `reduce-transparency`, for the examples that render glass, as Apple
+ * does (roadmap P4-D9), and `increased-contrast`, for every example but on `web-desktop` at `regular`
+ * density only (roadmap P4-D14). It records no `bold-text`. A cell that matrix does not record — any
+ * `bold-text` cell, an `increased-contrast` one on `web-touch` or at `compact` — is one the index says in
+ * words rather than counting as a missing pair (collect.ts, `out-of-matrix`).
  */
 export const VARIANTS = ['increased-contrast', 'reduce-transparency', 'bold-text'] as const;
 export type Variant = (typeof VARIANTS)[number];
+
+/**
+ * Where a platform's matrix records a forced state at fewer than both densities, the densities it does record it at.
+ * The web photographs `increased-contrast` on `web-desktop` at `regular` density alone (web/apps/vrt/matrix.ts,
+ * `increasedContrastAt`), so that platform's `compact` cells of it are outside its matrix, not gaps.
+ *
+ * Whether a platform records a forced state at all is read from its images, as it always was. What cannot be read
+ * from them is which densities it leaves out on purpose: a set with none of one density's images looks the same as a
+ * harness that lost them. So only this table narrows a platform's matrix, and a platform and state it does not name
+ * record at every density, where an image that is not there is a gap.
+ */
+export const VARIANT_DENSITIES: Readonly<Partial<Record<Variant, Readonly<Partial<Record<Platform, readonly Density[]>>>>>> = {
+  'increased-contrast': { 'web-desktop': ['regular'] },
+};
 
 /** Column order: the Apple targets, then the web ones. Its set is PLATFORMS' (config.test.ts). */
 export const PLATFORM_ORDER: readonly Platform[] = ['ios', 'ipados', 'macos', 'watchos', 'web-desktop', 'web-touch'];

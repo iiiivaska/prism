@@ -9,7 +9,7 @@ import { fsReader, memoryReader, REPO_ROOT, type SourceReader } from '../tokens/
 import { PLATFORMS } from '../parity/config.ts';
 import { runParity } from '../parity/report.ts';
 import { collect, type Gallery } from './collect.ts';
-import { INDEX_HTML, INDEX_JSON, PLATFORM_ORDER, SOURCES, VARIANTS } from './config.ts';
+import { INDEX_HTML, INDEX_JSON, PLATFORM_ORDER, SOURCES, VARIANT_DENSITIES, VARIANTS } from './config.ts';
 import { buildGallery, main, parseArgs } from './build.ts';
 import { memoryImages, pngSize, type PixelSize } from './images.ts';
 import { cellKey, formatName, isParsed, parseName } from './name.ts';
@@ -131,14 +131,24 @@ describe('both harnesses write the settled name', () => {
     expect(names).toEqual(['web-desktop', 'web-touch']);
     for (const name of names) expect(PLATFORMS).toContain(name);
     // The screenshot's name is built from the project name, so the two cannot drift apart, and a forced state is its last
-    // segment, spelt as the gallery spells the Apple image it pairs with (P4-D9).
+    // segment, spelt as the gallery spells the Apple image it pairs with (P4-D9, P4-D14).
     const spec = read('web/apps/vrt/tests/stories.spec.ts');
     expect(spec).toContain('`${story.name}.${testInfo.project.name}.${scheme}.${density}${suffix}.png`');
     expect(spec).toContain('const suffix = variant === null ? "" : `.${variant}`;');
     const declared = /export type Variant = ([^;]+);/u.exec(matrix)?.[1] ?? '';
     const variants = [...declared.matchAll(/"([^"]+)"/gu)].map((match) => match[1]);
-    expect(variants).toEqual(['reduce-transparency']);
+    expect(variants).toEqual(['increased-contrast', 'reduce-transparency']);
     for (const variant of variants) expect(VARIANTS).toContain(variant);
+  });
+
+  test('the gallery narrows the web matrix exactly where the VRT matrix does', () => {
+    // The web photographs Increase Contrast on one viewport at one density (P4-D14). VARIANT_DENSITIES must name that
+    // one and no other, or the gallery would read its left-out cells as gaps, or a real gap as out of the matrix.
+    const matrix = read('web/apps/vrt/matrix.ts');
+    const at = /export const increasedContrastAt = \{ platform: "([^"]+)", density: "([^"]+)" \} as const/u.exec(matrix);
+    expect(at?.slice(1)).toEqual(['web-desktop', 'regular']);
+    expect(matrix).toContain('platform === increasedContrastAt.platform && density === increasedContrastAt.density');
+    expect(VARIANT_DENSITIES).toEqual({ 'increased-contrast': { 'web-desktop': ['regular'] } });
   });
 
   test('spec/SCHEMA.md states the rule the two of them implement', () => {
@@ -213,6 +223,32 @@ describe('a cell a platform has no image for', () => {
     // and the web's are not, which is the whole point of telling the two apart.
     expect(states(gallery, 'basic', 'ios')['basic|dark|regular|increased-contrast']).toBe('missing');
     expect(gallery.counts.missing).toBe(3);
+  });
+
+  test('is “not in this matrix” at a density the matrix leaves out on purpose, and a gap at one it does not', () => {
+    // The web photographs Increase Contrast on web-desktop at regular density only (VARIANT_DENSITIES, P4-D14): its
+    // compact cells there, and all of web-touch's, which has no such image, are outside that matrix. A regular one it
+    // lacks is a gap. Apple, which the table does not narrow, owes the forced state at both densities (the test above).
+    const contrast = apple.map((name) => name.replace('.png', '.increased-contrast.png'));
+    const touch = apple.map((name) => name.replace('.ios.', '.web-touch.'));
+    const gallery = collect({
+      reader: tree(),
+      images: memoryImages(images(
+        ...[...apple, ...contrast].map(appleName),
+        ...[...web, ...touch, 'basic.web-desktop.light.regular.increased-contrast.png'].map(webName),
+      )),
+    });
+    const desktop = states(gallery, 'basic', 'web-desktop');
+    expect(desktop['basic|light|regular|increased-contrast']).toBe('present');
+    expect(desktop['basic|dark|regular|increased-contrast']).toBe('missing');
+    expect(desktop['basic|light|compact|increased-contrast']).toBe('out-of-matrix');
+    expect(desktop['basic|dark|compact|increased-contrast']).toBe('out-of-matrix');
+    expect(states(gallery, 'light-only', 'web-desktop')['light-only|light|regular|increased-contrast']).toBe('missing');
+    const onTouch = Object.entries(states(gallery, 'basic', 'web-touch')).filter(([key]) => key.endsWith('|increased-contrast'));
+    expect(onTouch.map(([, state]) => state)).toEqual(['out-of-matrix', 'out-of-matrix', 'out-of-matrix', 'out-of-matrix']);
+    // Apple's six are all there, so the two gaps are web-desktop's regular cells of `basic` dark and `light-only`.
+    expect(gallery.counts.missing).toBe(2);
+    expect(gallery.diagnostics).toEqual([]);
   });
 
   test('is no cell at all in a scheme the example does not declare', () => {

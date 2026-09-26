@@ -1,7 +1,8 @@
 /**
  * The visual regression matrix (ADR-0003 web stack, roadmap P3-4): every story tagged `vrt` in
  * storybook-static, in each color scheme × density, in each viewport project of playwright.config.ts,
- * plus forced Reduce Transparency for every story that renders glass (roadmap P4-D9).
+ * plus forced Reduce Transparency for every story that renders glass (roadmap P4-D9) and forced Increase
+ * Contrast for every story on `web-desktop` at `regular` density (roadmap P4-D14).
  *
  * Scheme and density reach the story as `<Theme>` props through Storybook globals; modality is pinned
  * per viewport project, and contrast, transparency and motion to their standard values, so a baseline
@@ -82,21 +83,39 @@ export const maxDiffPixelRatio: Readonly<Record<string, number>> = {};
 
 /**
  * A forced accessibility state, the last segment of a baseline's name (spec/SCHEMA.md, "Examples and snapshots"),
- * which the gallery pairs with the Apple image of the same name. The web records one of Apple's three.
+ * which the gallery pairs with the Apple image of the same name. The web records two of Apple's three.
  */
-export type Variant = "reduce-transparency";
+export type Variant = "increased-contrast" | "reduce-transparency";
 
 /**
- * The states a story is photographed in: the standard one (null), and forced Reduce Transparency when it renders
- * glass, which is where the Apple matrix forces it too (`DSSnapshotMatrix.variants(of:)`, `hasGlass`). Under it glass
- * falls back to `raised` over the page (ADR-0022 §1.2, ADR-0036 §9.1): the only picture of that fallback the web takes.
- * Increase Contrast, which Apple records for every example, and Bold Text are not recorded here.
+ * The one viewport and density the web photographs Increase Contrast at (roadmap P4-D14). Apple records it for every
+ * example at both densities. On the web it is a token layer over the scheme, colours and weights and nothing else
+ * (ADR-0011, ADR-0021 §3), which neither modality nor density touches, so one image per example and scheme shows what
+ * the others would. `tools/gallery` declares the same narrowing (`VARIANT_DENSITIES`), and its test holds the two equal.
  */
-export function variantsFor(tags: readonly string[]): readonly (Variant | null)[] {
-  return tags.includes("glass") ? [null, "reduce-transparency"] : [null];
+export const increasedContrastAt = { platform: "web-desktop", density: "regular" } as const satisfies { platform: Viewport["name"]; density: Density };
+
+/**
+ * The states a story is photographed in by one viewport project at one density: the standard one (null), and the
+ * forced states the Apple matrix records too (`DSSnapshotMatrix.variants(of:)`), each spelt as Apple spells it.
+ *
+ * - Increase Contrast, for every story, at `increasedContrastAt` alone. Glass falls back under it (ADR-0022 §1.2), as
+ *   under Reduce Transparency.
+ * - Reduce Transparency, when the story renders glass, which is where Apple forces it too (`hasGlass`). Under it glass
+ *   falls back to `raised` over the page (ADR-0022 §1.2, ADR-0036 §9.1), in both viewports and both densities.
+ *
+ * Bold Text is not recorded here.
+ */
+export function variantsFor(tags: readonly string[], platform: Viewport["name"], density: Density): readonly (Variant | null)[] {
+  return [
+    null,
+    ...(platform === increasedContrastAt.platform && density === increasedContrastAt.density ? (["increased-contrast"] as const) : []),
+    ...(tags.includes("glass") ? (["reduce-transparency"] as const) : []),
+  ];
 }
 
 export function globalsFor(scheme: Scheme, density: Density, modality: Modality, variant: Variant | null = null): string {
+  const contrast = variant === "increased-contrast" ? "more" : "standard";
   const transparency = variant === "reduce-transparency" ? "reduce" : "standard";
-  return [`colorScheme:${scheme}`, `density:${density}`, `modality:${modality}`, "contrast:standard", `transparency:${transparency}`, "motion:standard"].join(";");
+  return [`colorScheme:${scheme}`, `density:${density}`, `modality:${modality}`, `contrast:${contrast}`, `transparency:${transparency}`, "motion:standard"].join(";");
 }

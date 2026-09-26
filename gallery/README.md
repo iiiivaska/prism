@@ -52,10 +52,13 @@ harness cannot drift out of the pairing quietly.
   them down for scanning, and the captions keep stating the true size.
 - **A cell with no image says which kind of nothing it is.** `missing` (red) is a real gap: that platform records this
   component and this state, but not this cell. `not recorded here` means the platform has no snapshot of the component
-  at all — the parity report says how far its implementation is. `not in this matrix` means the platform's matrix has
-  no image with that forced state anywhere, so there is nothing to compare. The web records one forced state,
-  `reduce-transparency`, for the examples that render glass, as Apple does; it records neither `increased-contrast`
-  nor `bold-text`, and counting those as gaps would invent two for every such Apple image.
+  at all — the parity report says how far its implementation is. `not in this matrix` means the platform's matrix does
+  not record that forced state at that density, so there is nothing to compare. The web records two forced states:
+  `reduce-transparency`, for the examples that render glass, as Apple does, and `increased-contrast`, for every example
+  but on `web-desktop` at `regular` density only, because it changes colours and weights, which neither modality nor
+  density touches. It records no `bold-text`. Counting the cells it leaves out as gaps would invent them for every such
+  Apple image. That a platform records a forced state at all is read from its images; that it leaves a density out on
+  purpose is declared (`VARIANT_DENSITIES` in `tools/gallery/config.ts`), so a density a harness lost is still a gap.
 - **Every component spec has an anchor**, including the ones no stack has recorded yet, so a link from the parity
   report always lands somewhere. Pattern specs have no pairs yet: their example screens are Phase 4.
 - The toolbar filters by scheme and density, hides the forced states, and shows only the cells with a missing pair.

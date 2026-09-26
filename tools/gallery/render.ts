@@ -130,7 +130,7 @@ const STATE_TEXT: Readonly<Record<Exclude<CellState['kind'], 'present'>, string>
 const STATE_TITLE: Readonly<Record<Exclude<CellState['kind'], 'present'>, string>> = {
   missing: 'This platform records this component and this state, but not this cell: a gap in the pair.',
   'not-recorded': 'This platform has no snapshot of this component at all. The parity report says how far its implementation is.',
-  'out-of-matrix': 'This platform’s snapshot matrix has no image with this forced state anywhere, so there is nothing to compare here.',
+  'out-of-matrix': 'This platform’s snapshot matrix does not record this forced state at this density, so there is nothing to compare here.',
 };
 
 function variantText(variant: Variant | null): string {
