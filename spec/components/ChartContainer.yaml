@@ -232,7 +232,7 @@ examples:
   - id: titled-line
     props: { title: "Line output", subtitle: "Last 24 hours", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", caption: "Percent of rated capacity", height: 180 }
   - id: with-hero
-    props: { title: "Ingest rate", subtitle: "Last hour", summary: "Ingest rate over the last hour, 980 to 1,284 requests per second, flat after 14:20", hero: { value: "1 284", unit: "req/s", size: lg, live: true }, height: 180 }
+    props: { title: "Ingest rate", subtitle: "Last hour", summary: "Ingest rate over the last hour, 980 to 1,284 requests per second, flat after 14:20", hero: { value: "1 284", unit: "req/s", size: lg, isLive: true }, height: 180 }
   - id: scrubbed
     props: { title: "Line output", subtitle: "Last 24 hours", summary: "Line output over 24 hours, 61 to 86 percent, rising after 06:00", hero: { value: "74", trailing: ".2", unit: "%", size: lg }, height: 180 }
     description: the hero shows the value at the selected x while the plot shows only the crosshair

@@ -177,11 +177,11 @@ composition:
     where: "readout, when `stage` is map or image, with `backdrop` set from `stage`; over an illustration the same Card is `variant: solid` with `backdrop: none`, because glass there would only fall back"
   - component: HeroNumber
     props: { size: xl }
-    forwards: value, trailing, unit, label, format, live, delta, trend
+    forwards: value, trailing, unit, label, format, isLive, delta, trend
     where: "hero at `screen` and at a `sheet` over a stage; in a modal `sheet` and at `drawer` the pattern sets `size: lg`. Not on watchOS, where HeroNumber is `none`"
   - component: StatTile
     props: { size: lg }
-    forwards: label, value, unit, status, delta, trend, live
+    forwards: label, value, unit, status, delta, trend, isLive
     where: "hero on watchOS, and on any platform when the figure carries a status glyph, which StatTile draws and HeroNumber does not; in a modal `sheet` and at `drawer` the pattern sets `size: md`"
   - component: ListRow
     forwards: leadingIcon, title, subtitle, value, meta, accessory, separator, onPress, leading (slot), trailing (slot)

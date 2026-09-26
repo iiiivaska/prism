@@ -24835,7 +24835,7 @@
             "light",
             "dark"
           ],
-          "props": "title: Ingest rate, subtitle: Last hour, summary: Ingest rate over the last hour, 980 to 1,284 requests per second, flat after 14:20, hero: {\"value\":\"1 284\",\"unit\":\"req/s\",\"size\":\"lg\",\"live\":true}, height: 180",
+          "props": "title: Ingest rate, subtitle: Last hour, summary: Ingest rate over the last hour, 980 to 1,284 requests per second, flat after 14:20, hero: {\"value\":\"1 284\",\"unit\":\"req/s\",\"size\":\"lg\",\"isLive\":true}, height: 180",
           "cells": []
         },
         {

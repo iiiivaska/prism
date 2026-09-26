@@ -157,7 +157,7 @@ rules:
 composition:
   - component: StatTile
     props: { size: lg }
-    forwards: label, value, unit, status, delta, trend, live
+    forwards: label, value, unit, status, delta, trend, isLive
     where: "heroRow, when `hero: metric`"
   - component: Card
     props: { variant: vivid }
@@ -173,7 +173,7 @@ composition:
     where: "one tile of a tileGroup; the tile `litTile` names is the same Surface at `material: accent`, and everything on it follows the material it publishes (ADR-0022 §3.1, ADR-0030 §3.4)"
   - component: StatTile
     props: { size: sm, layout: stacked }
-    forwards: label, value, unit, status, delta, trend, live
+    forwards: label, value, unit, status, delta, trend, isLive
     where: "inside each tile of a tileGroup; `size: sm` renders type.metric.md, the tile metric of visual-dna §6.6"
   - component: ChartContainer
     props: { tableView: auto }
