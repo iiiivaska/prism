@@ -413,7 +413,9 @@ of that run on a `macos-26` runner of its own, with `XCODE_VERSION`. It needs no
 - uploads each bundle, zipped by `ditto` so that its symlinks and its ad hoc signature survive, as
   `showcase-app-ios-simulator` and `showcase-app-macos`;
 - photographs the running app, the pages SD-10 of the showcase review names, as `showcase-screenshots`. That part is
-  best effort: a capture the runner refuses is written down in the artifact's `index.txt`, and the job still passes.
+  best effort: a capture the runner refuses is written down in the artifact's `index.txt`, and the job still passes;
+- clicks two rows of the Mac app's sidebar after a plain `open` and after `open --args` with page keys, and fails
+  unless each click brings up its row's page. A click on the toolbar's Axes button is the control.
 
 The artifacts are kept for 14 days, and `swift/Showcase/README.md` ("The apps CI builds") says how to open them. The
 screenshots are for a person to read. Nothing compares against them and nothing commits them, so they are not the

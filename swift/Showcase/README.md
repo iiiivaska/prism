@@ -104,7 +104,7 @@ or a pull request never runs it. Download the artifacts from the run's page, or 
 |---|---|
 | `showcase-app-macos` | `PrismShowcase-macos.zip`, which unzips to `PrismShowcase.app` for macOS 26 or later, arm64 and x86_64 |
 | `showcase-app-ios-simulator` | `PrismShowcase-ios-simulator.zip`, which unzips to `PrismShowcase.app` for the iOS Simulator, iOS 26 or later, arm64 and x86_64 |
-| `showcase-screenshots` | PNGs of the running app on the iPhone 17 simulator and on the Mac, the pages SD-10 of `docs/direction-board/reference-distance-showcase.md` names, and `index.txt`, which gives the commit, the Xcode, the simulator and what each file shows |
+| `showcase-screenshots` | PNGs of the running app on the iPhone 17 simulator and on the Mac, the pages SD-10 of `docs/direction-board/reference-distance-showcase.md` names; `navigation/`, the window before and after each sidebar click the job checks; and `index.txt`, which gives the commit, the Xcode, the simulator, what each file shows and how each click went |
 
 Each bundle sits in a zip that `ditto` made, inside the artifact's own zip. The artifact's zip keeps no symlinks,
 permissions or extended attributes, and a bundle loses its signature without them. Unpack the inner zip with Finder
@@ -143,7 +143,10 @@ device.
 
 **The screenshots are for reading, not comparing.** Nothing compares against them and nothing commits them: the
 gallery and the VRT suite own pixels (`docs/showcase.md` §5). A capture the runner refuses is recorded as such in
-`index.txt`, and it does not fail the job.
+`index.txt`, and it does not fail the job. One thing does: the Mac app is opened as above, with a plain `open` and
+with `open --args` and page keys, two sidebar rows are clicked each time, and the job fails unless the window then
+shows each row's page. A click on the toolbar's Axes button is the control, so a failure says whether the window takes
+clicks at all. On the iPhone the same walk (back out of a page, then a sidebar row) is photographed, not checked.
 
 ## What it measures rather than claims
 

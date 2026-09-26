@@ -680,7 +680,8 @@ jobs:
     #
     # Nothing it uploads is compared or committed. The two bundles are what `pnpm showcase:apple` builds, and the
     # screenshots are of the running app, for the showcase review (SD-10 in
-    # docs/direction-board/reference-distance-showcase.md). The gallery and the VRT suite own pixels (ADR-0005).
+    # docs/direction-board/reference-distance-showcase.md). The gallery and the VRT suite own pixels (ADR-0005). One
+    # thing it does check, and fails on: that a click on the Mac app's sidebar brings up the row's page.
     name: Showcase apps (iOS Simulator and macOS)
     runs-on: macos-26
     if: github.event_name == 'workflow_dispatch' && inputs.showcase-apps == true
@@ -799,6 +800,90 @@ jobs:
           if-no-files-found: error
           retention-days: 14
           compression-level: 0 # ditto's zip is compressed already
+      - name: Build the pointer helper that drives the running apps
+        # The steps below click, scroll and drag the way a person does, with events posted to the window server: a
+        # window's number, frame and title by process id, a click, a scroll-wheel event and a mouse drag, which the
+        # Simulator app turns into a touch. Not best effort: the sidebar check at the end needs it.
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/showcase-input.swift" <<'SWIFT'
+          import CoreGraphics
+          import Foundation
+
+          /// The on-screen, normal-layer windows `pid` owns, largest first: number, frame in global coordinates, title. The
+          /// title is empty where the runner withholds window names.
+          func windows(of pid: Int) -> [(number: Int, frame: CGRect, title: String)] {
+              let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+              var found: [(number: Int, frame: CGRect, title: String)] = []
+              for info in list {
+                  guard (info[kCGWindowOwnerPID as String] as? Int) == pid, (info[kCGWindowLayer as String] as? Int) == 0,
+                        let number = info[kCGWindowNumber as String] as? Int,
+                        let bounds = info[kCGWindowBounds as String] as? NSDictionary,
+                        let frame = CGRect(dictionaryRepresentation: bounds as CFDictionary) else { continue }
+                  found.append((number, frame, info[kCGWindowName as String] as? String ?? ""))
+              }
+              return found.sorted { $0.frame.width * $0.frame.height > $1.frame.width * $1.frame.height }
+          }
+
+          /// Posts one left-button mouse event at a point.
+          func mouse(_ type: CGEventType, _ point: CGPoint) {
+              guard let event = CGEvent(mouseEventSource: nil, mouseType: type, mouseCursorPosition: point, mouseButton: .left) else { return }
+              event.setIntegerValueField(.mouseEventClickState, value: 1)
+              event.post(tap: .cghidEventTap)
+          }
+
+          /// Puts the pointer at a point, and waits out the quarter second in which a warp holds back the next events.
+          func pointer(to point: CGPoint) {
+              CGWarpMouseCursorPosition(point)
+              mouse(.mouseMoved, point)
+              usleep(400_000)
+          }
+
+          let arguments = CommandLine.arguments
+          let numbers = arguments.dropFirst(2).compactMap { Double($0) }
+          switch (arguments.count, arguments.count > 1 ? arguments[1] : "") {
+          case (3, "window"):
+              guard let pid = Int(arguments[2]), let found = windows(of: pid).first else { exit(1) }
+              print(found.number, Int(found.frame.minX), Int(found.frame.minY), Int(found.frame.width), Int(found.frame.height))
+          case (3, "title"):
+              guard let pid = Int(arguments[2]), let found = windows(of: pid).first else { exit(1) }
+              print(found.title)
+          case (3, "windows"):
+              guard let pid = Int(arguments[2]) else { exit(2) }
+              print(windows(of: pid).count)
+          case (4, "move") where numbers.count == 2:
+              pointer(to: CGPoint(x: numbers[0], y: numbers[1]))
+          case (4, "click") where numbers.count == 2:
+              let point = CGPoint(x: numbers[0], y: numbers[1])
+              pointer(to: point)
+              mouse(.leftMouseDown, point)
+              usleep(100_000)
+              mouse(.leftMouseUp, point)
+          case (5, "scroll") where numbers.count == 3:
+              let point = CGPoint(x: numbers[0], y: numbers[1])
+              pointer(to: point)
+              guard let scroll = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: Int32(numbers[2]), wheel2: 0, wheel3: 0) else { exit(1) }
+              scroll.location = point
+              scroll.post(tap: .cghidEventTap)
+          case (5, "drag") where numbers.count == 3:
+              // Down, a slow move and a pause before up: a touch that stops before it lifts leaves the scroll view no momentum.
+              let (x, from, to) = (numbers[0], numbers[1], numbers[2])
+              pointer(to: CGPoint(x: x, y: from))
+              mouse(.leftMouseDown, CGPoint(x: x, y: from))
+              usleep(150_000)
+              for step in 1...30 {
+                  mouse(.leftMouseDragged, CGPoint(x: x, y: from + (to - from) * Double(step) / 30))
+                  usleep(20_000)
+              }
+              usleep(500_000)
+              mouse(.leftMouseUp, CGPoint(x: x, y: to))
+          default:
+              print("usage: showcase-input window|title|windows <pid> | move|click <x> <y> | scroll <x> <y> <delta> | drag <x> <from y> <to y>")
+              exit(2)
+          }
+          SWIFT
+          xcrun swiftc -O -module-name ShowcaseInput -o "$RUNNER_TEMP/showcase-input" "$RUNNER_TEMP/showcase-input.swift"
       - name: Photograph the running app for the showcase review
         # Best effort: the apps are uploaded already, and a runner that will not boot the simulator or capture the screen
         # must not turn the job red, so this step may fail while the job passes; index.txt names every file and every
@@ -848,68 +933,8 @@ jobs:
             echo
           } > "$index"
 
-          # A helper for the pointer: the number and frame of a process's window, a scroll-wheel event at a point, and a
-          # mouse drag, which the Simulator app turns into a touch.
-          cat > "$helper.swift" <<'SWIFT'
-          import CoreGraphics
-          import Foundation
-
-          /// The largest normal-layer window on screen that `pid` owns: its number, and its frame in global coordinates.
-          func window(of pid: Int) -> (number: Int, frame: CGRect)? {
-              let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
-              var best: (number: Int, frame: CGRect)?
-              for info in windows {
-                  guard (info[kCGWindowOwnerPID as String] as? Int) == pid, (info[kCGWindowLayer as String] as? Int) == 0,
-                        let number = info[kCGWindowNumber as String] as? Int,
-                        let bounds = info[kCGWindowBounds as String] as? NSDictionary,
-                        let frame = CGRect(dictionaryRepresentation: bounds as CFDictionary) else { continue }
-                  if best.map({ frame.width * frame.height > $0.frame.width * $0.frame.height }) ?? true { best = (number, frame) }
-              }
-              return best
-          }
-
-          /// Posts one left-button mouse event at a point.
-          func mouse(_ type: CGEventType, _ point: CGPoint) {
-              guard let event = CGEvent(mouseEventSource: nil, mouseType: type, mouseCursorPosition: point, mouseButton: .left) else { return }
-              event.setIntegerValueField(.mouseEventClickState, value: 1)
-              event.post(tap: .cghidEventTap)
-          }
-
-          let arguments = CommandLine.arguments
-          switch (arguments.count, arguments.count > 1 ? arguments[1] : "") {
-          case (3, "window"):
-              guard let pid = Int(arguments[2]), let found = window(of: pid) else { exit(1) }
-              print(found.number, Int(found.frame.minX), Int(found.frame.minY), Int(found.frame.width), Int(found.frame.height))
-          case (5, "scroll"):
-              guard let x = Double(arguments[2]), let y = Double(arguments[3]), let delta = Int32(arguments[4]) else { exit(2) }
-              let point = CGPoint(x: x, y: y)
-              CGWarpMouseCursorPosition(point)
-              mouse(.mouseMoved, point)
-              usleep(300_000)
-              guard let scroll = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: delta, wheel2: 0, wheel3: 0) else { exit(1) }
-              scroll.location = point
-              scroll.post(tap: .cghidEventTap)
-          case (5, "drag"):
-              // Down, a slow move and a pause before up: a touch that stops before it lifts leaves the scroll view no momentum.
-              guard let x = Double(arguments[2]), let from = Double(arguments[3]), let to = Double(arguments[4]) else { exit(2) }
-              CGWarpMouseCursorPosition(CGPoint(x: x, y: from))
-              mouse(.mouseMoved, CGPoint(x: x, y: from))
-              usleep(400_000) // past the quarter second in which a warp holds back the next events
-              mouse(.leftMouseDown, CGPoint(x: x, y: from))
-              usleep(150_000)
-              for step in 1...30 {
-                  mouse(.leftMouseDragged, CGPoint(x: x, y: from + (to - from) * Double(step) / 30))
-                  usleep(20_000)
-              }
-              usleep(500_000)
-              mouse(.leftMouseUp, CGPoint(x: x, y: to))
-          default:
-              print("usage: showcase-input window <pid> | scroll <x> <y> <delta> | drag <x> <from y> <to y>")
-              exit(2)
-          }
-          SWIFT
-          xcrun swiftc -O -module-name ShowcaseInput -o "$helper" "$helper.swift" ||
-            note "The pointer helper did not compile, so the Mac shots are of the whole screen."
+          # The pointer helper is the step above's; without it the Mac shots fall back to the whole screen.
+          [ -x "$helper" ] || note "The pointer helper is missing, so the Mac shots are of the whole screen."
 
           # settle <seconds> <capture function> <file>: wait, then capture every 3 s until two frames in a row agree, so a
           # frame taken mid-launch or mid-animation is not the one kept; ten captures at most, and the last one stays.
@@ -1119,6 +1144,202 @@ jobs:
             [ -f "$file" ] && echo "  $(basename "$file")  $(sips -g pixelWidth -g pixelHeight "$file" | awk '/pixel/ { print $2 }' | paste -sd x -)" >> "$index"
           done
           exit "$failed"
+      - name: Tap back out of a page and onto a sidebar row on the iPhone
+        # Best effort, for the pictures: the iPhone counterpart of the Mac check below. The app opens on the page the
+        # owner's keys name, the back button is tapped until the sidebar shows, and then a sidebar row. The Simulator app
+        # turns a click on its window into a tap; it draws the screen with no bezel under its title bar, scaled to the
+        # window's width, so a point on the iPhone's 402 by 874 point screen maps onto the window by the window's frame.
+        continue-on-error: true
+        timeout-minutes: 10
+        shell: bash
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set +e
+          set -uo pipefail
+          bundle_id=com.example.prism.showcase
+          out="$RUNNER_TEMP/showcase-screenshots/navigation"
+          index="$RUNNER_TEMP/showcase-screenshots/index.txt"
+          helper="$RUNNER_TEMP/showcase-input"
+          failed=0
+          mkdir -p "$out"
+          note() { echo "$*" | tee -a "$index"; }
+          settle() {
+            local previous="$RUNNER_TEMP/settle-previous.png" i
+            rm -f "$previous"
+            sleep "$1"
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              "$2" "$3" || return 1
+              if [ -f "$previous" ] && cmp -s "$previous" "$3"; then return 0; fi
+              cp "$3" "$previous"
+              sleep 3
+            done
+          }
+          ios_capture() { xcrun simctl io "$UDID" screenshot "$1" >/dev/null; }
+          last=""
+          # frame <file> <what>: capture, and say whether the screen changed since the last frame.
+          frame() {
+            local change=""
+            settle 1 ios_capture "$out/$1" || { note "  FAILED $1: the capture"; failed=1; return; }
+            if [ -n "$last" ]; then
+              if cmp -s "$last" "$out/$1"; then change=" (the screen did NOT change)"; else change=" (the screen changed)"; fi
+            fi
+            note "  $1: $2$change"
+            last="$out/$1"
+          }
+
+          echo >> "$index"
+          note "Navigation on the iPhone 17 simulator (best effort; the pictures are in navigation/):"
+          open -a Simulator --args -CurrentDeviceUDID "$UDID"
+          sleep 10
+          if ! read -r simulator_window sx sy sw sh < <("$helper" window "$(pgrep -n -x Simulator)"); then
+            note "  FAILED: the Simulator app showed no window"
+            exit 1
+          fi
+          bar=$(awk -v w="$sw" -v h="$sh" 'BEGIN { printf "%d", h - 874 * w / 402 }')
+          note "  the Simulator app's window $simulator_window, frame $sx $sy $sw $sh: a $bar-point title bar over the screen"
+          # tap <x> <y>: a tap at a point of the iPhone's screen.
+          tap() {
+            "$helper" click "$(awk -v x="$sx" -v w="$sw" -v p="$1" 'BEGIN { printf "%d", x + p * w / 402 }')" \
+              "$(awk -v y="$sy" -v w="$sw" -v h="$sh" -v p="$2" 'BEGIN { k = w / 402; printf "%d", y + h - 874 * k + p * k }')"
+            "$helper" move "$sx" "$sy"
+            sleep 2
+          }
+          xcrun simctl ui "$UDID" appearance light
+          xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1 && sleep 2
+          xcrun simctl launch "$UDID" "$bundle_id" \
+            -DSShowcaseSection components -DSShowcaseExample Chip/md-with-avatar -DSShowcaseColorScheme light >/dev/null
+          sleep 8
+          frame ios-nav-0-opened.png "opened with the owner's keys: the Chip/md-with-avatar page"
+          for n in 1 2 3; do
+            tap 38 84
+            frame "ios-nav-$n-back.png" "after tapping the back button $n time(s)"
+          done
+          # The sidebar's Icons row, the third: where the list puts it under the large title "Prism".
+          tap 120 "${IOS_ICONS_ROW_Y:-290}"
+          frame ios-nav-4-icons-row.png "after tapping the sidebar's Icons row"
+          exit "$failed"
+      - name: Check that a click on the Mac sidebar changes the page
+        # Not best effort: a sidebar that ignores clicks is a broken app, so this step fails the job. The app is opened
+        # the two ways swift/Showcase/README.md tells a person to (a plain `open`, from a fresh install's state, and
+        # `open --args` with page keys), and each time two sidebar rows are clicked; after each click the window's title,
+        # which is the page's navigation title, must be the row's section. A control clicks the toolbar's Axes button,
+        # outside the sidebar, so a failure says whether the window takes clicks at all. Rows are at fixed heights in the
+        # window's frame, as the app draws them. The before and after pictures are in the artifact's navigation/.
+        shell: bash
+        run: |
+          set +e
+          set -uo pipefail
+          mac_app="$RUNNER_TEMP/showcase/DerivedData/Build/Products/Debug/PrismShowcase.app"
+          out="$RUNNER_TEMP/showcase-screenshots/navigation"
+          index="$RUNNER_TEMP/showcase-screenshots/index.txt"
+          helper="$RUNNER_TEMP/showcase-input"
+          failed=0 control=""
+          mkdir -p "$out"
+          note() { echo "$*" | tee -a "$index"; }
+          settle() {
+            local previous="$RUNNER_TEMP/settle-previous.png" i
+            rm -f "$previous"
+            sleep "$1"
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              "$2" "$3" || return 1
+              if [ -f "$previous" ] && cmp -s "$previous" "$3"; then return 0; fi
+              cp "$3" "$previous"
+              sleep 3
+            done
+          }
+          capture() { screencapture -x -o -l "$window" "$1"; }
+          # The sidebar's rows, in points from the window's top edge; every row is clicked 80 points in.
+          row() {
+            case $1 in
+              Overview) echo 68 ;; Foundations) echo 100 ;; Icons) echo 133 ;; Components) echo 164 ;; Patterns) echo 196 ;; About) echo 228 ;;
+            esac
+          }
+          # launch <name> [launch arguments...]: quit the app, forget its defaults and saved windows as a fresh install
+          # has none, open it, find its window, and click once on the empty middle of the title bar, which selects
+          # nothing, so that the app is frontmost and a click on a row is a click on the row.
+          launch() {
+            local name=$1 i
+            shift
+            pkill -x PrismShowcase && sleep 2
+            pkill -x Simulator # its window may sit over this one
+            defaults delete com.example.prism.showcase >/dev/null 2>&1
+            rm -rf "$HOME/Library/Saved Application State/com.example.prism.showcase.savedState"
+            if [ $# -gt 0 ]; then open -n "$mac_app" --args "$@"; else open -n "$mac_app"; fi
+            pid="" window=""
+            for i in $(seq 1 20); do
+              sleep 1
+              pid=$(pgrep -n -x PrismShowcase) || continue
+              read -r window x y w h < <("$helper" window "$pid") && break
+            done
+            if [ -z "$window" ]; then note "  FAILED $name: the app showed no window"; failed=1; return 1; fi
+            sleep 4
+            "$helper" click $((x + w * 3 / 5)) $((y + 8))
+            "$helper" move $((x + w * 3 / 5)) $((y + 8))
+            sleep 1
+            note "$name: \`open\` with ${*:-no arguments}; window $window at $x $y, ${w}x$h; frontmost: $(lsappinfo info -only name "$(lsappinfo front)" 2>/dev/null | sed 's/.*=//')"
+            last="$out/mac-$name-0-opened.png"
+            settle 1 capture "$last"
+            last_title=$("$helper" title "$pid")
+            note "  $(basename "$last"): as opened; window title \"$last_title\""
+          }
+          # click_row <name> <n> <row>: click a sidebar row, then check that the page is that section's.
+          click_row() {
+            local name=$1 n=$2 target=$3 file title verdict how
+            file="$out/mac-$name-$n-$(echo "$target" | tr '[:upper:]' '[:lower:]').png"
+            "$helper" click $((x + 80)) $((y + $(row "$target")))
+            "$helper" move $((x + w * 3 / 5)) $((y + 8))
+            sleep 2
+            settle 1 capture "$file"
+            title=$("$helper" title "$pid")
+            if [ -n "$title$last_title" ]; then
+              how="window title \"$last_title\" -> \"$title\""
+              if [ "$title" = "$target" ]; then verdict=PASS; else verdict=FAIL; fi
+            else
+              # No window names on this runner: the pictures decide, and only a change counts.
+              if cmp -s "$last" "$file"; then verdict=FAIL how="no window titles, and the window did not change"
+              else verdict=PASS how="no window titles, but the window changed"; fi
+            fi
+            note "  $verdict $(basename "$file"): clicked the sidebar's $target row; $how"
+            [ "$verdict" = PASS ] || failed=1
+            last=$file last_title=$title
+          }
+
+          echo >> "$index"
+          note "Navigation on the Mac: sidebar clicks after the two launches swift/Showcase/README.md gives (this step fails the job if a page does not follow):"
+          if [ ! -x "$helper" ]; then
+            echo "::error title=No pointer helper::The step that builds it failed, so the sidebar could not be clicked."
+            exit 1
+          fi
+          if launch plain; then
+            click_row plain 1 Components
+            click_row plain 2 Icons
+          fi
+          if launch keys -DSShowcaseSection components -DSShowcaseExample Chip/md-with-avatar; then
+            click_row keys 1 Icons
+            click_row keys 2 Foundations
+          fi
+          # The control: the toolbar's Axes button, top right, outside the sidebar. Its sheet is a window of its own.
+          if launch control; then
+            before=$("$helper" windows "$pid")
+            "$helper" click $((x + w - 27)) $((y + 26))
+            sleep 3
+            after=$("$helper" windows "$pid")
+            screencapture -x "$out/mac-control-1-axes.png"
+            if [ "${after:-0}" -gt "${before:-0}" ]; then control=PASS; else control=FAIL; fi
+            note "  $control mac-control-1-axes.png (the whole screen): clicked the toolbar's Axes button; the app's windows went from $before to $after"
+          fi
+          pkill -x PrismShowcase
+          if [ "$failed" = 1 ]; then
+            if [ "$control" = PASS ]; then
+              echo "::error title=The Mac sidebar does not navigate::The window takes clicks (the toolbar's Axes button opened its sheet), but a click on a sidebar row did not bring up that row's page. index.txt and navigation/ in the showcase-screenshots artifact have each click, before and after."
+            else
+              echo "::error title=The Mac sidebar does not navigate::A click on a sidebar row did not bring up that row's page, and the control click on the toolbar's Axes button did not answer either ($control), so the window, or this runner's clicks, may not work at all. index.txt and navigation/ in the showcase-screenshots artifact have each click."
+            fi
+            exit 1
+          fi
+          [ "$control" = PASS ] || echo "::warning title=Control click::The sidebar navigated, but the toolbar's Axes button did not open its sheet ($control)."
+          note "Every sidebar click brought up its row's page."
       - name: Upload the screenshots
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v7
