@@ -1,5 +1,5 @@
 /**
- * `Surface` (spec/components/Surface.yaml, specVersion 3): the container primitive every other
+ * `Surface` (spec/components/Surface.yaml, specVersion 4): the container primitive every other
  * component sits on.
  *
  * - It resolves the material with `resolveSurface` from `useTokenContext()` (ADR-0022 §1.3, ADR-0025
@@ -48,8 +48,12 @@ export interface SurfaceProps extends ScopeAttributes, Omit<HTMLAttributes<HTMLD
   readonly padding?: SurfacePadding;
   /** What the surface sits on; glass renders only over image, map or vivid. Default `none`. */
   readonly backdrop?: BackdropKind;
-  /** A selected glass surface renders and publishes `inverse` while the glass fallback is active. */
-  readonly selected?: boolean;
+  /**
+   * A selected glass surface renders and publishes `inverse` while the glass fallback is active. Default
+   * false. Surface.yaml specVersion 4 renamed it from `selected`, the name Card, Chip and IconButton
+   * already give the same meaning (spec/SCHEMA.md, "One meaning, one name, one polarity").
+   */
+  readonly isSelected?: boolean;
   readonly children?: ReactNode;
   readonly ref?: Ref<HTMLDivElement>;
 }
@@ -66,7 +70,7 @@ export function Surface(props: SurfaceProps): ReactNode {
     elevation,
     padding = "card",
     backdrop = "none",
-    selected = false,
+    isSelected = false,
     className,
     children,
     ref,
@@ -75,7 +79,7 @@ export function Surface(props: SurfaceProps): ReactNode {
 
   const { contrast, transparency } = useTokenContext();
   const parent = useSurfaceContext();
-  const resolution = resolveSurface({ material: requested, backdrop, selected }, { contrast, transparency });
+  const resolution = resolveSurface({ material: requested, backdrop, selected: isSelected }, { contrast, transparency });
   const { material } = resolution;
 
   useEffect(() => {
@@ -102,7 +106,7 @@ export function Surface(props: SurfaceProps): ReactNode {
       data-ds-padding={padding}
       data-ds-elevation={surfaceElevation(elevation, requested)}
       data-ds-vivid={isVivid ? (vivid ?? "default") : undefined}
-      data-ds-selected={selected ? "" : undefined}
+      data-ds-selected={isSelected ? "" : undefined}
       data-ds-fallback={resolution.isGlassFallback ? "" : undefined}
       data-ds-depth={parent.depth % 2 === 0 ? "even" : "odd"}
       data-ds-nested={parent.depth > 0 ? "" : undefined}

@@ -143,9 +143,10 @@ describe("the Apple showcase catalogues", () => {
     // (docs/roadmap.md P2-5), with nothing queued behind it. When that stops being true, move the fake to
     // another such name; do not delete the test, and do not reach for whatever is being implemented that week.
     const manifest = reader.readText("swift/Sources/DSComponents/Manifest.swift");
+    // Anchored on Surface's key and not its version, so a Surface bump does not unhook the fake.
     const faked = manifest.replace(
-      '"Surface": ["ios": 3',
-      '"Skeleton": ["ios": 1, "ipados": 1, "macos": 1],\n        "Surface": ["ios": 3',
+      '"Surface": ["ios": ',
+      '"Skeleton": ["ios": 1, "ipados": 1, "macos": 1],\n        "Surface": ["ios": ',
     );
     expect(faked).not.toBe(manifest);
     const landed = renderCatalogs(

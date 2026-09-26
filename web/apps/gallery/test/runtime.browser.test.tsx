@@ -261,7 +261,7 @@ describe("Surface's glass fallback on the client (ADR-0022 rule 1, ADR-0025 rule
     await act(async () => {
       root?.render(
         <Theme contrast="more">
-          <Surface material="glass" backdrop="image" selected />
+          <Surface material="glass" backdrop="image" isSelected />
         </Theme>,
       );
       await Promise.resolve();

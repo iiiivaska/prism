@@ -34,7 +34,7 @@
  *   Card.yaml behavior 11 now says: "a card with nothing to press takes no hover cue". The Apple side
  *   reaches it through the shared rule of `DSControlAppearance.showsHover` ("hover exists only under
  *   pointer modality, and only on a control that takes input").
- * - `isSelected` passes `selected` to the Surface and adds Card's own cue: the floating shadow and the
+ * - `isSelected` passes on to the Surface's `isSelected` and adds Card's own cue: the floating shadow and the
  *   selection outline (behavior 7).
  * - V3 (behavior 9, ADR-0030 §8): on vivid the hero holds only its value and trailing group; a `unit`
  *   joins the caption line in the header block, `cardUnitSeparator` between them — text inside the
@@ -239,7 +239,7 @@ export function Card(props: CardProps): ReactNode {
       radius={surfaceRadiusOf[radiusCell]}
       padding="card"
       backdrop={backdrop}
-      selected={isSelected}
+      isSelected={isSelected}
       role={pressable ? "button" : "group"}
       aria-label={name}
       data-ds-variant={variant}

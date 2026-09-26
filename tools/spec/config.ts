@@ -206,21 +206,6 @@ export const IMAGE_FIXTURES: readonly string[] = ['portrait'];
  */
 export const BOOLEAN_NEGATIONS: readonly string[] = ['Not', 'No', 'Non'];
 
-/**
- * The boolean props still named against that rule, as `<spec name>.<prop>`: of the twenty-nine that the
- * spec-consistency pass of 2026-09-22 found (roadmap P4-D3 (1)), the ones nothing has renamed yet. P4-11 renamed the
- * twenty-eight in specs no stack implements, in place. `prop/boolean-name` lets exactly these through. The list only
- * shrinks: a name leaves it in the change that renames the prop, in place where nothing implements it and with a
- * `specVersion` bump on both stacks where something does, and validate.test.ts fails on an entry that no longer names a
- * boolean the rule rejects, and on one the pass did not record. A new prop follows the rule from its first commit and
- * never joins it.
- */
-export const BOOLEAN_NAMES_OWED: readonly string[] = [
-  // A bare adjective where Card, Chip and IconButton say `isSelected`, in an implemented component: its rename is a
-  // `specVersion` bump on both stacks.
-  'Surface.selected',
-];
-
 /** Kebab-case component name: the `comp.<component>` group a spec owns (ADR-0024 §5.2). */
 export function compGroup(name: string): string {
   return name

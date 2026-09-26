@@ -32,8 +32,8 @@
 //   composition/prop             a pattern sets a prop the composed spec does not declare, or a value its type does not allow
 //   prop/boolean-name            a boolean prop whose name is not a verb of BOOLEAN_VERBS in the third person and a word
 //                                after it (`isSelected`, `hasNext`, `showsClose`, `clampsOverflow`), or one that states a
-//                                negation (spec/SCHEMA.md, "One meaning, one name, one polarity"); the names roadmap
-//                                P4-D3 still owes, BOOLEAN_NAMES_OWED, pass until each is renamed
+//                                negation (spec/SCHEMA.md, "One meaning, one name, one polarity"); no name passes by
+//                                name, since the thirty that predated the rule were renamed (roadmap P4-D3, P4-11)
 //   example/prop                 an example sets a prop its spec does not declare, or a value its type does not allow:
 //                                a boolean, number or string of that type, one of an enum's values, an id of the icon
 //                                registry for an icon (spec/SCHEMA.md, "Examples and snapshots"); a string also takes
@@ -86,7 +86,7 @@ import { error, formatDiagnostics, formatDiagnosticsJson, sortDiagnostics } from
 import { findIds, suggest } from '../tokens/ir/lookup.ts';
 import { statesOf, walkBindings } from './bindings.ts';
 import {
-  BACKDROPS, BOOLEAN_NAMES_OWED, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
+  BACKDROPS, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
   DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
   GLASS_GROUNDS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS,
   MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, MEDIA_SOLID, NESTED_GLASS_KEYS, NON_BINDABLE,
@@ -554,7 +554,7 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   }
 
   const named = name === '' ? base : name;
-  checkBooleanNames(doc, spec, named, diagnostics);
+  checkBooleanNames(doc, spec, diagnostics);
   checkExampleProps(doc, spec, named, ctx.icons?.ids ?? null, diagnostics);
   checkExamples(doc, spec, diagnostics);
   checkGlassChip(doc, spec, named, diagnostics);
@@ -635,16 +635,17 @@ export function booleanNameProblem(name: string): BooleanNameProblem | null {
 }
 
 /**
- * `prop/boolean-name`: every boolean prop a spec declares holds the naming rule, except the names roadmap P4-D3 still
- * owes (BOOLEAN_NAMES_OWED), each until the change that renames it.
+ * `prop/boolean-name`: every boolean prop a spec declares holds the naming rule, with no exception. The thirty that
+ * predated the rule passed by name until each was renamed (roadmap P4-D3): `Button.fullWidth` in Button 4, the
+ * twenty-eight in specs no stack implements in P4-11, and `Surface.selected` in Surface 4, which emptied that list.
  */
-function checkBooleanNames(doc: SpecDoc, spec: Record<string, unknown>, name: string, diagnostics: Diagnostic[]): void {
+function checkBooleanNames(doc: SpecDoc, spec: Record<string, unknown>, diagnostics: Diagnostic[]): void {
   const props = spec['props'];
   if (!Array.isArray(props)) return;
   props.forEach((prop, i) => {
     if (!isRecord(prop) || prop['type'] !== 'boolean' || typeof prop['name'] !== 'string') return;
     const problem = booleanNameProblem(prop['name']);
-    if (problem === null || BOOLEAN_NAMES_OWED.includes(`${name}.${prop['name']}`)) return;
+    if (problem === null) return;
     diagnostics.push(error('prop/boolean-name', `boolean prop \`${prop['name']}\` ${problem.message}`, {
       file: doc.path, line: doc.lineOf(['props', i, 'name']), hint: problem.hint,
     }));

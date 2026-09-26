@@ -16783,7 +16783,7 @@
       "name": "Surface",
       "spec": "spec/components/Surface.yaml",
       "layer": "primitive",
-      "specVersion": 3,
+      "specVersion": 4,
       "support": {
         "ios": "full",
         "ipados": "full",
@@ -17970,7 +17970,7 @@
             "light",
             "dark"
           ],
-          "props": "material: glass, backdrop: image, radius: card, selected: true",
+          "props": "material: glass, backdrop: image, radius: card, isSelected: true",
           "cells": [
             {
               "scheme": "light",

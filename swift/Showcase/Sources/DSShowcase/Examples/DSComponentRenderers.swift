@@ -33,7 +33,7 @@ public struct DSSurfaceRenderer: DSExampleRenderer {
                 elevation: elevation,
                 padding: padding,
                 backdrop: backdrop,
-                selected: example.bool("selected")
+                isSelected: example.bool("isSelected")
             ) {
                 DSExampleSlot(slot)
             }

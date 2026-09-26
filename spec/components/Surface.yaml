@@ -1,6 +1,6 @@
 name: Surface
 layer: primitive
-specVersion: 3
+specVersion: 4
 status: draft
 summary: >-
   The container primitive every other component sits on. Resolves one of the content materials
@@ -64,7 +64,7 @@ props:
     values: [none, image, map, vivid]
     default: none
     description: what the surface sits on; glass is only legal over image, map or vivid, and the kind is published with the material
-  - name: selected
+  - name: isSelected
     type: boolean
     default: false
     description: a selected glass surface renders and publishes inverse while the glass fallback is active
@@ -144,7 +144,7 @@ behavior:
   - A glass material is rendered only when `backdrop` is image, map or vivid; otherwise it silently falls back and logs at debug level.
   - "Glass falls back to an opaque `raised` under any of four triggers: watchOS, Reduce Transparency, Increase Contrast, or a backdrop that is not image, map or vivid. The shape is filled with color.bg.page and color.bg.surface.raised is painted over it; blur, saturation, edge, grain and bloom are dropped, and the requested radius and elevation stay."
   - "Unset, `elevation` takes the default of the material the caller requested: material raised draws elevation.1, its own step (ADR-0030 §5.2), and every other material draws elevation.0. A declared elevation always wins, and under the glass fallback the surface keeps the elevation it requested, so a glass surface that asked for none stays flat: the fallback changes what is drawn, not what was asked for."
-  - "`selected` matters only under the fallback: a selected glass surface renders and publishes `inverse` instead of `raised`, because `raised` alone cannot show which one is selected."
+  - "`isSelected` matters only under the fallback: a selected glass surface renders and publishes `inverse` instead of `raised`, because `raised` alone cannot show which one is selected."
   - Surface reads Prism's token context for the contrast, transparency and platform triggers, never the operating system settings.
   - The resolved material and the backdrop kind are published to descendants (`dsSurfaceContext` on Apple, data attributes on web) so Text and charts pick their foreground family automatically.
   - Solid, raised and nested paint color.bg.page under themselves, so a white-alpha surface over imagery or vivid stays the color its contrast pairs check.
@@ -198,7 +198,7 @@ examples:
     props: { material: glassLight, backdrop: image, radius: card }
     surface: image
   - id: glass-selected
-    props: { material: glass, backdrop: image, radius: card, selected: true }
+    props: { material: glass, backdrop: image, radius: card, isSelected: true }
     surface: image
   - id: inverse-pill
     props: { material: inverse, radius: pill, padding: none }
@@ -213,4 +213,7 @@ notes:
     The surface ladder and the glass rule come from the references (docs/research/visual-dna.md §1
     principles 5-6); the edge, bloom and grain geometry is ADR-0030 §4. specVersion 3 writes down the
     per-material default of `elevation`, which both stacks implement and no sentence stated.
+    specVersion 4 renames `selected` to `isSelected`, the name Card, Chip and IconButton give the
+    same meaning (spec/SCHEMA.md, "One meaning, one name, one polarity"; roadmap P4-D3), and
+    changes nothing a surface draws or publishes.
   references: [docs/adr/0009-materials-in-layers.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

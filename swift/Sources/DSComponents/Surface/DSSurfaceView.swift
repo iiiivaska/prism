@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Surface: the container primitive every other component sits on (`spec/components/Surface.yaml`, specVersion 3).
+/// Surface: the container primitive every other component sits on (`spec/components/Surface.yaml`, specVersion 4).
 ///
 /// It resolves one content material through DSCore's `DSSurface` — including the single glass fallback of ADR-0022
 /// §1, decided from Prism's token context and never from the OS settings — draws that material from its tokens, and
@@ -39,7 +39,7 @@ public struct DSSurfaceView<Content: View>: View {
     private let elevation: DSSurfaceElevation?
     private let padding: DSSurfacePadding
     private let backdrop: DSBackdropKind
-    private let selected: Bool
+    private let isSelected: Bool
     private let content: Content
 
     /// Set by `DSCard`, the one component that pins a header to its Surface; see `cardHeaderBlock()`.
@@ -66,7 +66,8 @@ public struct DSSurfaceView<Content: View>: View {
     ///   - padding: `card` pads the content by `space.card-padding`; `none` does not.
     ///   - backdrop: what the surface sits on. Glass renders only over `image`, `map` or `vivid`, and the kind is
     ///     published with the material.
-    ///   - selected: while the glass fallback is active, a selected glass surface renders and publishes `inverse`.
+    ///   - isSelected: while the glass fallback is active, a selected glass surface renders and publishes `inverse`.
+    ///     Surface.yaml's `isSelected`, which was `selected` before specVersion 4.
     public init(
         material: DSSurfaceMaterial = .solid,
         vivid: DSVividSlot = .default,
@@ -74,7 +75,7 @@ public struct DSSurfaceView<Content: View>: View {
         elevation: DSSurfaceElevation? = nil,
         padding: DSSurfacePadding = .card,
         backdrop: DSBackdropKind = .none,
-        selected: Bool = false,
+        isSelected: Bool = false,
         @ViewBuilder content: () -> Content
     ) {
         self.material = material
@@ -83,13 +84,13 @@ public struct DSSurfaceView<Content: View>: View {
         self.elevation = elevation
         self.padding = padding
         self.backdrop = backdrop
-        self.selected = selected
+        self.isSelected = isSelected
         self.content = content()
     }
 
     public var body: some View {
         let tokens = ds.tokens
-        let resolution = DSSurface.resolve(material: material, backdrop: backdrop, selected: selected, tokens: tokens)
+        let resolution = DSSurface.resolve(material: material, backdrop: backdrop, selected: isSelected, tokens: tokens)
         let cornerRadius = DSSurfaceAppearance.radius(requested: radius, tokens.radius, parent: parentGeometry)
         let inset = padding.value(tokens.space)
         let gradient = DSSurfaceAppearance.gradient(vivid, tokens)

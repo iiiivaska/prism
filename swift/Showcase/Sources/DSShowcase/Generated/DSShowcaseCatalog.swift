@@ -399,11 +399,11 @@ extension DSShowcaseCatalog {
             layer: "primitive",
             summary: "The container primitive every other component sits on. Resolves one of the content materials (solid, raised, nested, inverse, vivid, glass, light glass, accent) plus the page ground, applies the glass fallback (ADR-0022), and publishes its material and its backdrop kind to descendants so text and charts pick the right foreground tokens.",
             since: "0.1.0",
-            specVersion: 3,
+            specVersion: 4,
             specPath: "spec/components/Surface.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .adapted), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [("ios", 3), ("ipados", 3), ("macos", 3), ("watchos", 3)],
+            implemented: [("ios", 4), ("ipados", 4), ("macos", 4), ("watchos", 4)],
             platformNotes: [("watchos", "Only page, solid, raised, nested, inverse and accent exist; vivid resolves to solid, and glass and glassLight take the raised fallback of the behavior bullet (watchOS is its first trigger)."), ("macos", "Identical to iOS; hover does not change a surface.")],
             examples: [
                 DSSpecExample(id: "solid-card", props: [("material", .string("solid")), ("radius", .string("card"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
@@ -411,7 +411,7 @@ extension DSShowcaseCatalog {
                 DSSpecExample(id: "vivid-pair", props: [("material", .string("vivid")), ("radius", .string("tile"))], surface: nil, backdrop: nil, grid: ["1", "2", "2", "1"], schemes: ["light", "dark"], actions: [], summary: "a 2×2 of vivid tiles, one slot pair on the diagonals"),
                 DSSpecExample(id: "glass-over-map", props: [("material", .string("glass")), ("backdrop", .string("map")), ("radius", .string("card")), ("elevation", .string("overlay"))], surface: "map", backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
                 DSSpecExample(id: "glass-light-over-image", props: [("material", .string("glassLight")), ("backdrop", .string("image")), ("radius", .string("card"))], surface: "image", backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
-                DSSpecExample(id: "glass-selected", props: [("material", .string("glass")), ("backdrop", .string("image")), ("radius", .string("card")), ("selected", .bool(true))], surface: "image", backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
+                DSSpecExample(id: "glass-selected", props: [("material", .string("glass")), ("backdrop", .string("image")), ("radius", .string("card")), ("isSelected", .bool(true))], surface: "image", backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
                 DSSpecExample(id: "inverse-pill", props: [("material", .string("inverse")), ("radius", .string("pill")), ("padding", .string("none"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
                 DSSpecExample(id: "accent-tile", props: [("material", .string("accent")), ("radius", .string("tile"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: [], summary: nil),
             ]

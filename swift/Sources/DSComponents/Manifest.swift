@@ -94,6 +94,10 @@
 /// Button gains. IconButton's primary and selected circles leave the white media solid on the scheme's glass for the
 /// inverse solid, ink on light glass and white on smoke (ADR-0030 §3.1), so `IconButton/on-glass-over-map` moved in
 /// the light scheme.
+///
+/// Surface 4 renames `selected` to `isSelected`, the last of the names spec/SCHEMA.md owed its rule ("One meaning, one
+/// name, one polarity"; roadmap P4-D3): `DSSurfaceView(isSelected:)`, the name Card, Chip and IconButton already give
+/// the same meaning. DSCore's resolver keeps its own `selected:` label, and nothing it draws or publishes changed.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
@@ -104,7 +108,7 @@ public enum DSComponentsManifest {
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "IconButton": ["ios": 3, "ipados": 3, "macos": 3],
-        "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
+        "Surface": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]
 }

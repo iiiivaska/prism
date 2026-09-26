@@ -29,7 +29,7 @@ enum DSSurfaceExamples {
         },
         DSExample("Surface", "glass-selected", hasGlass: true) {
             DSExampleStage(.image) {
-                DSSurfaceView(material: .glass, radius: .card, backdrop: .image, selected: true) { DSExampleSlot(.card) }
+                DSSurfaceView(material: .glass, radius: .card, backdrop: .image, isSelected: true) { DSExampleSlot(.card) }
             }
         },
         DSExample("Surface", "inverse-pill") {

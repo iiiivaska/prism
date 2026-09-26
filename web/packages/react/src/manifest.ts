@@ -33,6 +33,6 @@ export const implemented: ImplementedVersions = {
   Divider: { "web-touch": 2, "web-desktop": 2 },
   Icon: { "web-touch": 3, "web-desktop": 3 },
   IconButton: { "web-touch": 3, "web-desktop": 3 },
-  Surface: { "web-touch": 3, "web-desktop": 3 },
+  Surface: { "web-touch": 4, "web-desktop": 4 },
   Text: { "web-touch": 2, "web-desktop": 2 },
 };

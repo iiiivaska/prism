@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic, type IRBundle, type SourceReader } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import {
-  BOOLEAN_NAMES_OWED, compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, MATERIAL_PUBLISHERS, MATERIALS_OWED, MATERIALS_SETTLED,
+  compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, MATERIAL_PUBLISHERS, MATERIALS_OWED, MATERIALS_SETTLED,
   NON_BINDABLE,
 } from './config.ts';
 import { loadSpec } from './load.ts';
@@ -503,9 +503,10 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
     expect(diagnostics[0]?.hint).toBe('rename it `showsValue` (spec/SCHEMA.md, "One meaning, one name, one polarity")');
   }, 60_000);
 
-  test('the owed boolean names only shrink: each is one the pass recorded, and each still names a boolean the rule rejects', () => {
-    // The twenty-nine the spec-consistency pass of 2026-09-22 recorded (roadmap P4-D3 (1)), as it recorded them.
-    // BOOLEAN_NAMES_OWED is what is left of them: it loses a name in the change that renames the prop, and gains none.
+  test('the twenty-nine names the pass recorded are gone, and every boolean in spec/ holds the rule', () => {
+    // The twenty-nine the spec-consistency pass of 2026-09-22 recorded (roadmap P4-D3 (1)), as it recorded them. They
+    // passed by name until each was renamed: twenty-eight in place by P4-11, and `Surface.selected` in Surface 4, which
+    // emptied the list, so nothing passes by name now. No boolean may take one of these names again.
     const recorded = [
       'ProgressBar.showValue', 'ProgressRing.showValue', 'Slider.showValue', 'DeltaBadge.showIcon', 'Pagination.showPageNumbers',
       'HeroNumber.live', 'StatCard.live', 'StatTile.live', 'LineChart.scrollable', 'Skeleton.animated',
@@ -517,26 +518,21 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
     ];
     expect(recorded).toHaveLength(29);
     const reader = fsReader(REPO_ROOT);
-    const types = new Map<string, unknown>();
+    const booleans: string[] = [];
     for (const dir of ['spec/components', 'spec/patterns']) {
       for (const entry of reader.list(dir).filter((e) => !e.dir && e.name.endsWith('.yaml'))) {
         const path = `${dir}/${entry.name}`;
         const value = loadSpec(path, reader.readText(path)).value ?? {};
         for (const prop of Array.isArray(value['props']) ? (value['props'] as unknown[]) : []) {
-          if (typeof prop === 'object' && prop !== null && 'name' in prop && 'type' in prop) types.set(`${String(value['name'])}.${String(prop.name)}`, prop.type);
+          if (typeof prop === 'object' && prop !== null && 'name' in prop && 'type' in prop && prop.type === 'boolean') {
+            booleans.push(`${String(value['name'])}.${String(prop.name)}`);
+          }
         }
       }
     }
-    const problems: string[] = [];
-    for (const owed of BOOLEAN_NAMES_OWED) {
-      const prop = owed.split('.')[1] ?? '';
-      if (!recorded.includes(owed)) problems.push(`${owed} is no name P4-D3 recorded: a new prop follows the rule and never joins the list`);
-      if (!types.has(owed)) problems.push(`${owed} names no prop: it was renamed, so remove it from BOOLEAN_NAMES_OWED`);
-      else if (types.get(owed) !== 'boolean') problems.push(`${owed} is no boolean now: remove it from BOOLEAN_NAMES_OWED`);
-      else if (booleanNameProblem(prop) === null) problems.push(`${owed} holds the rule now: remove it from BOOLEAN_NAMES_OWED`);
-    }
-    expect(problems).toEqual([]);
-    expect(new Set(BOOLEAN_NAMES_OWED).size).toBe(BOOLEAN_NAMES_OWED.length);
+    expect(booleans).not.toHaveLength(0);
+    expect(booleans.filter((owed) => recorded.includes(owed))).toEqual([]);
+    expect(booleans.filter((named) => booleanNameProblem(named.split('.')[1] ?? '') !== null)).toEqual([]);
   });
 
   test('the naming rule reads the verb and the words after it, and nothing else', () => {

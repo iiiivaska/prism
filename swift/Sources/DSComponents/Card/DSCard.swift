@@ -455,7 +455,7 @@ private struct DSCardLabel<Content: View, Aside: View>: View {
             elevation: DSCardAppearance.elevation(parts.variant, isSelected: parts.isSelected),
             padding: .card,
             backdrop: parts.backdrop,
-            selected: parts.isSelected
+            isSelected: parts.isSelected
         ) {
             DSCardAnatomy(
                 parts: parts,

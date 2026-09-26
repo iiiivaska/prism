@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Surface (spec/components/Surface.yaml, specVersion 3).
+ * Surface (spec/components/Surface.yaml, specVersion 4).
  *
  * - The React Surface test of ADR-0022 rule 1 and ADR-0025 rule 1: the full resolution table against an
  *   independent statement of ADR-0022 §1.2 and §1.6, and the same table rendered on the server through
@@ -58,8 +58,8 @@ function attributes(html: string): Record<string, string> {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Surface.yaml specVersion 3", () => {
-    expect(spec.specVersion).toBe(3);
+  it("is Surface.yaml specVersion 4", () => {
+    expect(spec.specVersion).toBe(4);
     expect([...surfaceMaterials]).toEqual(propValues(spec, "material"));
     expect([...backdropKinds]).toEqual(propValues(spec, "backdrop"));
   });
@@ -82,7 +82,7 @@ describe("the resolution table (ADR-0022 rule 1)", () => {
   it.each(combinations)("renders on the server through <Theme>: $material over $backdrop, selected $selected, $contrast, $transparency", (row) => {
     const html = renderToStaticMarkup(
       <Theme contrast={row.contrast} transparency={row.transparency}>
-        <Surface material={row.material} backdrop={row.backdrop} selected={row.selected}>
+        <Surface material={row.material} backdrop={row.backdrop} isSelected={row.selected}>
           <Probe />
         </Surface>
       </Theme>,
@@ -109,7 +109,7 @@ describe("the resolution table (ADR-0022 rule 1)", () => {
     expect(render(<Theme><Surface material="glass" backdrop="map" /></Theme>)).toBe("glass");
     expect(render(<Theme contrast="more"><Surface material="glass" backdrop="map" /></Theme>)).toBe("raised");
     expect(render(<Theme transparency="reduce"><Surface material="glassLight" backdrop="image" /></Theme>)).toBe("raised");
-    expect(render(<Theme transparency="reduce"><Surface material="glass" backdrop="image" selected /></Theme>)).toBe("inverse");
+    expect(render(<Theme transparency="reduce"><Surface material="glass" backdrop="image" isSelected /></Theme>)).toBe("inverse");
   });
 
   it("takes the undeclared elevation from the requested material, not from the one that renders", () => {

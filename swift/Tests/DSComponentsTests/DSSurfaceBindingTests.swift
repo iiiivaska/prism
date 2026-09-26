@@ -5,11 +5,11 @@ import DSCore
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Surface.yaml` specVersion 3: the binding matrix, the per-material default of `elevation`, the
+/// `spec/components/Surface.yaml` specVersion 4: the binding matrix, the per-material default of `elevation`, the
 /// fallback's drawing, and the geometry rules the behavior block states in words. Resolution itself (which material
 /// renders) is DSCore's and is covered by `DSSurfaceResolutionTests`; these tests check what `DSSurfaceView` draws for
-/// each resolution.
-@Suite("Surface bindings and geometry (Surface.yaml v3)")
+/// each resolution. Version 4 renamed the prop `selected` to `isSelected` and changed nothing drawn.
+@Suite("Surface bindings and geometry (Surface.yaml v4)")
 struct DSSurfaceBindingTests {
     static func tokens(
         scheme: DSColorScheme = .light,

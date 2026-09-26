@@ -47,7 +47,7 @@ struct DSSurfaceRenderTests {
     }
 
     static func surface(_ material: DSSurfaceMaterial, backdrop: DSBackdropKind = .image, selected: Bool = false) -> some View {
-        DSSurfaceView(material: material, radius: .none, padding: .none, backdrop: backdrop, selected: selected) {
+        DSSurfaceView(material: material, radius: .none, padding: .none, backdrop: backdrop, isSelected: selected) {
             Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
