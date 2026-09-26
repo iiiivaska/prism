@@ -10,6 +10,7 @@
 - **Re-reviewed: 2026-09-23**, in [§9](#9-re-review-of-the-wave-1-examples--2026-09-23). The showcase review's finding SD-8 asked for a rule 3 review of `IconButton/with-badge`, which composes three components. That review found a wider gap: no review had read any of the 688 images that Divider, Icon, Badge and IconButton added after this document (RD-5). §9 lists which of the gallery's 67 examples compose more than one component. It reviews all 39 wave-1 examples, `with-badge` in full, and the 104 Button and Card images re-recorded since. It adds four findings and replaces §8's condition 3. Sections 1–8 stand as written on 2026-09-22, apart from pointers to §9.
 - **Reviewed again: 2026-09-26**, in [§10](#10-review-of-avatars-examples--2026-09-26). P4-7's baselines (`5522846`) put Avatar's twelve examples in the gallery, outside this clearance by §9.9 condition 3 until a dated section read them. §10 reads all 204 images, and none is a copy. It adds two findings. RD-9: on Apple every example staged on the synthetic map sits where the route turns, and Avatar's two map examples put a bare round mark there, which makes them among the gallery's nearest images to a reference's map. RD-10: `Sidebar.yaml`'s `rail` example specifies the rail whose avatar is `Avatar/ringed`'s nearest reference. §10.8 adds a seventh expiry condition, and §10.9 says how the next component's section follows. Sections 1–9 stand as written, apart from pointers to §10.
 - **Reviewed again: 2026-09-26**, in [§11](#11-review-of-chips-examples--2026-09-26). P4-8's baselines (`5b1663c`) put Chip's thirteen examples in the gallery, and `md-with-avatar` fills a slot with an Avatar. §11 reads all 224 images, and none is a copy. It adds two findings. RD-11: `md-with-avatar` has the traffic console's plate chip's anatomy, with a person in it. RD-12: `identifier-copy`'s "B-4417" puts the gallery's fleet unit number in a vehicle-style identifier; a cheap relabel is recommended, and not taken. §11.9 names `md-with-avatar` beside `with-badge` in condition 4, extends condition 7 and adds condition 8.
+- **Reviewed again: 2026-09-26**, in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). P4-D9's baselines (`29b5490`) added 144 web Reduce Transparency images: new variants of 18 named examples, which §9.9 condition 3 covers with a sentence added to each group. §12 reads all 144 beside their Apple twins. None is a copy, and none moves an earlier verdict: the fallback removes the glass the references' map screens are built from. §12.5 reads the one image that asks a second look, `Avatar/initials-over-map` in light, whose disc becomes near-white.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -117,6 +118,8 @@ Each group gives the four things the board's review gives, plus a fifth where it
   - *Motion.* None in a still, by construction.
 - **Deliberate choice against the nearest reference.** **No scrim over maps.** The references darken the world under their glass; Prism's scrim is 0.45 in both schemes and is for photographs only — D1 removed it from maps entirely (ADR-0029 §1.7, finding F2). The gallery's glass-over-map images show the backdrop at full strength through the glass, which is visibly not the reference treatment.
 
+*Pointer added 2026-09-26: since `29b5490` the web also records these three examples under Reduce Transparency, 24 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 44–46): the slab falls back to opaque `raised`, and `glass-selected` to `inverse`, as Apple's twins here do. The verdict stands.*
+
 ### 3.4 The synthetic map and image backdrops themselves
 
 This group exists because it is where a reviewer would expect to find a copy, and because the answer is unusually clean.
@@ -171,6 +174,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Genre — the test RD-2 item 3 applies to `solid-metric`, applied here, because this is where it bites hardest.* The strings are invented; the **subject matter is not**. A dark smoked-glass card over a ground, titled with a fleet-unit identifier and a GPS-style timestamp ("Unit 4417" over "21.11.2026,…" on web-desktop and "21.11.2026, 14:0…" on iOS, the full "21.11.2026, 14:05:22" only in the compact rows) with a ↗ in the top-trailing corner, is the header block of 27220417's vehicle card, in 27220417's own genre, in an example `Card.yaml` names `glass-vehicle`. The truncation is a small counterweight rather than a defence — a clipped timestamp still reads as a timestamp — but it is what is on screen, and this section says so rather than quoting the prop. Copy distance and genre distance are different measurements: this example is clean on the first and the nearest in the gallery on the second. What holds it apart is the *Content* bullet above and not the subject — six of the reference card's eight parts are absent, so what a reader sees is a genre label on an almost empty card. That is a thinner margin than the rest of this section rests on, and **RD-2** item 3 now carries it.
 - **Deliberate choice against the nearest reference.** Glass follows the **scheme** rather than the backdrop (D1, ADR-0029 §1.2, §1.5): a dark photograph in light is handled as a dark *scope*, not by switching to smoked glass per backdrop as the references implicitly do.
 
+*Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 47–48): the card falls back to opaque `raised`, and `glass-selected` to `inverse`. The verdict and RD-2 item 3 stand, and re-subjecting `glass-vehicle` now moves 28 baselines (§12.5).*
+
 ### 3.8 The tinted focus card
 
 - **What it is.** `Card/tinted-focus` ("Sensor" / "Active", with an `object.gps` icon in a hairline ring above the title), **light scheme only**, both densities, with the `increased-contrast` twin. 8 images.
@@ -208,12 +213,16 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Contrast.* Every one of these pairs is a checked pair with a measured margin; the references' own analyses record 55 % white captions on hot gradients at an estimated 2.0–2.8:1, i.e. the exact treatment Prism's V1/V2 gates exist to refuse.
 - **Deliberate choice against the nearest reference.** The one-tone-on-vivid limit: over imagery and vivid, light glass carries **ink only**, because its quieter tones hold only over Prism's own map (ADR-0029 §1.4).
 
+*Pointer added 2026-09-26: since `29b5490` the web also records `Text/on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (row 49): the tile falls back to opaque `raised`. The verdict stands.*
+
 ### 3.11 The forced-state variants
 
 - **What it is.** **158** of the 488 images are forced accessibility states, recorded on Apple only: `increased-contrast` on every example (110 — 28 examples × 4, less the two dark rows `tinted-focus` does not have), `reduce-transparency` on every glass example (24 = 6 × 4), `bold-text` on every Text example (24 = 6 × 4). The web records none, and the gallery labels those cells "not in this matrix" rather than counting **316** invented gaps — the 158 forced cells times the two web platform keys.
 - **Nearest reference.** **None.** No reference shot records an accessibility state; all eleven are single-state marketing stills.
 - **Families mixed.** None.
 - **What differs.** These images show pictures that cannot exist in any reference: glass resolving to an opaque inverse slab, thin heroes snapping to weight 400, hairline edges thickening. They are the part of the gallery furthest from any reference, and they are a third of it.
+
+*Pointer added 2026-09-26: since `29b5490` the web records `reduce-transparency` too, for the 18 examples that render glass. Those 144 images are read in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). Increase Contrast and Bold Text are still recorded on Apple only, and the page labels their 868 web figures "not in this matrix".*
 
 ---
 
@@ -456,6 +465,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 - **What differs.** One line with nothing on either side of it: no row, no table and no tab above it.
 - **Verdict.** **Not a copy.** A rule is nobody's expression.
 
+*Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 50): the tile falls back to opaque `raised`. The verdict stands.*
+
 #### 9.5.2 Icon — 11 examples, 228 images
 
 - **What it is.** One registry glyph per example, alone on the stage:
@@ -474,6 +485,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 
 *Pointer added 2026-09-26: on Apple the glass tile of `on-glass-over-map` sits where the synthetic route turns, and both of the route's legs run into it, so the pin stands on the route's bend (RD-9). The verdict stands.*
 
+*Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` and `on-glass-light-over-image` under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (rows 51–52): the tile falls back to opaque `raised`. The verdict stands.*
+
 #### 9.5.3 Badge — 10 examples, 164 images
 
 - **What it is.** One mark per example, standing alone. Counts: neutral (3), critical (12) and accent (7). An overflow, "99+", in critical. Outlined counts: neutral (4) and critical (2). Two 8 px dots (`space.3`), critical and accent. A neutral 3 on vivid, and a critical 2 on glass over the map. Every filled count is a 20 px disc (`size.icon.md`). The critical disc decodes to `(229, 37, 42)`, which is `#E5252A`, `ref.color.status.danger.badge`.
@@ -487,6 +500,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
   - An outlined badge is never placed over media.
 - **Closest image.** `Badge/on-glass-over-map`: see **RD-6**.
 - **Verdict.** **Not a copy.** A count disc alone on a stage is the notification badge of every platform.
+
+*Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 53): the red "2" keeps its colour on an opaque `raised` tile. The verdict and RD-6 stand, and RD-6's change of count now moves 28 baselines (§12.5).*
 
 #### 9.5.4 IconButton, the other 11 examples — 180 images
 
@@ -509,6 +524,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 - **Verdict.** **Not a copy.** Single circles, each a control grammar that all eleven shots share and no one shot owns.
 
 *Pointer added 2026-09-26: on Apple the glass tile of `on-glass-over-map` sits where the synthetic route turns, and both of the route's legs run into it. In dark, that puts a white disc with a dark glyph where a white route turns, which is nearer the traffic console's puck in material than "one of the traffic console's map controls" says (RD-9). The verdict stands.*
+
+*Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 54): the tile falls back to opaque `raised`, and in light the circle turns from white to ink. The verdict stands.*
 
 ### 9.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -599,7 +616,7 @@ None of them composes the others.
 
 1. **A pattern example screen lands**, as in §8 condition 1.
 2. **P5-1 rebuilds the board screens into the gallery**, as in §8 condition 2.
-3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id and §11.8 Chip's thirteen, so the examples this document names are §9.8's 67, §10.7's 12 and §11.8's 13. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
+3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id and §11.8 Chip's thirteen, so the examples this document names are §9.8's 67, §10.7's 12 and §11.8's 13. §12 covers the web's Reduce Transparency variant of 18 of them. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
 4. **An example other than `IconButton/with-badge` composes more than one component in §9.3's sense**: a second component in a slot the example fills. Examples: Card's `body` or `aside` filled (RD-2), a chart in a ChartContainer, a Badge in any host other than `with-badge`, a TabBar or Sidebar item with a count. `with-badge` itself is reviewed in §9.4; a change to what it fills is condition 5's or condition 6's.
 5. **The notification composition moves towards the reference's bell** (RD-6, RD-7). That means any of these:
    - `with-badge`, or any IconButton with a badge, put on glass or over a map;
@@ -720,6 +737,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
 - **Calibration.** The board's ride report, which the owner signed off on 2026-09-16, keeps more of 27220417's map than these images, and says so. Its list of what it keeps names "a dashed ring around a map object", "a vertical stack of round glass buttons on the map" and "an accent route segment with a glowing dot" ([README.md](README.md), "What it keeps of 27220417"), and its route has a start ring of the board's own. These images draw a route and one round mark on it, and nothing else from that list.
 - **Verdict.** **Not a copy**, either example, on either stack. On Apple they are, with `IconButton/on-glass-over-map`, the nearest images in the gallery to 27220417's map. They are nearer than the ground §3.4 reviewed on its own, because a mark now stands on the route where §3.4 found "no endpoint of any kind". See **RD-9**.
 
+*Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 55–56): the circle falls back to opaque `raised` and the ring to the inverse solid, as this section says of Apple's. In light `initials-over-map` becomes a near-white disc, and §12.5 reads it against the puck. The verdict stands.*
+
 #### 10.4.4 On glass over the image — `on-glass-over-image`: 1 example, 20 images
 
 - **What it is.** "AP" with the ring, on a glass Surface tile of `radius.card` over the synthetic image. On Apple the tile is 88 pt (64 at compact), in a 136 pt crop that the image fills edge to edge. On the web it is 88 px, on a 184 px image plate in a 312 px stage. Inside the glass the chip is flat, with its fill and edge and no blur, so no chip blurs glass a second time (ADR-0036 §5). It decodes `(237, 241, 244)` in light and `(18, 21, 25)` in dark on Apple. The ring is `color.border.on-glass-fill`, a grey whose outer pixel decodes `(140, 142, 144)` in light and `(137, 138, 140)` in dark. The initials are `color.text.on-glass-fill`, ink in light and white in dark. Under the forced states the tile falls back to raised, and the ring to the inverse solid: `(14, 15, 18)` in light and `(255, 255, 255)` in dark.
@@ -727,6 +746,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
 - **Families mixed.** Glass where it refracts something, and a ring in the on-media stroke.
 - **What differs.** One lettered circle on a tile, anchored to nothing and with nothing beside it. No reference sets initials, and none puts an avatar on glass.
 - **Verdict.** **Not a copy.**
+
+*Pointer added 2026-09-26: since `29b5490` the web also records this example under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (row 57): the tile falls back to opaque `raised`, and the ring to the inverse solid. The verdict stands.*
 
 ### 10.5 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -930,6 +951,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **RD-9, continued.** These are the third kind of mark on the Apple route's bend, after wave 1's tiles and Avatar's two discs: a labelled pill. With them the gallery holds most of 27220417's map region, one part per example: the filter pill (Chip), a marker (Avatar), a pin (Icon), a locate control (IconButton), a glass card over the map (Surface) and the route. RD-9's count of Apple map images is now 128. §11.9 extends condition 7 to the region.
 - **Verdict.** **Not a copy**, either example, on either stack.
 
+*Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 58–59): the pill falls back to opaque `raised`, and the selected one drops its check. The verdict stands.*
+
 #### 11.5.4 On media — `on-vivid`, `on-glass-over-image`: 2 examples, 40 images
 
 - **What it is.**
@@ -940,6 +963,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **Families mixed.** Glass where it refracts something; the ring in the on-media stroke.
 - **What differs.** One pill on one tile, anchored to nothing. It carries no status colour, and no card, title or timestamp surrounds it. "In service" belongs to RD-2 item 3's genre only as a word.
 - **Verdict.** **Not a copy**, either example.
+
+*Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 60–61): the pill falls back to opaque `raised`, and on vivid the bloom goes. The verdict stands.*
 
 ### 11.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -1010,4 +1035,119 @@ Rows 31–43 continue §10.5's numbering, one row per example.
 
 **It is not a legal opinion**, for the reasons §8 gives.
 
-The next component's section follows §10.9. Its verdict rows start at 44 and its findings at RD-13.
+The next component's section follows §10.9. Its verdict rows start at 44 and its findings at RD-13. *Pointer added 2026-09-26: §12, a section on new variants, used rows 44–61, so the next section's rows start at 62.*
+
+---
+
+## 12. Review of the web's Reduce Transparency images — 2026-09-26
+
+- **Subject.** The **144 web images** that P4-D9 added: one `reduce-transparency` twin per web platform key, scheme and density of each of the 18 examples that render glass, at `web/apps/vrt/baselines/linux/<Component>/<id>.<platform>.<scheme>.<density>.reduce-transparency.png`. CI run 36212117968 on `3d5c4b2` recorded them, and `29b5490` committed them (P4-D9 2/2). They fill the web half of the 72 Reduce Transparency cells, which until then held Apple's image alone. The gallery now holds 1748 images in 872 cells, 0 missing, and still 92 examples of 10 components (`gallery/index.json`, `counts`).
+- **Why.** §9.9 condition 3: *"A new variant of a reviewed example can be covered by a sentence added to its group."* Each of the 144 is a new variant of an example that §9.8, §10.7 or §11.8 names. §12.4 gives the sentence for each example, and each group's section carries a pointer to it. The P4-D9 row and `29b5490` both said so the day the images landed.
+- **Format.** §10.9's checklist, adapted to a variant: what changed (§12.1), how the images were read (§12.2), what the fallback draws (§12.3), one verdict per example (§12.4), and whether anything moves an earlier verdict or finding (§12.5).
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops and page screenshots made for this section stayed in the session scratchpad, and none is committed.
+
+### 12.1 What changed since §11's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| The web photographs every glass example once more under Reduce Transparency. The stories carry a `glass` tag read from the spec, and the suite checks the fallback before it records an image. | `3d5c4b2` (P4-D9 1/2) | 0 | — |
+| The images that variant recorded | `29b5490` (P4-D9 2/2) | 144 | no, though their 72 Apple twins were (§12.2) |
+
+Between `5b1663c` and `29b5490`, a diff over both baseline roots adds the 144 web images and modifies or removes none. The run that recorded them compared all 872 Apple and 732 web baselines equal, and CI run 36213988632 on `29b5490` compares all 1748, the 144 among them, and is green. Every image §§9–11 read is unchanged. By component the 144 are: Surface 24, Card 16, Text 8, Divider 8, Icon 16, Badge 8, IconButton 8, Avatar 24 and Chip 32.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 fired by its variant clause, and this section answers it. No example is new, so the 92 that §9.8, §10.7 and §11.8 name are still the whole list.
+- Condition 4 did not fire. None of the 18 fills a slot. `with-badge` and `md-with-avatar` render no glass, so they have no Reduce Transparency twin.
+- Condition 5 did not fire. `Badge/on-glass-over-map` keeps its red "2" on its own tile, and no button joins it.
+- Condition 6 did not fire. Nothing was re-recorded: the 144 are new images, not new versions of committed ones.
+- Condition 7 did not fire. No mark on the map gains a heading arrow, a vehicle glyph or identifier, a ring, a halo or a card beside it; the map gains nothing; and no filter pill is composed with map controls. §12.5 reads the one image that asks a second look.
+- Condition 8 did not fire. None of the 18 is an identifier chip or holds an Avatar in a chip, and no chip stands in a card.
+
+### 12.2 Method
+
+- **Every image, on both stacks.** All 144 were opened on 18 contact sheets, one per example, each with four rows (two schemes × two densities). Each row holds the `web-desktop` standard image, its two web Reduce Transparency twins, Apple's standard image and Apple's Reduce Transparency twin: 360 images, the 72 Apple twins among them. §9.2 opened the wave-1 examples' regular rows and spot-checked the compact and `increased-contrast` rows, and it does not say it opened their Reduce Transparency twins. This section opened all 72 Apple twins beside the web ones, so each of the gallery's 216 Reduce Transparency images has now been opened by a dated section.
+- **Decoded, not read by eye.** For each of the 72 cells, on both stacks: the box in which the Reduce Transparency image differs from its standard twin, and the commonest colour inside it. Then named points: IconButton's circle, Avatar's disc and ring, and Badge's disc. Every colour below is a decoded pixel.
+- **Byte comparisons.** `web-touch` is byte-identical to `web-desktop` in 62 of 72 pairs. Card's 8 differ where touch draws the ↗ at rest, as their standard twins do. In 2 of Avatar's `ringed-over-map` pairs, 3 and 7 pixels of the portrait differ by at most 4 code values: the fixture's antialiasing.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, as §10.2 did. All 1748 images decode, 144 of them web Reduce Transparency images, and each of the 72 Reduce Transparency cells shows Apple's image beside both web images. The 868 web figures of the Increase Contrast and Bold Text cells still read "not in this matrix".
+- **The references.** Those the 18 examples' groups already name (§3.3, §3.4, §3.7, §3.10, §9.5, §10.4.3, §10.4.4, §11.5.3 and §11.5.4). The analyses' surface tables were also read for any opaque surface over a map.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 682 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 12.3 What the fallback draws, on both stacks
+
+Under Reduce Transparency every glass surface and every glass chip falls back to one declared material (ADR-0022 §1.1, and §1.6 for a selected Surface), and what sits on it takes its default cell. The decoded values agree on the two stacks in every cell:
+- **Glass becomes `raised`.** A glass Surface, a Card, a staging tile, and the glass chip of an Avatar or a Chip become opaque `raised`: (247, 248, 250) in light and (35, 36, 38) in dark. Nothing of the map or the image shows through.
+- **Selected glass becomes `inverse`.** `Surface/glass-selected` and `Card/glass-selected` become the inverse solid: (13, 14, 17) in light and (255, 255, 255) in dark. Card's selection outline goes with the glass, and the inverse slab carries the selection instead.
+- **What sits on them takes its default cell.** Labels, initials and glyphs leave the on-glass tones for the solid family's. IconButton's primary circle turns from white, (255, 255, 255), to ink, (13, 14, 17), in light, and stays white in dark. The Avatar ring becomes the inverse solid, and the chip's stroke the solid family's hairline. The critical "2" keeps its red, (229, 37, 42).
+- **A selected chip drops `status.check`.** So `selected-on-map` is 22 px narrower on both stacks: 289 against 311 on the web, and 114 against 136 on Apple.
+- **Vivid's bloom goes** (ADR-0022 §1.7). `Chip/on-vivid` is the one example whose page changes: the halo around the gradient tile is gone.
+- **Apart from that bloom, everything else is the standard image's pixels.** On the web the change is confined to the component, its staging surface and that surface's shadow. The box is the tile, the circle or the pill exactly, or a slab and the band its shadow covers. The map, the image and the page around them are the standard twin's, pixel for pixel, and the web map still draws no route.
+
+What differs between the stacks is what already differs in their standard images: the framing (the story's stage against a tight crop), the part of the synthetic map under the example, the route that only Apple's map draws (RD-9), the copy each harness gives Surface and Text (RD-3), and Card's ↗, drawn at rest under touch and on Apple.
+
+### 12.4 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 44–61 continue §11.6's numbering, one row per example. Each row is the sentence §9.9 condition 3 asks for, and each group's section points to it.
+
+| # | Example (group) | Copy? | Why |
+|---|---|---|---|
+| 44 | `Surface/glass-over-map` (§3.3) | **No** | An opaque raised slab over the synthetic map. The glass the move depends on is gone. |
+| 45 | `Surface/glass-light-over-image` (§3.3) | **No** | An opaque raised slab over the blurred image. |
+| 46 | `Surface/glass-selected` (§3.3) | **No** | An inverse slab, ink in light and white in dark, as §3.3 read Apple's twins. |
+| 47 | `Card/glass-vehicle` (§3.7) | **No; RD-2 item 3 stands** | "Unit 4417" and its timestamp on an opaque raised card over the image. The genre stays. The smoked glass, which is the material of the reference's vehicle card, goes. |
+| 48 | `Card/glass-selected` (§3.7) | **No** | "Unit 4417" on an inverse card. |
+| 49 | `Text/on-glass-over-map` (§3.10) | **No** | A line of type on an opaque tile over the map. |
+| 50 | `Divider/on-glass-over-map` (§9.5.1) | **No** | A hairline on an opaque tile. |
+| 51 | `Icon/on-glass-over-map` (§9.5.2) | **No** | The pin, monochrome, on an opaque tile. |
+| 52 | `Icon/on-glass-light-over-image` (§9.5.2) | **No** | Play, on an opaque tile. |
+| 53 | `Badge/on-glass-over-map` (§9.5.3) | **No; RD-6 stands** | The red "2" on an opaque tile over the map. The glass it shared with the reference's bell button goes. |
+| 54 | `IconButton/on-glass-over-map` (§9.5.4) | **No** | An ink circle in light and a white one in dark, on an opaque tile. |
+| 55 | `Avatar/ringed-over-map` (§10.4.3) | **No** | The portrait in an inverse ring, straight on the map. On the web, on no route. |
+| 56 | `Avatar/initials-over-map` (§10.4.3) | **No** | An opaque disc with "AP" on the map. §12.5 reads it against the reference's puck. |
+| 57 | `Avatar/on-glass-over-image` (§10.4.4) | **No** | A ringed monogram on an opaque tile. |
+| 58 | `Chip/on-map` (§11.5.3) | **No** | An opaque pill with the pin and "Depots", on the map. The reference's filter pills over its map are glass. |
+| 59 | `Chip/selected-on-map` (§11.5.3) | **No**, as row 58 | Selected, without the check. |
+| 60 | `Chip/on-vivid` (§11.5.4) | **No** | An opaque pill on the gradient, with no bloom. |
+| 61 | `Chip/on-glass-over-image` (§11.5.4) | **No** | An opaque pill on an opaque tile. |
+
+**Summary.** None of the 144 is close enough to one product that a reasonable person would call it a copy. Each draws what its Apple twin draws, and that twin was read in the group's own section. The fallback removes the one material the references' map screens are built from, so each image is further from its nearest reference than its standard twin is.
+
+### 12.5 Does anything here move an earlier verdict or finding?
+
+No verdict moves, and no finding changes its conclusion.
+- **The fallback surfaces.** The references draw glass over their maps and images; the traffic console's analysis puts glass only where it refracts something (27220417, §9.6). The one opaque surface over a map that the analyses record is the traffic console phone's bottom sheet (27289370): full width, with 28 pt top corners, across the lower half of the screen, fading into the map at its top edge. A 200 px square with four rounded corners, anchored to nothing in the middle of a plate, is not that sheet, and neither is a 68 or 88 px tile. The fallback moves every image away from the references' material and towards nothing of theirs.
+- **The map.** It is unchanged on both stacks. The web map draws no route in any of the 144. On Apple the route runs into the fallback surfaces as it does into the glass ones; those twins were read in their groups' sections, and RD-9 already counts them.
+- **RD-9 and condition 7.** One image asks a second look: `Avatar/initials-over-map` in light. Its circle falls back from the pale glass chip, (222, 223, 228) on Apple and (236, 236, 238) on the web, to opaque `raised`, (247, 248, 250). That makes it a near-white disc on the map, nearer in fill to 27220417's puck, a white disc at 85 %, than the glass chip was. What makes the puck a product's is still absent: the dark heading arrow, the dashed ring, the readout card beside it and the white route under it. The disc holds "AP". On the web it stands on no route, and on Apple's light map the route under it is ink. In dark the fallback disc is (35, 36, 38), not white. `IconButton/on-glass-over-map`, the other round mark on the map, turns ink in light and stays white in dark, as RD-9 recorded. Condition 7 has not fired, and it still names what would fire it.
+- **RD-11 and condition 8.** Untouched. `md-with-avatar` and `identifier-copy` render no glass and have no Reduce Transparency twin. None of the 144 shows an identifier chip or an Avatar in a chip, and no chip stands in a card.
+- **RD-2 item 3 and RD-6.** Both stand, and their rows (7 and 16) do not move. Their costs grow by the web twins: re-subjecting `Card/glass-vehicle`, or changing `Badge/on-glass-over-map`'s count, now moves 28 baselines each, 12 Apple and 16 web. Each example had 20 before `29b5490`, which is the count RD-6 gives. RD-12's relabel still moves 16, because `identifier-copy` renders no glass.
+- **RD-3.** On the web the Surface slabs keep the harness's copy under the fallback, so an opaque raised slab reads "Glass / Over the map". That is the harness's string on the fallback material, and no claim rests on it.
+- **§3.11.** It says the web records no forced state. Since `29b5490` the web records Reduce Transparency for the 18 glass examples, and Increase Contrast and Bold Text stay Apple's alone. §3.11 carries a pointer.
+
+### 12.6 Coverage
+
+| Component | Examples with a web Reduce Transparency twin | New images | Group |
+|---|---|---|---|
+| Surface | `glass-over-map`, `glass-light-over-image`, `glass-selected` | 24 | §3.3 |
+| Card | `glass-vehicle`, `glass-selected` | 16 | §3.7 |
+| Text | `on-glass-over-map` | 8 | §3.10 |
+| Divider | `on-glass-over-map` | 8 | §9.5.1 |
+| Icon | `on-glass-over-map`, `on-glass-light-over-image` | 16 | §9.5.2 |
+| Badge | `on-glass-over-map` | 8 | §9.5.3 |
+| IconButton | `on-glass-over-map` | 8 | §9.5.4 |
+| Avatar | `ringed-over-map`, `initials-over-map`, `on-glass-over-image` | 24 | §10.4.3, §10.4.4 |
+| Chip | `on-map`, `selected-on-map`, `on-vivid`, `on-glass-over-image` | 32 | §11.5.3, §11.5.4 |
+| **Total** | **18** | **144** | |
+
+With them the gallery review covers all 1748 images: the 1604 that §§3 and 9–11 read, and these 144.
+
+### 12.7 What this clearance covers, and when it expires
+
+**It covers** the gallery at `29b5490`: all 1748 images, 92 examples and 10 components. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires on §9.9's conditions, as §10.8 and §11.9 read them.** Two of them now reach the web's forced states:
+- **Condition 3's variant clause** covers any further forced state the web records. If the web ever photographs Increase Contrast or Bold Text, the 868 figures now "not in this matrix" become new variants of named examples, and a dated section reads them, as this one does.
+- **Condition 6** covers these 144 as it covers every committed baseline: a re-record that changes what one of them draws expires this clearance.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next section's verdict rows start at 62, and its findings at RD-13.
