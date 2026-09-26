@@ -43,7 +43,7 @@
     }
   ],
   "counts": {
-    "images": 1604,
+    "images": 1748,
     "paired": 872,
     "missing": 0,
     "cells": 872
@@ -68,7 +68,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 204,
+        "images": 228,
         "paired": 108,
         "missing": 0,
         "cells": 108
@@ -1626,10 +1626,16 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 }
               }
             },
@@ -1689,10 +1695,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 }
               }
             },
@@ -1752,10 +1764,16 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 }
               }
             },
@@ -1815,10 +1833,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 }
               }
             }
@@ -1888,10 +1912,16 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 }
               }
             },
@@ -1951,10 +1981,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 }
               }
             },
@@ -2014,10 +2050,16 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 264,
+                  "height": 264
                 }
               }
             },
@@ -2077,10 +2119,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 256,
+                  "height": 256
                 }
               }
             }
@@ -2150,10 +2198,16 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 }
               }
             },
@@ -2213,10 +2267,16 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 }
               }
             },
@@ -2276,10 +2336,16 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 }
               }
             },
@@ -2339,10 +2405,16 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 }
               }
             }
@@ -2555,7 +2627,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 164,
+        "images": 172,
         "paired": 84,
         "missing": 0,
         "cells": 84
@@ -4299,10 +4371,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -4362,10 +4440,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             },
@@ -4425,10 +4509,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -4488,10 +4578,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             }
@@ -5942,7 +6038,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 224,
+        "images": 256,
         "paired": 120,
         "missing": 0,
         "cells": 120
@@ -7500,10 +7596,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 311,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 311,
+                  "height": 256
                 }
               }
             },
@@ -7563,10 +7665,16 @@
                   "height": 76
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 311,
+                  "height": 252
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 311,
+                  "height": 252
                 }
               }
             },
@@ -7626,10 +7734,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 311,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 311,
+                  "height": 256
                 }
               }
             },
@@ -7689,10 +7803,16 @@
                   "height": 76
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 311,
+                  "height": 252
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 311,
+                  "height": 252
                 }
               }
             }
@@ -7762,10 +7882,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 289,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 289,
+                  "height": 256
                 }
               }
             },
@@ -7825,10 +7951,16 @@
                   "height": 76
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 289,
+                  "height": 252
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 289,
+                  "height": 252
                 }
               }
             },
@@ -7888,10 +8020,16 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 289,
+                  "height": 256
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 289,
+                  "height": 256
                 }
               }
             },
@@ -7951,10 +8089,16 @@
                   "height": 76
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 289,
+                  "height": 252
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 289,
+                  "height": 252
                 }
               }
             }
@@ -8024,10 +8168,16 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 228,
+                  "height": 208
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-touch.light.regular.reduce-transparency.png",
+                  "width": 228,
+                  "height": 208
                 }
               }
             },
@@ -8087,10 +8237,16 @@
                   "height": 108
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 212,
+                  "height": 188
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-touch.light.compact.reduce-transparency.png",
+                  "width": 212,
+                  "height": 188
                 }
               }
             },
@@ -8150,10 +8306,16 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 228,
+                  "height": 208
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 228,
+                  "height": 208
                 }
               }
             },
@@ -8213,10 +8375,16 @@
                   "height": 108
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 212,
+                  "height": 188
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 212,
+                  "height": 188
                 }
               }
             }
@@ -8286,10 +8454,16 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 351,
+                  "height": 304
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.regular.reduce-transparency.png",
+                  "width": 351,
+                  "height": 304
                 }
               }
             },
@@ -8349,10 +8523,16 @@
                   "height": 108
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 335,
+                  "height": 284
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.compact.reduce-transparency.png",
+                  "width": 335,
+                  "height": 284
                 }
               }
             },
@@ -8412,10 +8592,16 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 351,
+                  "height": 304
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 351,
+                  "height": 304
                 }
               }
             },
@@ -8475,10 +8661,16 @@
                   "height": 108
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 335,
+                  "height": 284
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 335,
+                  "height": 284
                 }
               }
             }
@@ -8691,7 +8883,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 100,
+        "images": 108,
         "paired": 52,
         "missing": 0,
         "cells": 52
@@ -9691,10 +9883,16 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 313
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 313
                 }
               }
             },
@@ -9754,10 +9952,16 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 289
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 289
                 }
               }
             },
@@ -9817,10 +10021,16 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 313
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 313
                 }
               }
             },
@@ -9880,10 +10090,16 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 289
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 289
                 }
               }
             }
@@ -9910,7 +10126,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 228,
+        "images": 244,
         "paired": 140,
         "missing": 0,
         "cells": 140
@@ -12338,10 +12554,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -12420,10 +12642,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             },
@@ -12502,10 +12730,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -12584,10 +12818,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             },
@@ -12676,10 +12916,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.light.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -12758,10 +13004,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.light.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             },
@@ -12840,10 +13092,16 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 292,
+                  "height": 292
                 }
               }
             },
@@ -12922,10 +13180,16 @@
                   "height": 100
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 276,
+                  "height": 276
                 }
               }
             },
@@ -12971,7 +13235,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 196,
+        "images": 204,
         "paired": 100,
         "missing": 0,
         "cells": 100
@@ -14715,10 +14979,16 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 }
               }
             },
@@ -14778,10 +15048,16 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 }
               }
             },
@@ -14841,10 +15117,16 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 312,
+                  "height": 312
                 }
               }
             },
@@ -14904,10 +15186,16 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 288,
+                  "height": 288
                 }
               }
             }
@@ -16084,7 +16372,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 140,
+        "images": 164,
         "paired": 76,
         "missing": 0,
         "cells": 76
@@ -16712,10 +17000,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -16775,10 +17069,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -16838,10 +17138,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -16901,10 +17207,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             }
@@ -16974,10 +17286,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17037,10 +17355,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17100,10 +17424,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17163,10 +17493,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             }
@@ -17236,10 +17572,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17299,10 +17641,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17362,10 +17710,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -17425,10 +17779,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             }
@@ -17827,7 +18187,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 124,
+        "images": 132,
         "paired": 76,
         "missing": 0,
         "cells": 76
@@ -18945,10 +19305,16 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -19027,10 +19393,16 @@
                   "height": 97
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -19109,10 +19481,16 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -19191,10 +19569,16 @@
                   "height": 97
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -20090,7 +20474,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 112,
+        "images": 128,
         "paired": 60,
         "missing": 0,
         "cells": 60
@@ -20718,10 +21102,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -20781,10 +21171,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -20844,10 +21240,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -20907,10 +21309,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             }
@@ -20980,10 +21388,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.light.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -21043,10 +21457,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.light.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -21106,10 +21526,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.dark.regular.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             },
@@ -21169,10 +21595,16 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-touch.dark.compact.reduce-transparency.png",
+                  "width": 424,
+                  "height": 424
                 }
               }
             }
