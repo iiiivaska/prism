@@ -8,6 +8,7 @@
 - **Re-reviewed, the Icons screens only: 2026-09-23** — [§11](#11-re-review-of-the-icons-screens--2026-09-23). P4-2 fired §10 condition 2 by implementing `Icon`, and P4-D4 then reconciled the two screens. §11 carries their verdict, a correction to this review (SD-6) and the Icons clearance's own expiry conditions. Sections 1–10 stand as written on 2026-09-22, apart from pointers to §11.
 - **Re-reviewed, the component pages: 2026-09-23** — [§12](#12-re-review-of-the-component-pages--2026-09-23). P4-4's `IconButton/with-badge` fired §10 condition 4, and SD-8 flagged it. §12 reviews the IconButton page on both apps, with that example on its own page on Apple, and the pages wave 1 added or changed. It closes SD-8, records SD-9 (the pages of the four wave-1 components staged 39 examples that no review had read), and replaces §10 condition 4. Sections 1–11 stand as written, apart from pointers to §12.
 - **Re-reviewed, the Avatar and Chip pages: 2026-09-26** — [§13](#13-re-review-of-the-avatar-and-chip-pages--2026-09-26). Both apps stage Avatar's twelve examples and Chip's thirteen, which fired §12.7 condition 5, and `Chip/md-with-avatar` fills a slot with an Avatar, which fired condition 4. The web app was built and run, and its pages are not a copy. The Apple app could not be run in that session, so its Chip page and its `md-with-avatar` page are not reviewed (**SD-10**), and a release from `5b1663c` is not cleared until a run on a Mac reads them. §13.8 adds condition 8. Sections 1–12 stand as written, apart from pointers to §13.
+- **Re-reviewed, the Apple Chip page and the `Chip/md-with-avatar` page: 2026-09-26** — [§14](#14-re-review-of-the-apple-chip-pages-in-the-running-app--2026-09-26). CI's `showcase-apps` job built the Apple app at `5694283` and photographed it running, on the iPhone 17 simulator and on a Mac, in the states SD-10 lists. Neither page is a copy, and in every picture the stage draws the gallery's Apple baseline. §14 closes **SD-10** and records **SD-11** to **SD-13**. It reads every condition in force against the diff from `5b1663c` to `a9e67da`: the shell's sidebar fix fires none, and the two changes that fired condition 8 after the pictures were taken are answered by gallery §13 and §15. A release from `a9e67da` is cleared under rule 3. Sections 1–13 stand as written, apart from pointers to §14.
 
 This is the **showcase half** of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. The gallery half closed on the same day and recorded in its §7 that the showcase half stayed open; this document is what closes it. Critic **C-16** flagged the ordering.
 
@@ -34,6 +35,8 @@ Three consequences worth stating before the screens:
 - **There is no picture of these apps in the public tree**, and CI never builds the app bundle or boots a browser for them, so none is produced as an artefact either. `git ls-files` finds zero PNGs under either path. What is reviewed below is what the apps *render when run*, which this review ran.
 - **Neither app is published.** `@iiiivaska/prism-showcase` is `private: true`, and `tools/release/targets.ts` defines a published package as one that is *"not `private`, and not ignored by Changesets"*, so neither `release:pack` nor `pnpm -r publish` reaches it. The Apple app is an `.xcodeproj` generated on demand, not a SwiftPM product a consumer resolves.
 - **They are nevertheless in scope.** ADR-0015 rule 3 says *"no Prism gallery screen"*, and `docs/legal-checkpoint.md` §5.2 item 1 widens that to *"every screen that will be public at the release"*. Source in a public repository that anyone can run in two commands is public enough for that sentence to bite, and these are — as the task that commissioned this review puts it — the most-seen screens of the system, because they are what anyone opens first.
+
+*Pointer added 2026-09-26: the table's last row and the first two bullets are no longer the whole story. Since `ac0d910`, a `ci` run dispatched with `showcase-apps` builds both Apple bundles, photographs the running app, and keeps both as run artifacts for 14 days, and `docs/showcase.md` §5 now says that no screenshot of these apps is ever a baseline. Nothing is added to the tree. §14 reads two such runs, and SD-13 ([§14.6](#146-findings-of-this-re-review)) says what that changes here.*
 
 ---
 
@@ -98,7 +101,7 @@ The chrome is the split view, the sidebar, the header, the axis controls and the
 - **Nearest showcase of the genre.** Apple's own **SF Symbols** app — a sidebar of categories beside a grid — and the "catalog app" shape that platform design systems ship as a sample.
 - **Families mixed.** None, and that is the point: this is Apple's furniture used the way Apple documents it, with Prism inside the content area only.
 - **What differs.** The sidebar is six fixed sections, not a browsable library: no search field, no inspector pane, no favourites, no export, no custom collections. What is *not* furniture is the resolved-context strip that opens every screen — *"prism · dark · regular · touch · contrast standard · transparency standard · motion standard / iOS · Dynamic Type large · Bold Text off"* — so a screenshot of any screen always says which axes produced it. No showcase of the genre prints that, and no reference shot has an axis to print.
-- **Verdict.** Platform furniture, declared as such on About. Not recognizably anything.
+- **Verdict.** Platform furniture, declared as such on About. Not recognizably anything. *Pointer added 2026-09-26: until `5694283` no sidebar row selected its section when clicked or tapped, on any device, and no run of this review records trying one (SD-12, [§14.6](#146-findings-of-this-re-review)). The verdict does not move.*
 
 ### 4.3 The axis controls
 
@@ -728,7 +731,7 @@ Rows 22–26 continue §12.4's numbering.
 
 ### 13.6 Findings of this re-review
 
-#### SD-10 — The Apple half of this section is read from source, so two Apple screens are unreviewed, and a release waits for them
+#### SD-10 — The Apple half of this section is read from source, so two Apple screens are unreviewed, and a release waits for them — **closed 2026-09-26** ([§14](#14-re-review-of-the-apple-chip-pages-in-the-running-app--2026-09-26))
 
 **What.** The session that wrote this section had no Mac, so the Apple app was not built or run. §13.3 and §13.4 read its Avatar and Chip pages, its 25 example pages and its Overview strip from their sources, from the generated catalogue, and from the gallery's Apple baselines of the same examples. CI compiles `DSShowcase`, but it builds no app bundle and records no screenshot of either app (§1). So no picture of these Apple pages exists anywhere.
 
@@ -776,7 +779,7 @@ The 25 examples themselves are covered in gallery §10 and §11, where they are 
 
 **Every condition in force was read on 2026-09-26** (§13.2): §10 conditions 1 and 3, §11.8 for the Icons screens, and §12.7's four.
 
-**So the rule 3 precondition is met for the web app, and not for the whole Apple app.** Two Apple screens, the Chip page and the `Chip/md-with-avatar` page, wait for the run SD-10 describes. A release made from `5b1663c` is not cleared until that run reads them.
+**So the rule 3 precondition is met for the web app, and not for the whole Apple app.** Two Apple screens, the Chip page and the `Chip/md-with-avatar` page, wait for the run SD-10 describes. A release made from `5b1663c` is not cleared until that run reads them. *Pointer added 2026-09-26: §14 read both pages in the running app at `5694283`, and neither is a copy. §14.8 says what is cleared there and at `a9e67da`.*
 
 **It expires on any of these.** Items 4–7 restate §12.7's, with this section's lists, and item 8 is new. §10 conditions 1 and 3, and §11.8 for the Icons screens, stand.
 
@@ -795,3 +798,219 @@ The 25 examples themselves are covered in gallery §10 and §11, where they are 
 **It is not a legal opinion**, for the reasons §10 gives.
 
 The next section's verdict rows start at 27, and its findings at SD-11.
+
+---
+
+## 14. Re-review of the Apple Chip pages in the running app — 2026-09-26
+
+- **Subject.**
+  - The two Apple pages that SD-10 left unreviewed, on the iPhone 17 simulator and on the Mac: the **Chip page**, with `md-with-avatar`'s block, and the **`Chip/md-with-avatar` page**.
+  - Read in the running app, from screenshots CI took at `5694283`, the head of `claude/admiring-mendel-p9skl8` when the job ran.
+  - The rest of both apps, as far as this document's conditions reach, read against the diff from `5b1663c` to `a9e67da`, the branch's head when this section was written (§14.2). Two commits in it changed what an example draws after the pictures were taken, and one of those examples is on the Chip page: from `e56272f`, `identifier-copy` reads "INV-209316", where the pictures show "B-4417".
+- **Why.** SD-10. §13 read the Apple half from source, and this document reviews what the apps render when run (§1). So §13.8's condition 4 stayed fired for Apple, and a release from `5b1663c` was not cleared.
+- **Format.** As §13. `md-with-avatar` and the other twelve Chip examples are reviewed from their baselines in gallery [§11](reference-distance-gallery.md#11-review-of-chips-examples--2026-09-26). This section reviews what the Apple app puts around the example, and measures whether the app's stage draws that baseline.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The screenshots are of Prism's own app, and CI took them. This review read them in the session scratchpad, and none is committed (`docs/showcase.md` §5).
+
+### 14.1 Method
+
+- **Who ran the app.** No session of this review has had a Mac. The `showcase-apps` job of `ci` runs on one, and only when a person dispatches `ci` with that input (`ac0d910`, `0612080`, `b3dd0af` and `1f14cb5`; `swift/Showcase/README.md`, "The apps CI builds"). It builds the app and photographs it running. With the pictures it uploads an `index.txt` that says what each one shows and how it was launched. Two runs were read:
+  - **Run 36237515203, at `5694283`.** 43 screenshots of the two pages, and 14 of the navigation walk described below. The verdicts rest on this run.
+  - **Run 36233461905, at `0612080`**, the tree before the sidebar fix. 42 screenshots of the same pages. On the iPhone, its four standard-contrast `md-with-avatar` captures and both Chip-page tops are byte-identical to the later run's. Its two Increase Contrast captures differ from the later run's in 6 and 27 pixels, by one code value, all in the toolbar. Its scrolled frames stop at other offsets, because a drag does not move the page a fixed distance. Each of its 18 Mac captures differs from the later run's in one place only: the sidebar's Components row, which `5694283` now highlights (3808 pixels, the same in every capture).
+- **The toolchain.** Both runs used Xcode 26.6 (17F113) on macOS 26.6.2 (25G83), arm64, and the iPhone 17 simulator on iOS 26.5 (runtime `com.apple.CoreSimulator.SimRuntime.iOS-26-5`, UDID `88931AEA-…`). That is the Xcode and the runtime that the Apple baselines record in `swift/Tests/DSSnapshotTests/__Snapshots__/provenance.json`: the job selects `XCODE_VERSION`, as the snapshot job does.
+- **The build.** `pnpm showcase:apple --device <UDID> --no-launch` for the simulator, and `pnpm showcase:apple --platform macos --no-launch` for the Mac. That is SD-10's step 1, with the job installing and launching the app itself. The checkout was clean after both builds, `Package.resolved` included.
+- **iPhone.** For each launch the job set the simulator's appearance and its Increase Contrast setting with `xcrun simctl ui`, launched the app with the page's keys, and took a `simctl io` screenshot, 1206 × 2622 px at 3×. Every launch passed `-DSShowcaseSection components`.
+  - The Chip page, `-DSShowcaseComponent Chip`, in light and dark. It was then dragged down frame by frame to its last block: 9 frames in light and 8 in dark. `md-with-avatar`'s block is whole in at least one frame of each scheme.
+  - The example page, `-DSShowcaseExample Chip/md-with-avatar`, in light and dark: at regular density, at compact, and at regular under Increase Contrast. The Increase Contrast launches set the simulator's setting and passed `-DSShowcaseIncreasedContrast 1`, and the page's resolved-context strip reads *contrast increased*. The regular launches passed `-DSShowcaseDensity regular`, which is also the phone's own density.
+- **Mac.** The job opened each page with `open` and the same keys, and captured the window by id: 1024 × 674 pt at 1×, because the runner's screen is 1024 pt wide. The Chip page was opened in light and dark, and scrolled to its end with the wheel, 7 frames each. The example page was opened in light and dark. The app chose compact density and the pointer, as it does on a Mac. **The runner has Reduce Transparency and Reduce Motion on.** That is the runner's own setting. The job reads it into `index.txt`, and the strip on every Mac capture prints *transparency reduced · motion reduced*. SD-11 says what that settles and what it does not.
+- **Navigation.** The later run also tested the sidebar that `5694283` fixed (§14.2).
+  - On the Mac it opened the app twice: with a plain `open`, and with `-DSShowcaseSection components -DSShowcaseExample Chip/md-with-avatar`. After each launch it clicked two sidebar rows. The job fails unless the window then shows each row's page, and all four clicks passed. A click on the toolbar's axes button, which opened a second window, is the control.
+  - On the iPhone it tapped back three times from the `md-with-avatar` page: to the Chip page, to the Components list and to the section list. Then it tapped the Overview row. That walk is photographed, not checked.
+- **What was read, and what was measured.** Every screenshot was read by eye. Three things were measured with a script that stayed in the scratchpad:
+  - *The stage against its baseline.* Each iPhone capture's stage was box-filtered to 1×; the Mac's is already 1×. The matching `md-with-avatar.ios.*` baseline was slid over it to the best offset, and the two were compared pixel by pixel. The comparison leaves out an 8-pt band at the stage's edge, where the app draws its hairline frame over the stage and rounds the stage's corners.
+  - *The rest of the frame.* The colour of every pixel between the stage's trailing edge and the frame's trailing corners.
+  - *The neighbours.* The stages of `identifier-copy`, `on-map` and `selected-on-map`, against their baselines.
+- **Sources read.** The diff from `5b1663c` to `a9e67da`, over both apps, the specs, the components, the tokens and the baselines (§14.2). The two pages' views: `DSComponentScreen`, `DSExampleBlock` and `DSExampleScreen` (`Screens/DSComponentsScreen.swift`). The rule by which the snapshot matrix adds a Reduce Transparency variant (`DSSnapshotMatrix.variants`). Every use of `DSAvatar` and `DSChip` in `swift/Showcase/Sources`.
+- **Gates, run on `a9e67da` with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 686 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current. CI run 36263219141 on `a9e67da` is green.
+
+### 14.2 What changed since `5b1663c`, and which conditions fired
+
+**To `5694283`, the tree the job ran.** The diff touches three files that the conditions reach, and none of the web app:
+- **The shell, `DSShowcaseShell.swift`** (`5694283`).
+  - The sidebar was `List(DSShowcaseSection.allCases, selection: $section)`. That tags each row with the section's `String` id, which never equals a `DSShowcaseSection` selection, so no row could be selected.
+  - Now the list passes `id: \.self`. A click or a tap selects its section, and the current section's row is highlighted.
+  - A change of section also clears the navigation path, so a section opens at its root. A launch that names a page still opens on that page.
+  - The rows are the same six `Label`s with the same stock symbols (§4.2). `tools/showcase/apple/shell.test.ts` guards both changes.
+- **`swift/Showcase/README.md`**: the section "The apps CI builds".
+- **`spec/SCHEMA.md`** (`3d5c4b2`): one row of the table that names snapshot files now says that the web records `reduce-transparency` too. It names files, and changes no example.
+
+The other commits in that range changed CI, the gallery review and the tracking documents. No spec example, component, token or brand changed, and no baseline was re-recorded.
+
+**From `5694283` to `a9e67da`.** Fourteen commits. No hand-written file of either app changed, and none of the apps' chrome or of either Icons screen. What they change on screen:
+- **Two examples changed what they draw.**
+  - `e56272f` (RD-12) gave `Chip/identifier-copy` the label "INV-209316", an invoice number. That example is on the Chip page, three blocks above `md-with-avatar`.
+  - `8987b2d` (P4-10, ADR-0040) turned `IconButton/on-glass-over-map`'s circle on light glass to the ink solid, on the IconButton page.
+  - Their baselines were re-recorded at `d771c40` and `9d02af0`, and no other baseline moved on either stack. `md-with-avatar`'s eight Apple baselines are byte-identical at `5694283` and at `a9e67da`.
+- **One state changed a tone.** `0abafaf` (ADR-0039) moves the pressed solid of Button and IconButton one lightness step from rest. No example draws differently on its stage, and no baseline moved, because no example is photographed pressed.
+- **The Apple app's generated catalogues were regenerated.** They carry the new spec versions (Button 7, IconButton 3), the two changed examples' props, the new colour roles as Foundations rows, and the renamed props and relabels in the examples of specs that no stack implements. A component page prints those as text, and stages none of them. The web app builds the same catalogue from the specs.
+- **183 web Increase Contrast images** (P4-D14) are new gallery variants of named examples, and change nothing either app draws.
+- No example was added or removed.
+
+**The conditions, read against both diffs.**
+- §10 condition 1 did not fire. The shell is still a `NavigationSplitView` with a `List` of `Label`s, and `Sidebar`, `TabBar` and `AdaptiveShell` are unimplemented. The new highlight is the list's own, in the system's selection colour: rgb(0, 100, 225) in the light Mac captures. Prism's accent, which colours the example ids, is orange.
+- §10 condition 3 did not fire. No file of the web app changed in either range.
+- None of §11.8's Icons conditions fired. The Icons screens did not change in either range. The Mac's sidebar now highlights *Icons* while that screen is open (`mac-keys-1-icons.png`). It is still the app's six sections, and it filters nothing (§11.3). The screen's own controls are still its four pickers.
+- §13.8 condition 4 had fired for `md-with-avatar` on Apple, and §14.3 answers it. No other example fills a slot, and none was added.
+- §13.8 condition 5 did not fire. The apps stage the 92 examples that gallery §9.8, §10.7 and §11.8 name, and no other.
+- §13.8 condition 6 did not fire. `IconButton/with-badge` did not change, and the chrome has no badge and no bell.
+- §13.8 condition 7 did not fire. The fix pairs no components: a sidebar row is a SwiftUI `Label`. In `swift/Showcase/Sources`, `DSAvatar` and `DSChip` appear only in the two renderers (`Examples/DSComponentRenderers.swift`) and in the generated bindings. No capture shows an Avatar or a Chip outside a stage.
+- §13.8 condition 8 did not fire before `5694283`.
+  - It fired at `e56272f` and again at `8987b2d`. Neither change fills a slot, so by the condition's own words gallery §13 and §15 answer them, as the two notes under §13.8 record.
+  - `0abafaf` does not fire it. The condition reads what an example draws on its stage, as the gallery photographs it (gallery §9.9 condition 6), and no example is photographed pressed. A press changes one component's tone while the reader holds it, and nothing around it.
+
+### 14.3 `Chip/md-with-avatar`, on its own page
+
+- **What it is.**
+  - *iPhone.* The page is titled *"Chip · md-with-avatar"*, with Apple's back chevron and the axes button in the toolbar. It opens with the resolved-context strip. Under the strip is a block headed *md-with-avatar*, with the spec's description, and then the stage in a hairline frame as wide as the page. The pill stands at the frame's leading edge: "AP" at its leading end, then "Anna Petrova". Last comes *"Props, as the spec writes them"*, in four rows: *label* Anna Petrova, *size* md, *avatar* name: Anna Petrova, and *schemes* light, dark. In light only the letters show, and in dark the disc shows lighter than the pill, as gallery §11.4 describes the baseline.
+  - The six iPhone states differ only where they should. At compact the stage is smaller. Under Increase Contrast the frame's hairline and the pill's stroke are stronger. The strip names each state.
+  - *Mac.* The same page in the split view, beside the six sections with *Components* highlighted, at compact density.
+  - **The stage is the gallery's picture.** In every capture the stage has its baseline's box, at the frame's leading edge: 189 × 88 pt at regular and 183 × 80 pt at compact. Away from the 8-pt band at its edge (§14.1), a capture differs from its baseline by a mean of 0.70 to 0.91 code values on the iPhone, and by 0.87 (light) and 1.54 (dark) on the Mac. Every pixel that differs by 30 or more lies on the edge of a letter or of the pill.
+    - The Increase Contrast captures match their own baselines (means 1.50 and 1.47, every large difference on an edge). They match the standard baselines less well (2.17 and 2.06, with 119 and 13 large differences off any edge). So Increase Contrast reached the component, not just the strip.
+    - The Mac captures, taken under Reduce Transparency, match the standard compact baselines. That is expected. `md-with-avatar` draws no glass, so the snapshot matrix records no Reduce Transparency variant of it: `DSSnapshotMatrix.variants` adds one only for an example that renders glass.
+  - **Nothing else is on the stage.** Between the stage's trailing edge and the frame's trailing corners, every pixel is the page ground to within 3 code values: rgb(241, 242, 245) in light and rgb(13, 14, 17) in dark. That holds in every capture of both pages, on both devices.
+- **Nearest reference.** For the chip, the plate chip of the traffic console 27220417, which the incident console 27619812 re-posts, and the identity lock-up of the finance monitor 27597487 (gallery §11.4). For the page, none of the eleven, because no shot is a documentation page.
+- **Nearest showcase of the genre (from recollection).** As §13.3 said: a documentation site's chips page, whose input-chip specimen is a pill with an avatar at its leading end. This page gives one specimen a page of its own, with its description and a table of its props. A single Storybook story, in a canvas above its args table, has the same shape.
+- **Families mixed.** The genre's specimen page, and the example's own families (gallery §11.4).
+- **What differs.** §13.3's list, read on the running app:
+  - The chip stands alone on its stage. Nothing puts it where gallery §11.4's defence stops: over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header. The table under it holds the example's props, and the chip heads no row of it.
+  - The page names one person and nothing else. The pill, the disc and the props all give "Anna Petrova" or its initials. No vehicle, number or route is on the page, so nothing on it sets a letter disc beside a vehicle number (gallery §11.9 condition 8).
+  - The chrome holds no Avatar and no Chip. The toolbar holds Apple's back chevron and the axes button, both round and neither badged. The sidebar holds six `Label`s, and the strip is Text in a Surface, a pairing §12.7 lists. So the page does not set an avatar after round toolbar buttons, which would be the top bar of 27220417 (§13.8 condition 7, gallery §10.4.1).
+  - Compared with the genre's page: the prose is the spec's, the props are printed as the spec writes them, and the strip prints the context the example was drawn in. §5.7 already cleared that shape.
+- **Verdict.** **Not a copy**, on the iPhone in light and dark, at regular and compact density and under Increase Contrast, and on the Mac in light and dark. The app adds a frame, a heading and a table to the gallery's picture, and nothing that brings it nearer the plate chip.
+
+### 14.4 The Chip page, with `md-with-avatar`'s block
+
+- **What it is.**
+  - The component page, on both devices. First come the strip, the summary, the facts and the platform's note, *Support* and *Links*. Then *"Examples — 13"*, with the note *"Staged from the spec's own `examples[]` props, on the ground the example declares."*, and thirteen blocks in spec order, in one column. `DSComponentScreen` stacks them in a `VStack`, so the column does not change with the window's width.
+  - A block is the example's id in the accent tone, which links to the example's own page; then the stage in a hairline frame; then the props line; and then the description, where the spec gives one.
+  - `md-with-avatar` is the eighth block. Its props line reads "label: Anna Petrova · size: md · avatar: name: Anna Petrova", and the spec's description follows. Its stage is the one §14.3 measured, with the same box and the same figures.
+  - `identifier-copy` is three blocks up, with `md-size` and `disabled` between them. The pictures predate `e56272f`, so it reads "B-4417" in them. From that commit it reads "INV-209316", an invoice number, in the pill and in the props line, and gallery §13 reads the new pill. The two can be on screen together: in the iPhone's fourth dark frame, "B-4417" and "AP Anna Petrova" are, on separate stages, two specimens apart.
+  - The neighbours draw the gallery's pictures too.
+    - On the iPhone, `on-map` and `selected-on-map` match their standard baselines: glass over the map, with the route turning under the pill (RD-9).
+    - On the Mac, under the runner's Reduce Transparency, they match their `reduce-transparency` baselines, the fallback that gallery §11 reads and §12 sets beside the web's, and not their glass ones.
+    - `identifier-copy` matches the baseline it had at `5694283` on both devices, with "B-4417" whole beside its copy glyph.
+- **Nearest reference.** For the chip, as §14.3. For the page, none of the eleven.
+- **Nearest showcase of the genre (from recollection).** A documentation site's chips page, as §13.3 said: specimens in panels above the component's API.
+- **Families mixed.** The genre's specimen page, and the families of the thirteen examples (gallery §11).
+- **What differs.**
+  - `md-with-avatar` stands alone on its stage, the eighth of thirteen specimens, as §13.3 found on the web.
+  - It is not set beside a vehicle number. In the pictures, `identifier-copy`'s "B-4417" is on its own stage three blocks up, and specimens on separate stages of one page are not one composition (gallery §9.9 condition 5). From `e56272f` that block holds an invoice number, so the page holds no vehicle-style number at all. So gallery §11.9 condition 8 does not fire, and nor does its last clause: the identifier is whole, not truncated beside its copy glyph.
+  - The map examples stand one per stage. No chip is composed over the map with map controls, a glass card or a mark (gallery §11.9 condition 7).
+  - The chrome is as in §14.3: no Avatar and no Chip in the toolbar, the sidebar or the strip.
+- **Verdict.** **Not a copy**, on the iPhone and on the Mac, in light and dark. At `a9e67da` the page differs from these pictures only in `identifier-copy`'s label, which moves it further from the plate chip.
+
+### 14.5 Is either page close enough to one product that a reasonable person would call it a copy?
+
+Rows 27–29 continue §13.5's numbering. They supersede its row 24.
+
+| # | Screen | Copy? | Why | What would have to change |
+|---|---|---|---|---|
+| 27 | `Chip/md-with-avatar` page, iPhone 17: light and dark, at regular and compact density and under Increase Contrast (§14.3) | **No** | The strip, the id and description, the stage and the spec's props. The stage is the gallery's picture, 189 × 88 pt at regular and 183 × 80 at compact: one chip on the page ground, named for a person, with nothing beside it. | Nothing, before a release. |
+| 28 | Chip page with `md-with-avatar`'s block, iPhone 17, light and dark (§14.4) | **No** | Thirteen specimens in one column, one stage each. `md-with-avatar` is the eighth, alone on its stage, three blocks below `identifier-copy`: "B-4417" in the pictures, "INV-209316" from `e56272f`. | Nothing, before a release. |
+| 29 | Both pages, Mac, light and dark, in a 1024 × 674 window under the runner's Reduce Transparency (§14.3, §14.4) | **No** | The same pages in the split view, at compact density. The stage draws its compact baseline, and the map examples draw their fallback. | Nothing, before a release. |
+
+§13.5's rows 25 and 26 stand. §12.7's last paragraph covers the Avatar page and the Overview strip, and SD-10 below says what this run saw of them.
+
+### 14.6 Findings of this re-review
+
+#### SD-10 — closed
+
+The two Apple pages were read in the running app, on the iPhone 17 simulator and on the Mac, and neither is a copy (§14.3, §14.4). SD-10's steps, as done:
+1. The app was built with `pnpm showcase:apple` at `5694283`, for the iPhone 17 (iOS 26.5) and for macOS, with the Xcode the baselines record. `Package.resolved` was unchanged. The build ran on a CI runner, not on the owner's Mac, and the job launched the app itself.
+2. On the iPhone: the Chip page down to `md-with-avatar`'s block, in light and dark. The example page in light and dark, at regular density, at compact and under Increase Contrast.
+3. On the Mac: both pages in light and dark, captured by window id, with `-DSShowcaseSection components` on every launch.
+4. Read against §13.3's *What differs* and gallery §11.9 condition 8. The verdicts are rows 27–29.
+5. The optional extras, in part.
+   - `on-map`, `selected-on-map` and `identifier-copy` were seen as blocks on the Chip page, not on pages of their own.
+   - The Overview strip was seen on the Mac as far as its first row, three across at 1024 pt: `Avatar/image-md`, `Badge/count-neutral` and `Button/primary-md`, each on its own stage under its own label, as §13.4 read them from source. On the iPhone it was seen as far as its first specimen.
+   - The Avatar page was not opened.
+   - §12.7 asks for none of them, and they stay covered by its last paragraph (§13.4).
+
+§13.8's condition 4 is answered for Apple, so it no longer stays fired for `md-with-avatar`.
+
+#### SD-11 — The Mac run is taken under the runner's Reduce Transparency, in a 1024-point window. That settles these two pages, and it would not settle glass
+
+**What.** The macOS runner has Reduce Transparency and Reduce Motion on, and its screen is 1024 pt wide. So every Mac capture has transparency reduced, and the window is 1024 × 674 pt, where §11.1 and §12.1 used 1280 × 880.
+
+**What it settles.** Everything SD-10 asked.
+- `md-with-avatar` draws no glass. The Mac captures match its standard compact baselines, and the matrix records no Reduce Transparency variant of it.
+- `DSComponentScreen` and `DSExampleScreen` lay out one column at any width. A wider window widens the frames and rewraps the text, and changes nothing that §14.3 or §14.4 reads.
+- Reduce Motion changes how the app moves, not what a settled frame shows, apart from the strip's word for it.
+
+**What it does not settle.**
+- *The Mac's glass.* On the Chip page, the four examples over media draw their fallback on the Mac, so the Mac's glass drawings of them were not seen. For this page the gap is covered: the iPhone shows the same four in glass, and the gallery's compact baselines show that glass at the Mac's density. But a later review of glass on the Mac, such as a pattern example screen over the map, could not rest on this job's Mac captures as they are.
+- *A screen that adapts to the window's width.* At 1024 pt the Overview strip is three across, where §12.3 read it four across at 1280 pt. The Icons grid, which §11.3 read seven across at 1280, adapts its columns to the width too, and this run did not photograph it. Neither is a page SD-10 names.
+
+**Action.** None in this section. The ticket that extends the job owns `ci.yml`, and it has two things to know:
+- The app's key `-DSShowcaseReduceTransparency 0` hands Prism's accessibility policy standard transparency, whatever the runner's setting (`DSAxisScope`, ADR-0019 §5), so Prism's glass should draw as glass. The strip prints which state it drew, so a capture would show whether it did. The system's own sidebar and toolbar would stay as the runner draws them.
+- A capture at the 1280-pt window of §11.1 and §12.1 needs a screen at least that wide, which this runner does not have.
+
+#### SD-12 — Not a distance matter: until `5694283` the Apple sidebar selected nothing, and no run of this review records a click on it
+
+**What.** From `0ee722a`, the app's first commit, the sidebar was `List(DSShowcaseSection.allCases, selection: $section)`, which tags each row with the section's `String` id. The selection is a `DSShowcaseSection?`, so no click or tap could select a row, and no row was ever highlighted. A plain launch opens Overview, and the sidebar could take a reader nowhere else, "on the Mac, and in the iPad's sidebar and the iPhone's collapsed list too, since the view is shared" (`5694283`'s message). CI run 36236185970 showed it on the Mac: a click on Components or Icons left the window on Overview, byte for byte. `5694283` fixed it (§14.2).
+
+**Why it matters.** Every Apple run of this review, in §3, §11.1 and §12.1, opened its pages with launch keys, and none records a click on a sidebar row. A click would have shown that nothing followed. §4.2 said that on the phone "every screen is a push". That was true inside a section, but the sidebar's own rows pushed nothing. This is SD-6's lesson a second time: a method that opens every page by its keys tests the pages, not the way a reader reaches them.
+
+**Distance.** None. The sidebar is the same six `Label`s. A list that selects and highlights its current row is `List(selection:)` as Apple documents it, and the highlight is the system's. No verdict of §4.2, §11.3 or §12.2 rested on the sidebar doing nothing.
+
+**Action.** Taken by `5694283`, with `tools/showcase/apple/shell.test.ts`. The `showcase-apps` job now clicks two sidebar rows after each of two Mac launches, and fails when the page does not follow (§14.1). So SD-6's lesson is now a check, not a sentence.
+
+#### SD-13 — Not a distance matter: §1 says no picture or build of these apps leaves a developer's machine, and since `ac0d910` a dispatched run publishes both for 14 days
+
+**What.** §1 says that no screenshot of either app exists, that CI never builds the app bundle, and that neither app is a published artefact. Since `ac0d910`, a `ci` run dispatched with `showcase-apps` uploads three artifacts, kept for 14 days: the two Apple bundles, Debug builds signed ad hoc, and the screenshots of the running app. `docs/showcase.md` §5 now says that no screenshot of these apps is ever a *baseline*, where §1 quotes it saying that none is ever *recorded*. In a public repository, anyone signed in to GitHub can download a run's artifacts.
+
+**Why it matters.** Not for the scope. The screens were in scope already, because the source is public and anyone can build it (§1). It matters for timing. A dispatch builds whatever tree it names, reviewed or not, so a run on a tree where a condition has fired publishes a build of screens that no review has read, for 14 days. That is not a release: ADR-0015 rule 3 and `docs/legal-checkpoint.md` §5 gate releases, and the same screens could always be built from the source.
+
+**Distance.** None. The pictures are of Prism's own screens, and no reference image is in them.
+
+**Action.** A pointer in §1. Nothing else is needed: a dispatch for a review, as for SD-10, is how a review should get its pictures.
+
+#### Carried from the gallery: RD-9, RD-11 and RD-12
+
+- **RD-9.** Seen in the running app. On the iPhone the route turns under `on-map`'s and `selected-on-map`'s pills, as in the gallery. On the Mac, the fallback pills sit on the same bend.
+- **RD-11.** `md-with-avatar` keeps the plate chip's anatomy, with a person in it. The app puts it where the plate chip never goes: alone on a stage, under its description.
+- **RD-12.** Closed by `e56272f` and gallery §13. The pictures predate the relabel, so on Apple they show "B-4417" twice on its block, in the pill and in the props line, as §13.4 read from source. From `e56272f` both read "INV-209316" (the first note under §13.8).
+
+### 14.7 Coverage
+
+| Screen | Where | States opened | Section | Verdict |
+|---|---|---|---|---|
+| `Chip/md-with-avatar` page | iPhone 17, iOS 26.5, CI run 36237515203 at `5694283` | light / dark × regular / compact; Increase Contrast at regular, light and dark | §14.3 | not a copy |
+| Chip page, top to end | iPhone 17 | light (9 frames) / dark (8 frames) | §14.4 | not a copy |
+| Both pages | Mac, 1024 × 674 pt window, the runner's Reduce Transparency and Reduce Motion | light / dark; the Chip page in 7 frames each | §14.3, §14.4 | not a copy |
+| The sidebar, after `5694283` | Mac: two launches, two rows clicked after each. iPhone: back to the section list, then a row | light | §14.2, SD-12 | Apple's furniture, as in §4.2 |
+| Overview, "Live, not a picture" | Mac, its first row; iPhone, its first specimen | light | SD-10 | covered by §12.7's last paragraph |
+| The same pages at `0612080` | CI run 36233461905 | as above, without the navigation | §14.1 | the same pixels, except the sidebar row and the iPhone's scroll offsets |
+
+The pictures are of `5694283`. At `a9e67da` the two pages draw the same, except for `identifier-copy`'s label on the Chip page (§14.2).
+
+Not opened in the running app: the Avatar page, and the own pages of `on-map`, `selected-on-map` and `identifier-copy`, which were seen as blocks on the Chip page. §12.7's last paragraph covers them (§13.4). Chip's thirteen examples themselves are covered in gallery §11, and `identifier-copy`'s relabelled images in gallery §13.
+
+### 14.8 What this clearance covers, and when it expires
+
+**It covers**, at `5694283` and at `a9e67da`:
+- **the web app, every page**, as §13.8 covered it at `5b1663c`. No file of it has changed since. The two examples that changed what they draw after `5694283` are read by gallery §13 and §15, as the notes under §13.8 record.
+- **the Apple app, every page.** The Chip page and the `Chip/md-with-avatar` page were read in the running app at `5694283` (§14.3, §14.4). At `a9e67da` they differ from those pictures only in `identifier-copy`'s label, which condition 8 hands to gallery §13. The other Avatar and Chip pages and the Overview strip are covered by §12.7's last paragraph, as at `5b1663c`, and every other page by §§4–13, on their conditions.
+
+**Every condition in force was read on 2026-09-26**, against the diff from `5b1663c` to `a9e67da` (§14.2): §10 conditions 1 and 3, §11.8 for the Icons screens, and §13.8's five. Condition 4 had fired for `md-with-avatar`, and it is now answered on both stacks. Condition 8 fired twice after `5694283`, and gallery §13 and §15 answer it. No other condition fired.
+
+**So the rule 3 precondition is met for the whole of both apps again.** For the Apple app it had not been met since `3fb52c9` staged `md-with-avatar` (SD-10). The gallery review covers all 1931 images at `a9e67da`, through its §15. With it and the board's review, every screen that would be public at a release made from `a9e67da` carries a reference-distance review, and none is a copy. **A release made from `a9e67da`, or from the commit that adds this section, is cleared under rule 3.** So is one from `5694283`. Setting `LEGAL_CHECKPOINT` stays the owner's act (`docs/legal-checkpoint.md` §5.1), and a later tree needs these conditions read against its diff first.
+
+**It expires on any of these.** §13.8's conditions 4–8 stand, with condition 4 restated below. §10 conditions 1 and 3, and §11.8 for the Icons screens, stand too.
+
+4. **A staged example other than `IconButton/with-badge` and `Chip/md-with-avatar` composes more than one component** in gallery §9.3's sense. Both are answered on both stacks: `with-badge` in §12.2, and `md-with-avatar` in §13.3 and §14.3. A change to what either example fills is condition 8's.
+
+**It does not expire** when a newly implemented component's page appears, as long as a dated section of the gallery review names its examples (§12.7).
+
+**It is not a legal opinion**, for the reasons §10 gives.
+
+The next section's verdict rows start at 30, and its findings at SD-14.
