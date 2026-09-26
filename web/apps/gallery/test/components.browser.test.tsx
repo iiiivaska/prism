@@ -1518,7 +1518,7 @@ describe("Chip", () => {
             <Chip key={`button-${size}`} size={size} label="Last 24 hours" isRemovable onPress={noop} onRemove={noop} data-probe={`button-${size}`} />
           ))}
           {chipSizes.map((size) => (
-            <Chip key={`label-${size}`} size={size} label="B-4417" data-probe={`label-${size}`} />
+            <Chip key={`label-${size}`} size={size} label="INV-209316" data-probe={`label-${size}`} />
           ))}
         </div>,
         { density, modality: "touch" },
@@ -1571,7 +1571,7 @@ describe("Chip", () => {
     expect(body.getAttribute("aria-pressed")).toBe("true");
     await unmount();
 
-    element = await mount(<Chip label="B-4417" trailingIcon="action.copy" onPress={onPress} />);
+    element = await mount(<Chip label="INV-209316" trailingIcon="action.copy" onPress={onPress} />);
     body = find(element, '[data-ds-slot="chip-body"]');
     expect(body.tagName).toBe("BUTTON");
     expect(body.hasAttribute("aria-pressed")).toBe(false);

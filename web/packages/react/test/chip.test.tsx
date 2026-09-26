@@ -576,7 +576,7 @@ describe("behaviour", () => {
     expect(attribute(tagOf(off, "chip-body"), "aria-pressed")).toBe("false");
     expect(pillTag(off)).not.toContain("data-ds-selected");
 
-    const button = html(<Chip label="B-4417" trailingIcon="action.copy" onPress={noop} />);
+    const button = html(<Chip label="INV-209316" trailingIcon="action.copy" onPress={noop} />);
     expect(bodyElement(button)).toBe("button");
     expect(tagOf(button, "chip-body") ?? "").not.toContain("aria-pressed");
     expect(attribute(pillTag(button), "data-ds-kind")).toBe("button");
@@ -617,10 +617,10 @@ describe("behaviour", () => {
     expect(showsChipTrailingIcon(false, true)).toBe(true);
     expect(showsChipTrailingIcon(true, true)).toBe(false);
     expect(showsChipTrailingIcon(false, false)).toBe(false);
-    const both = html(<Chip label="B-4417" trailingIcon="action.copy" isRemovable onPress={noop} onRemove={noop} />);
+    const both = html(<Chip label="INV-209316" trailingIcon="action.copy" isRemovable onPress={noop} onRemove={noop} />);
     expect(both).not.toContain('data-ds-icon="action.copy"');
     expect(both).toContain('data-ds-icon="nav.close"');
-    expect(html(<Chip label="B-4417" trailingIcon="action.copy" onPress={noop} />)).toContain('data-ds-icon="action.copy"');
+    expect(html(<Chip label="INV-209316" trailingIcon="action.copy" onPress={noop} />)).toContain('data-ds-icon="action.copy"');
   });
 
   it("puts an Avatar in the leading position on the md chip only, at size sm and decorative, in place of leadingIcon", () => {
@@ -830,7 +830,7 @@ describe("the accessibility the spec writes (Chip.yaml accessibility)", () => {
     selected: { name: "Last 24 hours", pressed: true, rendering: "own" },
     "with-leading-icon": { name: "Routes", rendering: "own" },
     removable: { name: "North yard", remove: "Remove North yard", rendering: "own" },
-    "identifier-copy": { name: "B-4417", rendering: "own" },
+    "identifier-copy": { name: "INV-209316", rendering: "own" },
     "md-size": { name: "Depots", rendering: "own" },
     disabled: { name: "Last 24 hours", disabled: true, rendering: "own" },
     "md-with-avatar": { name: "Anna Petrova", rendering: "own", hidden: "AP" },

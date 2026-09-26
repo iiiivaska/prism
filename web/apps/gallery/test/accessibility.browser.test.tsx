@@ -414,7 +414,7 @@ describe("Chip (Chip.yaml accessibility)", () => {
     selected: [button("Last 24 hours")],
     "with-leading-icon": [button("Routes")],
     removable: [button("North yard"), button("Remove North yard")],
-    "identifier-copy": [button("B-4417")],
+    "identifier-copy": [button("INV-209316")],
     "md-size": [button("Depots")],
     disabled: [button("Last 24 hours")],
     "md-with-avatar": [button("Anna Petrova")],

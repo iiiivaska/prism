@@ -7,7 +7,7 @@ import DSTokens
 /// specVersion 1).
 ///
 ///     DSChip("Last 24 hours", isSelected: isOn) { isOn.toggle() }           // a filter chip
-///     DSChip(verbatim: "B-4417", trailingIcon: .actionCopy) { copy() }      // an identifier chip whose press copies
+///     DSChip(verbatim: "INV-209316", trailingIcon: .actionCopy) { copy() }  // an identifier chip whose press copies
 ///     DSChip("North yard", isRemovable: true, onRemove: { remove() })       // a removable selection
 ///     DSChip(verbatim: "Anna Petrova", size: .md, avatar: DSAvatar(name: "Anna Petrova"))
 ///

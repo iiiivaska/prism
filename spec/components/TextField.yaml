@@ -305,9 +305,9 @@ examples:
   - id: with-value
     props: { label: "Site name", value: "North yard" }
   - id: helper-row
-    props: { label: "Batch id", value: "B-4417", helper: "Six characters: one letter, a dash and four digits" }
+    props: { label: "Batch id", value: "318204", helper: "Six digits, with no letters or spaces" }
   - id: invalid
-    props: { label: "Batch id", value: "B-44", isInvalid: true, errorText: "Enter six characters" }
+    props: { label: "Batch id", value: "3182", isInvalid: true, errorText: "Enter six digits" }
   - id: numeric-tabular
     props: { label: "Batch size", value: "1 240", contentType: number, helper: "Units per batch" }
     description: a typed number keeps tabular figures so the digits do not shift under the caret
@@ -317,7 +317,7 @@ examples:
     props: { label: "Access code", value: "••••••", contentType: password, isRevealable: true }
     description: the trailing action holds object.eye while the value is masked
   - id: required
-    props: { label: "Batch id (required)", placeholder: "B-4417", isRequired: true }
+    props: { label: "Batch id (required)", placeholder: "318204", isRequired: true }
     description: the requirement is in the label's words, not a glyph or a color
   - id: readonly
     props: { label: "Unit", value: "4417", isReadOnly: true }

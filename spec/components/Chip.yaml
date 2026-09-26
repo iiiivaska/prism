@@ -286,8 +286,8 @@ examples:
   - id: removable
     props: { label: "North yard", isRemovable: true }
   - id: identifier-copy
-    props: { label: "B-4417", trailingIcon: action.copy }
-    description: an identifier chip whose press copies it; action.copy shows what the press does, and the name is the identifier itself
+    props: { label: "INV-209316", trailingIcon: action.copy }
+    description: an identifier chip, here an invoice number, whose press copies it; action.copy shows what the press does, and the name is the identifier itself
   - id: md-size
     props: { label: "Depots", size: md, leadingIcon: object.map-pin }
   - id: disabled

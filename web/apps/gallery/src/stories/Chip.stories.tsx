@@ -49,11 +49,11 @@ export const Removable: Story = {
   ...example({"id":"removable"}),
 };
 
-/** Chip.yaml example `identifier-copy`: an identifier chip whose press copies it; action.copy shows what the press does, and the name is the identifier itself */
+/** Chip.yaml example `identifier-copy`: an identifier chip, here an invoice number, whose press copies it; action.copy shows what the press does, and the name is the identifier itself */
 export const IdentifierCopy: Story = {
   name: "identifier-copy",
-  args: {"label":"B-4417","trailingIcon":"action.copy"},
-  ...example({"id":"identifier-copy","description":"an identifier chip whose press copies it; action.copy shows what the press does, and the name is the identifier itself"}),
+  args: {"label":"INV-209316","trailingIcon":"action.copy"},
+  ...example({"id":"identifier-copy","description":"an identifier chip, here an invoice number, whose press copies it; action.copy shows what the press does, and the name is the identifier itself"}),
 };
 
 /** Chip.yaml example `md-size` */

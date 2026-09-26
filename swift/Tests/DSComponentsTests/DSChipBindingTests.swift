@@ -42,7 +42,7 @@ nonisolated struct DSChipNameCase: Sendable {
         DSChipNameCase("selected", "Last 24 hours", selected: true),
         DSChipNameCase("with-leading-icon", "Routes"),
         DSChipNameCase("removable", "North yard", remove: "Remove North yard"),
-        DSChipNameCase("identifier-copy", "B-4417"),
+        DSChipNameCase("identifier-copy", "INV-209316"),
         DSChipNameCase("md-size", "Depots"),
         DSChipNameCase("disabled", "Last 24 hours", disabled: true),
         DSChipNameCase("md-with-avatar", "Anna Petrova"),
@@ -55,7 +55,7 @@ nonisolated struct DSChipNameCase: Sendable {
     ]
 
     /// The UTF-8 byte count of each name, in table order.
-    static let nameBytes = [13, 13, 6, 10, 6, 6, 13, 12, 6, 6, 5, 10, 30]
+    static let nameBytes = [13, 13, 6, 10, 10, 6, 13, 12, 6, 6, 5, 10, 30]
 }
 
 /// `spec/components/Chip.yaml` specVersion 1: the pill as the Surface module's glass chip — `root.background` on every
@@ -660,7 +660,7 @@ struct DSChipBindingTests {
                     ("a glyph", AnyView(DSChip(verbatim: "Depots", size: size, leadingIcon: .objectMapPin) {})),
                     ("an Avatar", AnyView(DSChip(verbatim: "Anna Petrova", size: size, avatar: DSAvatar(name: "Anna Petrova")) {})),
                     ("the remove control", AnyView(DSChip(verbatim: "North yard", size: size, isRemovable: true, onRemove: {}))),
-                    ("a static label", AnyView(DSChip(verbatim: "B-4417", size: size))),
+                    ("a static label", AnyView(DSChip(verbatim: "INV-209316", size: size))),
                     ("a long label", AnyView(DSChip(verbatim: "Последние 24 часа на северном участке", size: size) {})),
                 ]
                 for (description, view) in variants {

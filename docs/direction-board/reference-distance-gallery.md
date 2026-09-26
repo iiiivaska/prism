@@ -1006,6 +1006,8 @@ Rows 31–43 continue §10.5's numbering, one row per example.
 
 **What would help. Cheap, and not required.** Relabel the example with an identifier outside the fleet genre, one that no other example uses, such as an order, invoice or batch number. That is one `Chip.yaml` example edit. It moves 16 baselines (8 Apple, 8 web) through the sanctioned re-record route, and condition 6 then asks for them to be compared as §9.1 compared the 104. Doing it with RD-2 item 3's re-subjecting of `glass-vehicle` would remove the gallery's only shared fleet identifier. It is not taken here: this ticket changes no spec and no component.
 
+*Pointer added 2026-09-26: RD-12 is taken. The commit that adds this pointer relabels `identifier-copy` "INV-209316", an invoice number that no other example uses. Its shape keeps it out of §11.5.2's genre as well as its word: a document prefix and six digits, where the reference names a vehicle by a word or a letter with four or five digits, and neither the shipping console's numbered chip nor the incident console's hash. TextField's and ListRow's "B-4417", which no stack implements, becomes the batch number "318204", so no example puts the fleet unit number in a vehicle-style identifier any more. `Card/glass-vehicle`'s "Unit 4417" and the other 4417s stand, and remain RD-2 item 3's to decide. Both showcase apps show the new label from this commit, which fires showcase §13.8 condition 8. The 16 images, 8 Apple and 8 web, keep "B-4417" until CI re-records them. §9.9 condition 6 then asks for a dated section that reads the new images beside the old ones, as §9.1 read the 104, and that section answers both conditions.*
+
 ### 11.8 Coverage
 
 | Component | Examples | Images | Reviewed in | Verdict |

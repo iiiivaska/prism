@@ -6794,7 +6794,7 @@
             "light",
             "dark"
           ],
-          "props": "label: B-4417, trailingIcon: action.copy",
+          "props": "label: INV-209316, trailingIcon: action.copy",
           "cells": [
             {
               "scheme": "light",
@@ -20025,7 +20025,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Batch id, value: B-4417, helper: Six characters: one letter, a dash and four digits",
+          "props": "label: Batch id, value: 318204, helper: Six digits, with no letters or spaces",
           "cells": []
         },
         {
@@ -20034,7 +20034,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Batch id, value: B-44, isInvalid: true, errorText: Enter six characters",
+          "props": "label: Batch id, value: 3182, isInvalid: true, errorText: Enter six digits",
           "cells": []
         },
         {
@@ -20070,7 +20070,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Batch id (required), placeholder: B-4417, isRequired: true",
+          "props": "label: Batch id (required), placeholder: 318204, isRequired: true",
           "cells": []
         },
         {
@@ -22406,7 +22406,7 @@
             "light",
             "dark"
           ],
-          "props": "title: North yard intake, subtitle: Batch B-4417, value: 1 240, accessory: chevron",
+          "props": "title: North yard intake, subtitle: Batch 318204, value: 1 240, accessory: chevron",
           "cells": []
         },
         {
@@ -22451,7 +22451,7 @@
             "light",
             "dark"
           ],
-          "props": "title: Batch B-4417, value: 1 240, swipeActions: [{\"id\":\"archive\",\"label\":\"Archive\",\"icon\":\"action.collapse\"},{\"id\":\"delete\",\"label\":\"Delete\",\"icon\":\"action.delete\",\"isDestructive\":true}]",
+          "props": "title: Batch 318204, value: 1 240, swipeActions: [{\"id\":\"archive\",\"label\":\"Archive\",\"icon\":\"action.collapse\"},{\"id\":\"delete\",\"label\":\"Delete\",\"icon\":\"action.delete\",\"isDestructive\":true}]",
           "cells": []
         },
         {

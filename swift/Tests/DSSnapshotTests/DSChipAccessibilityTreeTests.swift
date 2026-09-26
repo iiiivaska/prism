@@ -39,7 +39,7 @@ struct DSChipAccessibilityTreeTests {
         ("selected", "Last 24 hours", "", true, false),
         ("with-leading-icon", "Routes", "", false, false),
         ("removable", "North yard", "Remove North yard", false, false),
-        ("identifier-copy", "B-4417", "", false, false),
+        ("identifier-copy", "INV-209316", "", false, false),
         ("md-size", "Depots", "", false, false),
         ("disabled", "Last 24 hours", "", false, true),
         ("md-with-avatar", "Anna Petrova", "", false, false),
@@ -113,10 +113,10 @@ struct DSChipAccessibilityTreeTests {
             #expect(filter[1].traits.contains(.selected) == isSelected, "filter \(isSelected): \(filter[1])")
         }
 
-        let button = try Self.elements(around: DSChip(verbatim: "B-4417", trailingIcon: .actionCopy) {})
-        #expect(button.map(\.label) == ["Above", "B-4417", "Below"], "\(button)")
+        let button = try Self.elements(around: DSChip(verbatim: "INV-209316", trailingIcon: .actionCopy) {})
+        #expect(button.map(\.label) == ["Above", "INV-209316", "Below"], "\(button)")
         if button.count == 3 {
-            Self.expectButton(button[1], named: "B-4417", "button")
+            Self.expectButton(button[1], named: "INV-209316", "button")
             #expect(!button[1].traits.contains(.selected), "button: \(button[1])")
         }
 

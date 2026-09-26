@@ -253,7 +253,7 @@ examples:
     props: { title: "Last sync", value: "11 days ago", leadingIcon: object.clock, showsLeader: true }
     description: the datasheet row — glyph, label, dotted leader, right-aligned value
   - id: title-subtitle
-    props: { title: "North yard intake", subtitle: "Batch B-4417", value: "1 240", accessory: chevron }
+    props: { title: "North yard intake", subtitle: "Batch 318204", value: "1 240", accessory: chevron }
   - id: alert-row
     props: { title: "Pressure above the safe band", meta: "4 minutes ago", accessory: chevron }
     description: the leading slot holds a Badge with the alert's number
@@ -265,7 +265,7 @@ examples:
   - id: selected
     props: { title: "Unit 4417", subtitle: "In service", isSelected: true, value: "63 %" }
   - id: swipe-actions
-    props: { title: "Batch B-4417", value: "1 240", swipeActions: [{ id: "archive", label: "Archive", icon: "action.collapse" }, { id: "delete", label: "Delete", icon: "action.delete", isDestructive: true }] }
+    props: { title: "Batch 318204", value: "1 240", swipeActions: [{ id: "archive", label: "Archive", icon: "action.collapse" }, { id: "delete", label: "Delete", icon: "action.delete", isDestructive: true }] }
     description: touch modality only; the same two actions are the row's accessibility actions
   - id: no-separator
     props: { title: "Totals", value: "4 417", separator: none }

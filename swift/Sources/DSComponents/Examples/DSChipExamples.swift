@@ -29,7 +29,7 @@ enum DSChipExamples {
         DSChipExample("selected", label: "Last 24 hours", isSelected: true),
         DSChipExample("with-leading-icon", label: "Routes", leadingIcon: .actionFilter),
         DSChipExample("removable", label: "North yard", isRemovable: true),
-        DSChipExample("identifier-copy", label: "B-4417", trailingIcon: .actionCopy),
+        DSChipExample("identifier-copy", label: "INV-209316", trailingIcon: .actionCopy),
         DSChipExample("md-size", label: "Depots", size: .md, leadingIcon: .objectMapPin),
         DSChipExample("disabled", label: "Last 24 hours", isDisabled: true),
         DSChipExample("md-with-avatar", label: "Anna Petrova", size: .md, avatarName: "Anna Petrova"),
