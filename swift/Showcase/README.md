@@ -104,7 +104,7 @@ or a pull request never runs it. Download the artifacts from the run's page, or 
 |---|---|
 | `showcase-app-macos` | `PrismShowcase-macos.zip`, which unzips to `PrismShowcase.app` for macOS 26 or later, arm64 and x86_64 |
 | `showcase-app-ios-simulator` | `PrismShowcase-ios-simulator.zip`, which unzips to `PrismShowcase.app` for the iOS Simulator, iOS 26 or later, arm64 and x86_64 |
-| `showcase-screenshots` | PNGs of the running app on the iPhone 17 simulator and on the Mac, the pages SD-10 of `docs/direction-board/reference-distance-showcase.md` names; `navigation/`, the window before and after each sidebar click the job checks; and `index.txt`, which gives the commit, the Xcode, the simulator, what each file shows and how each click went |
+| `showcase-screenshots` | PNGs of the running app on the iPhone 17 simulator and on the Mac, the pages SD-10 of `docs/direction-board/reference-distance-showcase.md` names, and on the Mac the Avatar page and the Overview, top to end. The Mac launches for them pass `-DSShowcaseReduceTransparency 0`, so Prism draws its glass although the runner has Reduce Transparency on, and the system's sidebar and toolbar keep the runner's setting (SD-11); `navigation/`, the window before and after each sidebar click the job checks; and `index.txt`, which gives the commit, the Xcode, the simulator, what each file shows and how each click went |
 
 Each bundle sits in a zip that `ditto` made, inside the artifact's own zip. The artifact's zip keeps no symlinks,
 permissions or extended attributes, and a bundle loses its signature without them. Unpack the inner zip with Finder

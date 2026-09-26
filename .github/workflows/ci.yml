@@ -1003,7 +1003,10 @@ jobs:
         # dark on the Mac, captured by window id. Every launch passes `-DSShowcaseSection components`, as SD-10 asks: a
         # section default left in the app's domain wins over the section a page key implies. A frame is kept once two
         # captures in a row agree, because a fresh simulator is slow for its first minutes and a frame taken while the
-        # app is still launching is blank.
+        # app is still launching is blank. Every Mac launch also passes `-DSShowcaseReduceTransparency 0` (SD-11 in the
+        # same review): the runner has Reduce Transparency on, and the key hands Prism's accessibility policy standard
+        # transparency whatever the runner's setting, so Prism's glass draws as glass. The system's own sidebar and
+        # toolbar keep the runner's setting.
         id: screenshots
         continue-on-error: true
         timeout-minutes: 25
@@ -1038,7 +1041,7 @@ jobs:
             else
               echo "checkout    changed by the builds: $(git status --porcelain | paste -sd ';' -)"
             fi
-            echo "mac a11y    Reduce Transparency $(defaults read com.apple.universalaccess reduceTransparency 2>/dev/null || echo '?'), Reduce Motion $(defaults read com.apple.universalaccess reduceMotion 2>/dev/null || echo '?') (1 is on): the runner's own settings, which the Mac shots are taken under"
+            echo "mac a11y    Reduce Transparency $(defaults read com.apple.universalaccess reduceTransparency 2>/dev/null || echo '?'), Reduce Motion $(defaults read com.apple.universalaccess reduceMotion 2>/dev/null || echo '?') (1 is on): the runner's own settings, which the Mac shots are taken under; the Mac shots outside navigation/ also pass -DSShowcaseReduceTransparency 0, which gives Prism standard transparency whatever the first says (SD-11)"
             echo
           } > "$index"
 
@@ -1137,18 +1140,20 @@ jobs:
           echo >> "$index"
           note "Mac:"
           for scheme in light dark; do
-            mac "macos-chip-page-$scheme.png" "the Chip page as it opens, $scheme" "${chip[@]}" -DSShowcaseColorScheme "$scheme"
-            mac "macos-md-with-avatar-$scheme.png" "the Chip/md-with-avatar page, $scheme" "${example[@]}" -DSShowcaseColorScheme "$scheme"
+            mac "macos-chip-page-$scheme.png" "the Chip page as it opens, $scheme" "${chip[@]}" -DSShowcaseColorScheme "$scheme" -DSShowcaseReduceTransparency 0
+            mac "macos-md-with-avatar-$scheme.png" "the Chip/md-with-avatar page, $scheme" "${example[@]}" -DSShowcaseColorScheme "$scheme" -DSShowcaseReduceTransparency 0
           done
           pkill -x PrismShowcase
           exit "$failed"
-      - name: Scroll the Chip page down to md-with-avatar's block
+      - name: Scroll the Chip page down to md-with-avatar's block, and the Mac's Avatar page and Overview to their ends
         # SD-10 also reads md-with-avatar's block on the Chip page, and on both devices that block opens below the fold.
         # The app has no key that scrolls a component page and simctl cannot scroll, so this moves the pointer with the
         # helper the step above built: scroll-wheel events over the Mac window, and mouse drags over the Simulator app's
         # window, which turns a drag into a touch (an iPhone app takes no scroll wheel). A runner that does not let a
         # process post events leaves the frames the same, and index.txt says so. Best effort, like the step above, and
-        # after it, so that nothing here costs its shots.
+        # after it, so that nothing here costs its shots. On the Mac it also moves down the Avatar page and the Overview,
+        # in light, which §14 of the review did not see whole. Every Mac launch passes `-DSShowcaseReduceTransparency 0`,
+        # as the step above's do, so the examples over media draw Prism's glass (SD-11).
         continue-on-error: true
         timeout-minutes: 15
         shell: bash
@@ -1206,27 +1211,37 @@ jobs:
               i=$((i + 1))
             done
           }
+          # mac_frames <name> <what> <launch arguments...>: open the Mac app on a page, with Prism's glass drawn whatever
+          # the runner's Reduce Transparency (SD-11), and move down it frame by frame.
+          mac_frames() {
+            local name=$1 what=$2
+            shift 2
+            pkill -x PrismShowcase && sleep 2
+            open -n "$mac_app" --args -ApplePersistenceIgnoreState YES "$@" -DSShowcaseReduceTransparency 0
+            sleep 8
+            if read -r mac_window x y w h < <("$helper" window "$(pgrep -n -x PrismShowcase)"); then
+              # Over the detail column: right of the sidebar, halfway down.
+              x=$((x + w * 2 / 3)) y=$((y + h / 2))
+              frames "$name" "$what" mac_capture mac_move
+            else
+              note "FAILED $name: no window"
+              failed=1
+            fi
+          }
 
           echo >> "$index"
-          note "The Chip page, moved down frame by frame (scroll wheel on the Mac, a drag in the Simulator):"
+          note "The Chip page, moved down frame by frame (scroll wheel on the Mac, a drag in the Simulator), and on the Mac the Avatar page and the Overview, in light:"
           if [ ! -x "$helper" ]; then
             note "FAILED: the helper was not built, so nothing was scrolled"
             failed=1
           else
             for scheme in light dark; do
-              pkill -x PrismShowcase && sleep 2
-              open -n "$mac_app" --args -ApplePersistenceIgnoreState YES \
+              mac_frames "macos-chip-page-$scheme" "the Chip page, $scheme, Mac" \
                 -DSShowcaseSection components -DSShowcaseComponent Chip -DSShowcaseColorScheme "$scheme"
-              sleep 8
-              if read -r mac_window x y w h < <("$helper" window "$(pgrep -n -x PrismShowcase)"); then
-                # Over the detail column: right of the sidebar, halfway down.
-                x=$((x + w * 2 / 3)) y=$((y + h / 2))
-                frames "macos-chip-page-$scheme" "the Chip page, $scheme, Mac" mac_capture mac_move
-              else
-                note "FAILED macos-chip-page-$scheme: no window"
-                failed=1
-              fi
             done
+            mac_frames macos-avatar-page-light "the Avatar page, light, Mac" \
+              -DSShowcaseSection components -DSShowcaseComponent Avatar -DSShowcaseColorScheme light
+            mac_frames macos-overview-light "the Overview, light, Mac" -DSShowcaseSection overview -DSShowcaseColorScheme light
             pkill -x PrismShowcase
             open -a Simulator --args -CurrentDeviceUDID "$UDID"
             sleep 15
