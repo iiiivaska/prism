@@ -8,6 +8,7 @@
 - Subject: `gallery/index.html`, `gallery/index.json` and the **488 committed PNGs** they pair, at `showcase-and-license` (PR #11)
 - Companion: the same review for the three direction-board screens is [README.md § Reference-distance review](README.md#reference-distance-review), reviewed 2026-09-16
 - **Re-reviewed: 2026-09-23**, in [§9](#9-re-review-of-the-wave-1-examples--2026-09-23). The showcase review's finding SD-8 asked for a rule 3 review of `IconButton/with-badge`, which composes three components. That review found a wider gap: no review had read any of the 688 images that Divider, Icon, Badge and IconButton added after this document (RD-5). §9 lists which of the gallery's 67 examples compose more than one component. It reviews all 39 wave-1 examples, `with-badge` in full, and the 104 Button and Card images re-recorded since. It adds four findings and replaces §8's condition 3. Sections 1–8 stand as written on 2026-09-22, apart from pointers to §9.
+- **Reviewed again: 2026-09-26**, in [§10](#10-review-of-avatars-examples--2026-09-26). P4-7's baselines (`5522846`) put Avatar's twelve examples in the gallery, outside this clearance by §9.9 condition 3 until a dated section read them. §10 reads all 204 images, and none is a copy. It adds two findings. RD-9: on Apple every example staged on the synthetic map sits where the route turns, and Avatar's two map examples put a bare round mark there, which makes them among the gallery's nearest images to a reference's map. RD-10: `Sidebar.yaml`'s `rail` example specifies the rail whose avatar is `Avatar/ringed`'s nearest reference. §10.8 adds a seventh expiry condition, and §10.9 says how the next component's section follows. Sections 1–9 stand as written, apart from pointers to §10.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -124,6 +125,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
 - **Families mixed.** None, in any meaningful sense. The grounds are Prism's own `sys.color.map.*` palette, which ADR-0030 §1 added precisely because *no* token styled the map and every candidate board had mixed its own (finding F30).
 - **What differs.** Everything except the word "map" and, on Apple, the route. There is no imagery of any kind — no tile, no photograph, no render, no traced geometry — and no marker, no pin, no puck, no label, no halo, no radar ring, no highlighted segment. The road "network" is two straight bands crossing at 38 % and 46 %. **On the route, the one element held in common, the distance is in what it is made of:** the reference draws a 3 px solid white route *and* a dashed planned route *and* an orange highlighted segment with an 8 px glow, all over a satellite tile, with a puck at one end and pins along it. Prism draws one undashed two-segment polyline, no glow, no second route, no endpoint of any kind, on a four-colour ground — and it is not even accent-coloured: `color.map.route` resolves to `chart.series.1`, which is `neutral-950` in light and `neutral-0` in dark. It exists for one measurable reason: it is the only element that puts a **high-contrast line under the glass**, which is what ADR-0022 §3.3's limits have to hold against. `contrast:check` holds each ground to the glass limits per scheme (`map/backdrop-limit`: L ≤ 0.35 in dark, L ≥ 0.45 in light), and every translucent ground is painted over `map.land` alone and never stacked, which is a contrast rule rather than a cartographic one (ADR-0030 §1.1, §1.5).
 - **Verdict on this group, stated early because it carries the others.** A reader who knows 27220417 well would not recognise this as its map, because it is not a map. It is a four-colour test ground whose only job is to prove that glass composites legibly over a backdrop inside the declared limits.
+
+*Pointer added 2026-09-26: this describes the ground, not what the gallery stages on it. On Apple every example staged on the map covers the point where the route turns, and Avatar's two map examples put a bare round mark there ([§10.4.3](#1043-over-the-map--ringed-over-map-initials-over-map-2-examples-40-images), RD-9).*
 
 ### 3.5 The vivid 2×2 grids
 
@@ -335,6 +338,8 @@ The forced-state variants (§3.11) are not a row of their own: **158** of the 48
 
 *Pointer added 2026-09-23: four of the 53 components in that list now have images: Divider, Icon, Badge and IconButton, 688 images from wave 1. [§9](#9-re-review-of-the-wave-1-examples--2026-09-23) reviews them. The row's pointer to §8 named no condition that fired when they landed (RD-5).*
 
+*Pointer added 2026-09-26: Avatar's images landed at `5522846`, and [§10](#10-review-of-avatars-examples--2026-09-26) reviews them. The list now stands for 48 components.*
+
 ---
 
 ## 8. What this clearance does and does not cover
@@ -466,6 +471,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
   - The orange of `accent-mark` is Prism's accent. Its step 500 is `#F39444`, the default accent the traffic console's analysis proposed (§11, principle 5), which the board signed off as Prism's. Here it names no state and sits on no sheet.
 - **Verdict.** **Not a copy.** These are single glyphs, drawn by their vendors, one per image.
 
+*Pointer added 2026-09-26: on Apple the glass tile of `on-glass-over-map` sits where the synthetic route turns, and both of the route's legs run into it, so the pin stands on the route's bend (RD-9). The verdict stands.*
+
 #### 9.5.3 Badge — 10 examples, 164 images
 
 - **What it is.** One mark per example, standing alone. Counts: neutral (3), critical (12) and accent (7). An overflow, "99+", in critical. Outlined counts: neutral (4) and critical (2). Two 8 px dots (`space.3`), critical and accent. A neutral 3 on vivid, and a critical 2 on glass over the map. Every filled count is a 20 px disc (`size.icon.md`). The critical disc decodes to `(229, 37, 42)`, which is `#E5252A`, `ref.color.status.danger.badge`.
@@ -499,6 +506,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
   - `danger-md` repeats RD-4: the references mark state in red and never make red a control.
 - **Closest image.** `on-glass-over-map`: a white solid circle with a locate crosshair, on a glass tile over the synthetic map. It is one of the traffic console's map controls, alone and not in its stack. Its name, "Center on the vehicle", is spoken, not drawn in the gallery, though the showcase apps print it in the example's props. It belongs to the fleet genre that RD-2 item 3 already names. It is one of RD-6's three parts.
 - **Verdict.** **Not a copy.** Single circles, each a control grammar that all eleven shots share and no one shot owns.
+
+*Pointer added 2026-09-26: on Apple the glass tile of `on-glass-over-map` sits where the synthetic route turns, and both of the route's legs run into it. In dark, that puts a white disc with a dark glyph where a white route turns, which is nearer the traffic console's puck in material than "one of the traffic console's map controls" says (RD-9). The verdict stands.*
 
 ### 9.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -589,7 +598,7 @@ None of them composes the others.
 
 1. **A pattern example screen lands**, as in §8 condition 1.
 2. **P5-1 rebuilds the board screens into the gallery**, as in §8 condition 2.
-3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.)
+3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id, so the examples this document names are §9.8's 67 and §10.7's 12. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
 4. **An example other than `IconButton/with-badge` composes more than one component in §9.3's sense**: a second component in a slot the example fills. Examples: Card's `body` or `aside` filled (RD-2), a chart in a ChartContainer, a Badge in any host other than `with-badge`, a TabBar or Sidebar item with a count. `with-badge` itself is reviewed in §9.4; a change to what it fills is condition 5's or condition 6's.
 5. **The notification composition moves towards the reference's bell** (RD-6, RD-7). That means any of these:
    - `with-badge`, or any IconButton with a badge, put on glass or over a map;
@@ -599,3 +608,216 @@ None of them composes the others.
 6. **A re-record after `deb6632` changes what an example draws**: an element added or removed, or a tone, a material or a glyph binding changed. The re-records before it, the 104 images of §9.1 and ADR-0035's rebinding (`d084a0e`) among them, are in what this section reviewed. A re-record that changes only how the same elements are drawn (a glyph path, a stroke width, antialiasing) does not expire it. That kind should still be compared as §9.1 compared the 104.
 
 **It is not a legal opinion**, for the reasons §8 gives.
+
+---
+
+## 10. Review of Avatar's examples — 2026-09-26
+
+- **Subject.** Avatar's **204 committed PNGs**, 108 Apple and 96 web, and the 108 cells that pair them in `gallery/index.html` and `gallery/index.json`. CI run 36201679261 recorded them, and `5522846` committed them (P4-7 3/3); CI run 36203923486 on that commit is green. With them the gallery holds 1380 images in 752 cells, 0 missing: 79 examples of 9 components (`gallery/index.json`, `counts`). This section reads the tree at `3fb52c9`, which changes none of those images (§10.1).
+- **Why.** §9.9 condition 3. None of Avatar's twelve examples is among the 67 that §9.8 names, so from `5522846` on, the gallery held twelve examples outside this clearance. This time the gap was stated the day it opened: the P4-7 row and the baselines commit both say so, which is what condition 3 was rewritten for (RD-5).
+- **Format.** As §9: what changed since the last dated section (§10.1), how the images were read (§10.2), which examples compose more than one component (§10.3), then per group what it is, the nearest reference by `references.json` shot id, the families mixed, what differs, and a verdict (§10.4). §10.5 gives one verdict per example. §10.9 says how the next component's section follows this one.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops and page screenshots made for this section stayed in the session scratchpad, and none is committed.
+
+### 10.1 What changed since 2026-09-23
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| Avatar landed: its spec settled, then both stacks, then its baselines | `f2f3982`, `1652695`, `d38e670`, `5522846` | 204 | no |
+| Chip's spec settled and its code landed on both stacks, with no baseline yet. Its gallery section is still anchors. | `e2f9f5b`, `3fb52c9` | 0 | nothing to read in the gallery yet (§10.9) |
+| Icon went to specVersion 3 (SD-7) and Button to 5 (G-24), and neither drew anything new | `37e445d`, `2f82fd1` | 0 | — |
+
+Between `deb6632` and `3fb52c9`, a diff over both baseline roots adds the 204 Avatar images and modifies or removes none. Every image §9 read is unchanged, and Avatar's are the only new pixels in the gallery.
+
+**§9.9's conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 fired for Avatar's twelve examples, and this section answers it. Chip's thirteen examples have no image yet; they fire it when P4-8's baselines land.
+- Condition 4 did not fire. Avatar declares no slot, so no Avatar example can put a second component in one. Chip's `md-with-avatar` fills Chip's `avatar` slot with an Avatar, the first example of an implemented component since `IconButton/with-badge` to fill a slot. It fires condition 4 with its first image (§10.9).
+- Condition 5 did not fire. Nothing in the diff touches a badge, a bell or the neighbours of a round button.
+- Condition 6 did not fire. No baseline was re-recorded.
+
+### 10.2 Method
+
+- **Every image, on both stacks.** All 204 were opened. Each example got one contact sheet with its four scheme × density rows. Each row holds the `ios` image, its `increased-contrast` twin, its `reduce-transparency` twin where there is one, and both web platform keys, all at 2× nearest-neighbour. The circles and the map grounds were then opened again at 3–5×.
+- **Decoded, not read by eye.** A PNG decoder read the page colour, each circle's box, its fills and the ring's pixels, the box and ink of the initials, and, on the Apple map grounds, the route's pixels along both of its legs. Every colour below is a decoded pixel. Every size is a decoded box or a token value, and each says which.
+- **Byte comparisons.** Every `web-touch` image is byte-identical to its `web-desktop` twin (48 of 48), and `decorative` to `image-md` on both stacks (16 of 16). For `image-md`, `ringed`, `size-lg`, `decorative` and `fallback-icon`, the `increased-contrast` twin is byte-identical to the standard image in all four rows. For `ringed-over-map`, the `reduce-transparency` twin is byte-identical to the `increased-contrast` one.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, from a scratchpad copy with `snapshots/<Component>/<file>` mapped to the committed baselines, as §9.2 did. All 204 images decode there.
+- **The references.** The four shots the component inventory counts for Avatar (4 of 11: 27597487, 27678963, 27220417 and 27619812), from their written analyses. For the two map examples, the map layers of the traffic and incident consoles. The board's own review is used as a calibration point (§10.4.3). Two analyses also describe list rows with 40 px avatars in a video poster of a different product. The inventory does not count those, and neither does this section.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 682 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current. This section names two registry ids and none of Apple's symbol names, which ADR-0013 keeps out of documents.
+
+### 10.3 Which Avatar examples compose more than one component
+
+In §9.3's sense, none does: Avatar declares no slot. Each example is of one or two of §9.3's other kinds.
+
+| Kind (§9.3) | Avatar examples | Why |
+|---|---|---|
+| A second component that the host draws as a part of its own anatomy | **Icon**, from the absence of a name: `fallback-icon`, whose `fallbackIcon` part draws `object.user`. **Text**, from `name`: the six examples that show letters, `initials-md`, `initials-one-word`, `size-sm`, `initials-over-map`, `on-glass-over-image` and `russian-initials`. Both stacks set the initials with Text in code (`Avatar.tsx`, `DSAvatar.swift`). | The example passes a string, not a component. The host draws the result in its own `initials` and `fallbackIcon` parts, and a reader sees one circle. |
+| Staged inside a Surface, because the example declares a material | `on-glass-over-image`, whose `surface` is `glass` and whose `backdrop` is `image` | The harness wraps the avatar in a glass Surface of `radius.card` over the synthetic image. The Surface carries nothing but the avatar. |
+| One component over a synthetic backdrop | `ringed-over-map` and `initials-over-map`, whose `surface` is `map` | The harness puts the avatar straight on the synthetic map, which the stage declares through `Backdrop` (`dsBackdrop` on Apple, ADR-0036 §8). The circle renders the glass chip itself. This is §9.3's fourth row, with one difference: there the component was itself a Surface, and here it is the Surface module's other shape, the chip (ADR-0036). |
+| One component on the page ground, and nothing else | `image-md`, `initials-md`, `initials-one-word`, `fallback-icon`, `ringed`, `size-sm`, `size-lg`, `decorative` and `russian-initials` | — |
+
+The portrait is not a component. It is SCHEMA's `portrait` fixture, a picture each gallery draws from tokens and hands to the `image` prop (`spec/SCHEMA.md`, "Slot content in examples"). So `image-md`, `ringed`, `size-lg`, `decorative` and `ringed-over-map` each draw one component.
+
+The rows count 9 examples on the page ground, 7 with a part drawn by a second component, 1 inside a staging Surface and 2 straight on the map, which is 19 placements for 12 examples.
+
+### 10.4 The groups
+
+#### 10.4.1 The portrait circles — `image-md`, `ringed`, `size-lg`, `decorative`: 4 examples, 64 images
+
+- **What it is.** One circle on the page ground, holding the `portrait` fixture:
+  - **The portrait.** Back to front, decoded, the same on both stacks: a square in `color.chart.series.4`, teal at `(31, 143, 128)` in light and `(91, 200, 181)` in dark; the shoulders, an ellipse in `series.3`, at `(78, 108, 205)` and `(107, 132, 224)`; and the head, a circle in `series.2`, at `(184, 86, 26)` and `(243, 148, 68)`. Series slot 2 is the accent (`accent.700` in light, `accent.500` in dark), so the head is the brand's orange.
+  - **Size.** The decoded boxes agree on both stacks. `image-md`, `ringed` and `decorative` are 40 at regular and 32 at compact (`size.control.md`), and `size-lg` is 44 and 40 (`size.control.lg`). Each circle is centred in its frame to the pixel.
+  - **The ring.** `ringed` adds a ring flush inside the circle's edge, `border.strong` (1.5) in `comp.avatar.ring`, the inverse solid. Its outer pixel decodes `(13, 14, 17)` in light and `(255, 255, 255)` in dark on Apple, and the next pixel blends into the portrait. The circle's box does not grow (behavior 6).
+  - **`decorative`** draws what `image-md` draws, byte for byte on both stacks. Only what it exposes to assistive technology differs. The name its description says is written beside it is not drawn.
+  - **The frames.** On Apple, a tight crop with 24 pt of page around the circle (88 × 88 for md at regular). On the web, the story's stage (168 px).
+  - **Increase Contrast** changes nothing in any of the four. Their twins are byte-identical.
+- **Nearest reference.** The round photographs that the component inventory counts in four desktop shots:
+  - the **traffic console 27220417**: a 44 px circle photo with no ring at the right end of its top bar, after a search pill and four 44 px round buttons (its analysis §5 and §6). The **incident console 27619812** re-posts those frames;
+  - the **finance monitor 27597487**: a 36 px round photo in its header, trailing the utility icons, with a name at 13/400 and a grey role at 11/400 beside it;
+  - the **finance dashboard 27678963**: a 44 px avatar with a 2 px ink ring at the foot of its left rail. Above it are six 44 px outline circles, a chevron expander and a support button (its analysis §1 and §6). This is `ringed`'s nearest reference. Avatar.yaml describes `ringed` as "the one active avatar in a rail", and its `notes.design` maps that 2 px ring to `border.strong`.
+- **Families mixed.** The round photo at control height of the four desktop shots (the incident console's analysis: "44 px everywhere"), and the finance dashboard's ink-ringed rail avatar.
+- **What differs.**
+  - *No photograph, and no one in it.* Every reference avatar is a photograph of a person. The fixture is three flat token shapes, a head over shoulders, which is every platform's placeholder silhouette. SCHEMA forbids a file name or a URL in its place, so no photograph can reach the gallery through this prop.
+  - *Colour.* Three flat chart-series colours: a teal ground, a periwinkle body and an orange head. The references' avatars carry whatever colours their photographs hold.
+  - *Alone.* Each circle stands alone on the page. None has the bar, the rail, the neighbouring round buttons or the name-and-role lock-up that place every reference avatar.
+  - *Geometry.* The size comes from density: 40 or 32 for md, 44 or 40 for lg, where the references use a fixed 36 or 44. `size-lg` at regular is exactly the references' 44, because 44 is also Prism's large control height (visual-dna §1 principle 13).
+  - *The ring.* A 1.5 stroke inside the circle, and white in dark, where the reference's is a 2 px ink ring on a light page. It is a principle with a number (ADR-0015 rule 2), and it is the nearest part in the group.
+- **Where the defence would stop.** `ringed` is not a copy because it stands alone.
+  - A ringed avatar at the foot of a strip of outline circles, under an expander and beside a support control, would be the finance dashboard's rail. `Sidebar.yaml` specifies that strip in its `rail` example: RD-10.
+  - An avatar at the trailing end of a row of round buttons after a search field would be the traffic console's top bar. RD-7 already names that cluster in `TopBar.yaml`. With Avatar implemented, TopBar, PillTabs and SearchField are its only parts still unbuilt.
+
+  Both would fill a slot with an Avatar in a new example, so conditions 3 and 4 fire before either reaches a release.
+- **Verdict.** **Not a copy**, each of the four. A token pictogram in a circle, alone on the page.
+
+#### 10.4.2 The lettered and glyph circles — `initials-md`, `initials-one-word`, `size-sm`, `russian-initials`, `fallback-icon`: 5 examples, 80 images
+
+- **What it is.** One circle on the page ground in `comp.avatar.bg`, the raised step. It decodes `(247, 248, 250)` on a `(241, 242, 245)` page in light and `(35, 36, 38)` on `(13, 14, 17)` in dark, the same fill as IconButton's secondary puck (§9.4) without its ring. Inside it:
+  - **Letters.** `initials-md` "AP" and `russian-initials` "АП", from the invented "Anna Petrova" and "Анна Петрова"; `initials-one-word` "N", from "Northgate", a site; and `size-sm`, "AP" at `sm`. They are upper case in `type.label.*` and `color.text.secondary`, which decodes `(92, 96, 104)` in light and `(176, 176, 177)` in dark on Apple, within four units on the web. Under Increase Contrast it goes to `(64, 68, 76)` and `(211, 211, 212)`. On both stacks the letters' box sits within a pixel of the circle's centre: "AP" is 17 × 9 on Apple and 17 × 10 on the web.
+  - **A glyph.** `fallback-icon` draws the registry's `object.user`, an outline figure. On the web it is Phosphor's drawing, and on Apple it is the system symbol that the registry binds (ADR-0013). They decode at 16 × 16 and 15 × 17.
+  - **Sizes.** 40 and 32 for md, 32 and 28 for `size-sm`, decoded on both stacks.
+- **Nearest reference.** None as a composition. All four reference avatars are photographs, and no shot sets initials or a placeholder glyph in a circle. The move is the monogram that every contacts list and account menu draws when it has no photo.
+- **Families mixed.** The round control height of the desktop shots, and the one upper-case exception to visual-dna §2.5, which Avatar.yaml records.
+- **What differs.** Letters or a glyph on a neutral circle, with nothing around them. No shot carries Cyrillic.
+- **Verdict.** **Not a copy**, each of the five. A monogram alone on a stage is nobody's expression.
+
+#### 10.4.3 Over the map — `ringed-over-map`, `initials-over-map`: 2 examples, 40 images
+
+- **What it is.** An md avatar straight on the synthetic map (§10.3). `ringed-over-map` is the portrait with the ring. `initials-over-map` is "AP" with no portrait, so that the chip itself is photographed. The two stacks stage it differently, and the difference is this section's main finding.
+  - **The circle.** Over the map the circle is the Surface module's glass chip, blurred and with its edge (ADR-0036). `initials-over-map` shows it. In light it is a pale chip, `(222, 223, 228)` on Apple, with ink initials. In dark it is a smoked one, `(41, 43, 47)`, with white initials. The web's chip decodes differently because a different part of the map lies under it, as the P4-7 review recorded. In `ringed-over-map` the ring is `color.border.on-glass-fill`, which is translucent: its outer pixel decodes `(23, 85, 78)` in light and `(156, 222, 211)` in dark, where the page's `ringed` decodes `(13, 14, 17)` and `(255, 255, 255)`. Under Increase Contrast and Reduce Transparency the chip falls back to raised, and the ring to `comp.avatar.ring`, the inverse solid.
+  - **The web.** A 136 px plate of the web map (128 at compact): a block field with two building rectangles, a park, a water lozenge and two crossed roads, with no route. The avatar sits at the plate's centre, next to the crossing of the two roads.
+  - **Apple.** The tight crop draws the whole Apple map into 88 × 88 pt (80 at compact), and the avatar covers its centre. That is where both roads cross and where the route turns. `DSExampleMap` draws the route from 10 % of the width along the horizontal road to the centre, then up the vertical road to 12 % of the height (`swift/Sources/DSComponents/Examples/DSExampleStage.swift`). So in all 24 Apple images a 4 pt route, `color.map.route` on its casing, runs into the circle: `(13, 14, 17)` in light and `(255, 255, 255)` in dark, for 15 px from the leading side and 13 px from the top (16 and 14 at compact), decoded along each leg. Under the two forced states the ring of `ringed-over-map` takes the route's own colour and the two meet, which adds a pixel of route colour to each leg.
+- **Nearest reference.** The consoles' maps:
+  - the **traffic console 27220417**'s live map, which the **incident console 27619812** re-posts (the traffic analysis, §6 and §7). A 44 px vehicle puck, white at 85 %, with a dark navigation-arrow glyph and a soft shadow, sits inside a dashed radar ring about 60 px in radius. It rides a solid white 3 px route, beside a dashed planned route and an orange highlighted segment that glows. Category-coloured 24 px pins mark places, the ground is a desaturated satellite map, and a glass KPI card anchored beside the puck reads it out;
+  - the **mini route map** in the same shot's vehicle card: a dark tile with a fine street grid, a white 2 px polyline with 90° bends, and a small white pin at its origin;
+  - the **incident console 27571204**'s incident marker: a 32 pt red glass disc inside an 80 pt dashed red halo, on a road segment recoloured red.
+- **Families mixed.** The consoles' round glass buttons over the map, whose fill is a white tint the map shows through (the incident analysis, mobile), and the traffic console's rule that glass appears only where it refracts something (its §9.6). Nothing of the consoles' markers is used: no heading arrow, no ring of dashes, no pin.
+- **What differs.**
+  - *What the mark is.* A person, not a vehicle: a portrait pictogram or two initials, where the reference's puck carries a heading. A person's position on a route is the genre of every location-sharing or delivery screen; a vehicle's is the reference's.
+  - *What is around it.* No dashed ring or halo. `ringed-over-map`'s ring is a solid 1.5 stroke flush with the circle. No readout card stands beside the mark, and there are no pins, no planned route, no highlighted segment and no glow.
+  - *The ground.* Four flat token colours (blocks with a building each, an elliptical park, a curved river, two roads) against a satellite photograph. On the web there is no route at all.
+  - *The route.* One undashed polyline with one bend, the element §3.4 found in common, unchanged.
+  - *Its size in the frame.* At 88 pt the circle is almost half the frame's width. The reference's mini map puts a small pin on a 110 px tile, and its live puck is a 44 px mark on a full-screen map.
+- **Calibration.** The board's ride report, which the owner signed off on 2026-09-16, keeps more of 27220417's map than these images, and says so. Its list of what it keeps names "a dashed ring around a map object", "a vertical stack of round glass buttons on the map" and "an accent route segment with a glowing dot" ([README.md](README.md), "What it keeps of 27220417"), and its route has a start ring of the board's own. These images draw a route and one round mark on it, and nothing else from that list.
+- **Verdict.** **Not a copy**, either example, on either stack. On Apple they are, with `IconButton/on-glass-over-map`, the nearest images in the gallery to 27220417's map. They are nearer than the ground §3.4 reviewed on its own, because a mark now stands on the route where §3.4 found "no endpoint of any kind". See **RD-9**.
+
+#### 10.4.4 On glass over the image — `on-glass-over-image`: 1 example, 20 images
+
+- **What it is.** "AP" with the ring, on a glass Surface tile of `radius.card` over the synthetic image. On Apple the tile is 88 pt (64 at compact), in a 136 pt crop that the image fills edge to edge. On the web it is 88 px, on a 184 px image plate in a 312 px stage. Inside the glass the chip is flat, with its fill and edge and no blur, so no chip blurs glass a second time (ADR-0036 §5). It decodes `(237, 241, 244)` in light and `(18, 21, 25)` in dark on Apple. The ring is `color.border.on-glass-fill`, a grey whose outer pixel decodes `(140, 142, 144)` in light and `(137, 138, 140)` in dark. The initials are `color.text.on-glass-fill`, ink in light and white in dark. Under the forced states the tile falls back to raised, and the ring to the inverse solid: `(14, 15, 18)` in light and `(255, 255, 255)` in dark.
+- **Nearest reference.** The consoles' round glass buttons over their maps, and the finance dashboard 27678963's outline circle on glass, a white ring at 28 % with a white glyph (its analysis §6). A portrait under glass appears in the traffic console's selected vehicle card, whose header is a driver's photograph behind blur. This example is the opposite arrangement: letters on glass, not a photograph under it.
+- **Families mixed.** Glass where it refracts something, and a ring in the on-media stroke.
+- **What differs.** One lettered circle on a tile, anchored to nothing and with nothing beside it. No reference sets initials, and none puts an avatar on glass.
+- **Verdict.** **Not a copy.**
+
+### 10.5 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 19–30 continue §9.6's numbering, one row per example.
+
+| # | Example | Copy? | Why |
+|---|---|---|---|
+| 19 | `image-md` (§10.4.1) | **No** | A token pictogram in a circle, alone. Every reference avatar is a photograph in a bar or a rail. |
+| 20 | `initials-md` (§10.4.2) | **No** | A monogram on a raised circle. No reference sets initials. |
+| 21 | `initials-one-word` (§10.4.2) | **No** | One letter, the same move. |
+| 22 | `fallback-icon` (§10.4.2) | **No** | A vendor glyph on a raised circle. No reference draws a placeholder. |
+| 23 | `ringed` (§10.4.1) | **No** | The nearest image on the page ground: the finance dashboard's ink-ringed rail avatar, without the rail. RD-10 names where that rail is specified. |
+| 24 | `size-sm` (§10.4.2) | **No** | As row 20, at 32 and 28. |
+| 25 | `size-lg` (§10.4.1) | **No** | As row 19. At regular it is 44, Prism's large control height and also the references' avatar size. |
+| 26 | `decorative` (§10.4.1) | **No** | Byte-identical to `image-md` on both stacks. |
+| 27 | **`ringed-over-map`** (§10.4.3) | **No, and on Apple one of the gallery's nearest images to a reference's map** | A portrait mark where the Apple route turns. What makes 27220417's puck a product's is absent: the heading arrow, the dashed ring, the readout card beside it, the satellite ground and the pins. RD-9. |
+| 28 | **`initials-over-map`** (§10.4.3) | **No**, as row 27 | A glass chip with initials at the same bend. RD-9. |
+| 29 | `on-glass-over-image` (§10.4.4) | **No** | A ringed monogram on a glass tile, anchored to nothing. |
+| 30 | `russian-initials` (§10.4.2) | **No** | Cyrillic initials. No shot carries Cyrillic. |
+
+**Summary.** No Avatar image at `5522846` is close enough to one product that a reasonable person would call it a copy. The nearest are the two map examples on Apple, which put a round mark where the synthetic route turns, and `ringed`, whose nearest reference is a rail avatar with an ink ring. In each, the part is present and the composition that makes the reference's part a product's is not. RD-9 and RD-10 say where that stops.
+
+### 10.6 Findings of this review
+
+#### RD-9 — On Apple, every example staged on the map sits where the synthetic route turns, and Avatar's two put a bare mark there
+
+**What.** `DSExampleMap` turns its route at the centre of the ground: from (0.1 w, 0.5 h) along the horizontal road to the centre, then up the vertical road to (0.5 w, 0.12 h). The Apple stage centres every example, and its tight crop draws the whole map into the frame. So on Apple every example staged over the map covers the route's bend, 104 images in all. The pixels show three cases:
+- **Avatar's two.** Nothing stands between the route and the mark: a 40 pt disc at the bend, with a 4 pt leg of 15 px from the leading side and one of 13 px from the top, decoded in all 24 images.
+- **`Text`, `Divider`, `Icon`, `Badge` and `IconButton`'s `on-glass-over-map`.** One leg or both run into the glass tile that holds the component.
+- **`Surface/glass-over-map`.** Its 200 pt slab covers the route whole.
+
+The web map draws no route, so no web image shows any of this.
+
+**Why it matters.**
+1. §3.4 cleared the Apple ground partly on what it lacks: "no marker, no pin, no puck" and "no endpoint of any kind". That is still true of the ground, but it was never true of what the gallery stages on it. Since wave 1, `Icon/on-glass-over-map` has put a map-pin glyph where the route turns, and `IconButton/on-glass-over-map` a white disc with a dark locate glyph, each in a glass tile, and §9.5 reviewed both without saying where they sit. Neither verdict moves, because each is a tile rather than a mark on the route. But in dark, IconButton's is a white disc with a dark glyph where a white route turns, which is nearer the traffic console's puck in material than §9.5.4 said.
+2. Avatar's two are the first bare marks on the route, and a round mark on a route is a position on a map. That is the genre of every location-sharing screen, while the reference's mark is a vehicle's. The distance rests on what is absent (§10.4.3). The gallery already holds most of the other parts, each in a different example: the route; a mark at its bend; a locate control and a pin on glass at the same point; a readout on glass over the map (`Surface/glass-over-map`, `Text/on-glass-over-map`); and a fleet-unit glass card over the image (`Card/glass-vehicle`, RD-2 item 3). A composition that put them together would be 27220417's live map part for part, apart from the satellite ground, the heading arrow and the dashed ring.
+
+**What would help, and what it costs.** The one cheap change is in the harness: turn the Apple route somewhere other than the centre. It would move all 104 Apple map images through the sanctioned re-record route, and those re-records would fall under condition 6. It would buy little: a mark on a straight route still reads as a position on a map, and the route exists to put a high-contrast line under the glass (§3.4). This review does not recommend it on distance grounds, and it is not taken here, because this ticket changes no component and no harness. The finding is recorded so that §3.4's sentence is not read as a description of what the gallery shows on it. §10.8 condition 7 makes a composition that moves the mark towards the reference's an expiry condition.
+
+#### RD-10 — Sidebar's `rail` example specifies the finance dashboard's rail, and Avatar is its last missing part
+
+**What.** Avatar.yaml describes `ringed` as "the one active avatar in a rail". Its nearest reference is the avatar with a 2 px ink ring at the foot of the finance dashboard 27678963's left rail: six 44 px outline circles and a chevron expander, then a support button and the avatar. `Sidebar.yaml` specifies that rail. Its `rail` variant is "the narrow strip of round buttons", its footer is "the bottom cluster - a support control, an Avatar", and its collapse control is an IconButton. Its own `notes.design` quotes the inventory's "icon rail of outline circles with an expander, a support button and an avatar". Its `rail` example sets `footer: true`.
+
+**Why it matters.** Sidebar is unimplemented (P4-45), so no screen draws it and nothing is uncovered today. But it is where `ringed`'s defence stops, as TopBar's `desktop-navigation` is where `with-badge`'s does (RD-7). A ringed avatar at the foot of a strip of outline circles, under an expander and beside a support control, is that shot's rail. What `footer: true` draws is not settled yet: SCHEMA renders a slot given `true` as the one component its anatomy names, and this footer names two, so P4-25 decides it.
+
+**Action.** None now. The `rail` example must be read in a dated section before any release that ships it, and condition 4 fires on it as soon as its footer holds an Avatar. Recomposing it is cheap while Sidebar is unimplemented: for instance a footer without the support control, a footer avatar without a ring, or a rail without the expander. The P4-45 row carries this.
+
+### 10.7 Coverage
+
+| Component | Examples | Images | Reviewed in | Verdict |
+|---|---|---|---|---|
+| Avatar | 12 | 204: 108 Apple, 96 web | §10.4.1 (`image-md`, `ringed`, `size-lg`, `decorative`: 64 images), §10.4.2 (`initials-md`, `initials-one-word`, `size-sm`, `russian-initials`, `fallback-icon`: 80), §10.4.3 (`ringed-over-map`, `initials-over-map`: 40) and §10.4.4 (`on-glass-over-image`: 20) | not a copy; RD-9, RD-10 |
+| The eight components of §9.8 | 67 | 1176 | §9.8 | unchanged since `deb6632` (§10.1) |
+| **Total** | **79** | **1380** | | |
+
+§7's list of sections with no image now stands for 48 components, Chip among them until its baselines land, and for the three patterns and the documentation chrome, for the reasons §7 gives.
+
+**The 12 examples, by id.** Together with §9.8's 67, this list is what §9.9 condition 3 means by an example this document names.
+
+- Avatar: `image-md`, `initials-md`, `initials-one-word`, `fallback-icon`, `ringed`, `size-sm`, `size-lg`, `decorative`, `ringed-over-map`, `initials-over-map`, `on-glass-over-image`, `russian-initials`.
+
+### 10.8 What this clearance covers, and when it expires
+
+**It covers** the gallery at `5522846`, unchanged at `3fb52c9`: all 1380 images, 79 examples and 9 components. That is the 67 examples §9 read and the 12 this section reads. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires, or stops covering part of the gallery, on any of these.** §9.9's six conditions stand, condition 3 is read as below, and condition 7 is new.
+
+- **Condition 3, read with this section: any example no dated section names.** §9.8 names 67 examples by id, and §10.7 names 12. A later section that reviews a component adds its own list (§10.9), and an example on none of the lists is outside this clearance. The rest of §9.9 condition 3 stands as written.
+- **Condition 7, new: a mark on the map moves towards 27220417's** (RD-9). That means any of these:
+  - a mark staged on the map ground given a heading arrow, a vehicle glyph (`object.bus`) or a vehicle identifier;
+  - a dashed ring or a halo drawn around anything on the map ground;
+  - a glass readout card or tile set beside a mark on the map, in one composition. A pattern screen or P5-1's rebuilt ride report already expires this clearance by condition 1 or 2, and this names what their review has to read;
+  - the synthetic map gaining a second route, the dashed route ahead (`color.map.route-ahead`), an accent segment, a glow or pins;
+  - the `portrait` fixture gaining a photograph or a face.
+
+RD-10's rail is covered by conditions 3 and 4, as RD-7's cluster is by conditions 3 and 5.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+### 10.9 How the next component's section follows this one
+
+Chip (P4-8) lands its baselines next. Its section, and each one after it, does what this one did:
+
+1. **Subject and why.** The component's images, the commit that recorded them, and the condition that fired.
+2. **What changed since the last dated section.** A diff over both baseline roots from the last section's commit: every image added, modified or removed, and each condition of §9.9 and §10.8 read against it.
+3. **Method.** Every image opened on both stacks, every colour and box it quotes decoded, the gallery page opened, and the two gates run with the section in the tree.
+4. **Composition.** Each example filed under §9.3's kinds.
+5. **Groups, verdicts, findings and coverage.** A group for each set of examples a reader perceives as one, and one verdict per example continuing §10.5's numbering from row 31. Findings are numbered from RD-11. The examples are listed by id, which is the list condition 3 reads.
+6. **Tracking.** The list of dated sections at the top of this document, the P5-2 row, the component's own row, `docs/legal-checkpoint.md` §5.2, and the conditions in force in the board's [README.md](README.md).
+
+For Chip in particular, four things are already known, three of them from its spec. None of them is a verdict.
+- `md-with-avatar` fills Chip's `avatar` slot with an Avatar, so it fires condition 4. The Avatar in it is read here only as a component on its own (§10.4.2), not as it sits in a chip.
+- `on-map` and `selected-on-map` stand straight on the map ground, so on Apple they will sit where the route turns (RD-9, condition 7).
+- `identifier-copy` labels a chip "B-4417", with the invented unit number of `Card/glass-vehicle`, which RD-2 item 3 places in 27220417's genre.
+- Both showcase apps have staged Chip's thirteen examples since `3fb52c9`. What that fires is read by the showcase review's §12.7, not by this document.
