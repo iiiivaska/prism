@@ -4,8 +4,9 @@ specVersion: 1
 status: draft
 summary: >-
   A short, mutually exclusive choice shown in full: a trackless row of pills where exactly one is the
-  inverse solid and its siblings are hairline outlines. It is the pill grammar plus the inverse-solid
-  active rule, so a group never gets a filled track behind it and never uses the accent to say "active".
+  inverse solid and its siblings draw no outline, bare labels on the page and floating glass chips over
+  media, as the signed-off board draws them. It is the pill grammar plus the inverse-solid active rule, so
+  a group never gets a filled track behind it and never uses the accent to say "active".
 since: 0.1.0
 
 platforms:
@@ -95,16 +96,11 @@ tokens:
         vivid: material.glass.chip.edge.end
       vivid: material.glass.chip.edge.end
       glass: material.glass.chip.edge.end
-    border:
-      default: color.border.hairline
+    shadow:
       page:
-        default: color.border.hairline
-        map: color.border.on-glass-fill
-        image: color.border.on-glass-fill
-        vivid: color.border.on-media
-      vivid: color.border.on-media
-      glass: color.border.on-glass-fill
-    borderWidth: border.hairline
+        map: elevation.2
+        image: elevation.2
+        vivid: elevation.2
     radius: radius.control
     height:
       sm: size.control.sm
@@ -125,6 +121,7 @@ tokens:
         vivid: color.bg.fill.inverse-media
         glass: color.bg.fill.inverse
         accent: color.bg.fill.inverse
+      shadow: elevation.0
     focus-visible:
       ring: color.border.focus
       ringWidth: border.focus
@@ -173,9 +170,9 @@ tokens:
 behavior:
   - Exactly one segment is selected at all times; pressing another moves the selection and fires `onChange` once on release inside the segment.
   - "The group draws no track: the row has no fill, no border and no shadow, and its segments are separated by a space.1 gap only."
-  - The selected segment is the one inverse solid in the group (ink on light, white on dark) and carries the opposite-colored label and glyph; every other segment is a hairline outline with a secondary label.
-  - On a vivid surface the selected segment becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media) and the unselected outlines take color.border.on-media; on the scheme's glass the solid is color.bg.fill.inverse, which is already ink on light glass and white on smoked glass.
-  - Over a map, imagery, a vivid surface or the scheme's glass the unselected segments render the glass chip and carry color.text.on-glass-fill, so the row reads as glass chips with one solid among them; the selected segment keeps its solid fill and never takes the chip.
+  - The selected segment is the one inverse solid in the group (ink on light, white on dark) and carries the opposite-colored label and glyph; on the page every other segment is a bare pill, its secondary label with no fill and no outline, as the signed-off board draws its trackless segments. No segment draws an outline, the selected one included, because each is identified by its label.
+  - On a vivid surface the selected segment becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media); on the scheme's glass the solid is color.bg.fill.inverse, which is already ink on light glass and white on smoked glass.
+  - Over a map, imagery, a vivid surface or the scheme's glass the unselected segments render the glass chip and carry color.text.on-glass-fill, so the row reads as glass chips with one solid among them. Straight on the page over a map, imagery or a vivid backdrop each chip floats at elevation.2 with no ring, as the board's map controls do; inside a vivid or glass Surface it is flat, as the board's chip in a vivid card's header is. The selected segment keeps its solid fill at elevation.0 and never takes the chip.
   - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where a segment renders glass. On the scheme's glass a segment draws the fill and the edge and no blur or saturation, so no chip blurs glass a second time (ADR-0036 §5)."
   - The hit region of each segment is the larger of its visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); the invisible extension never overlaps a neighbor, so a row keeps its gaps.
   - "Labels never wrap and never truncate: a segment that cannot show its whole label means the choice belongs in a Select. At most four segments."
@@ -197,8 +194,8 @@ accessibility:
   traits: [button, selected]
   keyboard: arrow keys move the selection inside the group and wrap at its ends, Home and End move to the first and last segment, Tab enters and leaves the group as one stop, and the focus ring is color.border.focus at border.focus width outside the segment's pill
   dynamicType: labels scale with type.label.*; the segments grow with them up to the accessibility3 size and then the row wraps to a vertical stack rather than truncating a label
-  contrast: the selected pair is color.text.on-inverse on color.bg.fill.inverse, and color.text.on-inverse-media on color.bg.fill.inverse-media on vivid; unselected labels are color.text.secondary, functional on page, surface and raised, and color.text.on-glass-fill on material.glass.chip over media; on an accent surface the unselected label is color.text.on-accent-secondary on color.bg.fill.accent; the hairline outline is decorative, because the label already identifies the segment
-  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws an unselected segment that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; that segment publishes raised, so every part takes its default cell, color.border.hairline for the outline and the secondary tones for the label and glyph; the selected segment keeps its solid, and inside a glass parent, which falls back to raised itself, it takes its default cell, comp.segmented-control.active.bg
+  contrast: the selected pair is color.text.on-inverse on color.bg.fill.inverse, and color.text.on-inverse-media on color.bg.fill.inverse-media on vivid; unselected labels are color.text.secondary, functional on page, surface and raised, and color.text.on-glass-fill on material.glass.chip over media; on an accent surface the unselected label is color.text.on-accent-secondary on color.bg.fill.accent; no segment draws an outline, so none owes a boundary pair, because the label identifies the segment
+  reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws an unselected segment that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius and elevation; blur, saturation and the inner edge are dropped; that segment publishes raised, so every part takes its default cell, the secondary tones for the label and glyph, and it draws no outline; the selected segment keeps its solid, and inside a glass parent, which falls back to raised itself, it takes its default cell, comp.segmented-control.active.bg
   reduceMotion: the incoming segment does not scale; the fill change crossfades to comp.segmented-control.active.bg over motion.duration.base with motion.easing.out, and nothing slides between segments
   voiceOver: each segment announces its label and whether it is selected; the group announces its own label once on entry
 
@@ -255,6 +252,11 @@ notes:
     takes the solid, because a stroke-marked active pill is a selected Chip and the two must not look
     alike. The folder-tab and image-chip variants are app compositions, not this primitive, and the
     truncated label of one sighting is refused here: a segment that cannot show its label belongs in a
-    Select. Anti-pattern 24 forbids a filled track and a second solid in one group. Example strings
-    are invented (ADR-0015 rule 3).
+    Select. Anti-pattern 24 forbids a filled track and a second solid in one group. The unselected
+    segments carry no outline because the signed-off board draws none: bare pills on the page (its
+    "trackless segments") and, over the map, glass chips at elevation.2 with no ring. This spec drew a
+    hairline there until 2026-09-26, when the owner settled the board's disagreement by what each outline
+    is for (critic C-32): this one was decorative, since the label identifies the segment, so the board
+    wins at no accessibility tier, while TextField keeps the edge that identifies it. With no outline
+    left, the selected segment wears none either. Example strings are invented (ADR-0015 rule 3).
   references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

@@ -280,7 +280,7 @@ extension DSShowcaseCatalog {
     static let specSegmentedControl: DSComponentEntry = DSComponentEntry(
             name: "SegmentedControl",
             layer: "primitive",
-            summary: "A short, mutually exclusive choice shown in full: a trackless row of pills where exactly one is the inverse solid and its siblings are hairline outlines. It is the pill grammar plus the inverse-solid active rule, so a group never gets a filled track behind it and never uses the accent to say \"active\".",
+            summary: "A short, mutually exclusive choice shown in full: a trackless row of pills where exactly one is the inverse solid and its siblings draw no outline, bare labels on the page and floating glass chips over media, as the signed-off board draws them. It is the pill grammar plus the inverse-solid active rule, so a group never gets a filled track behind it and never uses the accent to say \"active\".",
             since: "0.1.0",
             specVersion: 1,
             specPath: "spec/components/SegmentedControl.yaml",
@@ -453,7 +453,7 @@ extension DSShowcaseCatalog {
                 DSSpecExample(id: "default-three-rows", props: [("label", .string("Shift notes")), ("placeholder", .string("What happened on this run?")), ("rows", .number(3))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
                 DSSpecExample(id: "with-value", props: [("label", .string("Shift notes")), ("value", .string("Loader two idled for eleven minutes while the north gate was closed."))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
                 DSSpecExample(id: "helper-row", props: [("label", .string("Shift notes")), ("placeholder", .string("What happened on this run?")), ("helper", .string("Visible to the yard supervisor"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
-                DSSpecExample(id: "counter", props: [("label", .string("Shift notes")), ("value", .string("Loader two idled for eleven minutes.")), ("maxLength", .number(280))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
+                DSSpecExample(id: "counter", props: [("label", .string("Shift notes")), ("value", .string("Loader two idled for eleven minutes.")), ("maxLength", .number(280))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: "the counter reads 36/280, the value's length and the limit, drawn and spoken as characters"),
                 DSSpecExample(id: "invalid", props: [("label", .string("Shift notes")), ("value", .string("ok")), ("isInvalid", .bool(true)), ("errorText", .string("Describe what happened in at least ten characters"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
                 DSSpecExample(id: "auto-grow-capped", props: [("label", .string("Shift notes")), ("rows", .number(3)), ("maxRows", .number(8)), ("growsWithValue", .bool(true))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),
                 DSSpecExample(id: "readonly", props: [("label", .string("Shift notes")), ("value", .string("Loader two idled for eleven minutes.")), ("isReadOnly", .bool(true))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),

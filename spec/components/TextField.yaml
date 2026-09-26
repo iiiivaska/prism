@@ -350,6 +350,13 @@ notes:
     takes color.border.boundary rather than §7.5's border.hairline: a hairline is 1.26:1 and ADR-0011 puts
     input borders in the 3:1 boundary tier, which ADR-0030 §3.2 assigns to a control identified only by
     its edge; on the accent fill that role reaches only 2.4:1, so the edge there is
-    color.text.on-accent-secondary, the pair ADR-0030 §3.4 checks on that material. Tabular figures on a
-    typed number are ADR-0021 §5 and §2.4 of the visual DNA. Example strings are invented (ADR-0015 rule 3).
+    color.text.on-accent-secondary, the pair ADR-0030 §3.4 checks on that material. The signed-off board
+    draws its field differently, as a filled pill of color.bg.surface.nested with no edge (the "nested
+    field" of its controls figure, a search pill), and Prism keeps the edge on purpose: the nested fill is
+    about 1.13:1 on color.bg.page, so a field without its edge would be identified by a step no pair
+    checks. The owner settled it on 2026-09-26 by what each outline is for (critic C-32): SegmentedControl's
+    decorative hairline follows the board and goes, and this edge, which identifies the field, stays. It is
+    a recorded divergence from the board, which P5-1 redraws with the edge rather than reopening, and
+    TextArea, Select and SearchField keep the same box. Tabular figures on a typed number are ADR-0021 §5
+    and §2.4 of the visual DNA. Example strings are invented (ADR-0015 rule 3).
   references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md]

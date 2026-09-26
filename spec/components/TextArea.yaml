@@ -40,7 +40,7 @@ anatomy:
     description: a status glyph plus the message, in place of the helper row
   - part: counter
     optional: true
-    description: remaining characters, trailing in the footer; shown only when `maxLength` is set
+    description: the value's length and the limit as characters, "36/280", trailing in the footer; shown only when `maxLength` is set
 
 props:
   - name: label
@@ -169,7 +169,7 @@ behavior:
   - At rest the box is `rows` line boxes of type.body.md tall and never shorter than size.row, so an empty area still reads as a target at the row height of its density.
   - "With `growsWithValue` the box grows one line box at a time as the value wraps, up to `maxRows`; past that the value scrolls inside the box and the box stops growing. The rows below it never move under the caret."
   - "The value wraps; it never truncates and it never ends in an ellipsis. Long generated prose that is only being displayed belongs in Text with `truncation: fade`, not in a read-only area."
-  - "`maxLength` shows the counter with tabular figures and stops input at the limit; pasted text over the limit is trimmed with the counter announced, never dropped silently."
+  - "`maxLength` shows the counter: the value's length and the limit, joined by a slash (\"36/280\"), each number from the platform's locale formatter and set in type.data, whose figures are tabular. It stops input at the limit, and pasted text over the limit is trimmed with the counter announced, never dropped silently. The counter holds no word, so it has no `strings` key: its characters are spoken as characters (ADR-0032 rule 2.2), and no plural form is ever chosen (rule 9)."
   - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
   - The error row pairs the status.danger glyph with the message, so the state never rests on color alone.
   - "`isReadOnly` keeps the value selectable and focusable and fills the box with color.bg.fill.neutral.subtle; `isDisabled` lowers the whole field to opacity.disabled and removes it from the focus order."
@@ -196,7 +196,7 @@ accessibility:
   contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; on an accent surface the tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and the edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there
   reduceTransparency: no glass of its own; an enclosing glass Surface resolves to the opaque raised fallback and every tone returns to the solid family
   reduceMotion: the ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place. The box keeps growing over motion.duration.quick, which is an in-place size change and not a substituted one (ADR-0023 §8.4), and nothing scales, moves or blurs
-  voiceOver: announces label, value or placeholder, then "required" and the helper text; the counter is read as remaining characters, and on `isInvalid` the message is announced once as the field's description
+  voiceOver: announces label, value or placeholder, then "required" and the helper text; the counter is read as its characters, the length, the slash and the limit ("36/280"), with no word of Prism's, and on `isInvalid` the message is announced once as the field's description
 
 usage:
   do:
@@ -219,6 +219,7 @@ examples:
     props: { label: "Shift notes", placeholder: "What happened on this run?", helper: "Visible to the yard supervisor" }
   - id: counter
     props: { label: "Shift notes", value: "Loader two idled for eleven minutes.", maxLength: 280 }
+    description: the counter reads 36/280, the value's length and the limit, drawn and spoken as characters
   - id: invalid
     props: { label: "Shift notes", value: "ok", isInvalid: true, errorText: "Describe what happened in at least ten characters" }
   - id: auto-grow-capped
