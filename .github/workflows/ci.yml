@@ -807,10 +807,12 @@ jobs:
         # Chip/md-with-avatar page in light and dark on the iPhone 17 simulator, the example page also at compact density
         # and under Increase Contrast, which takes the OS setting and the app's key together; and both pages in light and
         # dark on the Mac, captured by window id. Every launch passes `-DSShowcaseSection components`, as SD-10 asks: a
-        # section default left in the app's domain wins over the section a page key implies.
+        # section default left in the app's domain wins over the section a page key implies. A frame is kept once two
+        # captures in a row agree, because a fresh simulator is slow for its first minutes and a frame taken while the
+        # app is still launching is blank.
         id: screenshots
         continue-on-error: true
-        timeout-minutes: 20
+        timeout-minutes: 25
         shell: bash
         env:
           UDID: ${{ steps.simulator.outputs.udid }}
@@ -842,10 +844,12 @@ jobs:
             else
               echo "checkout    changed by the builds: $(git status --porcelain | paste -sd ';' -)"
             fi
+            echo "mac a11y    Reduce Transparency $(defaults read com.apple.universalaccess reduceTransparency 2>/dev/null || echo '?'), Reduce Motion $(defaults read com.apple.universalaccess reduceMotion 2>/dev/null || echo '?') (1 is on): the runner's own settings, which the Mac shots are taken under"
             echo
           } > "$index"
 
-          # A helper for the Mac: the number and frame of a process's window, and a scroll-wheel event at a point.
+          # A helper for the pointer: the number and frame of a process's window, a scroll-wheel event at a point, and a
+          # mouse drag, which the Simulator app turns into a touch.
           cat > "$helper.swift" <<'SWIFT'
           import CoreGraphics
           import Foundation
@@ -864,6 +868,13 @@ jobs:
               return best
           }
 
+          /// Posts one left-button mouse event at a point.
+          func mouse(_ type: CGEventType, _ point: CGPoint) {
+              guard let event = CGEvent(mouseEventSource: nil, mouseType: type, mouseCursorPosition: point, mouseButton: .left) else { return }
+              event.setIntegerValueField(.mouseEventClickState, value: 1)
+              event.post(tap: .cghidEventTap)
+          }
+
           let arguments = CommandLine.arguments
           switch (arguments.count, arguments.count > 1 ? arguments[1] : "") {
           case (3, "window"):
@@ -873,36 +884,70 @@ jobs:
               guard let x = Double(arguments[2]), let y = Double(arguments[3]), let delta = Int32(arguments[4]) else { exit(2) }
               let point = CGPoint(x: x, y: y)
               CGWarpMouseCursorPosition(point)
-              CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+              mouse(.mouseMoved, point)
               usleep(300_000)
               guard let scroll = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: delta, wheel2: 0, wheel3: 0) else { exit(1) }
               scroll.location = point
               scroll.post(tap: .cghidEventTap)
+          case (5, "drag"):
+              // Down, a slow move and a pause before up: a touch that stops before it lifts leaves the scroll view no momentum.
+              guard let x = Double(arguments[2]), let from = Double(arguments[3]), let to = Double(arguments[4]) else { exit(2) }
+              CGWarpMouseCursorPosition(CGPoint(x: x, y: from))
+              mouse(.mouseMoved, CGPoint(x: x, y: from))
+              usleep(400_000) // past the quarter second in which a warp holds back the next events
+              mouse(.leftMouseDown, CGPoint(x: x, y: from))
+              usleep(150_000)
+              for step in 1...30 {
+                  mouse(.leftMouseDragged, CGPoint(x: x, y: from + (to - from) * Double(step) / 30))
+                  usleep(20_000)
+              }
+              usleep(500_000)
+              mouse(.leftMouseUp, CGPoint(x: x, y: to))
           default:
-              print("usage: showcase-input window <pid> | scroll <x> <y> <delta>")
+              print("usage: showcase-input window <pid> | scroll <x> <y> <delta> | drag <x> <from y> <to y>")
               exit(2)
           }
           SWIFT
           xcrun swiftc -O -module-name ShowcaseInput -o "$helper" "$helper.swift" ||
-            note "The window helper did not compile, so the Mac shots are of the whole screen."
+            note "The pointer helper did not compile, so the Mac shots are of the whole screen."
 
+          # settle <seconds> <capture function> <file>: wait, then capture every 3 s until two frames in a row agree, so a
+          # frame taken mid-launch or mid-animation is not the one kept; ten captures at most, and the last one stays.
+          settle() {
+            local previous="$RUNNER_TEMP/settle-previous.png" i
+            rm -f "$previous"
+            sleep "$1"
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              "$2" "$3" || return 1
+              if [ -f "$previous" ] && cmp -s "$previous" "$3"; then return 0; fi
+              cp "$3" "$previous"
+              sleep 3
+            done
+          }
+          ios_capture() { xcrun simctl io "$UDID" screenshot "$1" >/dev/null; }
+          mac_capture() { screencapture -x -o -l "$mac_window" "$1"; }
           # ios <file> <appearance> <increase_contrast> <what> <launch arguments...>
           ios() {
-            local file=$1 appearance=$2 contrast=$3 what=$4 settings
+            local file=$1 appearance=$2 contrast=$3 what=$4 settings attempt
             shift 4
-            xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1
             settings="appearance $appearance, Increase Contrast $contrast"
             if ! xcrun simctl ui "$UDID" appearance "$appearance" || ! xcrun simctl ui "$UDID" increase_contrast "$contrast"; then
               settings="$settings (NOT all applied: simctl ui failed)"
               failed=1
             fi
-            if xcrun simctl launch "$UDID" "$bundle_id" "$@" >/dev/null && sleep 10 \
-              && xcrun simctl io "$UDID" screenshot "$out/$file" >/dev/null; then
-              note "$file: $what. Simulator: $settings. Launched with: $*"
-            else
-              note "FAILED $file: $what"
-              failed=1
-            fi
+            for attempt in 1 2; do
+              xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1 && sleep 2
+              if ! xcrun simctl launch "$UDID" "$bundle_id" "$@" >/dev/null || ! settle $((attempt * 8)) ios_capture "$out/$file"; then
+                note "FAILED $file: $what"
+                failed=1
+                return
+              fi
+              # Every page of this app is well over 150 KB as a PNG of this device, and its blank launch frame is about
+              # 70 KB: a frame that small is taken once more, after a longer wait.
+              [ "$(wc -c < "$out/$file")" -ge 120000 ] && break
+              if [ "$attempt" = 2 ]; then settings="$settings; the frame may be blank"; failed=1; fi
+            done
+            note "$file: $what. Simulator: $settings. Launched with: $*"
           }
           # mac <file> <what> <launch arguments...>
           mac() {
@@ -910,13 +955,18 @@ jobs:
             shift 2
             pkill -x PrismShowcase && sleep 2
             open -n "$mac_app" --args -ApplePersistenceIgnoreState YES "$@"
-            sleep 10
+            sleep 8
             pid=$(pgrep -n -x PrismShowcase)
             [ -n "$pid" ] && [ -x "$helper" ] && window=$("$helper" window "$pid")
-            if [ -n "$window" ] && screencapture -x -o -l "${window%% *}" "$out/$file"; then
-              note "$file: $what, window ${window%% *}, frame ${window#* } (x y width height). Launched with: $*"
-            elif [ -n "$pid" ] && screencapture -x "$out/$file"; then
-              note "$file: $what, the whole screen, since no window id was found. Launched with: $*"
+            if [ -n "$window" ]; then
+              mac_window=${window%% *}
+              if settle 0 mac_capture "$out/$file"; then
+                note "$file: $what, window $mac_window, frame ${window#* } (x y width height). Launched with: $*"
+                return
+              fi
+            fi
+            if [ -n "$pid" ] && screencapture -x "$out/$file"; then
+              note "$file: $what, the whole screen, since the window could not be captured. Launched with: $*"
             else
               note "FAILED $file: $what (the app did not start, or screencapture refused)"
               failed=1
@@ -928,8 +978,9 @@ jobs:
           note "iPhone 17 simulator:"
           if xcrun simctl bootstatus "$UDID" -b && xcrun simctl install "$UDID" "$ios_app"; then
             xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100
-            # The first launch after an install does work the later ones do not; let it do that off the record.
-            xcrun simctl launch "$UDID" "$bundle_id" >/dev/null && sleep 20
+            # A fresh simulator is busy for its first minutes, and the first launch after an install does work the later
+            # ones do not: both happen off the record, until the app's first page holds still.
+            xcrun simctl launch "$UDID" "$bundle_id" >/dev/null && settle 20 ios_capture "$RUNNER_TEMP/warm-up.png"
             ios ios-chip-page-light.png light disabled "the Chip page as it opens, light" "${chip[@]}" -DSShowcaseColorScheme light
             ios ios-chip-page-dark.png dark disabled "the Chip page as it opens, dark" "${chip[@]}" -DSShowcaseColorScheme dark
             for scheme in light dark; do
@@ -959,12 +1010,13 @@ jobs:
           exit "$failed"
       - name: Scroll the Chip page down to md-with-avatar's block
         # SD-10 also reads md-with-avatar's block on the Chip page, and on both devices that block opens below the fold.
-        # The app has no key that scrolls a component page and simctl cannot scroll, so this posts scroll-wheel events
-        # with the helper the step above built: over the Mac window, and over the Simulator app's window, which passes
-        # them on to the simulated iPhone. A runner that does not let a process post events leaves the frames the same,
-        # and index.txt says so. Best effort, like the step above, and after it, so that nothing here costs its shots.
+        # The app has no key that scrolls a component page and simctl cannot scroll, so this moves the pointer with the
+        # helper the step above built: scroll-wheel events over the Mac window, and mouse drags over the Simulator app's
+        # window, which turns a drag into a touch (an iPhone app takes no scroll wheel). A runner that does not let a
+        # process post events leaves the frames the same, and index.txt says so. Best effort, like the step above, and
+        # after it, so that nothing here costs its shots.
         continue-on-error: true
-        timeout-minutes: 10
+        timeout-minutes: 15
         shell: bash
         env:
           UDID: ${{ steps.simulator.outputs.udid }}
@@ -979,37 +1031,50 @@ jobs:
           failed=0
           mkdir -p "$out"
           note() { echo "$*" | tee -a "$index"; }
-          # frames <name> <what> <x> <y> <capture function>: a frame, a scroll of 400 points at (x, y), the next frame,
-          # until a frame repeats the one before it (the end of the page) or eight frames are taken. A first scroll that
-          # moves nothing is tried once the other way, in case the wheel's sign reads the other way round here.
+          # settle: the step above's.
+          settle() {
+            local previous="$RUNNER_TEMP/settle-previous.png" i
+            rm -f "$previous"
+            sleep "$1"
+            for i in 1 2 3 4 5 6 7 8 9 10; do
+              "$2" "$3" || return 1
+              if [ -f "$previous" ] && cmp -s "$previous" "$3"; then return 0; fi
+              cp "$3" "$previous"
+              sleep 3
+            done
+          }
+          ios_capture() { xcrun simctl io "$UDID" screenshot "$1" >/dev/null; }
+          mac_capture() { screencapture -x -o -l "$mac_window" "$1"; }
+          # The two ways of moving the page down at the point (x, y), about 400 points a move; 1 moves it down, -1 up.
+          mac_move() { "$helper" scroll "$x" "$y" $((-400 * $1)); }
+          ios_move() { "$helper" drag "$x" $((y + 150 * $1)) $((y - 150 * $1)); }
+          # frames <name> <what> <capture function> <move function>: a frame, a move, the next frame, until a frame repeats
+          # the one before it (the end of the page) or twelve frames are taken. A first move that changes nothing is tried
+          # once the other way round, in case the direction reads the other way on this runner.
           frames() {
-            local name=$1 what=$2 x=$3 y=$4 capture=$5 i=1 file previous="" delta=-400 flipped=0
-            while [ "$i" -le 8 ]; do
+            local name=$1 what=$2 capture=$3 move=$4 i=1 file previous="" sign=1 flipped=0
+            while [ "$i" -le 12 ]; do
               file="$out/$name-scrolled-$i.png"
-              if ! "$capture" "$file"; then note "FAILED $(basename "$file"): the capture"; failed=1; return; fi
+              if ! settle 1 "$capture" "$file"; then note "FAILED $(basename "$file"): the capture"; failed=1; return; fi
               if [ -n "$previous" ] && cmp -s "$previous" "$file"; then
                 rm -f "$file"
                 if [ "$i" = 2 ] && [ "$flipped" = 0 ]; then
-                  flipped=1 delta=400
-                  "$helper" scroll "$x" "$y" "$delta"
-                  sleep 2
+                  flipped=1 sign=-1
+                  "$move" "$sign"
                   continue
                 fi
-                if [ "$i" = 2 ]; then note "FAILED $name: no scroll moved the page"; failed=1; fi
+                if [ "$i" = 2 ]; then note "FAILED $name: no move changed the page"; failed=1; fi
                 return
               fi
-              note "$(basename "$file"): $what, after $((i - 1)) scroll(s) of 400 points"
+              note "$(basename "$file"): $what, after $((i - 1)) move(s)"
               previous=$file
-              "$helper" scroll "$x" "$y" "$delta"
-              sleep 2
+              "$move" "$sign"
               i=$((i + 1))
             done
           }
-          mac_frame() { screencapture -x -o -l "$mac_window" "$1"; }
-          ios_frame() { xcrun simctl io "$UDID" screenshot "$1" >/dev/null; }
 
           echo >> "$index"
-          note "The Chip page, scrolled frame by frame:"
+          note "The Chip page, moved down frame by frame (scroll wheel on the Mac, a drag in the Simulator):"
           if [ ! -x "$helper" ]; then
             note "FAILED: the helper was not built, so nothing was scrolled"
             failed=1
@@ -1018,10 +1083,11 @@ jobs:
               pkill -x PrismShowcase && sleep 2
               open -n "$mac_app" --args -ApplePersistenceIgnoreState YES \
                 -DSShowcaseSection components -DSShowcaseComponent Chip -DSShowcaseColorScheme "$scheme"
-              sleep 10
+              sleep 8
               if read -r mac_window x y w h < <("$helper" window "$(pgrep -n -x PrismShowcase)"); then
                 # Over the detail column: right of the sidebar, halfway down.
-                frames "macos-chip-page-$scheme" "the Chip page, $scheme, Mac" $((x + w * 2 / 3)) $((y + h / 2)) mac_frame
+                x=$((x + w * 2 / 3)) y=$((y + h / 2))
+                frames "macos-chip-page-$scheme" "the Chip page, $scheme, Mac" mac_capture mac_move
               else
                 note "FAILED macos-chip-page-$scheme: no window"
                 failed=1
@@ -1031,14 +1097,15 @@ jobs:
             open -a Simulator --args -CurrentDeviceUDID "$UDID"
             sleep 15
             if read -r simulator_window x y w h < <("$helper" window "$(pgrep -n -x Simulator)"); then
-              echo "Simulator window $simulator_window"
+              echo "The Simulator app's window $simulator_window, frame $x $y $w $h"
+              x=$((x + w / 2)) y=$((y + h / 2))
               for scheme in light dark; do
                 xcrun simctl ui "$UDID" appearance "$scheme"
-                xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1
+                xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1 && sleep 2
                 xcrun simctl launch "$UDID" "$bundle_id" \
                   -DSShowcaseSection components -DSShowcaseComponent Chip -DSShowcaseColorScheme "$scheme" >/dev/null
-                sleep 10
-                frames "ios-chip-page-$scheme" "the Chip page, $scheme, iPhone 17" $((x + w / 2)) $((y + h / 2)) ios_frame
+                sleep 8
+                frames "ios-chip-page-$scheme" "the Chip page, $scheme, iPhone 17" ios_capture ios_move
               done
             else
               note "FAILED ios-chip-page: the Simulator app showed no window"
