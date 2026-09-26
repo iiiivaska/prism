@@ -96,7 +96,7 @@ struct DSChipAccessibilityTreeTests {
             }
         }
         #expect(examples.count == 13)
-        #expect(Self.names.map { Array($0.name.utf8).count } == [13, 13, 6, 10, 6, 6, 13, 12, 6, 6, 5, 10, 30])
+        #expect(Self.names.map { Array($0.name.utf8).count } == [13, 13, 6, 10, 10, 6, 13, 12, 6, 6, 5, 10, 30])
     }
 
     // MARK: - Behavior 1: the role
