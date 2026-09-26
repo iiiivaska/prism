@@ -4,7 +4,7 @@ import DSIcons
 import DSTokens
 
 /// Button: a tappable action with one label and an optional leading or trailing icon
-/// (`spec/components/Button.yaml`, specVersion 4).
+/// (`spec/components/Button.yaml`, specVersion 5).
 ///
 ///     DSButton("Continue") { save() }
 ///     DSButton("Details", variant: .secondary, trailingIcon: .navOpen) { openDetails() }
@@ -26,8 +26,9 @@ import DSTokens
 ///    shows nothing there, because the fill Button.yaml names as its substitute is its own rest fill — a token gap,
 ///    stated in full on `DSButtonAppearance.reducedMotionPressOverlay` and held by `DSButtonReduceMotionTests`.
 ///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill.
-///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width, ignores presses and reads
-///    "<label>, loading"; the button keeps its place in the focus order.
+///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width and ignores presses; the
+///    button keeps its place in the focus order and is named by the app's `strings.Button.loading` template filled
+///    with its label, "Saving, loading" under the English defaults (`loadingName(locale:strings:)`, ADR-0032).
 ///  - `isDisabled` lowers the button to `opacity.disabled` and removes it from the focus order. Prefer explaining why
 ///    an action is unavailable.
 ///  - The label never wraps and truncates with an ellipsis; the label and the height scale with Dynamic Type up to
@@ -50,6 +51,10 @@ public struct DSButton: View {
     private let action: () -> Void
 
     private var ds = DSThemeValues()
+    /// The locale a localized label is resolved in when it fills the loading template (ADR-0032 rule 4).
+    @Environment(\.locale) private var locale
+    /// The app's strings table, whose `Button.loading` template names a loading button (ADR-0032).
+    @Environment(\.dsStrings) private var strings
 
     /// A button whose label is a localized string key, looked up like SwiftUI's `Text(_:tableName:bundle:comment:)`.
     ///
@@ -168,19 +173,26 @@ public struct DSButton: View {
         .accessibilityLabel(accessibilityLabel)
     }
 
-    /// The visible label, and "<label>, loading" while loading (Button.yaml behavior).
-    ///
-    /// **Known gap.** "loading" is a component-owned string, and Prism has no contract for those yet (critic G-24,
-    /// roadmap: before P3-3 and P3-4); until it does, the word is English on both stacks.
+    /// The visible label, and while loading the name `loadingName(locale:strings:)` gives the button (behavior 3).
     private var accessibilityLabel: Text {
-        guard isLoading else { return label.text }
-        return Text("\(label.text), \(Text(verbatim: DSButtonAppearance.loadingWord))")
+        guard let name = loadingName(locale: locale, strings: strings) else { return label.text }
+        return Text(verbatim: name)
     }
 }
 
-extension DSButtonAppearance {
-    /// The state word a loading button appends to its accessibility label (see `DSButton`'s known gap).
-    static let loadingWord = "loading"
+extension DSButton {
+    /// What a loading button is named, or nil when it is not loading and its visible label is its name (behavior 3):
+    /// the app's `strings.Button.loading` template filled with the label as it resolves where the button renders — a
+    /// localized key in the environment's locale, from the table and bundle the caller named — which is "Saving,
+    /// loading" under the English defaults. Button owns no word (ADR-0032 rules 1 and 2): the body passes its own
+    /// `locale` and `strings` environment values, and the fill is `DSButtonAppearance.loadingName(_:strings:)`.
+    ///
+    /// It lives in this file because the props are private to it; it reads them and draws nothing, so what a button
+    /// shows is unchanged. The web's twin is the `aria-label` `Button.tsx` fills from `useStrings()`.
+    func loadingName(locale: Locale, strings: DSStrings) -> String? {
+        guard isLoading else { return nil }
+        return DSButtonAppearance.loadingName(label.resolved(locale: locale), strings: strings)
+    }
 }
 
 /// The pill's content: the icons and the label, and the spinner that replaces the label while loading.

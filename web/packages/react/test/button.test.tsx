@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Button (spec/components/Button.yaml, specVersion 4).
+ * Button (spec/components/Button.yaml, specVersion 5).
  *
  * - Button.css binds what Button.yaml binds: every variant on every material the matrices key, the rest,
  *   pressed and hover fills, the outline's colour and width, sizes, label typography, icons, the spinner,
@@ -10,6 +10,9 @@
  *   --ds-motion-presentation-crossfade (the press scale and the danger substitute).
  * - Server renders: React Aria's button with the published material, the loading and disabled states,
  *   icons from the brand table, ScopeAttributes.
+ * - The loading name (behavior 3, ADR-0032): the app's `strings.Button.loading` filled with `label`,
+ *   the English default and an app's template set through `<Theme strings>` alike, so the words are
+ *   the table's and not Button's. `DSButtonBindingTests` holds `DSButton.loadingName` to the same names.
  */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -17,9 +20,10 @@ import type { ReactNode } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Theme } from "@iiiivaska/prism-tokens/react";
+import { Theme, type StringsTable } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
-import { Button, Surface, buttonSizes, buttonVariants, type ButtonVariant } from "../src/index.ts";
+import { Button, Surface, buttonSizes, buttonVariants, defaultStrings, type ButtonVariant } from "../src/index.ts";
+import { fillTemplate } from "../src/strings.ts";
 import { Cascade, declarationsOf } from "./cascade.ts";
 import { cell, cssVariable, loadSpec, propValues, type Binding } from "./spec.ts";
 
@@ -38,13 +42,22 @@ function on(variant: ButtonVariant, material: string, extra: Record<string, stri
   return { classes: ["ds-button"], attributes: { "data-ds-variant": variant, "data-ds-size": "md", "data-ds-surface": material, ...extra } };
 }
 
-function html(node: ReactNode): string {
-  return renderToStaticMarkup(<Theme tokens={tokens}>{node}</Theme>);
+function html(node: ReactNode, strings?: Partial<StringsTable>): string {
+  return renderToStaticMarkup(
+    <Theme tokens={tokens} strings={strings}>
+      {node}
+    </Theme>,
+  );
+}
+
+/** The accessible name a render writes on its button: the `aria-label` of the root, if it has one. */
+function nameOf(out: string): string | undefined {
+  return /^<button [^>]*aria-label="([^"]*)"/.exec(out)?.[1];
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Button.yaml specVersion 4", () => {
-    expect(spec.specVersion).toBe(4);
+  it("is Button.yaml specVersion 5", () => {
+    expect(spec.specVersion).toBe(5);
     expect([...buttonVariants]).toEqual(propValues(spec, "variant"));
     expect([...buttonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -211,11 +224,11 @@ describe("Button renders", () => {
     expect(out).toContain('data-ds-surface="raised"');
   });
 
-  it("isLoading: pending, the label kept for its width, a Spinner and the label \"<label>, loading\"", () => {
+  it("isLoading: pending, the label kept for its width, a Spinner and the English strings.Button.loading as the name", () => {
     const out = html(<Button label="Saving" isLoading onPress={noop} />);
     expect(out).toContain('data-pending="true"');
     expect(out).toContain('aria-disabled="true"');
-    expect(out).toContain('aria-label="Saving, loading"');
+    expect(nameOf(out)).toBe("Saving, loading");
     expect(out).toContain('<span data-ds-slot="button-label-text">Saving</span>');
     expect(out).toContain('<svg data-ds-slot="button-spinner" aria-hidden="true" focusable="false"><circle data-ds-slot="button-spinner-ring"></circle><circle data-ds-slot="button-spinner-arc" pathLength="100"></circle></svg>');
   });
@@ -243,5 +256,29 @@ describe("Button renders", () => {
     const out = html(<Button label="Continue" onPress={noop} data-ds-color-scheme="dark" data-ds-density="compact" />);
     expect(out).toMatch(/^<button [^>]*data-ds-color-scheme="dark"/);
     expect(out).toMatch(/^<button [^>]*data-ds-density="compact"/);
+  });
+});
+
+describe("the loading name is the strings table's (behavior 3, ADR-0032)", () => {
+  it("is strings.Button.loading filled with the label, and \"Saving, loading\" is the table's English default", () => {
+    expect(defaultStrings["Button.loading"]).toBe("{label}, loading");
+    expect(nameOf(html(<Button label="Saving" isLoading onPress={noop} />))).toBe(fillTemplate(defaultStrings["Button.loading"], { label: "Saving" }));
+  });
+
+  it("speaks the app's template, set once at the root through <Theme strings>", () => {
+    const strings = { "Button.loading": "{label}: загрузка" } as const;
+    expect(nameOf(html(<Button label="Сохранение" isLoading onPress={noop} />, strings))).toBe("Сохранение: загрузка");
+    // The template the app writes may drop the label; the name is then the app's words alone.
+    expect(nameOf(html(<Button label="Сохранение" isLoading onPress={noop} />, { "Button.loading": "Загрузка" }))).toBe("Загрузка");
+  });
+
+  it("names a button that is not loading by its label alone, whatever the table says", () => {
+    const out = html(<Button label="Сохранение" onPress={noop} />, { "Button.loading": "{label}: загрузка" });
+    expect(nameOf(out)).toBeUndefined();
+    expect(out).toContain('<span data-ds-slot="button-label-text">Сохранение</span>');
+  });
+
+  it("places the label as written and never reads it as a template", () => {
+    expect(nameOf(html(<Button label="{label}" isLoading onPress={noop} />))).toBe("{label}, loading");
   });
 });

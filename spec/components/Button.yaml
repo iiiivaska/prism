@@ -1,6 +1,6 @@
 name: Button
 layer: primitive
-specVersion: 4
+specVersion: 5
 status: draft
 summary: >-
   A tappable action with one label and an optional leading or trailing icon. Controls in Prism are
@@ -129,7 +129,7 @@ tokens:
 behavior:
   - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
   - The hit region is the larger of the visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly beyond a smaller visual height, and the visual box never grows with modality.
-  - "`isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input; the accessibility label becomes \"<label>, loading\"."
+  - "`isLoading` replaces the label with a Spinner of the label's height, keeps the button width, and disables input. The accessibility label becomes the `strings.Button.loading` template, \"{label}, loading\" in Prism's English defaults, filled with the button's own `label` as the stack resolves it (on Apple a localized key, looked up in the environment's locale); Button invents no word of its own and the app replaces the template once at the root (ADR-0032 rules 1 and 2)."
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; disabled buttons are avoided in favor of explaining why an action is unavailable."
   - Labels never wrap; long labels truncate with an ellipsis; `isFullWidth` stretches the pill and centers the content.
   - Pressed state scales the pill to 0.97 with comp.button.motion.press and returns on release; hover (pointer only) adds the hover overlay.
@@ -147,7 +147,7 @@ haptics:
 
 accessibility:
   role: button
-  label: the visible label; required as an explicit label when the button is icon-only (use IconButton instead)
+  label: the visible label, and while the button is loading the `strings.Button.loading` template filled with it, "Saving, loading" under the English defaults (behavior 3, ADR-0032 rules 1 and 2); required as an explicit label when the button is icon-only (use IconButton instead)
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: label scales with type.label.*; height grows with it up to the accessibility3 size, then clamps and the label wraps to two lines
@@ -187,4 +187,4 @@ notes:
     macos: default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on.
     web-desktop: built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.
   design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9; the ghost button's transparent rest is ADR-0029 §3.3; every outline's border.hairline width is the signed-off direction board's (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`), ADR-0033.
-  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0033-control-outlines-are-hairlines.md]
+  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0033-control-outlines-are-hairlines.md]

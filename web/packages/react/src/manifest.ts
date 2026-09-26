@@ -27,7 +27,7 @@ export type ImplementedVersions = Readonly<Record<string, Readonly<Partial<Recor
 export const implemented: ImplementedVersions = {
   Avatar: { "web-touch": 1, "web-desktop": 1 },
   Badge: { "web-touch": 1, "web-desktop": 1 },
-  Button: { "web-touch": 4, "web-desktop": 4 },
+  Button: { "web-touch": 5, "web-desktop": 5 },
   Card: { "web-touch": 5, "web-desktop": 5 },
   Divider: { "web-touch": 2, "web-desktop": 2 },
   Icon: { "web-touch": 3, "web-desktop": 3 },

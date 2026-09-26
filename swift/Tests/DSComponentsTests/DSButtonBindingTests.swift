@@ -6,9 +6,9 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Button.yaml` specVersion 4: the binding matrix keyed by variant and published material, the sizes
-/// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule and the watch
-/// adaptations.
+/// `spec/components/Button.yaml` specVersion 5: the binding matrix keyed by variant and published material, the sizes
+/// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule, the watch
+/// adaptations, and the name a loading button speaks, which is the app's `strings.Button.loading` (ADR-0032).
 ///
 /// **The matrix is read out of the spec, not written again here** (`DSSpec`, `Generated/DSTokenKeyPaths.swift`).
 /// Every cell test says the sentence the web test says about `Button.css`
@@ -20,7 +20,7 @@ import DSTokens
 /// What stays hand-written, and why, is marked at each test: a rule the spec states as prose (the hit region, the
 /// Dynamic Type clamp, the watch adaptations), a rule an ADR states where the spec has no cell (the danger underlay),
 /// and the documented deviations from a cell (the primary pressed fill and spinner on vivid).
-@Suite("Button bindings (Button.yaml v4)")
+@Suite("Button bindings (Button.yaml v5)")
 struct DSButtonBindingTests {
     let spec: DSSpec
     /// Ghost and danger bind no spinner cell of their own, so their spinner is Spinner.yaml's arc.
@@ -51,7 +51,7 @@ struct DSButtonBindingTests {
     /// The axis check is what keeps the loops below honest: a loop over an axis the matrix is not keyed by would
     /// read `default` at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 4)
+        #expect(try spec.specVersion == 5)
         #expect(try spec.propValues("variant") == DSButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSButtonSize.allCases.map(\.rawValue))
         let variants = Set(try spec.propValues("variant"))
@@ -130,7 +130,7 @@ struct DSButtonBindingTests {
 
     /// A tinted danger pill paints `color.bg.page` under its tint over media (ADR-0030 §6.2), and nowhere else.
     ///
-    /// Button.yaml v4 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
+    /// Button.yaml v5 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
     /// comes from the ADR and the materials are the ones IconButton.yaml keys its own `underlay` by. The missing
     /// property is asserted, so a version that adds the cell fails here rather than leaving two rules in two places.
     @Test func dangerPaintsThePageOverMedia() throws {
@@ -315,6 +315,71 @@ struct DSButtonBindingTests {
     @Test func spinnerGeometry() {
         #expect(DSSpinnerGeometry.sweep == 0.75)
         #expect(DSSpinnerGeometry.turn.degrees == 360)
+    }
+
+    // MARK: - The loading name (behavior 3, ADR-0032)
+
+    static let english = Locale(identifier: "en_US")
+
+    /// A loading button is named by the `strings.Button.loading` template filled with its label: "Saving, loading" for
+    /// the `loading` example under the English defaults, the name the web gives the same story
+    /// (`web/packages/react/test/button.test.tsx`). Every form of the label fills it the same way, and the label is
+    /// placed as written, never read as a template. A button that is not loading has no such name: its visible label
+    /// is its name.
+    @Test @MainActor func aLoadingButtonIsNamedByTheTemplate() {
+        let english = Self.english
+        let saving = "Saving"
+        let key = DSButton("Saving", isLoading: true) {}
+        let verbatim = DSButton(verbatim: "Saving", isLoading: true) {}
+        let held = DSButton(saving, isLoading: true) {}
+        let braces = DSButton(verbatim: "{label}", isLoading: true) {}
+        let idle = DSButton("Saving") {}
+        #expect(key.loadingName(locale: english, strings: .english) == "Saving, loading")
+        #expect(verbatim.loadingName(locale: english, strings: .english) == "Saving, loading")
+        #expect(held.loadingName(locale: english, strings: .english) == "Saving, loading")
+        #expect(braces.loadingName(locale: english, strings: .english) == "{label}, loading")
+        #expect(idle.loadingName(locale: english, strings: .english) == nil)
+        // The same function names every loading button, and the English is the table's default, not Button's.
+        #expect(DSButtonAppearance.loadingName("Saving", strings: .english) == "Saving, loading")
+        #expect(DSStrings.english.buttonLoading == "{label}, loading")
+    }
+
+    /// The words are the app's: a template it sets at the root reaches the name in its own order and its own words, and
+    /// a template that drops the label is the app's words alone (ADR-0032 rules 1 and 2). That the body reads the
+    /// table from the environment is measured on the simulator (`DSButtonAccessibilityTreeTests`).
+    @Test @MainActor func aLoadingButtonSpeaksTheAppsTemplate() {
+        let russian = DSStrings(buttonLoading: "{label}: загрузка")
+        let wordless = DSStrings(buttonLoading: "Загрузка")
+        let button = DSButton(verbatim: "Сохранение", isLoading: true) {}
+        #expect(button.loadingName(locale: Self.english, strings: russian) == "Сохранение: загрузка")
+        #expect(button.loadingName(locale: Self.english, strings: wordless) == "Загрузка")
+        #expect(DSButtonAppearance.loadingName("Saving", strings: russian) == "Saving: загрузка")
+    }
+
+    /// A localized label fills the template as it resolves where the button renders: looked up in the environment's
+    /// locale, in the table and the bundle the caller named, as `Text` looks it up. The table is a throwaway bundle in
+    /// the temporary directory, standing in for the app's own, built the way
+    /// `DSIconBindingTests.aKeyTranslatedToSpacesNamesNothing` builds its bundle; both of its values are English
+    /// because only the difference between the two languages matters here.
+    @Test @MainActor func aLocalizedLabelIsResolvedInTheEnvironmentsLocale() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("DSButtonLoadingName-\(UUID().uuidString).bundle")
+        defer { try? FileManager.default.removeItem(at: root) }
+        for (language, value) in [("en", "Saving route 14"), ("ru", "Route 14, from the ru table")] {
+            let folder = root.appendingPathComponent("\(language).lproj", isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            try "\"route-save\" = \"\(value)\";\n".write(to: folder.appendingPathComponent("Routes.strings"), atomically: true, encoding: .utf8)
+        }
+        let bundle = try #require(Bundle(url: root))
+        let button = DSButton("route-save", tableName: "Routes", bundle: bundle, isLoading: true) {}
+        #expect(button.loadingName(locale: Locale(identifier: "en"), strings: .english) == "Saving route 14, loading")
+        #expect(button.loadingName(locale: Locale(identifier: "ru"), strings: .english) == "Route 14, from the ru table, loading")
+    }
+
+    /// ADR-0032: Button owns exactly the one string its spec names, and the default its prose writes out is the table's.
+    @Test func buttonOwnsExactlyItsOneString() throws {
+        let named = Set(spec.text.matches(of: /strings\.Button\.([A-Za-z]+)/).map { "Button.\($0.1)" })
+        #expect(named == ["Button.loading"])
+        #expect(spec.text.contains(DSStrings.english.buttonLoading))
     }
 }
 

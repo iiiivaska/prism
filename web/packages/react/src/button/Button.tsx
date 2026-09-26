@@ -1,5 +1,5 @@
 /**
- * `Button` (spec/components/Button.yaml, specVersion 4): one action, one label, an optional leading or
+ * `Button` (spec/components/Button.yaml, specVersion 5): one action, one label, an optional leading or
  * trailing icon, on React Aria Components' `Button`.
  *
  * - React Aria owns the behavior (Button.yaml behavior 1): `onPress` fires once on release inside the
@@ -10,7 +10,10 @@
  *   apply to what the Surface renders, the glass fallback included (ADR-0022 §3.1).
  * - `isLoading` is React Aria's pending state: the control keeps its focus and its width, presses and
  *   hover stop, the label is hidden and a Spinner takes its place, and the accessibility label becomes
- *   "<label>, loading" (Button.yaml behavior 3).
+ *   the app's `strings.Button.loading` template filled with `label`, "Saving, loading" under the
+ *   English defaults (Button.yaml behavior 3). The table is `useStrings()`, which the root `<Theme
+ *   strings>` sets, and the fill is `fillTemplate`, the one every component makes: Button owns no word
+ *   (ADR-0032 rules 1 and 2). Apple's twin is `DSButton.loadingName(locale:strings:)`.
  * - `isDisabled` removes the control from the focus order and lowers its opacity (behavior 4).
  * - The icons are Icon's box (`IconPart`) at `size.icon.md` with `tone: inherit`, so they take the
  *   label's foreground and are hidden from assistive technology: the button's name is its label alone.
@@ -21,9 +24,10 @@
  */
 import type { CSSProperties, ReactNode, Ref } from "react";
 import { Button as AriaButton, type ButtonProps as AriaButtonProps, type PressEvent } from "react-aria-components";
-import type { ScopeAttributes } from "@iiiivaska/prism-tokens/react";
+import { useStrings, type ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import type { IconName } from "../generated/icons.ts";
 import { IconPart } from "../icon/Icon.tsx";
+import { fillTemplate } from "../strings.ts";
 import { useSurfaceContext } from "../surface/context.ts";
 import type { ButtonSize, ButtonVariant } from "./variants.ts";
 
@@ -75,7 +79,10 @@ export function Button(props: ButtonProps): ReactNode {
   } = props;
 
   const surface = useSurfaceContext();
-  const accessibleLabel = isLoading ? `${label}, loading` : rest["aria-label"];
+  const strings = useStrings();
+  // Behavior 3: while loading the name is the app's `strings.Button.loading` filled with `label` as the
+  // caller wrote it, never a word of Button's own (ADR-0032).
+  const accessibleLabel = isLoading ? fillTemplate(strings["Button.loading"], { label }) : rest["aria-label"];
 
   return (
     <AriaButton

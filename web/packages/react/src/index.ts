@@ -94,7 +94,7 @@ export {
   type TextTruncation,
 } from "./text/tones.ts";
 
-/** Button (spec/components/Button.yaml, specVersion 4), on React Aria Components' `Button`. */
+/** Button (spec/components/Button.yaml, specVersion 5), on React Aria Components' `Button`. */
 export { Button, type ButtonProps } from "./button/Button.tsx";
 export { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from "./button/variants.ts";
 

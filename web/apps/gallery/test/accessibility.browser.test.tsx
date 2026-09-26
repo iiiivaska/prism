@@ -106,11 +106,12 @@ describe("Divider (Divider.yaml accessibility)", () => {
 });
 
 /**
- * Button.yaml `accessibility`: one button named by its `label`, and "<label>, loading" while it loads
- * (behavior 3). Its icons are drawn by Icon with no `label`, so they are hidden and add no node: the tree of
- * `secondary-md` and `ghost-sm` is the one button and nothing else. The Apple twin is
- * swift/Tests/DSSnapshotTests/DSIconAccessibilityTreeTests.swift, which reads `Details` and `Filter` for the
- * same two ids; `DSButtonAppearance.loadingWord` writes the same ", loading".
+ * Button.yaml `accessibility`: one button named by its `label`, and while it loads by the English
+ * `strings.Button.loading` filled with it, "Saving, loading" (behavior 3, ADR-0032). Its icons are drawn by
+ * Icon with no `label`, so they are hidden and add no node: the tree of `secondary-md` and `ghost-sm` is the
+ * one button and nothing else. The Apple twins are swift/Tests/DSSnapshotTests/DSIconAccessibilityTreeTests.swift,
+ * which reads `Details` and `Filter` for the same two ids, and DSButtonAccessibilityTreeTests.swift, which
+ * reads "Saving, loading" for `loading`.
  */
 describe("Button (Button.yaml accessibility)", () => {
   const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {

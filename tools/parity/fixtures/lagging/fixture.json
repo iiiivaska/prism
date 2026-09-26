@@ -1,5 +1,5 @@
 {
-  "description": "an implementation behind its spec: iOS at v3 against spec v4, and the other cells of a started row at nothing",
+  "description": "an implementation behind its spec: iOS at v4 against spec v5, and the other cells of a started row at nothing",
   "expect": [],
   "lags": ["Button|ios", "Button|ipados", "Button|macos", "Button|watchos", "Button|web-touch", "Button|web-desktop"]
 }

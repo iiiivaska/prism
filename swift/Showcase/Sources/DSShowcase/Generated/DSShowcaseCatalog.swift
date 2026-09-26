@@ -66,11 +66,11 @@ extension DSShowcaseCatalog {
             layer: "primitive",
             summary: "A tappable action with one label and an optional leading or trailing icon. Controls in Prism are pills or circles; the primary variant is the single solid pill in a group, secondary is a raised pill, ghost is outlined with no fill at rest, danger is a tinted pill with critical text.",
             since: "0.1.0",
-            specVersion: 4,
+            specVersion: 5,
             specPath: "spec/components/Button.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .adapted), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [("ios", 4), ("ipados", 4), ("macos", 4), ("watchos", 4)],
+            implemented: [("ios", 5), ("ipados", 5), ("macos", 5), ("watchos", 5)],
             platformNotes: [("watchos", "sizes collapse to lg; no trailing icon; ghost renders as secondary. The watch density gives lg 44 pt."), ("macos", "default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on."), ("web-desktop", "built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.")],
             examples: [
                 DSSpecExample(id: "primary-md", props: [("variant", .string("primary")), ("size", .string("md")), ("label", .string("Continue"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onPress"], summary: nil),

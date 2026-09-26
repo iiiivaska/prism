@@ -177,6 +177,17 @@ enum DSTextContent {
         if case let .verbatim(string) = self { return string }
         return nil
     }
+
+    /// The string this content reads as in `locale`: a verbatim string as given, and a localized key or joined runs as
+    /// SwiftUI resolves them, with the content's own table and bundle — the lookup `DSIconAppearance.resolved` makes for
+    /// a glyph's label, through `Text._resolveText(in:)`. A component that places its label in a template of the app's
+    /// strings table reads it through this (Button's loading name, ADR-0032).
+    func resolved(locale: Locale) -> String {
+        if case let .verbatim(string) = self { return string }
+        var environment = EnvironmentValues()
+        environment.locale = locale
+        return text._resolveText(in: environment)
+    }
 }
 
 /// The role resolved: the scaled line pitch the truncation clamp needs, the tones, and the layout.

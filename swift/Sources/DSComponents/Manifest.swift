@@ -70,11 +70,16 @@
 /// module's glass chip (`dsSurfaceChip`, ADR-0036): its circle is the chip, and its initials, fallback glyph and ring
 /// read the context the chip publishes. Avatar.yaml marks watchOS `none` — a wrist screen names a person in Text
 /// rather than picturing them — so its row, like Divider's, Badge's and IconButton's, has no `watchos` key.
+///
+/// Button 5 takes the name a loading button speaks from the strings table of ADR-0032 (critic G-24): the app's
+/// `strings.Button.loading` template, read through `\.dsStrings` and filled with the label as it resolves in the
+/// environment's locale, where this target used to append an English "loading" of its own. The name under the English
+/// defaults, "Saving, loading", and every pixel are what they were at Button 4.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
-        "Button": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
+        "Button": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],

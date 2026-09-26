@@ -28,8 +28,8 @@ nonisolated public struct DSStrings: Sendable, Hashable {
     /// `strings.Badge.overflow`, `"{max}+"`: the mark a count badge draws above `max`, `{max}` through the locale's
     /// number formatter (Badge.yaml behavior 3).
     public var badgeOverflow: String
-    /// `strings.Button.loading`, `"{label}, loading"`. Carried and not yet read: `DSButton` keeps its own "loading"
-    /// constant (`DSButtonAppearance.loadingWord`) until its migration, ADR-0032's separate follow-up.
+    /// `strings.Button.loading`, `"{label}, loading"`: the name of a loading button, `{label}` its label as it resolves
+    /// where the button renders (Button.yaml behavior 3).
     public var buttonLoading: String
     /// `strings.Chip.remove`, `"Remove {label}"`: the name of a removable chip's remove button, carried for Chip (P4-8).
     public var chipRemove: String

@@ -4503,7 +4503,7 @@
       "name": "Button",
       "spec": "spec/components/Button.yaml",
       "layer": "primitive",
-      "specVersion": 4,
+      "specVersion": 5,
       "support": {
         "ios": "full",
         "ipados": "full",

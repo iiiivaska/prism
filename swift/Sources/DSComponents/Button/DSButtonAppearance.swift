@@ -2,9 +2,9 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Button.yaml` (specVersion 4) binds, as pure functions of the variant, the size and the
-/// material the enclosing Surface publishes, so the binding matrix runs on the host. `DSButton` only draws what these
-/// return.
+/// Every value `spec/components/Button.yaml` (specVersion 5) binds, as pure functions of the variant, the size and the
+/// material the enclosing Surface publishes, so the binding matrix runs on the host, and the name a loading button
+/// speaks, as a pure function of its label and the strings table. `DSButton` only draws and names what these return.
 ///
 /// A cell keyed by a material applies when the enclosing Surface publishes that material, not because the button asked
 /// for it (spec/SCHEMA.md, ADR-0022 §3.1); a value with no cell takes `default`, and with no `default` either the
@@ -113,7 +113,7 @@ nonisolated enum DSButtonAppearance {
     static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
 
     /// The page under the danger tint over media: "a tinted element that carries text or a glyph over media paints
-    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v4 has no
+    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v5 has no
     /// underlay cell, so the published materials that mean media are the ones IconButton.yaml keys its `underlay` by,
     /// vivid and the scheme's glass, and light glass, which only sits over imagery.
     static func underlay(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
@@ -189,5 +189,17 @@ nonisolated enum DSButtonAppearance {
     /// The icon slots that render: on watchOS there is no trailing icon (`notes.platform.watchos`).
     static func trailingIcon<Icon>(_ icon: Icon?, isWatch: Bool = DSPlatform.isWatch) -> Icon? {
         isWatch ? nil : icon
+    }
+
+    // MARK: - What a loading button says (behavior 3)
+
+    /// The name a loading button speaks: the app's `strings.Button.loading` template with `{label}` filled by the
+    /// button's label, placed as written and never scanned again — "Saving, loading" under the English defaults. The
+    /// words are the table's, not Button's (ADR-0032 rules 1 and 2), so an app that sets its own template once, at the
+    /// root (`DSTheme(strings:)`), hears it on every loading button. `label` is the string the caller's label resolves
+    /// to where the button renders (`DSButton.loadingName(locale:strings:)`). The web's twin fills the same template
+    /// with `fillTemplate` in `Button.tsx`.
+    static func loadingName(_ label: String, strings: DSStrings) -> String {
+        DSStrings.fill(strings.buttonLoading, ["label": label])
     }
 }
