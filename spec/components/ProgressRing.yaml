@@ -49,7 +49,11 @@ props:
     description: renders the whole percent inside the ring; ignored at size sm and on a surface that publishes vivid
   - name: label
     type: string
-    description: what is being measured; it becomes the accessibility label and is required when nothing beside the ring names the work
+    required: true
+    description: >-
+      what is being measured: the ring's accessible name, which the ring never draws, since its anatomy has no label.
+      It is required even where a Text beside the ring names the work, because the ring cannot see that Text; the
+      caller passes the same words (ADR-0041)
 
 states: [default]
 
@@ -113,7 +117,7 @@ motion:
 
 accessibility:
   role: progressbar (indeterminate rings expose no value)
-  label: from `label`; it states the work, not the percentage ("Battery charge", "Uploading")
+  label: from `label`, which is required and never drawn; it states the work, not the percentage ("Battery charge", "Uploading") (ADR-0041)
   traits: [updatesFrequently]
   keyboard: not focusable and not a tab stop; the ring is a readout and the control that started the work keeps the focus
   dynamicType: the ring's diameter does not scale, because it belongs to the control family; the inner numeral scales with `type.data` and, once it would pass 45 % of the diameter, it is dropped and the value is read from the Text beside the ring instead of shrinking or clipping
@@ -162,4 +166,4 @@ notes:
     watchos: "`adapted`. Determinate only, `size` lg; the ring maps to SwiftUI's circular Gauge, and dataviz-design.md §3 H47 keeps the wrist glanceable. On the watch vivid resolves to solid and glass takes the opaque `raised` fallback (Surface.yaml), so only the `default` cells apply. The watch density gives `size.control.lg` 44 px, whose 45 % cap is 19.8 px, so `type.data` still fits inside; the 4 px stroke floor is stricter than E25's 2 pt watch minimum, which is safe."
     macos: identical to iOS; the ring has no hover state, because it is not interactive.
   design: "The ring geometry is dataviz-design.md §3 E24 (closed for a fraction of a whole, the 270 degree open sweep otherwise), E25 (stroke ratio with a 4 px floor, round caps, the value inside at 45 % of the diameter) and E26 (no hue for thresholds), with the stroke ratio at ADR-0030 §2.5's 0.05. E25's 45 % cap is what keeps the inner numeral at `type.data` rather than a metric role: no control diameter in any density leaves room for `type.metric.md`, and the hung unit of §1 principle 4 belongs to the Text beside the ring, not inside it. The inverse-solid arc and the white flip on media are docs/research/visual-dna.md §1 principle 9 and §4.7, and the control diameters are ADR-0024 §7. docs/research/component-inventory.md records ProgressRing with 0 of 11 sightings and on ADR-0010's Tier 3 list, so the form comes from the rulebook rather than from a shot. Example strings are invented (ADR-0015 rule 3)."
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

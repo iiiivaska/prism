@@ -26,15 +26,19 @@ anatomy:
   - part: segment
   - part: label
     optional: true
-    description: absent only when the segment is icon-only, and then the segment carries an accessibility label
+    description: the segment's `label`, drawn unless its `labelVisibility` is hidden - the icon-only segment, which carries the same string as its accessible name (ADR-0041)
   - part: icon
     optional: true
 
 props:
+  - name: label
+    type: string
+    required: true
+    description: the group's name ("Period"), never drawn and announced once when focus enters the group; each segment carries its own (ADR-0041)
   - name: segments
     type: data
     required: true
-    description: "[{ value, label?, icon? }]; two to four segments, each with a label, an icon, or both"
+    description: "[{ value, label, icon?, labelVisibility? }]; two to four segments. `label` names each segment and is required; `labelVisibility: hidden` draws the segment's `icon` alone, which is the icon-only segment, and keeps `label` as its accessible name (ADR-0041)"
   - name: value
     type: string
     required: true
@@ -188,7 +192,7 @@ behavior:
   - The hit region of each segment is the larger of its visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); the invisible extension never overlaps a neighbor, so a row keeps its gaps.
   - "Labels never wrap and never truncate: a segment that cannot show its whole label means the choice belongs in a Select. At most four segments."
   - "`isFullWidth` gives every segment the width of the widest, so the row keeps one rhythm; otherwise each segment is as wide as its content plus its padding."
-  - An icon-only segment keeps the same height and takes a square footprint; it carries an accessibility label from the registry id's meaning, never from the glyph alone.
+  - An icon-only segment is one whose `labelVisibility` is hidden. It draws its `icon` alone, keeps the same height and takes a square footprint, and its `label` is its accessible name; the glyph and its registry id never are (ADR-0032 decision 8, ADR-0041).
   - "Moving the selection slides nothing: the outgoing segment loses its fill and the incoming one gains it, and the incoming segment scales to 0.97 and back under motion.spring.snappy."
   - Hover (pointer only) adds the neutral overlay to an unselected segment; the selected segment does not change on hover, because it is already the solid. Hover takes its stack's Button timing, and no hover motion cell is bound here (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6).
   - "One choice, one haptic: a press or an arrow key that moves the selection plays haptic.selection, with no press haptic before it, and a press on the segment already selected moves nothing and plays nothing (spec/haptics.yaml rules 2 and 5)."
@@ -202,7 +206,7 @@ haptics:
 
 accessibility:
   role: radiogroup, with each segment a radio
-  label: the group's purpose, given by the caller; each segment's label is its own text, or an explicit label when it is icon-only
+  label: the `label` prop names the group by its purpose and is never drawn; each segment is named by its item's `label`, drawn, or hidden on an icon-only segment (ADR-0041)
   traits: [button, selected]
   keyboard: arrow keys move the selection inside the group and wrap at its ends, Home and End move to the first and last segment, Tab enters and leaves the group as one stop, and the focus ring is color.border.focus at border.focus width outside the segment's pill
   dynamicType: labels scale with type.label.*; the segments grow with them up to the accessibility3 size and then the row wraps to a vertical stack rather than truncating a label
@@ -224,31 +228,32 @@ usage:
 
 examples:
   - id: two-segments
-    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day" }
+    props: { label: "Period", segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day" }
   - id: three-segments
-    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "week" }
+    props: { label: "Period", segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "week" }
   - id: label-and-icon
-    props: { segments: [{ value: "list", label: "List", icon: "nav.menu" }, { value: "map", label: "Map", icon: "object.map" }], value: "map" }
+    props: { label: "View", segments: [{ value: "list", label: "List", icon: "nav.menu" }, { value: "map", label: "Map", icon: "object.map" }], value: "map" }
   - id: icon-only
-    props: { segments: [{ value: "list", icon: "nav.menu" }, { value: "map", icon: "object.map" }], value: "list", size: md }
+    props: { label: "View", segments: [{ value: "list", label: "List", icon: "nav.menu", labelVisibility: hidden }, { value: "map", label: "Map", icon: "object.map", labelVisibility: hidden }], value: "list", size: md }
+    description: each segment draws its glyph alone and is named by its hidden `label`, never by the glyph's registry id (ADR-0041)
   - id: full-width
-    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "day", isFullWidth: true }
+    props: { label: "Period", segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }, { value: "month", label: "Month" }], value: "day", isFullWidth: true }
   - id: disabled
-    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day", isDisabled: true }
+    props: { label: "Period", segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "day", isDisabled: true }
   - id: on-vivid
-    props: { segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "week" }
+    props: { label: "Period", segments: [{ value: "day", label: "Day" }, { value: "week", label: "Week" }], value: "week" }
     surface: vivid
     description: the selected segment becomes the white solid with an ink label
   - id: on-glass-over-map
-    props: { segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "depots" }
+    props: { label: "Map layer", segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "depots" }
     surface: glass
     backdrop: map
     description: the unselected segments are glass chips and the selected one stays the solid
   - id: over-map
-    props: { segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "traffic" }
+    props: { label: "Map layer", segments: [{ value: "traffic", label: "Traffic" }, { value: "depots", label: "Depots" }], value: "traffic" }
     surface: map
   - id: russian-segments
-    props: { segments: [{ value: "day", label: "День" }, { value: "week", label: "Неделя" }, { value: "month", label: "Месяц" }], value: "week" }
+    props: { label: "Период", segments: [{ value: "day", label: "День" }, { value: "week", label: "Неделя" }, { value: "month", label: "Месяц" }], value: "week" }
     description: Russian labels are longer than the English ones, so the row widens instead of truncating
 
 notes:
@@ -271,4 +276,4 @@ notes:
     is for (critic C-32): this one was decorative, since the label identifies the segment, so the board
     wins at no accessibility tier, while TextField keeps the edge that identifies it. With no outline
     left, the selected segment wears none either. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

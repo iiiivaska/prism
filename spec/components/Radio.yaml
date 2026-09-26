@@ -29,6 +29,7 @@ anatomy:
     description: drawn only on the selected option
   - part: label
     optional: true
+    description: drawn unless `labelVisibility` is hidden; `label` names the option either way
 
 props:
   - name: value
@@ -40,7 +41,15 @@ props:
     default: false
   - name: label
     type: string
-    description: the visible label; when it is absent the control carries an explicit accessibility name
+    description: >-
+      the option's name, drawn after the circle unless `labelVisibility` is hidden and its accessible name either
+      way. Unset, the name is the one its host hands over through the name context, and an option named by neither
+      is a defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label, so the row is the circle alone (ADR-0041)
   - name: isDisabled
     type: boolean
     default: false
@@ -122,7 +131,7 @@ haptics:
 
 accessibility:
   role: radio, inside a group with role radiogroup
-  label: the `label` prop, or an explicit name when no label is visible; the group's own name comes from FormField and is announced before the option
+  label: the `label` prop, drawn or hidden (`labelVisibility`), or, when the option has none, the name its host hands over through the name context (ADR-0041); the group's own name comes from FormField and is announced before the option
   traits: [button]
   keyboard: the group takes one tab stop; the arrow keys move the selection between options and wrap at the ends; Space selects the focused option; the focus ring is color.border.focus at border.focus width around the row, following `root.radius` (radius.inner), and around the circle at radius.control when there is no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the circle keeps comp.radio.size and the row grows with the label
@@ -152,8 +161,8 @@ examples:
     props: { value: "on-change", label: "Only when a reading leaves its target band" }
     description: an option that needs a sentence; this is where Radio beats a SegmentedControl
   - id: bare
-    props: { value: "hourly" }
-    description: no visible label; the name comes from the table row that hosts it
+    props: { value: "hourly", label: "Every hour", labelVisibility: hidden }
+    description: no visible label; the circle alone, named by its hidden `label`, which is what the table row that hosts it hands it (ADR-0041)
   - id: on-vivid
     props: { value: "daily", label: "Every day", isSelected: true }
     surface: vivid
@@ -177,4 +186,4 @@ notes:
     docs/research/visual-dna.md §1 principle 9 and §4.7, at the circle radius of §1 principle 2. The dot
     is 8 px (space.3) rather than a glyph, because a single choice is a mark, not a symbol. Example
     strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

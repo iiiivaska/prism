@@ -1,0 +1,9 @@
+{
+  "description": "Second names: a string prop beside `label` for the accessible name, and two booleans for whether the label is drawn, one in the form spec/SCHEMA.md's boolean rule would suggest (`showsLabel`) and one it rejects (`labelHidden`), which is reported once, as a second name.",
+  "expect": [
+    {
+      "code": "prop/second-name",
+      "file": "spec/components/Sample.yaml"
+    }
+  ]
+}

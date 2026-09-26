@@ -1,0 +1,96 @@
+name: SamplePattern
+layer: pattern
+specVersion: 1
+status: draft
+summary: >-
+  A fixture pattern. It exists only so that tools/spec/fixtures can break one pattern rule at a time; it
+  is never assembled into a screen and has no implementation manifest entry.
+since: 0.1.0
+
+platforms:
+  ios: adapted
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: grid
+    slot: true
+  - part: navigation
+    optional: true
+
+props:
+  - name: title
+    type: string
+  - name: destinations
+    type: data
+    description: "[{ value, label, icon }]"
+
+states: [default, loading]
+
+tokens:
+  root:
+    background: color.bg.page
+    padding: space.page-margin
+  grid:
+    gap: space.4
+    loading:
+      opacity: opacity.dimmed-row
+
+layout:
+  breakpoints:
+    compact: "< 600 px"
+    desktop: ">= 1024 px"
+  columns: { compact: 1, desktop: 4 }
+  gap: space.4
+  cardMinWidth: size.card.min
+
+rules:
+  - One hero figure per screen, at type.metric.xl.
+  - Cards never shrink below size.card.min.
+
+composition:
+  - component: Card
+    props: { variant: solid, isSelected: false }
+    forwards: title, caption, hero
+    where: every grid cell
+
+behavior:
+  - The grid has `layout.columns` equal columns at space.4 gaps and never shrinks a card.
+
+motion:
+  dim: motion.duration.base
+  reduceMotion: crossfade
+
+accessibility:
+  role: the root is the main landmark
+  label: the title names the main region
+  keyboard: Tab order is the navigation, then the grid in reading order
+  dynamicType: text size never changes the column count
+  contrast: the pattern binds no text tone of its own
+  reduceTransparency: not applicable; the pattern paints opaque grounds only
+  reduceMotion: the dim to opacity.dimmed-row is an opacity change over motion.duration.base in both contexts
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't assemble a screen from the fixture.
+
+examples:
+  - id: named-destinations
+    props: { title: "Sample", destinations: [{ value: "home", label: "Home", icon: nav.home }] }
+  - id: glyph-destination
+    props: { title: "Sample", destinations: [{ value: "home", label: "Home", icon: nav.home }, { value: "menu", icon: nav.menu }] }
+    description: a pattern's items are held to their names as a component's are
+
+notes:
+  platform:
+    ios: "adapted — a phone never reaches desktop width, so the grid is one column."
+    watchos: "none — the fixture has no watch form."

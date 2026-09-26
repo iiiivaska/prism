@@ -1,0 +1,66 @@
+name: SampleGroup
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture group. It exists only so that tools/spec/fixtures can break one rule at a time: it never draws
+  its name, so its `label` is required and every example sets it.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+
+props:
+  - name: label
+    type: string
+    required: true
+    description: the group's name, never drawn
+  - name: isDisabled
+    type: boolean
+    default: false
+
+states: [default, disabled]
+
+tokens:
+  root:
+    gap: space.1
+    disabled:
+      opacity: opacity.disabled
+
+behavior:
+  - The fixture lays out its children with space.1 between them and draws nothing of its own.
+
+motion:
+  reduceMotion: none
+
+accessibility:
+  role: radiogroup
+  label: the `label` prop, never drawn
+  keyboard: Tab enters and leaves the group as one stop
+  dynamicType: the group grows with its children
+  contrast: the group draws no colour of its own
+  reduceTransparency: not applicable; the group draws no material
+  reduceMotion: nothing to substitute
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: named
+    props: { label: "Period" }
+  - id: nameless
+    props: { isDisabled: true }

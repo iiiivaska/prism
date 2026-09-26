@@ -1,0 +1,13 @@
+{
+  "description": "A `labelVisibility` declared otherwise than FormField declares it (other values and another default), and one declared correctly beside a `label` that is no string, so it hides no name.",
+  "expect": [
+    {
+      "code": "prop/label-visibility",
+      "file": "spec/components/Sample.yaml"
+    },
+    {
+      "code": "prop/label-visibility",
+      "file": "spec/components/SampleCount.yaml"
+    }
+  ]
+}

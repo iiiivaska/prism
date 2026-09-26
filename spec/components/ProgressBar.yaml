@@ -34,7 +34,7 @@ anatomy:
     description: one perpendicular target tick, centred on the track's centreline and standing above and below it
   - part: label
     optional: true
-    description: what is being measured, above the bar; not drawn on vivid
+    description: what is being measured, above the bar; not drawn on vivid or while `labelVisibility` is hidden, and `label` names the bar either way (ADR-0041)
   - part: value
     optional: true
     description: the readout, trailing on the label's line; not drawn on vivid
@@ -52,7 +52,16 @@ props:
     description: an optional target fraction, drawn as one tick; not drawn on light glass, on inverse or on accent, which hold no chart role (behavior)
   - name: label
     type: string
-    description: what is being measured; required unless a neighbouring Text already names it
+    required: true
+    description: >-
+      what is being measured: the bar's name, drawn above it unless `labelVisibility` is hidden or the bar sits on
+      vivid, and its accessible name in every case. The bar cannot see a neighbouring Text, so where one already
+      names the work the caller passes the same words with `labelVisibility: hidden` (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label row, for a bar whose neighbour already draws the words (ADR-0041)
   - name: showsValue
     type: boolean
     default: false
@@ -148,7 +157,7 @@ motion:
 
 accessibility:
   role: progressbar
-  label: from `label`; required when no neighbouring Text names the work, and it states the work, not the percentage ("Uploading route file")
+  label: from `label`, which is required, drawn or hidden (`labelVisibility`), and states the work, not the percentage ("Uploading route file"); a bar whose neighbouring Text already draws the words carries the same words hidden, so the name reaches the bar without being drawn twice (ADR-0041)
   traits: [updatesFrequently]
   keyboard: not focusable and not a tab stop; the bar is a readout, and the control that started the work keeps the focus
   dynamicType: the track's height does not scale; `label` scales with `type.label.sm` and `value` with `type.data`, and the readout wraps below the label instead of shrinking the bar
@@ -172,8 +181,8 @@ examples:
   - id: determinate
     props: { value: 0.62, label: "Uploading route file", showsValue: true }
   - id: bare
-    props: { value: 0.18 }
-    description: a bar inside a row whose neighbouring Text already names the work
+    props: { value: 0.18, label: "Uploading route file", labelVisibility: hidden }
+    description: a bar inside a row whose neighbouring Text already names the work; the same words are its hidden `label`, so the bar is named without drawing them twice (ADR-0041)
   - id: split
     props: { value: 0.45, secondaryValue: 0.2, label: "Storage used", showsValue: true }
     description: the two-segment split bar, both lengths against one whole
@@ -199,4 +208,4 @@ notes:
     macos: identical to iOS; the bar has no hover state, because it is not interactive.
     ipados: identical to iOS; the bar does not change with the pointer.
   design: "The bar's form is docs/research/component-inventory.md's two ProgressBar sightings, both segmented (a two-segment split bar and a split progress pill with a boundary marker), read through docs/research/visual-dna.md §1 principle 2 (pill grammar), principle 3 (the accent is attention, never an active state), principle 9 (the inverse solid carries the one active thing) and principle 10 (charts are hairline instruments). The 4 px thickness is dataviz-design.md §3 E25's minimum gauge stroke and the target tick is its E27. The references' glow on the split bar is dropped under visual-dna §11 anti-pattern 5. Example strings are invented (ADR-0015 rule 3)."
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

@@ -32,6 +32,7 @@ anatomy:
     description: one mark per step, drawn under the track; decorative
   - part: label
     optional: true
+    description: leads the label row unless `labelVisibility` is hidden; `label` names the slider either way
   - part: valueLabel
     optional: true
     description: the current value with its unit, and the readout that follows the thumb while dragging
@@ -55,6 +56,15 @@ props:
     description: draws one mark per step; without a `step` it draws nothing
   - name: label
     type: string
+    description: >-
+      the slider's name, leading the label row unless `labelVisibility` is hidden and its accessible name either way.
+      Unset, the name is the label of the FormField around it, handed over through the name context, and a Slider
+      named by neither is a defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label; the readout keeps its place (ADR-0041)
   - name: unit
     type: string
     description: hung beside the readout by Text, never inside the numeral
@@ -163,7 +173,7 @@ haptics:
 
 accessibility:
   role: slider
-  label: the `label` prop, or an explicit name when no label is visible; the control always reports a value, and the value is spoken with its unit ("42 percent") even when `showsValue` is false
+  label: the `label` prop, drawn or hidden (`labelVisibility`), or, when the Slider has none, the label of the FormField around it, handed over through the name context (ADR-0041); the control always reports a value, and the value is spoken with its unit ("42 percent") even when `showsValue` is false
   traits: [adjustable]
   keyboard: the thumb is the one tab stop; the arrow keys move one step, Home and End jump to the ends, Page Up and Page Down move ten steps; the focus ring is color.border.focus at border.focus width around the thumb's circle, following radius.control, and the thumb keeps its halo while focus is on it
   dynamicType: the label and the readout scale with type.label.md and type.metric.md and the row grows with them; the track and the thumb keep their token sizes, so the control never loses its geometry
@@ -223,4 +233,4 @@ notes:
     the tabular readout is §4.2 with §11 anti-pattern 18. The 4 px track height is the smallest step of
     the §6.1 rhythm - the references give no thickness of their own - and the 2x halo radius is stated
     as space.3 beyond the thumb rather than as a value. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

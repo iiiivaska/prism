@@ -1,5 +1,6 @@
 // spec:validate (roadmap P2-1 and P4-D3; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
-// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rules 4 and 6, ADR-0036 §10, spec/SCHEMA.md).
+// rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rules 4 and 6, ADR-0036 §10, ADR-0041 rules 1,
+// 2 and 8, spec/SCHEMA.md).
 //
 // Every spec/components/*.yaml is checked against spec/component.schema.json, and every
 // spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
@@ -58,6 +59,15 @@
 //   material/glass-solid         the white media solid of vivid, or what it carries (MEDIA_SOLID), bound under a
 //                                `glass` or `glassLight` key, where the solid is color.bg.fill.inverse (ADR-0030
 //                                §3.1, ADR-0040 §1)
+//   prop/label-visibility        a `labelVisibility` declared otherwise than FormField declares it (LABEL_VISIBILITY),
+//                                or with no `label` string prop beside it (ADR-0041 rule 2)
+//   prop/second-name             a prop that is a second name for `label` or for `labelVisibility`, one of
+//                                SECOND_NAMES (ADR-0041 rule 1)
+//   example/name                 an example that renders what it names with no name: it sets no `label` though its
+//                                spec requires one or declares `labelVisibility`, since an example has no host to hand
+//                                one over; an item of a `data` or `slot` value carries a glyph (GLYPH_KEYS) and no
+//                                `label`; or an item sets `labelVisibility` with no `label` beside it, or a value
+//                                other than `visible` or `hidden` (ADR-0041 rule 8)
 //
 // Token paths resolve through tools/tokens/api.ts `lookup()`, the same name grammar the rest of the
 // tooling uses; nothing here re-implements resolution.
@@ -88,9 +98,10 @@ import { statesOf, walkBindings } from './bindings.ts';
 import {
   BACKDROPS, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
   DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
-  GLASS_GROUNDS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS,
-  MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, MEDIA_SOLID, NESTED_GLASS_KEYS, NON_BINDABLE,
-  PATTERN_SCHEMA, PATTERNS_DIR, STATED_MATERIALS, STRINGS, VIVID_SLOT_PAIRS,
+  GLASS_GROUNDS, GLYPH_KEYS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LABEL_VISIBILITY, LIGHT_GLASS_BACKDROPS,
+  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED,
+  MEDIA_SOLID, NAME_PROP, NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, SECOND_NAMES, STATED_MATERIALS,
+  STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -555,7 +566,9 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
 
   const named = name === '' ? base : name;
   checkBooleanNames(doc, spec, diagnostics);
+  checkNameProps(doc, spec, diagnostics);
   checkExampleProps(doc, spec, named, ctx.icons?.ids ?? null, diagnostics);
+  checkExampleNames(doc, spec, named, diagnostics);
   checkExamples(doc, spec, diagnostics);
   checkGlassChip(doc, spec, named, diagnostics);
   checkGlassSolid(doc, spec, diagnostics);
@@ -635,15 +648,19 @@ export function booleanNameProblem(name: string): BooleanNameProblem | null {
 }
 
 /**
- * `prop/boolean-name`: every boolean prop a spec declares holds the naming rule, with no exception. The thirty that
- * predated the rule passed by name until each was renamed (roadmap P4-D3): `Button.fullWidth` in Button 4, the
- * twenty-eight in specs no stack implements in P4-11, and `Surface.selected` in Surface 4, which emptied that list.
+ * `prop/boolean-name`: every boolean prop a spec declares holds the naming rule. The thirty that predated the rule
+ * passed by name until each was renamed (roadmap P4-D3): `Button.fullWidth` in Button 4, the twenty-eight in specs no
+ * stack implements in P4-11, and `Surface.selected` in Surface 4, which emptied that list. The label's names are left to
+ * ADR-0041's rules: a second name for its visibility (SECOND_NAMES) is `prop/second-name`'s, since the fix is
+ * `labelVisibility` and never the boolean form this rule would suggest (`showsLabel`), and a `labelVisibility` declared
+ * as a boolean is `prop/label-visibility`'s.
  */
 function checkBooleanNames(doc: SpecDoc, spec: Record<string, unknown>, diagnostics: Diagnostic[]): void {
   const props = spec['props'];
   if (!Array.isArray(props)) return;
   props.forEach((prop, i) => {
     if (!isRecord(prop) || prop['type'] !== 'boolean' || typeof prop['name'] !== 'string') return;
+    if (prop['name'] === LABEL_VISIBILITY.name || SECOND_NAMES.some((second) => second.name === prop['name'])) return;
     const problem = booleanNameProblem(prop['name']);
     if (problem === null) return;
     diagnostics.push(error('prop/boolean-name', `boolean prop \`${prop['name']}\` ${problem.message}`, {
@@ -659,6 +676,126 @@ function declaredProps(spec: Record<string, unknown>): Map<string, Record<string
     if (isRecord(prop) && typeof prop['name'] === 'string') declared.set(prop['name'], prop);
   }
   return declared;
+}
+
+/** Whether a value names something: a string with a character in it that is not white space. */
+function isName(value: unknown): boolean {
+  return typeof value === 'string' && value.trim() !== '';
+}
+
+/** A prop's declaration as `prop/label-visibility` quotes it: its type, its values and its default. */
+function declaration(prop: Readonly<Record<string, unknown>>): string {
+  const values = prop['values'];
+  const listed = Array.isArray(values) && values.length > 0 ? values.map((v) => `\`${String(v)}\``).join(', ') : 'no values';
+  const type = typeof prop['type'] === 'string' ? `\`${prop['type']}\`` : 'no type';
+  const given = prop['default'];
+  const fallback = given === undefined ? 'no default' : `default \`${typeof given === 'string' ? given : JSON.stringify(given)}\``;
+  return `${type} of ${listed}, ${fallback}`;
+}
+
+/**
+ * `prop/second-name` and `prop/label-visibility` (ADR-0041 rules 1 and 2): a component's name is `label`, drawn or
+ * not, and whether it is drawn is `labelVisibility`. No prop is a second name for either (SECOND_NAMES), and a
+ * `labelVisibility` is declared as FormField declares it (LABEL_VISIBILITY), beside the `label` string it draws or hides.
+ */
+function checkNameProps(doc: SpecDoc, spec: Record<string, unknown>, diagnostics: Diagnostic[]): void {
+  const props = spec['props'];
+  if (!Array.isArray(props)) return;
+  const label = declaredProps(spec).get(NAME_PROP);
+  props.forEach((prop, i) => {
+    if (!isRecord(prop) || typeof prop['name'] !== 'string') return;
+    const where = { file: doc.path, line: doc.lineOf(['props', i, 'name']) };
+    const second = SECOND_NAMES.find((s) => s.name === prop['name']);
+    if (second !== undefined) {
+      diagnostics.push(error('prop/second-name', `prop \`${second.name}\` is a second name for \`${second.of}\``, {
+        ...where,
+        hint: second.of === NAME_PROP
+          ? `take it out: \`${NAME_PROP}\` is the name whether or not it is drawn, and \`${LABEL_VISIBILITY.name}: hidden\` keeps it for assistive technology alone (ADR-0041 rule 1)`
+          : `declare \`${LABEL_VISIBILITY.name}\` instead, as FormField declares it: ${declaration(LABEL_VISIBILITY)} (ADR-0041 rule 2)`,
+      }));
+    }
+    if (prop['name'] !== LABEL_VISIBILITY.name) return;
+    const values = prop['values'];
+    const same = prop['type'] === LABEL_VISIBILITY.type && prop['default'] === LABEL_VISIBILITY.default
+      && Array.isArray(values) && values.length === LABEL_VISIBILITY.values.length
+      && values.every((v, k) => v === LABEL_VISIBILITY.values[k]);
+    if (!same) {
+      diagnostics.push(error('prop/label-visibility', `\`${LABEL_VISIBILITY.name}\` is declared ${declaration(prop)}, and FormField declares it ${declaration(LABEL_VISIBILITY)}`, {
+        ...where, hint: 'declare it as FormField does: one meaning keeps one name, one set of values and one default (ADR-0041 rule 2, spec/SCHEMA.md)',
+      }));
+    }
+    if (label === undefined || label['type'] !== 'string') {
+      diagnostics.push(error('prop/label-visibility', `\`${LABEL_VISIBILITY.name}\` is declared with no \`${NAME_PROP}\` string beside it, so it hides no name`, {
+        ...where, hint: `declare \`${NAME_PROP}\`, a string: it is the name that \`${LABEL_VISIBILITY.name}\` draws or hides (ADR-0041 rules 1 and 2)`,
+      }));
+    }
+  });
+}
+
+/**
+ * `example/name` (ADR-0041 rule 8): an example is rendered with no host around it, so it names what it renders the way
+ * a caller does. An example of a spec that requires `label`, or that declares `labelVisibility`, sets a `label`. In a
+ * `data` or `slot` value, an item that carries a glyph (GLYPH_KEYS) carries a `label` beside it, because the glyph is
+ * never the name (ADR-0032 decision 8), and an item that sets `labelVisibility` sets a `label` beside it and `visible` or
+ * `hidden`. A value written as one of SCHEMA's fixtures carries neither key, so it passes as written. Whether an example
+ * sets every other required prop is not asked here.
+ */
+function checkExampleNames(doc: SpecDoc, spec: Record<string, unknown>, name: string, diagnostics: Diagnostic[]): void {
+  const examples = spec['examples'];
+  if (!Array.isArray(examples)) return;
+  const declared = declaredProps(spec);
+  const names = declared.has(LABEL_VISIBILITY.name) ? 'declares' : declared.get(NAME_PROP)?.['required'] === true ? 'requires' : null;
+  examples.forEach((example, i) => {
+    if (!isRecord(example)) return;
+    const id = typeof example['id'] === 'string' ? example['id'] : String(i);
+    const props = isRecord(example['props']) ? example['props'] : {};
+    const given = props[NAME_PROP];
+    // A `label` of another type is `example/prop`'s to report.
+    if (names !== null && (given === undefined || (typeof given === 'string' && !isName(given)))) {
+      diagnostics.push(error('example/name', `example \`${id}\` sets ${given === undefined ? 'no' : 'a blank'} \`${NAME_PROP}\`, so ${name} renders with no name`, {
+        file: doc.path, line: doc.lineOf(given === undefined ? ['examples', i] : ['examples', i, 'props', NAME_PROP]),
+        hint: names === 'declares'
+          ? `set \`${NAME_PROP}\`, with \`${LABEL_VISIBILITY.name}: hidden\` where the example draws none: an example has no host to hand a name over (ADR-0041)`
+          : `set \`${NAME_PROP}\`, which ${name} requires because it draws its name nowhere (ADR-0041)`,
+      }));
+    }
+    for (const [key, value] of Object.entries(props)) {
+      const type = declared.get(key)?.['type'];
+      if (type === 'data' || type === 'slot') checkItemNames(doc, value, ['examples', i, 'props', key], key, id, diagnostics);
+    }
+  });
+}
+
+/** Every item of one `data` or `slot` value of an example, depth first, held to `example/name` (see checkExampleNames). */
+function checkItemNames(doc: SpecDoc, value: unknown, at: JsonPath, written: string, id: string, diagnostics: Diagnostic[]): void {
+  if (Array.isArray(value)) {
+    value.forEach((item, k) => checkItemNames(doc, item, [...at, k], `${written}[${k}]`, id, diagnostics));
+    return;
+  }
+  if (!isRecord(value)) return;
+  const where = { file: doc.path, line: doc.lineOf(at) };
+  const glyph = GLYPH_KEYS.find((key) => key in value);
+  const named = isName(value[NAME_PROP]);
+  if (glyph !== undefined && !named) {
+    diagnostics.push(error('example/name', `example \`${id}\`: \`${written}\` carries the glyph \`${String(value[glyph])}\` and no \`${NAME_PROP}\``, {
+      ...where, hint: `give it a \`${NAME_PROP}\`, with \`${LABEL_VISIBILITY.name}: hidden\` where it draws its glyph alone: neither the glyph nor its registry id is ever a name (ADR-0032 decision 8, ADR-0041)`,
+    }));
+  }
+  if (LABEL_VISIBILITY.name in value) {
+    const visibility = value[LABEL_VISIBILITY.name];
+    // An item with a glyph and no name is reported once, above.
+    if (!named && glyph === undefined) {
+      diagnostics.push(error('example/name', `example \`${id}\`: \`${written}\` sets \`${LABEL_VISIBILITY.name}\` and no \`${NAME_PROP}\``, {
+        ...where, hint: `set the \`${NAME_PROP}\` that \`${LABEL_VISIBILITY.name}\` draws or hides, beside it (ADR-0041)`,
+      }));
+    }
+    if (!LABEL_VISIBILITY.values.some((v) => v === visibility)) {
+      diagnostics.push(error('example/name', `example \`${id}\`: \`${written}.${LABEL_VISIBILITY.name}\` is ${JSON.stringify(visibility)}, not \`visible\` or \`hidden\``, {
+        ...where, hint: 'write `visible` or `hidden`, the two values FormField declares (ADR-0041 rule 2)',
+      }));
+    }
+  }
+  for (const [key, child] of Object.entries(value)) checkItemNames(doc, child, [...at, key], `${written}.${key}`, id, diagnostics);
 }
 
 /**

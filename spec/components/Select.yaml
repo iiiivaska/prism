@@ -24,7 +24,7 @@ anatomy:
   - part: root
   - part: label
     optional: true
-    description: the control's name, above the trigger
+    description: the control's name, above the trigger; drawn unless `labelVisibility` is hidden or the trigger is the glass chip over media, and `label` names the trigger either way (ADR-0041)
   - part: trigger
     description: the outlined pill the user presses
   - part: value
@@ -42,6 +42,16 @@ anatomy:
 props:
   - name: label
     type: string
+    description: >-
+      the choice's name, drawn above the trigger unless `labelVisibility` is hidden or the trigger renders as the
+      glass chip over media (a filter pill over a map), and its accessible name in every case. Unset, the name is the
+      label of the FormField around it, handed over through the name context, and a trigger named by neither is a
+      defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label row (ADR-0041)
   - name: value
     type: string
     description: the chosen option's visible text; empty shows the placeholder
@@ -280,7 +290,7 @@ haptics:
 
 accessibility:
   role: button that opens a listbox (web `aria-haspopup="listbox"` with `aria-expanded`; `combobox` is reserved for an editable ComboBox, which this is not)
-  label: the visible label; a trigger without one (a filter pill over a map) carries an explicit accessibility label, and the value is exposed separately from it
+  label: the `label` prop, drawn or hidden - a trigger that draws none (`labelVisibility` hidden, or a filter pill over a map) is named by the same string - or, when the trigger has none, the label of the FormField around it, handed over through the name context (ADR-0041); the value is exposed separately from it
   traits: [button, hasPopup]
   keyboard: Space, Enter and Down open the list; typing jumps to a matching option; Escape closes it and keeps the value; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: label, value, helper and error scale with their roles; the pill grows with the value up to the accessibility3 size and then clamps, and the value truncates rather than pushing the chevron out
@@ -315,16 +325,16 @@ examples:
   - id: disabled
     props: { label: "Period", value: "Last 24 hours", isDisabled: true }
   - id: chip-over-map
-    props: { value: "All routes", leadingIcon: action.filter }
+    props: { label: "Route filter", value: "All routes", leadingIcon: action.filter }
     surface: map
-    description: the trigger renders as one glass chip and drops its label and helper rows
+    description: the trigger renders as one glass chip and drops its label and helper rows; `label` still names it (ADR-0041)
   - id: in-glass-card-over-map
     props: { label: "Period", value: "Last 24 hours" }
     surface: glass
     backdrop: map
     description: inside a glass Card the label follows the published backdrop kind
   - id: on-vivid
-    props: { value: "Last 24 hours" }
+    props: { label: "Period", value: "Last 24 hours" }
     surface: vivid
   - id: russian-value
     props: { label: "Период", value: "Последние двадцать четыре часа", helper: "Влияет на все карточки экрана" }
@@ -346,4 +356,4 @@ notes:
     color.text.on-accent-secondary, the pair ADR-0030 §3.4 checks on that material. The role is a button
     with a listbox popup, not a combobox: the value is not editable, so the trigger is a pop-up button
     and the platform owns the list. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

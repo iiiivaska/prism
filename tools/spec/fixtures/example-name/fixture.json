@@ -1,0 +1,17 @@
+{
+  "description": "Examples that render with no name: a component whose spec declares `labelVisibility` or requires `label`, given no `label` or a blank one; an item of a data or slot value that carries a glyph and no `label`, or a blank one, at any depth; an item that sets `labelVisibility` with no `label`, or a value that is neither `visible` nor `hidden`. Beside them, the forms that pass: a drawn and a hidden `label`, an icon-only item named by a hidden `label`, a slot written as SCHEMA's fixture, and a pattern's item held like a component's.",
+  "expect": [
+    {
+      "code": "example/name",
+      "file": "spec/components/Sample.yaml"
+    },
+    {
+      "code": "example/name",
+      "file": "spec/components/SampleGroup.yaml"
+    },
+    {
+      "code": "example/name",
+      "file": "spec/patterns/SamplePattern.yaml"
+    }
+  ]
+}

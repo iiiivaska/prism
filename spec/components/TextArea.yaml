@@ -23,7 +23,7 @@ anatomy:
   - part: root
   - part: label
     optional: true
-    description: the field's name, above the box; required unless an explicit accessibility label is given
+    description: the field's name, above the box; drawn unless `labelVisibility` is hidden, and `label` names the area either way (ADR-0041)
   - part: box
     description: the outlined container that holds the value
   - part: input
@@ -45,6 +45,15 @@ anatomy:
 props:
   - name: label
     type: string
+    description: >-
+      the area's name, drawn above the box unless `labelVisibility` is hidden and its accessible name either way.
+      Unset, the name is the label of the FormField around it, handed over through the name context, and an area
+      named by neither is a defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label row (ADR-0041)
   - name: value
     type: string
   - name: placeholder
@@ -180,7 +189,7 @@ tokens:
       glassLight: color.text.on-glass-light
 
 behavior:
-  - The label is programmatically tied to the input, and the placeholder never stands in for it; a box with no visible label carries an explicit accessibility label.
+  - The label is programmatically tied to the input, and the placeholder never stands in for it; a box whose label is hidden (`labelVisibility`) keeps `label` as its accessible name (ADR-0041).
   - "The box is a container, not a control: it takes radius.inner rather than radius.control, has no fill at rest and is identified by its 1 px color.border.boundary edge."
   - At rest the box is `rows` line boxes of type.body.md tall and never shorter than size.row, so an empty area still reads as a target at the row height of its density.
   - "With `growsWithValue` the box grows one line box at a time as the value wraps, up to `maxRows`; past that the value scrolls inside the box and the box stops growing. The rows below it never move under the caret."
@@ -204,7 +213,7 @@ motion:
 
 accessibility:
   role: textbox
-  label: the visible label; the placeholder is never the label, and a required area says so in its label rather than with a lone glyph
+  label: the `label` prop, drawn or hidden (`labelVisibility`), or, when the area has none, the label of the FormField around it, handed over through the name context (ADR-0041); the placeholder is never the label, and a required area says so in its label rather than with a lone glyph
   traits: [textField]
   keyboard: Tab moves in and out and never inserts a tab character; Enter inserts a line break and does not submit; the focus ring is color.border.focus at border.focus width outside the box
   dynamicType: label, value, helper, error and counter scale with their roles; the box grows with the value, and at the accessibility3 size `rows` is honored as a minimum while the box is free to grow past `maxRows`
@@ -263,4 +272,4 @@ notes:
     docs/research/visual-dna.md §1 principle 2 (inner 8 for the smallest container); the edge takes
     color.border.boundary for ADR-0011's 3:1 boundary tier, as in TextField. Fade truncation belongs to
     Text, not here (§4.15). Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0021-typography-rules.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0021-typography-rules.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

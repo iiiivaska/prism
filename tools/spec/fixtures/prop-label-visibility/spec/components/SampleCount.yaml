@@ -1,0 +1,61 @@
+name: SampleCount
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture readout. It exists only so that tools/spec/fixtures can break one rule at a time: its
+  `labelVisibility` is FormField's, and the `label` beside it is a number, which names nothing.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+
+props:
+  - name: label
+    type: number
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+
+states: [default]
+
+tokens:
+  root:
+    gap: space.1
+
+behavior:
+  - The fixture draws nothing of its own.
+
+motion:
+  reduceMotion: none
+
+accessibility:
+  role: group
+  label: none; the fixture is a container
+  keyboard: not focusable
+  dynamicType: nothing scales
+  contrast: the fixture draws no colour of its own
+  reduceTransparency: not applicable; the fixture draws no material
+  reduceMotion: nothing to substitute
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: counted
+    props: { label: 3 }

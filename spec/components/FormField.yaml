@@ -63,7 +63,7 @@ props:
     type: enum
     values: [visible, hidden]
     default: visible
-    description: hidden keeps the label for assistive technology only, for a control whose place already names it
+    description: hidden keeps the label for assistive technology only, for a control whose place already names it; every control that draws its own label declares the same prop, and FormField hands its value on with the label (ADR-0041)
   - name: isInvalid
     type: boolean
     default: false
@@ -134,15 +134,15 @@ tokens:
       glass: color.text.on-glass-fill
 
 behavior:
-  - "FormField owns the wiring, not a second copy of the rows. TextField, TextArea and Select already declare `label`, `helper` and `errorText` and draw those rows themselves; when the control is one of them, FormField forwards `label`, `helper`, `errorText`, `isInvalid`, `isRequired` and `isDisabled` into the control's props of the same name and draws no label, helper or error row of its own."
-  - "When the control is a Checkbox, Radio, Toggle, Slider or an app control, FormField draws the helper and the error row itself and wires them: the label points at the control (`for`/`id` on web, an accessibility label on Apple), and the helper and the error together are the control's description."
-  - "One control, one name. Checkbox, Radio, Toggle and Slider each declare a `label` of their own, so FormField never draws a second copy of it: at `layout: stacked` it passes its `label` into the control's `label` prop and draws no label row, and at `layout: inline` it draws the label as the row's own title and renders the control with no visible label, the same accessible name reaching it through the wiring. FormField draws the `label` part only in that inline row, for a control that has no `label` prop of its own, and for `kind: group`. This is the anatomy note on the `label` part, stated as a rule."
+  - "FormField owns the wiring, not a second copy of the rows. TextField, TextArea and Select already declare `label`, `helper` and `errorText` and draw those rows themselves; when the control is one of them, FormField hands it its `label` through the name context (ADR-0041), forwards `helper`, `errorText`, `isInvalid`, `isRequired` and `isDisabled` into the control's props of the same name, and draws no label, helper or error row of its own."
+  - "When the control is a Checkbox, Radio, Toggle, Slider or an app control, FormField draws the helper and the error row itself and wires them: the label reaches the control through the name context (ADR-0041), and the helper and the error together are the control's description."
+  - "One control, one name, handed over through the name context (ADR-0041). FormField publishes its `label` with a `labelVisibility` to the control it holds, and the control takes that pair when the caller gave it no `label` of its own; a control given one keeps its own, which the usage below forbids. Checkbox, Radio, Toggle and Slider draw a label themselves, so FormField never draws a second copy of it: at `layout: stacked` it hands the label on as `visible` and the control draws it, with no label row of FormField's own, and at `layout: inline` it draws the label as the row's own title and hands it on as `hidden`, so the control draws none and is named by the same words. FormField draws the `label` part only in that inline row, for a control that draws no label of its own (one that declares no `labelVisibility`, an app control among them), and for `kind: group`, whose label names the group and is handed to no option. This is the anatomy note on the `label` part, stated as a rule."
   - "`kind: group` is the one place two names are right: the group label names the set and each option keeps the label it draws itself, so a screen reader reads \"Channels, Email, checked\"."
   - "`kind: group` labels a set rather than one control: the label becomes the group's own name (a `fieldset` legend on web, an accessibility container label on Apple), the options sit space.3 apart inside the group, and the error belongs to the group, not to one option."
   - "`isInvalid` swaps the helper row for the error row and exposes `errorText` as the control's description; the message is announced once, politely, when it appears, and it is not re-announced while the value changes."
   - "The error row pairs the status.danger glyph with the message, so the state never rests on colour alone (ADR-0011 rule 4). It replaces the helper rather than joining it, so a field never carries two lines of advice at once."
   - "\"Required\" is said once, in the caller's words. A required field says so in its `label` (\"Batch id (required)\"), never with a lone asterisk and never with a colour, and that label is the control's accessible name, so every reader meets the word once. `isRequired` marks the field required for the form, and FormField forwards it to a TextField, TextArea or Select or keeps it for a group; it adds no second announcement, so neither FormField nor its control sets `aria-required` or `required` on the web, and Apple has no required trait. The word is the caller's because the label already carries it, ADR-0032's third cheaper route, so no strings key is added. In a form where most fields are required, the optional ones are marked instead, the same way, in words."
-  - "`labelVisibility: hidden` keeps the label in the accessibility tree and removes it from the layout; it exists for a control whose place already names it — a search pill in a top bar, one field in a labelled table column — and a placeholder is never a substitute for it."
+  - "`labelVisibility: hidden` keeps the label in the accessibility tree and removes it from the layout; it exists for a control whose place already names it — a search pill in a top bar, one field in a labelled table column — and a placeholder is never a substitute for it. FormField hands the label on as `hidden` at either layout, so the control draws none either (ADR-0041)."
   - "`layout: inline` puts the label before the control on one row, columnGap space.4 apart, and lifts it to type.body.md in color.text.primary, because there it reads as the row's own title rather than as a field name. It is the settings row: label leading, Toggle trailing. The helper and error rows stay below, aligned to the label."
   - "The label, the helper and the error rows all wrap and never truncate; the field grows in height instead (ADR-0011). Nothing in this component shrinks below its role's size to keep a height."
   - "`isDisabled` lowers the whole field to opacity.disabled and removes the control from the focus order; FormField never disables the label alone, because a label at opacity.disabled beside a live control reads as a broken field."
@@ -153,7 +153,7 @@ behavior:
 
 accessibility:
   role: "none of its own — FormField is a wiring element; `kind: group` exposes a group (a `fieldset` on web, an accessibility container on Apple)"
-  label: the `label` prop, always present and always attached to the control, whether or not it is visible; a placeholder, a unit or a glyph is never the label
+  label: the `label` prop, always present and always the control's name, whether or not it is visible - FormField hands it and its visibility to the control through the name context, which the control takes when the caller gave it no `label` of its own (ADR-0041); a placeholder, a unit or a glyph is never the label
   traits: []
   keyboard: not focusable itself; Tab reaches the control and then any control inside it, and the focus ring belongs to the control. The helper and the error are never focus stops — they reach the control as its description
   dynamicType: "label, helper and error all scale with their roles; the field grows in height, the rows wrap, and at the accessibility3 size `layout: inline` reflows to `stacked` so the label keeps its full text"
@@ -237,3 +237,4 @@ notes:
     - docs/adr/0023-motion-tokens.md
     - docs/adr/0029-direction-board-sign-off.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md
+    - docs/adr/0041-a-control-is-named-by-its-label.md

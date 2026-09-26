@@ -1,0 +1,120 @@
+name: Sample
+layer: primitive
+specVersion: 1
+status: draft
+summary: >-
+  A fixture component. It exists only so that tools/spec/fixtures can break one rule at a time; it is
+  never implemented and never appears in the parity report.
+since: 0.1.0
+
+platforms:
+  ios: full
+  ipados: full
+  macos: full
+  watchos: none
+  web-touch: full
+  web-desktop: full
+density: [compact, regular, comfortable, watch]
+modality: [pointer, touch]
+schemes: [light, dark]
+
+anatomy:
+  - part: root
+  - part: label
+  - part: items
+    optional: true
+  - part: action
+    optional: true
+    slot: true
+
+props:
+  - name: variant
+    type: enum
+    values: [solid, glass]
+    default: solid
+  - name: label
+    type: string
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+  - name: items
+    type: data
+    description: "[{ value, label, icon?, glyph?, labelVisibility?, items? }]"
+  - name: action
+    type: slot
+
+states: [default, pressed]
+
+tokens:
+  root:
+    background:
+      solid: color.bg.surface
+      glass: material.glass.fill
+    radius: radius.card
+    padding: space.card-padding
+    pressed:
+      overlay: color.bg.fill.neutral.subtle
+  label:
+    typography: type.label.md
+    color:
+      solid: color.text.primary
+      glass: color.text.on-glass-fill
+
+behavior:
+  - The fixture draws one surface with one label and nothing else.
+  - The hit region is the larger of the visual size and size.hit on each axis.
+
+motion:
+  press: motion.spring.snappy
+  reduceMotion: crossfade
+
+haptics:
+  press: haptic.press.button
+
+accessibility:
+  role: button
+  label: the `label` prop, drawn or hidden
+  keyboard: Space and Enter activate
+  dynamicType: the label scales with type.label.*
+  contrast: the label pair is checked by tools/contrast
+  reduceTransparency: glass resolves to an opaque raised surface over color.bg.page
+  reduceMotion: the press scale is replaced by a fill change to color.bg.fill.neutral.subtle
+
+usage:
+  do:
+    - Use the fixture only in the tools/spec tests.
+  dont:
+    - Don't ship the fixture in a release.
+
+examples:
+  - id: named
+    props: { variant: solid, label: "Sample" }
+  - id: hidden
+    props: { variant: solid, label: "Sample", labelVisibility: hidden }
+    description: a hidden label is a name all the same, so this passes
+  - id: nameless
+    props: { variant: solid, labelVisibility: hidden }
+  - id: blank
+    props: { variant: solid, label: " " }
+  - id: glyph-items
+    props: { label: "Sample", items: [{ value: "back", label: "Back", icon: nav.back }, { value: "menu", icon: nav.menu }] }
+  - id: blank-item
+    props: { label: "Sample", items: [{ value: "menu", label: " ", icon: nav.menu }] }
+  - id: icon-only-items
+    props: { label: "Sample", items: [{ value: "back", label: "Back", icon: nav.back, labelVisibility: hidden }] }
+    description: an icon-only item named by its hidden label, so this passes
+  - id: nested-items
+    props: { label: "Sample", items: [{ value: "more", label: "More", items: [{ value: "add", glyph: action.add }] }] }
+  - id: unnamed-visibility
+    props: { label: "Sample", items: [{ value: "plain", labelVisibility: hidden }] }
+  - id: visibility-value
+    props: { label: "Sample", items: [{ value: "plain", label: "Plain", labelVisibility: hiden }] }
+  - id: glyph-slot
+    props: { label: "Sample", action: { glyph: action.add } }
+  - id: named-slot
+    props: { label: "Sample", action: { glyph: action.add, label: "Add a site" } }
+    description: a component in the slot that names itself, so this passes
+  - id: fixture-slot
+    props: { label: "Sample", action: { fixture: text, lines: 2 } }
+    description: a slot written as SCHEMA's fixture carries no glyph and no label of its own, so this passes

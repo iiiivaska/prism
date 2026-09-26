@@ -6161,7 +6161,7 @@
             "light",
             "dark"
           ],
-          "props": "value: off",
+          "props": "value: off, label: Include archived sites, labelVisibility: hidden",
           "cells": []
         },
         {
@@ -16037,7 +16037,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 0.18",
+          "props": "value: 0.18, label: Uploading route file, labelVisibility: hidden",
           "cells": []
         },
         {
@@ -16254,7 +16254,7 @@
             "light",
             "dark"
           ],
-          "props": "value: hourly",
+          "props": "value: hourly, label: Every hour, labelVisibility: hidden",
           "cells": []
         },
         {
@@ -16313,7 +16313,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: day",
+          "props": "label: Period, segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: day",
           "cells": []
         },
         {
@@ -16322,7 +16322,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"},{\"value\":\"month\",\"label\":\"Month\"}], value: week",
+          "props": "label: Period, segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"},{\"value\":\"month\",\"label\":\"Month\"}], value: week",
           "cells": []
         },
         {
@@ -16331,7 +16331,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"list\",\"label\":\"List\",\"icon\":\"nav.menu\"},{\"value\":\"map\",\"label\":\"Map\",\"icon\":\"object.map\"}], value: map",
+          "props": "label: View, segments: [{\"value\":\"list\",\"label\":\"List\",\"icon\":\"nav.menu\"},{\"value\":\"map\",\"label\":\"Map\",\"icon\":\"object.map\"}], value: map",
           "cells": []
         },
         {
@@ -16340,7 +16340,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"list\",\"icon\":\"nav.menu\"},{\"value\":\"map\",\"icon\":\"object.map\"}], value: list, size: md",
+          "props": "label: View, segments: [{\"value\":\"list\",\"label\":\"List\",\"icon\":\"nav.menu\",\"labelVisibility\":\"hidden\"},{\"value\":\"map\",\"label\":\"Map\",\"icon\":\"object.map\",\"labelVisibility\":\"hidden\"}], value: list, size: md",
           "cells": []
         },
         {
@@ -16349,7 +16349,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"},{\"value\":\"month\",\"label\":\"Month\"}], value: day, isFullWidth: true",
+          "props": "label: Period, segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"},{\"value\":\"month\",\"label\":\"Month\"}], value: day, isFullWidth: true",
           "cells": []
         },
         {
@@ -16358,7 +16358,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: day, isDisabled: true",
+          "props": "label: Period, segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: day, isDisabled: true",
           "cells": []
         },
         {
@@ -16367,7 +16367,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: week",
+          "props": "label: Period, segments: [{\"value\":\"day\",\"label\":\"Day\"},{\"value\":\"week\",\"label\":\"Week\"}], value: week",
           "cells": []
         },
         {
@@ -16376,7 +16376,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"traffic\",\"label\":\"Traffic\"},{\"value\":\"depots\",\"label\":\"Depots\"}], value: depots",
+          "props": "label: Map layer, segments: [{\"value\":\"traffic\",\"label\":\"Traffic\"},{\"value\":\"depots\",\"label\":\"Depots\"}], value: depots",
           "cells": []
         },
         {
@@ -16385,7 +16385,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"traffic\",\"label\":\"Traffic\"},{\"value\":\"depots\",\"label\":\"Depots\"}], value: traffic",
+          "props": "label: Map layer, segments: [{\"value\":\"traffic\",\"label\":\"Traffic\"},{\"value\":\"depots\",\"label\":\"Depots\"}], value: traffic",
           "cells": []
         },
         {
@@ -16394,7 +16394,7 @@
             "light",
             "dark"
           ],
-          "props": "segments: [{\"value\":\"day\",\"label\":\"День\"},{\"value\":\"week\",\"label\":\"Неделя\"},{\"value\":\"month\",\"label\":\"Месяц\"}], value: week",
+          "props": "label: Период, segments: [{\"value\":\"day\",\"label\":\"День\"},{\"value\":\"week\",\"label\":\"Неделя\"},{\"value\":\"month\",\"label\":\"Месяц\"}], value: week",
           "cells": []
         }
       ]
@@ -16480,7 +16480,7 @@
             "light",
             "dark"
           ],
-          "props": "value: All routes, leadingIcon: action.filter",
+          "props": "label: Route filter, value: All routes, leadingIcon: action.filter",
           "cells": []
         },
         {
@@ -16498,7 +16498,7 @@
             "light",
             "dark"
           ],
-          "props": "value: Last 24 hours",
+          "props": "label: Period, value: Last 24 hours",
           "cells": []
         },
         {
@@ -20607,7 +20607,7 @@
             "light",
             "dark"
           ],
-          "props": "placeholder: Search this area, leadingIcon: action.search, contentType: search",
+          "props": "label: Search this area, placeholder: Street or depot, leadingIcon: action.search, contentType: search",
           "cells": []
         },
         {
@@ -20684,7 +20684,7 @@
             "light",
             "dark"
           ],
-          "props": "isOn: false",
+          "props": "isOn: false, label: Night shading, labelVisibility: hidden",
           "cells": []
         },
         {

@@ -1,7 +1,8 @@
 // Paths and vocabularies spec:validate checks against (ADR-0006, ADR-0013, ADR-0022 §3.1, ADR-0023 §8.4,
-// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rules 4 and 6, ADR-0036 §9, spec/SCHEMA.md). Everything here is a
-// decision an ADR or spec/SCHEMA.md records; the bindable categories are not, because ADR-0024 §5.3 makes the regex in
-// spec/component.schema.json their single copy (`bindableCategories()` in schema.ts reads it back).
+// ADR-0024 §5, ADR-0029 §1.4, ADR-0030 §3, ADR-0032 rules 4 and 6, ADR-0036 §9, ADR-0041, spec/SCHEMA.md).
+// Everything here is a decision an ADR or spec/SCHEMA.md records; the bindable categories are not, because
+// ADR-0024 §5.3 makes the regex in spec/component.schema.json their single copy (`bindableCategories()` in schema.ts
+// reads it back).
 
 /** Repository-relative layout of the contract. */
 export const SPEC_DIR = 'spec';
@@ -205,6 +206,49 @@ export const IMAGE_FIXTURES: readonly string[] = ['portrait'];
  * it names the condition that is true, and the default says which way the component starts (spec/SCHEMA.md).
  */
 export const BOOLEAN_NEGATIONS: readonly string[] = ['Not', 'No', 'Non'];
+
+/**
+ * The name of a control, a group or an item, whether it is drawn or not (ADR-0041 rule 1): one prop, `label`, and
+ * never a second one.
+ */
+export const NAME_PROP = 'label';
+
+/**
+ * Whether a component that draws its `label` draws it (ADR-0041 rule 2), declared once, as FormField declared it first:
+ * an enum of `visible` and `hidden`, in that order, with `visible` the default. `prop/label-visibility` holds every spec
+ * that declares the prop to this and to a `label` string beside it, and validate.test.ts holds this constant to
+ * FormField.yaml, so neither can move alone.
+ */
+export const LABEL_VISIBILITY = { name: 'labelVisibility', type: 'enum', values: ['visible', 'hidden'], default: 'visible' } as const;
+
+/**
+ * Second names for the name or for whether it is drawn, which no spec declares (ADR-0041 rule 1, `prop/second-name`):
+ * `label` is the name and `labelVisibility` its visibility, on every component and item. `showsLabel` is listed because
+ * spec/SCHEMA.md's boolean rule would otherwise make it the natural name for a part that is there either way and drawn
+ * or not, and the label's axis is FormField's enum, which SwiftUI's own `labelsVisibility(_:)` also takes. The list is
+ * closed: a second name that a review meets joins it in the change that finds it, as a verb joins BOOLEAN_VERBS.
+ */
+export const SECOND_NAMES: readonly { readonly name: string; readonly of: string }[] = [
+  { name: 'accessibilityLabel', of: NAME_PROP },
+  { name: 'accessibilityName', of: NAME_PROP },
+  { name: 'accessibleName', of: NAME_PROP },
+  { name: 'a11yLabel', of: NAME_PROP },
+  { name: 'ariaLabel', of: NAME_PROP },
+  { name: 'ariaLabelledBy', of: NAME_PROP },
+  { name: 'labelledBy', of: NAME_PROP },
+  { name: 'showsLabel', of: LABEL_VISIBILITY.name },
+  { name: 'hidesLabel', of: LABEL_VISIBILITY.name },
+  { name: 'isLabelHidden', of: LABEL_VISIBILITY.name },
+  { name: 'isLabelVisible', of: LABEL_VISIBILITY.name },
+  { name: 'labelHidden', of: LABEL_VISIBILITY.name },
+];
+
+/**
+ * The keys an item of a `data` prop, or a component written into a `slot`, carries its one glyph under: SegmentedControl's
+ * and Sidebar's `icon`, TabBar's, Toolbar's and IconButton's `glyph`. The glyph is never the name (ADR-0032 decision 8),
+ * so `example/name` holds an item that carries one to a `label` beside it (ADR-0041 rule 8).
+ */
+export const GLYPH_KEYS: readonly string[] = ['icon', 'glyph'];
 
 /** Kebab-case component name: the `comp.<component>` group a spec owns (ADR-0024 §5.2). */
 export function compGroup(name: string): string {

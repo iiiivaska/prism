@@ -27,6 +27,7 @@ anatomy:
   - part: knob
   - part: label
     optional: true
+    description: drawn unless `labelVisibility` is hidden; `label` names the switch either way
 
 props:
   - name: isOn
@@ -35,7 +36,15 @@ props:
     description: true puts the Toggle in its `selected` state
   - name: label
     type: string
-    description: the visible label; when it is absent the control carries an explicit accessibility name
+    description: >-
+      the switch's name, drawn as the row's label unless `labelVisibility` is hidden and its accessible name either
+      way. Unset, the name is the one its host hands over through the name context (ListRow's title, FormField's
+      label), and a Toggle named by neither is a defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label, so the row is the switch alone (ADR-0041)
   - name: isDisabled
     type: boolean
     default: false
@@ -132,7 +141,7 @@ haptics:
 
 accessibility:
   role: switch
-  label: the `label` prop, or an explicit name when no label is visible; the label says what the switch controls and never contains the word on or off, which the value carries
+  label: the `label` prop, drawn or hidden (`labelVisibility`), or, when the Toggle has none, the name its host hands over through the name context (ADR-0041); the label says what the switch controls and never contains the word on or off, which the value carries
   traits: [toggle]
   keyboard: Space flips the switch; Enter does not activate it; the focus ring is color.border.focus at border.focus width around the row, following `root.radius` (radius.inner), or radius.control around the track when the row has no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs, so the row grows while the track keeps comp.toggle.height
@@ -159,8 +168,8 @@ examples:
   - id: on-disabled
     props: { isOn: true, label: "Night shading", isDisabled: true }
   - id: bare
-    props: { isOn: false }
-    description: no visible label; the accessibility name comes from the row that hosts it
+    props: { isOn: false, label: "Night shading", labelVisibility: hidden }
+    description: no visible label; the switch alone, named by its hidden `label`, which is what a row that draws the words hands it (ADR-0041)
   - id: on-vivid
     props: { isOn: true, label: "Live readings" }
     surface: vivid
@@ -188,4 +197,4 @@ notes:
     ADR-0029 §3.3, the pill is §1 principle 2, the 4 px knob inset is the smallest step of the §6.1
     rhythm, and the track height is size.control.sm so a switch sits in the one control family of §1
     principle 13. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

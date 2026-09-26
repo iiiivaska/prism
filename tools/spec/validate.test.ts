@@ -4,8 +4,8 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic, type IRBundle, type SourceReader } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import {
-  compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, MATERIAL_PUBLISHERS, MATERIALS_OWED, MATERIALS_SETTLED,
-  NON_BINDABLE,
+  compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, LABEL_VISIBILITY, MATERIAL_PUBLISHERS, MATERIALS_OWED,
+  MATERIALS_SETTLED, NAME_PROP, NON_BINDABLE, SECOND_NAMES,
 } from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
@@ -195,6 +195,7 @@ describe('fixtures', () => {
       'composition/prop',
       'composition/unknown',
       'example/light-glass-backdrop',
+      'example/name',
       'example/prop',
       'example/tinted-scheme',
       'example/vivid-grid',
@@ -207,6 +208,8 @@ describe('fixtures', () => {
       'material/uneven',
       'matrix/axis',
       'prop/boolean-name',
+      'prop/label-visibility',
+      'prop/second-name',
       'prose/unknown',
       'spec/file-name',
       'spec/no-schema',
@@ -568,6 +571,143 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
       '59 prose/unknown prose names `icon.nav.bakc`, which resolves to no token',
     ]);
   }, 60_000);
+});
+
+describe('the name of a control that draws no label (ADR-0041)', () => {
+  // Each fixture breaks its rule every way it can be broken, one way per example, item or prop, beside the forms the
+  // rule lets through, so every branch is pinned by its line and message.
+  const diagnose = async (reader: SourceReader): Promise<string[]> =>
+    (await runSpecValidate({ reader, collected: await repoDictionary() })).diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`);
+  const fixture = (name: string): SourceReader => {
+    const c = specCases().find((x) => x.name === name);
+    if (c === undefined) throw new Error(`no fixture ${name}`);
+    return caseReader(c);
+  };
+  const props = (reader: SourceReader, path: string): Record<string, unknown>[] => {
+    const value = loadSpec(path, reader.readText(path)).value?.['props'];
+    return Array.isArray(value) ? value.filter((p): p is Record<string, unknown> => typeof p === 'object' && p !== null) : [];
+  };
+
+  test('example/name: no name and a blank one, a glyph item with none at any depth and in a slot, an item that hides no name or hides it wrongly, a required name left out, and a pattern item', async () => {
+    expect(await diagnose(fixture('example-name'))).toEqual([
+      // With no `label` the diagnostic points at the example; with a blank one, at the `label`.
+      '96 example/name example `nameless` sets no `label`, so Sample renders with no name',
+      '99 example/name example `blank` sets a blank `label`, so Sample renders with no name',
+      '101 example/name example `glyph-items`: `items[1]` carries the glyph `nav.menu` and no `label`',
+      // A blank `label` names an item no better than none.
+      '103 example/name example `blank-item`: `items[0]` carries the glyph `nav.menu` and no `label`',
+      '108 example/name example `nested-items`: `items[0].items[0]` carries the glyph `action.add` and no `label`',
+      '110 example/name example `unnamed-visibility`: `items[0]` sets `labelVisibility` and no `label`',
+      '112 example/name example `visibility-value`: `items[0].labelVisibility` is "hiden", not `visible` or `hidden`',
+      '114 example/name example `glyph-slot`: `action` carries the glyph `action.add` and no `label`',
+      // A name the spec requires because nothing draws it, and no `labelVisibility` declared.
+      '65 example/name example `nameless` sets no `label`, so SampleGroup renders with no name',
+      // A pattern's items are read as a component's are.
+      '90 example/name example `glyph-destination`: `destinations[1]` carries the glyph `nav.menu` and no `label`',
+    ]);
+  }, 60_000);
+
+  test('prop/label-visibility: other values and another default, a `label` that is no string, none at all, and a boolean, which only this rule reports', async () => {
+    const reader = fixture('prop-label-visibility');
+    expect(await diagnose(reader)).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `enum` of `shown`, `hidden`, default `hidden`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      '27 prop/label-visibility `labelVisibility` is declared with no `label` string beside it, so it hides no name',
+    ]);
+    // No `label` at all: the same diagnostic. The example's `label: 3` is then undeclared, which is example/prop's.
+    const counted = 'spec/components/SampleCount.yaml';
+    const unlabelled = reader.readText(counted).replace('  - name: label\n    type: number\n', '');
+    expect(unlabelled).not.toBe(reader.readText(counted));
+    expect((await diagnose(overlayReader(reader, memoryReader({ [counted]: unlabelled })))).filter((d) => !d.includes('example/prop'))).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `enum` of `shown`, `hidden`, default `hidden`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      '25 prop/label-visibility `labelVisibility` is declared with no `label` string beside it, so it hides no name',
+    ]);
+    // Each part of the declaration is read on its own: the values in FormField's order, and the default. A boolean
+    // `labelVisibility` is this rule's alone: prop/boolean-name, which would call it a bare noun, is silent.
+    const sample = 'spec/components/Sample.yaml';
+    const declared = '    type: enum\n    values: [shown, hidden]\n    default: hidden\n';
+    expect(reader.readText(sample)).toContain(declared);
+    expect(booleanNameProblem('labelVisibility')).not.toBeNull();
+    const redeclared = async (as: string): Promise<string[]> =>
+      diagnose(overlayReader(reader, memoryReader({ [sample]: reader.readText(sample).replace(declared, as) })));
+    const countless = '27 prop/label-visibility `labelVisibility` is declared with no `label` string beside it, so it hides no name';
+    expect(await redeclared('    type: enum\n    values: [visible, hidden]\n    default: visible\n')).toEqual([countless]);
+    expect(await redeclared('    type: enum\n    values: [hidden, visible]\n    default: visible\n')).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `enum` of `hidden`, `visible`, default `visible`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      countless,
+    ]);
+    expect(await redeclared('    type: enum\n    values: [visible, hidden]\n    default: hidden\n')).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `enum` of `visible`, `hidden`, default `hidden`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      countless,
+    ]);
+    // The schema lets any type carry `values`, so the type is read on its own too.
+    expect(await redeclared('    type: string\n    values: [visible, hidden]\n    default: visible\n')).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `string` of `visible`, `hidden`, default `visible`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      countless,
+    ]);
+    expect(await redeclared('    type: boolean\n    default: false\n')).toEqual([
+      '33 prop/label-visibility `labelVisibility` is declared `boolean` of no values, default `false`, and FormField declares it `enum` of `visible`, `hidden`, default `visible`',
+      countless,
+    ]);
+  }, 60_000);
+
+  test("prop/second-name: a string beside `label`, and two booleans for its visibility, one SCHEMA's boolean rule passes and one it rejects, each reported once", async () => {
+    expect(await diagnose(fixture('prop-second-name'))).toEqual([
+      '33 prop/second-name prop `accessibilityLabel` is a second name for `label`',
+      '35 prop/second-name prop `showsLabel` is a second name for `labelVisibility`',
+      '38 prop/second-name prop `labelHidden` is a second name for `labelVisibility`',
+    ]);
+    // Why `showsLabel` is listed: the boolean rule alone would take it, and it rejects `labelHidden`, which is reported
+    // once, as a second name, and not also as a bare adjective.
+    expect(booleanNameProblem('showsLabel')).toBeNull();
+    expect(booleanNameProblem('labelHidden')).not.toBeNull();
+    expect(new Set(SECOND_NAMES.map((s) => s.name)).size).toBe(SECOND_NAMES.length);
+    expect(SECOND_NAMES.every((s) => s.of === NAME_PROP || s.of === LABEL_VISIBILITY.name)).toBe(true);
+  }, 60_000);
+
+  test("LABEL_VISIBILITY is FormField's declaration, and the specs that declare it are the controls ADR-0041 gave it, FormField and SearchField", () => {
+    const repo = fsReader(REPO_ROOT);
+    const holders: string[] = [];
+    for (const entry of repo.list('spec/components').filter((e) => !e.dir && e.name.endsWith('.yaml'))) {
+      const path = `spec/components/${entry.name}`;
+      const declared = props(repo, path).find((p) => p['name'] === LABEL_VISIBILITY.name);
+      if (declared === undefined) continue;
+      holders.push(entry.name.replace(/\.yaml$/, ''));
+      expect({ name: declared['name'], type: declared['type'], values: declared['values'], default: declared['default'] }, path)
+        .toEqual({ ...LABEL_VISIBILITY, values: [...LABEL_VISIBILITY.values] });
+    }
+    expect(holders).toEqual(['Checkbox', 'FormField', 'ProgressBar', 'Radio', 'SearchField', 'Select', 'Slider', 'TextArea', 'TextField', 'Toggle']);
+  });
+
+  test('the eight examples roadmap P4-9 found with no name are named now, and each fails example/name as P4-9 found it', async () => {
+    const repo = fsReader(REPO_ROOT);
+    // Each example as it is, and as it was before ADR-0041 (spec, example id, the props line now, the props line then).
+    const examples: readonly (readonly [string, string, string, string])[] = [
+      ['Toggle', 'bare', '{ isOn: false, label: "Night shading", labelVisibility: hidden }', '{ isOn: false }'],
+      ['Checkbox', 'bare', '{ value: "off", label: "Include archived sites", labelVisibility: hidden }', '{ value: "off" }'],
+      ['Radio', 'bare', '{ value: "hourly", label: "Every hour", labelVisibility: hidden }', '{ value: "hourly" }'],
+      ['ProgressBar', 'bare', '{ value: 0.18, label: "Uploading route file", labelVisibility: hidden }', '{ value: 0.18 }'],
+      ['TextField', 'chip-over-map', '{ label: "Search this area", placeholder: "Street or depot", leadingIcon: action.search, contentType: search }', '{ placeholder: "Search this area", leadingIcon: action.search, contentType: search }'],
+      ['Select', 'chip-over-map', '{ label: "Route filter", value: "All routes", leadingIcon: action.filter }', '{ value: "All routes", leadingIcon: action.filter }'],
+      ['Select', 'on-vivid', '{ label: "Period", value: "Last 24 hours" }', '{ value: "Last 24 hours" }'],
+      ['SegmentedControl', 'icon-only', '{ label: "View", segments: [{ value: "list", label: "List", icon: "nav.menu", labelVisibility: hidden }, { value: "map", label: "Map", icon: "object.map", labelVisibility: hidden }], value: "list", size: md }', '{ segments: [{ value: "list", icon: "nav.menu" }, { value: "map", icon: "object.map" }], value: "list", size: md }'],
+    ];
+    for (const [name, id, now, then] of examples) {
+      const path = `spec/components/${name}.yaml`;
+      const text = repo.readText(path);
+      const written = `  - id: ${id}\n    props: ${now}\n`;
+      expect(text, `${name}'s ${id}`).toContain(written);
+      const line = text.split('\n').indexOf(`  - id: ${id}`) + 1;
+      const before = await diagnose(overlayReader(repo, memoryReader({ [path]: text.replace(written, `  - id: ${id}\n    props: ${then}\n`) })));
+      const unnamed = name === 'SegmentedControl'
+        ? [
+          `${line} example/name example \`${id}\` sets no \`label\`, so ${name} renders with no name`,
+          `${line + 1} example/name example \`${id}\`: \`segments[0]\` carries the glyph \`nav.menu\` and no \`label\``,
+          `${line + 1} example/name example \`${id}\`: \`segments[1]\` carries the glyph \`object.map\` and no \`label\``,
+        ]
+        : [`${line} example/name example \`${id}\` sets no \`label\`, so ${name} renders with no name`];
+      expect(before, `${name}'s ${id} as P4-9 found it`).toEqual(unnamed);
+    }
+  }, 120_000);
 });
 
 describe('the binding-matrix grammar', () => {

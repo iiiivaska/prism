@@ -200,7 +200,7 @@ behavior:
   - The row's height is at least size.row (32 compact, 44 regular and watch, 52 comfortable) and grows with its content; the horizontal padding is space.card-padding, so a row inside a card starts where the card's content starts, and a full-bleed list on the page aligns to space.page-margin instead.
   - "The hit region is the larger of the visual row and size.hit on each axis; a compact 32 pt row under touch therefore still answers a 44 pt target, and the visual row never grows with modality (ADR-0024 §7.3)."
   - "Order along the row: rule, leading, title and subtitle, the leader, the value and meta, the trailing control, the chevron. A row never holds both a trailing control and a chevron, because two affordances at one end say two different things about one tap. A row given both is a defect: the chevron is dropped, the control is kept, and both stacks assert in debug builds."
-  - "A focusable control in the `trailing` slot takes the row's title as its accessible name and draws no label of its own: a Toggle beside \"Notify on threshold\" is named by the row, not by a second copy of the words. A non-focusable trailing mark — a Badge, a StatusPill — is folded into the row's own label instead."
+  - "A trailing control that draws a label of its own - a Toggle, a Checkbox - is named by the row: the row hands its `title` to the `trailing` slot through the name context with `labelVisibility: hidden` (ADR-0041), so the control, given no `label` by the caller, draws none and takes the title as its accessible name, and a Toggle beside \"Notify on threshold\" is named by the row, not by a second copy of the words. An IconButton there keeps its own `label`, which names its action rather than the row. A non-focusable trailing mark — a Badge, a StatusPill — is folded into the row's own label instead."
   - "The title wraps to a second line and then truncates with an ellipsis; the row grows in height rather than clipping it (ADR-0011). The subtitle wraps the same way. The value never wraps and never truncates: it keeps its width and the title's column yields, because the value is the datum the reader scans down the column."
   - "An identifier in the title truncates with an ellipsis and carries its full text in the accessibility label, which is the identifier rule of docs/research/visual-dna.md §4.15; generated prose in a subtitle uses Text `truncation: fade` instead."
   - "When the title and the value together outgrow one line, the row drops the leader first, then wraps the title, and last moves the value under the title as a second line. Nothing shrinks below its role's size."
@@ -261,7 +261,7 @@ examples:
     props: { title: "Pump 4", subtitle: "Line two", isSubItem: true, value: "2.1 bar" }
   - id: with-toggle
     props: { title: "Notify on threshold", subtitle: "Sends one message per breach", separator: inset }
-    description: the trailing slot holds a Toggle, which owns its own focus stop; its accessible name is the row's title and it draws no label of its own, so the row is never announced twice
+    description: the trailing slot holds a Toggle, which owns its own focus stop; the row hands it its title through the name context, so it draws no label of its own and is named by the title (ADR-0041), and the row is never announced twice
   - id: selected
     props: { title: "Unit 4417", subtitle: "In service", isSelected: true, value: "63 %" }
   - id: swipe-actions
@@ -312,3 +312,4 @@ notes:
     - docs/adr/0024-token-source-conventions.md
     - docs/adr/0029-direction-board-sign-off.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md
+    - docs/adr/0041-a-control-is-named-by-its-label.md

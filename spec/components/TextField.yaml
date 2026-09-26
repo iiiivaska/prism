@@ -24,7 +24,7 @@ anatomy:
   - part: root
   - part: label
     optional: true
-    description: the field's name, above the box; required unless an explicit accessibility label is given
+    description: the field's name, above the box; drawn unless `labelVisibility` is hidden or the field is the glass chip over media, and `label` names the field either way (ADR-0041)
   - part: box
     description: the outlined control that holds the value and the affordances
   - part: input
@@ -47,7 +47,16 @@ anatomy:
 props:
   - name: label
     type: string
-    description: required unless the caller supplies an accessibility label (a search field inside a chip)
+    description: >-
+      the field's name, drawn above the box unless `labelVisibility` is hidden or the field renders as the glass chip
+      over media (a search field inside a chip), and its accessible name in every case. Unset, the name is the label
+      of the FormField around it, handed over through the name context, and a field named by neither is a defect
+      (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label row (ADR-0041)
   - name: value
     type: string
   - name: placeholder
@@ -269,7 +278,7 @@ tokens:
       glassLight: color.text.on-glass-light
 
 behavior:
-  - The label is programmatically tied to the input (`for`/`id` on web, an accessibility label on Apple); a field with no visible label carries an explicit one, and the placeholder never stands in for it.
+  - The label is programmatically tied to the input (`for`/`id` on web, an accessibility label on Apple); a field that draws no label - `labelVisibility` hidden, or the glass chip over media - keeps `label` as its accessible name (ADR-0041), and the placeholder never stands in for it.
   - The box has no fill at rest on the page and on solid, raised and nested surfaces; it is identified by its 1 px color.border.boundary edge, which is the role for a control edge that must pass 3:1.
   - The hit region is the larger of the visual size and size.hit on each axis (28 pt under pointer, 44 pt under touch); it extends invisibly beyond a smaller box, and the visual box never grows with modality.
   - Over a map, imagery or a vivid surface the field renders as one glass chip and carries color.text.on-glass-fill for every tone, because a chip is checked with its primary foreground only; the label, helper and error rows are not drawn there.
@@ -294,7 +303,7 @@ motion:
 
 accessibility:
   role: textbox
-  label: the visible label; a field without one (a search pill over a map) carries an explicit accessibility label, and the placeholder is never the label
+  label: the `label` prop, drawn or hidden - a field that draws none (`labelVisibility` hidden, or a search pill over a map) is named by the same string - or, when the field has none, the label of the FormField around it, handed over through the name context (ADR-0041); the placeholder is never the label
   traits: [textField]
   keyboard: Tab moves in and out and then onto the trailing action; Escape clears the value when `isClearable`; the focus ring is color.border.focus at border.focus width outside the pill, following radius.control
   dynamicType: label, value, helper and error scale with their roles; the box grows with the value up to the accessibility3 size and then wraps the rows below it, and nothing is clipped to keep the height
@@ -341,9 +350,9 @@ examples:
   - id: disabled
     props: { label: "Site name", value: "North yard", isDisabled: true }
   - id: chip-over-map
-    props: { placeholder: "Search this area", leadingIcon: action.search, contentType: search }
+    props: { label: "Search this area", placeholder: "Street or depot", leadingIcon: action.search, contentType: search }
     surface: map
-    description: the field renders as one glass chip and drops its label, helper and error rows
+    description: the field renders as one glass chip and drops its label, helper and error rows; `label` still names it (ADR-0041)
   - id: in-glass-card-over-map
     props: { label: "Unit", value: "4417" }
     surface: glass
@@ -376,4 +385,4 @@ notes:
     a recorded divergence from the board, which P5-1 redraws with the edge rather than reopening, and
     TextArea, Select and SearchField keep the same box. Tabular figures on a typed number are ADR-0021 §5
     and §2.4 of the visual DNA. Example strings are invented (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0021-typography-rules.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]

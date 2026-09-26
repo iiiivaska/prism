@@ -38,7 +38,7 @@ anatomy:
   - part: selectionCell
     optional: true
     slot: true
-    description: one Checkbox per row and one in the header for select-all
+    description: one Checkbox per row and one in the header for select-all; Table builds each, so it is their caller and hands each a `label` with `labelVisibility` hidden (ADR-0041)
   - part: columnRule
     optional: true
     description: the vertical hairline between columns
@@ -175,7 +175,7 @@ behavior:
   - "The table itself paints no background, no border and no shadow: the ground is the card it sits in, and the scroller's height comes from the layout around it (a table with no bound height fills its parent and scrolls inside it)."
   - "A column marked `isRowHeader` is the leading identifier column: it sticks horizontally with the header, keeps the primary tone and is what assistive technology reads as each row's name. There is at most one."
   - "Sorting: a `sortable` header cell is a button. Pressing it sorts ascending, pressing it again reverses, and a third press returns the table to the caller's order. Only the sorted column draws an indicator - nav.up for ascending, nav.down for descending, at size.icon.sm - and the direction is also in the header cell's accessibility state, never carried by the glyph alone."
-  - "Selection: `single` and `multiple` add a leading Checkbox column, and `multiple` puts a select-all Checkbox in the header whose mixed state means \"some rows\". A selected row takes the neutral overlay and a leading rule of border.focus width in comp.table.row.selected.rule, the inverse solid that ListRow's selection rule also is, so selection survives on a hovered row, where the overlay alone would be ambiguous, and in a screenshot with no colour."
+  - "Selection: `single` and `multiple` add a leading Checkbox column, and `multiple` puts a select-all Checkbox in the header whose mixed state means \"some rows\". A selected row takes the neutral overlay and a leading rule of border.focus width in comp.table.row.selected.rule, the inverse solid that ListRow's selection rule also is, so selection survives on a hovered row, where the overlay alone would be ambiguous, and in a screenshot with no colour. Table builds those Checkboxes itself, so it is their caller: it hands each one a `label` that names its row, or the whole set in the header, with `labelVisibility: hidden`, because the column draws no label (ADR-0041)."
   - "The footer is one totals row, at size.row, pinned to the bottom edge of the scroller the way the header is pinned to the top: it scrolls horizontally with the body and never vertically, it takes the same opaque surface step as the header, and each of its cells keeps its column's alignment and its column's width, so a total sits under the digits it totals. It holds one value per column and no control; there is exactly one footer, and it is announced as the table's last row rather than as a second header."
   - "Rules: one hairline under each row at border.hairline width in color.border.hairline, and a vertical hairline between columns only where a column boundary must be read across a wide table. Both are decorative - the cells carry the data (visual-dna §7.5)."
   - "A row is not a link and has no action of its own: `pressed` is the moment a pointer or a key is held on a row while `selection` is `single` or `multiple`, and its only outcome is the selection change that `onSelectionChange` reports. With `selection: none` no row is pressable, hoverable or focusable as a whole, and the arrow keys still move the focused cell. Opening the object a row stands for is a ContextMenu on the row under a pointer, or a control the screen puts beside the table - never a bare click on the row, which would collide with selection, and never a button inside a cell."
@@ -196,7 +196,7 @@ motion:
 
 accessibility:
   role: grid when rows are selectable or focusable cell by cell, table otherwise
-  label: "the `label` prop, always explicit; each row is named by its row-header cell, and each cell announces its column header with its value"
+  label: "the `label` prop, always explicit; each row is named by its row-header cell, and each cell announces its column header with its value; each selection Checkbox is named by the hidden `label` Table hands it (ADR-0041)"
   traits: [staticText]
   keyboard: "the table is one Tab stop; arrow keys move the focused cell, Home and End reach the first and last cell of a row, Page Up and Page Down move by a viewport, Cmd or Ctrl with Home and End reaches the first and last cell of the table. Enter or Space on a header cell sorts it. While `selection` is `single` or `multiple`, Space toggles the focused row's selection; under `multiple` Shift with an arrow extends it and Cmd or Ctrl with A selects every row, and under `single` and `none` those two do nothing. Every focus ring is color.border.focus at border.focus width"
   dynamicType: header and cell text scale with type.caption and type.data; the rows grow in height from size.row and the columns widen with them, and a cell truncates rather than wrapping so the grid keeps one baseline (ADR-0011). Past the accessibility3 size a narrow viewport scrolls horizontally instead of compressing a column
@@ -269,3 +269,4 @@ notes:
     - docs/adr/0019-web-runtime-contract.md
     - docs/adr/0021-typography-rules.md
     - docs/adr/0030-semantic-roles-from-the-direction-board.md
+    - docs/adr/0041-a-control-is-named-by-its-label.md

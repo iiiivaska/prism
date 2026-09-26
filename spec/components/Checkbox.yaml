@@ -29,6 +29,7 @@ anatomy:
     description: the check or the mixed minus; drawn only when the value is on or mixed
   - part: label
     optional: true
+    description: drawn unless `labelVisibility` is hidden; `label` names the box either way
 
 props:
   - name: value
@@ -38,7 +39,15 @@ props:
     description: "`on` and `mixed` put the box in the `selected` state, where the two differ by glyph alone"
   - name: label
     type: string
-    description: the visible label; when it is absent the control carries an explicit accessibility name
+    description: >-
+      the box's name, drawn after the box unless `labelVisibility` is hidden and its accessible name either way.
+      Unset, the name is the one its host hands over through the name context (ListRow's title, FormField's
+      label), and a Checkbox named by neither is a defect (ADR-0041)
+  - name: labelVisibility
+    type: enum
+    values: [visible, hidden]
+    default: visible
+    description: hidden keeps `label` as the accessible name and draws no label, so the row is the box alone (ADR-0041)
   - name: isDisabled
     type: boolean
     default: false
@@ -121,7 +130,7 @@ haptics:
 
 accessibility:
   role: checkbox
-  label: the `label` prop, or an explicit name when no label is visible; the label names what is being chosen and never spells out the value, which the control reports as checked, unchecked or mixed
+  label: the `label` prop, drawn or hidden (`labelVisibility`), or, when the Checkbox has none, the name its host hands over through the name context (ADR-0041); the label names what is being chosen and never spells out the value, which the control reports as checked, unchecked or mixed
   traits: [toggle]
   keyboard: Space changes the value; Enter does not; the focus ring is color.border.focus at border.focus width around the row, following `root.radius` (radius.inner), and around the box at comp.checkbox.radius when there is no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the box keeps comp.checkbox.size and the row grows with the label
@@ -151,8 +160,8 @@ examples:
   - id: on-disabled
     props: { value: "on", label: "Include archived sites", isDisabled: true }
   - id: bare
-    props: { value: "off" }
-    description: no visible label; the name comes from the row or the table header that hosts it
+    props: { value: "off", label: "Include archived sites", labelVisibility: hidden }
+    description: no visible label; the box alone, named by its hidden `label`, which is what a table row or a ListRow hands it (ADR-0041)
   - id: on-vivid
     props: { value: "on", label: "Compare with last week" }
     surface: vivid
@@ -177,4 +186,4 @@ notes:
     control is a pill or a circle", made so that a checkbox and a radio are not the same silhouette. The
     glyphs are registry ids (ADR-0013): status.check and action.remove. Example strings are invented
     (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0012-layers-and-v1-scope.md, docs/adr/0013-icon-registry.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0041-a-control-is-named-by-its-label.md]
