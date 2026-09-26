@@ -505,3 +505,143 @@ struct DSExampleAvatar: View {
         )
     }
 }
+
+// MARK: - Chip
+
+/// Chip.yaml's `label`, `size`, `leadingIcon`, `avatar`, `trailingIcon`, `isSelected`, `isRemovable`, `isDisabled`,
+/// `onPress` and `onRemove`, staged as Avatar is in every harness: no frame of its own, so a page example is the chip on
+/// the page, one on `map` is the chip straight on that ground, which the stage declares, so its pill renders the glass
+/// chip, and one that declares a material is the chip inside a `card`-padded Surface that hugs it (the default
+/// `surfacePadding`).
+///
+/// `label` is required and never invented: an example that writes none, or one of nothing but whitespace, is not
+/// staged. `isSelected` stays unset where the example writes none, because setting it, true or false, is what makes a
+/// chip a filter (behavior 1). The `avatar` slot is read as Avatar's own props — `name`, `image` and `hasRing` — with
+/// the `portrait` fixture as the only image, as `DSAvatarRenderer` reads an Avatar example; anything else there is not
+/// staged rather than drawn as some other chip. Every action the spec declares gets its no-op handler, so every example
+/// is the control the gallery photographs.
+public struct DSChipRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        guard let label = example.string("label"), !label.allSatisfy(\.isWhitespace) else { return nil }
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        let size: DSChipSize? = example.string("size") == nil ? .sm : example.raw("size")
+        guard let size else { return nil }
+        var leadingIcon: DSIconName?
+        if example["leadingIcon"] != nil {
+            guard let glyph = example.icon("leadingIcon") else { return nil }
+            leadingIcon = glyph
+        }
+        var trailingIcon: DSIconName?
+        if example["trailingIcon"] != nil {
+            guard let glyph = example.icon("trailingIcon") else { return nil }
+            trailingIcon = glyph
+        }
+        var isSelected: Bool?
+        if let written = example["isSelected"] {
+            guard let value = written.bool else { return nil }
+            isSelected = value
+        }
+        var avatar: DSExampleChipAvatar?
+        if let written = example["avatar"] {
+            guard case .map(let pairs) = written else { return nil }
+            let known: Set<String> = ["name", "image", "hasRing"]
+            guard pairs.allSatisfy({ known.contains($0.key) }) else { return nil }
+            var hasPortrait = false
+            if let image = written["image"] {
+                guard case .map(let fixture) = image, fixture.count == 1, image["fixture"]?.string == "portrait" else { return nil }
+                hasPortrait = true
+            }
+            avatar = DSExampleChipAvatar(name: written["name"]?.string, hasPortrait: hasPortrait, hasRing: written["hasRing"]?.bool ?? false)
+        }
+        // `isRemovable` and `isDisabled` default false in the spec, which is also `bool(_:)`'s default.
+        return AnyView(
+            DSExampleChip(
+                label: label,
+                size: size,
+                leadingIcon: leadingIcon,
+                avatar: avatar,
+                trailingIcon: trailingIcon,
+                isSelected: isSelected,
+                isRemovable: example.bool("isRemovable"),
+                isDisabled: example.bool("isDisabled"),
+                onPress: example.handler("onPress"),
+                onRemove: example.handler("onRemove")
+            )
+        )
+    }
+}
+
+/// The Avatar an example's `avatar` slot writes: Avatar's own `name`, whether its `image` is the `portrait` fixture, and
+/// `hasRing`. The chip draws it at size sm and decorative, whatever it is given.
+struct DSExampleChipAvatar {
+    let name: String?
+    let hasPortrait: Bool
+    let hasRing: Bool
+}
+
+/// A chip with an example's props, its Avatar's portrait drawn in the colours of the context it renders in, as
+/// `DSExampleAvatar` draws Avatar's own.
+struct DSExampleChip: View {
+    let label: String
+    let size: DSChipSize
+    let leadingIcon: DSIconName?
+    let avatar: DSExampleChipAvatar?
+    let trailingIcon: DSIconName?
+    let isSelected: Bool?
+    let isRemovable: Bool
+    let isDisabled: Bool
+    let onPress: (() -> Void)?
+    let onRemove: (() -> Void)?
+    private var ds = DSThemeValues()
+    /// The context the portrait's colours are resolved in: the scheme and contrast the page renders in.
+    @Environment(\.self) private var environment
+
+    // Written out: a private stored property makes the synthesized memberwise initializer private.
+    init(
+        label: String,
+        size: DSChipSize,
+        leadingIcon: DSIconName?,
+        avatar: DSExampleChipAvatar?,
+        trailingIcon: DSIconName?,
+        isSelected: Bool?,
+        isRemovable: Bool,
+        isDisabled: Bool,
+        onPress: (() -> Void)?,
+        onRemove: (() -> Void)?
+    ) {
+        self.label = label
+        self.size = size
+        self.leadingIcon = leadingIcon
+        self.avatar = avatar
+        self.trailingIcon = trailingIcon
+        self.isSelected = isSelected
+        self.isRemovable = isRemovable
+        self.isDisabled = isDisabled
+        self.onPress = onPress
+        self.onRemove = onRemove
+    }
+
+    var body: some View {
+        DSChip(
+            verbatim: label,
+            size: size,
+            leadingIcon: leadingIcon,
+            avatar: avatar.map { avatar in
+                DSAvatar(
+                    name: avatar.name,
+                    image: avatar.hasPortrait ? DSExamplePortrait.image(ds.tokens, in: environment) : nil,
+                    hasRing: avatar.hasRing
+                )
+            },
+            trailingIcon: trailingIcon,
+            isSelected: isSelected,
+            isRemovable: isRemovable,
+            isDisabled: isDisabled,
+            onPress: onPress,
+            onRemove: onRemove
+        )
+    }
+}

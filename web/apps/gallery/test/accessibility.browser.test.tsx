@@ -15,7 +15,7 @@
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Avatar, Badge, Icon, IconButton, Theme } from "@iiiivaska/prism-react";
+import { Avatar, Badge, Chip, Icon, IconButton, Theme, type StringsTable } from "@iiiivaska/prism-react";
 // The host flag is internal to the package (IconButton sets it, roadmap P4-4), so it is imported from the
 // source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so this is the one context
 // the Badge above reads.
@@ -24,6 +24,7 @@ import * as avatarStories from "../src/stories/Avatar.stories.tsx";
 import * as badgeStories from "../src/stories/Badge.stories.tsx";
 import * as buttonStories from "../src/stories/Button.stories.tsx";
 import * as cardStories from "../src/stories/Card.stories.tsx";
+import * as chipStories from "../src/stories/Chip.stories.tsx";
 import * as dividerStories from "../src/stories/Divider.stories.tsx";
 import * as iconStories from "../src/stories/Icon.stories.tsx";
 import * as iconButtonStories from "../src/stories/IconButton.stories.tsx";
@@ -394,5 +395,61 @@ describe("Avatar (Avatar.yaml accessibility)", () => {
     expect(await text(<Avatar name="Anna Petrova" isDecorative />)).toEqual([]);
     expect(await read(<Avatar name="4417" />)).toEqual([{ role: "image", name: "4417" }]);
     expect(await text(<Avatar name="4417" />)).toEqual([]);
+  });
+});
+
+/**
+ * Chip.yaml `accessibility` and behavior 1 (ADR-0032): every example is one button named by its `label`, byte for
+ * byte — a filter, one that sets `isSelected`, is a toggle button of the same name whose `aria-pressed` is its state —
+ * and `removable` is followed by a second button, the remove control, named by the `strings.Chip.remove` template
+ * filled with the label. The glyphs, the check and the Avatar are hidden, so no example adds a node for them, and the
+ * only text in the tree is the label, the button's own. Every name here is the one
+ * swift/Tests/DSSnapshotTests/DSChipAccessibilityTreeTests.swift reads off the simulator for the same id, where a
+ * filter that is on carries the selected trait.
+ */
+describe("Chip (Chip.yaml accessibility)", () => {
+  const button = (name: string): AccessibleNode => ({ role: "button", name });
+  const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {
+    "default-sm": [button("Last 24 hours")],
+    selected: [button("Last 24 hours")],
+    "with-leading-icon": [button("Routes")],
+    removable: [button("North yard"), button("Remove North yard")],
+    "identifier-copy": [button("B-4417")],
+    "md-size": [button("Depots")],
+    disabled: [button("Last 24 hours")],
+    "md-with-avatar": [button("Anna Petrova")],
+    "on-map": [button("Depots")],
+    "selected-on-map": [button("Depots")],
+    "on-vivid": [button("Yield")],
+    "on-glass-over-image": [button("In service")],
+    // "Последние 24 часа", written as its code points so the bytes compared are unambiguous: 17 of them, 30 bytes of
+    // UTF-8.
+    "russian-label": [button("\u041f\u043e\u0441\u043b\u0435\u0434\u043d\u0438\u0435 24 \u0447\u0430\u0441\u0430")],
+  };
+
+  it("names each example by its label, and the remove control by the strings table, as the Apple suite does", async () => {
+    expect(await examplesInTheTree(chipStories)).toEqual(expected);
+  });
+
+  it("holds the label as the chip's own text and nothing else: the glyphs, the check and the Avatar's initials are hidden", async () => {
+    const found = await examplesTextInTheTree(chipStories);
+    expect(Object.keys(found).sort()).toEqual(Object.keys(expected).sort());
+    for (const [id, nodes] of Object.entries(expected)) {
+      const chip = nodes[0];
+      expect(found[id], id).toEqual(chip === undefined ? [] : [{ text: chip.name, in: chip }]);
+    }
+  });
+
+  // The cases no example stages: a chip with no handler, no `isRemovable` and no `isSelected` is its label as text,
+  // with no role; the remove control speaks the app's template, not a word of React Aria's.
+  it("reads a static chip as text with no role, and the remove control in the app's template", async () => {
+    const read = (node: ReactNode, strings?: Partial<StringsTable>): Promise<AccessibleNode[]> => nodesInTheTree(<Theme tokens={tokens} strings={strings}>{node}</Theme>);
+    const text = (node: ReactNode): Promise<TextRun[]> => textInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    expect(await read(<Chip label="North yard" leadingIcon="object.map-pin" />)).toEqual([]);
+    expect(await text(<Chip label="North yard" leadingIcon="object.map-pin" />)).toEqual([{ text: "North yard", in: null }]);
+    expect(await read(<Chip label="North yard" isRemovable onRemove={() => undefined} />, { "Chip.remove": "\u0423\u0434\u0430\u043b\u0438\u0442\u044c: {label}" })).toEqual([
+      button("North yard"),
+      button("\u0423\u0434\u0430\u043b\u0438\u0442\u044c: North yard"),
+    ]);
   });
 });

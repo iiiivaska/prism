@@ -42,6 +42,14 @@
  *   initials; the glass chip over the map computing its blur, flat on the scheme's glass, and falling back to
  *   `color.bg.surface.raised` over `color.bg.page` under Reduce Transparency, with the initials back in
  *   `color.text.secondary`.
+ * - Chip.yaml behaviors 1 to 3, the remove control, `motion.press` and `accessibility.keyboard`: one row of the
+ *   control height per size and density, with a hit region of at least `size.hit` for a control and none for a
+ *   label; the role from the props alone, a filter's press asking through `onPress` while `aria-pressed` follows
+ *   `isSelected`; the remove control firing `onRemove` and never `onPress`, and Delete and Backspace doing the same;
+ *   the 0.97 press and the pressed fill on the pill over the map, which keeps its glass and its blur (ADR-0037 §5),
+ *   and no scale under Reduce Motion; the glass chip over the map, flat on the scheme's glass, its own fill on the
+ *   page, and the fallback under Reduce Transparency and Increase Contrast with every part its default cell and no
+ *   check; the focus rings; and disabled.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -62,12 +70,14 @@ import {
   Badge,
   Button,
   Card,
+  Chip,
   Divider,
   Icon,
   IconButton,
   Surface,
   Theme,
   cardUnitSeparator,
+  chipSizes,
   glyphSizes,
   iconButtonSizes,
   iconButtonVariants,
@@ -1493,5 +1503,246 @@ describe("Avatar", () => {
     expect(getComputedStyle(find(avatar, '[data-ds-slot="avatar-ring"]')).boxShadow.startsWith(tokenColor(avatar, "--ds-avatar-ring"))).toBe(true);
     const glyph = find(element, '[data-probe="glyph"]');
     await settles(() => getComputedStyle(find(glyph, '[data-ds-slot="avatar-fallback-icon"]')).color, tokenColor(glyph, "--ds-color-icon-secondary"));
+  });
+});
+
+describe("Chip", () => {
+  const noop = (): void => undefined;
+  const heightToken = { sm: "--ds-size-control-sm", md: "--ds-size-control-md" } as const;
+
+  it("is one row of the control height per size and density, with a hit region of at least size.hit for a control and none for a label (behaviors 2 and 3)", async () => {
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      const element = await mount(
+        <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
+          {chipSizes.map((size) => (
+            <Chip key={`button-${size}`} size={size} label="Last 24 hours" isRemovable onPress={noop} onRemove={noop} data-probe={`button-${size}`} />
+          ))}
+          {chipSizes.map((size) => (
+            <Chip key={`label-${size}`} size={size} label="B-4417" data-probe={`label-${size}`} />
+          ))}
+        </div>,
+        { density, modality: "touch" },
+      );
+      for (const size of chipSizes) {
+        const height = tokenPx(element, heightToken[size]);
+        const hit = tokenPx(element, "--ds-size-hit");
+        for (const probe of [`button-${size}`, `label-${size}`]) {
+          const chip = find(element, `[data-probe="${probe}"]`);
+          const rect = chip.getBoundingClientRect();
+          expect(rect.height, `${density} ${probe}`).toBe(height);
+          // One line: the label never wraps, and the pill is as wide as what it holds.
+          const label = find(chip, '[data-ds-slot="chip-label"]');
+          expect(label.getBoundingClientRect().height, `${density} ${probe}`).toBeLessThan(height);
+          expect(getComputedStyle(label).whiteSpace, `${density} ${probe}`).toBe("nowrap");
+          const before = getComputedStyle(find(chip, '[data-ds-slot="chip-body"]'), "::before");
+          if (probe.startsWith("button")) {
+            expect(Number.parseFloat(before.top), `${density} ${probe}`).toBeCloseTo(Math.min(0, (height - hit) / 2), 3);
+          } else {
+            expect(before.content, `${density} ${probe}: a static label keeps no hit region`).toBe("none");
+          }
+        }
+        // The remove control is the glyph's box, and its region reaches size.hit around it.
+        const remove = find(find(element, `[data-probe="button-${size}"]`), '[data-ds-slot="chip-remove"]');
+        const box = tokenPx(remove, "--ds-size-icon-sm");
+        expect(remove.getBoundingClientRect().width, `${density} ${size}`).toBe(box);
+        expect(Number.parseFloat(getComputedStyle(remove, "::before").left), `${density} ${size}`).toBeCloseTo(Math.min(0, (box - hit) / 2), 3);
+      }
+      await unmount();
+    }
+  });
+
+  it("decides its role from the props alone: a filter asks through onPress while aria-pressed follows isSelected, a button presses, a label does neither (behavior 1)", async () => {
+    const onPress = vi.fn();
+    let element = await mount(<Chip label="Last 24 hours" isSelected={false} onPress={onPress} />);
+    let body = find(element, '[data-ds-slot="chip-body"]');
+    expect(body.tagName).toBe("BUTTON");
+    expect(body.getAttribute("aria-pressed")).toBe("false");
+    await act(async () => {
+      await userEvent.click(body);
+    });
+    expect(onPress).toHaveBeenCalledTimes(1);
+    // The press asks and the app decides: the chip is not on until the app sets isSelected.
+    expect(body.getAttribute("aria-pressed")).toBe("false");
+    expect(find(element, '[data-ds-slot="chip"]').hasAttribute("data-ds-selected")).toBe(false);
+    await unmount();
+
+    element = await mount(<Chip label="Last 24 hours" isSelected onPress={onPress} />);
+    body = find(element, '[data-ds-slot="chip-body"]');
+    expect(body.getAttribute("aria-pressed")).toBe("true");
+    await unmount();
+
+    element = await mount(<Chip label="B-4417" trailingIcon="action.copy" onPress={onPress} />);
+    body = find(element, '[data-ds-slot="chip-body"]');
+    expect(body.tagName).toBe("BUTTON");
+    expect(body.hasAttribute("aria-pressed")).toBe(false);
+    await act(async () => {
+      await userEvent.click(body);
+    });
+    expect(onPress).toHaveBeenCalledTimes(2);
+    await unmount();
+
+    element = await mount(<Chip label="North yard" leadingIcon="object.map-pin" />);
+    body = find(element, '[data-ds-slot="chip-body"]');
+    expect(body.tagName).toBe("SPAN");
+    expect(body.hasAttribute("role")).toBe(false);
+    expect(element.querySelectorAll("button, [tabindex]").length).toBe(0);
+  });
+
+  it("removes through its own control, which never fires onPress, and through Delete and Backspace on the chip, which leave Space to press it", async () => {
+    const onPress = vi.fn();
+    const onRemove = vi.fn();
+    const element = await mount(<Chip label="North yard" isRemovable onPress={onPress} onRemove={onRemove} />);
+    const remove = find(element, '[data-ds-slot="chip-remove"]');
+    expect(remove.getAttribute("aria-label")).toBe("Remove North yard");
+    await act(async () => {
+      await userEvent.click(remove);
+    });
+    expect(onRemove).toHaveBeenCalledTimes(1);
+    expect(onPress).not.toHaveBeenCalled();
+    const body = find(element, '[data-ds-slot="chip-body"]');
+    for (const key of ["Delete", "Backspace"]) {
+      await act(async () => {
+        body.focus();
+        body.dispatchEvent(new KeyboardEvent("keydown", { key, code: key, bubbles: true, cancelable: true }));
+        await Promise.resolve();
+      });
+    }
+    expect(onRemove).toHaveBeenCalledTimes(3);
+    expect(onPress).not.toHaveBeenCalled();
+    const release = await pressWithKeyboard(body);
+    await release();
+    expect(onPress).toHaveBeenCalledTimes(1);
+    expect(onRemove).toHaveBeenCalledTimes(3);
+  });
+
+  it("scales the pill to 0.97 while pressed and lays the pressed fill over its glass, which keeps its blur; nothing scales under Reduce Motion (motion.press, ADR-0037 §5)", async () => {
+    for (const motion of ["standard", "reduce"] as const) {
+      const onPress = vi.fn();
+      const element = await mount(
+        <Backdrop kind="map">
+          <Chip label="Depots" leadingIcon="object.map-pin" onPress={onPress} />
+        </Backdrop>,
+        { motion },
+      );
+      const chip = find(element, '[data-ds-slot="chip"]');
+      const body = find(chip, '[data-ds-slot="chip-body"]');
+      const blur = `blur(${String(tokenPx(chip, "--ds-material-glass-chip-blur"))}px) saturate(1)`;
+      expect(getComputedStyle(chip).backdropFilter, motion).toBe(blur);
+      const release = await pressWithKeyboard(body);
+      expect(chip.hasAttribute("data-pressed"), motion).toBe(true);
+      await settles(() => getComputedStyle(body).getPropertyValue("--ds--chip-press").trim(), tokenColor(body, "--ds-chip-bg-pressed"));
+      if (motion === "standard") await settles(() => getComputedStyle(chip).scale, "0.97");
+      else expect(getComputedStyle(chip).scale, motion).toBe("1");
+      // The press is a layer over the glass: the chip shape is handed the same cell, and blurs the map as before.
+      expect(chip.getAttribute("data-ds-surface-chip"), motion).toBe("glass");
+      expect(getComputedStyle(chip).backdropFilter, motion).toBe(blur);
+      await release();
+      expect(onPress, motion).toHaveBeenCalledTimes(1);
+      await settles(() => getComputedStyle(body).getPropertyValue("--ds--chip-press").trim(), TRANSPARENT);
+      await unmount();
+    }
+  });
+
+  it("is the glass chip over the map, with its blur, flat on the scheme's glass, and its own fill on the page (ADR-0036)", async () => {
+    const element = await mount(
+      <div>
+        <Backdrop kind="map">
+          <Chip label="Depots" leadingIcon="object.map-pin" onPress={noop} data-probe="map" />
+        </Backdrop>
+        <Surface material="glass" backdrop="map">
+          <Chip label="In service" onPress={noop} data-probe="glass" />
+        </Surface>
+        <Chip label="Last 24 hours" onPress={noop} data-probe="page" />
+      </div>,
+    );
+    const map = find(element, '[data-probe="map"]');
+    expect(map.getAttribute("data-ds-surface-chip")).toBe("glass");
+    const blur = tokenPx(map, "--ds-material-glass-chip-blur");
+    expect(getComputedStyle(map).backdropFilter).toBe(`blur(${String(blur)}px) saturate(1)`);
+    expect(map.querySelector('[data-ds-slot="surface-chip-edge"]')).not.toBeNull();
+    await settles(() => getComputedStyle(find(map, '[data-ds-slot="chip-label"]')).color, tokenColor(map, "--ds-color-text-on-glass-fill"));
+    await settles(() => getComputedStyle(find(map, '[data-ds-slot="chip-leading-icon"]')).color, tokenColor(map, "--ds-color-text-on-glass-fill"));
+    const glass = find(element, '[data-probe="glass"]');
+    expect(glass.hasAttribute("data-ds-surface-chip-flat")).toBe(true);
+    expect(getComputedStyle(glass).backdropFilter).toBe("none");
+    const page = find(element, '[data-probe="page"]');
+    expect(page.getAttribute("data-ds-surface-chip")).toBe("own");
+    expect(getComputedStyle(page).backdropFilter).toBe("none");
+    await settles(() => getComputedStyle(page).getPropertyValue("--ds--surface-chip-fill").trim(), tokenColor(page, "--ds-chip-bg-rest"));
+    await settles(() => getComputedStyle(find(page, '[data-ds-slot="chip-label"]')).color, tokenColor(page, "--ds-color-text-secondary"));
+    // The stroke: the chip's own hairline on the page, the glass fill's over the map.
+    const hairline = tokenPx(page, "--ds-border-hairline");
+    await settles(() => getComputedStyle(find(page, '[data-ds-slot="chip-body"]')).boxShadow, `${tokenColor(page, "--ds-chip-border-rest")} 0px 0px 0px ${String(hairline)}px inset`);
+    await settles(() => getComputedStyle(find(map, '[data-ds-slot="chip-body"]')).boxShadow, `${tokenColor(map, "--ds-color-border-on-glass-fill")} 0px 0px 0px ${String(hairline)}px inset`);
+  });
+
+  it.each([
+    ["Reduce Transparency", { transparency: "reduce" }],
+    ["Increase Contrast", { contrast: "more" }],
+  ] as const)("falls back over the map under %s: raised over the page, no blur and no edge, every part its default cell and no check", async (_setting, axes) => {
+    const element = await mount(
+      <Backdrop kind="map">
+        <Chip label="Depots" isSelected onPress={noop} data-probe="selected" />
+      </Backdrop>,
+      axes,
+    );
+    const chip = find(element, '[data-probe="selected"]');
+    expect(chip.getAttribute("data-ds-surface-chip")).toBe("fallback");
+    expect([chip.getAttribute("data-ds-surface"), chip.getAttribute("data-ds-backdrop")]).toEqual(["raised", "none"]);
+    expect(getComputedStyle(chip).backdropFilter).toBe("none");
+    expect(chip.querySelector('[data-ds-slot="surface-chip-edge"]')).toBeNull();
+    expect(chip.querySelector('[data-ds-slot="chip-check"]')).toBeNull();
+    await settles(() => getComputedStyle(chip).backgroundColor, tokenColor(chip, "--ds-color-bg-page"));
+    await settles(() => getComputedStyle(chip).getPropertyValue("--ds--surface-chip-fill").trim(), tokenColor(chip, "--ds-color-bg-surface-raised"));
+    await settles(() => getComputedStyle(find(chip, '[data-ds-slot="chip-label"]')).color, tokenColor(chip, "--ds-color-text-primary"));
+    const strong = tokenPx(chip, "--ds-border-strong");
+    await settles(() => getComputedStyle(find(chip, '[data-ds-slot="chip-body"]')).boxShadow, `${tokenColor(chip, "--ds-chip-border-selected")} 0px 0px 0px ${String(strong)}px inset`);
+  });
+
+  it("draws the focus ring outside the pill, and outside the remove control's glyph when that control has focus (accessibility.keyboard)", async () => {
+    const element = await mount(<Chip label="North yard" isRemovable onPress={noop} onRemove={noop} />);
+    const body = find(element, '[data-ds-slot="chip-body"]');
+    const remove = find(element, '[data-ds-slot="chip-remove"]');
+    for (const [target, name] of [
+      [body, "the chip"],
+      [remove, "the remove control"],
+    ] as const) {
+      await act(async () => {
+        await userEvent.tab();
+      });
+      expect(document.activeElement, name).toBe(target);
+      await vi.waitFor(() => {
+        expect(target.hasAttribute("data-focus-visible"), name).toBe(true);
+      });
+      const style = getComputedStyle(target);
+      expect(style.outlineStyle, name).toBe("solid");
+      expect(Number.parseFloat(style.outlineWidth), name).toBe(tokenPx(target, "--ds-border-focus"));
+      expect(style.outlineColor, name).toBe(tokenColor(target, "--ds-color-border-focus"));
+    }
+    // The remove control's ring is round, drawn around the glyph's box.
+    expect(Number.parseFloat(getComputedStyle(remove).borderTopLeftRadius)).toBeGreaterThanOrEqual(remove.getBoundingClientRect().width / 2);
+  });
+
+  it("dims the whole pill and leaves the focus order when disabled, its remove control with it", async () => {
+    const onPress = vi.fn();
+    const onRemove = vi.fn();
+    const element = await mount(<Chip label="Last 24 hours" isRemovable isDisabled onPress={onPress} onRemove={onRemove} />);
+    const chip = find(element, '[data-ds-slot="chip"]');
+    const probe = document.createElement("div");
+    probe.style.opacity = "var(--ds-opacity-disabled)";
+    element.append(probe);
+    const disabled = getComputedStyle(probe).opacity;
+    probe.remove();
+    expect(Number(disabled)).toBeLessThan(1);
+    expect(getComputedStyle(chip).opacity).toBe(disabled);
+    const body = find(chip, '[data-ds-slot="chip-body"]') as HTMLButtonElement;
+    const remove = find(chip, '[data-ds-slot="chip-remove"]') as HTMLButtonElement;
+    expect([body.disabled, remove.disabled]).toEqual([true, true]);
+    await act(async () => {
+      await userEvent.click(body, { force: true });
+      await userEvent.click(remove, { force: true });
+    });
+    expect(onPress).not.toHaveBeenCalled();
+    expect(onRemove).not.toHaveBeenCalled();
   });
 });

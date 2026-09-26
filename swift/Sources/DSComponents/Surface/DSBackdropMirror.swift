@@ -76,17 +76,35 @@ struct DSBackdropMirror<S: Shape>: View {
     ///  3. saturate;
     ///  4. blur with `blur(radius:opaque: true)`, so nothing past the band bleeds in as transparency;
     ///  5. clip to the shape.
+    ///
+    /// The frame is the one the shape is drawn at in the backdrop's space. A scale applied around the chip — a pressed
+    /// control's 0.97, which its host puts on the chip's root (ADR-0036 rule 13) — reaches that frame and not the
+    /// proxy's own size, so the crop is the backdrop under the frame as drawn, stretched to the proxy's size: once the
+    /// scale is applied it lies over the backdrop it was cut from, as Chromium's `backdrop-filter` samples the
+    /// backdrop under the transformed box. With no scale around the chip the two sizes are equal and the stretch is 1.
     private var inBounds: some View {
         let band = DSSurfaceAppearance.blurBleed(radius: recipe.blurRadius)
         return GeometryReader { proxy in
             let frame = proxy.frame(in: .named(backdrop.space))
-            DSMirroredBand(crop: crop(at: frame.origin, size: proxy.size), size: proxy.size, band: band)
+            let stretch = Self.stretch(from: frame.size, to: proxy.size)
+            DSMirroredBand(crop: crop(at: frame.origin, size: frame.size), size: frame.size, band: band)
                 .saturation(recipe.saturate)
                 .blur(radius: recipe.blurRadius, opaque: true)
                 .offset(x: -band, y: -band)
+                .frame(width: frame.width, height: frame.height, alignment: .topLeading)
+                .scaleEffect(stretch, anchor: .topLeading)
                 .frame(width: proxy.size.width, height: proxy.size.height, alignment: .topLeading)
         }
         .clipShape(shape)
+    }
+
+    /// The factor that takes the frame as drawn in the backdrop's space back to the proxy's own size, on each axis; 1
+    /// on an axis the frame has no extent on.
+    static func stretch(from drawn: CGSize, to own: CGSize) -> CGSize {
+        CGSize(
+            width: drawn.width > 0 ? own.width / drawn.width : 1,
+            height: drawn.height > 0 ? own.height / drawn.height : 1
+        )
     }
 
     /// The backdrop under a frame of `size` whose top-leading corner sits at `origin` in the backdrop's space.

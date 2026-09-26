@@ -29,6 +29,7 @@ export const implemented: ImplementedVersions = {
   Badge: { "web-touch": 1, "web-desktop": 1 },
   Button: { "web-touch": 5, "web-desktop": 5 },
   Card: { "web-touch": 5, "web-desktop": 5 },
+  Chip: { "web-touch": 1, "web-desktop": 1 },
   Divider: { "web-touch": 2, "web-desktop": 2 },
   Icon: { "web-touch": 3, "web-desktop": 3 },
   IconButton: { "web-touch": 1, "web-desktop": 1 },

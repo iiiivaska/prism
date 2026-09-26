@@ -22,15 +22,16 @@
  * container's edge.
  *
  * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
- * frame, and on a material in a Surface hugging the glyph. Badge, IconButton and Avatar are staged the same
- * way (`renderBadgeExample`, `renderIconButtonExample`, `renderAvatarExample`).
+ * frame, and on a material in a Surface hugging the glyph. Badge, IconButton, Avatar and Chip are staged the
+ * same way (`renderBadgeExample`, `renderIconButtonExample`, `renderAvatarExample`, `renderChipExample`).
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
  * renders the component's interactive form). Two exceptions: a component whose API bundles several of the
  * spec's props into one value, which an entry here assembles rather than spreads — Card's `action`,
  * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`) — and a fixture, which an entry
- * draws: Avatar's `image: { fixture: portrait }` (./portrait.ts, spec/SCHEMA.md).
+ * draws: Avatar's `image: { fixture: portrait }` (./portrait.ts, spec/SCHEMA.md), and the same inside Chip's
+ * `avatar` slot.
  */
 import type { ReactElement, ReactNode } from "react";
 import {
@@ -39,6 +40,7 @@ import {
   Badge,
   Button,
   Card,
+  Chip,
   Divider,
   Icon,
   IconButton,
@@ -49,6 +51,7 @@ import {
   type BackdropKind,
   type ButtonProps,
   type CardProps,
+  type ChipProps,
   type DividerOrientation,
   type DividerProps,
   type IconButtonProps,
@@ -338,6 +341,51 @@ export function renderAvatarExample(props: Readonly<Record<string, unknown>>, ex
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-sc-mark">{avatar}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * A Chip with its example's props, the `portrait` fixture in its Avatar's `image` drawn in the colours of the page's
+ * context. The props are read as `renderChipExample` in web/apps/gallery/src/harness/examples.tsx reads them.
+ */
+function ChipExample(props: { readonly args: ChipProps; readonly avatar: Readonly<Record<string, unknown>> | undefined }): ReactNode {
+  const portrait = usePortrait();
+  if (props.avatar === undefined) return <Chip {...props.args} />;
+  const { image, ...person } = props.avatar;
+  return <Chip {...props.args} avatar={{ ...person, image: image === undefined ? undefined : typeof image === "string" ? image : portrait }} />;
+}
+
+/**
+ * A Chip on its example's `surface`, staged exactly as `renderChipExample` in web/apps/gallery/src/harness/examples.tsx
+ * stages it, which is Avatar's staging: straight on the stage, with no card-sized frame, on the synthetic map declared
+ * with `Backdrop`, where the pill renders the glass chip, or inside a Surface of that material with `radius: card` and
+ * its default card padding, hugging the pill in a flex box (`ds-sc-mark`), over `backdrop` when the material is glass.
+ * A label that is missing or blank, an `avatar` that is not a mapping of Avatar's own props, or an Avatar image that
+ * is neither a source nor the `portrait` fixture cannot be staged: the page says so, the web's reading of
+ * `DSChipRenderer` returning nil.
+ */
+export function renderChipExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const { label, avatar, ...rest } = props;
+  if (typeof label !== "string" || label.trim() === "") return <Unstageable example={example} />;
+  let person: Readonly<Record<string, unknown>> | undefined;
+  if (avatar !== undefined) {
+    if (typeof avatar !== "object" || avatar === null || Array.isArray(avatar)) return <Unstageable example={example} />;
+    person = avatar as Readonly<Record<string, unknown>>;
+    if (!Object.keys(person).every((key) => key === "name" || key === "image" || key === "hasRing")) return <Unstageable example={example} />;
+    const image = person["image"];
+    if (image !== undefined && typeof image !== "string" && !isPortraitFixture(image)) return <Unstageable example={example} />;
+  }
+  const args = { ...rest, label } as unknown as ChipProps;
+  const chip = <ChipExample args={args} avatar={person} />;
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{chip}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, chip)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      <div className="ds-sc-mark">{chip}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

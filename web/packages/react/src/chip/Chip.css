@@ -1,0 +1,319 @@
+/*
+ * Chip (spec/components/Chip.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025).
+ *
+ * The React Chip's root is the pill and also the Surface module's glass chip (ADR-0036 §7): useSurfaceChip writes
+ * data-ds-surface-chip (glass, fallback, own or none), data-ds-surface-chip-flat, and data-ds-surface and
+ * data-ds-backdrop, the context the chip publishes: the ground the pill sits on, or raised under the fallback.
+ * surface/Surface.css paints the pill from them. This sheet never sets the root's background-color or
+ * background-image and names no glass recipe (ADR-0036 rule 2): it hands the chip Chip's own cell,
+ * comp.chip.bg.rest, as --ds--surface-chip-own, and keys every other part on the published context and on
+ * data-ds-selected, so the fallback reaches the label, the glyphs and the stroke by construction (ADR-0036 §4).
+ * It reads no axis attribute and no media query: the fallback has already happened in React, sizes follow density
+ * through the size.control.* tokens, hover is the only rule under a modality variant (@variant ds-pointer), and
+ * Reduce Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4). No selector uses :not(), which
+ * test/cascade.ts cannot read.
+ *
+ * The root also carries data-ds-size, data-ds-kind (filter, button or label), data-ds-selected, data-ds-avatar,
+ * data-ds-removable, and data-pressed and data-disabled, the body's press lifted onto the pill. The press scale and
+ * the disabled opacity sit on the root, the element that carries the backdrop filter, so they keep the blur
+ * (ADR-0036 F4, rule 13). Inside it, the body — React Aria's ToggleButton or Button, or a span for a static label —
+ * covers the pill: it holds the content in one row and paints, over whatever the chip renders and under the
+ * content, the hover overlay, the pressed fill and the stroke as an inset shadow. Those are layers, never the cell
+ * the chip shape is handed (ADR-0037 §5). The remove control is a second button over the space the body keeps in
+ * the trailing position. Custom properties named --ds--chip-* are this component's own (ARCHITECTURE §8).
+ */
+
+/* The pressed fill and the hover overlay animate as colors: a fill change over motion.duration.base. */
+@property --ds--chip-press {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --ds--chip-hover {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@layer ds.components {
+  .ds-chip {
+    /* root.background: the own cell, which the chip shape paints wherever Chip asks it for its own fill. */
+    --ds--surface-chip-own: var(--ds-chip-bg-rest);
+    /* label.color, leadingIcon.color, trailingIcon.color, root.border and root.borderWidth: their default cells. */
+    --ds--chip-label: var(--ds-color-text-secondary);
+    --ds--chip-leading: var(--ds-color-icon-secondary);
+    --ds--chip-trailing: var(--ds-color-icon-secondary);
+    --ds--chip-border: var(--ds-chip-border-rest);
+    --ds--chip-border-width: var(--ds-border-hairline);
+    /* root.height and root.paddingX, which the size rules below set; the leading side is paddingX unless an Avatar leads. */
+    --ds--chip-height: var(--ds-size-control-sm);
+    --ds--chip-padding-x: var(--ds-space-4);
+    --ds--chip-padding-start: var(--ds--chip-padding-x);
+    /* The press: 0.97 on motion.spring.snappy; under Reduce Motion the scale is 1 (ADR-0023 §8.4 item 2). */
+    --ds--chip-press-scale: calc(1 - 0.03 * (1 - var(--ds-motion-presentation-crossfade)));
+    /* motion.select on motion.spring.smooth; under Reduce Motion a crossfade over motion.duration.base (Card's idiom). */
+    --ds--chip-select-duration: calc(
+      var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    vertical-align: middle;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--ds-radius-chip);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    /* The chip shape's own transitions, extended by the press scale (Surface.css). */
+    transition:
+      var(--ds--surface-chip-transition),
+      scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
+  }
+
+  /* ---- root.height and root.paddingX: the control height of each size, which follows density ---- */
+
+  .ds-chip[data-ds-size="sm"] {
+    --ds--chip-height: var(--ds-size-control-sm);
+    --ds--chip-padding-x: var(--ds-space-4);
+  }
+
+  .ds-chip[data-ds-size="md"] {
+    --ds--chip-height: var(--ds-size-control-md);
+    --ds--chip-padding-x: var(--ds-space-5);
+  }
+
+  /*
+   * Behavior, "An identifier chip may put an Avatar": on the md chip the Avatar keeps half of size.control.md less
+   * size.control.sm above, below and before it, so the circle is concentric with the pill's leading end.
+   */
+  .ds-chip[data-ds-avatar] {
+    --ds--chip-padding-start: calc((var(--ds-size-control-md) - var(--ds-size-control-sm)) / 2);
+  }
+
+  /* ---- selected: the stroke thickens to border.strong in comp.chip.border.selected, and the label and glyph lift ---- */
+
+  .ds-chip[data-ds-selected] {
+    --ds--chip-label: var(--ds-color-text-primary);
+    --ds--chip-leading: var(--ds-color-icon-primary);
+    --ds--chip-border: var(--ds-chip-border-selected);
+    --ds--chip-border-width: var(--ds-border-strong);
+  }
+
+  /*
+   * ---- the parts on the context the chip publishes ----
+   * The page over a map or an image, and the scheme's glass: the chip glass's one foreground, at rest and selected,
+   * and its stroke.
+   */
+
+  .ds-chip:is([data-ds-surface="page"][data-ds-backdrop="map"], [data-ds-surface="page"][data-ds-backdrop="image"], [data-ds-surface="glass"]) {
+    --ds--chip-label: var(--ds-color-text-on-glass-fill);
+    --ds--chip-leading: var(--ds-color-text-on-glass-fill);
+    --ds--chip-trailing: var(--ds-color-text-on-glass-fill);
+    --ds--chip-border: var(--ds-color-border-on-glass-fill);
+  }
+
+  /* The page over vivid, and a vivid Surface: the same foreground, and the stroke of media (ADR-0030 §3.2). */
+  .ds-chip:is([data-ds-surface="page"][data-ds-backdrop="vivid"], [data-ds-surface="vivid"]) {
+    --ds--chip-label: var(--ds-color-text-on-glass-fill);
+    --ds--chip-leading: var(--ds-color-text-on-glass-fill);
+    --ds--chip-trailing: var(--ds-color-text-on-glass-fill);
+    --ds--chip-border: var(--ds-color-border-on-media);
+  }
+
+  /* Accent: no fill of its own, and the lit tile's two tones for the label and the glyphs; the stroke keeps its cell. */
+  .ds-chip[data-ds-surface="accent"] {
+    --ds--chip-label: var(--ds-color-text-on-accent-secondary);
+    --ds--chip-leading: var(--ds-color-text-on-accent-secondary);
+    --ds--chip-trailing: var(--ds-color-text-on-accent-secondary);
+  }
+
+  .ds-chip[data-ds-surface="accent"][data-ds-selected] {
+    --ds--chip-label: var(--ds-color-text-on-accent);
+    --ds--chip-leading: var(--ds-color-text-on-accent);
+  }
+
+  /*
+   * Inverse: no fill of its own either, and every part in the material's one foreground, the stroke included, at
+   * rest and selected: this rule comes after the selected one, at the same weight, so it wins.
+   */
+  .ds-chip[data-ds-surface="inverse"] {
+    --ds--chip-label: var(--ds-color-text-on-inverse);
+    --ds--chip-leading: var(--ds-color-text-on-inverse);
+    --ds--chip-trailing: var(--ds-color-text-on-inverse);
+    --ds--chip-border: var(--ds-color-text-on-inverse);
+  }
+
+  /* ---- pressed and disabled, on the pill itself (ADR-0036 rule 13) ---- */
+
+  .ds-chip[data-pressed] {
+    scale: var(--ds--chip-press-scale);
+  }
+
+  .ds-chip[data-disabled] {
+    opacity: var(--ds-opacity-disabled);
+  }
+
+  /* ---- the body: the pill's content, its layers and its stroke ---- */
+
+  /*
+   * One row at root.height, root.paddingX and root.gap, as wide as its content: the label never wraps and never
+   * truncates. It covers the pill, so its layers and its stroke are the pill's, drawn over whatever the chip renders.
+   * The layers, bottom to top: the pressed fill, then the hover overlay; the stroke is an inset shadow over both.
+   */
+  .ds-chip-body {
+    --ds--chip-press: transparent;
+    --ds--chip-hover: transparent;
+
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--ds-space-2);
+    min-block-size: var(--ds--chip-height);
+    margin: 0;
+    padding-block: 0;
+    padding-inline-start: var(--ds--chip-padding-start);
+    padding-inline-end: var(--ds--chip-padding-x);
+    border: none;
+    border-radius: inherit;
+    outline: none;
+    background-color: transparent;
+    background-image:
+      linear-gradient(var(--ds--chip-hover), var(--ds--chip-hover)),
+      linear-gradient(var(--ds--chip-press), var(--ds--chip-press));
+    box-shadow: inset 0 0 0 var(--ds--chip-border-width) var(--ds--chip-border);
+    color: var(--ds--chip-label);
+    font: inherit;
+    font-synthesis: none;
+    text-align: start;
+    white-space: nowrap;
+    touch-action: manipulation;
+    transition:
+      --ds--chip-press var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--chip-hover var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      box-shadow var(--ds--chip-select-duration) var(--ds-motion-spring-smooth-easing);
+  }
+
+  /*
+   * Behavior 3: a control's hit region is the larger of the pill and size.hit on each axis, centred on it, Button's
+   * region verbatim. The root is the containing block, so the region is the pill's; it extends invisibly and the
+   * pill never grows with modality. A static label takes no press, so it keeps no region.
+   */
+  .ds-chip:is([data-ds-kind="filter"], [data-ds-kind="button"]) > .ds-chip-body::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  /* Hover: the neutral overlay over the pill, pointer only (behavior, ADR-0019 rule 9). */
+  .ds-chip-body {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--chip-hover: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  /* Pressed: comp.chip.bg.pressed over whatever the chip renders, in every material and every motion mode. */
+  .ds-chip-body[data-pressed] {
+    --ds--chip-press: var(--ds-chip-bg-pressed);
+  }
+
+  /* The focus ring: color.border.focus at border.focus outside the pill, following radius.chip. */
+  .ds-chip-body[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  /* ---- the parts ---- */
+
+  /*
+   * The label: one line of the Text inside (label.typography), which inherits this colour. Its tone moves with the
+   * selection on motion.select, as the stroke does; the leading glyph's below.
+   */
+  .ds-chip-label {
+    display: flex;
+    color: var(--ds--chip-label);
+    white-space: nowrap;
+    transition: color var(--ds--chip-select-duration) var(--ds-motion-spring-smooth-easing);
+  }
+
+  /*
+   * The leading glyph and the check: Icon's sm box (leadingIcon.size), taking this colour through tone: inherit. The
+   * check appears and leaves with the selection, with no fade of its own (behavior).
+   */
+  .ds-chip :is([data-ds-slot="chip-leading-icon"], [data-ds-slot="chip-check"]) {
+    color: var(--ds--chip-leading);
+    transition: color var(--ds--chip-select-duration) var(--ds-motion-spring-smooth-easing);
+  }
+
+  /* The trailing glyph, and the remove control's nav.close: Icon's sm box (trailingIcon.size), in trailingIcon.color. */
+  .ds-chip :is([data-ds-slot="chip-trailing-icon"], [data-ds-slot="chip-remove-icon"]) {
+    color: var(--ds--chip-trailing);
+  }
+
+  /* The place the body keeps for the remove control's glyph, so the pill is as wide as the glyph makes it. */
+  .ds-chip [data-ds-slot="chip-remove-space"] {
+    display: block;
+    flex: none;
+    inline-size: var(--ds-size-icon-sm);
+    block-size: var(--ds-size-icon-sm);
+  }
+
+  /*
+   * The remove control: its own button, over the space the body keeps, root.paddingX from the trailing edge and
+   * centred on the pill. Its hit region is the larger of the glyph's box and size.hit on each axis, and it sits
+   * above the body's, so a press on it never reaches the body (behavior, "`isRemovable` renders nav.close").
+   */
+  .ds-chip-remove {
+    position: absolute;
+    z-index: 1;
+    inset-inline-end: var(--ds--chip-padding-x);
+    inset-block-start: calc((100% - var(--ds-size-icon-sm)) / 2);
+    box-sizing: border-box;
+    display: flex;
+    inline-size: var(--ds-size-icon-sm);
+    block-size: var(--ds-size-icon-sm);
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--ds-radius-control);
+    outline: none;
+    background: none;
+    color: var(--ds--chip-trailing);
+    touch-action: manipulation;
+  }
+
+  .ds-chip-remove::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  /* Its focus ring: color.border.focus at border.focus outside the glyph's box, drawn as a circle. */
+  .ds-chip-remove[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  /*
+   * Forced colors drop the fill, the chip and the stroke's shadow, so the pill would vanish into Canvas: it keeps its
+   * shape as a system outline drawn inside it (Surface's idiom), and a selected chip's outline is the thicker one.
+   * Web only.
+   */
+  @media (forced-colors: active) {
+    .ds-chip-body {
+      outline: var(--ds-border-hairline) solid ButtonText;
+      outline-offset: calc(var(--ds-border-hairline) * -1);
+    }
+
+    .ds-chip[data-ds-selected] > .ds-chip-body {
+      outline-width: var(--ds-border-strong);
+      outline-offset: calc(var(--ds-border-strong) * -1);
+    }
+  }
+}

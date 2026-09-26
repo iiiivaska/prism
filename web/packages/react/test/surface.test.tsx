@@ -383,8 +383,10 @@ describe("Surface.css draws the glass chip (ADR-0036 §7)", () => {
     expect(declared(".ds-surface-chip", "--ds--surface-chip-crossfade-duration")).toBe(declared(".ds-surface", "--ds--surface-crossfade-duration"));
     expect(declared(".ds-surface-chip", "--ds--surface-chip-geometry-duration")).toBe(declared(".ds-surface", "--ds--surface-geometry-duration"));
     // The fills crossfade; the shadow and the blur take the geometry timing, as a Surface's do where no Card
-    // retimes its shadow.
-    expect(splitTopLevel(squeeze(declared(".ds-surface-chip", "transition")))).toEqual([
+    // retimes its shadow. The list is one custom property, so a host that puts its press scale on the root
+    // extends it rather than restating the filter it may not name (Chip.css, ADR-0036 §7 and rule 13).
+    expect(declared(".ds-surface-chip", "transition")).toBe("var(--ds--surface-chip-transition)");
+    expect(splitTopLevel(squeeze(declared(".ds-surface-chip", "--ds--surface-chip-transition")))).toEqual([
       "--ds--surface-chip-fill var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing)",
       "--ds--surface-chip-under var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing)",
       "box-shadow var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing)",

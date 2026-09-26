@@ -23,7 +23,7 @@ struct DSComponentsContractTests {
         try DSSpec.component(name).text
     }
 
-    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar"]
+    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar", "Chip"]
     nonisolated static let applePlatforms = ["ios", "ipados", "macos", "watchos"]
 
     @Test(arguments: implemented)
@@ -107,17 +107,54 @@ struct DSExampleHandlerTests {
         return probe.value
     }
 
-    /// Card is the one implemented spec whose `action` prop is optional in the Swift API, so it is the one whose
-    /// examples could lose their handler: `DSButton`'s and `DSIconButton`'s `action` is a required parameter, which
-    /// makes a Button or IconButton example without one a compile error rather than a different picture. IconButton's
-    /// `onPress` is required in the spec too, and the examples pass `{}` for it (`DSIconButtonExample.button`).
-    @Test func cardIsTheSpecWhoseHandlerCanBeForgotten() throws {
+    /// Card and Chip are the implemented specs whose handlers are optional in the Swift API, so they are the ones whose
+    /// examples could lose them: `DSButton`'s and `DSIconButton`'s `action` is a required parameter, which makes a
+    /// Button or IconButton example without one a compile error rather than a different picture. IconButton's
+    /// `onPress` is required in the spec too, and the examples pass `{}` for it (`DSIconButtonExample.button`). A Chip
+    /// without `onPress` and `onRemove` is a static label, not the button the web story renders.
+    @Test func cardAndChipAreTheSpecsWhoseHandlersCanBeForgotten() throws {
         var withActions: [String: [String]] = [:]
         for name in DSComponentsContractTests.implemented {
             let props = try DSSpec.component(name).actionProps
             if !props.isEmpty { withActions[name] = props }
         }
-        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"], "IconButton": ["onPress"]])
+        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"], "Chip": ["onPress", "onRemove"], "IconButton": ["onPress"]])
+    }
+
+    /// What every Chip an example renders is, read out of the preference the chips publish (`DSChipKindKey`).
+    static func chipKinds(_ example: DSExample) -> [DSChipKind] {
+        let probe = ChipKindProbe()
+        let view = DSTheme { example.content() }
+            .backgroundPreferenceValue(DSChipKindKey.self) { kinds in
+                probe.value = kinds
+                return Color.clear
+            }
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 1
+        _ = renderer.cgImage
+        return probe.value
+    }
+
+    final class ChipKindProbe {
+        var value: [DSChipKind] = []
+    }
+
+    /// Every Chip example renders a chip that was given its handlers, so it is the control the web story renders: a
+    /// filter exactly where the spec's entry sets `isSelected`, and a button everywhere else — never a static label,
+    /// which is what a chip with neither `onPress` nor `isRemovable` is (Chip.yaml behavior 1).
+    @Test func everyChipExampleIsTheControlItsSpecEntryMakesIt() throws {
+        let spec = try DSSpec.component("Chip")
+        let entries = try #require(spec.document["examples"]?.listValue)
+        let examples = DSExamples.all.filter { $0.component == "Chip" }
+        #expect(examples.count == entries.count)
+        for (example, entry) in zip(examples, entries) {
+            let setsSelection = entry["props"]?["isSelected"] != nil
+            let kinds = Self.chipKinds(example)
+            #expect(kinds == [setsSelection ? DSChipKind.filter : .button], "\(example.id): renders \(kinds)")
+        }
+        // The probe itself: a chip with no handler and no `isSelected` is read back as the static label it is.
+        let label = DSExample("Chip", "probe") { DSExampleStage { DSChip(verbatim: "North yard") } }
+        #expect(Self.chipKinds(label) == [DSChipKind.label])
     }
 
     /// Every Card example renders a card that was given its `onAction`, so an `open` example is the pressable card

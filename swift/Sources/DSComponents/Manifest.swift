@@ -75,12 +75,18 @@
 /// `strings.Button.loading` template, read through `\.dsStrings` and filled with the label as it resolves in the
 /// environment's locale, where this target used to append an English "loading" of its own. The name under the English
 /// defaults, "Saving, loading", and every pixel are what they were at Button 4.
+///
+/// P4-8 adds Chip (`DSChip`) on iOS, iPadOS and macOS, the second component to draw through the chip shape and the
+/// first to nest a chip in it: its pill is the chip, and an Avatar in its leading position is a chip inside a chip,
+/// which reads the enclosure the pill hands it (ADR-0037). Chip.yaml marks watchOS `none` — a watch filter is a list
+/// screen — so its row has no `watchos` key either.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
         "Button": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
+        "Chip": ["ios": 1, "ipados": 1, "macos": 1],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "IconButton": ["ios": 1, "ipados": 1, "macos": 1],

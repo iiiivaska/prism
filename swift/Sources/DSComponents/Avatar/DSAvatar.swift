@@ -106,6 +106,15 @@ public struct DSAvatar: View {
     }
 }
 
+extension DSAvatar {
+    /// The Avatar a Chip draws in its leading position (Chip.yaml `avatar`): this one at size sm and decorative, because
+    /// the chip's `label` names the chip and the Avatar's name would be read twice. Its `name`, `image` and `hasRing` are
+    /// the caller's. Written here, beside the stored properties it reads, which are private to this file.
+    var inChip: DSAvatar {
+        DSAvatar(name: name, image: image, size: .sm, hasRing: hasRing, isDecorative: true)
+    }
+}
+
 /// The circle's side: `size.control.*`, grown along the initials' Dynamic Type style the way their own size scales,
 /// so the circle keeps its proportions up to accessibility3, where `DSAvatar` clamps both. Button's frame scales its
 /// pill's height the same way.

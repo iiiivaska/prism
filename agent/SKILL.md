@@ -23,7 +23,7 @@ Only the **Implemented** column exists in code. A name in the **Specified only**
 
 | Layer | Implemented on both stacks | Specified only (a contract, no code yet) |
 |---|---|---|
-| Primitives | Avatar, Badge, Button, Divider, Icon, IconButton, Surface, Text | Checkbox, Chip, ProgressBar, ProgressRing, Radio, SegmentedControl, Select, Skeleton, Slider, Spinner, TextArea, TextField, Toggle, Tooltip |
+| Primitives | Avatar, Badge, Button, Chip, Divider, Icon, IconButton, Surface, Text | Checkbox, ProgressBar, ProgressRing, Radio, SegmentedControl, Select, Skeleton, Slider, Spinner, TextArea, TextField, Toggle, Tooltip |
 | Composites | Card (solid, vivid, glass, tinted) | Alert, Banner, CommandPalette, ContextMenu, Dialog, EmptyState, FormField, ListRow, Menu, Pagination, PillTabs, Popover, SearchField, Sheet, Sidebar, StatCard, StatusPill, Stepper, TabBar, Table, Timeline, Toast, Toolbar, TopBar |
 | Data-viz (`DSCharts`, `@iiiivaska/prism-charts`) | — | AreaChart, ChartContainer, DeltaBadge, HeroNumber, LineChart, RangeBand, ReferenceLine, RingGauge, Sparkline, StatTile |
 | Patterns (recipes, `spec/patterns/`) | — | AdaptiveShell (stack, split, sidebar), DashboardGrid, DetailScreen |

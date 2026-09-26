@@ -9,7 +9,7 @@ import DSTokens
 @testable import DSComponents
 
 /// The SwiftUI snapshots of roadmap P3-3: every spec example of Surface, Text, Button, Card, Divider, Icon, Badge,
-/// IconButton and Avatar (`DSExamples`, which the `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus
+/// IconButton, Avatar and Chip (`DSExamples`, which the `#Preview` blocks show) in light/dark × regular/compact × standard/Increase Contrast, plus
 /// forced Reduce Transparency for every glass example and Bold Text for every Text and Icon example
 /// (`DSSnapshotMatrix`).
 ///

@@ -14,12 +14,12 @@
  *
  * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
  * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge,
- * IconButton and Avatar are staged the same way (`renderBadgeExample`, `renderIconButtonExample`,
- * `renderAvatarExample`).
+ * IconButton, Avatar and Chip are staged the same way (`renderBadgeExample`, `renderIconButtonExample`,
+ * `renderAvatarExample`, `renderChipExample`).
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button, Card, Icon, Badge, IconButton and Avatar examples carry their strings in
- * their props, and Divider draws none. An image prop names spec/SCHEMA.md's `portrait` fixture, which the
+ * (src/harness/content.ts); Button, Card, Icon, Badge, IconButton, Avatar and Chip examples carry their strings
+ * in their props, and Divider draws none. An image prop names spec/SCHEMA.md's `portrait` fixture, which the
  * harness draws from tokens (src/harness/portrait.ts) and hands the component as its source.
  *
  * An example's props reach the component untouched, including the no-op handler the generated story adds
@@ -27,7 +27,8 @@
  * renders the component's interactive form). Two exceptions: a component whose API bundles several of the
  * spec's props into one value, which the renderer assembles rather than spreads — Card's `action`,
  * `actionIcon` and `actionLabel` are the only such props today (`cardArgs`) — and a fixture, which the
- * renderer draws — Avatar's `image: { fixture: portrait }` (`AvatarExample`).
+ * renderer draws — Avatar's `image: { fixture: portrait }` (`AvatarExample`), and the same inside Chip's `avatar`
+ * slot (`ChipExample`).
  */
 import type { ReactElement, ReactNode } from "react";
 import {
@@ -36,6 +37,7 @@ import {
   Badge,
   Button,
   Card,
+  Chip,
   Divider,
   Icon,
   IconButton,
@@ -48,6 +50,8 @@ import {
   type ButtonProps,
   type CardActionKind,
   type CardProps,
+  type ChipAvatar,
+  type ChipProps,
   type DividerOrientation,
   type DividerProps,
   type IconButtonProps,
@@ -332,17 +336,62 @@ function AvatarExample(props: { readonly args: AvatarExampleArgs }): ReactNode {
  * glass.
  */
 export function renderAvatarExample(args: AvatarExampleArgs, example: ExampleFields): ReactElement {
-  const avatar = <AvatarExample args={args} />;
+  return onMarkStage(<AvatarExample args={args} />, example);
+}
+
+/**
+ * A mark on its example's `surface`, Badge's, IconButton's, Avatar's and Chip's staging in all four harnesses:
+ * straight on the stage with no card-sized frame; on the synthetic map or image, which `GalleryGround` declares with
+ * the package's `Backdrop`, so the mark reads the page over that kind; or inside a Surface of that material with
+ * `radius: card` and its default card padding, hugging the mark in a flex box (`ds-gallery-mark`), over `backdrop`
+ * when the material is glass.
+ */
+function onMarkStage(mark: ReactNode, example: ExampleFields): ReactElement {
   const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
-  if (material === undefined || material === "page") return <Stage>{avatar}</Stage>;
-  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, avatar)}</Stage>;
+  if (material === undefined || material === "page") return <Stage>{mark}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, mark)}</Stage>;
   const backdrop = (example.backdrop ?? "none") as BackdropKind;
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
-      <div className="ds-gallery-mark">{avatar}</div>
+      <div className="ds-gallery-mark">{mark}</div>
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * Chip.yaml's own props, which are Chip's props but for the Avatar the `avatar` slot holds: an example writes it as a
+ * mapping of Avatar's own props (spec/SCHEMA.md, "Slot content in examples"), whose `image`, like Avatar's own, can
+ * only be the `portrait` fixture. A generated story's args are the example's props verbatim, so they carry the slot
+ * as written.
+ */
+export type ChipExampleArgs = Omit<ChipProps, "avatar"> & {
+  readonly avatar?: Omit<ChipAvatar, "image"> & { readonly image?: string | PortraitFixture };
+};
+
+/**
+ * A Chip with its example's props, its Avatar's `portrait` fixture drawn in the colours of the context it renders in.
+ * An Avatar image that names any other fixture cannot be staged, and throws as `AvatarExample` does.
+ */
+function ChipExample(props: { readonly args: ChipExampleArgs }): ReactNode {
+  const { avatar, ...rest } = props.args;
+  const portrait = usePortrait();
+  if (avatar === undefined) return <Chip {...rest} />;
+  const { image, ...person } = avatar;
+  if (image !== undefined && typeof image !== "string" && !isPortraitFixture(image)) {
+    throw new Error(`A Chip example's avatar image is ${JSON.stringify(image)}: an example fills an image's source with { fixture: portrait } and nothing else (spec/SCHEMA.md, "Slot content in examples").`);
+  }
+  return <Chip {...rest} avatar={{ ...person, image: image === undefined ? undefined : typeof image === "string" ? image : portrait }} />;
+}
+
+/**
+ * A Chip on its example's `surface`, staged as Avatar is (`onMarkStage`): on the page, straight on the synthetic map,
+ * where the pill reads the page over a map and renders the glass chip, or inside a vivid or glass Surface that hugs it.
+ * Its `onPress` and `onRemove` are the story's spies, so every example is the control it is in the SwiftUI snapshots:
+ * a filter where it sets `isSelected`, a button otherwise.
+ */
+export function renderChipExample(args: ChipExampleArgs, example: ExampleFields): ReactElement {
+  return onMarkStage(<ChipExample args={args} />, example);
 }
 
 /**

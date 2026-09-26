@@ -18,13 +18,16 @@ import DSTokens
 /// - On the scheme's glass, on light glass and inside another glass chip, a glass chip draws the recipe's fill and edge,
 ///   the edge with the colour, alphas and width the tokens give it, and no mirror (§5).
 /// - The chip's fallback paints `color.bg.surface.raised` over `color.bg.page`, in both schemes.
+/// - A chip inside another chip samples nothing (ADR-0037 rules 1 and 2, checked with Chip, the first component that
+///   nests one): inside a host that renders nothing it draws the recipe flat, the sharp stripe under its fill, and inside
+///   a host that renders its own cell it has no media under it and reads the fallback.
 ///
 /// **Why this is a simulator suite.** The chip's colours, and those of the glass it sits on, are `Colors.xcassets`
 /// entries, which only a run that compiles the catalog resolves (`DSRenderCapability`; README.md, "Why the pixel suites
 /// live here"). The stripe fixtures are drawn in literal black and white, but their measurement belongs to the renderer
 /// the baselines are taken with, the pinned iPhone 17 simulator, so they run there too.
 @MainActor
-@Suite("Glass chip renders (ADR-0036 §5, §6)", .serialized)
+@Suite("Glass chip renders (ADR-0036 §5, §6; ADR-0037 rules 1 and 2)", .serialized)
 struct DSSurfaceChipRenderTests {
     // MARK: - ADR-0036 F2: the stripe fixture
 
@@ -556,6 +559,142 @@ struct DSSurfaceChipRenderTests {
             Self.chip.dsAccessibilityPolicy(increasedContrast: false, reduceTransparency: false), scheme: scheme
         )
         #expect(glass != nil && !Self.close(glass, raisedOverThePage, within: 0), "glass in \(scheme)")
+    }
+
+    // MARK: - ADR-0037: a chip inside another chip
+
+    /// ADR-0037's fixture, the one both stacks drew for its table: a 140 × 40 pill host with 4 pt of padding; inside it,
+    /// at its leading edge, a 32 × 32 circle whose background follows Avatar's `root.background` table; under both, 2 pt
+    /// red and blue stripes, red from the host's leading edge, declared as a map. The web draws the same fixture
+    /// (`web/apps/gallery/test/runtime.browser.test.tsx`).
+    static let nestHost = CGSize(width: 140, height: 40)
+    static let nestPadding: CGFloat = 4
+    static let nestSide: CGFloat = 32
+    static let nestStripe: CGFloat = 2
+    static let red = Color(.sRGB, red: 1, green: 0, blue: 0)
+    static let blue = Color(.sRGB, red: 0, green: 0, blue: 1)
+
+    /// The fixture's stripes: `nestStripe` wide, red first, across the host's whole width and height.
+    struct RedAndBlueStripes: View {
+        init() {}
+
+        var body: some View {
+            let count = Int(DSSurfaceChipRenderTests.nestHost.width / DSSurfaceChipRenderTests.nestStripe)
+            HStack(spacing: 0) {
+                ForEach(0..<count, id: \.self) { index in
+                    (index.isMultiple(of: 2) ? DSSurfaceChipRenderTests.red : DSSurfaceChipRenderTests.blue)
+                        .frame(width: DSSurfaceChipRenderTests.nestStripe)
+                }
+            }
+        }
+    }
+
+    /// The recipe's fill over the red stripe: what a circle that draws the recipe flat shows at its centre.
+    struct FillOverRed: View {
+        private var ds = DSThemeValues()
+
+        init() {}
+
+        var body: some View {
+            ZStack {
+                DSSurfaceChipRenderTests.red
+                DSGlassAppearance.chip.recipe(ds.tokens.material).fill
+            }
+        }
+    }
+
+    /// The fixture in `scheme`, with glass allowed to render: the circle inside a host that hands the chip shape `host`,
+    /// or with no host at all, in the same place, for nil.
+    static func nest(host: DSSurfaceChipCell?, scheme: ColorScheme) -> some View {
+        let circle = Color.clear
+            .frame(width: nestSide, height: nestSide)
+            .dsSurfaceChip(DSAvatarAppearance.background(on:), in: Circle())
+            .padding(nestPadding)
+            .frame(width: nestHost.width, height: nestHost.height, alignment: .leading)
+        return DSTheme {
+            Group {
+                if let host {
+                    circle.dsSurfaceChip({ _ in host }, in: Capsule(style: .circular))
+                } else {
+                    circle
+                }
+            }
+            .dsBackdrop(.map) { RedAndBlueStripes() }
+        }
+        .environment(\.colorScheme, scheme)
+        .dsAccessibilityPolicy(increasedContrast: false, reduceTransparency: false)
+    }
+
+    /// The pixel at the circle's centre, `(20, 20)`, as RGB: the first column of the red stripe from 20 to 22 pt.
+    static func nestCentre(host: DSSurfaceChipCell?, scheme: ColorScheme) -> [UInt8]? {
+        let width = Int(nestHost.width)
+        guard let pixels = rgba(nest(host: host, scheme: scheme), width: width, height: Int(nestHost.height)) else { return nil }
+        let at = Int(nestPadding + nestSide / 2)
+        let offset = (at * width + at) * 4
+        return [pixels[offset], pixels[offset + 1], pixels[offset + 2]]
+    }
+
+    /// The mean of the 8 × 8 block at the circle's centre, from 16 to 24 pt on each axis, as RGB rounded to code values:
+    /// what ADR-0037's table reads.
+    static func nestMean(host: DSSurfaceChipCell?, scheme: ColorScheme) -> [UInt8]? {
+        let width = Int(nestHost.width)
+        guard let pixels = rgba(nest(host: host, scheme: scheme), width: width, height: Int(nestHost.height)) else { return nil }
+        let first = Int(nestPadding + nestSide / 2) - 4
+        var sums = [0, 0, 0]
+        for y in first..<(first + 8) {
+            for x in first..<(first + 8) {
+                for channel in 0..<3 {
+                    sums[channel] += Int(pixels[(y * width + x) * 4 + channel])
+                }
+            }
+        }
+        return sums.map { UInt8((Double($0) / 64).rounded()) }
+    }
+
+    /// `FillOverRed` in `scheme`, as RGB.
+    static func fillOverRed(scheme: ColorScheme) -> [UInt8]? {
+        guard let pixels = rgba(DSTheme { FillOverRed() }.environment(\.colorScheme, scheme), width: 8, height: 8) else {
+            return nil
+        }
+        let offset = (4 * 8 + 4) * 4
+        return [pixels[offset], pixels[offset + 1], pixels[offset + 2]]
+    }
+
+    /// ADR-0037 rule 1: a chip that another chip encloses draws no backdrop filter, even inside a host that renders
+    /// nothing, where the stripes show through the host. The circle asks for glass on the page over the map, renders the
+    /// recipe flat, and its centre pixel is the red stripe under the recipe's fill — 255, 64, 64 in light and 172, 7, 8
+    /// in dark by the ADR's measurements — within 2 code values of `FillOverRed`. A blur there reads the stripes' purple,
+    /// about 160, 64, 160 and 89, 7, 91. The centre pixel is what is read, because the 8 × 8 mean is the same either way.
+    ///
+    /// The control: the same circle with no host blurs the stripes, and reads more than 40 code values from the sharp
+    /// stripe. So the reading can see a blur, and the pass above is the rule's.
+    @Test(arguments: [ColorScheme.light, .dark])
+    func aChipInsideAHostThatRendersNothingDrawsNoFilter(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
+        let sharp = try #require(Self.fillOverRed(scheme: scheme))
+        let nested = try #require(Self.nestCentre(host: DSSurfaceChipCell.none, scheme: scheme))
+        #expect(Self.close(nested, sharp, within: 2), "\(scheme): inside a host that renders nothing the circle reads \(nested), the sharp stripe under the fill \(sharp)")
+        let alone = try #require(Self.nestCentre(host: nil, scheme: scheme))
+        #expect(!Self.close(alone, sharp, within: 40), "\(scheme): alone on the map the circle reads \(alone), the sharp stripe \(sharp): no blur to tell apart")
+    }
+
+    /// ADR-0037 rule 2: inside a chip that renders its own cell a chip has no media under it, so glass asked for there
+    /// falls back under the `content` gate, and the 8 × 8 mean at the circle's centre reads `color.bg.surface.raised`
+    /// over `color.bg.page` within 2 code values, in both schemes — 247, 248, 250 in light and 35, 36, 38 in dark by the
+    /// ADR's measurements. Before the rule it read the blurred map.
+    ///
+    /// The host's cell is `color.bg.surface.nested`, which is translucent in both schemes: light `raised` is opaque, and
+    /// flat glass over it reads within 2 code values of the fallback, so a host in that cell could not fail the check.
+    /// The control: inside a host that renders nothing the same circle draws the recipe flat over the stripes, which is
+    /// not the fallback's colour.
+    @Test(arguments: [ColorScheme.light, .dark])
+    func aChipInsideAnOwnCellReadsTheFallback(_ scheme: ColorScheme) throws {
+        try DSRenderCapability.requireRasterizing()
+        let fallback = try #require(Self.centre(RaisedOverThePage(), scheme: scheme))
+        let nested = try #require(Self.nestMean(host: .own(\.color.bgSurfaceNested), scheme: scheme))
+        #expect(Self.close(nested, fallback, within: 2), "\(scheme): inside an own cell the circle reads \(nested), raised over the page \(fallback)")
+        let flat = try #require(Self.nestMean(host: DSSurfaceChipCell.none, scheme: scheme))
+        #expect(!Self.close(flat, fallback, within: 2), "\(scheme): the flat circle reads \(flat), the fallback's colour \(fallback)")
     }
 }
 

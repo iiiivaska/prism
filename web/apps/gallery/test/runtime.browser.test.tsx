@@ -12,6 +12,10 @@
  *   its fill; Text schedules no animation at all.
  * - ADR-0021 rule 8: Text computes `font-synthesis: none`.
  * - ADR-0021 rule 5 (§5, ADR-0030 §7.1): the equal-width test with `getBoundingClientRect`.
+ * - Roadmap P4-8, Chip over media: the pill's blur on the map, inside a Backdrop inside a glass Surface and when
+ *   disabled (ADR-0036 rule 13, F4), flat on the scheme's glass; ADR-0037's fixture read as pixels, a chip inside a
+ *   host that renders nothing drawn flat and one inside an own cell falling back (rules 1 and 2); and a Chip's Avatar
+ *   resolving the same at rest and pressed on every ground under every setting (rule 4).
  *
  * The OS preferences come from a controllable `matchMedia` installed before the runtime first reads one;
  * the attribute names and queries are spelled here on purpose, to check the generated contract
@@ -22,10 +26,25 @@ import "@iiiivaska/prism-tokens/brands/prism/fonts.css";
 import "@iiiivaska/prism-tokens/motion.css";
 import "@iiiivaska/prism-react/styles.css";
 
-import { act, useContext, type ReactNode } from "react";
+import { act, useContext, type CSSProperties, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
-import { Surface, Text, Theme, mountRoot, readContext, useTokenContext, webRuntime, type TextRole, type TokenContext } from "@iiiivaska/prism-react";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
+import { page } from "vitest/browser";
+import {
+  Backdrop,
+  Chip,
+  Surface,
+  Text,
+  Theme,
+  backdropKinds,
+  mountRoot,
+  readContext,
+  surfaceMaterials,
+  useTokenContext,
+  webRuntime,
+  type TextRole,
+  type TokenContext,
+} from "@iiiivaska/prism-react";
 // The chip shape, its resolver and the two contexts it reads are internal to the package (ADR-0036 §7), so they
 // are imported from the source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so these
 // are the contexts the hook reads and the resolver it calls.
@@ -38,7 +57,9 @@ import {
   type SurfaceChipPublication,
   type SurfaceChipResolution,
 } from "../../../packages/react/src/surface/resolve.ts";
-import { useSurfaceChip } from "../../../packages/react/src/surface/SurfaceChip.tsx";
+import { SurfaceChipEdge, SurfaceChipScope, useSurfaceChip } from "../../../packages/react/src/surface/SurfaceChip.tsx";
+// Avatar's `root.background` table, which ADR-0037's fixture circle follows, is internal to the package too.
+import { avatarBackground } from "../../../packages/react/src/avatar/parts.ts";
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -502,4 +523,316 @@ describe("Text in the browser", () => {
       expect(Math.abs(ones - zeros)).toBeLessThanOrEqual(0.5);
     });
   }
+});
+
+/**
+ * Chip over media in Chromium (roadmap P4-8): what only a painted page can show.
+ *
+ * - ADR-0036 rule 13 and F4: the pill carries the backdrop filter, the press scale and the disabled opacity on one
+ *   element, so a Chip on the map blurs it, one inside a `<Backdrop>` inside a glass Surface blurs its own backdrop,
+ *   one on the scheme's glass draws the recipe flat, and a disabled one still blurs: its pixels are the enabled chip's
+ *   at `opacity.disabled` over the map.
+ * - ADR-0037 rules 1 and 2, on the ADR's own fixture: a 140 × 40 host with 4 px of padding, a 32 × 32 circle inside it
+ *   whose background follows Avatar's `root.background` table, and 2 px red and blue stripes under both, declared as a
+ *   map. Inside a host that renders nothing the circle computes `backdrop-filter: none` and its centre pixel is the red
+ *   stripe under the recipe's fill; inside a host that renders its own cell, `color.bg.surface.nested`, it falls back,
+ *   and the 8 × 8 mean at its centre is `color.bg.surface.raised` over `color.bg.page`. In both schemes. The SwiftUI
+ *   twin is swift/Tests/DSSnapshotTests/DSSurfaceChipRenderTests.swift.
+ * - ADR-0037 rule 4 with a real host: a Chip's Avatar resolves the same at rest and pressed, on every ground and under
+ *   every setting, never blurs, and renders glass exactly where the Chip does. The press is forced as the component
+ *   tests force it, with Space held on the focused chip.
+ *
+ * Pixels are read from a screenshot of the element Chromium painted (`page.screenshot`), decoded on a canvas.
+ */
+describe("Chip over media in Chromium (roadmap P4-8: ADR-0036 rule 13, ADR-0037 rules 1, 2 and 4)", () => {
+  const noop = (): void => undefined;
+
+  // The test frame is scaled down to fit the browser window when it is taller than the window, and a screenshot
+  // of a scaled frame blends the 2 px stripes. So these tests run in a frame short enough to be drawn at 1:1, and
+  // every reading checks that it was (`Pixels.scale`).
+  let frame: { readonly width: number; readonly height: number } | null = null;
+  beforeAll(async () => {
+    frame = { width: window.innerWidth, height: window.innerHeight };
+    await page.viewport(frame.width, 480);
+  });
+  afterAll(async () => {
+    if (frame !== null) await page.viewport(frame.width, frame.height);
+  });
+
+  /** The pixels Chromium painted in an element's box, addressed in CSS pixels from its top-leading corner. */
+  interface Pixels {
+    readonly scale: number;
+    at(x: number, y: number): readonly [number, number, number];
+    mean(x: number, y: number, size: number): readonly [number, number, number];
+  }
+
+  async function pixelsOf(element: HTMLElement): Promise<Pixels> {
+    const base64 = await page.screenshot({ element, save: false });
+    const image = new Image();
+    image.src = `data:image/png;base64,${base64}`;
+    await image.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    const context = canvas.getContext("2d");
+    if (context === null) throw new Error("no 2d context");
+    context.drawImage(image, 0, 0);
+    const data = context.getImageData(0, 0, canvas.width, canvas.height).data;
+    const scale = canvas.width / element.getBoundingClientRect().width;
+    const at = (x: number, y: number): readonly [number, number, number] => {
+      const offset = (Math.floor(y * scale) * canvas.width + Math.floor(x * scale)) * 4;
+      return [data[offset] ?? 0, data[offset + 1] ?? 0, data[offset + 2] ?? 0];
+    };
+    const mean = (x: number, y: number, size: number): readonly [number, number, number] => {
+      const sums = [0, 0, 0];
+      for (let row = 0; row < size; row += 1) {
+        for (let column = 0; column < size; column += 1) {
+          const pixel = at(x + column, y + row);
+          for (let channel = 0; channel < 3; channel += 1) sums[channel] = (sums[channel] ?? 0) + (pixel[channel] ?? 0);
+        }
+      }
+      return [Math.round((sums[0] ?? 0) / (size * size)), Math.round((sums[1] ?? 0) / (size * size)), Math.round((sums[2] ?? 0) / (size * size))];
+    };
+    return { scale, at, mean };
+  }
+
+  /** The largest difference over red, green and blue, in code values. */
+  const distance = (a: readonly number[], b: readonly number[]): number => Math.max(...[0, 1, 2].map((channel) => Math.abs((a[channel] ?? 0) - (b[channel] ?? 0))));
+
+  function find(element: HTMLElement, selector: string): HTMLElement {
+    const found = element.querySelector<HTMLElement>(selector);
+    if (found === null) throw new Error(`no ${selector}`);
+    return found;
+  }
+
+  async function unmountNow(): Promise<void> {
+    await act(async () => {
+      root?.unmount();
+      await Promise.resolve();
+    });
+    root = null;
+    host?.remove();
+    host = null;
+  }
+
+  /** A custom property's value in px, resolved on an element through a probe declaration. */
+  function tokenPx(element: HTMLElement, variable: string): number {
+    const probe = document.createElement("div");
+    probe.style.position = "absolute";
+    probe.style.inlineSize = `var(${variable})`;
+    element.append(probe);
+    const width = probe.getBoundingClientRect().width;
+    probe.remove();
+    return width;
+  }
+
+  /** Space held on a focused control, which React Aria reads as a press, and the release. */
+  async function hold(element: HTMLElement): Promise<() => Promise<void>> {
+    await act(async () => {
+      element.focus();
+      element.dispatchEvent(new KeyboardEvent("keydown", { key: " ", code: "Space", bubbles: true, cancelable: true }));
+      await Promise.resolve();
+    });
+    return async () => {
+      await act(async () => {
+        element.dispatchEvent(new KeyboardEvent("keyup", { key: " ", code: "Space", bubbles: true, cancelable: true }));
+        await Promise.resolve();
+      });
+    };
+  }
+
+  // ---- ADR-0036 rule 13 and F4 ----
+
+  it("blurs the map on the map and inside a Backdrop inside a glass Surface, and draws the recipe flat on the scheme's glass", async () => {
+    const element = await mount(
+      <Theme>
+        <Backdrop kind="map">
+          <Chip label="Depots" onPress={noop} data-probe="map" />
+        </Backdrop>
+        <Surface material="glass" backdrop="map">
+          <Chip label="In service" onPress={noop} data-probe="glass" />
+          <Backdrop kind="image">
+            <Chip label="Depots" onPress={noop} data-probe="backdrop-in-glass" />
+          </Backdrop>
+        </Surface>
+      </Theme>,
+    );
+    const blur = `blur(${String(tokenPx(element, "--ds-material-glass-chip-blur"))}px) saturate(1)`;
+    expect(getComputedStyle(find(element, "[data-probe='map']")).backdropFilter).toBe(blur);
+    expect(getComputedStyle(find(element, "[data-probe='backdrop-in-glass']")).backdropFilter).toBe(blur);
+    const glass = find(element, "[data-probe='glass']");
+    expect(glass.getAttribute("data-ds-surface-chip")).toBe("glass");
+    expect(glass.hasAttribute("data-ds-surface-chip-flat")).toBe(true);
+    expect(getComputedStyle(glass).backdropFilter).toBe("none");
+  });
+
+  it("keeps its blur when disabled: its pixels are the enabled chip's, dimmed to opacity.disabled, and not a bare fill's (ADR-0036 F4)", async () => {
+    const stripes = "repeating-linear-gradient(90deg, rgb(255, 0, 0) 0px 2px, rgb(0, 0, 255) 2px 4px)";
+    // A long label, so the middle of the pill lies more than three standard deviations of the blur from either end,
+    // where no edge mode reaches. The two chips and the reference sit one above the other, on the same stripes; the
+    // reference is what a disabled chip whose blur was cut would show, the recipe's fill alone at opacity.disabled.
+    const label = "Depots and yards on the northern line";
+    const element = await mount(
+      <Theme>
+        <div data-probe="stage" style={{ position: "relative", width: "400px", height: "200px", background: stripes }}>
+          <Backdrop kind="map">
+            <span style={{ position: "absolute", left: "20px", top: "20px" }}>
+              <Chip label={label} onPress={noop} data-probe="enabled" />
+            </span>
+            <span style={{ position: "absolute", left: "20px", top: "80px" }}>
+              <Chip label={label} isDisabled onPress={noop} data-probe="disabled" />
+            </span>
+          </Backdrop>
+          <div style={{ position: "absolute", left: "20px", top: "140px", width: "300px", height: "32px", background: "var(--ds-material-glass-chip)", opacity: "var(--ds-opacity-disabled)" }} />
+        </div>
+      </Theme>,
+    );
+    const stage = find(element, "[data-probe='stage']");
+    const enabled = find(element, "[data-probe='enabled']");
+    const disabled = find(element, "[data-probe='disabled']");
+    expect(getComputedStyle(disabled).backdropFilter).toBe(getComputedStyle(enabled).backdropFilter);
+    const alpha = Number(getComputedStyle(disabled).opacity);
+    expect(alpha).toBeLessThan(1);
+    const pixels = await pixelsOf(stage);
+    expect(pixels.scale).toBe(1);
+    const rect = enabled.getBoundingClientRect();
+    expect(rect.width / 2).toBeGreaterThan(3 * tokenPx(stage, "--ds-material-glass-chip-blur"));
+    // The middle of the pill, 4 px below its top: above the label, below the stroke and the edge. The map is read
+    // below everything, in the same column.
+    const x = 20 + Math.round(rect.width / 2);
+    const e = pixels.at(x, 20 + 4);
+    const d = pixels.at(x, 80 + 4);
+    const cut = pixels.at(x, 140 + 4);
+    const b = pixels.at(x, 190);
+    // The enabled chip, dimmed over the map. Chromium blends the dimmed chip with the backdrop it read for the filter
+    // rather than with the page, and that read mixes a little of the neighbouring stripe in (up to 9 code values here,
+    // Chromium 153), so the bound is 12 and not 2.
+    const dimmed = [0, 1, 2].map((channel) => alpha * (e[channel] ?? 0) + (1 - alpha) * (b[channel] ?? 0));
+    expect(distance(d, dimmed), `disabled ${String(d)}, the enabled chip ${String(e)} at ${String(alpha)} over the map ${String(b)}`).toBeLessThanOrEqual(12);
+    // Not a bare fill: a disabled chip whose blur the opacity cut would show the reference, and that is more than
+    // three times the bound away.
+    expect(distance(d, cut), `disabled ${String(d)}, the fill alone ${String(cut)}`).toBeGreaterThan(36);
+    // The control: the enabled chip does blur, so its pixel is not the map's sharp stripe.
+    expect(distance(e, b), `enabled ${String(e)}, map ${String(b)}`).toBeGreaterThan(20);
+  });
+
+  // ---- ADR-0037 rules 1 and 2 ----
+
+  /** ADR-0037's circle: a 32 × 32 chip whose background follows Avatar's `root.background` table, with nothing in it. */
+  function Circle(): ReactNode {
+    const chip = useSurfaceChip(avatarBackground);
+    return (
+      <span {...chip.rootProps} data-probe="circle" style={{ display: "block", width: "32px", height: "32px", borderRadius: "50%", overflow: "hidden" }}>
+        <SurfaceChipEdge chip={chip} />
+      </span>
+    );
+  }
+
+  /** ADR-0037's host: a 140 × 40 pill with 4 px of padding that hands the chip shape `fill`, its own cell `own`. */
+  function Host(props: { readonly fill: SurfaceChipFill; readonly own?: string }): ReactNode {
+    const chip = useSurfaceChip(() => props.fill);
+    const style = { display: "block", boxSizing: "border-box", width: "140px", height: "40px", padding: "4px", borderRadius: "20px", "--ds--surface-chip-own": props.own } as CSSProperties;
+    return (
+      <span {...chip.rootProps} data-probe="host" style={style}>
+        <SurfaceChipEdge chip={chip} />
+        <SurfaceChipScope chip={chip}>
+          <Circle />
+        </SurfaceChipScope>
+      </span>
+    );
+  }
+
+  const STRIPES = "repeating-linear-gradient(90deg, rgb(255, 0, 0) 0px 2px, rgb(0, 0, 255) 2px 4px)";
+
+  /** The fixture in `scheme`: the host handing `fill`, or no host at all for null, over the stripes declared as a map. */
+  async function nest(scheme: "light" | "dark", fill: SurfaceChipFill | null, own?: string): Promise<{ element: HTMLElement; pixels: Pixels }> {
+    const element = await mount(
+      <Theme colorScheme={scheme}>
+        <div data-probe="stage" style={{ width: "140px", height: "40px", background: STRIPES }}>
+          <Backdrop kind="map">{fill === null ? <span style={{ display: "block", padding: "4px" }}><Circle /></span> : <Host fill={fill} own={own} />}</Backdrop>
+        </div>
+      </Theme>,
+    );
+    const pixels = await pixelsOf(find(element, "[data-probe='stage']"));
+    return { element, pixels };
+  }
+
+  /** A reference painted in `scheme`: `background` under `over`, read at the centre of an 8 × 8 box. */
+  async function reference(scheme: "light" | "dark", background: string, over: string): Promise<readonly [number, number, number]> {
+    const element = await mount(
+      <Theme colorScheme={scheme}>
+        <div data-probe="reference" style={{ width: "8px", height: "8px", background }}>
+          <div style={{ width: "8px", height: "8px", background: over }} />
+        </div>
+      </Theme>,
+    );
+    const pixels = await pixelsOf(find(element, "[data-probe='reference']"));
+    await unmountNow();
+    return pixels.at(4, 4);
+  }
+
+  it.each(["light", "dark"] as const)("draws a chip inside a host that renders nothing flat: no filter, and the sharp stripe under the fill at its centre, %s (ADR-0037 rule 1)", async (scheme) => {
+    const sharp = await reference(scheme, "rgb(255, 0, 0)", "var(--ds-material-glass-chip)");
+    const nested = await nest(scheme, "none");
+    const circle = find(nested.element, "[data-probe='circle']");
+    expect(circle.getAttribute("data-ds-surface-chip")).toBe("glass");
+    expect(circle.hasAttribute("data-ds-surface-chip-flat")).toBe(true);
+    expect(getComputedStyle(circle).backdropFilter).toBe("none");
+    expect(nested.pixels.scale).toBe(1);
+    const centre = nested.pixels.at(20, 20);
+    expect(distance(centre, sharp), `${scheme}: the centre reads ${String(centre)}, the sharp stripe under the fill ${String(sharp)}`).toBeLessThanOrEqual(2);
+    await unmountNow();
+    // The control: alone on the map the same circle blurs the stripes, and its centre is far from the sharp stripe.
+    const alone = await nest(scheme, null);
+    expect(getComputedStyle(find(alone.element, "[data-probe='circle']")).backdropFilter).toMatch(/^blur\(/u);
+    const blurred = alone.pixels.at(20, 20);
+    expect(distance(blurred, sharp), `${scheme}: alone the centre reads ${String(blurred)}`).toBeGreaterThan(40);
+  });
+
+  it.each(["light", "dark"] as const)("falls back inside a host that renders its own cell: raised over the page in the 8 × 8 mean at its centre, %s (ADR-0037 rule 2)", async (scheme) => {
+    const fallback = await reference(scheme, "var(--ds-color-bg-page)", "var(--ds-color-bg-surface-raised)");
+    const nested = await nest(scheme, "own", "var(--ds-color-bg-surface-nested)");
+    expect(find(nested.element, "[data-probe='host']").getAttribute("data-ds-surface-chip")).toBe("own");
+    expect(find(nested.element, "[data-probe='circle']").getAttribute("data-ds-surface-chip")).toBe("fallback");
+    const mean = nested.pixels.mean(16, 16, 8);
+    expect(distance(mean, fallback), `${scheme}: the mean reads ${String(mean)}, raised over the page ${String(fallback)}`).toBeLessThanOrEqual(2);
+    await unmountNow();
+    // The control: inside a host that renders nothing the circle draws the recipe flat over the stripes instead.
+    const flat = await nest(scheme, "none");
+    expect(distance(flat.pixels.mean(16, 16, 8), fallback)).toBeGreaterThan(2);
+  });
+
+  // ---- ADR-0037 rule 4 ----
+
+  const settings = [
+    ["standard", {}],
+    ["Reduce Transparency", { transparency: "reduce" }],
+    ["Increase Contrast", { contrast: "more" }],
+  ] as const;
+  const grounds = surfaceMaterials.flatMap((material) => backdropKinds.map((backdrop) => [material, backdrop] as const));
+
+  it.each(grounds)("never lets a press change what its Avatar resolves, on %s over %s, under every setting (ADR-0037 rule 4)", async (material, backdrop) => {
+    const read = (element: HTMLElement, selector: string): readonly (string | null)[] => {
+      const node = find(element, selector);
+      return ["data-ds-surface-chip", "data-ds-surface-chip-flat", "data-ds-surface", "data-ds-backdrop"].map((name) => node.getAttribute(name));
+    };
+    for (const [setting, axes] of settings) {
+      const chip = <Chip label="Anna Petrova" size="md" avatar={{ name: "Anna Petrova" }} onPress={noop} />;
+      const staged = material === "page" ? (backdrop === "none" ? chip : <Backdrop kind={backdrop}>{chip}</Backdrop>) : <Surface material={material} backdrop={backdrop}>{chip}</Surface>;
+      const element = await mount(<Theme {...axes}>{staged}</Theme>);
+      const name = `${material} over ${backdrop} under ${setting}`;
+      const pill = find(element, "[data-ds-slot='chip']");
+      const rest = read(element, "[data-ds-slot='avatar']");
+      const pillRest = read(element, "[data-ds-slot='chip']");
+      const release = await hold(find(pill, "[data-ds-slot='chip-body']"));
+      expect(pill.hasAttribute("data-pressed"), name).toBe(true);
+      expect(read(element, "[data-ds-slot='avatar']"), `${name}: pressed`).toEqual(rest);
+      expect(read(element, "[data-ds-slot='chip']"), `${name}: the pill, pressed`).toEqual(pillRest);
+      expect(getComputedStyle(find(element, "[data-ds-slot='avatar']")).backdropFilter, name).toBe("none");
+      expect(rest[0] === "glass", `${name}: the pill renders ${String(pillRest[0])}, the Avatar ${String(rest[0])}`).toBe(pillRest[0] === "glass");
+      if (rest[0] === "glass") expect(rest[1], name).toBe("");
+      await release();
+      await unmountNow();
+    }
+  });
 });

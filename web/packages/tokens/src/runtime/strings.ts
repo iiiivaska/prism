@@ -11,8 +11,8 @@
  * `fillTemplate`, which is internal to `@iiiivaska/prism-react` (web/packages/react/src/strings.ts), as
  * Apple's `DSStrings.fill(_:_:)` is `package` API: an app does not depend on Prism's fill.
  *
- * `Chip.remove` is carried for Chip, which no stack implements yet (roadmap P4-8); every other key is
- * read by the component it names, `Button.loading` by Button from Button.yaml specVersion 5.
+ * Every key is read by the component it names: `Button.loading` by Button from Button.yaml specVersion
+ * 5, and `Chip.remove` by Chip from Chip.yaml specVersion 1.
  *
  * Framework-free, like the rest of the root export: the React half is `<Theme strings>` and
  * `useStrings()` in `../react/index.ts`.

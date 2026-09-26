@@ -13,8 +13,8 @@
 # (rule 4). Each stack's table carries every key below, in this order, with these defaults, and a test
 # on each stack reads this file to prove it.
 #
-# `Chip.remove` is carried for Chip, which no stack implements yet (roadmap P4-8); every other key is
-# read by the component it names, `Button.loading` by Button from Button.yaml specVersion 5.
+# Every key is read by the component it names: `Button.loading` by Button from Button.yaml specVersion
+# 5, and `Chip.remove` by Chip from Chip.yaml specVersion 1.
 
 version: 1
 strings:

@@ -31,7 +31,8 @@ nonisolated public struct DSStrings: Sendable, Hashable {
     /// `strings.Button.loading`, `"{label}, loading"`: the name of a loading button, `{label}` its label as it resolves
     /// where the button renders (Button.yaml behavior 3).
     public var buttonLoading: String
-    /// `strings.Chip.remove`, `"Remove {label}"`: the name of a removable chip's remove button, carried for Chip (P4-8).
+    /// `strings.Chip.remove`, `"Remove {label}"`: the name of a removable chip's remove control, `{label}` the chip's
+    /// label as it resolves where the chip renders (Chip.yaml behavior, `DSChip.removeName(locale:strings:)`).
     public var chipRemove: String
 
     /// - Parameters: each template, English by default. A template names its placeholders in braces; a component fills

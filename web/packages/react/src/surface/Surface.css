@@ -414,17 +414,23 @@
         var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
     );
     --ds--surface-chip-geometry-duration: calc(var(--ds-motion-spring-smooth-duration) * (1 - var(--ds-motion-presentation-crossfade)));
+    /*
+     * The chip's own transitions, as one list a host extends rather than restates: a host's press scale sits on
+     * this same root (ADR-0036 §7, rule 13), and a second `transition` there would replace these, so the host
+     * writes `transition: var(--ds--surface-chip-transition), scale …` (Chip.css) and never names the filter.
+     */
+    --ds--surface-chip-transition:
+      --ds--surface-chip-fill var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      --ds--surface-chip-under var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing),
+      backdrop-filter var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing);
 
     position: relative;
     isolation: isolate;
     background-color: var(--ds--surface-chip-under);
     background-image: linear-gradient(var(--ds--surface-chip-fill), var(--ds--surface-chip-fill));
     box-shadow: var(--ds--surface-chip-shadow);
-    transition:
-      --ds--surface-chip-fill var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
-      --ds--surface-chip-under var(--ds--surface-chip-crossfade-duration) var(--ds-motion-spring-smooth-easing),
-      box-shadow var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing),
-      backdrop-filter var(--ds--surface-chip-geometry-duration) var(--ds-motion-spring-smooth-easing);
+    transition: var(--ds--surface-chip-transition);
   }
 
   /* The scheme's chip glass: material.glass.chip's fill, blur and saturation (ADR-0029 §1.2). */

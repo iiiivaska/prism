@@ -10,6 +10,7 @@ extension DSShowcaseRenderers {
         "Avatar": DSAvatarRenderer(),
         "Badge": DSBadgeRenderer(),
         "Button": DSButtonRenderer(),
+        "Chip": DSChipRenderer(),
         "Divider": DSDividerRenderer(),
         "Icon": DSIconRenderer(),
         "IconButton": DSIconButtonRenderer(),
