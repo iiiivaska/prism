@@ -4,8 +4,8 @@ import { beforeAll, describe, expect, test } from 'vitest';
 import { fsReader, memoryReader, overlayReader, REPO_ROOT, type Diagnostic, type IRBundle, type SourceReader } from '../tokens/api.ts';
 import { axesOf, statesOf, walkBindings } from './bindings.ts';
 import {
-  compGroup, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, LABEL_VISIBILITY, MATERIAL_PUBLISHERS, MATERIALS_OWED,
-  MATERIALS_SETTLED, NAME_PROP, NON_BINDABLE, SECOND_NAMES,
+  compGroup, COMPONENTS_DIR, GLASS_CHIP_FALLBACK_EXCEPTIONS, IMAGE_FIXTURES, LABEL_VISIBILITY, MATERIAL_PUBLISHERS,
+  MATERIALS_OWED, MATERIALS_SETTLED, NAME_PROP, NON_BINDABLE, PATTERNS_DIR, SECOND_NAMES,
 } from './config.ts';
 import { loadSpec } from './load.ts';
 import { bareWord, expandPath, isTokenPath, PATTERN_PROSE_FIELDS, proseTokenPaths } from './prose.ts';
@@ -204,6 +204,8 @@ describe('fixtures', () => {
       'glass-chip/fallback',
       'glass-chip/nested-blur',
       'haptic/unknown',
+      'interaction/focus-ring',
+      'interaction/wash',
       'material/glass-solid',
       'material/uneven',
       'matrix/axis',
@@ -404,6 +406,58 @@ describe('the materials a part keys (ADR-0040 §6)', () => {
       '56 material/glass-solid `tokens.label.color.glassLight` binds color.text.on-inverse-media on light glass',
     ]);
   }, 60_000);
+
+  test('interaction/focus-ring: a ring keyed by a prop, a text role at the wrong width, and a ground\'s ring bound as a border; the ring SCHEMA writes passes', async () => {
+    const c = specCases().find((x) => x.name === 'interaction-focus-ring');
+    if (c === undefined) throw new Error('no fixture interaction-focus-ring');
+    expect(await diagnose(caseReader(c))).toEqual([
+      // A ground's ring is the drawing's to pick, wherever a spec would bind it.
+      '39 interaction/focus-ring `tokens.root.border.vivid` binds color.border.focus-on-media, which only the shared focus drawing picks',
+      // Keyed by anything, even to the right role everywhere, the ring is a matrix: the drawing keys it by the ground.
+      '43 interaction/focus-ring `tokens.root.focus-visible.ring` binds a matrix keyed by sm, md, not color.border.focus',
+      '52 interaction/focus-ring `tokens.label.focus-visible.ring` binds color.text.primary, not color.border.focus',
+      '53 interaction/focus-ring `tokens.label.focus-visible.ringWidth` binds border.strong, not border.focus',
+    ]);
+  }, 60_000);
+
+  test('interaction/wash: the inverse wash under `accent`, and the tile\'s wash keyed by a prop or by nothing; each under its own material, a backdrop below it included, passes', async () => {
+    const c = specCases().find((x) => x.name === 'interaction-wash');
+    if (c === undefined) throw new Error('no fixture interaction-wash');
+    expect(await diagnose(caseReader(c))).toEqual([
+      '40 interaction/wash `tokens.root.hover.overlay.accent` binds color.bg.fill.on-inverse-subtle on `accent`',
+      // A prop's key is no ground: the cell is on whatever material the Surface publishes.
+      '49 interaction/wash `tokens.root.pressed.background.sm` binds color.bg.fill.on-accent-subtle on no material',
+      '60 interaction/wash `tokens.label.hover.background` binds color.bg.fill.on-accent-subtle on no material',
+    ]);
+  }, 60_000);
+
+  test('every spec binds the focus ring as SCHEMA writes it, and none binds a ground\'s ring (ADR-0042 §1.4)', () => {
+    const repo = fsReader(REPO_ROOT);
+    const problems: string[] = [];
+    let rings = 0;
+    for (const dir of [COMPONENTS_DIR, PATTERNS_DIR]) {
+      for (const entry of repo.list(dir)) {
+        if (entry.dir || !entry.name.endsWith('.yaml')) continue;
+        const path = `${dir}/${entry.name}`;
+        const text = repo.readText(path);
+        if (/color\.border\.focus-on-/u.test(text)) problems.push(`${entry.name} names a ground's ring`);
+        const spec = load(path, text);
+        const tokens = spec['tokens'];
+        if (typeof tokens !== 'object' || tokens === null) continue;
+        for (const [part, body] of Object.entries(tokens as Record<string, unknown>)) {
+          const focus = (body as Record<string, unknown> | null)?.['focus-visible'];
+          if (typeof focus !== 'object' || focus === null || !statesOf(spec).has('focus-visible')) continue;
+          const { ring, ringWidth } = focus as Record<string, unknown>;
+          if (ring === undefined) continue;
+          rings++;
+          if (ring !== 'color.border.focus' || ringWidth !== 'border.focus') problems.push(`${entry.name} ${part}: ${JSON.stringify({ ring, ringWidth })}`);
+        }
+      }
+    }
+    expect(problems).toEqual([]);
+    // Twenty-eight rings across twenty-six component specs, Table's three included: the check is not vacuous.
+    expect(rings).toBeGreaterThanOrEqual(28);
+  });
 
   test('Button and IconButton, the implemented specs ADR-0040 §7 settles, are settled and key the white media solid on vivid alone', () => {
     const repo = fsReader(REPO_ROOT);

@@ -1,6 +1,6 @@
 // spec:validate (roadmap P2-1 and P4-D3; ADR-0006, ADR-0022 rules 8 and 9, ADR-0023 rule 9, ADR-0024 §5 and
 // rule 7, ADR-0029 §2.5 and §3.3, ADR-0030 §8 and rule 10, ADR-0032 rules 4 and 6, ADR-0036 §10, ADR-0041 rules 1,
-// 2 and 8, spec/SCHEMA.md).
+// 2 and 8, ADR-0042 rules 2 and 5, spec/SCHEMA.md).
 //
 // Every spec/components/*.yaml is checked against spec/component.schema.json, and every
 // spec/patterns/*.yaml against spec/pattern.schema.json (which `$ref`s the component schema), and both
@@ -59,6 +59,11 @@
 //   material/glass-solid         the white media solid of vivid, or what it carries (MEDIA_SOLID), bound under a
 //                                `glass` or `glassLight` key, where the solid is color.bg.fill.inverse (ADR-0030
 //                                §3.1, ADR-0040 §1)
+//   interaction/focus-ring       a `focus-visible.ring` or `.ringWidth` that is not `color.border.focus` or
+//                                `border.focus` as one path, or a cell that binds a ground's ring (FOCUS_RING_GROUNDS),
+//                                which each stack's shared focus drawing picks for the ground under the ring (ADR-0042 §1)
+//   interaction/wash             a material's own wash (MATERIAL_WASHES) bound in a cell whose ground is not that
+//                                material (ADR-0042 §2)
 //   prop/label-visibility        a `labelVisibility` declared otherwise than FormField declares it (LABEL_VISIBILITY),
 //                                or with no `label` string prop beside it (ADR-0041 rule 2)
 //   prop/second-name             a prop that is a second name for `label` or for `labelVisibility`, one of
@@ -97,11 +102,11 @@ import { findIds, suggest } from '../tokens/ir/lookup.ts';
 import { statesOf, walkBindings } from './bindings.ts';
 import {
   BACKDROPS, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
-  DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
-  GLASS_GROUNDS, GLYPH_KEYS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LABEL_VISIBILITY, LIGHT_GLASS_BACKDROPS,
-  LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED,
-  MEDIA_SOLID, NAME_PROP, NESTED_GLASS_KEYS, NON_BINDABLE, PATTERN_SCHEMA, PATTERNS_DIR, SECOND_NAMES, STATED_MATERIALS,
-  STRINGS, VIVID_SLOT_PAIRS,
+  DEFAULT_KEY, FOCUS_RING, FOCUS_RING_GROUNDS, FOCUS_STATE, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS,
+  GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS, GLASS_GROUNDS, GLYPH_KEYS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES,
+  LABEL_VISIBILITY, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS, MATERIAL_PUBLISHERS,
+  MATERIAL_WASHES, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, MEDIA_SOLID, NAME_PROP, NESTED_GLASS_KEYS, NON_BINDABLE,
+  PATTERN_SCHEMA, PATTERNS_DIR, SECOND_NAMES, STATED_MATERIALS, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
 import { PATTERN_PROSE_FIELDS, PROSE_FIELDS, proseStrings, proseTokenPaths } from './prose.ts';
@@ -572,6 +577,7 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   checkExamples(doc, spec, diagnostics);
   checkGlassChip(doc, spec, named, diagnostics);
   checkGlassSolid(doc, spec, diagnostics);
+  checkInteraction(doc, spec, diagnostics);
   if (ctx.kind === 'component') {
     checkMaterials(doc, spec, named, ctx.bundle, diagnostics);
   }
@@ -1149,6 +1155,62 @@ function checkGlassSolid(doc: SpecDoc, spec: Record<string, unknown>, diagnostic
           file: doc.path, line: doc.lineOf(where),
           hint: "delete the cell, so the part takes its default there: on glass the solid is color.bg.fill.inverse under color.text.on-inverse, ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1), and the white media solid is vivid's",
         }));
+      }
+    }
+  }
+}
+
+/** A binding as a diagnostic names it: its path, or `a matrix` for one keyed by anything. */
+function describeBinding(value: unknown): string {
+  return typeof value === 'string' ? value : isRecord(value) ? `a matrix keyed by ${Object.keys(value).join(', ')}` : 'nothing';
+}
+
+/**
+ * The interaction layers (ADR-0042).
+ *
+ * `interaction/focus-ring` (§1.4, rule 2): every `focus-visible.ring` binds the ring's role, `color.border.focus`, and
+ * every `focus-visible.ringWidth` binds `border.focus`, each as one path, because each stack's shared focus drawing
+ * picks the ring for the ground under it; and no cell anywhere binds a ring of FOCUS_RING_GROUNDS, which only that
+ * drawing picks.
+ *
+ * `interaction/wash` (§2, rule 5): each material's own wash, MATERIAL_WASHES, is bound only in a cell whose ground is
+ * that material, so no other ground takes a wash that is right on inverse or on the lit tile alone.
+ */
+function checkInteraction(doc: SpecDoc, spec: Record<string, unknown>, diagnostics: Diagnostic[]): void {
+  const tokens = spec['tokens'];
+  if (!isRecord(tokens)) return;
+  const states = statesOf(spec);
+  for (const [part, body] of Object.entries(tokens)) {
+    if (!isRecord(body)) continue;
+    const properties = Object.entries(body).flatMap(([key, value]): { at: JsonPath; state: string | null; property: string; value: unknown }[] =>
+      states.has(key) && isRecord(value)
+        ? Object.entries(value).map(([property, cell]) => ({ at: ['tokens', part, key, property], state: key, property, value: cell }))
+        : [{ at: ['tokens', part, key], state: null, property: key, value }]);
+    for (const { at, state, property, value } of properties) {
+      const expected = state === FOCUS_STATE ? FOCUS_RING[property] : undefined;
+      if (expected !== undefined && value !== expected) {
+        diagnostics.push(error('interaction/focus-ring', `\`${at.join('.')}\` binds ${describeBinding(value)}, not ${expected}`, {
+          file: doc.path, line: doc.lineOf(at),
+          hint: property === 'ring'
+            ? `bind \`ring: ${expected}\` as one path: each stack's shared focus drawing picks the ring for the ground under it, so no spec keys its ring (ADR-0042 §1, spec/SCHEMA.md "The interaction layers")`
+            : `bind \`ringWidth: ${expected}\` as one path: the ring is that wide on every ground (ADR-0042 §1, spec/SCHEMA.md "The interaction layers")`,
+        }));
+      }
+      for (const cell of matrixCells(value)) {
+        const where = [...at, ...cell.keys];
+        if (FOCUS_RING_GROUNDS.includes(cell.path)) {
+          diagnostics.push(error('interaction/focus-ring', `\`${where.join('.')}\` binds ${cell.path}, which only the shared focus drawing picks`, {
+            file: doc.path, line: doc.lineOf(where),
+            hint: `bind the ring as \`${FOCUS_STATE}: { ring: ${FOCUS_RING['ring'] ?? ''} }\`: the drawing takes ${cell.path} where the ground under the ring asks for it (ADR-0042 §1.1)`,
+          }));
+        }
+        const wash = MATERIAL_WASHES.find((w) => w.token === cell.path);
+        if (wash !== undefined && cell.ground !== wash.material) {
+          diagnostics.push(error('interaction/wash', `\`${where.join('.')}\` binds ${cell.path} ${cell.ground === null ? 'on no material' : `on \`${cell.ground}\``}`, {
+            file: doc.path, line: doc.lineOf(where),
+            hint: `bind ${cell.path} only under \`${wash.material}\`, the material it is the wash of; elsewhere the wash is color.bg.fill.neutral.subtle (ADR-0042 §2)`,
+          }));
+        }
       }
     }
   }

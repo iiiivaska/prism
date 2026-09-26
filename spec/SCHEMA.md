@@ -161,7 +161,35 @@ materials:
   inverse: "`track` draws nothing on inverse: the material has one foreground, and a track in it would be the fill's colour. The fill and the thumb carry the value."
 ```
 
-`spec:validate` (`material/uneven`) fails a spec where one colour-bearing part keys a material and another neither keys it nor is named, and, for the specs whose materials are settled, any colour-bearing part that is neither. A part is held as a whole: a colour cell in one of its state blocks makes it colour-bearing, and a cell keyed by the material in any of its properties or states keys it. The interaction layers, the hover and pressed washes, the focus ring and a field's state edges, are keyed by no material (ADR-0040 §4), so a part that draws only those is named in `materials`. `material/glass-solid` fails the white media solid, its pressed step or what it carries (`color.bg.fill.inverse-media`, `color.bg.fill.inverse-media-pressed`, `color.text.on-inverse-media`) under a `glass` or `glassLight` key: on either glass the solid is `color.bg.fill.inverse`, and the white solid is vivid's (ADR-0040 §1).
+`spec:validate` (`material/uneven`) fails a spec where one colour-bearing part keys a material and another neither keys it nor is named, and, for the specs whose materials are settled, any colour-bearing part that is neither. A part is held as a whole: a colour cell in one of its state blocks makes it colour-bearing, and a cell keyed by the material in any of its properties or states keys it. The focus ring is keyed by no spec: every spec binds `color.border.focus`, and each stack's shared focus drawing picks the ring for the ground (below). A wash is a part's cell and is keyed like any other (below); a field's state edges and read-only fill wait for their tickets (ADR-0040 §4.1). A part that draws only the ring and washes it does not key on a material is named in `materials`. `material/glass-solid` fails the white media solid, its pressed step or what it carries (`color.bg.fill.inverse-media`, `color.bg.fill.inverse-media-pressed`, `color.text.on-inverse-media`) under a `glass` or `glassLight` key: on either glass the solid is `color.bg.fill.inverse`, and the white solid is vivid's (ADR-0040 §1).
+
+### The interaction layers
+
+The focus ring, and the hover and pressed washes, are drawn by every focusable or pressable component on every ground. ADR-0042 settles both.
+
+**The focus ring follows the ground under it.** A spec binds `focus-visible: { ring: color.border.focus, ringWidth: border.focus }` and nothing else there: no spec keys its ring by a material, and none binds a `color.border.focus-on-*` role. The ring is drawn outside the element it surrounds, on the ground that element sits on, and one drawing per stack picks it from the context that element reads from outside itself (`DSFocusRing` on Apple, `src/focus/` and `focus/FocusRing.css` on the web):
+
+| Ground under the ring | Ring |
+|-----------------------|------|
+| `page` over nothing or a map, `solid`, `raised`, `nested`, `glass`, `glassLight` | `color.border.focus` |
+| `inverse` | `color.border.focus-on-inverse` |
+| `accent` | `color.border.focus-on-accent` |
+| `vivid`, and `page` over `vivid` | `color.border.focus-on-media` |
+| `page` over `image` | `color.border.focus` on a band of `color.bg.page` one ring width wider, so one of the two holds 3:1 against any image |
+
+A ring drawn on a chip's own paint reads that paint: wherever a chip encloses it, the `vivid` rows and the band give way to `color.border.focus`, the foreground of the chip's glass. A component that draws its ring inside a Surface of its own (Card) hands the drawing the ground outside it. `spec:validate` holds the cells (`interaction/focus-ring`).
+
+**A wash is the material's own where a part draws no fill of its own.** On `inverse` such a part takes `color.bg.fill.on-inverse-subtle`, and on `accent` `color.bg.fill.on-accent-subtle`, in place of `color.bg.fill.neutral.subtle`, which is the inverse fill's own colour and does not show on the dark lit tile. Over a fill the part draws itself (a solid, a raised pill, a chip's cell or glass, a tint over its underlay) the wash stays `color.bg.fill.neutral.subtle`. The spec keys it:
+
+```yaml
+    hover:
+      overlay:
+        default: color.bg.fill.neutral.subtle
+        inverse: color.bg.fill.on-inverse-subtle
+        accent: color.bg.fill.on-accent-subtle
+```
+
+`interaction/wash` fails `color.bg.fill.on-inverse-subtle` bound under any key but `inverse`, and `color.bg.fill.on-accent-subtle` under any but `accent`.
 
 ## Behavior
 

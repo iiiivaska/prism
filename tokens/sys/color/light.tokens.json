@@ -173,6 +173,38 @@
               }
             }
           },
+          "on-inverse-subtle": {
+            "$value": "{sys.color.text.on-inverse}",
+            "$description": "the hover and pressed wash on an inverse ground, where a part draws no fill of its own: the material's foreground at 6 %, white over the ink fill (OKLab L +0.064, the dark page's own step), where bg.fill.neutral.subtle is the fill's own colour and composites to nothing (ADR-0042 §2)",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.06,
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
+          "on-accent-subtle": {
+            "$value": "{sys.color.text.on-accent}",
+            "$description": "the hover and pressed wash on the lit tile, where a part draws no fill of its own: the tile's ink at 6 % (OKLab L -0.037), the value bg.fill.neutral.subtle has in light; relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §2)",
+            "$extensions": {
+              "app.prism": {
+                "alpha": 0.06,
+                "figma": {
+                  "collection": "colorScheme",
+                  "scopes": [
+                    "FRAME_FILL",
+                    "SHAPE_FILL"
+                  ]
+                }
+              }
+            }
+          },
           "accent": {
             "$value": "{ref.color.slot.light.bg-fill-accent}",
             "$description": "the one attention tile; content is ink",
@@ -424,7 +456,8 @@
               "a11y": {
                 "pairsWith": [
                   "color.bg.fill.inverse",
-                  "color.bg.fill.inverse-pressed"
+                  "color.bg.fill.inverse-pressed",
+                  "color.bg.fill.on-inverse-subtle"
                 ]
               },
               "figma": {
@@ -463,7 +496,8 @@
             "app.prism": {
               "a11y": {
                 "pairsWith": [
-                  "color.bg.fill.accent"
+                  "color.bg.fill.accent",
+                  "color.bg.fill.on-accent-subtle"
                 ]
               },
               "figma": {
@@ -501,7 +535,8 @@
               "alpha": 0.7,
               "a11y": {
                 "pairsWith": [
-                  "color.bg.fill.accent"
+                  "color.bg.fill.accent",
+                  "color.bg.fill.on-accent-subtle"
                 ]
               },
               "figma": {
@@ -1006,6 +1041,49 @@
         },
         "focus": {
           "$value": "{ref.color.neutral.950}",
+          "$description": "the focus ring on the page, solid, raised and nested, on both glasses, over Prism's map and, on a band of color.bg.page, over imagery; on inverse, accent and vivid the shared focus drawing takes focus-on-inverse, focus-on-accent or focus-on-media instead (ADR-0042 §1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "focus-on-inverse": {
+          "$value": "{sys.color.text.on-inverse}",
+          "$description": "the focus ring on an inverse ground: the material's foreground, white on the ink fill, where color.border.focus is the fill's own colour (ADR-0042 §1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "focus-on-accent": {
+          "$value": "{sys.color.text.on-accent}",
+          "$description": "the focus ring on the lit tile: the tile's ink, relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §1)",
+          "$extensions": {
+            "app.prism": {
+              "figma": {
+                "collection": "colorScheme",
+                "scopes": [
+                  "STROKE_COLOR"
+                ]
+              }
+            }
+          }
+        },
+        "focus-on-media": {
+          "$value": "{sys.color.text.on-vivid}",
+          "$description": "the focus ring on vivid, and on the page over vivid outside a chip: white, which ADR-0022 V1 holds at 3:1 against every stop and sample, where the ink ring is 2.39:1 on sky in light (ADR-0042 §1)",
           "$extensions": {
             "app.prism": {
               "figma": {

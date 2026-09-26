@@ -1,6 +1,6 @@
 # ADR-0040: A part keys `inverse`, `accent` and light glass, or its spec says what it draws there; the solid on the scheme's glass is the inverse solid
 
-- Status: accepted
+- Status: accepted (§4, which recorded the focus ring and the neutral washes, settled by [ADR-0042](0042-the-interaction-layers-follow-the-ground.md): the ring is picked by the ground under it in one drawing per stack, and a part with no fill of its own takes the material's wash on `inverse` and `accent`; §7's pressed cells of secondary on the lit tile amended by it: `color.bg.fill.on-accent-subtle` in place of `color.bg.fill.neutral.subtle`, which does not show on the dark tile)
 - Date: 2026-09-26
 - Decision record entry: docs/decisions.md #40
 

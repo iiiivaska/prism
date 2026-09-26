@@ -1,0 +1,6 @@
+{
+  "description": "Each material's own wash bound where its material is not the ground: the inverse wash under `accent`, the tile's wash keyed by a prop, and the tile's wash on no material at all. The same washes under their own material, and one under a backdrop keyed below it, pass.",
+  "expect": [
+    { "code": "interaction/wash", "file": "spec/components/Sample.yaml" }
+  ]
+}

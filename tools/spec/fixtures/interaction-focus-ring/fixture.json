@@ -1,0 +1,6 @@
+{
+  "description": "A focus ring keyed by a prop, a ring bound to a text role at the wrong width, and a ground's ring bound as a border: each stack's shared focus drawing picks the ring for the ground, so every spec binds color.border.focus at border.focus as one path, and no spec binds a color.border.focus-on-* role. A part that binds the ring as SCHEMA writes it passes.",
+  "expect": [
+    { "code": "interaction/focus-ring", "file": "spec/components/Sample.yaml" }
+  ]
+}

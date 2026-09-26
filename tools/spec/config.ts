@@ -104,6 +104,29 @@ export const MEDIA_SOLID: readonly string[] = [
 /** The grounds `material/glass-solid` reads: the scheme's glass and light glass (ADR-0040 §1). */
 export const GLASS_GROUNDS: readonly string[] = ['glass', 'glassLight'];
 
+/**
+ * The focus ring's cells, which every spec binds exactly so (ADR-0042 §1.4): the state block that draws the ring, and
+ * the ring's role and width. Each stack's shared focus drawing picks the ring for the ground under it, so a spec keys
+ * no ring by a material, and `interaction/focus-ring` holds every `focus-visible.ring` and `.ringWidth` to these paths.
+ */
+export const FOCUS_STATE = 'focus-visible';
+export const FOCUS_RING: Readonly<Record<string, string>> = { ring: 'color.border.focus', ringWidth: 'border.focus' };
+
+/**
+ * The rings the shared focus drawing picks for a ground other than the page family's (ADR-0042 §1.1): on inverse, on
+ * the lit tile, and on vivid or the page over vivid. Only the drawing picks them, so no spec binds one.
+ */
+export const FOCUS_RING_GROUNDS: readonly string[] = ['color.border.focus-on-inverse', 'color.border.focus-on-accent', 'color.border.focus-on-media'];
+
+/**
+ * Each material's own wash (ADR-0042 §2): the hover and pressed wash of a part that draws no fill of its own there,
+ * where `color.bg.fill.neutral.subtle` does not show. `interaction/wash` holds each to a cell keyed by its material.
+ */
+export const MATERIAL_WASHES: readonly { readonly token: string; readonly material: string }[] = [
+  { token: 'color.bg.fill.on-inverse-subtle', material: 'inverse' },
+  { token: 'color.bg.fill.on-accent-subtle', material: 'accent' },
+];
+
 /** The backdrop kind a Surface publishes beside its material (ADR-0029 §1.4); the second glass axis. */
 export const BACKDROPS: readonly string[] = ['none', 'image', 'map', 'vivid'];
 

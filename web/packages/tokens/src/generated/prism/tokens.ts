@@ -71,8 +71,12 @@ export interface TokenTable {
   readonly 'color.bg.fill.neutral.subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-neutral-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5) */
   readonly 'color.bg.fill.on-accent-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-accent-pressed'; readonly $value: ColorValue };
+  /** the hover and pressed wash on the lit tile, where a part draws no fill of its own: the tile's ink at 6 % (OKLab L -0.037), the value bg.fill.neutral.subtle has in light; relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §2) */
+  readonly 'color.bg.fill.on-accent-subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-accent-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5) */
   readonly 'color.bg.fill.on-inverse-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-inverse-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the hover and pressed wash on an inverse ground, where a part draws no fill of its own: the material's foreground at 6 %, white over the ink fill (OKLab L +0.064, the dark page's own step), where bg.fill.neutral.subtle is the fill's own colour and composites to nothing (ADR-0042 §2) */
+  readonly 'color.bg.fill.on-inverse-subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-inverse-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35% */
   readonly 'color.bg.page': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-page'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** card: no border, no shadow (optional ambient 5%) */
@@ -94,7 +98,14 @@ export interface TokenTable {
   readonly 'color.bg.tint.warning': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-tint-warning'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** control edges that must pass 3:1 */
   readonly 'color.border.boundary': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-boundary'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the focus ring on the page, solid, raised and nested, on both glasses, over Prism's map and, on a band of color.bg.page, over imagery; on inverse, accent and vivid the shared focus drawing takes focus-on-inverse, focus-on-accent or focus-on-media instead (ADR-0042 §1) */
   readonly 'color.border.focus': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-focus'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the focus ring on the lit tile: the tile's ink, relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §1) */
+  readonly 'color.border.focus-on-accent': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-focus-on-accent'; readonly $value: ColorValue };
+  /** the focus ring on an inverse ground: the material's foreground, white on the ink fill, where color.border.focus is the fill's own colour (ADR-0042 §1) */
+  readonly 'color.border.focus-on-inverse': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-focus-on-inverse'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the focus ring on vivid, and on the page over vivid outside a chip: white, which ADR-0022 V1 holds at 3:1 against every stop and sample, where the ink ring is 2.39:1 on sky in light (ADR-0042 §1) */
+  readonly 'color.border.focus-on-media': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-focus-on-media'; readonly $value: ColorValue };
   /** inputs, table rows, chip strokes */
   readonly 'color.border.hairline': { readonly $type: 'color'; readonly $cssVar: '--ds-color-border-hairline'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue }; readonly $increasedContrast: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** rings and outlines on the scheme's glass; decorative, next to a label or glyph (ADR-0030 §3.2) */
@@ -736,11 +747,25 @@ export const table: TokenTable = {
     $type: 'color', $cssVar: '--ds-color-bg-fill-on-accent-pressed',
     $value: { css: 'oklch(0.164 0.0065 271 / 0.88)', cssP3: null, hex: '#0d0e11', alpha: 0.88 },
   },
+  'color.bg.fill.on-accent-subtle': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-on-accent-subtle', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
+      dark: { css: 'oklch(1 0 0 / 0.2)', cssP3: null, hex: '#ffffff', alpha: 0.2 },
+    },
+  },
   'color.bg.fill.on-inverse-pressed': {
     $type: 'color', $cssVar: '--ds-color-bg-fill-on-inverse-pressed', $axis: 'colorScheme',
     $values: {
       light: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
       dark: { css: 'oklch(0.2478 0.0099 268.3)', cssP3: null, hex: '#1f2126', alpha: 1 },
+    },
+  },
+  'color.bg.fill.on-inverse-subtle': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-on-inverse-subtle', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+      dark: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
     },
   },
   'color.bg.page': {
@@ -826,6 +851,21 @@ export const table: TokenTable = {
       light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
       dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
     },
+  },
+  'color.border.focus-on-accent': {
+    $type: 'color', $cssVar: '--ds-color-border-focus-on-accent',
+    $value: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+  },
+  'color.border.focus-on-inverse': {
+    $type: 'color', $cssVar: '--ds-color-border-focus-on-inverse', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      dark: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
+    },
+  },
+  'color.border.focus-on-media': {
+    $type: 'color', $cssVar: '--ds-color-border-focus-on-media',
+    $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
   },
   'color.border.hairline': {
     $type: 'color', $cssVar: '--ds-color-border-hairline', $axis: 'colorScheme',

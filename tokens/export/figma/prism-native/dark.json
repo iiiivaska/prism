@@ -499,6 +499,30 @@
             ]
           }
         },
+        "on-accent-subtle": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              1,
+              1,
+              1
+            ],
+            "alpha": 0.2,
+            "hex": "#ffffff"
+          },
+          "$description": "the hover and pressed wash on the lit tile, where a part draws no fill of its own: white at 20 %, the scheme's lightening wash strong enough to show on the tile (OKLab L +0.045, where bg.fill.neutral.subtle's 6 % moves it +0.013), and the one direction that raises text.on-accent-secondary on it (5.25:1) where the tile's ink at 6 % would take it to 4.45:1 (ADR-0042 §2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-on-accent-subtle)",
+              "iOS": "tokens.color.bgFillOnAccentSubtle"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
         "on-inverse-pressed": {
           "$type": "color",
           "$value": {
@@ -516,6 +540,30 @@
             "com.figma.codeSyntax": {
               "WEB": "var(--ds-color-bg-fill-on-inverse-pressed)",
               "iOS": "tokens.color.bgFillOnInversePressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "on-inverse-subtle": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.06,
+            "hex": "#0d0e11"
+          },
+          "$description": "the hover and pressed wash on an inverse ground, where a part draws no fill of its own: the material's foreground at 6 %, ink over the white fill (OKLab L -0.043, the light page's own step), where bg.fill.neutral.subtle is the fill's own colour and composites to nothing (ADR-0042 §2)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-on-inverse-subtle)",
+              "iOS": "tokens.color.bgFillOnInverseSubtle"
             },
             "com.figma.scopes": [
               "FRAME_FILL",
@@ -801,10 +849,80 @@
           "alpha": 1,
           "hex": "#ffffff"
         },
+        "$description": "the focus ring on the page, solid, raised and nested, on both glasses, over Prism's map and, on a band of color.bg.page, over imagery; on inverse, accent and vivid the shared focus drawing takes focus-on-inverse, focus-on-accent or focus-on-media instead (ADR-0042 §1)",
         "$extensions": {
           "com.figma.codeSyntax": {
             "WEB": "var(--ds-color-border-focus)",
             "iOS": "tokens.color.borderFocus"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "focus-on-accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the focus ring on the lit tile: the tile's ink, where color.border.focus is white at 2.30:1 on the dark tile; relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-focus-on-accent)",
+            "iOS": "tokens.color.borderFocusOnAccent"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "focus-on-inverse": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            0.051,
+            0.0549,
+            0.0667
+          ],
+          "alpha": 1,
+          "hex": "#0d0e11"
+        },
+        "$description": "the focus ring on an inverse ground: the material's foreground, ink on the white fill, where color.border.focus is the fill's own colour (ADR-0042 §1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-focus-on-inverse)",
+            "iOS": "tokens.color.borderFocusOnInverse"
+          },
+          "com.figma.scopes": [
+            "STROKE_COLOR"
+          ]
+        }
+      },
+      "focus-on-media": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [
+            1,
+            1,
+            1
+          ],
+          "alpha": 1,
+          "hex": "#ffffff"
+        },
+        "$description": "the focus ring on vivid, and on the page over vivid outside a chip: white, which ADR-0022 V1 holds at 3:1 against every stop and sample (ADR-0042 §1)",
+        "$extensions": {
+          "com.figma.codeSyntax": {
+            "WEB": "var(--ds-color-border-focus-on-media)",
+            "iOS": "tokens.color.borderFocusOnMedia"
           },
           "com.figma.scopes": [
             "STROKE_COLOR"

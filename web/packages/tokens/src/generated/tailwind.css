@@ -43,7 +43,9 @@
   --background-color-ds-fill-inverse-pressed: var(--ds-color-bg-fill-inverse-pressed);
   --background-color-ds-fill-neutral-subtle: var(--ds-color-bg-fill-neutral-subtle);
   --background-color-ds-fill-on-accent-pressed: var(--ds-color-bg-fill-on-accent-pressed);
+  --background-color-ds-fill-on-accent-subtle: var(--ds-color-bg-fill-on-accent-subtle);
   --background-color-ds-fill-on-inverse-pressed: var(--ds-color-bg-fill-on-inverse-pressed);
+  --background-color-ds-fill-on-inverse-subtle: var(--ds-color-bg-fill-on-inverse-subtle);
   --background-color-ds-page: var(--ds-color-bg-page);
   --background-color-ds-surface: var(--ds-color-bg-surface);
   --background-color-ds-surface-nested: var(--ds-color-bg-surface-nested);
@@ -56,6 +58,9 @@
   --background-color-ds-tint-warning: var(--ds-color-bg-tint-warning);
   --border-color-ds-boundary: var(--ds-color-border-boundary);
   --border-color-ds-focus: var(--ds-color-border-focus);
+  --border-color-ds-focus-on-accent: var(--ds-color-border-focus-on-accent);
+  --border-color-ds-focus-on-inverse: var(--ds-color-border-focus-on-inverse);
+  --border-color-ds-focus-on-media: var(--ds-color-border-focus-on-media);
   --border-color-ds-hairline: var(--ds-color-border-hairline);
   --border-color-ds-on-glass-fill: var(--ds-color-border-on-glass-fill);
   --border-color-ds-on-media: var(--ds-color-border-on-media);
@@ -110,6 +115,9 @@
   --opacity-ds-disabled: var(--ds-opacity-disabled);
   --outline-color-ds-boundary: var(--ds-color-border-boundary);
   --outline-color-ds-focus: var(--ds-color-border-focus);
+  --outline-color-ds-focus-on-accent: var(--ds-color-border-focus-on-accent);
+  --outline-color-ds-focus-on-inverse: var(--ds-color-border-focus-on-inverse);
+  --outline-color-ds-focus-on-media: var(--ds-color-border-focus-on-media);
   --outline-color-ds-hairline: var(--ds-color-border-hairline);
   --outline-color-ds-on-glass-fill: var(--ds-color-border-on-glass-fill);
   --outline-color-ds-on-media: var(--ds-color-border-on-media);

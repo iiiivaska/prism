@@ -17,7 +17,9 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case bgFillInversePressed = "color-bg-fill-inverse-pressed"
     case bgFillNeutralSubtle = "color-bg-fill-neutral-subtle"
     case bgFillOnAccentPressed = "color-bg-fill-on-accent-pressed"
+    case bgFillOnAccentSubtle = "color-bg-fill-on-accent-subtle"
     case bgFillOnInversePressed = "color-bg-fill-on-inverse-pressed"
+    case bgFillOnInverseSubtle = "color-bg-fill-on-inverse-subtle"
     case bgPage = "color-bg-page"
     case bgSurface = "color-bg-surface"
     case bgSurfaceNested = "color-bg-surface-nested"
@@ -30,6 +32,9 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case bgTintWarning = "color-bg-tint-warning"
     case borderBoundary = "color-border-boundary"
     case borderFocus = "color-border-focus"
+    case borderFocusOnAccent = "color-border-focus-on-accent"
+    case borderFocusOnInverse = "color-border-focus-on-inverse"
+    case borderFocusOnMedia = "color-border-focus-on-media"
     case borderHairline = "color-border-hairline"
     case borderOnGlassFill = "color-border-on-glass-fill"
     case borderOnMedia = "color-border-on-media"
@@ -139,7 +144,9 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .bgFillInversePressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), dark: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), highContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), darkHighContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), watch: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1))
         case .bgFillNeutralSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgFillOnAccentPressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88))
+        case .bgFillOnAccentSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.displayP3, 1, 1, 1, 0.2), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 0.2), watch: DSRGBA(.displayP3, 1, 1, 1, 0.2))
         case .bgFillOnInversePressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), watch: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1))
+        case .bgFillOnInverseSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 0.06), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 0.06), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06))
         case .bgPage: DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
         case .bgSurface: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgSurfaceNested: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.12), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
@@ -152,6 +159,9 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .bgTintWarning: DSColorAppearances(any: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), highContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1))
         case .borderBoundary: DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.36), highContrast: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.36), watch: DSRGBA(.sRGB, 1, 1, 1, 0.36))
         case .borderFocus: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .borderFocusOnAccent: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .borderFocusOnInverse: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
+        case .borderFocusOnMedia: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .borderHairline: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.08), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.3), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), watch: DSRGBA(.sRGB, 1, 1, 1, 0.08))
         case .borderOnGlassFill: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4))
         case .borderOnMedia: DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.4), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4))
@@ -301,8 +311,14 @@ public struct DSColor: Hashable, Sendable {
     /// the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5)
     public var bgFillOnAccentPressed: Color { DSColorToken.bgFillOnAccentPressed.color(brand) }
 
+    /// the hover and pressed wash on the lit tile, where a part draws no fill of its own: the tile's ink at 6 % (OKLab L -0.037), the value bg.fill.neutral.subtle has in light; relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §2)
+    public var bgFillOnAccentSubtle: Color { DSColorToken.bgFillOnAccentSubtle.color(brand) }
+
     /// the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5)
     public var bgFillOnInversePressed: Color { DSColorToken.bgFillOnInversePressed.color(brand) }
+
+    /// the hover and pressed wash on an inverse ground, where a part draws no fill of its own: the material's foreground at 6 %, white over the ink fill (OKLab L +0.064, the dark page's own step), where bg.fill.neutral.subtle is the fill's own colour and composites to nothing (ADR-0042 §2)
+    public var bgFillOnInverseSubtle: Color { DSColorToken.bgFillOnInverseSubtle.color(brand) }
 
     /// never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%
     public var bgPage: Color { DSColorToken.bgPage.color(brand) }
@@ -336,7 +352,17 @@ public struct DSColor: Hashable, Sendable {
     /// control edges that must pass 3:1
     public var borderBoundary: Color { DSColorToken.borderBoundary.color(brand) }
 
+    /// the focus ring on the page, solid, raised and nested, on both glasses, over Prism's map and, on a band of color.bg.page, over imagery; on inverse, accent and vivid the shared focus drawing takes focus-on-inverse, focus-on-accent or focus-on-media instead (ADR-0042 §1)
     public var borderFocus: Color { DSColorToken.borderFocus.color(brand) }
+
+    /// the focus ring on the lit tile: the tile's ink, relative to text.on-accent because that follows a brand's text-on-accent slot (ADR-0042 §1)
+    public var borderFocusOnAccent: Color { DSColorToken.borderFocusOnAccent.color(brand) }
+
+    /// the focus ring on an inverse ground: the material's foreground, white on the ink fill, where color.border.focus is the fill's own colour (ADR-0042 §1)
+    public var borderFocusOnInverse: Color { DSColorToken.borderFocusOnInverse.color(brand) }
+
+    /// the focus ring on vivid, and on the page over vivid outside a chip: white, which ADR-0022 V1 holds at 3:1 against every stop and sample, where the ink ring is 2.39:1 on sky in light (ADR-0042 §1)
+    public var borderFocusOnMedia: Color { DSColorToken.borderFocusOnMedia.color(brand) }
 
     /// inputs, table rows, chip strokes
     public var borderHairline: Color { DSColorToken.borderHairline.color(brand) }

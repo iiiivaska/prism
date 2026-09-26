@@ -16,7 +16,7 @@ import SwiftUI
 import DSTokens
 
 nonisolated enum DSTokenKeyPaths {
-    /// Every colour: `color.bg.page` is `\DSTokenSet.color.bgPage`. (192 tokens.)
+    /// Every colour: `color.bg.page` is `\DSTokenSet.color.bgPage`. (197 tokens.)
     nonisolated(unsafe) static let color: [String: KeyPath<DSTokenSet, Color>] = [
         "color.accent": \.color.accent,
         "color.accent.glow": \.color.accentGlow,
@@ -31,7 +31,9 @@ nonisolated enum DSTokenKeyPaths {
         "color.bg.fill.inverse-pressed": \.color.bgFillInversePressed,
         "color.bg.fill.neutral.subtle": \.color.bgFillNeutralSubtle,
         "color.bg.fill.on-accent-pressed": \.color.bgFillOnAccentPressed,
+        "color.bg.fill.on-accent-subtle": \.color.bgFillOnAccentSubtle,
         "color.bg.fill.on-inverse-pressed": \.color.bgFillOnInversePressed,
+        "color.bg.fill.on-inverse-subtle": \.color.bgFillOnInverseSubtle,
         "color.bg.page": \.color.bgPage,
         "color.bg.surface": \.color.bgSurface,
         "color.bg.surface.nested": \.color.bgSurfaceNested,
@@ -44,6 +46,9 @@ nonisolated enum DSTokenKeyPaths {
         "color.bg.tint.warning": \.color.bgTintWarning,
         "color.border.boundary": \.color.borderBoundary,
         "color.border.focus": \.color.borderFocus,
+        "color.border.focus-on-accent": \.color.borderFocusOnAccent,
+        "color.border.focus-on-inverse": \.color.borderFocusOnInverse,
+        "color.border.focus-on-media": \.color.borderFocusOnMedia,
         "color.border.hairline": \.color.borderHairline,
         "color.border.on-glass-fill": \.color.borderOnGlassFill,
         "color.border.on-media": \.color.borderOnMedia,
