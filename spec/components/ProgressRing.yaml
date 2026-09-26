@@ -43,7 +43,7 @@ props:
     type: enum
     values: [sm, md, lg]
     default: md
-  - name: showValue
+  - name: showsValue
     type: boolean
     default: false
     description: renders the whole percent inside the ring; ignored at size sm and on a surface that publishes vivid
@@ -85,11 +85,11 @@ behavior:
   - "The outer diameter is `size.control.sm`, `.md` or `.lg`, so a ring belongs to the same control family as a Button or an IconButton and shares its height in every density."
   - "The stroke is `chart.gauge-stroke-ratio` (0.05) of the diameter, never below `comp.progress-ring.stroke-min` (4 px, dataviz-design.md §3 E25). At control diameters the floor governs; the ratio takes over only when a product draws the ring at card scale, and a hairline track with only the arc weighted is RingGauge's question, not this component's."
   - "`variant` indeterminate ignores `value`. The track is still drawn — that is what tells an indeterminate ring from a Spinner, which has none — and over it runs the 270 degree open sweep of dataviz-design.md §3 E24, turning one revolution per `motion.duration.slower` with `motion.easing.linear`, which ADR-0023 §9 reserves for constant motion."
-  - "`showValue` is allowed at `size` md and lg and is ignored at sm. dataviz-design.md §3 E25 caps the numeral at 45 % of the diameter: `size.control.md` is 32, 40, 48 and 40 px across the four densities and `size.control.lg` 40, 44, 52 and 44, so the cap is 14.4 px at worst and `type.data` (13 px) fits everywhere; `size.control.sm` at compact density gives 12.6 px and does not. `type.metric.md` (20 px) fits no control diameter at all, which is why the inner numeral is not a metric role."
+  - "`showsValue` is allowed at `size` md and lg and is ignored at sm. dataviz-design.md §3 E25 caps the numeral at 45 % of the diameter: `size.control.md` is 32, 40, 48 and 40 px across the four densities and `size.control.lg` 40, 44, 52 and 44, so the cap is 14.4 px at worst and `type.data` (13 px) fits everywhere; `size.control.sm` at compact density gives 12.6 px and does not. `type.metric.md` (20 px) fits no control diameter at all, which is why the inner numeral is not a metric role."
   - "The inner numeral is the whole percent with no sign and no unit: at control size E25's unit rule (40 to 50 % of the numeral) would ask for a 6 px glyph. A unit, and anything else the reader needs in words, sits in the Text beside the ring. The numeral is `type.data`, which is tabular (ADR-0021 §5), so it does not jitter as the ring fills; it replaces its value and never counts up (Text.yaml)."
   - The ring never carries a second colour for a threshold. Bands and qualitative ranges belong to RingGauge, and a status is carried by an icon and a label, never by recolouring the arc.
   - On a surface that publishes `vivid` the arc flips to the white solid `color.bg.fill.inverse-media` over a `color.chart.on-media.grid` track; on the scheme's glass it keeps `comp.progress-ring.arc`, which is the inverse solid ADR-0030 §3.1 already makes right there (ink on light glass, white on smoke), over the glass grid.
-  - "On a surface that publishes `vivid` the ring draws no numeral: `type.data` is 13 px, and outside the Card header block `color.text.on-vivid` is checked only at 24 px and above (ADR-0022 V1 and V2). `showValue` is ignored there and the enclosing Card's caption carries the words, the way it carries the hero's unit (ADR-0030 §8)."
+  - "On a surface that publishes `vivid` the ring draws no numeral: `type.data` is 13 px, and outside the Card header block `color.text.on-vivid` is checked only at 24 px and above (ADR-0022 V1 and V2). `showsValue` is ignored there and the enclosing Card's caption carries the words, the way it carries the hero's unit (ADR-0030 §8)."
   - Reaching 1 plays no haptic. The haptics registry allows at most one haptic per user action and none on a programmatic state change.
   - The ring is a readout, never a control. A ring the user can drag is a Slider, and a ring that opens something sits inside a Button.
 
@@ -125,24 +125,24 @@ examples:
   - id: determinate-md
     props: { variant: determinate, value: 0.62, size: md, label: "Uploading route file" }
   - id: determinate-lg-value
-    props: { variant: determinate, value: 0.86, size: lg, showValue: true, label: "Battery charge" }
+    props: { variant: determinate, value: 0.86, size: lg, showsValue: true, label: "Battery charge" }
     description: the bare percent inside the ring; the word and any unit belong to the Text beside it
   - id: determinate-sm
     props: { variant: determinate, value: 0.25, size: sm, label: "Sync" }
   - id: indeterminate
     props: { variant: indeterminate, size: md, label: "Checking connection" }
   - id: complete
-    props: { variant: determinate, value: 1, size: lg, showValue: true, label: "Sync complete" }
+    props: { variant: determinate, value: 1, size: lg, showsValue: true, label: "Sync complete" }
   - id: on-vivid
     props: { variant: determinate, value: 0.5, size: md, label: "Batch progress" }
     surface: vivid
-    description: the ring alone; on vivid `showValue` is ignored and the card's caption carries the words
+    description: the ring alone; on vivid `showsValue` is ignored and the card's caption carries the words
   - id: on-glass-over-map
     props: { variant: determinate, value: 0.35, size: md, label: "Route recalculated" }
     surface: glass
     backdrop: map
   - id: ru-label
-    props: { variant: determinate, value: 0.4, size: lg, showValue: true, label: "Заряд аккумулятора" }
+    props: { variant: determinate, value: 0.4, size: lg, showsValue: true, label: "Заряд аккумулятора" }
     description: a Russian label roughly twice the length of "Battery charge"; it sits beside the ring and wraps, and the ring keeps its diameter
 
 notes:

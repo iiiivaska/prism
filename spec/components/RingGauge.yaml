@@ -68,7 +68,7 @@ props:
     type: string
   - name: caption
     type: string
-  - name: clampOverflow
+  - name: clampsOverflow
     type: boolean
     default: true
   - name: isLoading
@@ -153,7 +153,7 @@ behavior:
   - "Thresholds are at most five ranges, ideally three, drawn as a thin outer ring in intensities of one ink — bandStrong, bandMid and bandSubtle — never as distinct hues; a status hue marks only the current state, and then with its glyph and word."
   - "Thresholds are a solid-family form. ADR-0030 §2 gives the on-media and on-glass-fill chart families a line, a reference and a grid and no band inks, so on vivid and on the scheme's glass the ring is the track and the arc alone, and `style: segmented` degrades to `closed` there. The gauge is not placed on light glass, inverse or accent at all, which hold no chart family (ADR-0030 rule 3)."
   - "On a vivid surface the ring's figure is the hero block and is drawn at 24 px or more, so only `size: lg` (type.metric.lg) is used there; the caption and the unit join the header block, the one place ADR-0030 rule 7 allows text under 24 px on a gradient. color.text.on-vivid has no pair for a 20 px figure outside that block."
-  - "A value outside [min, max] clamps the arc and draws an overflow tick at the end when `clampOverflow` is true; the written figure is never clamped."
+  - "A value outside [min, max] clamps the arc and draws an overflow tick at the end when `clampsOverflow` is true; the written figure is never clamped."
   - "An indeterminate ring draws the track alone with an em dash in the value slot; it never spins under Reduce Motion."
   - "The arc animates from the minimum to the value on motion.spring.smooth when the ring first appears, and follows later changes with the same spring."
   - "`isLoading` enters `loading`, which holds the previous arc, figure and caption at opacity.dimmed-row. A gauge inside a container that is loading itself keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."

@@ -70,7 +70,7 @@ props:
     type: enum
     values: [dot, none]
     default: dot
-  - name: extremes
+  - name: showsExtremes
     type: boolean
     default: false
   - name: comparison
@@ -146,7 +146,7 @@ behavior:
   - A target is one dashed reference in color.chart.target with stroke.target, drawn over the trace; it is never a second series.
   - "The normal range is a band of color.chart.band behind the trace, and it is drawn on the solid family only. A sparkline has no plot fill of its own, so on vivid and on the scheme's glass the band would be a wash on the raw gradient or on the raw glass, which is what a sparkline never does; ADR-0030 §2 gives neither media family a band role either. There the range is dropped and the trace stands alone. A flagged window belongs to RangeBand inside a full chart, not here."
   - "A sparkline is placed on the solid family, on vivid or on the scheme's glass. It is not placed on light glass, inverse or accent, which hold no chart family at all (ADR-0030 rule 3); a number on one of those materials carries its trend in words."
-  - "The endpoint bead is chart.endpoint-size in color.chart.now and ties the trace to the number beside it; `extremes: true` adds chart.marker-size dots on the minimum and the maximum."
+  - "The endpoint bead is chart.endpoint-size in color.chart.now and ties the trace to the number beside it; `showsExtremes: true` adds chart.marker-size dots on the minimum and the maximum."
   - "A sparkline never sits on raw glass: on the scheme's glass it takes color.chart.on-glass-fill.line and needs no plot fill, and on vivid it takes color.chart.on-media.line and stays out of the gradient's lightest end."
   - The sparkline has no hover, no tooltip and no selection; a series that has to be inspected is a LineChart inside a ChartContainer.
   - "`isLoading` enters `loading`, which holds the previous trace at opacity.dimmed-row rather than showing a skeleton. A sparkline inside a StatCard, a StatTile, a HeroNumber or a ChartContainer that is loading keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
@@ -191,7 +191,7 @@ examples:
   - id: bars-zero
     props: { points: [3, 5, 4, 8, 6, 9, 7, 11, 10, 13, 12, 15], kind: bar, baseline: zero }
   - id: extremes
-    props: { points: [61, 72, 58, 68, 91, 70, 74, 63, 77, 82, 55, 86], kind: line, extremes: true }
+    props: { points: [61, 72, 58, 68, 91, 70, 74, 63, 77, 82, 55, 86], kind: line, showsExtremes: true }
   - id: insufficient-data
     props: { points: [42], kind: line }
     description: fewer than two points renders an em dash, not an empty box

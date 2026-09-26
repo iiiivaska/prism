@@ -79,11 +79,11 @@ props:
     values: [none, image, map, illustration]
     default: none
     description: "what the stage shows; ignored, and treated as none, at `drawer`"
-  - name: readout
+  - name: hasReadout
     type: boolean
     default: false
     description: "a Card anchored on the stage: glass over an image or a map, solid over an illustration, and not drawn without a stage"
-  - name: hero
+  - name: hasHero
     type: boolean
     default: true
   - name: detents
@@ -91,7 +91,7 @@ props:
     values: [full, half, twoStep]
     default: full
     description: "used only at `presentation: sheet`, mapped onto Sheet's detents: full offers [large], half offers [medium], twoStep offers [medium, large] and opens at medium, and it is the only value a drag can move between. `screen` has no detents, because its sheet scrolls with the page, and a drawer has none, because Sheet's side edges have none"
-  - name: actionBar
+  - name: hasActionBar
     type: boolean
     default: false
   - name: onDismiss
@@ -207,7 +207,7 @@ composition:
     forwards: role, tone, truncation, maxLines
     where: a section that holds generated prose
   - component: Skeleton
-    props: { animated: true }
+    props: { isAnimated: true }
     forwards: shape, role, lines
     where: a section that has never had data while `loading`
   - component: EmptyState
@@ -222,13 +222,13 @@ behavior:
   - "Floating controls the app places on the stage sit space.5 from its edges (visual-dna §6.5: a 16-20 inset); the pattern places them and draws none of them."
   - "`titlePlacement: backdrop` sets the title in type.display.xl directly on the stage, space.page-margin from its leading and top edges, below the top safe-area inset, in color.text.on-glass over material.glass.scrim - not in color.text.primary, which is an ink tone in light and would sit on imagery. The scrim runs bottom-up under the title block only. The header block below then holds the caption and the hero. It is honored only at `presentation: screen` with a stage; anywhere else the title renders as `header`."
   - "A `readout` Card is anchored beside the object it describes, space.5 from the stage's edges, at 200 × 150 px at compact width and 240 × 300 px at regular and desktop width (visual-dna §4.3), and it floats at the elevation Card gives it; the pattern places it and Card draws it. It is a glass Card over an image or a map, a solid Card over an illustration, whose Surface would otherwise fall back to an opaque raised card anyway, and it is not drawn without a stage."
-  - "Exactly one hero figure: the header holds it, and no section below repeats it at hero size. It is a HeroNumber at `size: xl` where this pattern owns the screen - at `screen` and at a `sheet` over a stage - and at `size: lg` in a modal `sheet` and at `drawer`, which share the screen with their host's own hero; or a StatTile at `size: lg` (`md` in a modal sheet and a drawer) on watchOS and wherever the figure carries a status glyph. A screen whose entity has no single figure sets `hero: false` and leads with the title alone."
+  - "Exactly one hero figure: the header holds it, and no section below repeats it at hero size. It is a HeroNumber at `size: xl` where this pattern owns the screen - at `screen` and at a `sheet` over a stage - and at `size: lg` in a modal `sheet` and at `drawer`, which share the screen with their host's own hero; or a StatTile at `size: lg` (`md` in a modal sheet and a drawer) on watchOS and wherever the figure carries a status glyph. A screen whose entity has no single figure sets `hasHero: false` and leads with the title alone."
   - "`detents` applies only at `presentation: sheet` and maps onto Sheet's own set: `full` offers [large], `half` offers [medium] and `twoStep` offers [medium, large] and opens at medium. Only `twoStep` resizes under a drag, and `expanded` is its large detent. The grabber's geometry, color, hit region and presence are Sheet's, and so are the drag, the settle and the haptic - it tracks the finger with motion.spring.interactive, settles with motion.spring.sheet and plays haptic.impact.medium once when a detent is reached - and this pattern adds no motion and no haptic of its own there."
   - "The detent is reachable without a drag on every platform, through Sheet's own affordances: under `twoStep` the grabber is an adjustable element named by the sheet's title whose increment and decrement step between the two detents, the same steps are accessibility actions on the sheet, and where there is no drag gesture the header also draws a visible detent control. The grabber is never the only way to change one."
   - "Sections are separated by space.section-gap, and section titles are type.label.md in color.text.secondary, which is the only type this pattern draws below the header. Rows are ListRows at ListRow's own height; the rule between them is ListRow's `separator: inset` between the rows of one table-like list and `none` on every other row, the last row of each list included, so no hairline ever falls between two sections - spacing carries the grouping, because a dark hairline is structure for sighted users only (visual-dna §7.5)."
   - "Scrolling at `screen`: the stage stays fixed and the sheet part scrolls up over it; once the sheet's top reaches the top safe-area inset, or the bottom edge of a host's TopBar, the sheet's content keeps scrolling beneath that edge. The header block scrolls with the sheet and never becomes a sticky bar of its own. At `sheet` and `drawer` Sheet's own nested scrolling applies, with Sheet's header pinned."
   - "The title wraps to at most two lines and then truncates with an ellipsis; Sheet's pinned title follows Sheet's own rule. The caption is one line in tabular figures and truncates in the middle when it is an identifier, with the full value in the accessible label. Generated prose in a section fades out over its last two lines instead of ending in an ellipsis, and the fade invites the reader to expand it."
-  - "`actionBar: true` adds one Toolbar. At `screen` it floats pinned to the bottom of the sheet; the Toolbar draws its own track, radius, elevation, item gaps and inset, and the sheet reserves the Toolbar's height plus its inset plus the bottom safe-area inset as bottom padding, so content scrolls under the dock and the last row is never covered. Where a host's floating TabBar shares the bottom edge, the Toolbar sits above it with space.4 between them, which is Toolbar's own rule, and the reserve grows by the TabBar's. At `sheet` and `drawer` the Toolbar is `placement: inline` in Sheet's `actions` area, which Sheet pins to its bottom edge."
+  - "`hasActionBar: true` adds one Toolbar. At `screen` it floats pinned to the bottom of the sheet; the Toolbar draws its own track, radius, elevation, item gaps and inset, and the sheet reserves the Toolbar's height plus its inset plus the bottom safe-area inset as bottom padding, so content scrolls under the dock and the last row is never covered. Where a host's floating TabBar shares the bottom edge, the Toolbar sits above it with space.4 between them, which is Toolbar's own rule, and the reserve grows by the TabBar's. At `sheet` and `drawer` the Toolbar is `placement: inline` in Sheet's `actions` area, which Sheet pins to its bottom edge."
   - "`loading` holds the sections at opacity.dimmed-row and keeps the stage, the title, the caption and the hero at full opacity and in place; only a section that has never had data renders a Skeleton, whose `role` is the type role of the text it stands in for, so the section keeps its height when the data lands."
   - "`error` puts one EmptyState of `variant: section` in place of the sections and keeps the stage, the title and the action bar, so the reader can still leave or retry. A section that fails on its own shows its component's error state, and the rest of the screen stays."
   - "A state on an illustration tints only the affected sub-region; the drawing is never recolored as a whole, and the state is also stated in a row of the sections."
@@ -264,7 +264,7 @@ usage:
 
 examples:
   - id: entity-over-map
-    props: { title: "Unit 4417", caption: "21.11.2026, 14:05:22", stage: map, readout: true, presentation: sheet, detents: twoStep }
+    props: { title: "Unit 4417", caption: "21.11.2026, 14:05:22", stage: map, hasReadout: true, presentation: sheet, detents: twoStep }
     surface: map
     description: the map is the stage, one glass readout floats beside the marker, and the docked sheet rests at its medium detent with a grabber; nothing dims the map, which stays usable
   - id: expanded-sheet
@@ -275,20 +275,20 @@ examples:
     props: { title: "Batch 2026-118", caption: "Closed 14:05", presentation: sheet, detents: half }
     description: no stage, so the sheet is modal over its host with Sheet's scrim, its title in Sheet's header and the hero numeral at type.metric.lg below it, because the host keeps the screen's one metric.xl hero
   - id: phone-stage-sheet
-    props: { title: "Pump 4", caption: "Line B, north hall", stage: illustration, presentation: screen, actionBar: true }
+    props: { title: "Pump 4", caption: "Line B, north hall", stage: illustration, presentation: screen, hasActionBar: true }
     description: a line-art stage with the affected sub-region tinted, the sheet this pattern draws holding the sections, and a floating dock whose height the sheet reserves
   - id: desktop-drawer
-    props: { title: "Batch 2026-118", caption: "Closed 14:05", presentation: drawer, hero: true }
+    props: { title: "Batch 2026-118", caption: "Closed 14:05", presentation: drawer, hasHero: true }
     description: Sheet's trailing drawer over the trailing columns of a DashboardGrid, with the page beside it undimmed and the hero at type.metric.lg, because the dashboard owns the screen's metric.xl hero
   - id: backdrop-title
     props: { title: "North corridor", stage: image, titlePlacement: backdrop, presentation: screen }
     surface: image
     description: the title in type.display.xl and color.text.on-glass over material.glass.scrim on the stage; the header block below holds only the hero
   - id: no-hero
-    props: { title: "Maintenance log", hero: false, presentation: screen }
+    props: { title: "Maintenance log", hasHero: false, presentation: screen }
     description: an entity with no single figure; the title leads, and the sections carry the numbers in their rows and cards, none of them at type.metric.xl
   - id: readout-on-image
-    props: { title: "Bay 12", caption: "Camera 3", stage: image, readout: true, presentation: screen }
+    props: { title: "Bay 12", caption: "Camera 3", stage: image, hasReadout: true, presentation: screen }
     surface: image
     description: the readout is a glass Card over the photograph, one of the three backdrops ADR-0022 lets glass sit on; in light the scheme's glass carries ink there and in dark it carries white
   - id: loading

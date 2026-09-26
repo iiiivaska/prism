@@ -68,7 +68,7 @@ props:
   - name: trend
     type: data
     description: Sparkline props, `points` included; a trend without a series is not drawn, since the series is what a sparkline is
-  - name: live
+  - name: isLive
     type: boolean
     default: false
     description: the value changes while visible; sets tabular figures and lets changed digits roll
@@ -145,7 +145,7 @@ behavior:
   - "The label sits above the value in `layout: stacked` and before it in `layout: inline`; the label is sentence case and never an uppercase eyebrow."
   - "A status draws its registry glyph before the label together with the label's words, so the state is never carried by color alone (ADR-0011 rule 4). The map is fixed: success → status.success, warning → status.warning, critical → status.danger, info → status.info."
   - "On vivid, light glass, inverse and accent the status glyph takes that material's foreground, and the state is read from the glyph's shape and the label."
-  - "The value is proportional by default; `live: true` sets tabular figures on the role, as every value that changes while visible must (ADR-0021 §5)."
+  - "The value is proportional by default; `isLive: true` sets tabular figures on the role, as every value that changes while visible must (ADR-0021 §5)."
   - "The unit hangs on the value's baseline in type.metric.unit; on a vivid surface the hero block holds only the value, so the unit moves to the label line (ADR-0030 §8, V3)."
   - "On vivid the tile is `layout: stacked`, and its label line is the header block ADR-0030 rule 7 allows sub-24 px text in: the label, the status glyph, the unit and the delta all live there, and the value row below holds the value alone at 24 px or more. `size: sm` (20 px) and the inline layout are therefore not used on vivid, where color.text.on-vivid has no pair below 24 px outside that block."
   - "The dimmed trailing group of a value exists only at 24 px or more, so `size: sm` (type.metric.md, 20 px) never dims its tail."
@@ -153,7 +153,7 @@ behavior:
   - Tiles in a group nearly touch — the gap between tiles is space.tile-gap, and whitespace goes to the page, not inside the tile.
   - A missing value renders an em dash in the value role; the label, the status glyph and the unit stay.
   - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row; a tile grid never flashes skeletons row by row. A tile inside a container that is loading itself keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
-  - "A changed value rolls exactly as HeroNumber's does: only while `live` is true, only the digit positions that changed, and only when the new string keeps the old one's length and non-digit characters; over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out). Every other change replaces the value at once, and nothing counts up."
+  - "A changed value rolls exactly as HeroNumber's does: only while `isLive` is true, only the digit positions that changed, and only when the new string keeps the old one's length and non-digit characters; over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out). Every other change replaces the value at once, and nothing counts up."
   - "At most three tiles stack in one column on the watch, where the tile is label, status glyph and value only."
 
 motion:
@@ -188,7 +188,7 @@ examples:
   - id: stacked-with-delta
     props: { label: "Conversion", value: "12.9", unit: "%", size: md, delta: { value: "0.8", direction: up, polarity: upIsGood, basis: points } }
   - id: with-trend
-    props: { label: "Ingest rate", value: "1 284", unit: "req/s", size: md, live: true, trend: { points: [1180, 1204, 1192, 1231, 1218, 1246, 1260, 1249, 1272, 1265, 1279, 1284], kind: line, size: tile, emphasis: primary } }
+    props: { label: "Ingest rate", value: "1 284", unit: "req/s", size: md, isLive: true, trend: { points: [1180, 1204, 1192, 1231, 1218, 1246, 1260, 1249, 1272, 1265, 1279, 1284], kind: line, size: tile, emphasis: primary } }
     description: the trend carries the series Sparkline requires, ending on the value the tile shows
   - id: status-critical
     props: { label: "Pump 4 pressure", value: "2.1", unit: "bar", size: md, status: critical }

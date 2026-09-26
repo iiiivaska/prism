@@ -59,8 +59,8 @@ props:
     description: the box's height at rest, in line boxes of the input's role
   - name: maxRows
     type: number
-    description: the height `autoGrow` stops at; past it the value scrolls inside the box
-  - name: autoGrow
+    description: the height `growsWithValue` stops at; past it the value scrolls inside the box
+  - name: growsWithValue
     type: boolean
     default: true
   - name: maxLength
@@ -167,7 +167,7 @@ behavior:
   - The label is programmatically tied to the input, and the placeholder never stands in for it; a box with no visible label carries an explicit accessibility label.
   - "The box is a container, not a control: it takes radius.inner rather than radius.control, has no fill at rest and is identified by its 1 px color.border.boundary edge."
   - At rest the box is `rows` line boxes of type.body.md tall and never shorter than size.row, so an empty area still reads as a target at the row height of its density.
-  - "`autoGrow` grows the box one line box at a time as the value wraps, up to `maxRows`; past that the value scrolls inside the box and the box stops growing. The rows below it never move under the caret."
+  - "With `growsWithValue` the box grows one line box at a time as the value wraps, up to `maxRows`; past that the value scrolls inside the box and the box stops growing. The rows below it never move under the caret."
   - "The value wraps; it never truncates and it never ends in an ellipsis. Long generated prose that is only being displayed belongs in Text with `truncation: fade`, not in a read-only area."
   - "`maxLength` shows the counter with tabular figures and stops input at the limit; pasted text over the limit is trimmed with the counter announced, never dropped silently."
   - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
@@ -222,7 +222,7 @@ examples:
   - id: invalid
     props: { label: "Shift notes", value: "ok", isInvalid: true, errorText: "Describe what happened in at least ten characters" }
   - id: auto-grow-capped
-    props: { label: "Shift notes", rows: 3, maxRows: 8, autoGrow: true }
+    props: { label: "Shift notes", rows: 3, maxRows: 8, growsWithValue: true }
   - id: readonly
     props: { label: "Shift notes", value: "Loader two idled for eleven minutes.", isReadOnly: true }
   - id: disabled

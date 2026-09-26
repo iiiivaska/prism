@@ -62,7 +62,7 @@ props:
   - name: format
     type: data
     description: "how `value` and `trailing` were produced — { style: decimal|percent|currency|unit, compact: boolean, significantDigits: 1-3, locale }. The component does not reformat the strings; it reads this to build the spoken value and to reserve width. Unset, the strings are spoken as written"
-  - name: live
+  - name: isLive
     type: boolean
     default: false
     description: the value changes while visible; sets tabular figures and lets changed digits roll
@@ -150,13 +150,13 @@ behavior:
   - One HeroNumber per view; a second headline figure is a StatTile, and a number inside a card is Text at metric-lg.
   - "Layout is fixed so both stacks land on the same block. `root` stacks three rows `rowGap` (space.2) apart: the label line, the value line and the trend, whose own `gap` is the same space.2. On the value line the value and its trailing group run together with no space between them, the unit follows the trailing group at `unit.gap` (space.2), and the delta follows the unit at `delta.gap` (space.3), all on one baseline; a part that is absent takes its space with it, so the delta follows the value when there is no tail and no unit. The hero sets no space outside its root — the layout that places it owns that. The label row is the header block and the value row is the hero block, the two zones ADR-0030 §8 names."
   - "The component writes no sign; `value` carries the string it is given, sign included, and a signed hero states its sign explicitly. A leading currency symbol is not a dimmed group in v1 — `trailing` is the tail only — so a prefixed symbol stays at the value's tone and a hung symbol goes in `unit`."
-  - "Figures follow ADR-0021 §5 as ADR-0030 §7.1 amends it: a static hero is proportional on every metric role, and `live: true` sets tabular figures on the value and the trailing group, so the digits stop jittering while the value ticks."
+  - "Figures follow ADR-0021 §5 as ADR-0030 §7.1 amends it: a static hero is proportional on every metric role, and `isLive: true` sets tabular figures on the value and the trailing group, so the digits stop jittering while the value ticks."
   - "The caller formats the figure and passes the pieces as strings; `format` describes what it did. Compact notation carries at most three significant digits, and the layout reserves width for Cyrillic compact names (\"12,9 тыс.\", \"4,2 млн\"), which run two to three glyphs longer than \"K\" and \"M\". The compact name is the dimmed tail, so it goes in `trailing`, not in `unit`."
   - "The trailing group takes the value's own role at every size and renders in color.text.dimmed, but only on a role of 24 px or more; at `size: md` (type.metric.md, 20 px) it resolves to color.text.secondary instead, as Text does, because the dimmed pair is the decorative tier and ADR-0011 grants that tier only from 24 px. The same split applies on the scheme's glass over a map, where color.text.on-glass-fill-dimmed gives way to color.text.on-glass-fill-secondary; the -media tones are functional at every size and do not split."
   - "The unit hangs on the baseline in type.metric.unit, which is 12 px, so it takes a functional tone on every material and is never dimmed. The trailing group is therefore the only part of a hero that dims, and a hero never carries two dimmed groups, whatever the caller passes."
   - "On a vivid surface the hero block holds only the value and its trailing group, both 24 px or more; everything under 24 px moves to the label line, where V2 guarantees the functional tier (ADR-0030 §8, V3 and rule 7). An implementation given `unit` on vivid writes the label line as the label, a comma, one space and the unit exactly as passed (\"Line output, %\"), or as the unit alone when there is no label. A delta on vivid is always drawn, at the end of that line, `delta.gap` after its text and on its baseline, and it wraps with the line rather than being dropped. `size: md` is not a hero on vivid, because a 20 px numeral is below V1's tier."
   - The trend sits below the value line and never exceeds its width.
-  - "Only digits roll, and only when `live` is true. When a new value arrives and the joined string of `value` and `trailing` has the same length and the same non-digit characters in the same positions as the one on screen, each position whose decimal digit (Unicode category Nd) changed rolls to its new digit inside that digit's own box — upward when the new digit is greater, downward when it is smaller — over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out); the unchanged positions, the unit and the label do not move. Any other change — the first render, a change while `live` is false, a change of length, of sign, of a separator or of the compact name, and a switch to or from the em dash — replaces the value at once. There is no count-up: the component never parses the strings as numbers, so it never draws a value it was not given."
+  - "Only digits roll, and only when `isLive` is true. When a new value arrives and the joined string of `value` and `trailing` has the same length and the same non-digit characters in the same positions as the one on screen, each position whose decimal digit (Unicode category Nd) changed rolls to its new digit inside that digit's own box — upward when the new digit is greater, downward when it is smaller — over the motion block's `roll` (motion.duration.base) with its `rollEasing` (motion.easing.out); the unchanged positions, the unit and the label do not move. Any other change — the first render, a change while `isLive` is false, a change of length, of sign, of a separator or of the compact name, and a switch to or from the em dash — replaces the value at once. There is no count-up: the component never parses the strings as numbers, so it never draws a value it was not given."
   - An absent value renders an em dash in the value's role and tone; the label and the unit stay so the block keeps its shape, and the trailing group, the delta and the trend are not drawn.
   - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row; the hero never flashes a skeleton. A hero inside a container that is loading itself — the hero of a ChartContainer — keeps its own `isLoading` false, so the hold is applied once (spec/SCHEMA.md)."
   - Tones follow the material the enclosing Surface publishes, and on the scheme's glass also its backdrop kind; the hero never reads the color scheme itself.
@@ -180,7 +180,7 @@ usage:
   do:
     - Exactly one hero per view, at the top of the reading order.
     - "Put the insignificant tail in `trailing`; it is the one part of the hero that dims."
-    - "Set `live: true` on anything that ticks, so the numeral keeps tabular figures and its digits roll."
+    - "Set `isLive: true` on anything that ticks, so the numeral keeps tabular figures and its digits roll."
     - On vivid, write the unit into the label where the word reads better than the symbol ("Line output, percent").
   dont:
     - "Don't put a `size: md` hero on a vivid surface; below 24 px only the label line is a checked pair there."
@@ -195,7 +195,7 @@ examples:
     props: { value: "86", trailing: ".4", unit: "%", label: "Line output, last 24 hours", size: xl }
     description: the instrument numeral — significant digits, dimmed decimal, hung unit
   - id: hero-live
-    props: { value: "1 284", unit: "req/s", label: "Ingest rate", size: xl, live: true }
+    props: { value: "1 284", unit: "req/s", label: "Ingest rate", size: xl, isLive: true }
     description: a ticking value, so the role takes tabular figures and a changed digit rolls
   - id: hero-with-delta
     props: { value: "12", trailing: ".9", unit: "%", label: "Conversion", size: xl, delta: { value: "0.8", basis: points, direction: up, polarity: upIsGood } }

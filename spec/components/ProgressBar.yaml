@@ -53,7 +53,7 @@ props:
   - name: label
     type: string
     description: what is being measured; required unless a neighbouring Text already names it
-  - name: showValue
+  - name: showsValue
     type: boolean
     default: false
     description: renders the whole percent trailing on the label's line, in tabular figures; ignored on vivid
@@ -113,8 +113,8 @@ behavior:
   - The track is a pill of `radius.control` and `comp.progress-bar.height` (4 px, the minimum gauge stroke of dataviz-design.md §3 E25); the root is the column that stacks the optional label row over it, and only the track carries that height. The fill's ends stay round at every value, so a value just above 0 shows a dot rather than a sliver.
   - "`secondaryValue` draws a second length after the fill in `comp.progress-bar.fill-secondary`, separated from it by `space.1` (4 px). Both lengths are measured against the same whole, so a split bar still reads as one part-to-whole bar."
   - "The split bar is drawn only on the solid family (page, solid, raised, nested), and the spec declares no `vivid` or `glass` cell for `segment`. Those families have no comparison weight (ADR-0030 §2.1 gives them `line`, `reference` and `grid` only), and white 40 % over a white 24 % track would not be a second length anyone could read. On vivid and on the scheme's glass `secondaryValue` is ignored and the bar shows one length."
-  - "`target` draws one perpendicular tick of `border.strong` (1.5 px) in `color.chart.target`, `comp.progress-bar.marker-height` (8 px, twice the track) tall and centred on the track's centreline, so it stands half above and half below the pill and the root's box grows to hold it (dataviz-design.md §3 E27). A target is never the only cue: `label` or `showValue` states it in words."
-  - "`showValue` renders `value` as a whole percent followed by `%` at the same size, one string in the `value` part (`62 %`) — not a hung unit, which belongs to the metric roles. `type.data` is tabular, because a progress value changes while it is visible (ADR-0021 §5). The readout replaces its value and never counts up (Text.yaml). A product that needs another unit puts it in a neighbouring Text and leaves `showValue` false."
+  - "`target` draws one perpendicular tick of `border.strong` (1.5 px) in `color.chart.target`, `comp.progress-bar.marker-height` (8 px, twice the track) tall and centred on the track's centreline, so it stands half above and half below the pill and the root's box grows to hold it (dataviz-design.md §3 E27). A target is never the only cue: `label` or `showsValue` states it in words."
+  - "`showsValue` renders `value` as a whole percent followed by `%` at the same size, one string in the `value` part (`62 %`) — not a hung unit, which belongs to the metric roles. `type.data` is tabular, because a progress value changes while it is visible (ADR-0021 §5). The readout replaces its value and never counts up (Text.yaml). A product that needs another unit puts it in a neighbouring Text and leaves `showsValue` false."
   - The bar has no intrinsic margin. Its distance from the label row is `space.3` (8 px); everything outside the component belongs to the layout.
   - On a surface that publishes `vivid` the fill flips to the white solid `color.bg.fill.inverse-media` over a `color.chart.on-media.grid` track; on the scheme's glass it keeps `comp.progress-bar.fill`, which is the inverse solid ADR-0030 §3.1 already makes right there (ink on light glass, white on smoke), over the glass grid. A bar is never drawn on a vivid gradient's lightest stop or over its bloom.
   - "On a surface that publishes `vivid` the component draws neither `label` nor the readout. Both sit below 24 px, where `color.text.on-vivid` is checked only inside the Card header block (ADR-0022 V2), and the large tier covers only 24 px and above (V1). The work is named by the enclosing Card's title and caption instead, the way the hero's unit is (ADR-0030 §8); `label` still supplies the accessibility name."
@@ -150,17 +150,17 @@ usage:
 
 examples:
   - id: determinate
-    props: { value: 0.62, label: "Uploading route file", showValue: true }
+    props: { value: 0.62, label: "Uploading route file", showsValue: true }
   - id: bare
     props: { value: 0.18 }
     description: a bar inside a row whose neighbouring Text already names the work
   - id: split
-    props: { value: 0.45, secondaryValue: 0.2, label: "Storage used", showValue: true }
+    props: { value: 0.45, secondaryValue: 0.2, label: "Storage used", showsValue: true }
     description: the two-segment split bar, both lengths against one whole
   - id: with-target
-    props: { value: 0.72, target: 0.9, label: "Monthly target", showValue: true }
+    props: { value: 0.72, target: 0.9, label: "Monthly target", showsValue: true }
   - id: complete
-    props: { value: 1, label: "Sync complete", showValue: true }
+    props: { value: 1, label: "Sync complete", showsValue: true }
   - id: on-vivid
     props: { value: 0.5, label: "Batch progress" }
     surface: vivid
@@ -170,7 +170,7 @@ examples:
     surface: glass
     backdrop: map
   - id: ru-long-label
-    props: { value: 0.4, label: "Загрузка данных маршрута", showValue: true }
+    props: { value: 0.4, label: "Загрузка данных маршрута", showsValue: true }
     description: a Russian label about a third longer than its English twin; the label wraps to two lines and the bar keeps its height
 
 notes:

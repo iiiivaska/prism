@@ -119,12 +119,16 @@ export const NESTED_GLASS_KEYS: readonly string[] = ['glass', 'glassLight'];
  * for the condition that is true, as a statement whose subject is the component, so its name is a verb in the third
  * person followed by what it says: `is` for a condition of the component (`isSelected`), `has` for something it has or
  * lacks (`hasNext`), `shows` for a part the flag draws (`showsClose`), and, for a behavior the component performs, that
- * behavior's own verb. `clamps` is SCHEMA's example of the last (`clampsOverflow`, not `clampOverflow`), and the form
- * RingGauge's owed rename takes. The list is closed, because a word that ends in -s is not therefore a verb (`focusRing`,
- * `statusIcon`, `glassFill` are bare nouns): a behavior verb joins it in the change that first names a prop with it,
- * the way a new sys category is classified in the change that adds it.
+ * behavior's own verb. `clamps` is SCHEMA's example of the last (`RingGauge.clampsOverflow`, not `clampOverflow`). The
+ * list is closed, because a word that ends in -s is not therefore a verb (`focusRing`, `statusIcon`, `glassFill` are
+ * bare nouns): a behavior verb joins it in the change that first names a prop with it, the way a new sys category is
+ * classified in the change that adds it. `grows` and `delays` joined it with P4-11, for the two props roadmap P4-D3
+ * classes as behaviors and no condition, part or possession names: a TextArea that grows with its value
+ * (`TextArea.growsWithValue`, which was `autoGrow`) and a Spinner that holds itself back before it appears
+ * (`Spinner.delaysAppearance`, which was `delay`). `isAutoGrowing` or `hasDelay` would state the behavior as a
+ * condition or a thing the component owns, which is what the rule's third form exists to avoid.
  */
-export const BOOLEAN_VERBS: readonly string[] = ['is', 'has', 'shows', 'clamps'];
+export const BOOLEAN_VERBS: readonly string[] = ['is', 'has', 'shows', 'clamps', 'grows', 'delays'];
 
 /**
  * The fixtures spec/SCHEMA.md writes for a `string` prop that is an image's source ("Slot content in examples"): an
@@ -140,29 +144,17 @@ export const IMAGE_FIXTURES: readonly string[] = ['portrait'];
 export const BOOLEAN_NEGATIONS: readonly string[] = ['Not', 'No', 'Non'];
 
 /**
- * The boolean props still named against that rule, as `<spec name>.<prop>`: the twenty-nine that the spec-consistency
- * pass of 2026-09-22 found and nothing has renamed yet (roadmap P4-D3 (1), grouped as it groups them).
- * `prop/boolean-name` lets exactly these through. The list only shrinks: a name leaves it in the change that renames the
- * prop, which is the next change to its spec, in place where nothing implements it and with a `specVersion` bump on both
- * stacks where something does, and validate.test.ts fails on an entry that no longer names a boolean the rule rejects,
- * and on one the pass did not record. A new prop follows the rule from its first commit and never joins it.
+ * The boolean props still named against that rule, as `<spec name>.<prop>`: of the twenty-nine that the
+ * spec-consistency pass of 2026-09-22 found (roadmap P4-D3 (1)), the ones nothing has renamed yet. P4-11 renamed the
+ * twenty-eight in specs no stack implements, in place. `prop/boolean-name` lets exactly these through. The list only
+ * shrinks: a name leaves it in the change that renames the prop, in place where nothing implements it and with a
+ * `specVersion` bump on both stacks where something does, and validate.test.ts fails on an entry that no longer names a
+ * boolean the rule rejects, and on one the pass did not record. A new prop follows the rule from its first commit and
+ * never joins it.
  */
 export const BOOLEAN_NAMES_OWED: readonly string[] = [
-  // The imperative `show`, where the rule's verb is `shows`.
-  'ProgressBar.showValue', 'ProgressRing.showValue', 'Slider.showValue', 'DeltaBadge.showIcon', 'Pagination.showPageNumbers',
-  // A bare adjective for a condition, which takes `is…`.
-  'HeroNumber.live', 'StatCard.live', 'StatTile.live', 'LineChart.scrollable', 'Skeleton.animated',
-  // A bare noun for a part, which takes `has…` or `shows…`.
-  'AreaChart.grid', 'LineChart.grid', 'ListRow.leader', 'RangeBand.bookends', 'Slider.ticks', 'Sparkline.extremes', 'Table.stickyHeader',
-  // A verb or noun for a behavior, which takes the third person.
-  'RingGauge.clampOverflow', 'TextArea.autoGrow', 'Spinner.delay',
-  // In the patterns, a bare noun for a region the pattern draws.
-  'AdaptiveShell.topBar', 'AdaptiveShell.commandPalette', 'DashboardGrid.tileGroup', 'DashboardGrid.band',
-  'DetailScreen.readout', 'DetailScreen.actionBar', 'DetailScreen.hero',
-  // A bare participle, and a second name for the `Sidebar.isCollapsed` it forwards.
-  'AdaptiveShell.sidebarCollapsed',
   // A bare adjective where Card, Chip and IconButton say `isSelected`, in an implemented component: its rename is a
-  // `specVersion` bump on both stacks, which Surface's next bump takes (roadmap P4-D8).
+  // `specVersion` bump on both stacks.
   'Surface.selected',
 ];
 

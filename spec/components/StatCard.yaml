@@ -86,7 +86,7 @@ props:
     values: [compact, regular, large]
     default: regular
     description: forwarded to Card, and it selects the hero's type role
-  - name: live
+  - name: isLive
     type: boolean
     default: false
     description: sets tabular figures on the hero, as every value that changes while visible must
@@ -139,7 +139,7 @@ behavior:
   - "The hero is type.metric.lg at every size but `large`, which is the screen's lead figure and takes type.metric.xl. A screen carries one hero numeral (docs/research/visual-dna.md §11 anti-pattern 25), so at most one StatCard per screen is `size: large`."
   - "The trailing group is the insignificant tail at the hero's own size in Text's dimmed tone, never a smaller type — a denominator is written `value: \"24\"` with `trailing: \"/38\"`, not as a second role. Dimming exists only at 24 px and above (ADR-0011), and the hero clears that at every size — type.metric.lg is 32 px at `compact` and `regular`, type.metric.xl is 48 px at `large` — so the trailing group is legal on every StatCard. `size` changes the card's padding, its radius and the hero's role at `large`; it never shrinks the hero below type.metric.lg."
   - "The unit hangs on the value's baseline in type.metric.unit, space.2 from it. On a vivid surface it moves into the caption: the hero block there holds only the value, which V1 covers at 24 px and above, and the header block is what V2 covers at the functional tier (ADR-0030 §8, V3)."
-  - "`live: true` sets tabular figures on the hero, as ADR-0021 §5 requires of every value that changes while visible; a static hero keeps the role's proportional figures."
+  - "`isLive: true` sets tabular figures on the hero, as ADR-0021 §5 requires of every value that changes while visible; a static hero keeps the role's proportional figures."
   - "The delta sits after the hero on its baseline, space.3 from it; it is a DeltaBadge the caller passes in, and StatCard neither writes its sign nor colours it. A positive delta stays neutral (docs/research/visual-dna.md §1 principle 3)."
   - "The aside is the Card's bottom-right slot, baseline-locked to the hero. A composite may not import data-viz (ADR-0012 rule 1), so a Sparkline or a RingGauge reaches it as a slot the caller fills, the way Card.yaml already makes `aside` a slot."
   - "The footer is a full-width strip under the body, space.5 below the hero row and inside the card padding, for a chart or a short table. It is drawn only at `size: regular` and `large`; a footer passed to a `size: compact` card is not drawn at all, because a compact card has no room for one."
@@ -174,7 +174,7 @@ usage:
     - Use a StatCard for one number that needs a name, a period and a way in.
     - "Put the trend in the aside and the history in the footer, never both at `size: compact`."
     - Keep the unit in the caption on a vivid card, and the value alone in the hero.
-    - Use `live` for anything that changes while it is on screen.
+    - Use `isLive` for anything that changes while it is on screen.
   dont:
     - Don't put a second number in the hero; a second metric is a second card or a StatTile grid.
     - Don't set a smaller type for a denominator; it is the hero's dimmed trailing group.
@@ -190,7 +190,7 @@ examples:
   - id: with-delta
     props: { variant: solid, title: "Conversion", caption: "Last 7 days", value: "12", trailing: ".9", unit: "%", delta: { value: "0.8", direction: up, polarity: upIsGood, basis: points } }
   - id: with-trend-aside
-    props: { variant: solid, title: "Ingest rate", caption: "Last hour", value: "1 284", unit: "req/s", live: true }
+    props: { variant: solid, title: "Ingest rate", caption: "Last hour", value: "1 284", unit: "req/s", isLive: true }
     description: the aside slot holds one Sparkline at the card's aside height, baseline-locked to the hero
   - id: with-chart-footer
     props: { variant: solid, size: large, title: "Line output", caption: "Last 24 hours", value: "86", trailing: ".4", unit: "%" }

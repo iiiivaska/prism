@@ -80,7 +80,7 @@ props:
     values: [none, chevron]
     default: none
     description: chevron draws nav.forward at the trailing edge and says the row opens something
-  - name: leader
+  - name: showsLeader
     type: boolean
     default: false
     description: draws the dotted leader between the title and the value; only legal when both are present
@@ -204,7 +204,7 @@ behavior:
   - "The title wraps to a second line and then truncates with an ellipsis; the row grows in height rather than clipping it (ADR-0011). The subtitle wraps the same way. The value never wraps and never truncates: it keeps its width and the title's column yields, because the value is the datum the reader scans down the column."
   - "An identifier in the title truncates with an ellipsis and carries its full text in the accessibility label, which is the identifier rule of docs/research/visual-dna.md §4.15; generated prose in a subtitle uses Text `truncation: fade` instead."
   - "When the title and the value together outgrow one line, the row drops the leader first, then wraps the title, and last moves the value under the title as a second line. Nothing shrinks below its role's size."
-  - "`leader: true` draws the dotted leader of stroke.leader between the title and the value, in color.border.strong. It is ornament: the value carries the meaning, the leader is hidden from assistive technology, and it is not drawn when the row has no `value`, when the gap is under space.10 or when the title wraps."
+  - "`showsLeader: true` draws the dotted leader of stroke.leader between the title and the value, in color.border.strong. It is ornament: the value carries the meaning, the leader is hidden from assistive technology, and it is not drawn when the row has no `value`, when the gap is under space.10 or when the title wraps."
   - "`isSubItem` indents the row and draws the leading rule at border.strong width in color.border.strong, space.4 from the text. It is the nested station list of the alert rail, and it nests one level only."
   - "`isSelected` draws the same rule in comp.list-row.rule.selected, the inverse solid, and sets the row's selected state for assistive technology. Selection changes no fill: the inverse mark is the one active element of its group (docs/research/visual-dna.md §1 principle 9), and the state is never carried by colour alone (ADR-0011 rule 4)."
   - "`separator: inset` draws one Divider below the row at `inset: content`, so the line starts at space.card-padding and follows the density; `full` runs the line edge to edge; `none` is the last row of a group. Every row in one list uses the same value, and a list whose rows are cards separates by space.card-gap instead of by a line."
@@ -250,7 +250,7 @@ usage:
 
 examples:
   - id: spec-row
-    props: { title: "Last sync", value: "11 days ago", leadingIcon: object.clock, leader: true }
+    props: { title: "Last sync", value: "11 days ago", leadingIcon: object.clock, showsLeader: true }
     description: the datasheet row — glyph, label, dotted leader, right-aligned value
   - id: title-subtitle
     props: { title: "North yard intake", subtitle: "Batch B-4417", value: "1 240", accessory: chevron }
@@ -281,7 +281,7 @@ examples:
     surface: glass
     backdrop: image
   - id: russian-row
-    props: { title: "Последняя синхронизация участка", subtitle: "Северный двор", value: "11 дней", leader: true }
+    props: { title: "Последняя синхронизация участка", subtitle: "Северный двор", value: "11 дней", showsLeader: true }
     description: the Russian title runs about a third longer, so it wraps to two lines, the row grows and the leader is dropped
 
 notes:

@@ -69,7 +69,7 @@ props:
   - name: moreLabel
     type: string
     description: the name of the fifth TabBar destination that holds the rest when there are more than five destinations; required then
-  - name: topBar
+  - name: hasTopBar
     type: boolean
     default: true
     description: "whether the shell draws the topBar region; `navigation: pillTabs` draws it at `split` and `sidebar` whatever this says"
@@ -78,11 +78,11 @@ props:
     values: [none, column, overlay]
     default: none
     description: the kind of region the detail slot opens as at desktop width; below it a detail opens as a sheet
-  - name: commandPalette
+  - name: hasCommandPalette
     type: boolean
     default: false
     description: whether the app offers a CommandPalette in the overlay slot; the shell presents it only at desktop width under pointer modality
-  - name: sidebarCollapsed
+  - name: isSidebarCollapsed
     type: boolean
     default: false
   - name: onSidebarCollapsedChange
@@ -137,7 +137,7 @@ composition:
     where: "navigation at `stack`, at `size: lg` under touch and `size: md` under pointer. It takes at most five items: with more destinations the first four are items and the fifth is a destination named by `moreLabel` with the nav.more glyph, which lists the rest. TabBar is a floating capsule by definition, and on the web it draws its own material.glass.chip capsule with its own insets and opaque fallback, while on Apple it is the system tab bar"
   - component: Sidebar
     props: { variant: panel }
-    forwards: "items (from `destinations`), value (from `selectedDestination`), onChange (to `onSelectDestination`), isCollapsed (from `sidebarCollapsed`), onCollapsedChange (to `onSidebarCollapsedChange`), header (slot, the brand mark), content (slot), footer (slot)"
+    forwards: "items (from `destinations`), value (from `selectedDestination`), onChange (to `onSelectDestination`), isCollapsed (from `isSidebarCollapsed`), onCollapsedChange (to `onSidebarCollapsedChange`), header (slot, the brand mark), content (slot), footer (slot)"
     where: "navigation at `split` and `sidebar` when `navigation` is auto, sidebar or tabBar; `navigation: rail` sets `variant: rail`, and a collapsed panel renders as the rail at Sidebar's own rail width"
   - component: PillTabs
     props: { variant: pill }
@@ -151,7 +151,7 @@ composition:
     where: "TopBar's `search` slot at `split` and `sidebar`; at `stack` search is a destination or a control inside the screen, not a field in the bar"
   - component: CommandPalette
     forwards: isOpen, query, onQueryChange, items, activeId, placeholder, emptyMessage, shortcut, isLoading, onSelect, onClose
-    where: "the overlay slot, when `commandPalette` is true, at desktop width under pointer modality only; it draws its own panel and scrim, binds its own z and traps focus itself"
+    where: "the overlay slot, when `hasCommandPalette` is true, at desktop width under pointer modality only; it draws its own panel and scrim, binds its own z and traps focus itself"
   - component: ListRow
     props: { accessory: chevron }
     forwards: title (from each remaining destination's `label`), leadingIcon (from its `icon`), onPress (to `onSelectDestination`)
@@ -177,7 +177,7 @@ behavior:
   - "The detail region exists only at desktop width. It is open while the detail slot holds a DetailScreen and closed while it is empty; the app fills it in answer to the screen's own open action, such as DashboardGrid's `onOpenDetail`, and empties it on the DetailScreen's `onDismiss`. `detail: column` adds a trailing region of `layout.detail.column` below the TopBar, and the content region shrinks to make room; `overlay` lays the DetailScreen's docked drawer over the trailing part of the content without moving it, with no scrim, because the change of material separates the layer (visual-dna §6.4, §11 anti-pattern 6). In both kinds the DetailScreen has `presentation: drawer` and, through Sheet, draws the region's surface, width, inset, radius, elevation and z. Below desktop width the same DetailScreen is presented with `presentation: sheet`, which is modal over the content and the TabBar when it has no stage (component-inventory, layer 4: a desktop rail becomes a phone bottom sheet)."
   - "A detail region is never modal: it takes focus when it opens, the content beside it stays reachable by pointer and by keyboard, and Escape while focus is inside it closes it and returns focus to what opened it."
   - "The overlay slot holds one modal at a time - a CommandPalette, a modal Sheet or a Dialog - and paints after every other region. Those components and a DetailScreen drawer all bind z.overlay themselves, so at equal z the paint order decides: content, then the TabBar at its own z.raised, then the detail region, then the overlay slot. The shell binds no z; each modal draws its own material.glass.scrim and traps focus itself, and no second scrim is painted over the first."
-  - "`commandPalette: true` presents the app's CommandPalette only at desktop width under pointer modality. At `stack` and `split`, and under touch modality at any width, the shell does not present it: it is a keyboard-first affordance, and offering it without a keyboard would put a command behind a control nothing can reach."
+  - "`hasCommandPalette: true` presents the app's CommandPalette only at desktop width under pointer modality. At `stack` and `split`, and under touch modality at any width, the shell does not present it: it is a keyboard-first affordance, and offering it without a keyboard would put a command behind a control nothing can reach."
   - "Crossing a breakpoint keeps the app's state: the selected destination, the scroll position of the content region and the focused element all survive the change, focus never jumps to the top, and the layout change is not announced. A detail open at desktop width stays open across the change and moves between the drawer and the sheet presentation."
   - "Selecting a destination fires `onSelectDestination` once; the selection haptic is TabBar's own haptic.selection, and the shell fires none of its own."
   - "The shell paints color.bg.page on the root and nothing else; every surface inside it resolves its own material."
@@ -213,7 +213,7 @@ usage:
 
 examples:
   - id: phone-stack
-    props: { layout: stack, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "alerts", label: "Alerts", icon: object.notification, count: 3 }, { value: "reports", label: "Reports", icon: object.chart }], selectedDestination: "routes", topBar: true }
+    props: { layout: stack, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "alerts", label: "Alerts", icon: object.notification, count: 3 }, { value: "reports", label: "Reports", icon: object.chart }], selectedDestination: "routes", hasTopBar: true }
     description: the floating TabBar over the content - the chip capsule on the web, the system bar on Apple - with the content region reserving its height plus space.7 and the safe area so the last row clears it
   - id: phone-more
     props: { layout: stack, moreLabel: "More", destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }, { value: "reports", label: "Reports", icon: object.chart }, { value: "people", label: "Drivers", icon: object.user }, { value: "settings", label: "Settings", icon: action.settings }], selectedDestination: "routes" }
@@ -222,16 +222,16 @@ examples:
     props: { layout: split, navigation: sidebar, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "reports", label: "Reports", icon: object.chart }], selectedDestination: "fleet" }
     description: a Sidebar panel inset by space.page-margin beside the content, with the TopBar over the content; a detail opened here is a sheet, because the detail region needs desktop width
   - id: tablet-rail
-    props: { layout: split, navigation: sidebar, sidebarCollapsed: true, onSidebarCollapsedChange: toggleSidebar, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
+    props: { layout: split, navigation: sidebar, isSidebarCollapsed: true, onSidebarCollapsedChange: toggleSidebar, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
     description: the collapsed Sidebar as its rail, every item still named, and still tooltipped under pointer
   - id: desktop-sidebar
-    props: { layout: sidebar, navigation: sidebar, topBar: true, commandPalette: true, detail: overlay, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }], selectedDestination: "fleet" }
+    props: { layout: sidebar, navigation: sidebar, hasTopBar: true, hasCommandPalette: true, detail: overlay, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }], selectedDestination: "fleet" }
     description: the desktop chrome in full - Sidebar, TopBar with a SearchField, CommandPalette on its shortcut - and a DetailScreen drawer over the trailing part of the content
   - id: desktop-pill-tabs
     props: { layout: sidebar, navigation: pillTabs, destinations: [{ value: "overview", label: "Overview", icon: object.chart }, { value: "fleet", label: "Fleet", icon: object.bus }, { value: "alerts", label: "Alerts", icon: object.notification }], selectedDestination: "overview" }
     description: no Sidebar - the destinations are a PillTabs row in a leading-aligned TopBar that carries the brand mark, and the content takes the full width under it
   - id: command-palette-open
-    props: { layout: sidebar, commandPalette: true, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
+    props: { layout: sidebar, hasCommandPalette: true, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "routes" }
     description: the palette is the one modal in the overlay slot; it paints last, draws its own panel and material.glass.scrim and traps focus itself
   - id: detail-column
     props: { layout: sidebar, detail: column, destinations: [{ value: "routes", label: "Routes", icon: object.map }, { value: "fleet", label: "Fleet", icon: object.bus }], selectedDestination: "fleet" }

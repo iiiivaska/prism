@@ -82,7 +82,7 @@ props:
     description: the keys of the rows in the `selected` state, written by the caller in answer to `onSelectionChange`
   - name: onSelectionChange
     type: action
-  - name: stickyHeader
+  - name: hasStickyHeader
     type: boolean
     default: true
   - name: emptyMessage
@@ -171,7 +171,7 @@ tokens:
 behavior:
   - "Every numeric column is tabular and aligned on its trailing edge, so digits line up down the column whatever their count; `type.data` and `type.caption` are the two roles in the table, and `type.data` is tabular by definition (ADR-0021 §5). A text column is leading-aligned, and `align` overrides both."
   - "A column's alignment is the same in its header cell and in its body cells, so the header of a number column sits over the last digit and not over the first."
-  - "`stickyHeader` pins the header inside the scroller while the body scrolls. The pinned header and the pinned footer are opaque: each takes the surface step the enclosing material publishes - color.bg.surface on a solid card, color.bg.surface.nested in a nested panel, color.bg.surface.raised on a raised one - so rows never show through them, and they sit at z.raised inside the table's own stacking context, never above the page's overlays."
+  - "`hasStickyHeader` pins the header inside the scroller while the body scrolls. The pinned header and the pinned footer are opaque: each takes the surface step the enclosing material publishes - color.bg.surface on a solid card, color.bg.surface.nested in a nested panel, color.bg.surface.raised on a raised one - so rows never show through them, and they sit at z.raised inside the table's own stacking context, never above the page's overlays."
   - "The table itself paints no background, no border and no shadow: the ground is the card it sits in, and the scroller's height comes from the layout around it (a table with no bound height fills its parent and scrolls inside it)."
   - "A column marked `isRowHeader` is the leading identifier column: it sticks horizontally with the header, keeps the primary tone and is what assistive technology reads as each row's name. There is at most one."
   - "Sorting: a `sortable` header cell is a button. Pressing it sorts ascending, pressing it again reverses, and a third press returns the table to the caller's order. Only the sorted column draws an indicator - nav.up for ascending, nav.down for descending, at size.icon.sm - and the direction is also in the header cell's accessibility state, never carried by the glyph alone."

@@ -52,7 +52,7 @@ props:
   - name: pageCount
     type: number
     description: how many positions there are in the `pages` form; unset, the end is unknown and the next control stays available
-  - name: showPageNumbers
+  - name: showsPageNumbers
     type: boolean
     default: false
     description: expands the readout into numbered buttons; a pointer layout, ignored under touch
@@ -74,7 +74,7 @@ props:
     required: true
   - name: onSelectPage
     type: action
-    description: fired by a numbered button; required when `showPageNumbers` is set
+    description: fired by a numbered button; required when `showsPageNumbers` is set
 
 states: [default, hover, pressed, selected, focus-visible, disabled]
 
@@ -138,7 +138,7 @@ behavior:
   - "The readout reserves a width, so the two controls do not walk inwards and outwards as the label changes: size.card.min (200 px) in the `range` form, where the label is a period written in words, and size.control.lg in the `pages` form, where it is two numbers. A longer label widens the row from that minimum and stays centred between the controls."
   - "Every number in this component is tabular, on both roles: the page and the count change while they are visible, and ADR-0021 §5 makes every such value tabular. type.data is tabular by its role, and the `md` readout sets it on type.label.md."
   - "`hasPrevious` and `hasNext` decide availability, not the numbers: a control that cannot move takes IconButton's disabled look and leaves the focus order. The row never wraps around from the last position to the first, because a pager that loops hides the end of the set."
-  - "`showPageNumbers` expands the readout into numbered buttons and is a pointer layout: under touch modality it is ignored and the row stays two controls and a readout, because a row of 32 pt numbers inside 44 pt hit regions does not fit a phone's width. It belongs to `kind: pages`; on a `range` pager it is ignored in every modality, because a period has no numbered siblings."
+  - "`showsPageNumbers` expands the readout into numbered buttons and is a pointer layout: under touch modality it is ignored and the row stays two controls and a readout, because a row of 32 pt numbers inside 44 pt hit regions does not fit a phone's width. It belongs to `kind: pages`; on a `range` pager it is ignored in every modality, because a period has no numbered siblings."
   - "In the expanded layout the current page is the one inverse solid of its group and every other number is a plain button with no fill (docs/research/visual-dna.md §1 principle 9). At most seven buttons are drawn: the first, the last, the current and its two neighbours, with an ellipsis mark standing for each run that is left out."
   - "The ellipsis is decoration. It is not a control, it is not focusable and it is hidden from assistive technology, which reads the position from the readout instead."
   - "Selection moves on release inside a button and fires `onSelectPage` once; nothing slides between numbers, because the numbers are not adjacent segments of one track. The outgoing number loses its fill and the incoming one gains it."
@@ -193,10 +193,10 @@ examples:
     props: { kind: pages, page: 4 }
     description: with no `pageCount` the readout is the page alone and the next control stays available
   - id: pages-expanded
-    props: { kind: pages, page: 4, pageCount: 12, showPageNumbers: true }
+    props: { kind: pages, page: 4, pageCount: 12, showsPageNumbers: true }
     description: the pointer layout — first, last, current and its neighbours, with an ellipsis for each run left out; the current number is the one solid
   - id: pages-expanded-first
-    props: { kind: pages, page: 1, pageCount: 4, showPageNumbers: true, hasPrevious: false }
+    props: { kind: pages, page: 1, pageCount: 4, showsPageNumbers: true, hasPrevious: false }
   - id: small
     props: { kind: pages, page: 2, pageCount: 8, size: sm }
   - id: on-glass-over-map
@@ -211,7 +211,7 @@ examples:
 notes:
   platform:
     watchos: "`none`. Pagination is not in ADR-0010's Tier 3 set. A watch screen is a vertical stack of at most three glanceable tiles (spec/patterns/README.md), and two 44 pt circles around a readout would fill the 198 pt face of ADR-0029 §3.2; the wrist moves through a set with the crown and a list screen instead. This is a decision, not a gap."
-    macos: "compact density gives 32 pt controls and 32 pt numbers at `size: md`, 28 pt at `sm`; hover is required on the numbered buttons, and `showPageNumbers` is the layout a wide table footer asks for."
+    macos: "compact density gives 32 pt controls and 32 pt numbers at `size: md`, 28 pt at `sm`; hover is required on the numbered buttons, and `showsPageNumbers` is the layout a wide table footer asks for."
     web-desktop: "the numbered buttons are React Aria Buttons inside a `nav` landmark, `data-selected` drives the solid, and the readout is an `aria-live=\"polite\"` element."
   design: >-
     Two of eleven shots carry a pager (docs/research/component-inventory.md), and the row merges both: the

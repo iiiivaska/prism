@@ -399,14 +399,14 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
     const diagnostics = await diagnose('prop-boolean-name');
     expect(diagnostics.map((d) => `${d.line ?? 0} ${d.code} ${d.message}`)).toEqual([
       "46 prop/boolean-name boolean prop `showValue` opens with the imperative `show`, and the rule's verb is `shows`: a name is a statement about the component, never an instruction",
-      // `live` is owed as HeroNumber's, StatCard's and StatTile's, never as a word: the allowance names a spec's prop.
-      '49 prop/boolean-name boolean prop `live` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+      // A bare adjective: HeroNumber's, StatCard's and StatTile's `live` became `isLive` (P4-11).
+      '49 prop/boolean-name boolean prop `live` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`, `grows…`, `delays…`) followed by what it says, so it does not state what is true of the component',
       // The verbs are a closed list, because a noun can end in -s too.
-      '52 prop/boolean-name boolean prop `focusRing` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+      '52 prop/boolean-name boolean prop `focusRing` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`, `grows…`, `delays…`) followed by what it says, so it does not state what is true of the component',
       '55 prop/boolean-name boolean prop `isNotReady` states a negation (`Not`)',
       '58 prop/boolean-name boolean prop `hasNoBorder` states a negation (`No`)',
       // A pattern's props are held to the rule as a component's are: a bare noun for a region it draws.
-      '35 prop/boolean-name boolean prop `sidebar` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`) followed by what it says, so it does not state what is true of the component',
+      '35 prop/boolean-name boolean prop `sidebar` is not a verb of the rule (`is…`, `has…`, `shows…`, `clamps…`, `grows…`, `delays…`) followed by what it says, so it does not state what is true of the component',
     ]);
     expect(diagnostics[0]?.hint).toBe('rename it `showsValue` (spec/SCHEMA.md, "One meaning, one name, one polarity")');
   }, 60_000);
@@ -448,7 +448,7 @@ describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {
   });
 
   test('the naming rule reads the verb and the words after it, and nothing else', () => {
-    for (const name of ['isSelected', 'isOn', 'isReadOnly', 'hasNext', 'showsClose', 'clampsOverflow']) expect(booleanNameProblem(name), name).toBeNull();
+    for (const name of ['isSelected', 'isOn', 'isReadOnly', 'hasNext', 'showsClose', 'clampsOverflow', 'growsWithValue', 'delaysAppearance']) expect(booleanNameProblem(name), name).toBeNull();
     // A verb alone says nothing; an imperative, a modal, a verb outside the list and a noun that ends in -s are no
     // statement about the component.
     for (const name of ['is', 'shows', 'show', 'showValue', 'canDismiss', 'hidesClose', 'statusIcon', 'selected']) expect(booleanNameProblem(name), name).not.toBeNull();

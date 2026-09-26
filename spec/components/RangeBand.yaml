@@ -49,7 +49,7 @@ props:
     values: [neutral, accent]
     default: neutral
     description: accent flags a window that is off target; a status hue is never used here
-  - name: bookends
+  - name: showsBookends
     type: boolean
     default: true
     description: dots at the window's edges, on the time axis only
@@ -139,7 +139,7 @@ examples:
     props: { from: 90, to: 100, axis: y, fill: accent, label: "Above capacity" }
     description: where the band reaches the plot's top edge there is no room above it, so the label sits below the band's lower edge in color.text.accent
   - id: no-bookends
-    props: { from: 1763528400, to: 1763542800, axis: x, bookends: false }
+    props: { from: 1763528400, to: 1763542800, axis: x, showsBookends: false }
   - id: label-ru
     props: { from: 1763528400, to: 1763542800, axis: x, label: "Плановое обслуживание" }
     description: the Russian label is about half again as long; where it no longer fits between the band's leading edge and the plot's trailing edge it moves into the chart caption rather than clipping

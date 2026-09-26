@@ -44,7 +44,7 @@ props:
     values: [display-xl, display-lg, display-md, title-lg, title-md, title-sm, headline, body-lg, body-md, body-sm, label-lg, label-md, label-sm, caption, micro, eyebrow, metric-xl, metric-lg, metric-md, data]
     default: body-md
     description: "the Text role the placeholder stands in for; every bar is that role's line box tall. The vocabulary is Text's, so the caller names the role it is about to render. Ignored unless `shape` is text; a block or a circle takes the box of the content it replaces"
-  - name: animated
+  - name: isAnimated
     type: boolean
     default: true
     description: false holds the placeholder still even when Reduce Motion is off, for a dense list where many sweeps would flicker
@@ -95,7 +95,7 @@ behavior:
   - "The fill is `comp.skeleton.bg`, which is `color.bg.fill.neutral.subtle` (ink or white 6 %): one step of the surface ladder, never a grey of its own."
   - "The sweep is one pass per `motion.duration.slower` with `motion.easing.linear`: a linear gradient along the long axis, transparent at both ends and `comp.skeleton.shimmer` at its midpoint, one third of that axis wide, travelling from one edge to the other and restarting at the first. Because the shimmer token aliases the same neutral subtle fill as the body, the brightest point of the pass is two 6 % layers and never reaches the next step of the ladder."
   - "One container runs one sweep, so a loading card reads as one object rather than as a field of flickering bars: the travelling gradient is measured across the nearest enclosing Surface and each placeholder shows the part of it that crosses its own box, with one shared start time. Placeholders that share no Surface do not share a sweep."
-  - "With `animated` false, and in Prism's reduced motion context, the `shimmer` part is not rendered at all — it is left out, not paused at opacity 0 — and the placeholder is one static fill from first paint."
+  - "With `isAnimated` false, and in Prism's reduced motion context, the `shimmer` part is not rendered at all — it is left out, not paused at opacity 0 — and the placeholder is one static fill from first paint."
   - "A Skeleton is drawn only on the solid surface ladder. On vivid it would land in a gradient's no-text zone and on glass it would be a grey on glass, which the chart rules forbid (dataviz-design.md §3 E25 and G39; visual-dna §11 anti-pattern 23), so the component declares no vivid or glass cell."
   - The content replaces the Skeleton with an opacity crossfade over `motion.duration.base` with `motion.easing.out`. The placeholder never grows, shrinks, slides or morphs into its content, and it has no minimum display time.
   - "A refetch of content that is already on screen shows no Skeleton: the previous render is held at `opacity.dimmed-row` until the new data lands (dataviz-design.md §3 H46). Skeletons belong to a first load only."
@@ -143,7 +143,7 @@ examples:
     props: { shape: circle }
     description: an avatar or round-button placeholder
   - id: still
-    props: { shape: text, lines: 2, role: body-sm, animated: false }
+    props: { shape: text, lines: 2, role: body-sm, isAnimated: false }
     description: a dense list where many sweeps would flicker, held still with Reduce Motion off
   - id: card-placeholder
     props: { shape: block }

@@ -92,7 +92,7 @@ props:
     type: enum
     values: [auto, always, never]
     default: auto
-  - name: grid
+  - name: showsGrid
     type: boolean
     default: true
   - name: selection
@@ -100,7 +100,7 @@ props:
     description: the selected x, read and written by the caller; unset means no selection, and the crosshair and the now-dot are not drawn
   - name: onSelectionChange
     type: action
-  - name: scrollable
+  - name: isScrollable
     type: boolean
     default: false
   - name: visibleDomain
@@ -223,7 +223,7 @@ behavior:
   - "`selection` enters the `selected` state: while it is set, the selected x draws the crosshair rule and a chart.endpoint-size now-dot in color.chart.now; the values live outside the plot, in the ChartContainer's header, where the hero and its delta update together."
   - "Selection fires haptic.selection once per snapped index on touch, and never on pointer platforms."
   - "Keyboard and Switch Control: the plot is focusable; arrow keys move the selection one point, Home and End jump to the ends, PageUp and PageDown move ten points, and Escape clears it. Focus shows the same readout as hover."
-  - "`scrollable` lets the x axis scroll inside `visibleDomain`; the y domain is computed over the visible window and stated in the chart's caption when it changes."
+  - "`isScrollable` lets the x axis scroll inside `visibleDomain`; the y domain is computed over the visible window and stated in the chart's caption when it changes."
   - "`isLoading` enters `loading`, which holds the previous render at opacity.dimmed-row and never flashes a skeleton. Inside a ChartContainer the container's own `isLoading` holds the whole block and the chart's stays false, so the hold is applied once (spec/SCHEMA.md). An empty or failed series is the ChartContainer's message, not the plot's."
   - "The plot fill is color.chart.plot on the solid family and the white lift color.chart.on-glass-fill.plot on the scheme's glass; a chart never sits on raw glass. On vivid the plot has no fill at all — the on-media family carries no plot role, and a grey plot box would flatten the gradient — so the marks are drawn straight on it, inside its large zone and away from its lightest end."
 
@@ -285,7 +285,7 @@ examples:
     backdrop: map
     description: the plot is the white lift of color.chart.on-glass-fill.plot and a single series takes the glass foreground
   - id: on-vivid
-    props: { series: [{ id: yield, name: "Yield", points: 60 }], grid: true, directLabels: none, markers: never }
+    props: { series: [{ id: yield, name: "Yield", points: 60 }], showsGrid: true, directLabels: none, markers: never }
     surface: vivid
     description: marks only — one white series and the dashed grid straight on the gradient, with no plot fill, no axis text and no direct label; the scale is stated in the container's header
 

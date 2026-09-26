@@ -34,7 +34,7 @@ props:
   - name: label
     type: string
     description: what is being waited for; it becomes the accessibility label when the owning control does not already provide one
-  - name: delay
+  - name: delaysAppearance
     type: boolean
     default: true
     description: hold the Spinner hidden for one `motion.duration.slower` so a fast answer never flashes a spinner
@@ -61,7 +61,7 @@ behavior:
   - "The arc is the 270 degree open sweep of dataviz-design.md §3 E24 with round caps, drawn at `comp.spinner.stroke` (1.5 px, the icon stroke of visual-dna §10). It turns one revolution per `motion.duration.slower` with `motion.easing.linear`, which ADR-0023 §9 reserves for constant motion."
   - The Spinner has no track and no value. A mark with a track is a ProgressRing, and a mark with a value is a ProgressBar.
   - "The box is `size.icon.sm`, `.md` or `.lg`, so a Spinner occupies exactly the slot of the glyph or label it replaces and no layout shifts when it appears. `Button.isLoading` replaces the label with a Spinner of the label's height and keeps the button's width."
-  - "With `delay` true the Spinner stays hidden for `motion.duration.slower` and then fades in over `motion.duration.base` with `motion.easing.out`, so a request that answers quickly shows nothing at all. The delay is the bound token, not a literal, so it is 500 ms in the default motion context and 150 ms in the reduced one, where ADR-0023 §8.3 caps every duration at 150 ms; the Spinner does not branch on the context to keep it longer."
+  - "With `delaysAppearance` true the Spinner stays hidden for `motion.duration.slower` and then fades in over `motion.duration.base` with `motion.easing.out`, so a request that answers quickly shows nothing at all. The delay is the bound token, not a literal, so it is 500 ms in the default motion context and 150 ms in the reduced one, where ADR-0023 §8.3 caps every duration at 150 ms; the Spinner does not branch on the context to keep it longer."
   - "The arc takes `comp.spinner.arc` unless the owning control binds the `arc` part itself; Button binds its own foreground per variant, so a Spinner inside a primary pill is `color.text.on-inverse`."
   - One Spinner per waiting region. A screen that is loading its whole content uses Skeleton placeholders or an EmptyState, not a field of spinners.
   - A Spinner never carries the message alone. The control or region that owns it names the work in text, so the state survives Reduce Motion, where the arc does not turn.
@@ -82,13 +82,13 @@ accessibility:
   dynamicType: the arc does not scale with text, because it stands in a glyph slot; a Spinner replacing a label matches that label's height, which does scale
   contrast: "while it turns, the arc is a mark that carries meaning and holds the 3:1 boundary tier of ADR-0011; `comp.spinner.arc` is `color.icon.primary` (ink 80 % in light, 10.7:1 on white; white in dark) and the material cells take that material's primary foreground, the same tones Text uses. The static ring it becomes under Reduce Motion is dimmed to `opacity.dimmed-row` and is decoration at that point: it carries no tier, which is why the owning control's text and the accessibility label, not the mark, carry the state there"
   reduceTransparency: not applicable — the Spinner renders no glass of its own; when the enclosing Surface falls back from glass to `raised`, the arc takes its `default` colour with it
-  reduceMotion: "the rotation is an ambient loop and does not run (ADR-0023 §8.4, `instant`): the Spinner draws its complete circumference in `comp.spinner.arc` at `opacity.dimmed-row` and holds it. The entrance no longer scales; it crossfades by opacity over `motion.duration.base` with `motion.easing.out`. The `delay` still applies but shortens with its token to 150 ms, because ADR-0023 §8.3 caps every duration in the reduced context. Because the static mark says nothing on its own, the owning control's text and its accessibility label carry the state"
+  reduceMotion: "the rotation is an ambient loop and does not run (ADR-0023 §8.4, `instant`): the Spinner draws its complete circumference in `comp.spinner.arc` at `opacity.dimmed-row` and holds it. The entrance no longer scales; it crossfades by opacity over `motion.duration.base` with `motion.easing.out`. The hold of `delaysAppearance` still applies but shortens with its token to 150 ms, because ADR-0023 §8.3 caps every duration in the reduced context. Because the static mark says nothing on its own, the owning control's text and its accessibility label carry the state"
 
 usage:
   do:
     - Put the Spinner in the slot of the thing it replaces, at that thing's size, so nothing reflows when it appears or leaves.
     - Name the work beside it or in the owning control ("Saving", "Checking connection").
-    - Keep `delay` on for anything that usually answers in well under half a second.
+    - Keep `delaysAppearance` on for anything that usually answers in well under half a second.
   dont:
     - Don't use a Spinner for work you can measure; that is a ProgressBar, and a bar that pretends to measure is worse than a Spinner.
     - Don't fill a loading screen with Spinners; use Skeleton placeholders for a layout you already know.
@@ -103,7 +103,7 @@ examples:
   - id: large
     props: { size: lg, label: "Loading report" }
   - id: no-delay
-    props: { size: md, label: "Saving", delay: false }
+    props: { size: md, label: "Saving", delaysAppearance: false }
     description: a control that is known to be slow shows the Spinner at once
   - id: on-vivid
     props: { size: md, label: "Refreshing" }

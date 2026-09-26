@@ -60,7 +60,7 @@ props:
     default: md
   - name: period
     type: string
-  - name: showIcon
+  - name: showsIcon
     type: boolean
     default: true
 
@@ -138,7 +138,7 @@ tokens:
 
 behavior:
   - "The sign is explicit for every non-zero value (+, −). A measured zero is not a missing value and the two never render alike: `direction: flat` writes the formatted zero with its basis (\"0.0%\" in English, \"0,0 %\" in Russian) and no sign and no glyph, while an unset or empty `value` renders an em dash, which means no data here as it does in HeroNumber, StatTile and Sparkline. A flat badge reads \"unchanged\"; an em-dash badge reads \"no data\"."
-  - "The glyph is status.trend-up for `up` and status.trend-down for `down`, and `flat` and the no-data case draw none. `showIcon: false` is safe at any time, because the component always writes the sign and the direction therefore never rests on color alone (ADR-0011 rule 4); it exists for rows that already carry a direction column."
+  - "The glyph is status.trend-up for `up` and status.trend-down for `down`, and `flat` and the no-data case draw none. `showsIcon: false` is safe at any time, because the component always writes the sign and the direction therefore never rests on color alone (ADR-0011 rule 4); it exists for rows that already carry a direction column."
   - "The badge's figures are tabular on every role: a delta changes while it is visible (ADR-0021 §5)."
   - "Color says only whether the change is on target: a change in the wanted direction keeps color.text.primary, and an off-target change takes color.text.accent. Status hues never color a delta, and green never appears."
   - "`polarity: neutral` keeps both directions in color.text.primary; the glyph and the sign still carry the direction."

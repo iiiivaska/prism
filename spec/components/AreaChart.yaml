@@ -80,7 +80,7 @@ props:
     type: enum
     values: [endpoint, none]
     default: endpoint
-  - name: grid
+  - name: showsGrid
     type: boolean
     default: true
   - name: selection

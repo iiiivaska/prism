@@ -65,18 +65,18 @@ props:
   - name: columns
     type: number
     description: an upper limit on the width-derived column count of `layout.columns`; it lowers the count and never raises it, and size.card.min still applies
-  - name: tileGroup
+  - name: hasTileGroup
     type: boolean
     default: false
   - name: litTile
     type: number
     description: the zero-based index of the one lit tile in the slab, counted in reading order; unset, no tile is lit, and an index outside the slab lights none
-  - name: band
+  - name: hasBand
     type: boolean
     default: false
   - name: bandTitle
     type: string
-    description: the name of the band region and of the Sheet that replaces it at compact width; required when `band` is true
+    description: the name of the band region and of the Sheet that replaces it at compact width; required when `hasBand` is true
   - name: detailPanel
     type: enum
     values: [none, column, overlay]
@@ -196,7 +196,7 @@ composition:
     forwards: "title (from `bandTitle`), detent, onDetentChange, content (slot, the band's charts)"
     where: "the band at compact width, inside the band's dark scope; a docked Sheet draws no scrim and traps nothing, so the grid behind it stays usable"
   - component: Skeleton
-    props: { animated: true }
+    props: { isAnimated: true }
     forwards: shape, role, lines
     where: "the first load of a cell, before any data has arrived; `role` is the type role of the text the skeleton stands in for, so the cell does not change height when the data lands"
 
@@ -213,9 +213,9 @@ behavior:
   - "The detail panel is open while the detailPanel slot holds a DetailScreen and closed while it is empty. At desktop width `column` adds a trailing column of `layout.detailPanel.column` beside the grid, and the grid recomputes its columns in what is left; `overlay` lays the DetailScreen's docked drawer over the trailing part of the grid without moving a card, with no scrim, because a change of material separates the layer (visual-dna §6.4, §11 anti-pattern 6). In both kinds the DetailScreen has `presentation: drawer` and, through Sheet, draws the panel's surface, width, inset, radius, elevation and z; this pattern gives it the region and nothing else. At compact and regular width either kind opens as the same DetailScreen with `presentation: sheet`, because the trailing panel of visual-dna §6.3 appears only at landscape tablet width, which is desktop width here."
   - "The panel is not modal: it takes focus when it opens, leaves the grid reachable by pointer and by keyboard, and does not make it inert. Escape while focus is inside the panel fires the DetailScreen's `onDismiss`, and closing returns focus to the cell that opened it. A layer that must block the page is a Sheet with `isModal` or a Dialog, which draws its own scrim and traps focus itself."
   - "Inside an AdaptiveShell the shell owns the detail region: the grid keeps `detailPanel: none`, and the app answers `onOpenDetail` by filling the shell's `detail` slot, so one screen never shows two trailing panels. The grid carries the page margin and the shell's content region adds none, so space.page-margin is applied once."
-  - "`band: true` adds a band under the grid and the slab. Its outer edges are the grid's outer column edges, so it spans every column, and it holds `layout.bandCharts` ChartContainers per row - two side by side at desktop width, one at regular - at space.4 inside space.card-padding; the band is as tall as its charts, and an app sizes them so the band takes about 22 % of the viewport height (visual-dna §6.4). At compact width the band becomes a docked Sheet at `detent: peek` with `detents: [peek, medium]`, `isModal: false` and `isDismissible: false`, titled by `bandTitle`, and the band's own radius, padding and gap do not apply there; the page reserves the Sheet's `peek` height plus the bottom safe-area inset as its bottom content inset, so the last card clears the docked Sheet. On macOS and web-desktop, where Sheet has no detents, the band stays a band at every width."
+  - "`hasBand: true` adds a band under the grid and the slab. Its outer edges are the grid's outer column edges, so it spans every column, and it holds `layout.bandCharts` ChartContainers per row - two side by side at desktop width, one at regular - at space.4 inside space.card-padding; the band is as tall as its charts, and an app sizes them so the band takes about 22 % of the viewport height (visual-dna §6.4). At compact width the band becomes a docked Sheet at `detent: peek` with `detents: [peek, medium]`, `isModal: false` and `isDismissible: false`, titled by `bandTitle`, and the band's own radius, padding and gap do not apply there; the page reserves the Sheet's `peek` height plus the bottom safe-area inset as its bottom content inset, so the last card clears the docked Sheet. On macOS and web-desktop, where Sheet has no detents, the band stays a band at every width."
   - "The band is the second material of visual-dna §4.10, a near-black band under a lighter page, and it is reached by scope rather than by a material of its own: the band region, and the compact Sheet that replaces it, declare the dark color scheme on their element in both schemes (`scope()` on the web, the DSCore modifier on Apple - color scheme and density nest per element, while contrast, transparency, modality and motion are read from the root alone, ADR-0019 §1 and §4). The band then paints that scope's color.bg.page at radius.sheet, which on a dark page is the page's own ground. Nothing reads the scheme to choose a material: every component in the band asks for its own material and the scope's tokens resolve it."
-  - "`tileGroup: true` adds a slab under the grid, at space.5 from it, spanning the grid's full width in `layout.tileColumns` equal columns - two at compact and regular width, four at desktop (visual-dna §4.5: a 2x2 slab, or four count tiles in a row) - at space.tile-gap. Every tile is a Surface of material solid at radius.tile with space.card-padding holding one StatTile at `size: sm`; the tile `litTile` names is that Surface at `material: accent`, so its fill is color.bg.fill.accent and the text on it resolves to color.text.on-accent and color.text.on-accent-secondary from the published material. There is at most one lit tile, and it is the screen's single accent."
+  - "`hasTileGroup: true` adds a slab under the grid, at space.5 from it, spanning the grid's full width in `layout.tileColumns` equal columns - two at compact and regular width, four at desktop (visual-dna §4.5: a 2x2 slab, or four count tiles in a row) - at space.tile-gap. Every tile is a Surface of material solid at radius.tile with space.card-padding holding one StatTile at `size: sm`; the tile `litTile` names is that Surface at `material: accent`, so its fill is color.bg.fill.accent and the text on it resolves to color.text.on-accent and color.text.on-accent-secondary from the published material. There is at most one lit tile, and it is the screen's single accent."
   - "The control swap of visual-dna §4.5 - a control on the lit tile taking color.bg.fill.neutral.subtle where it would take color.bg.surface.raised - is a cell of that control's own spec, keyed by the published `accent` material. This pattern overrides no composed component's cell; IconButton.yaml and Button.yaml declare no `accent` cell yet, so until they do, a control on the lit tile keeps its default fill."
   - "`loading` holds the grid, the slab and the band at opacity.dimmed-row and keeps every card in place; the header and an open detail panel stay at full opacity. Only a cell that has never had data renders a Skeleton, so a refetch never reflows the page."
   - "`error` replaces each failed cell with its component's own error state and leaves the grid geometry alone; a whole-page failure renders one EmptyState of `variant: page` in place of the grid, the slab and the band and keeps the header, so the reader can still retry or leave."
@@ -253,7 +253,7 @@ usage:
 
 examples:
   - id: ops-dark
-    props: { title: "Fleet console", hero: metric, tileGroup: true, litTile: 0, band: true, bandTitle: "Throughput today", detailPanel: overlay }
+    props: { title: "Fleet console", hero: metric, hasTileGroup: true, litTile: 0, hasBand: true, bandTitle: "Throughput today", detailPanel: overlay }
     schemes: [dark]
     description: four columns at desktop width with an availability numeral in the hero block and two cards beside it, a slab of four count tiles with the first one lit, a band of two charts on the grid's outer edges, and an entity drawer over the trailing columns
   - id: airy-light
@@ -265,13 +265,13 @@ examples:
     grid: ["1", "2", "2", "1"]
     description: the hero block is a 2x2 of vivid cards, one slot pair on the diagonals, so the group is one temperature
   - id: phone-stack
-    props: { title: "Today", hero: metric, tileGroup: true }
+    props: { title: "Today", hero: metric, hasTileGroup: true }
     description: compact width - one card column, the hero numeral full width, the slab two tiles per row, and the second group of cards behind a tab
   - id: lit-slab
-    props: { title: "Line status", tileGroup: true, litTile: 2 }
+    props: { title: "Line status", hasTileGroup: true, litTile: 2 }
     description: a slab of tiles at space.tile-gap in which the third tile in reading order is lit and carries the screen's single accent
   - id: with-band
-    props: { title: "Throughput", hero: metric, band: true, bandTitle: "Last seven days" }
+    props: { title: "Throughput", hero: metric, hasBand: true, bandTitle: "Last seven days" }
     schemes: [light]
     description: a near-black band under the light page, on the grid's outer column edges, holding two ChartContainers side by side
   - id: detail-overlay
@@ -284,7 +284,7 @@ examples:
     props: { title: "Revenue", hero: vivid }
     description: a refetch holds the grid at opacity.dimmed-row with the header at full opacity, and only the never-loaded cell shows a Skeleton
   - id: title-ru
-    props: { title: "Сводка по автопарку за смену", hero: metric, tileGroup: true }
+    props: { title: "Сводка по автопарку за смену", hero: metric, hasTileGroup: true }
     description: the Russian page title runs about a third longer than its English twin and wraps to a second line rather than truncating; the header grows and the grid moves down with it
 
 notes:

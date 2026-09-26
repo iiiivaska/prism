@@ -15602,7 +15602,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 0.62, label: Uploading route file, showValue: true",
+          "props": "value: 0.62, label: Uploading route file, showsValue: true",
           "cells": []
         },
         {
@@ -15620,7 +15620,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 0.45, secondaryValue: 0.2, label: Storage used, showValue: true",
+          "props": "value: 0.45, secondaryValue: 0.2, label: Storage used, showsValue: true",
           "cells": []
         },
         {
@@ -15629,7 +15629,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 0.72, target: 0.9, label: Monthly target, showValue: true",
+          "props": "value: 0.72, target: 0.9, label: Monthly target, showsValue: true",
           "cells": []
         },
         {
@@ -15638,7 +15638,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 1, label: Sync complete, showValue: true",
+          "props": "value: 1, label: Sync complete, showsValue: true",
           "cells": []
         },
         {
@@ -15665,7 +15665,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 0.4, label: Загрузка данных маршрута, showValue: true",
+          "props": "value: 0.4, label: Загрузка данных маршрута, showsValue: true",
           "cells": []
         }
       ]
@@ -15706,7 +15706,7 @@
             "light",
             "dark"
           ],
-          "props": "variant: determinate, value: 0.86, size: lg, showValue: true, label: Battery charge",
+          "props": "variant: determinate, value: 0.86, size: lg, showsValue: true, label: Battery charge",
           "cells": []
         },
         {
@@ -15733,7 +15733,7 @@
             "light",
             "dark"
           ],
-          "props": "variant: determinate, value: 1, size: lg, showValue: true, label: Sync complete",
+          "props": "variant: determinate, value: 1, size: lg, showsValue: true, label: Sync complete",
           "cells": []
         },
         {
@@ -15760,7 +15760,7 @@
             "light",
             "dark"
           ],
-          "props": "variant: determinate, value: 0.4, size: lg, showValue: true, label: Заряд аккумулятора",
+          "props": "variant: determinate, value: 0.4, size: lg, showsValue: true, label: Заряд аккумулятора",
           "cells": []
         }
       ]
@@ -16149,7 +16149,7 @@
             "light",
             "dark"
           ],
-          "props": "shape: text, lines: 2, role: body-sm, animated: false",
+          "props": "shape: text, lines: 2, role: body-sm, isAnimated: false",
           "cells": []
         },
         {
@@ -16199,7 +16199,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 6, min: 0, max: 12, step: 1, ticks: true, label: Sampling window, unit: h",
+          "props": "value: 6, min: 0, max: 12, step: 1, showsTicks: true, label: Sampling window, unit: h",
           "cells": []
         },
         {
@@ -16226,7 +16226,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 42, min: 0, max: 100, label: Alert threshold, showValue: false",
+          "props": "value: 42, min: 0, max: 100, label: Alert threshold, showsValue: false",
           "cells": []
         },
         {
@@ -16321,7 +16321,7 @@
             "light",
             "dark"
           ],
-          "props": "size: md, label: Saving, delay: false",
+          "props": "size: md, label: Saving, delaysAppearance: false",
           "cells": []
         },
         {
@@ -19939,7 +19939,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Shift notes, rows: 3, maxRows: 8, autoGrow: true",
+          "props": "label: Shift notes, rows: 3, maxRows: 8, growsWithValue: true",
           "cells": []
         },
         {
@@ -22397,7 +22397,7 @@
             "light",
             "dark"
           ],
-          "props": "title: Last sync, value: 11 days ago, leadingIcon: object.clock, leader: true",
+          "props": "title: Last sync, value: 11 days ago, leadingIcon: object.clock, showsLeader: true",
           "cells": []
         },
         {
@@ -22496,7 +22496,7 @@
             "light",
             "dark"
           ],
-          "props": "title: Последняя синхронизация участка, subtitle: Северный двор, value: 11 дней, leader: true",
+          "props": "title: Последняя синхронизация участка, subtitle: Северный двор, value: 11 дней, showsLeader: true",
           "cells": []
         }
       ]
@@ -22668,7 +22668,7 @@
             "light",
             "dark"
           ],
-          "props": "kind: pages, page: 4, pageCount: 12, showPageNumbers: true",
+          "props": "kind: pages, page: 4, pageCount: 12, showsPageNumbers: true",
           "cells": []
         },
         {
@@ -22677,7 +22677,7 @@
             "light",
             "dark"
           ],
-          "props": "kind: pages, page: 1, pageCount: 4, showPageNumbers: true, hasPrevious: false",
+          "props": "kind: pages, page: 1, pageCount: 4, showsPageNumbers: true, hasPrevious: false",
           "cells": []
         },
         {
@@ -23238,7 +23238,7 @@
             "light",
             "dark"
           ],
-          "props": "variant: solid, title: Ingest rate, caption: Last hour, value: 1 284, unit: req/s, live: true",
+          "props": "variant: solid, title: Ingest rate, caption: Last hour, value: 1 284, unit: req/s, isLive: true",
           "cells": []
         },
         {
@@ -24512,7 +24512,7 @@
             "light",
             "dark"
           ],
-          "props": "value: 1 284, unit: req/s, label: Ingest rate, size: xl, live: true",
+          "props": "value: 1 284, unit: req/s, label: Ingest rate, size: xl, isLive: true",
           "cells": []
         },
         {
@@ -24715,7 +24715,7 @@
             "light",
             "dark"
           ],
-          "props": "series: [{\"id\":\"yield\",\"name\":\"Yield\",\"points\":60}], grid: true, directLabels: none, markers: never",
+          "props": "series: [{\"id\":\"yield\",\"name\":\"Yield\",\"points\":60}], showsGrid: true, directLabels: none, markers: never",
           "cells": []
         }
       ]
@@ -24783,7 +24783,7 @@
             "light",
             "dark"
           ],
-          "props": "from: 1763528400, to: 1763542800, axis: x, bookends: false",
+          "props": "from: 1763528400, to: 1763542800, axis: x, showsBookends: false",
           "cells": []
         },
         {
@@ -25086,7 +25086,7 @@
             "light",
             "dark"
           ],
-          "props": "points: [61,72,58,68,91,70,74,63,77,82,55,86], kind: line, extremes: true",
+          "props": "points: [61,72,58,68,91,70,74,63,77,82,55,86], kind: line, showsExtremes: true",
           "cells": []
         },
         {
@@ -25163,7 +25163,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Ingest rate, value: 1 284, unit: req/s, size: md, live: true, trend: {\"points\":[1180,1204,1192,1231,1218,1246,1260,1249,1272,1265,1279,1284],\"kind\":\"line\",\"size\":\"tile\",\"emphasis\":\"primary\"}",
+          "props": "label: Ingest rate, value: 1 284, unit: req/s, size: md, isLive: true, trend: {\"points\":[1180,1204,1192,1231,1218,1246,1260,1249,1272,1265,1279,1284],\"kind\":\"line\",\"size\":\"tile\",\"emphasis\":\"primary\"}",
           "cells": []
         },
         {

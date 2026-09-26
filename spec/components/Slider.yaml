@@ -49,7 +49,7 @@ props:
   - name: step
     type: number
     description: when set, the value snaps to multiples of it from `min`
-  - name: ticks
+  - name: showsTicks
     type: boolean
     default: false
     description: draws one mark per step; without a `step` it draws nothing
@@ -58,7 +58,7 @@ props:
   - name: unit
     type: string
     description: hung beside the readout by Text, never inside the numeral
-  - name: showValue
+  - name: showsValue
     type: boolean
     default: true
   - name: isDisabled
@@ -124,9 +124,9 @@ behavior:
   - The thumb's hit region is the larger of its circle and size.hit on each axis (28 pt under pointer, 44 pt under touch); modality owns that region and never changes the drawn circle, which follows density through comp.slider.thumb.size (ADR-0024 §7.1 and §7.3).
   - "The thumb is the focusable element, not the row: it takes the control's single tab stop, and the focus ring is drawn around its circle at radius.control, outside it, in color.border.focus at border.focus width. The label and the readout are never focusable."
   - "`step` snaps the value to multiples of it from `min`, and the reported value is always clamped to the closed range: a `value` outside `min`..`max` renders and reports as the nearer end, `max` is reachable even when `max - min` is not a whole number of steps (the last stop is short), and a `step` of zero or less is read as no step at all."
-  - "`ticks` draws one mark per step under the track in comp.slider.tick at border.hairline width - the tick-ruler ornament of visual-dna §4.12, which is decorative: the readout carries the meaning, and ticks are dropped rather than crowded when a step would fall closer than space.1 to its neighbour. `ticks: true` without a `step` draws nothing and is not an error; there is no ruler without stops."
+  - "`showsTicks` draws one mark per step under the track in comp.slider.tick at border.hairline width - the tick-ruler ornament of visual-dna §4.12, which is decorative: the readout carries the meaning, and ticks are dropped rather than crowded when a step would fall closer than space.1 to its neighbour. `showsTicks: true` without a `step` draws nothing and is not an error; there is no ruler without stops."
   - "Keyboard: the arrow keys move one step, Home and End jump to `min` and `max`, and Page Up and Page Down move ten steps. A Slider with no `step` takes one hundredth of its range as the keyboard step (dataviz-design §3 rule 43, the scrubber's keyboard grammar). Every keyboard move fires `onChange` and then `onChangeEnd`, because a key press is a whole gesture."
-  - "`showValue` renders the current value beside the label as a Text of role metric-md with tabular figures and `unit` hung beside it; live values are tabular so the row does not jitter (visual-dna §4.2 and §11 anti-pattern 18). The readout is trailing in the label row and never wraps or truncates: the label takes the width that is left and wraps, so a long label grows the row downwards and the number keeps its place on the first line."
+  - "`showsValue` renders the current value beside the label as a Text of role metric-md with tabular figures and `unit` hung beside it; live values are tabular so the row does not jitter (visual-dna §4.2 and §11 anti-pattern 18). The readout is trailing in the label row and never wraps or truncates: the label takes the width that is left and wraps, so a long label grows the row downwards and the number keeps its place on the first line."
   - "While dragging, the same string is also drawn over the thumb, space.2 above the track, so a finger does not hide it. It is an addition, not a move - the readout in the label row stays where it is, nothing reflows, and under pointer modality, where nothing covers the thumb, the floating copy is not drawn at all."
   - On a vivid surface, and on the scheme's glass, the fill and the thumb become the white solid (color.bg.fill.inverse-media) and the unfilled track takes color.border.on-media or color.border.on-glass-fill.
   - Hover is pointer-only and draws a halo of color.bg.fill.neutral.subtle around the thumb, spreading the bound haloSpread (space.3) beyond it on every side; the same halo marks the dragging state on both modalities. Touch never shows a hover state (ADR-0010 rule 2).
@@ -148,7 +148,7 @@ haptics:
 
 accessibility:
   role: slider
-  label: the `label` prop, or an explicit name when no label is visible; the control always reports a value, and the value is spoken with its unit ("42 percent") even when `showValue` is false
+  label: the `label` prop, or an explicit name when no label is visible; the control always reports a value, and the value is spoken with its unit ("42 percent") even when `showsValue` is false
   traits: [adjustable]
   keyboard: the thumb is the one tab stop; the arrow keys move one step, Home and End jump to the ends, Page Up and Page Down move ten steps; the focus ring is color.border.focus at border.focus width around the thumb's circle, following radius.control, and the thumb keeps its halo while focus is on it
   dynamicType: the label and the readout scale with type.label.md and type.metric.md and the row grows with them; the track and the thumb keep their token sizes, so the control never loses its geometry
@@ -170,7 +170,7 @@ examples:
   - id: continuous
     props: { value: 42, min: 0, max: 100, label: "Alert threshold", unit: "%" }
   - id: stepped-ticks
-    props: { value: 6, min: 0, max: 12, step: 1, ticks: true, label: "Sampling window", unit: "h" }
+    props: { value: 6, min: 0, max: 12, step: 1, showsTicks: true, label: "Sampling window", unit: "h" }
   - id: at-minimum
     props: { value: 0, min: 0, max: 100, label: "Alert threshold", unit: "%" }
     description: the fill has no length and the thumb sits on the leading end of the track
@@ -178,7 +178,7 @@ examples:
     props: { value: 78, min: 0, max: 100, label: "Alert threshold", unit: "%" }
     description: the halo is drawn around the thumb; under touch the readout is also drawn over it, space.2 above the track
   - id: no-readout
-    props: { value: 42, min: 0, max: 100, label: "Alert threshold", showValue: false }
+    props: { value: 42, min: 0, max: 100, label: "Alert threshold", showsValue: false }
   - id: disabled
     props: { value: 42, min: 0, max: 100, label: "Alert threshold", unit: "%", isDisabled: true }
   - id: on-vivid
