@@ -43,7 +43,7 @@
     }
   ],
   "counts": {
-    "images": 1748,
+    "images": 1931,
     "paired": 872,
     "missing": 0,
     "cells": 872
@@ -68,7 +68,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 228,
+        "images": 252,
         "paired": 108,
         "missing": 0,
         "cells": 108
@@ -119,7 +119,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "image-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -207,7 +210,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "image-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -305,7 +311,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -393,7 +402,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -491,7 +503,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -579,7 +594,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -677,7 +695,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -765,7 +786,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -863,7 +887,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -951,7 +978,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1049,7 +1079,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "size-sm.web-desktop.light.regular.increased-contrast.png",
+                  "width": 160,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1137,7 +1170,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "size-sm.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 160,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1235,7 +1271,10 @@
                   "height": 92
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "size-lg.web-desktop.light.regular.increased-contrast.png",
+                  "width": 172,
+                  "height": 172
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1323,7 +1362,10 @@
                   "height": 92
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "size-lg.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 172,
+                  "height": 172
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1421,7 +1463,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1509,7 +1554,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1607,7 +1655,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1745,7 +1796,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -1893,7 +1947,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2031,7 +2088,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 264,
+                  "height": 264
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2179,7 +2239,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.regular.increased-contrast.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2317,7 +2380,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2465,7 +2531,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2553,7 +2622,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2627,7 +2699,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 172,
+        "images": 192,
         "paired": 84,
         "missing": 0,
         "cells": 84
@@ -2678,7 +2750,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-neutral.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2766,7 +2841,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-neutral.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2864,7 +2942,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-critical.web-desktop.light.regular.increased-contrast.png",
+                  "width": 150,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -2952,7 +3033,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-critical.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 150,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3050,7 +3134,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-accent.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3138,7 +3225,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-accent.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3236,7 +3326,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-overflow.web-desktop.light.regular.increased-contrast.png",
+                  "width": 156,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3324,7 +3417,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "count-overflow.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 156,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3422,7 +3518,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "outline-neutral.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3510,7 +3609,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "outline-neutral.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3608,7 +3710,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "outline-critical.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3696,7 +3801,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "outline-critical.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3794,7 +3902,10 @@
                   "height": 56
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "dot-critical.web-desktop.light.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3882,7 +3993,10 @@
                   "height": 56
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "dot-critical.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -3980,7 +4094,10 @@
                   "height": 56
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "dot-accent.web-desktop.light.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4068,7 +4185,10 @@
                   "height": 56
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "dot-accent.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4166,7 +4286,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 196,
+                  "height": 196
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4254,7 +4377,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 196,
+                  "height": 196
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4352,7 +4478,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4490,7 +4619,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4614,7 +4746,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 112,
+        "images": 126,
         "paired": 56,
         "missing": 0,
         "cells": 56
@@ -4665,7 +4797,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "primary-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4753,7 +4888,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "primary-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4851,7 +4989,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "secondary-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 229,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -4939,7 +5080,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "secondary-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 229,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5037,7 +5181,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ghost-sm.web-desktop.light.regular.increased-contrast.png",
+                  "width": 210,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5125,7 +5272,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ghost-sm.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 210,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5223,7 +5373,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "danger-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 235,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5311,7 +5464,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "danger-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 235,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5409,7 +5565,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "loading.web-desktop.light.regular.increased-contrast.png",
+                  "width": 202,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5497,7 +5656,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "loading.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 202,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5595,7 +5757,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.light.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5683,7 +5848,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5781,7 +5949,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -5869,7 +6040,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6038,7 +6212,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 256,
+        "images": 282,
         "paired": 120,
         "missing": 0,
         "cells": 120
@@ -6089,7 +6263,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "default-sm.web-desktop.light.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6177,7 +6354,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "default-sm.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6275,7 +6455,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected.web-desktop.light.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6363,7 +6546,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6461,7 +6647,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "with-leading-icon.web-desktop.light.regular.increased-contrast.png",
+                  "width": 214,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6549,7 +6738,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "with-leading-icon.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 214,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6647,7 +6839,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "removable.web-desktop.light.regular.increased-contrast.png",
+                  "width": 235,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6735,7 +6930,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "removable.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 235,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6833,7 +7031,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "identifier-copy.web-desktop.light.regular.increased-contrast.png",
+                  "width": 240,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -6921,7 +7122,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "identifier-copy.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 240,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7019,7 +7223,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "md-size.web-desktop.light.regular.increased-contrast.png",
+                  "width": 226,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7107,7 +7314,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "md-size.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 226,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7205,7 +7415,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.light.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7293,7 +7506,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 230,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7391,7 +7607,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "md-with-avatar.web-desktop.light.regular.increased-contrast.png",
+                  "width": 269,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7479,7 +7698,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "md-with-avatar.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 269,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7577,7 +7799,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 311,
+                  "height": 256
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7715,7 +7940,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 311,
+                  "height": 256
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -7863,7 +8091,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 289,
+                  "height": 256
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8001,7 +8232,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-on-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 289,
+                  "height": 256
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8149,7 +8383,10 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 228,
+                  "height": 208
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8287,7 +8524,10 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 228,
+                  "height": 208
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8435,7 +8675,10 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.regular.increased-contrast.png",
+                  "width": 351,
+                  "height": 304
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8573,7 +8816,10 @@
                   "height": 128
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 351,
+                  "height": 304
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8721,7 +8967,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "russian-label.web-desktop.light.regular.increased-contrast.png",
+                  "width": 265,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8809,7 +9058,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "russian-label.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 265,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -8883,7 +9135,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 108,
+        "images": 120,
         "paired": 52,
         "missing": 0,
         "cells": 52
@@ -8934,7 +9186,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "horizontal.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9022,7 +9277,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "horizontal.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9120,7 +9378,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "horizontal-inset.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9208,7 +9469,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "horizontal-inset.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9306,7 +9570,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vertical.web-desktop.light.regular.increased-contrast.png",
+                  "width": 217,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9394,7 +9661,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vertical.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 217,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9492,7 +9762,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "semantic.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9580,7 +9853,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "semantic.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9678,7 +9954,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9766,7 +10045,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 217
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -9864,7 +10146,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 313
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10002,7 +10287,10 @@
                   "height": 137
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 313
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10126,7 +10414,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 244,
+        "images": 266,
         "paired": 140,
         "missing": 0,
         "cells": 140
@@ -10177,7 +10465,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "control-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10303,7 +10594,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "control-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10439,7 +10733,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.light.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10565,7 +10862,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "corner-sm.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10701,7 +11001,10 @@
                   "height": 72
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "display-lg.web-desktop.light.regular.increased-contrast.png",
+                  "width": 152,
+                  "height": 152
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10827,7 +11130,10 @@
                   "height": 72
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "display-lg.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 152,
+                  "height": 152
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -10963,7 +11269,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "status-filled.web-desktop.light.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11089,7 +11398,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "status-filled.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11225,7 +11537,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.light.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11351,7 +11666,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "accent-mark.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11487,7 +11805,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.light.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11613,7 +11934,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "inherit-in-row.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11749,7 +12073,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -11875,7 +12202,10 @@
                   "height": 68
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 148,
+                  "height": 148
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12011,7 +12341,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.light.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12137,7 +12470,10 @@
                   "height": 64
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "named-standalone.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 144,
+                  "height": 144
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12273,7 +12609,10 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 192,
+                  "height": 192
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12399,7 +12738,10 @@
                   "height": 112
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 192,
+                  "height": 192
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12535,7 +12877,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12711,7 +13056,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -12897,7 +13245,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.light.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13073,7 +13424,10 @@
                   "height": 116
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-light-over-image.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 292,
+                  "height": 292
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13235,7 +13589,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 204,
+        "images": 228,
         "paired": 100,
         "missing": 0,
         "cells": 100
@@ -13286,7 +13640,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "secondary-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13374,7 +13731,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "secondary-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13472,7 +13832,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "primary-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13560,7 +13923,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "primary-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13658,7 +14024,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ghost-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13746,7 +14115,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "ghost-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13844,7 +14216,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "plain-sm.web-desktop.light.regular.increased-contrast.png",
+                  "width": 160,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -13932,7 +14307,10 @@
                   "height": 80
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "plain-sm.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 160,
+                  "height": 160
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14030,7 +14408,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "danger-md.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14118,7 +14499,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "danger-md.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14216,7 +14600,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-in-group.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14304,7 +14691,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "selected-in-group.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14402,7 +14792,10 @@
                   "height": 92
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "lg-touch.web-desktop.light.regular.increased-contrast.png",
+                  "width": 172,
+                  "height": 172
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14490,7 +14883,10 @@
                   "height": 92
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "lg-touch.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 172,
+                  "height": 172
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14588,7 +14984,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14676,7 +15075,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "disabled.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14774,7 +15176,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 216
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14862,7 +15267,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 216,
+                  "height": 216
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -14960,7 +15368,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -15098,7 +15509,10 @@
                   "height": 136
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 312,
+                  "height": 312
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -15246,7 +15660,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "label-ru.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -15334,7 +15751,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "label-ru.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -15432,7 +15852,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "with-badge.web-desktop.light.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -15520,7 +15943,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "with-badge.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 168,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16372,7 +16798,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 164,
+        "images": 180,
         "paired": 76,
         "missing": 0,
         "cells": 76
@@ -16423,7 +16849,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "solid-card.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16511,7 +16940,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "solid-card.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16609,7 +17041,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-default.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16697,7 +17132,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-default.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16795,7 +17233,10 @@
                   "height": 268
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-pair.web-desktop.light.regular.increased-contrast.png",
+                  "width": 540,
+                  "height": 540
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16883,7 +17324,10 @@
                   "height": 268
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-pair.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 540,
+                  "height": 540
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -16981,7 +17425,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17119,7 +17566,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17267,7 +17717,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17405,7 +17858,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-light-over-image.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17553,7 +18009,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17691,7 +18150,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17839,7 +18301,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "inverse-pill.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -17927,7 +18392,10 @@
                   "height": 88
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "inverse-pill.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 168
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18025,7 +18493,10 @@
                   "height": 152
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "accent-tile.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18113,7 +18584,10 @@
                   "height": 152
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "accent-tile.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18187,7 +18661,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 132,
+        "images": 144,
         "paired": 76,
         "missing": 0,
         "cells": 76
@@ -18238,7 +18712,10 @@
                   "height": 96
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "hero-metric.web-desktop.light.regular.increased-contrast.png",
+                  "width": 245,
+                  "height": 176
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18364,7 +18841,10 @@
                   "height": 96
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "hero-metric.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 245,
+                  "height": 176
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18500,7 +18980,10 @@
                   "height": 155
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "title-two-tone.web-desktop.light.regular.increased-contrast.png",
+                  "width": 511,
+                  "height": 199
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18626,7 +19109,10 @@
                   "height": 155
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "title-two-tone.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 511,
+                  "height": 199
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18762,7 +19248,10 @@
                   "height": 65
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "caption.web-desktop.light.regular.increased-contrast.png",
+                  "width": 273,
+                  "height": 145
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -18888,7 +19377,10 @@
                   "height": 65
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "caption.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 273,
+                  "height": 145
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19024,7 +19516,10 @@
                   "height": 120
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19150,7 +19645,10 @@
                   "height": 120
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-vivid.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19286,7 +19784,10 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19462,7 +19963,10 @@
                   "height": 113
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "on-glass-over-map.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19648,7 +20152,10 @@
                   "height": 65
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "data-tabular.web-desktop.light.regular.increased-contrast.png",
+                  "width": 190,
+                  "height": 145
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -19774,7 +20281,10 @@
                   "height": 65
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "data-tabular.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 190,
+                  "height": 145
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20474,7 +20984,7 @@
         "web-touch"
       ],
       "counts": {
-        "images": 128,
+        "images": 141,
         "paired": 60,
         "missing": 0,
         "cells": 60
@@ -20525,7 +21035,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "solid-metric.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20613,7 +21126,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "solid-metric.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20711,7 +21227,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-default-kpi.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20799,7 +21318,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-default-kpi.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20897,7 +21419,10 @@
                   "height": 460
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-pair.web-desktop.light.regular.increased-contrast.png",
+                  "width": 540,
+                  "height": 540
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -20985,7 +21510,10 @@
                   "height": 460
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "vivid-pair.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 540,
+                  "height": 540
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21083,7 +21611,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21221,7 +21752,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-vehicle.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21369,7 +21903,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.light.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21507,7 +22044,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "glass-selected.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 424,
+                  "height": 424
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21654,7 +22194,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "tinted-focus.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21752,7 +22295,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "compact.web-desktop.light.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"
@@ -21840,7 +22386,10 @@
                   "height": 248
                 },
                 "web-desktop": {
-                  "state": "out-of-matrix"
+                  "state": "present",
+                  "file": "compact.web-desktop.dark.regular.increased-contrast.png",
+                  "width": 328,
+                  "height": 328
                 },
                 "web-touch": {
                   "state": "out-of-matrix"

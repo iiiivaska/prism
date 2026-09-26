@@ -12,6 +12,7 @@
 - **Reviewed again: 2026-09-26**, in [§11](#11-review-of-chips-examples--2026-09-26). P4-8's baselines (`5b1663c`) put Chip's thirteen examples in the gallery, and `md-with-avatar` fills a slot with an Avatar. §11 reads all 224 images, and none is a copy. It adds two findings. RD-11: `md-with-avatar` has the traffic console's plate chip's anatomy, with a person in it. RD-12: `identifier-copy`'s "B-4417" puts the gallery's fleet unit number in a vehicle-style identifier; a cheap relabel is recommended, and not taken. §11.9 names `md-with-avatar` beside `with-badge` in condition 4, extends condition 7 and adds condition 8.
 - **Reviewed again: 2026-09-26**, in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). P4-D9's baselines (`29b5490`) added 144 web Reduce Transparency images: new variants of 18 named examples, which §9.9 condition 3 covers with a sentence added to each group. §12 reads all 144 beside their Apple twins. None is a copy, and none moves an earlier verdict: the fallback removes the glass the references' map screens are built from. §12.5 reads the one image that asks a second look, `Avatar/initials-over-map` in light, whose disc becomes near-white.
 - **Reviewed again: 2026-09-26**, in [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26). RD-12 was taken: `e56272f` relabelled `Chip/identifier-copy` "INV-209316", which fired showcase §13.8 condition 8, and CI re-recorded its 16 images, which fired §9.9 condition 6. §13 reads the 16 beside the images they replace. Only the label and the pill's width changed, none is a copy, and RD-12 is closed.
+- **Reviewed again: 2026-09-26**, in [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26). P4-D14's baselines added 183 web Increase Contrast images, one per example and scheme on `web-desktop` at regular density: new variants of all 92 named examples, which §9.9 condition 3 covers with a sentence added to each group. §14 reads all 183 beside their Apple twins. None is a copy, and none moves an earlier verdict: on both stacks Increase Contrast deepens strokes and secondary text, raises thin weights to 400 and falls glass back as Reduce Transparency does.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -93,6 +94,8 @@ Each group gives the four things the board's review gives, plus a fifth where it
   - *Motion.* `loading` swaps the label for a spinner. Holding the pill's width while it does so is a **spec** behaviour (`Button.yaml`: *"replaces the label while loading; width is preserved"*), and the gallery does not picture it: `loading` is its own example with its own label ("Saving"), so its pill is 74 px wide against `primary-md`'s 88 px ("Continue"), and no pair in the gallery shows one button before and after. Either way the references are stills and record no loading state.
 - **Deliberate choice against the nearest reference.** The **ghost** rests with an outline and **no fill** (`comp.button.ghost.bg.rest` deleted, `bg.pressed` added — ADR-0029 §3.3, finding F29). visual-dna §3.6 had recorded "ghost fill" from the references; the owner chose the outline instead on 2026-09-15. The gallery shows the choice: `ghost-sm` is a hairline ring on the page in both schemes.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 14 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 63): the secondary and ghost rings deepen, and the other five are byte-identical to their standard images. The verdict stands.*
+
 ### 3.2 Surface — the flat materials
 
 - **What it is.** Four examples: `solid-card`, `vivid-default`, `inverse-pill`, `accent-tile`. 64 images — 32 web, 32 Apple. Each is one slab (or one pill) alone on the page. **The two stacks differ in what is written on the slab, and the difference is total.** The web harness supplies sample copy from `web/apps/gallery/src/harness/content.ts` — "Solid / The content surface", "Vivid / The default gradient", "Accent / The lit tile", and the single word "Selected" on the pill — so the 32 web images carry one or two lines. The Apple examples set no content at all: `swift/Sources/DSComponents/Examples/DSSurfaceExamples.swift` says so in its own doc comment (*"A Surface example sets no content, so each renders the empty content slot"*) and `DSExampleSlot` draws `Color.clear`, so the 32 Apple images in this group are **blank slabs with no title and no caption**. See RD-3.
@@ -104,6 +107,8 @@ Each group gives the four things the board's review gives, plus a fifth where it
   - *Type.* On the web, a `headline` 18/400 title over a `caption` 12/400 secondary line, in Onest; never bold, at most two lines. **On Apple there is no type in this group at all** — the empty content slot means those 32 images show material, radius and size and nothing else, which puts them further from any reference than their web twins, not nearer.
   - *Affordance.* `inverse-pill` carries no glyph and no icon — the "one solid" of §4.7 shown as a material rather than as a control. It is labelled "Selected" on the web and unlabelled on Apple.
 - **Deliberate choice against the nearest reference.** Light `bg.surface.raised` is `neutral.50` with a `color.edge.raised` top edge and `elevation.1`, not a white-alpha overlay (ADR-0030 §5.2, finding F10): the reference ladder's white-over-white step was measured at 1.03:1 in light and rejected.
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 8 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 64): no fill moves; on the web `solid-card`'s caption deepens, and the other three are byte-identical. The verdict stands.*
 
 ### 3.3 Surface — glass over the synthetic backdrops
 
@@ -120,6 +125,8 @@ Each group gives the four things the board's review gives, plus a fifth where it
 - **Deliberate choice against the nearest reference.** **No scrim over maps.** The references darken the world under their glass; Prism's scrim is 0.45 in both schemes and is for photographs only — D1 removed it from maps entirely (ADR-0029 §1.7, finding F2). The gallery's glass-over-map images show the backdrop at full strength through the glass, which is visibly not the reference treatment.
 
 *Pointer added 2026-09-26: since `29b5490` the web also records these three examples under Reduce Transparency, 24 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 44–46): the slab falls back to opaque `raised`, and `glass-selected` to `inverse`, as Apple's twins here do. The verdict stands.*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 6 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 65): the glass falls back as under Reduce Transparency, and on the web the raised slabs' captions deepen. The verdict stands.*
 
 ### 3.4 The synthetic map and image backdrops themselves
 
@@ -146,6 +153,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Affordance.* The ↗ in the same corner of every tile — see §3.6, where it is dealt with honestly.
 - **Deliberate choice against the nearest reference.** Three, all from the 2026-09-15 sign-off: ember-night was moved **out** of the slots because its end stop was ΔE(OK) 0.078 from `accent.500` and read as a second accent (ADR-0029 §2.3); the light set spent its V1 headroom on chroma instead of staying dusky (§2.1, finding F13); and navy-cyan's stops moved to 30 %/85 % to kill a hard horizon the reference-style three-stop ramp had produced (§2.2, finding F12).
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 66): both grids are byte-identical to their standard images. The verdict stands.*
+
 ### 3.6 The metric cards
 
 **This is the group that needed the hardest look, and the one §5 flags.**
@@ -160,6 +169,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Colour.* Solid card on `bg.page`, one grey for the caption, no accent anywhere in the example. The reference KPI card is glass over a coloured world; its accent appears the moment a value goes off-target.
   - *Affordance.* The ↗ is `nav.open` at `size.icon.sm`, and Prism attaches a rule the references have no equivalent of: it is **the cue that the card opens, not decoration** (Card.yaml behavior 4), so an `open` card with no handler draws no glyph at all; and under **pointer** it appears only on hover, press or keyboard focus, while under **touch** it is always drawn. That is why the `web-desktop` column of these images shows a card with no glyph and the `ios` and `web-touch` columns show one. A reader comparing the two columns is seeing a modality rule, not drift.
 - **Deliberate choice against the nearest reference.** On vivid, **the unit leaves the hero and joins the caption** (`vivid-default-kpi` shows it): ADR-0030 §8 made V3 a rule because text below 24 px must stay inside the V2 header block, so the hung unit the reference sets beside its 46 px hero cannot exist on a Prism vivid card. And `metric.md` became proportional by default (ADR-0030 §7.1, finding F24) rather than tabular, so static readouts stop looking letter-spaced beside proportional heroes — a departure from the references' uniformly tabular ops readouts.
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 6 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 67): the thin hero becomes regular and the dimmed remainder secondary, two of the parts row 6 shares with the reference card. RD-2 stands. The verdict stands.*
 
 ### 3.7 The glass vehicle cards
 
@@ -177,6 +188,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
 
 *Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 47–48): the card falls back to opaque `raised`, and `glass-selected` to `inverse`. The verdict and RD-2 item 3 stand, and re-subjecting `glass-vehicle` now moves 28 baselines (§12.5).*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 68): the fallback of rows 47–48, with a deeper timestamp. RD-2 item 3 stands. The verdict stands.*
+
 ### 3.8 The tinted focus card
 
 - **What it is.** `Card/tinted-focus` ("Sensor" / "Active", with an `object.gps` icon in a hairline ring above the title), **light scheme only**, both densities, with the `increased-contrast` twin. 8 images.
@@ -188,6 +201,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Content.* No hero, no dotted leaders, no spec rows, no dot-grid page behind it, no line drawing. Two words and an icon.
   - *Type.* `headline` 18/400 over `caption` 12/400, Onest. The reference's card sets hero numerals at ~40 pt with tiny grey units.
 - **Deliberate choice against the nearest reference.** The tinted Card is **light-only**. In dark, `bg.tint.accent` at 14 % composited to a brown mud (`#2D2118`), so ADR-0030 §3.3 (finding F18) kept the tint for chart windows and made the dark attention surface the lit tile instead. The gallery shows this as an absence: `tinted-focus` has no dark row, and the cell says so rather than pretending.
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 1 image. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 69): the icon's ring and the caption deepen on the unchanged tint. The verdict stands.*
 
 ### 3.9 Text — the type specimens
 
@@ -203,6 +218,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
   - *Copy.* The two stacks deliberately carry **different invented strings** for the same example — the web `title-two-tone` reads "Weekly summary / Three rides ahead of plan", the Apple one "Weekly summary / Twelve sessions logged" — because Surface and Text examples carry no strings in the spec and each harness supplies its own. The pair compares type, not words, and both sets are invented.
 - **Deliberate choice against the nearest reference.** `type.axis` 12/1.2/400 with tabular figures was added because §8.2 wanted 12 px axes while `type.data` is 13 px and `caption` is proportional (ADR-0030 §2.6, finding F20) — Prism split a role the references run together. And under Bold Text or Increase Contrast every weight below 400 resolves to 400, so the `increased-contrast` and `bold-text` twins in this group show heroes the references' UltraLight grammar could not survive.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 8 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 70): the thin numeral becomes regular and its ".4" secondary, the second line and the caption deepen, and the timer is byte-identical. The verdict stands.*
+
 ### 3.10 Text — type on media
 
 - **What it is.** `Text/on-vivid` (web "Evening loop", Apple "Average yield") on a vivid card, and `Text/on-glass-over-map` (web "Two stops ahead", Apple "Next stop in four minutes") on a glass card over the synthetic map — the two stacks' strings differ by harness, RD-3. 44 images, including `reduce-transparency` twins for the glass one.
@@ -216,6 +233,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
 
 *Pointer added 2026-09-26: since `29b5490` the web also records `Text/on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (row 49): the tile falls back to opaque `raised`. The verdict stands.*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 71): the header block is byte-identical, and the line on the tile falls back as in row 49 and deepens. The verdict stands.*
+
 ### 3.11 The forced-state variants
 
 - **What it is.** **158** of the 488 images are forced accessibility states, recorded on Apple only: `increased-contrast` on every example (110 — 28 examples × 4, less the two dark rows `tinted-focus` does not have), `reduce-transparency` on every glass example (24 = 6 × 4), `bold-text` on every Text example (24 = 6 × 4). The web records none, and the gallery labels those cells "not in this matrix" rather than counting **316** invented gaps — the 158 forced cells times the two web platform keys.
@@ -224,6 +243,8 @@ This group exists because it is where a reviewer would expect to find a copy, an
 - **What differs.** These images show pictures that cannot exist in any reference: glass resolving to an opaque inverse slab, thin heroes snapping to weight 400, hairline edges thickening. They are the part of the gallery furthest from any reference, and they are a third of it.
 
 *Pointer added 2026-09-26: since `29b5490` the web records `reduce-transparency` too, for the 18 examples that render glass. Those 144 images are read in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). Increase Contrast and Bold Text are still recorded on Apple only, and the page labels their 868 web figures "not in this matrix".*
+
+*Pointer added 2026-09-26: since P4-D14 the web records `increased-contrast` too, on `web-desktop` at regular density, one image per example and scheme. Those 183 images are read in [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26). Bold Text, and Increase Contrast at compact density and on `web-touch`, stay Apple's alone, and the page labels those 685 web figures "not in this matrix".*
 
 ---
 
@@ -454,6 +475,8 @@ One edge case, for completeness. On the web the harness fills Surface's content 
   - **When the bell gets the reference's neighbours.** A badged bell among other round buttons at a screen's top-trailing corner, beside a search field and an avatar, is the tools cluster that the board's D4 rework removed as 27220417's inventory ([README.md](README.md), § Ride report: *"the tools cluster is gone"*). `TopBar.yaml`'s `desktop-navigation` example already specifies that cluster (RD-7). It is unimplemented, so no screen draws it yet.
 - **Verdict.** **Not a copy.** It is the genre's composition drawn alone, achromatic, opaque, on an empty page, and it shares with the nearest product's bell a single number. Nothing has to change before a release. §9.9 condition 5 records the changes that would bring it nearer.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 2 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 75): the circle's ring deepens, and the bell, the badge and its count do not change. The verdict stands.*
+
 ### 9.5 The other 38 wave-1 examples
 
 Each of these is one component. None fired a condition (§9.3), but before this section no review covered any of them (RD-5), so each group gets the same four questions.
@@ -467,6 +490,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 - **Verdict.** **Not a copy.** A rule is nobody's expression.
 
 *Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 50): the tile falls back to opaque `raised`. The verdict stands.*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 12 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 72): a deeper hairline; `on-vivid` is byte-identical, and `on-glass-over-map`'s tile falls back. The verdict stands.*
 
 #### 9.5.2 Icon — 11 examples, 228 images
 
@@ -488,6 +513,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 
 *Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` and `on-glass-light-over-image` under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (rows 51–52): the tile falls back to opaque `raised`. The verdict stands.*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 22 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 73): nine are byte-identical, and the two on glass equal their Reduce Transparency twins. The verdict stands.*
+
 #### 9.5.3 Badge — 10 examples, 164 images
 
 - **What it is.** One mark per example, standing alone. Counts: neutral (3), critical (12) and accent (7). An overflow, "99+", in critical. Outlined counts: neutral (4) and critical (2). Two 8 px dots (`space.3`), critical and accent. A neutral 3 on vivid, and a critical 2 on glass over the map. Every filled count is a 20 px disc (`size.icon.md`). The critical disc decodes to `(229, 37, 42)`, which is `#E5252A`, `ref.color.status.danger.badge`.
@@ -503,6 +530,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 - **Verdict.** **Not a copy.** A count disc alone on a stage is the notification badge of every platform.
 
 *Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 53): the red "2" keeps its colour on an opaque `raised` tile. The verdict and RD-6 stand, and RD-6's change of count now moves 28 baselines (§12.5).*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 20 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 74): `outline-neutral`'s ring deepens, the red "2" on the map equals its Reduce Transparency twin, and the other eight are byte-identical. RD-6 stands. The verdict stands.*
 
 #### 9.5.4 IconButton, the other 11 examples — 180 images
 
@@ -527,6 +556,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 *Pointer added 2026-09-26: on Apple the glass tile of `on-glass-over-map` sits where the synthetic route turns, and both of the route's legs run into it. In dark, that puts a white disc with a dark glyph where a white route turns, which is nearer the traffic console's puck in material than "one of the traffic console's map controls" says (RD-9). The verdict stands.*
 
 *Pointer added 2026-09-26: since `29b5490` the web also records `on-glass-over-map` under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them beside their Apple twins (row 54): the tile falls back to opaque `raised`, and in light the circle turns from white to ink. The verdict stands.*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 22 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 76): four rings deepen, the circle on the map equals its Reduce Transparency twin, and the other six are byte-identical. The verdict stands.*
 
 ### 9.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -617,7 +648,7 @@ None of them composes the others.
 
 1. **A pattern example screen lands**, as in §8 condition 1.
 2. **P5-1 rebuilds the board screens into the gallery**, as in §8 condition 2.
-3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id and §11.8 Chip's thirteen, so the examples this document names are §9.8's 67, §10.7's 12 and §11.8's 13. §12 covers the web's Reduce Transparency variant of 18 of them. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
+3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id and §11.8 Chip's thirteen, so the examples this document names are §9.8's 67, §10.7's 12 and §11.8's 13. §12 covers the web's Reduce Transparency variant of 18 of them, and §14 the web's Increase Contrast variant of all 92, on `web-desktop` at regular density. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
 4. **An example other than `IconButton/with-badge` composes more than one component in §9.3's sense**: a second component in a slot the example fills. Examples: Card's `body` or `aside` filled (RD-2), a chart in a ChartContainer, a Badge in any host other than `with-badge`, a TabBar or Sidebar item with a count. `with-badge` itself is reviewed in §9.4; a change to what it fills is condition 5's or condition 6's.
 5. **The notification composition moves towards the reference's bell** (RD-6, RD-7). That means any of these:
    - `with-badge`, or any IconButton with a badge, put on glass or over a map;
@@ -707,6 +738,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
   Both would fill a slot with an Avatar in a new example, so conditions 3 and 4 fire before either reaches a release.
 - **Verdict.** **Not a copy**, each of the four. A token pictogram in a circle, alone on the page.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 8 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 77): all four are byte-identical to their standard images. The verdict stands.*
+
 #### 10.4.2 The lettered and glyph circles — `initials-md`, `initials-one-word`, `size-sm`, `russian-initials`, `fallback-icon`: 5 examples, 80 images
 
 - **What it is.** One circle on the page ground in `comp.avatar.bg`, the raised step. It decodes `(247, 248, 250)` on a `(241, 242, 245)` page in light and `(35, 36, 38)` on `(13, 14, 17)` in dark, the same fill as IconButton's secondary puck (§9.4) without its ring. Inside it:
@@ -717,6 +750,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
 - **Families mixed.** The round control height of the desktop shots, and the one upper-case exception to visual-dna §2.5, which Avatar.yaml records.
 - **What differs.** Letters or a glyph on a neutral circle, with nothing around them. No shot carries Cyrillic.
 - **Verdict.** **Not a copy**, each of the five. A monogram alone on a stage is nobody's expression.
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 10 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 78): the initials deepen, and `fallback-icon` is byte-identical. The verdict stands.*
 
 #### 10.4.3 Over the map — `ringed-over-map`, `initials-over-map`: 2 examples, 40 images
 
@@ -740,6 +775,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
 
 *Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 55–56): the circle falls back to opaque `raised` and the ring to the inverse solid, as this section says of Apple's. In light `initials-over-map` becomes a near-white disc, and §12.5 reads it against the puck. The verdict stands.*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 79): the fallback §12.5 read, with deeper initials on `initials-over-map`. The verdict stands.*
+
 #### 10.4.4 On glass over the image — `on-glass-over-image`: 1 example, 20 images
 
 - **What it is.** "AP" with the ring, on a glass Surface tile of `radius.card` over the synthetic image. On Apple the tile is 88 pt (64 at compact), in a 136 pt crop that the image fills edge to edge. On the web it is 88 px, on a 184 px image plate in a 312 px stage. Inside the glass the chip is flat, with its fill and edge and no blur, so no chip blurs glass a second time (ADR-0036 §5). It decodes `(237, 241, 244)` in light and `(18, 21, 25)` in dark on Apple. The ring is `color.border.on-glass-fill`, a grey whose outer pixel decodes `(140, 142, 144)` in light and `(137, 138, 140)` in dark. The initials are `color.text.on-glass-fill`, ink in light and white in dark. Under the forced states the tile falls back to raised, and the ring to the inverse solid: `(14, 15, 18)` in light and `(255, 255, 255)` in dark.
@@ -749,6 +786,8 @@ The rows count 9 examples on the page ground, 7 with a part drawn by a second co
 - **Verdict.** **Not a copy.**
 
 *Pointer added 2026-09-26: since `29b5490` the web also records this example under Reduce Transparency, 8 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (row 57): the tile falls back to opaque `raised`, and the ring to the inverse solid. The verdict stands.*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 2 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 80): the fallback tile, with deeper initials. The verdict stands.*
 
 ### 10.5 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -911,6 +950,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **Where the defence would stop.** When the disc holds one letter and the label is a vehicle's number or a plate, which is the plate chip's content in its own form. Avatar gives one letter for a one-word name (§10.4.2), so a one-word avatar name beside a number would get there. It also stops when the chip is placed as the plate chip is: over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header. RD-11, and §11.9 condition 8.
 - **Verdict.** **Not a copy.** It is the genre's person chip, drawn alone, with the reference's anatomy and none of its content or placement.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 2 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 81): the pill's stroke, the label and the initials deepen, and the anatomy does not change. RD-11 stands. The verdict stands.*
+
 ### 11.5 The other twelve examples
 
 #### 11.5.1 The page chips — `default-sm`, `selected`, `with-leading-icon`, `removable`, `md-size`, `disabled`, `russian-label`: 7 examples, 112 images
@@ -929,6 +970,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **Where the defence would stop.** A row of period chips flush with a chart's title in a dark band over a step chart would be the finance monitor's chart header. No spec composes that today.
 - **Verdict.** **Not a copy**, each of the seven. A filter pill alone on a stage is every date-range picker's.
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 14 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 82): strokes and labels deepen, on pills that keep their fills. The verdict stands.*
+
 #### 11.5.2 `identifier-copy`: 1 example, 16 images
 
 - **What it is.** "B-4417" and a trailing `action.copy`, in a raised sm pill of 86 × 32 (86 × 28 at compact), alone on the page. Its description says a press copies the identifier, and its name is the identifier: on the web, one button named "B-4417".
@@ -943,6 +986,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 
 *Pointer added 2026-09-26: this group describes "B-4417". RD-12 was taken at `e56272f`, and the example now reads "INV-209316", an invoice number. [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26) reads its 16 re-recorded images. The genre bullet above no longer applies to it, and row 35's verdict becomes a plain "No".*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 2 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 83): "INV-209316" with a deeper stroke and label. The verdict stands.*
+
 #### 11.5.3 Over the map — `on-map`, `selected-on-map`: 2 examples, 40 images
 
 - **What it is.** The pill straight on the synthetic map, where it renders the glass chip: "Depots" after a map pin in `on-map`, and "Depots" selected in `selected-on-map`, where the check a chip selected over media draws takes the leading slot. Every tone on the pill collapses to the glass foreground. On Apple the light pill decodes `(217, 219, 223)` with an ink label and stroke, and the dark one `(42, 44, 49)` with a white label. Under Increase Contrast and Reduce Transparency the pill falls back to the raised step inside a hairline, and the selected chip drops its check.
@@ -956,6 +1001,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 
 *Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 58–59): the pill falls back to opaque `raised`, and the selected one drops its check. The verdict stands.*
 
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 84): the fallback pill, with a deeper stroke; selected, it has no check. The verdict stands.*
+
 #### 11.5.4 On media — `on-vivid`, `on-glass-over-image`: 2 examples, 40 images
 
 - **What it is.**
@@ -968,6 +1015,8 @@ Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224
 - **Verdict.** **Not a copy**, either example.
 
 *Pointer added 2026-09-26: since `29b5490` the web also records both examples under Reduce Transparency, 16 images. [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26) reads them (rows 60–61): the pill falls back to opaque `raised`, and on vivid the bloom goes. The verdict stands.*
+
+*Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 4 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 85): the fallback pill, with a deeper stroke; `on-vivid` keeps vivid's bloom. The verdict stands.*
 
 ### 11.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
@@ -1153,6 +1202,8 @@ With them the gallery review covers all 1748 images: the 1604 that §§3 and 9�
 - **Condition 3's variant clause** covers any further forced state the web records. If the web ever photographs Increase Contrast or Bold Text, the 868 figures now "not in this matrix" become new variants of named examples, and a dated section reads them, as this one does.
 - **Condition 6** covers these 144 as it covers every committed baseline: a re-record that changes what one of them draws expires this clearance.
 
+*Pointer added 2026-09-26: P4-D14 photographs Increase Contrast on `web-desktop` at regular density, and [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads its 183 images. 685 figures remain "not in this matrix".*
+
 **It is not a legal opinion**, for the reasons §8 gives.
 
 The next section's verdict rows start at 62, and its findings at RD-13.
@@ -1252,6 +1303,139 @@ With them the gallery review covers all 1748 images: the 1732 that §§3 and 9�
 
 **It expires on §9.9's conditions, as §10.8, §11.9 and §12.7 read them.** The web Increase Contrast images that `364a8e8` begins to record are condition 3's new variants when they land, `identifier-copy`'s two among them.
 
+*Pointer added 2026-09-26: they landed with P4-D14's baselines, and [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them, `identifier-copy`'s two among them (row 83).*
+
 **It is not a legal opinion**, for the reasons §8 gives.
 
 The next section's verdict rows start at 63, and its findings at RD-13.
+
+---
+
+## 14. Review of the web's Increase Contrast images — 2026-09-26
+
+- **Subject.** The **183 web images** that P4-D14 added: one `increased-contrast` twin per example and scheme, on `web-desktop` at regular density only, at `web/apps/vrt/baselines/linux/<Component>/<id>.web-desktop.<scheme>.regular.increased-contrast.png`. CI run 36249203600 on `d771c40` recorded them, and the commit that adds this section commits them (P4-D14 2/2). They fill the web half of the 183 regular Increase Contrast cells, which until then held Apple's image alone. The gallery now holds 1931 images in 872 cells, 0 missing, and still 92 examples of 10 components (`gallery/index.json`, `counts`).
+- **Why.** §9.9 condition 3: *"A new variant of a reviewed example can be covered by a sentence added to its group."* Each of the 183 is a new variant of one of the 92 examples that §9.8, §10.7 and §11.8 name, and §12.7 and §13.7 said a web Increase Contrast variant would be read this way. §14.4 gives the sentence for each group, and each group's section carries a pointer to it.
+- **Format.** §12's, for a second variant: what changed (§14.1), how the images were read (§14.2), what Increase Contrast draws on both stacks (§14.3), the verdicts (§14.4), and whether anything moves an earlier verdict or finding (§14.5). §12 gave each of its 18 examples a row. Here each of the 23 groups gets one and names its examples by id: condition 3 asks for a sentence per group, and inside each group the examples change in the same way.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, decodes and page captures made for this section stayed in the session scratchpad, and none is committed.
+
+### 14.1 What changed since §13's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| The web photographs every example once more under Increase Contrast, on `web-desktop` at regular density. Before it records an image, the suite checks the root's contrast attribute and that the stage computes the scheme's Increase Contrast token layer. The gallery declares the cells the web leaves out. | `364a8e8` (P4-D14 1/2) | 0 | — |
+| The images that variant recorded | run 36249203600, and this section's commit (P4-D14 2/2) | 183 | no, though their 183 Apple twins were, in their groups' own sections (§14.2) |
+
+A diff over both baseline roots, from `d771c40` (the commit that added §13) to this section's commit, adds the 183 web images and modifies or removes none. The run that recorded them compared all 872 Apple and all 876 web baselines equal, `identifier-copy`'s 16 re-recorded images among them, and skipped the variant on `web-touch`. Every image §§9–13 read is unchanged. By component the 183 are: Surface 16, Text 12, Button 14, Card 13, Divider 12, Icon 22, Badge 20, IconButton 24, Avatar 24 and Chip 26. None of their paths was ever tracked or deleted: the web folder's only deletions are P3-5's 220 renames.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 fired by its variant clause, and this section answers it. No example is new, so the 92 that §9.8, §10.7 and §11.8 name are still the whole list.
+- Condition 4 did not fire. `with-badge` and `md-with-avatar` gain a twin in each scheme, and each twin fills the same slot with the same component as its standard image.
+- Condition 5 did not fire. `with-badge`'s twins keep their count and their ground; only the circle's ring deepens. `Badge/on-glass-over-map` falls back as it does under Reduce Transparency, and joins no button.
+- Condition 6 did not fire. Nothing was re-recorded: the 183 are new images, not new versions of committed ones.
+- Condition 7 did not fire. The map examples fall back as §12 read them. Nothing on the map gains a heading arrow, a ring, a halo or a card, and the web map still draws no route.
+- Condition 8 did not fire. `identifier-copy` and `md-with-avatar` keep their labels and their anatomy; their strokes and labels deepen.
+
+### 14.2 Method
+
+- **Every image, on both stacks.** All 183 were opened on ten contact sheets, one per component, one row per example and scheme at regular density. Each row holds Apple's standard image, its Increase Contrast twin, the `web-desktop` standard image and the new web image. The 18 glass examples' rows add both stacks' Reduce Transparency twins. That is 804 images, Apple's 183 regular Increase Contrast twins among them. §9.2 had spot-checked wave 1's `increased-contrast` rows, and §10 and §11 had opened Avatar's and Chip's. With this section, every one of Apple's regular Increase Contrast images has been opened by a dated section.
+- **Decoded, not read by eye.** For each of the 183 cells, on both stacks: the image's size, the box in which the Increase Contrast image differs from its standard twin, the number of pixels that differ, and the commonest colour changes inside the box. For the 18 glass examples, the Increase Contrast image against its Reduce Transparency twin as well. Every colour below is a decoded pixel.
+- **Byte comparisons.** The web image equals its standard twin in 82 cells, and Apple's in 84, and the two stacks agree cell by cell on whether anything changed in 181 of 183. The other two are `Surface/solid-card` (§14.3). Against the local renders `364a8e8` was checked with, 179 of the 183 are byte-identical. `identifier-copy`'s two were rendered locally before RD-12's relabel. `Avatar/ringed-over-map`'s two differ in 7 and 8 pixels of the portrait, by at most 5 code values: the fixture's antialiasing that §12.2 and §13.1 found.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, from the working tree after `pnpm gallery:build`, as §10.2 did. All 1931 images decode. Each of the 183 regular Increase Contrast cells shows Apple's image beside `web-desktop`'s, and `web-touch`'s figure reads "not in this matrix". Each of the 183 compact ones shows Apple's image, and both web figures read "not in this matrix". 685 web figures read so in all, Bold Text's 136 among them, and no cell misses a pair.
+- **The references.** Those each group's section already names. §3.11's answer holds for a forced state on either stack: no reference shot records one.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 684 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 14.3 What Increase Contrast draws, on both stacks
+
+Increase Contrast is a token layer (ADR-0011). It deepens the secondary, tertiary and dimmed text tones and the hairline and strong strokes, and it raises every weight below 400 to 400 (ADR-0021 §3). It is also a trigger of the glass fallback (ADR-0022 §1.2). It changes no fill. The decoded values agree on the two stacks in every cell, to within the antialiasing their standard images already differ by:
+- **Strokes deepen.** A chip's hairline, (224, 225, 227) in light, becomes (177, 178, 180) on Apple; on the web (222, 223, 226) becomes (176, 177, 179). In dark, Apple's (53, 54, 55) and the web's (52, 53, 55) both become (90, 91, 92). A secondary button's ring moves the same way. Divider's line on the page goes from (218, 219, 222) to (173, 174, 177) on Apple and from (217, 218, 222) to (172, 173, 176) on the web, over the same 200 pixels. Button's ghost ring goes from (138, 139, 142) to (104, 105, 108) on both stacks.
+- **Secondary text deepens.** In light, (92, 96, 104) becomes (64, 68, 76) on both stacks: the second line of `Text/title-two-tone`, the chips' labels and the Avatar's initials. In dark the label goes from (176, 176, 177) to (211, 211, 212) on Apple and from (172, 172, 173) to (206, 207, 207) on the web. Their standard images are the same few code values apart (§13.3).
+- **Dimmed digits become secondary, and thin weights regular.** `Card/solid-metric`'s ".4", (126, 131, 143) in light, becomes (92, 96, 104) on both stacks, and so does `Text/hero-metric`'s on the web. The heroes' thin weight becomes 400. So `hero-metric`, whose dark weight is thinner still, grows 2 px wider in dark on both stacks: 243 to 245 on the web, 163 to 165 on Apple. In light it grows 1 px on Apple, and not at all on the web.
+- **Glass falls back exactly as under Reduce Transparency.** Glass becomes `raised` over the page, (247, 248, 250) and (35, 36, 38), and a selected glass Surface or Card becomes `inverse`, (13, 14, 17) and (255, 255, 255). These are §12.3's values, on both stacks. `selected-on-map` drops its check and is 22 px narrower on both. In light, IconButton's primary circle on the map is ink.
+  - Of the 36 glass cells, the Increase Contrast image equals its Reduce Transparency twin in 14 on the web and 18 on Apple.
+  - Elsewhere the two differ only where the layer recolours a label, a stroke or the initials on the fallback: at most 614 pixels, on the same parts on both stacks.
+  - The exception is `Chip/on-vivid`, whose Reduce Transparency twin also drops vivid's bloom.
+- **Vivid keeps its bloom.** Only Reduce Transparency drops it (ADR-0022 §1.7). Under Increase Contrast, `Chip/on-vivid` changes nothing outside its pill on the web. On Apple the bloom stays too, and about 3,400 pixels inside the gradient tile move by at most 3 code values: rendering noise, not a change of material.
+- **What does not change.** No fill: the page, vivid, accent and inverse, the solid pills and circles, Badge's discs, Icon's tones and the portraits. 82 of the web's 183 images, and 84 of Apple's twins, are byte-identical to their standard images:
+  - Surface's `vivid-default`, `vivid-pair`, `inverse-pill` and `accent-tile`, and Card's `vivid-pair`;
+  - Text's `data-tabular` and `on-vivid`, and Divider's `on-vivid`;
+  - Icon's nine examples off glass, and Badge's eight other than `outline-neutral` and `on-glass-over-map`;
+  - Button's `primary-md`, `danger-md`, `loading`, `disabled` and `on-vivid`;
+  - IconButton's `primary-md`, `plain-sm`, `danger-md`, `selected-in-group`, `lg-touch` and `on-vivid`;
+  - Avatar's `image-md`, `ringed`, `size-lg`, `decorative` and `fallback-icon`.
+
+What differs between the stacks is what already differs in their standard images: the framing, the part of the synthetic map under the example, Apple's route (RD-9), and the copy each harness gives Surface and Text (RD-3). RD-3 is also why the stacks disagree about `Surface/solid-card`. The web's slab carries "The content surface" in the secondary tone, which deepens. Apple's carries nothing, so its twin is byte-identical. For the same reason the web's glass Surfaces differ from their Reduce Transparency twins in their captions, and Apple's do not.
+
+### 14.4 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 63–85 continue §13.4's numbering, one row per group. Each row is the sentence §9.9 condition 3 asks for, and each group's section points to it.
+
+| # | Group (section) | Examples | Copy? | Why |
+|---|---|---|---|---|
+| 63 | Button — the control set (§3.1) | `primary-md`, `secondary-md`, `ghost-sm`, `danger-md`, `loading`, `disabled`, `on-vivid` | **No**; row 1 and RD-4 stand | The secondary and ghost rings deepen. The other five are byte-identical to their standard images, `danger-md`'s critical wash among them. |
+| 64 | Surface — the flat materials (§3.2) | `solid-card`, `vivid-default`, `inverse-pill`, `accent-tile` | **No**; row 2 stands | No fill moves. The web's `solid-card` caption deepens (RD-3), and the other three are byte-identical. |
+| 65 | Surface — glass over the backdrops (§3.3) | `glass-over-map`, `glass-light-over-image`, `glass-selected` | **No**, as rows 44–46 | The fallback: an opaque raised slab, or the inverse slab when selected. On the web the raised slabs' captions deepen. |
+| 66 | The vivid 2×2 grids (§3.5) | Surface `vivid-pair`, Card `vivid-pair` | **No**; row 5 stands | Byte-identical to their standard images on both stacks. |
+| 67 | Card — the metric cards (§3.6) | `solid-metric`, `vivid-default-kpi`, `compact` | **Borderline on anatomy, no on composition, as row 6; RD-2 stands** | The same parts in the same places. The thin hero becomes regular and the dimmed remainder secondary, so two of the parts row 6 shares with the reference card are drawn less like it. |
+| 68 | Card — the glass vehicle cards (§3.7) | `glass-vehicle`, `glass-selected` | **No**, as rows 47–48; RD-2 item 3 stands | "Unit 4417" on an opaque raised card, with a deeper timestamp, or on the inverse card when selected. |
+| 69 | Card — the tinted focus card (§3.8) | `tinted-focus` (light only) | **No**; row 8 stands | The icon's ring and the caption deepen on the unchanged peach tint. |
+| 70 | Text — the type specimens (§3.9) | `hero-metric`, `title-two-tone`, `caption`, `data-tabular` | **No**; row 9 stands | The thin numeral becomes regular and its ".4" secondary, and the second line and the caption deepen. The timer is byte-identical. |
+| 71 | Text — type on media (§3.10) | `on-vivid`, `on-glass-over-map` | **No**; rows 10 and 49 stand | The header block is byte-identical. The line on the tile falls back as in row 49, and deepens. |
+| 72 | Divider (§9.5.1) | `horizontal`, `horizontal-inset`, `vertical`, `semantic`, `on-vivid`, `on-glass-over-map` | **No**; rows 14 and 50 stand | A deeper hairline. `on-vivid` is byte-identical, and `on-glass-over-map`'s tile falls back. |
+| 73 | Icon (§9.5.2) | `control-md`, `corner-sm`, `display-lg`, `status-filled`, `accent-mark`, `inherit-in-row`, `decorative`, `named-standalone`, `on-vivid`, `on-glass-over-map`, `on-glass-light-over-image` | **No**; rows 15, 51 and 52 stand | The layer holds no glyph tone. Nine are byte-identical, and the two on glass equal their Reduce Transparency twins. |
+| 74 | Badge (§9.5.3) | `count-neutral`, `count-critical`, `count-accent`, `count-overflow`, `outline-neutral`, `outline-critical`, `dot-critical`, `dot-accent`, `on-vivid`, `on-glass-over-map` | **No; RD-6 stands** | `outline-neutral`'s ring deepens. The red "2" on the map equals its Reduce Transparency twin (row 53), and the other eight are byte-identical. |
+| 75 | `IconButton/with-badge` (§9.4) | `with-badge` | **No**; row 13 stands | The circle's ring deepens. The bell, the badge and its count do not change. |
+| 76 | IconButton, the other 11 (§9.5.4) | `secondary-md`, `primary-md`, `ghost-md`, `plain-sm`, `danger-md`, `selected-in-group`, `lg-touch`, `disabled`, `on-vivid`, `on-glass-over-map`, `label-ru` | **No**; rows 17 and 54 stand | The rings of `secondary-md`, `label-ru`, `ghost-md` and `disabled` deepen. The circle on the map equals its Reduce Transparency twin, ink in light, and the other six are byte-identical. |
+| 77 | Avatar — the portrait circles (§10.4.1) | `image-md`, `ringed`, `size-lg`, `decorative` | **No**; rows 19, 23, 25 and 26 stand | Byte-identical to their standard images on both stacks. |
+| 78 | Avatar — the lettered and glyph circles (§10.4.2) | `initials-md`, `initials-one-word`, `size-sm`, `russian-initials`, `fallback-icon` | **No**; rows 20–22, 24 and 30 stand | The initials deepen. `fallback-icon` is byte-identical. |
+| 79 | Avatar — over the map (§10.4.3) | `ringed-over-map`, `initials-over-map` | **No**, as rows 55–56; RD-9 as §12.5 read it | The fallback on the map. `ringed-over-map` equals its Reduce Transparency twin, and `initials-over-map`'s near-white disc carries deeper initials. |
+| 80 | Avatar — on glass over the image (§10.4.4) | `on-glass-over-image` | **No**, as row 57 | The fallback tile, with deeper initials. |
+| 81 | `Chip/md-with-avatar` (§11.4) | `md-with-avatar` | **No**; row 38 and RD-11 stand | The pill's stroke, the label and the initials deepen. The anatomy and the person in it do not change. |
+| 82 | Chip — the page chips (§11.5.1) | `default-sm`, `selected`, `with-leading-icon`, `removable`, `md-size`, `disabled`, `russian-label` | **No**; rows 31–34, 36, 37 and 43 stand | Strokes and labels deepen, on pills that keep their fills. |
+| 83 | `Chip/identifier-copy` (§11.5.2) | `identifier-copy` | **No**; row 62 stands, and RD-12 stays closed | "INV-209316", with the deeper stroke and label that §13.3 decoded on Apple, now on the web as well. |
+| 84 | Chip — over the map (§11.5.3) | `on-map`, `selected-on-map` | **No**, as rows 58–59 | The fallback pill on the map, with a deeper stroke. Selected, it has no check. |
+| 85 | Chip — on media (§11.5.4) | `on-vivid`, `on-glass-over-image` | **No**, as rows 60–61 | The fallback pill, with a deeper stroke. `on-vivid` keeps vivid's bloom. |
+
+**Summary.** None of the 183 is close enough to one product that a reasonable person would call it a copy. Each draws what its Apple twin draws, and that twin was read in the group's own section. Increase Contrast deepens strokes and secondary text, raises thin weights, and falls glass back. So each image is at least as far from its nearest reference as its standard twin, and the metric cards and the glass are further.
+
+### 14.5 Does anything here move an earlier verdict or finding?
+
+No verdict moves, and no finding changes its conclusion.
+- **§3.11 and row 11.** "No reference has an accessibility state to be close to" holds for the web's 183 as for Apple's. §3.11 carries a pointer.
+- **RD-2.** The metric cards stay borderline on anatomy. Under Increase Contrast their thin hero turns regular and their dimmed remainder secondary, two of the parts row 6 lists, so the twins are drawn less like the reference card, not more. Item 3 stands: `glass-vehicle`'s twin keeps "Unit 4417" on an opaque card. Its cost grows by the two web twins: re-subjecting it now moves 30 baselines, 12 Apple and 18 web.
+- **RD-3.** It explains the only cells where the stacks disagree about what Increase Contrast changes. The web's Surface examples carry copy in the secondary tone, and Apple's carry none (§14.3). No claim rests on it.
+- **RD-4.** `danger-md`'s twin is byte-identical to its standard image on both stacks: the critical wash does not move.
+- **RD-6 and condition 5.** `Badge/on-glass-over-map`'s twin equals its Reduce Transparency twin, and `with-badge`'s keeps its count and its ground. Changing the count now moves 30 baselines, 12 Apple and 18 web.
+- **RD-9 and condition 7.** The map examples' twins are the fallback §12.5 read, with deeper strokes and initials. The web map draws no route in any of them. In light `Avatar/initials-over-map` is the near-white disc §12.5 read, with a darker "AP". Condition 7 has not fired.
+- **RD-11 and condition 8.** `md-with-avatar`'s twin keeps the person's initials and name, and only its stroke, label and initials deepen. `identifier-copy`'s keeps "INV-209316". Condition 8 has not fired.
+- **RD-12.** Stays closed. The new images draw "INV-209316": CI recorded them after the relabel.
+
+### 14.6 Coverage
+
+| Component | Examples with a web Increase Contrast twin | New images | Groups |
+|---|---|---|---|
+| Button | 7 | 14 | §3.1 |
+| Surface | 8 | 16 | §3.2, §3.3, §3.5 |
+| Card | 7 | 13 | §3.5–§3.8 |
+| Text | 6 | 12 | §3.9, §3.10 |
+| Divider | 6 | 12 | §9.5.1 |
+| Icon | 11 | 22 | §9.5.2 |
+| Badge | 10 | 20 | §9.5.3 |
+| IconButton | 12 | 24 | §9.4, §9.5.4 |
+| Avatar | 12 | 24 | §10.4.1–§10.4.4 |
+| Chip | 13 | 26 | §11.4, §11.5.1–§11.5.4 |
+| **Total** | **92** | **183** | |
+
+With them the gallery review covers all 1931 images: the 1748 that §§3 and 9–13 read, as they still are, and these 183.
+
+### 14.7 What this clearance covers, and when it expires
+
+**It covers** the gallery at the commit that adds this section: all 1931 images, 92 examples and 10 components. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires on §9.9's conditions, as §10.8, §11.9 and §12.7 read them.** Two of them now reach the web's Increase Contrast images:
+- **Condition 3's variant clause.** Each new example brings two web Increase Contrast twins, and its section reads them with the rest of its images. If the web ever photographs Increase Contrast at compact density or on `web-touch`, or Bold Text, the 685 figures now "not in this matrix" become new variants of named examples, and a dated section reads them, as this one does.
+- **Condition 6** covers these 183 as it covers every committed baseline: a re-record that changes what one of them draws expires this clearance for it. P4-10, which changes IconButton's colours on glass, is the next one known.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next section's verdict rows start at 86, and its findings at RD-13.
