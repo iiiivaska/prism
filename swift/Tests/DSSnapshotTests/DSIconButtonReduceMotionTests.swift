@@ -7,8 +7,9 @@ import DSTokens
 @testable import DSComponents
 
 /// IconButton.yaml `accessibility.reduceMotion` and behavior ("Pressed…") as pixels: under Reduce Motion nothing about a
-/// press scales, so each variant's press has to show as its pressed fill — secondary, ghost and plain — or as the
-/// pressed overlay of `color.bg.fill.neutral.subtle` — primary, danger and a selected circle (ADR-0023 §8.4 item 2).
+/// press scales, so each variant's press has to show as its pressed fill — primary and a selected circle, one lightness
+/// step from the rest fill (ADR-0039), secondary, ghost and plain — or as the pressed overlay of
+/// `color.bg.fill.neutral.subtle` over danger's tint (ADR-0023 §8.4 item 2).
 ///
 /// Each case renders the same circle twice through the same pipeline, at rest and pressed, and compares the two
 /// images; no colour value is written here, so the tokens decide both sides. Modality is touch, where there is no hover
@@ -40,15 +41,6 @@ struct DSIconButtonReduceMotionTests {
 
         static let all: [Case] = DSIconButtonVariant.allCases.map { Case(variant: $0, isSelected: false) }
             + [Case(variant: .ghost, isSelected: true)]
-    }
-
-    /// The known gap of the spec's behavior and `accessibility.reduceMotion` (Button's): the primary and selected
-    /// overlay, `color.bg.fill.neutral.subtle`, composites to nothing over `color.bg.fill.inverse` in both schemes, and
-    /// over `color.bg.fill.inverse-media` in dark. In light it shows over the white media solid.
-    nonisolated static func isKnownGap(_ testCase: Case, on material: DSSurfaceMaterial, scheme: ColorScheme) -> Bool {
-        let rendered = DSIconButtonAppearance.rendered(testCase.variant, isSelected: testCase.isSelected)
-        guard rendered == .primary else { return false }
-        return !DSIconButtonAppearance.isMedia(material) || scheme == .dark
     }
 
     /// One circle on a surface that publishes `material`, at rest or pressed, with no glyph, so every pixel of the
@@ -119,8 +111,8 @@ struct DSIconButtonReduceMotionTests {
     }
 
     /// Pressing changes what is on screen under Reduce Motion, for every variant and a selected circle, on both grounds
-    /// and in both schemes — except the known gap, which is held as a known issue so the day the primary pressed cells
-    /// get a step of their own this fails and the gap is struck from the spec.
+    /// and in both schemes. Primary and a selected circle were held here as ten known issues until ADR-0039 gave their
+    /// pressed cells a lightness step of their own; now every case meets the same bound.
     @Test(arguments: Case.all)
     func theReduceMotionPressIsVisible(_ testCase: Case) throws {
         try DSRenderCapability.requireRasterizing()
@@ -131,40 +123,36 @@ struct DSIconButtonReduceMotionTests {
                 let moved = DSButtonReduceMotionTests.difference(rest, pressed)
                 let fill = Self.interiorStep(rest, pressed)
                 print("DSIconButtonReduceMotionPress \(testCase) on \(material) in \(scheme) | interior step \(fill) | largest channel step \(moved.largest) | pixels changed \(moved.pixels)")
-                withKnownIssue(
-                    "the primary and selected overlay composites to nothing over color.bg.fill.inverse, and over color.bg.fill.inverse-media in dark (IconButton.yaml behavior, Button's known gap)"
-                ) {
-                    #expect(
-                        fill >= Self.visible,
-                        "\(testCase) on \(material) in \(scheme): the press moved the circle's fill by at most \(fill) code value(s); only \(moved.pixels) pixel(s) changed anywhere, by at most \(moved.largest)"
-                    )
-                } when: {
-                    Self.isKnownGap(testCase, on: material, scheme: scheme)
-                }
+                #expect(
+                    fill >= Self.visible,
+                    "\(testCase) on \(material) in \(scheme): the press moved the circle's fill by at most \(fill) code value(s); only \(moved.pixels) pixel(s) changed anywhere, by at most \(moved.largest)"
+                )
             }
         }
     }
 
-    /// The pressed overlay of primary and danger shows on every press, not only under Reduce Motion — the one place
-    /// where copying Button would be wrong, since Button's danger substitute appears only under Reduce Motion. Read at
-    /// the circle's interior under standard motion, where the 0.97 scale moves no fill.
-    @Test func thePressedOverlayShowsInEveryMotionMode() throws {
+    /// Every press shows in the circle's fill under standard motion too, not only under Reduce Motion: danger's overlay —
+    /// the one place where copying Button would be wrong, since Button's danger substitute appears only under Reduce
+    /// Motion — and the pressed fill of primary and a selected circle (ADR-0039). Read at the circle's interior, where the
+    /// 0.97 scale moves no fill.
+    @Test func thePressShowsInEveryMotionMode() throws {
         try DSRenderCapability.requireRasterizing()
-        let danger = Case(variant: .danger, isSelected: false)
-        for scheme in [ColorScheme.light, .dark] {
-            for material in Self.materials {
-                let rest = try #require(Self.pixels(danger, isPressed: false, on: material, scheme: scheme, reduceMotion: false))
-                let pressed = try #require(Self.pixels(danger, isPressed: true, on: material, scheme: scheme, reduceMotion: false))
-                let step = Self.interiorStep(rest, pressed)
-                print("DSIconButtonStandardPress danger on \(material) in \(scheme) | interior step \(step)")
-                #expect(step >= Self.visible, "danger on \(material) in \(scheme): the overlay moved the circle's fill by \(step)")
+        let cases = [
+            Case(variant: .danger, isSelected: false),
+            Case(variant: .primary, isSelected: false),
+            Case(variant: .ghost, isSelected: true),
+        ]
+        for testCase in cases {
+            for scheme in [ColorScheme.light, .dark] {
+                for material in Self.materials {
+                    let rest = try #require(Self.pixels(testCase, isPressed: false, on: material, scheme: scheme, reduceMotion: false))
+                    let pressed = try #require(Self.pixels(testCase, isPressed: true, on: material, scheme: scheme, reduceMotion: false))
+                    let step = Self.interiorStep(rest, pressed)
+                    print("DSIconButtonStandardPress \(testCase) on \(material) in \(scheme) | interior step \(step)")
+                    #expect(step >= Self.visible, "\(testCase) on \(material) in \(scheme): the press moved the circle's fill by \(step)")
+                }
             }
         }
-        // Where the primary overlay can show — over the white media solid in light — it shows under standard motion too.
-        let primary = Case(variant: .primary, isSelected: false)
-        let rest = try #require(Self.pixels(primary, isPressed: false, on: .vivid, scheme: .light, reduceMotion: false))
-        let pressed = try #require(Self.pixels(primary, isPressed: true, on: .vivid, scheme: .light, reduceMotion: false))
-        #expect(Self.interiorStep(rest, pressed) >= Self.visible, "primary on vivid in light: the overlay does not show")
     }
 }
 #endif

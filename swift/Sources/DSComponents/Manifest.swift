@@ -80,16 +80,22 @@
 /// first to nest a chip in it: its pill is the chip, and an Avatar in its leading position is a chip inside a chip,
 /// which reads the enclosure the pill hands it (ADR-0037). Chip.yaml marks watchOS `none` — a watch filter is a list
 /// screen — so its row has no `watchos` key either.
+///
+/// Button 6 and IconButton 2 give the inverse solid a pressed step (ADR-0039): the primary pill, and the primary or
+/// selected circle, take `color.bg.fill.inverse-pressed` while pressed, or `color.bg.fill.inverse-media-pressed` over
+/// media, one lightness step from the rest fill in every scheme, so the press shows under Reduce Motion, where nothing
+/// scales. IconButton's pressed overlay leaves primary and a selected circle and stays on danger. No example is
+/// photographed pressed, so no image moved.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
-        "Button": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
+        "Button": ["ios": 6, "ipados": 6, "macos": 6, "watchos": 6],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Chip": ["ios": 1, "ipados": 1, "macos": 1],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
-        "IconButton": ["ios": 1, "ipados": 1, "macos": 1],
+        "IconButton": ["ios": 2, "ipados": 2, "macos": 2],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]

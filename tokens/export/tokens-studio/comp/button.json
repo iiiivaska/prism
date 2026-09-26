@@ -70,7 +70,8 @@
         "bg": {
           "pressed": {
             "$type": "color",
-            "$value": "{color.bg.fill.inverse}"
+            "$value": "{color.bg.fill.inverse-pressed}",
+            "$description": "the pressed pill: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); on vivid the spec binds color.bg.fill.inverse-media-pressed"
           },
           "rest": {
             "$type": "color",

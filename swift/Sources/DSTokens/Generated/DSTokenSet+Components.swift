@@ -130,6 +130,7 @@ extension DSTokenSet {
             public let paddingXLg: CGFloat
             public let paddingXMd: CGFloat
             public let paddingXSm: CGFloat
+            /// the pressed pill: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); on vivid the spec binds color.bg.fill.inverse-media-pressed
             public let primaryBgPressed: Color
             /// solid inverse pill is the only fill
             public let primaryBgRest: Color
@@ -155,7 +156,7 @@ extension DSTokenSet {
                 self.paddingXLg = space.step6
                 self.paddingXMd = space.step5
                 self.paddingXSm = space.step4
-                self.primaryBgPressed = color.bgFillInverse
+                self.primaryBgPressed = color.bgFillInversePressed
                 self.primaryBgRest = color.bgFillInverse
                 self.primaryText = color.textOnInverse
                 self.radius = radius.control
@@ -254,6 +255,7 @@ extension DSTokenSet {
             public let ghostIcon: Color
             /// the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance
             public let plainIcon: Color
+            /// the pressed circle, selected or not: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); over media the spec binds color.bg.fill.inverse-media-pressed
             public let primaryBgPressed: Color
             /// the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9)
             public let primaryBgRest: Color
@@ -276,7 +278,7 @@ extension DSTokenSet {
                 self.ghostBorder = color.borderStrong
                 self.ghostIcon = color.iconPrimary
                 self.plainIcon = color.iconSecondary
-                self.primaryBgPressed = color.bgFillInverse
+                self.primaryBgPressed = color.bgFillInversePressed
                 self.primaryBgRest = color.bgFillInverse
                 self.primaryIcon = color.textOnInverse
                 self.secondaryBgPressed = color.bgSurfaceNested

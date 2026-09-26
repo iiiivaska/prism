@@ -1,5 +1,5 @@
 /**
- * `Button` (spec/components/Button.yaml, specVersion 5): one action, one label, an optional leading or
+ * `Button` (spec/components/Button.yaml, specVersion 6): one action, one label, an optional leading or
  * trailing icon, on React Aria Components' `Button`.
  *
  * - React Aria owns the behavior (Button.yaml behavior 1): `onPress` fires once on release inside the

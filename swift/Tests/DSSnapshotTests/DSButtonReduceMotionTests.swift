@@ -31,7 +31,7 @@ struct DSButtonReduceMotionTests {
     static let visible = 3
 
     /// The page and the vivid gradient: the two grounds whose cells differ for `primary`, which takes
-    /// `color.bg.fill.inverse-media` on vivid and `comp.button.primary.bg.*` everywhere else.
+    /// `color.bg.fill.inverse-media` and its pressed step on vivid and `comp.button.primary.bg.*` everywhere else.
     nonisolated static let materials: [DSSurfaceMaterial] = [.page, .vivid]
 
     /// One pill on a surface that publishes `material`, at rest or pressed.
@@ -92,14 +92,10 @@ struct DSButtonReduceMotionTests {
 
     /// Pressing changes what is on screen, for every variant, on both grounds and in both schemes.
     ///
-    /// **Known gap for `primary`, the default variant.** `comp.button.primary.bg.pressed` and
-    /// `comp.button.primary.bg.rest` both alias `color.bg.fill.inverse`, and on vivid both cells are forced to
-    /// `color.bg.fill.inverse-media`, so the substitute Button.yaml `accessibility.reduceMotion` names is the fill
-    /// already on screen. `DSButtonAppearance.reducedMotionPressOverlay` documents why this cannot be repaired from
-    /// the component: `color.bg.fill.neutral.subtle`, the substitute danger and Card use, is the inverse fill's own
-    /// colour at 6 % and composites to nothing over it. The fix is the token, through P1-1 and P1-2, and this fails
-    /// the day it lands. Tracked in `docs/roadmap.md`, "Verify before implementing": **Button `primary` has no Reduce
-    /// Motion press**, so the record is not this comment alone.
+    /// `primary`, the default variant, is the case this suite was written for: its pressed fill used to be its rest
+    /// fill, which this test held as a known issue on all four cases. Since ADR-0039 its pressed cell is one lightness
+    /// step from its rest — `color.bg.fill.inverse-pressed` through `comp.button.primary.bg.pressed`, and
+    /// `color.bg.fill.inverse-media-pressed` on vivid — so every variant is held to the same bound, with no known issue.
     @Test(arguments: DSButtonVariant.allCases)
     func theReduceMotionPressIsVisible(_ variant: DSButtonVariant) throws {
         try DSRenderCapability.requireRasterizing()
@@ -109,16 +105,10 @@ struct DSButtonReduceMotionTests {
                 let pressed = try #require(Self.pixels(variant, isPressed: true, on: material, scheme: scheme), "\(variant) \(material) \(scheme) did not render")
                 let moved = Self.difference(rest, pressed)
                 print("DSReduceMotionPress \(variant) on \(material) in \(scheme) | largest channel step \(moved.largest) | pixels changed \(moved.pixels)")
-                withKnownIssue(
-                    "comp.button.primary.bg.pressed aliases color.bg.fill.inverse, its own rest fill, so Button.yaml's named substitute changes nothing"
-                ) {
-                    #expect(
-                        moved.largest >= Self.visible,
-                        "\(variant) on \(material) in \(scheme): the press moved at most \(moved.largest) code value(s) over \(moved.pixels) pixel(s)"
-                    )
-                } when: {
-                    variant == .primary
-                }
+                #expect(
+                    moved.largest >= Self.visible,
+                    "\(variant) on \(material) in \(scheme): the press moved at most \(moved.largest) code value(s) over \(moved.pixels) pixel(s)"
+                )
             }
         }
     }

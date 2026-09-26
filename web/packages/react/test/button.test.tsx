@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Button (spec/components/Button.yaml, specVersion 5).
+ * Button (spec/components/Button.yaml, specVersion 6).
  *
  * - Button.css binds what Button.yaml binds: every variant on every material the matrices key, the rest,
  *   pressed and hover fills, the outline's colour and width, sizes, label typography, icons, the spinner,
@@ -56,8 +56,8 @@ function nameOf(out: string): string | undefined {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Button.yaml specVersion 5", () => {
-    expect(spec.specVersion).toBe(5);
+  it("is Button.yaml specVersion 6", () => {
+    expect(spec.specVersion).toBe(6);
     expect([...buttonVariants]).toEqual(propValues(spec, "variant"));
     expect([...buttonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -82,13 +82,25 @@ describe("Button.css binds what Button.yaml binds", () => {
   it.each(combinations)("root.pressed.background of $variant on $material", ({ variant, material }) => {
     const pressed = cascade.value(on(variant, material, { "data-pressed": "" }), "--ds--button-fill");
     const rest = cascade.value(on(variant, material), "--ds--button-fill");
-    const cellValue = bound(cell((root["pressed"] as Record<string, Binding> | undefined)?.["background"], variant));
-    if (variant === "primary" && material === "vivid") {
-      // Button.yaml's pressed cell has no vivid key; the white inverse-media pill keeps its fill so its ink
-      // label stays legible (reported against the spec, see Button.css).
-      expect(pressed).toBe(rest);
-    } else {
-      expect(pressed).toBe(cellValue ?? rest);
+    const cellValue = bound(cell((root["pressed"] as Record<string, Binding> | undefined)?.["background"], variant, material));
+    expect(pressed).toBe(cellValue ?? rest);
+  });
+
+  // ADR-0039: the pressed pill is one lightness step from its rest, in every scheme and under Increase Contrast, so
+  // the press is never the fill already on screen. The pixels are Apple's `DSButtonReduceMotionTests`.
+  it("gives primary's pressed cells a value of their own in every colour scheme context (ADR-0039)", () => {
+    const pressedCells = (root["pressed"] as Record<string, Binding> | undefined)?.["background"];
+    for (const colorScheme of ["light", "dark"] as const) {
+      for (const contrast of ["standard", "more"] as const) {
+        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string }>>;
+        for (const material of materials) {
+          const rest = cell(root["background"], "primary", material) ?? "";
+          const pressed = cell(pressedCells, "primary", material) ?? "";
+          const context = `${colorScheme}, contrast ${contrast}, on ${material}: ${pressed} against ${rest}`;
+          expect(resolved[pressed]?.hex, context).toBeDefined();
+          expect(resolved[pressed]?.hex, context).not.toBe(resolved[rest]?.hex);
+        }
+      }
     }
   });
 

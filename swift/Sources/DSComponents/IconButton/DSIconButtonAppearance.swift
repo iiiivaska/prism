@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/IconButton.yaml` (specVersion 1) binds, as pure functions of the variant, the size and
+/// Every value `spec/components/IconButton.yaml` (specVersion 2) binds, as pure functions of the variant, the size and
 /// the material the enclosing Surface publishes, so the binding matrix runs on the host. `DSIconButton` only draws what
 /// these return.
 ///
@@ -12,14 +12,14 @@ import DSTokens
 /// `default` either the property is not set — which is how `ghost` and `plain` have no fill at rest and `primary` and
 /// `plain` no ring (ADR-0029 §3.3).
 ///
-/// **A selected circle is `primary`, cell for cell** (behavior, "`isSelected`"). The fill — pressed or not, as the
-/// web's `[data-ds-selected]` fill is — and the glyph read the spec's own `selected` cells, and every other cell — the
-/// underlay, the ring and its width, and the pressed overlay — is read for `rendered(_:isSelected:)`, which is
-/// `primary` for a selected circle. So a selected `danger` has no red ring and no underlay, and a pressed selected
-/// `ghost` takes primary's pressed overlay rather than the ghost's pressed wash.
-/// `DSIconButtonBindingTests.aSelectedCircleIsPrimaryCellForCell` holds the `selected` cells to primary's on every
-/// material, and primary's pressed fill to its rest fill in value, so the day the spec or the tokens separate them that
-/// test fails and this rule is read again.
+/// **A selected circle is `primary`, cell for cell** (behavior, "`isSelected`"). At rest the fill and the glyph read
+/// the spec's own `selected` cells; pressed, the fill is primary's pressed cell, as the web's
+/// `[data-ds-selected][data-pressed]` fill is. Every other cell — the underlay, the ring and its width, and the pressed
+/// overlay — is read for `rendered(_:isSelected:)`, which is `primary` for a selected circle. So a selected `danger` has
+/// no red ring, no underlay and no overlay, and a pressed selected `ghost` takes primary's pressed step (ADR-0039)
+/// rather than the ghost's pressed wash. `DSIconButtonBindingTests.aSelectedCircleIsPrimaryCellForCell` holds the
+/// `selected` cells to primary's on every material, and the pressed selected fill to primary's pressed fill, so the day
+/// the spec separates them that test fails and this rule is read again.
 ///
 /// The web's twins are the `--ds--icon-button-*` properties of `IconButton.css`
 /// (`web/packages/react/src/icon-button/`); both stacks assert the same cells out of the same spec.
@@ -110,33 +110,32 @@ nonisolated enum DSIconButtonAppearance {
     /// `tokens.root.hover.overlay`, pointer only, over the circle and never over the larger hit region.
     static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
 
-    /// `tokens.root.pressed.background`: the fill a pressed circle takes in place of its rest fill. Primary carries a
-    /// material level (white on vivid and on the scheme's glass, so its ink glyph stays on a white circle); secondary
+    /// `tokens.root.pressed.background`: the fill a pressed circle takes in place of its rest fill. Primary's, which a
+    /// selected circle takes too, is one lightness step from its rest fill in every scheme (ADR-0039): the inverse
+    /// solid's `comp.icon-button.primary.bg.pressed`, and on vivid and on the scheme's glass
+    /// `color.bg.fill.inverse-media-pressed`, the white circle a step darker under the same ink glyph. Secondary takes
     /// the nested step; ghost and plain the neutral wash, painted on the circle only; danger has no cell and keeps its
     /// tint.
     static func pressedBackground(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: isMedia(material) ? \.color.bgFillInverseMedia : \.components.iconButton.primaryBgPressed
+        case .primary: isMedia(material) ? \.color.bgFillInverseMediaPressed : \.components.iconButton.primaryBgPressed
         case .secondary: \.components.iconButton.secondaryBgPressed
         case .ghost, .plain: \.components.iconButton.ghostBgPressed
         case .danger: nil
         }
     }
 
-    /// `tokens.root.pressed.overlay`: `color.bg.fill.neutral.subtle` over primary and danger, whose pressed cell carries
-    /// their rest value, so that no variant's press is carried by the scale alone. It is shown on **every** press, in
-    /// every motion mode — unlike Button's danger substitute, which appears only under Reduce Motion.
+    /// `tokens.root.pressed.overlay`: `color.bg.fill.neutral.subtle` over danger, whose tint has no pressed cell, so that
+    /// no variant's press is carried by the scale alone. It is shown on **every** press, in every motion mode — unlike
+    /// Button's danger substitute, which appears only under Reduce Motion.
     ///
-    /// **Known gap (behavior, `accessibility.reduceMotion`).** Over `color.bg.fill.inverse` the overlay composites to
-    /// nothing in both schemes — it is the inverse fill's own ink at 6 % in light, and white at 6 % over white in dark —
-    /// and over `color.bg.fill.inverse-media` it does so in dark. So a pressed primary or selected circle on a solid
-    /// ground, and on vivid or glass in dark, shows its press only by the scale, and under Reduce Motion not at all. It
-    /// is Button's gap (`DSButtonAppearance.reducedMotionPressOverlay`), held as a known issue by
-    /// `DSIconButtonReduceMotionTests`, and it lasts until the primary pressed cells get a step of their own.
+    /// Primary and a selected circle take no overlay: their press is primary's pressed fill, one lightness step from the
+    /// rest fill (ADR-0039). The overlay is the inverse solid's own colour at 6 %, so over it it would show nothing,
+    /// which is what IconButton 1 drew; `DSIconButtonReduceMotionTests` measures every press with no known issue.
     static func pressedOverlay(_ variant: DSIconButtonVariant) -> DSColorPath? {
         switch variant {
-        case .primary, .danger: \.color.bgFillNeutralSubtle
-        case .secondary, .ghost, .plain: nil
+        case .danger: \.color.bgFillNeutralSubtle
+        case .primary, .secondary, .ghost, .plain: nil
         }
     }
 
@@ -146,16 +145,18 @@ nonisolated enum DSIconButtonAppearance {
         isMedia(material) ? \.color.bgFillInverseMedia : \.components.iconButton.primaryBgRest
     }
 
-    /// The fill a circle draws: the `selected` cell for a selected circle, pressed or not; otherwise the pressed cell
-    /// while pressed, falling back to the rest cell where the variant has none (danger); otherwise the rest cell. nil
-    /// is no fill (ghost and plain at rest).
+    /// The fill a circle draws: for a selected circle the `selected` cell at rest and primary's pressed cell while
+    /// pressed; otherwise the pressed cell while pressed, falling back to the rest cell where the variant has none
+    /// (danger); otherwise the rest cell. nil is no fill (ghost and plain at rest).
     static func fill(
         _ variant: DSIconButtonVariant,
         isSelected: Bool,
         isPressed: Bool,
         on material: DSSurfaceMaterial
     ) -> DSColorPath? {
-        if isSelected { return selectedBackground(on: material) }
+        if isSelected {
+            return isPressed ? pressedBackground(.primary, on: material) : selectedBackground(on: material)
+        }
         let rest = background(variant, on: material)
         guard isPressed else { return rest }
         return pressedBackground(variant, on: material) ?? rest

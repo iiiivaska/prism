@@ -402,6 +402,54 @@
             ]
           }
         },
+        "inverse-media-pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8823,
+              0.8902,
+              0.9097
+            ],
+            "alpha": 1,
+            "hex": "#e1e3e8"
+          },
+          "$description": "the white solid over media while pressed: bg.fill.inverse-media one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under the same ink (ADR-0039)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-inverse-media-pressed)",
+              "iOS": "tokens.color.bgFillInverseMediaPressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "inverse-pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8823,
+              0.8902,
+              0.9097
+            ],
+            "alpha": 1,
+            "hex": "#e1e3e8"
+          },
+          "$description": "the inverse solid while pressed: bg.fill.inverse one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under the same on-inverse text, so a primary pill or circle shows its press without the scale (ADR-0023 §8.4, ADR-0039)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-inverse-pressed)",
+              "iOS": "tokens.color.bgFillInversePressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
         "neutral": {
           "subtle": {
             "$type": "color",
@@ -6022,13 +6070,14 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                1,
-                1,
-                1
+                0.8823,
+                0.8902,
+                0.9097
               ],
               "alpha": 1,
-              "hex": "#ffffff"
+              "hex": "#e1e3e8"
             },
+            "$description": "the pressed pill: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); on vivid the spec binds color.bg.fill.inverse-media-pressed",
             "$extensions": {
               "com.figma.codeSyntax": {
                 "WEB": "var(--ds-button-primary-bg-pressed)",
@@ -6791,13 +6840,14 @@
             "$value": {
               "colorSpace": "srgb",
               "components": [
-                1,
-                1,
-                1
+                0.8823,
+                0.8902,
+                0.9097
               ],
               "alpha": 1,
-              "hex": "#ffffff"
+              "hex": "#e1e3e8"
             },
+            "$description": "the pressed circle, selected or not: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); over media the spec binds color.bg.fill.inverse-media-pressed",
             "$extensions": {
               "com.figma.codeSyntax": {
                 "WEB": "var(--ds-icon-button-primary-bg-pressed)",

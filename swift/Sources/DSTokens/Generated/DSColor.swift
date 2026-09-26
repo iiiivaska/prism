@@ -13,6 +13,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case bgFillCritical = "color-bg-fill-critical"
     case bgFillInverse = "color-bg-fill-inverse"
     case bgFillInverseMedia = "color-bg-fill-inverse-media"
+    case bgFillInverseMediaPressed = "color-bg-fill-inverse-media-pressed"
+    case bgFillInversePressed = "color-bg-fill-inverse-pressed"
     case bgFillNeutralSubtle = "color-bg-fill-neutral-subtle"
     case bgPage = "color-bg-page"
     case bgSurface = "color-bg-surface"
@@ -131,6 +133,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .bgFillCritical: DSColorAppearances(any: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), dark: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), highContrast: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), darkHighContrast: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1), watch: DSRGBA(.displayP3, 0.8253, 0.2318, 0.208, 1))
         case .bgFillInverse: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
         case .bgFillInverseMedia: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1))
+        case .bgFillInverseMediaPressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), watch: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1))
+        case .bgFillInversePressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), dark: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), highContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), darkHighContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), watch: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1))
         case .bgFillNeutralSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgPage: DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
         case .bgSurface: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
@@ -281,6 +285,12 @@ public struct DSColor: Hashable, Sendable {
 
     /// the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)
     public var bgFillInverseMedia: Color { DSColorToken.bgFillInverseMedia.color(brand) }
+
+    /// the white solid over media while pressed: bg.fill.inverse-media one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under the same ink (ADR-0039)
+    public var bgFillInverseMediaPressed: Color { DSColorToken.bgFillInverseMediaPressed.color(brand) }
+
+    /// the inverse solid while pressed: bg.fill.inverse one step up the neutral ladder (neutral.950 to 850, OKLab L +0.084), under the same on-inverse text, so a primary pill or circle shows its press without the scale (ADR-0023 §8.4, ADR-0039)
+    public var bgFillInversePressed: Color { DSColorToken.bgFillInversePressed.color(brand) }
 
     public var bgFillNeutralSubtle: Color { DSColorToken.bgFillNeutralSubtle.color(brand) }
 

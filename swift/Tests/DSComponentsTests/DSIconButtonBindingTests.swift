@@ -57,7 +57,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
     static let labelBytes = [13, 10, 14, 12, 12, 8, 13, 16, 19, 21, 46, 18]
 }
 
-/// `spec/components/IconButton.yaml` specVersion 1: the binding matrix keyed by variant and published material, the
+/// `spec/components/IconButton.yaml` specVersion 2: the binding matrix keyed by variant and published material, the
 /// selected cells, the sizes per density, the badge's offset, the press and select motion, the hit region, the rules
 /// the spec states as prose, the examples as the spec writes them, and the name and value of each one.
 ///
@@ -70,7 +70,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
 /// What the simulator publishes to VoiceOver is measured by `DSIconButtonAccessibilityTreeTests`, what a press draws
 /// under Reduce Motion by `DSIconButtonReduceMotionTests`, and what every example draws by the snapshot matrix, all in
 /// DSSnapshotTests.
-@Suite("IconButton bindings (IconButton.yaml v1)")
+@Suite("IconButton bindings (IconButton.yaml v2)")
 struct DSIconButtonBindingTests {
     let spec: DSSpec
 
@@ -105,7 +105,7 @@ struct DSIconButtonBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default` at
     /// every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 1)
+        #expect(try spec.specVersion == 2)
         #expect(try spec.propValues("variant") == DSIconButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSIconButtonSize.allCases.map(\.rawValue))
         #expect(try propDefault("variant") == DSIconButtonVariant.secondary.rawValue)
@@ -273,7 +273,7 @@ struct DSIconButtonBindingTests {
     }
 
     /// `tokens.root.hover.overlay`, `tokens.root.pressed.background` — primary's material level included — and
-    /// `tokens.root.pressed.overlay`, which primary and danger take and the others do not.
+    /// `tokens.root.pressed.overlay`, which danger takes and the others do not.
     @Test func hoverAndPressedCells() throws {
         try spec.binds(DSIconButtonAppearance.hoverOverlay, at: "root.hover.overlay")
         for material in Self.materials {
@@ -283,11 +283,11 @@ struct DSIconButtonBindingTests {
                 )
                 try spec.binds(DSIconButtonAppearance.pressedOverlay(variant), at: "root.pressed.overlay", variant, material)
             }
+            // ADR-0039: primary's pressed fill is a role of its own on every material, never its rest fill, and the
+            // press lays no overlay over the solid.
+            #expect(DSIconButtonAppearance.pressedBackground(.primary, on: material) != DSIconButtonAppearance.background(.primary, on: material), "\(material)")
         }
-        // On vivid and glass a pressed primary circle stays white under its ink glyph (the Spec step's S2).
-        for material in [DSSurfaceMaterial.vivid, .glass] {
-            #expect(DSIconButtonAppearance.pressedBackground(.primary, on: material) == DSIconButtonAppearance.background(.primary, on: material))
-        }
+        #expect(DSIconButtonAppearance.pressedOverlay(.primary) == nil)
     }
 
     /// The fill the view draws: the pressed cell while pressed, the rest cell otherwise, and the rest cell for a pressed
@@ -313,7 +313,7 @@ struct DSIconButtonBindingTests {
     }
 
     /// Behavior, "`isSelected`": a selected circle renders as `primary` in every state — its `selected` cells are
-    /// primary's cell for cell, it has no ring and no underlay, and when pressed it takes primary's pressed overlay —
+    /// primary's cell for cell, it has no ring and no underlay, and when pressed it takes primary's pressed fill —
     /// whatever its variant. If the spec ever separates the `selected` cells from primary's, this fails and
     /// `DSIconButtonAppearance`'s rule is read again.
     @Test func aSelectedCircleIsPrimaryCellForCell() throws {
@@ -326,33 +326,30 @@ struct DSIconButtonBindingTests {
                 let rendered = DSIconButtonAppearance.rendered(variant, isSelected: true)
                 #expect(rendered == .primary)
                 #expect(DSIconButtonAppearance.rendered(variant, isSelected: false) == variant)
-                // The fill is the `selected` cell, pressed or not — the web's `[data-ds-selected]` fill does not change
-                // under `[data-pressed]` either — and the press shows as primary's overlay.
-                for pressed in [false, true] {
-                    #expect(
-                        DSIconButtonAppearance.fill(variant, isSelected: true, isPressed: pressed, on: material)
-                            == DSIconButtonAppearance.selectedBackground(on: material),
-                        "\(variant) \(material) pressed \(pressed)"
-                    )
-                }
+                // The fill is the `selected` cell at rest and primary's pressed cell while pressed, as the web's
+                // `[data-ds-selected]` and `[data-ds-selected][data-pressed]` fills are (ADR-0039).
+                #expect(
+                    DSIconButtonAppearance.fill(variant, isSelected: true, isPressed: false, on: material)
+                        == DSIconButtonAppearance.selectedBackground(on: material),
+                    "\(variant) \(material) at rest"
+                )
+                #expect(
+                    DSIconButtonAppearance.fill(variant, isSelected: true, isPressed: true, on: material)
+                        == DSIconButtonAppearance.pressedBackground(.primary, on: material),
+                    "\(variant) \(material) pressed"
+                )
                 #expect(DSIconButtonAppearance.glyph(variant, isSelected: true, on: material) == DSIconButtonAppearance.foreground(.primary, on: material))
                 #expect(DSIconButtonAppearance.underlay(rendered, on: material) == nil, "\(variant) \(material): a selected circle has no underlay")
                 #expect(DSIconButtonAppearance.border(rendered, on: material) == nil, "\(variant) \(material): a selected circle has no ring")
                 #expect(DSIconButtonAppearance.borderWidth(rendered) == nil)
                 #expect(DSIconButtonAppearance.pressedOverlay(rendered) == DSIconButtonAppearance.pressedOverlay(.primary))
             }
-            // Primary's pressed fill is its rest fill in value, in both schemes, so a pressed selected circle keeping
-            // the `selected` cell is a pressed primary circle pixel for pixel. The day `comp.icon-button.primary.bg.pressed`
-            // gets a step of its own (behavior, Button's known gap) this fails, and the pressed selected fill is read
-            // again on both stacks.
-            for scheme in [DSColorScheme.light, .dark] {
-                let tokens = Self.tokens(scheme: scheme)
-                let primaryPressed = try #require(DSIconButtonAppearance.pressedBackground(.primary, on: material))
-                #expect(
-                    tokens[keyPath: primaryPressed] == tokens[keyPath: DSIconButtonAppearance.selectedBackground(on: material)],
-                    "\(material) \(scheme)"
-                )
-            }
+            // A pressed selected circle is a pressed primary circle: the same fill, and neither lays an overlay.
+            #expect(
+                DSIconButtonAppearance.fill(.ghost, isSelected: true, isPressed: true, on: material)
+                    == DSIconButtonAppearance.fill(.primary, isSelected: false, isPressed: true, on: material),
+                "\(material)"
+            )
         }
     }
 

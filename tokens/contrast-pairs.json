@@ -51,6 +51,8 @@
     { "fg": "color.text.accent", "bg": "color.bg.surface.nested", "tier": "functional", "underlays": ["color.bg.page", "color.bg.surface", "color.bg.surface.raised"], "note": "an accent chart label outside the plot on a nested ground: RangeBand's time-window label and ReferenceLine's label moved outside the plot" },
     { "fg": "color.text.on-inverse", "bg": "color.bg.fill.inverse", "tier": "functional", "note": "the inverse material, including a selected glass Surface under the fallback (ADR-0022 §1.6)" },
     { "fg": "color.text.on-inverse-media", "bg": "color.bg.fill.inverse-media", "tier": "functional", "note": "the white solid on vivid (ADR-0030 §3.1); the solid against every vivid sample is V1" },
+    { "fg": "color.text.on-inverse", "bg": "color.bg.fill.inverse-pressed", "tier": "functional", "note": "the inverse solid while pressed, one lightness step from its rest: Button primary and IconButton primary or selected (ADR-0039)" },
+    { "fg": "color.text.on-inverse-media", "bg": "color.bg.fill.inverse-media-pressed", "tier": "functional", "note": "the white solid over media while pressed, one lightness step darker under the same ink (ADR-0039)" },
     { "fg": "color.text.on-accent", "bg": "color.bg.fill.accent", "tier": "functional" },
     { "fg": "color.text.on-accent-secondary", "bg": "color.bg.fill.accent", "tier": "functional", "note": "the lit tile's second tone (ADR-0030 §3.4)" },
     { "fg": "color.text.on-accent-strong", "bg": "color.bg.fill.accent-strong", "tier": "functional", "schemes": ["light"], "note": "critic G-13: a brand's accent-strong fill is checked for every brand" },

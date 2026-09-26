@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Button.yaml` (specVersion 5) binds, as pure functions of the variant, the size and the
+/// Every value `spec/components/Button.yaml` (specVersion 6) binds, as pure functions of the variant, the size and the
 /// material the enclosing Surface publishes, so the binding matrix runs on the host, and the name a loading button
 /// speaks, as a pure function of its label and the strings table. `DSButton` only draws and names what these return.
 ///
@@ -72,39 +72,26 @@ nonisolated enum DSButtonAppearance {
 
     /// `tokens.root.pressed.background`; danger has no cell and keeps its tint.
     ///
-    /// Primary's pressed cell carries no material level, and in light `comp.button.primary.bg.pressed` is the ink
-    /// solid while the vivid label is `color.text.on-inverse-media`, also ink, so read literally a pressed primary on
-    /// vivid would lose its label. The pressed cell is the rest cell's own token (`comp.button.primary.bg.pressed` and
-    /// `.rest` both alias `color.bg.fill.inverse`), so on vivid the pressed pill keeps its vivid rest fill,
-    /// `color.bg.fill.inverse-media`.
+    /// Primary's pressed cell is one lightness step from its rest cell in every scheme (ADR-0039):
+    /// `comp.button.primary.bg.pressed`, which aliases `color.bg.fill.inverse-pressed`, and on vivid
+    /// `color.bg.fill.inverse-media-pressed`, the white pill one step darker under the same ink label.
     static func pressedBackground(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: material == .vivid ? \.color.bgFillInverseMedia : \.components.button.primaryBgPressed
+        case .primary: material == .vivid ? \.color.bgFillInverseMediaPressed : \.components.button.primaryBgPressed
         case .secondary: \.components.button.secondaryBgPressed
         case .ghost: \.components.button.ghostBgPressed
         case .danger: nil
         }
     }
 
-    /// What replaces the press scale under Reduce Motion (Button.yaml `accessibility.reduceMotion`): the variant's
-    /// pressed background, which every variant but danger already shows while pressed, and for danger
+    /// What replaces the press scale under Reduce Motion (Button.yaml `accessibility.reduceMotion`, ADR-0023 §8.4 item
+    /// 2): the variant's pressed background, which every variant but danger already shows while pressed, and for danger
     /// `color.bg.fill.neutral.subtle`, laid over its tint so the critical ground stays.
     ///
-    /// **Known gap: a pressed `primary` shows nothing under Reduce Motion.** ADR-0023 §8.4 item 2 asks the press
-    /// scale to be replaced by a visible opacity or colour change to a token the spec names, and Button.yaml names
-    /// `comp.button.primary.bg.pressed`. That token and `comp.button.primary.bg.rest` both alias
-    /// `color.bg.fill.inverse` in every context, and on vivid both cells are forced to `color.bg.fill.inverse-media`,
-    /// so the fill the spec names as the substitute is the fill already on screen. Nothing scales
-    /// (`DSControlAppearance.scale`), and under touch modality there is no hover overlay either, so a Reduce Motion
-    /// phone user pressing the default variant gets only the haptic.
-    ///
-    /// **Why this is not fixed here.** Adding `color.bg.fill.neutral.subtle` for primary, the substitute danger and
-    /// Card use, composites to nothing on this ground: it is `color.neutral.950` at 6 % over `color.bg.fill.inverse`,
-    /// which *is* `color.neutral.950`, in light, and `#ffffff` at 6 % over white in dark. The fix is
-    /// `comp.button.primary.bg.pressed` in `tokens/comp/button.tokens.json` taking a value that differs from `.rest`
-    /// — one step of the luminance ladder, as `comp.list-row.bg.pressed` does — with Button.yaml
-    /// `accessibility.reduceMotion` amended to match and a specVersion bump. `DSButtonReduceMotionTests` holds the
-    /// gap as a known issue, so the day that token changes the suite fails until this is reread.
+    /// Primary needs no overlay: its pressed background is one lightness step from its rest fill (ADR-0039). An overlay
+    /// of `color.bg.fill.neutral.subtle` would show nothing there, since it is the inverse solid's own colour at 6 %,
+    /// which is why primary's press is a fill of its own. `DSButtonReduceMotionTests` measures every variant's press on
+    /// the page and on vivid in both schemes, with no known issue.
     static func reducedMotionPressOverlay(_ variant: DSButtonVariant) -> DSColorPath? {
         variant == .danger ? \.color.bgFillNeutralSubtle : nil
     }
@@ -113,7 +100,7 @@ nonisolated enum DSButtonAppearance {
     static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
 
     /// The page under the danger tint over media: "a tinted element that carries text or a glyph over media paints
-    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v5 has no
+    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v6 has no
     /// underlay cell, so the published materials that mean media are the ones IconButton.yaml keys its `underlay` by,
     /// vivid and the scheme's glass, and light glass, which only sits over imagery.
     static func underlay(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {

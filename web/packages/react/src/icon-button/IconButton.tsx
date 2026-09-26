@@ -1,5 +1,5 @@
 /**
- * `IconButton` (spec/components/IconButton.yaml, specVersion 1): a circular action carrying one glyph and
+ * `IconButton` (spec/components/IconButton.yaml, specVersion 2): a circular action carrying one glyph and
  * no label, on React Aria Components' `Button`, the element Button is built on.
  *
  * - React Aria owns the behavior (behavior 1): `onPress` fires once on release inside the element, a drag

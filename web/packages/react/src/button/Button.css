@@ -1,5 +1,5 @@
 /*
- * Button (spec/components/Button.yaml, specVersion 5). Compiled into styles.css by
+ * Button (spec/components/Button.yaml, specVersion 6). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Button writes data-ds-variant, data-ds-size, data-ds-full-width and data-ds-surface (the
@@ -220,17 +220,14 @@
     scale: var(--ds--button-press-scale);
   }
 
+  /* Primary's pressed fill is one lightness step from its rest fill, so the press shows without the scale (ADR-0039). */
   .ds-button[data-ds-variant="primary"][data-pressed] {
     --ds--button-fill: var(--ds-button-primary-bg-pressed);
   }
 
-  /*
-   * The pressed cell of Button.yaml has no vivid key, and comp.button.primary.bg.pressed is the dark
-   * inverse fill in light: under the ink label on vivid it would hide the label while pressed. The pill
-   * keeps its inverse-media fill instead, as it keeps its inverse-media foreground.
-   */
+  /* root.pressed.background [primary, vivid]: the white pill one step darker, under the same ink label. */
   .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"][data-pressed] {
-    --ds--button-fill: var(--ds-color-bg-fill-inverse-media);
+    --ds--button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
   }
 
   .ds-button[data-ds-variant="secondary"][data-pressed] {

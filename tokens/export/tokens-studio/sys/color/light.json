@@ -66,6 +66,16 @@
           "$value": "{ref.color.neutral.0}",
           "$description": "the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1)"
         },
+        "inverse-media-pressed": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.200}",
+          "$description": "the white solid over media while pressed: bg.fill.inverse-media one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under the same ink (ADR-0039)"
+        },
+        "inverse-pressed": {
+          "$type": "color",
+          "$value": "{ref.color.neutral.850}",
+          "$description": "the inverse solid while pressed: bg.fill.inverse one step up the neutral ladder (neutral.950 to 850, OKLab L +0.084), under the same on-inverse text, so a primary pill or circle shows its press without the scale (ADR-0023 §8.4, ADR-0039)"
+        },
         "neutral": {
           "subtle": {
             "$type": "color",

@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Button.yaml` specVersion 5: the binding matrix keyed by variant and published material, the sizes
+/// `spec/components/Button.yaml` specVersion 6: the binding matrix keyed by variant and published material, the sizes
 /// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule, the watch
 /// adaptations, and the name a loading button speaks, which is the app's `strings.Button.loading` (ADR-0032).
 ///
@@ -19,8 +19,8 @@ import DSTokens
 ///
 /// What stays hand-written, and why, is marked at each test: a rule the spec states as prose (the hit region, the
 /// Dynamic Type clamp, the watch adaptations), a rule an ADR states where the spec has no cell (the danger underlay),
-/// and the documented deviations from a cell (the primary pressed fill and spinner on vivid).
-@Suite("Button bindings (Button.yaml v5)")
+/// and the documented deviation from a cell (the primary spinner on vivid).
+@Suite("Button bindings (Button.yaml v6)")
 struct DSButtonBindingTests {
     let spec: DSSpec
     /// Ghost and danger bind no spinner cell of their own, so their spinner is Spinner.yaml's arc.
@@ -51,7 +51,7 @@ struct DSButtonBindingTests {
     /// The axis check is what keeps the loops below honest: a loop over an axis the matrix is not keyed by would
     /// read `default` at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 5)
+        #expect(try spec.specVersion == 6)
         #expect(try spec.propValues("variant") == DSButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSButtonSize.allCases.map(\.rawValue))
         let variants = Set(try spec.propValues("variant"))
@@ -60,7 +60,7 @@ struct DSButtonBindingTests {
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
         }
         let materials = Set(Self.materials.map(\.rawValue))
-        for property in ["root.background.primary", "root.foreground.ghost", "root.border.ghost"] {
+        for property in ["root.background.primary", "root.foreground.ghost", "root.border.ghost", "root.pressed.background.primary"] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: materials), "\(property) is keyed by \(keys.sorted())")
         }
@@ -104,20 +104,16 @@ struct DSButtonBindingTests {
         }
     }
 
-    /// `tokens.root.pressed.background` and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion
-    /// substitute, which `accessibility.reduceMotion` names in prose.
+    /// `tokens.root.pressed.background` — primary's material level included, the white pill's pressed step on vivid
+    /// (ADR-0039) — and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion substitute, which
+    /// `accessibility.reduceMotion` names in prose.
     @Test func pressedAndHoverCells() throws {
         for material in Self.materials {
             for variant in DSButtonVariant.allCases {
-                // The pressed matrix carries no material level; primary on vivid is the one documented deviation
-                // (`DSButtonAppearance.pressedBackground`): read literally the pressed cell would be the ink solid
-                // under an ink label, so the vivid pill keeps its own rest fill.
-                if variant == .primary && material == .vivid {
-                    #expect(DSButtonAppearance.pressedBackground(.primary, on: .vivid) == DSButtonAppearance.background(.primary, on: .vivid))
-                    continue
-                }
                 try spec.binds(DSButtonAppearance.pressedBackground(variant, on: material), at: "root.pressed.background", variant, material)
             }
+            // ADR-0039: primary's pressed fill is a role of its own on every material, never its rest fill.
+            #expect(DSButtonAppearance.pressedBackground(.primary, on: material) != DSButtonAppearance.background(.primary, on: material), "\(material)")
         }
         try spec.binds(DSButtonAppearance.hoverOverlay, at: "root.hover.overlay")
         // `accessibility.reduceMotion`: danger takes `color.bg.fill.neutral.subtle`, the rest take their pressed
@@ -130,7 +126,7 @@ struct DSButtonBindingTests {
 
     /// A tinted danger pill paints `color.bg.page` under its tint over media (ADR-0030 §6.2), and nowhere else.
     ///
-    /// Button.yaml v5 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
+    /// Button.yaml v6 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
     /// comes from the ADR and the materials are the ones IconButton.yaml keys its own `underlay` by. The missing
     /// property is asserted, so a version that adds the cell fails here rather than leaving two rules in two places.
     @Test func dangerPaintsThePageOverMedia() throws {

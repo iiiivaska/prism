@@ -19,7 +19,7 @@ import DSTokens
 /// **Why this is a simulator suite.** The circle and the badge are `Colors.xcassets` fills, which `swift test` leaves
 /// transparent on the macOS host (`DSRenderCapability`).
 @MainActor
-@Suite("IconButton renders (IconButton.yaml v1)", .serialized)
+@Suite("IconButton renders (IconButton.yaml v2)", .serialized)
 struct DSIconButtonRenderTests {
     static func tokens(density: DSDensity) -> DSTokenSet {
         DSTokenSet(DSTokenContext(brand: .default, colorScheme: .light, density: density, modality: .touch, motion: .standard))

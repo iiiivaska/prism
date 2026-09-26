@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * IconButton (spec/components/IconButton.yaml, specVersion 1).
+ * IconButton (spec/components/IconButton.yaml, specVersion 2).
  *
  * - IconButton.css binds what IconButton.yaml binds: every cell of `tokens`, read off the spec and checked as
  *   it wins on the root through a small cascade, for every variant on every published material: the rest and
@@ -9,7 +9,8 @@
  *   focus-visible and the badge's offset. The matrices are keyed by the axes the loops walk, so a cell the
  *   sheet does not map fails here.
  * - Motion: the press rides motion.spring.snappy, selection motion.spring.smooth, and ADR-0023 §8.4 arrives
- *   through --ds-motion-presentation-crossfade; the pressed overlay shows on every press, in every motion mode.
+ *   through --ds-motion-presentation-crossfade; the pressed fill and danger's overlay show on every press, in
+ *   every motion mode, and primary's pressed fill is one lightness step from its rest in every scheme (ADR-0039).
  * - Server renders: React Aria's button with its variant, size, material and selection; the name, which is
  *   `label` and, with a badge, the badge's contribution after `iconButtonValueSeparator`; the hidden glyph and
  *   the hidden badge; no hint of any kind; ScopeAttributes.
@@ -133,8 +134,8 @@ function contextIn(density: Density, modality: Modality = "pointer"): TokenConte
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is IconButton.yaml specVersion 1", () => {
-    expect(spec.specVersion).toBe(1);
+  it("is IconButton.yaml specVersion 2", () => {
+    expect(spec.specVersion).toBe(2);
     expect([...iconButtonVariants]).toEqual(propValues(spec, "variant"));
     expect([...iconButtonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -223,17 +224,41 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     const width = specCell("root.borderWidth", "primary");
     const under = specCell("root.underlay", "primary", material);
     for (const [state, which] of [[selected, `a selected ${variant}`], [pressed, `a selected ${variant}, pressed`]] as const) {
-      expect(value(state, "--ds--icon-button-fill"), `${fill.name}, ${which}`).toBe(bound(fill.token));
       expect(value(state, "--ds--icon-button-foreground"), `${foreground.name}, ${which}`).toBe(bound(foreground.token));
       // Every cell that is not selection's own is primary's: no ring, no underlay.
       expect(value(state, "--ds--icon-button-border"), `${border.name}, ${which}`).toBe(bound(border.token) ?? "transparent");
       expect(value(state, "--ds--icon-button-border-width"), `${width.name}, ${which}`).toBe(bound(width.token) ?? ZERO_WIDTH);
       expect(value(state, "--ds--icon-button-under"), `${under.name}, ${which}`).toBe(bound(under.token) ?? "transparent");
     }
-    // Pressed, it takes primary's overlay.
+    // At rest the `selected` cell; pressed, primary's pressed cell, as a pressed primary circle (ADR-0039).
+    expect(value(selected, "--ds--icon-button-fill"), `${fill.name}, a selected ${variant}`).toBe(bound(fill.token));
+    const pressedFill = specCell("root.pressed.background", "primary", material);
+    expect(value(pressed, "--ds--icon-button-fill"), `${pressedFill.name}, a selected ${variant}, pressed`).toBe(bound(pressedFill.token));
+    expect(value(pressed, "--ds--icon-button-fill"), `a selected ${variant} on ${material}, pressed, is a pressed primary circle`).toBe(
+      value(on("primary", material, { "data-pressed": "" }), "--ds--icon-button-fill"),
+    );
+    // Primary's overlay, which is none: a selected danger lays no overlay either.
     const overlay = specCell("root.pressed.overlay", "primary");
-    expect(value(pressed, "--ds--icon-button-press"), `${overlay.name}, a selected ${variant} on ${material}, pressed`).toBe(bound(overlay.token));
+    expect(value(pressed, "--ds--icon-button-press"), `${overlay.name}, a selected ${variant} on ${material}, pressed`).toBe(bound(overlay.token) ?? "transparent");
     expect(value(selected, "--ds--icon-button-press"), `${overlay.name}, a selected ${variant} on ${material}, at rest`).toBe("transparent");
+  });
+
+  // ADR-0039: the pressed solid is one lightness step from its rest, in every scheme and under Increase Contrast, so the
+  // press is never the fill already on screen. The pixels are Apple's `DSIconButtonReduceMotionTests`.
+  it("gives primary's pressed cells a value of their own in every colour scheme context (ADR-0039)", () => {
+    expect(specCell("root.pressed.overlay", "primary").token, "a solid's press lays no overlay on it").toBeUndefined();
+    for (const colorScheme of ["light", "dark"] as const) {
+      for (const contrast of ["standard", "more"] as const) {
+        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string }>>;
+        for (const material of materials) {
+          const rest = specCell("root.background", "primary", material);
+          const pressed = specCell("root.pressed.background", "primary", material);
+          const context = `${colorScheme}, contrast ${contrast}: ${pressed.name} against ${rest.name}`;
+          expect(resolved[pressed.token ?? ""]?.hex, context).toBeDefined();
+          expect(resolved[pressed.token ?? ""]?.hex, context).not.toBe(resolved[rest.token ?? ""]?.hex);
+        }
+      }
+    }
   });
 
   it("gives the selected cells primary's values on every material (D3)", () => {
@@ -408,11 +433,14 @@ describe("motion (IconButton.yaml motion, ADR-0023 §8.4)", () => {
       expect(squash(selected["transition"]), `${selectCell.name}: ${property}, arriving selected`).toContain(`${property} ${timing}`);
     }
     // Arriving in the selected state the fill moves on the selection's timing; a press of a selected circle keeps
-    // the press's timing for the overlay and the scale.
+    // the press's timing for the scale, and its fill, arriving pressed, takes the press's timing too: the base
+    // rule's list, word for word.
     expect(squash(selected["transition"]), `${selectCell.name}: the fill, arriving selected`).toContain(`--ds--icon-button-fill ${timing}`);
-    expect(squash(selected["transition"]), `${cellName(spec, "root.pressed.overlay", "primary")}: a selected circle's press`).toContain("--ds--icon-button-press var(--ds-motion-duration-base) var(--ds-motion-easing-out)");
     const pressCell = specCell("motion.press");
     expect(squash(selected["transition"]), `${pressCell.name}: a selected circle's press`).toContain(`scale var(${cssVariable(pressCell.token ?? "")}-duration)`);
+    const selectedPressed = declarationsOf(cascade.rules, ".ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface][data-pressed]");
+    expect(squash(selectedPressed["transition"]), `${cellName(spec, "root.pressed.background", "primary")}: a selected circle's press`).toBe(squash(base["transition"]));
+    expect(squash(selectedPressed["transition"])).toContain("--ds--icon-button-fill var(--ds-motion-duration-base) var(--ds-motion-easing-out)");
   });
 });
 

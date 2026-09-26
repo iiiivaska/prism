@@ -1,5 +1,5 @@
 /*
- * IconButton (spec/components/IconButton.yaml, specVersion 1). Compiled into styles.css by
+ * IconButton (spec/components/IconButton.yaml, specVersion 2). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React IconButton writes data-ds-variant (always the caller's variant), data-ds-size, data-ds-surface
@@ -227,12 +227,16 @@
     scale: var(--ds--icon-button-press-scale);
   }
 
+  /*
+   * Primary's pressed fill is one lightness step from its rest fill in every scheme (ADR-0039), so the press shows
+   * without the scale: the inverse solid's step, and over media the white circle one step darker.
+   */
   .ds-icon-button[data-ds-variant="primary"][data-pressed] {
     --ds--icon-button-fill: var(--ds-icon-button-primary-bg-pressed);
   }
 
   .ds-icon-button[data-ds-variant="primary"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"])[data-pressed] {
-    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
   }
 
   .ds-icon-button[data-ds-variant="secondary"][data-pressed] {
@@ -245,22 +249,22 @@
   }
 
   /*
-   * Primary and danger, whose pressed fill carries their rest value, take the overlay on every press, in every
-   * motion mode, so no press is carried by the scale alone. Unlike Button's danger substitute it is not
-   * multiplied by the crossfade flag. Over an inverse solid the overlay composites to nothing: the known gap
-   * behavior 13 records.
+   * Danger, whose tint has no pressed cell, takes the overlay on every press, in every motion mode, so no press is
+   * carried by the scale alone. Unlike Button's danger substitute it is not multiplied by the crossfade flag.
+   * Primary takes its pressed fill instead: the overlay is the inverse solid's own colour at 6 % and would show
+   * nothing over it (ADR-0039).
    */
-  .ds-icon-button:is([data-ds-variant="primary"], [data-ds-variant="danger"])[data-pressed] {
+  .ds-icon-button[data-ds-variant="danger"][data-pressed] {
     --ds--icon-button-press: var(--ds-color-bg-fill-neutral-subtle);
   }
 
   /*
    * ---- selected: the circle as `primary` renders it, whatever the variant (behavior 6) ----
-   * The `selected` cells for the fill and the glyph; primary's for everything else: no ring, no underlay, and
-   * primary's pressed overlay. `[data-ds-variant]` and `[data-ds-surface]` are on every IconButton, so here they
-   * only lift the rules above every variant, material and pressed rule before them. Arriving here, the fill,
-   * the foreground, the ring and the underlay move on motion.select's timing; leaving, the fill takes the rest
-   * timing, because a transition runs on the timing of the state it arrives in.
+   * The `selected` cells for the fill and the glyph; primary's for everything else: no ring, no underlay, no
+   * overlay, and primary's pressed fill. `[data-ds-variant]` and `[data-ds-surface]` are on every IconButton, so
+   * here they only lift the rules above every variant, material and pressed rule before them. Arriving here, the
+   * fill, the foreground, the ring and the underlay move on motion.select's timing; leaving, the fill takes the
+   * rest timing, because a transition runs on the timing of the state it arrives in.
    */
   .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface] {
     --ds--icon-button-fill: var(--ds-icon-button-primary-bg-rest);
@@ -283,8 +287,26 @@
     --ds--icon-button-foreground: var(--ds-color-text-on-inverse-media);
   }
 
-  .ds-icon-button[data-ds-selected][data-pressed] {
-    --ds--icon-button-press: var(--ds-color-bg-fill-neutral-subtle);
+  /*
+   * Pressed, a selected circle takes primary's pressed fill (ADR-0039) and no overlay, a selected danger's included.
+   * Arriving here the fill moves on the press's timing, the base rule's list; released, it returns on the selected
+   * state's, since the state it arrives in is the selected one (P4-D6).
+   */
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface][data-pressed] {
+    --ds--icon-button-fill: var(--ds-icon-button-primary-bg-pressed);
+    --ds--icon-button-press: transparent;
+    transition:
+      --ds--icon-button-fill var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--icon-button-press var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      --ds--icon-button-hover var(--ds-motion-duration-base) var(--ds-motion-easing-out),
+      color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      box-shadow var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      background-color var(--ds--icon-button-select-duration) var(--ds-motion-spring-smooth-easing),
+      scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant]:is([data-ds-surface="vivid"], [data-ds-surface="glass"])[data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
   }
 
   /* ---- disabled, focus-visible ---- */

@@ -32,8 +32,9 @@
  *   the first drawing or on a badge that reappears.
  * - IconButton.yaml behaviors 2, 3, 5 to 7, 12, 13, 15 and 16: a circle of `root.size` that is the same under
  *   either modality and a hit region of at least `size.hit` around it; `plain` draws nothing but the glyph; the
- *   selected circle is primary's; hover under pointer only; the 0.97 press with its pressed overlay on every
- *   press, Reduce Motion included; the focus ring outside the circle; disabled; the badge `badge.offset` outside
+ *   selected circle is primary's; hover under pointer only; the 0.97 press with its pressed fill, or danger's
+ *   overlay, on every press, Reduce Motion included, primary's and a selected circle's one lightness step from the
+ *   rest (ADR-0039); the focus ring outside the circle; disabled; the badge `badge.offset` outside
  *   the top-trailing corner, in either writing direction, moving neither the circle nor the glyph; and no hint
  *   attribute on any root.
  * - Avatar.yaml behaviors 1, 4 to 6, 8 and 13 and `accessibility.reduceTransparency`: a circle of
@@ -290,6 +291,25 @@ describe("Button", () => {
       await release();
       expect(onPress, motion).toHaveBeenCalledTimes(1);
       await unmount();
+    }
+  });
+
+  it("steps the primary pill's fill while pressed in both motion modes, on the page and on vivid (ADR-0039)", async () => {
+    for (const motion of ["standard", "reduce"] as const) {
+      for (const vivid of [false, true]) {
+        const pill = <Button label="Continue" onPress={noop} />;
+        const element = await mount(vivid ? <Surface material="vivid">{pill}</Surface> : pill, { motion });
+        const button = find(element, ".ds-button");
+        const style = getComputedStyle(button);
+        const rest = style.getPropertyValue("--ds--button-fill").trim();
+        const release = await pressWithKeyboard(button);
+        const cell = vivid ? "--ds-color-bg-fill-inverse-media-pressed" : "--ds-button-primary-bg-pressed";
+        await settles(() => style.getPropertyValue("--ds--button-fill").trim(), tokenColor(button, cell));
+        expect(style.getPropertyValue("--ds--button-fill").trim(), `${motion}, vivid ${vivid}`).not.toBe(rest);
+        await release();
+        await settles(() => style.getPropertyValue("--ds--button-fill").trim(), rest);
+        await unmount();
+      }
     }
   });
 
@@ -1239,28 +1259,42 @@ describe("IconButton", () => {
     }
   });
 
-  it("scales to 0.97 while pressed, not under Reduce Motion, and shows the pressed overlay on every press in both (behavior 13)", async () => {
+  it("scales to 0.97 while pressed, not under Reduce Motion, and shows danger's overlay and primary's pressed step on every press in both (behavior 13, ADR-0039)", async () => {
     for (const motion of ["standard", "reduce"] as const) {
       for (const variant of ["danger", "primary"] as const) {
         const onPress = vi.fn();
         const element = await mount(<IconButton variant={variant} glyph="action.delete" label="Delete route" onPress={onPress} />, { motion });
         const button = find(element, ".ds-icon-button");
+        const style = getComputedStyle(button);
+        const rest = style.getPropertyValue("--ds--icon-button-fill").trim();
         const release = await pressWithKeyboard(button);
         expect(button.hasAttribute("data-pressed"), `${motion} ${variant}`).toBe(true);
-        const style = getComputedStyle(button);
-        await settles(() => style.getPropertyValue("--ds--icon-button-press").trim(), tokenColor(button, "--ds-color-bg-fill-neutral-subtle"));
+        if (variant === "danger") {
+          await settles(() => style.getPropertyValue("--ds--icon-button-press").trim(), tokenColor(button, "--ds-color-bg-fill-neutral-subtle"));
+        } else {
+          // The solid's press is a fill of its own, one lightness step from the rest, and lays no overlay on it.
+          await settles(() => style.getPropertyValue("--ds--icon-button-fill").trim(), tokenColor(button, "--ds-icon-button-primary-bg-pressed"));
+          expect(style.getPropertyValue("--ds--icon-button-fill").trim(), `${motion} ${variant}`).not.toBe(rest);
+          expect(style.getPropertyValue("--ds--icon-button-press").trim(), `${motion} ${variant}`).toMatch(TRANSPARENT);
+        }
         if (motion === "standard") await settles(() => style.scale, "0.97");
         else expect(style.scale, variant).toBe("1");
         await release();
         expect(onPress, `${motion} ${variant}`).toHaveBeenCalledTimes(1);
         await settles(() => style.getPropertyValue("--ds--icon-button-press").trim(), TRANSPARENT);
+        await settles(() => style.getPropertyValue("--ds--icon-button-fill").trim(), rest);
         await unmount();
       }
     }
   });
 
-  it("takes the variant's pressed fill while pressed (behavior 13, accessibility.reduceMotion)", async () => {
-    const cells = { secondary: "--ds-icon-button-secondary-bg-pressed", ghost: "--ds-icon-button-ghost-bg-pressed", plain: "--ds-icon-button-ghost-bg-pressed" } as const;
+  it("takes the variant's pressed fill while pressed, a selected circle primary's (behavior 13, accessibility.reduceMotion)", async () => {
+    const cells = {
+      primary: "--ds-icon-button-primary-bg-pressed",
+      secondary: "--ds-icon-button-secondary-bg-pressed",
+      ghost: "--ds-icon-button-ghost-bg-pressed",
+      plain: "--ds-icon-button-ghost-bg-pressed",
+    } as const;
     for (const [variant, cell] of Object.entries(cells) as [keyof typeof cells, string][]) {
       const element = await mount(<IconButton variant={variant} glyph="action.filter" label="Filter results" onPress={noop} />, { motion: "reduce" });
       const button = find(element, ".ds-icon-button");
@@ -1270,6 +1304,13 @@ describe("IconButton", () => {
       await release();
       await unmount();
     }
+    const element = await mount(<IconButton variant="ghost" glyph="object.map" label="Map view" isSelected onPress={noop} />, { motion: "reduce" });
+    const button = find(element, ".ds-icon-button");
+    const release = await pressWithKeyboard(button);
+    await settles(() => getComputedStyle(button).getPropertyValue("--ds--icon-button-fill").trim(), tokenColor(button, "--ds-icon-button-primary-bg-pressed"));
+    expect(getComputedStyle(button).getPropertyValue("--ds--icon-button-press").trim(), "a selected circle lays no overlay").toMatch(TRANSPARENT);
+    await release();
+    await unmount();
   });
 
   it("draws the focus ring outside the circle, and the badge stays outside the ring's shape (accessibility.keyboard)", async () => {

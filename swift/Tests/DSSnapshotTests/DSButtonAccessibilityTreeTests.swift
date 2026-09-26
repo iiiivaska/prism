@@ -22,7 +22,7 @@ import DSTokens
 /// suite with the reason instead of failing it. Every content renders in `en_US`, the locale the snapshots render in.
 @MainActor
 @Suite(
-    "Button in the accessibility tree on the simulator (Button.yaml v5)",
+    "Button in the accessibility tree on the simulator (Button.yaml v6)",
     .serialized,
     .enabled(if: DSAccessibilityAutomation.isAvailable, DSAccessibilityAutomation.unavailableComment)
 )

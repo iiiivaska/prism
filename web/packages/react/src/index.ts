@@ -94,7 +94,7 @@ export {
   type TextTruncation,
 } from "./text/tones.ts";
 
-/** Button (spec/components/Button.yaml, specVersion 5), on React Aria Components' `Button`. */
+/** Button (spec/components/Button.yaml, specVersion 6), on React Aria Components' `Button`. */
 export { Button, type ButtonProps } from "./button/Button.tsx";
 export { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from "./button/variants.ts";
 
@@ -128,7 +128,7 @@ export { glyphSizes, glyphTones, glyphWeights, type GlyphSize, type GlyphTone, t
 export { Badge, type BadgeProps } from "./badge/Badge.tsx";
 export { badgeEmphases, badgeTones, badgeVariants, type BadgeEmphasis, type BadgeTone, type BadgeVariant } from "./badge/options.ts";
 
-/** IconButton (spec/components/IconButton.yaml, specVersion 1): one glyph in a circle, named by its label, on React Aria Components' `Button`. */
+/** IconButton (spec/components/IconButton.yaml, specVersion 2): one glyph in a circle, named by its label, on React Aria Components' `Button`. */
 export { IconButton, type IconButtonBadge, type IconButtonProps } from "./icon-button/IconButton.tsx";
 export { iconButtonSizes, iconButtonVariants, type IconButtonSize, type IconButtonVariant } from "./icon-button/options.ts";
 

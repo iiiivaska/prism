@@ -47,7 +47,8 @@
         "bg": {
           "pressed": {
             "$type": "color",
-            "$value": "{color.bg.fill.inverse}"
+            "$value": "{color.bg.fill.inverse-pressed}",
+            "$description": "the pressed circle, selected or not: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); over media the spec binds color.bg.fill.inverse-media-pressed"
           },
           "rest": {
             "$type": "color",

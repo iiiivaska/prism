@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 1).
+/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 2).
 ///
 ///     DSIconButton("Open settings", glyph: .actionSettings) { openSettings() }
 ///     DSIconButton("Add a site", glyph: .actionAdd, variant: .primary) { add() }
@@ -25,13 +25,12 @@ import DSTokens
 ///    a Tooltip of its own: SwiftUI's `help` would also set the accessibility hint, and VoiceOver would read the name
 ///    twice (behavior, "Prism has no Tooltip yet").
 ///  - `isSelected` renders the circle as `primary` in every state — the `selected` cells, no ring, no underlay, and
-///    primary's pressed overlay — and adds the selected trait. The role stays a button.
+///    primary's pressed fill — and adds the selected trait. The role stays a button.
 ///  - A press scales the circle to 0.97 on `motion.spring.snappy` and plays `haptic.press.button`, the one haptic a
-///    press plays (a group that selects replaces it, as TabBar does). Secondary, ghost and plain take their pressed
-///    fill, primary and danger the pressed overlay, on every press; under Reduce Motion nothing scales and the fills
-///    change over `motion.duration.base` with `motion.easing.out`. A pressed primary or selected circle shows nothing
-///    there on a solid ground, or on vivid or glass in dark: Button's gap, stated on
-///    `DSIconButtonAppearance.pressedOverlay`.
+///    press plays (a group that selects replaces it, as TabBar does). Every variant but danger takes its pressed fill
+///    on every press — primary's, and a selected circle's, one lightness step from the rest fill (ADR-0039) — and
+///    danger the pressed overlay over its tint; under Reduce Motion nothing scales and the fills change over
+///    `motion.duration.base` with `motion.easing.out`, measured by `DSIconButtonReduceMotionTests`.
 ///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the circle, never over the hit region.
 ///  - On vivid and on the scheme's glass a danger circle paints an opaque `color.bg.page` disc under its tint.
 ///  - `isDisabled` lowers the whole control, badge included, to `opacity.disabled` and takes it out of input and the

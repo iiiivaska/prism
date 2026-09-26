@@ -319,6 +319,7 @@
     --ds-color-accent: var(--ds-ref-color-accent-500);
     --ds-color-bg-fill-critical: var(--ds-ref-color-status-danger-badge);
     --ds-color-bg-fill-inverse-media: var(--ds-ref-color-neutral-0);
+    --ds-color-bg-fill-inverse-media-pressed: var(--ds-ref-color-neutral-200);
     --ds-color-border-on-media: rgb(255 255 255 / 0.4);
     --ds-color-chart-now: var(--ds-ref-color-accent-500);
     --ds-color-chart-on-glass-fill-plot: rgb(255 255 255 / 0.08);
@@ -582,6 +583,7 @@
     --ds-color-bg-fill-accent: var(--ds-ref-color-slot-light-bg-fill-accent);
     --ds-color-bg-fill-accent-strong: var(--ds-ref-color-accent-700);
     --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-950);
+    --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-850);
     --ds-color-bg-fill-neutral-subtle: oklch(0.164 0.0065 271 / 0.06);
     --ds-color-bg-page: var(--ds-ref-color-slot-light-bg-page);
     --ds-color-bg-surface: var(--ds-ref-color-neutral-0);
@@ -727,6 +729,7 @@
     --ds-color-bg-fill-accent: var(--ds-ref-color-slot-dark-bg-fill-accent);
     --ds-color-bg-fill-accent-strong: var(--ds-ref-color-accent-600);
     --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-0);
+    --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-200);
     --ds-color-bg-fill-neutral-subtle: rgb(255 255 255 / 0.06);
     --ds-color-bg-page: var(--ds-ref-color-slot-dark-bg-page);
     --ds-color-bg-surface: rgb(255 255 255 / 0.06);
@@ -873,6 +876,7 @@
       --ds-color-bg-fill-accent: var(--ds-ref-color-slot-dark-bg-fill-accent);
       --ds-color-bg-fill-accent-strong: var(--ds-ref-color-accent-600);
       --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-0);
+      --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-200);
       --ds-color-bg-fill-neutral-subtle: rgb(255 255 255 / 0.06);
       --ds-color-bg-page: var(--ds-ref-color-slot-dark-bg-page);
       --ds-color-bg-surface: rgb(255 255 255 / 0.06);
@@ -1027,7 +1031,7 @@
     --ds-button-ghost-bg-pressed: var(--ds-color-bg-fill-neutral-subtle);
     --ds-button-ghost-border: var(--ds-color-border-strong);
     --ds-button-ghost-text: var(--ds-color-text-primary);
-    --ds-button-primary-bg-pressed: var(--ds-color-bg-fill-inverse);
+    --ds-button-primary-bg-pressed: var(--ds-color-bg-fill-inverse-pressed);
     --ds-button-primary-bg-rest: var(--ds-color-bg-fill-inverse);
     --ds-button-primary-text: var(--ds-color-text-on-inverse);
     --ds-button-secondary-bg-pressed: var(--ds-color-bg-surface-nested);
@@ -1054,7 +1058,7 @@
     --ds-icon-button-ghost-border: var(--ds-color-border-strong);
     --ds-icon-button-ghost-icon: var(--ds-color-icon-primary);
     --ds-icon-button-plain-icon: var(--ds-color-icon-secondary);
-    --ds-icon-button-primary-bg-pressed: var(--ds-color-bg-fill-inverse);
+    --ds-icon-button-primary-bg-pressed: var(--ds-color-bg-fill-inverse-pressed);
     --ds-icon-button-primary-bg-rest: var(--ds-color-bg-fill-inverse);
     --ds-icon-button-primary-icon: var(--ds-color-text-on-inverse);
     --ds-icon-button-secondary-bg-pressed: var(--ds-color-bg-surface-nested);

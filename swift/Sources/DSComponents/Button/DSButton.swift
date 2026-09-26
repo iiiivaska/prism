@@ -4,7 +4,7 @@ import DSIcons
 import DSTokens
 
 /// Button: a tappable action with one label and an optional leading or trailing icon
-/// (`spec/components/Button.yaml`, specVersion 5).
+/// (`spec/components/Button.yaml`, specVersion 6).
 ///
 ///     DSButton("Continue") { save() }
 ///     DSButton("Details", variant: .secondary, trailingIcon: .navOpen) { openDetails() }
@@ -21,10 +21,9 @@ import DSTokens
 ///  - The hit region is the larger of the pill and `size.hit` on each axis (28 pt under pointer, 44 pt under touch);
 ///    it reaches past the pill invisibly and the pill never grows with modality.
 ///  - A press scales the pill to 0.97 on `comp.button.motion.press` and plays `haptic.press.button`; the variant's
-///    pressed fill applies while pressed. Under Reduce Motion nothing scales: the press shows as the pressed fill over
-///    `motion.duration.base` with `motion.easing.out` (danger: `color.bg.fill.neutral.subtle`). A pressed `primary`
-///    shows nothing there, because the fill Button.yaml names as its substitute is its own rest fill — a token gap,
-///    stated in full on `DSButtonAppearance.reducedMotionPressOverlay` and held by `DSButtonReduceMotionTests`.
+///    pressed fill applies while pressed, primary's one lightness step from its rest fill (ADR-0039). Under Reduce
+///    Motion nothing scales: the press shows as the pressed fill over `motion.duration.base` with `motion.easing.out`
+///    (danger: `color.bg.fill.neutral.subtle` over its tint), measured by `DSButtonReduceMotionTests`.
 ///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill.
 ///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width and ignores presses; the
 ///    button keeps its place in the focus order and is named by the app's `strings.Button.loading` template filled

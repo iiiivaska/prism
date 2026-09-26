@@ -64,6 +64,10 @@ export interface TokenTable {
   readonly 'color.bg.fill.inverse': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the white solid of visual-dna principle 9 on vivid: Button primary and the active segment when the published material is vivid (ADR-0030 §3.1) */
   readonly 'color.bg.fill.inverse-media': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse-media'; readonly $value: ColorValue };
+  /** the white solid over media while pressed: bg.fill.inverse-media one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under the same ink (ADR-0039) */
+  readonly 'color.bg.fill.inverse-media-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse-media-pressed'; readonly $value: ColorValue };
+  /** the inverse solid while pressed: bg.fill.inverse one step up the neutral ladder (neutral.950 to 850, OKLab L +0.084), under the same on-inverse text, so a primary pill or circle shows its press without the scale (ADR-0023 §8.4, ADR-0039) */
+  readonly 'color.bg.fill.inverse-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.bg.fill.neutral.subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-neutral-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35% */
   readonly 'color.bg.page': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-page'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -426,6 +430,7 @@ export interface TokenTable {
   readonly 'comp.button.padding-x.lg': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-padding-x-lg'; readonly $value: number };
   readonly 'comp.button.padding-x.md': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-padding-x-md'; readonly $value: number };
   readonly 'comp.button.padding-x.sm': { readonly $type: 'dimension'; readonly $cssVar: '--ds-button-padding-x-sm'; readonly $value: number };
+  /** the pressed pill: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); on vivid the spec binds color.bg.fill.inverse-media-pressed */
   readonly 'comp.button.primary.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-button-primary-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** solid inverse pill is the only fill */
   readonly 'comp.button.primary.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-button-primary-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -476,6 +481,7 @@ export interface TokenTable {
   readonly 'comp.icon-button.ghost.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-ghost-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the bare corner glyph: no fill, no ring, the same tone Card gives its open affordance */
   readonly 'comp.icon-button.plain.icon': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-plain-icon'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the pressed circle, selected or not: one lightness step from the rest fill, so a press shows with no scale under Reduce Motion (ADR-0039); over media the spec binds color.bg.fill.inverse-media-pressed */
   readonly 'comp.icon-button.primary.bg.pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-primary-bg-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** the one solid circle in a group; selection renders this cell too (visual-dna §1 principle 9) */
   readonly 'comp.icon-button.primary.bg.rest': { readonly $type: 'color'; readonly $cssVar: '--ds-icon-button-primary-bg-rest'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
@@ -703,6 +709,17 @@ export const table: TokenTable = {
   'color.bg.fill.inverse-media': {
     $type: 'color', $cssVar: '--ds-color-bg-fill-inverse-media',
     $value: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+  },
+  'color.bg.fill.inverse-media-pressed': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-inverse-media-pressed',
+    $value: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
+  },
+  'color.bg.fill.inverse-pressed': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-inverse-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.2478 0.0099 268.3)', cssP3: null, hex: '#1f2126', alpha: 1 },
+      dark: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
+    },
   },
   'color.bg.fill.neutral.subtle': {
     $type: 'color', $cssVar: '--ds-color-bg-fill-neutral-subtle', $axis: 'colorScheme',
@@ -2311,8 +2328,8 @@ export const table: TokenTable = {
   'comp.button.primary.bg.pressed': {
     $type: 'color', $cssVar: '--ds-button-primary-bg-pressed', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
-      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      light: { css: 'oklch(0.2478 0.0099 268.3)', cssP3: null, hex: '#1f2126', alpha: 1 },
+      dark: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
     },
   },
   'comp.button.primary.bg.rest': {
@@ -2565,8 +2582,8 @@ export const table: TokenTable = {
   'comp.icon-button.primary.bg.pressed': {
     $type: 'color', $cssVar: '--ds-icon-button-primary-bg-pressed', $axis: 'colorScheme',
     $values: {
-      light: { css: 'oklch(0.164 0.0065 271)', cssP3: null, hex: '#0d0e11', alpha: 1 },
-      dark: { css: 'oklch(1 0 0)', cssP3: null, hex: '#ffffff', alpha: 1 },
+      light: { css: 'oklch(0.2478 0.0099 268.3)', cssP3: null, hex: '#1f2126', alpha: 1 },
+      dark: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
     },
   },
   'comp.icon-button.primary.bg.rest': {
