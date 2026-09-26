@@ -21,6 +21,7 @@
     "tokens:check": "pnpm --filter @iiiivaska/prism-tools tokens:check",
     "tokens:diff": "pnpm --filter @iiiivaska/prism-tools tokens:diff",
     "contrast:check": "pnpm --filter @iiiivaska/prism-tools contrast:check",
+    "viz:validate": "pnpm --filter @iiiivaska/prism-tools viz:validate",
     "fonts:check": "pnpm --filter @iiiivaska/prism-tools fonts:check",
     "spec:validate": "pnpm --filter @iiiivaska/prism-tools spec:validate",
     "icons:validate": "pnpm --filter @iiiivaska/prism-tools icons:validate",

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "$description": "Check 5 fails: slot 4 is a second green beside slot 3, 9.6 apart in light and 10.3 in dark under normal vision.",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "series": {
+        "light": {
+          "1": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9216,
+                0.4078,
+                0.2039
+              ],
+              "alpha": 1,
+              "hex": "#eb6834"
+            }
+          },
+          "2": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.1647,
+                0.4706,
+                0.8392
+              ],
+              "alpha": 1,
+              "hex": "#2a78d6"
+            }
+          },
+          "3": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0.5137,
+                0
+              ],
+              "alpha": 1,
+              "hex": "#008300"
+            }
+          },
+          "4": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.0471,
+                0.6392,
+                0.0471
+              ],
+              "alpha": 1,
+              "hex": "#0ca30c"
+            }
+          }
+        },
+        "dark": {
+          "1": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.851,
+                0.349,
+                0.149
+              ],
+              "alpha": 1,
+              "hex": "#d95926"
+            }
+          },
+          "2": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2235,
+                0.5294,
+                0.898
+              ],
+              "alpha": 1,
+              "hex": "#3987e5"
+            }
+          },
+          "3": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0.5137,
+                0
+              ],
+              "alpha": 1,
+              "hex": "#008300"
+            }
+          },
+          "4": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2627,
+                0.6275,
+                0.2784
+              ],
+              "alpha": 1,
+              "hex": "#43a047"
+            }
+          }
+        }
+      }
+    }
+  }
+}

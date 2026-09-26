@@ -72,6 +72,7 @@ jobs:
       dscore_tests: ${{ steps.gates.outputs.dscore_tests }}
       dscore_scheme: ${{ steps.gates.outputs.dscore_scheme }}
       contrast: ${{ steps.gates.outputs.contrast }}
+      viz_validate: ${{ steps.gates.outputs.viz_validate }}
       tokens_diff: ${{ steps.gates.outputs.tokens_diff }}
       font_root: ${{ steps.gates.outputs.font_root }}
       fonts_check: ${{ steps.gates.outputs.fonts_check }}
@@ -114,6 +115,7 @@ jobs:
           gate dscore_tests     P3-1 swift/Tests/DSCoreTests/DSFontRegistrationTests.swift
           gate dscore_scheme    P3-1 .swiftpm/xcode/xcshareddata/xcschemes/DSCoreTests.xcscheme
           gate contrast         P1-6 tools/contrast/check.ts
+          gate viz_validate     P4-49 tools/viz-validate/validate.ts
           gate tokens_diff      P1-7 tools/tokens/diff.ts
           gate font_root        P1-8 tools/tokens/formats/fonts.ts
           gate fonts_check      P1-8 tools/fonts/check.ts
@@ -182,6 +184,13 @@ jobs:
       - name: Contrast test for every brand and scheme # P1-6
         if: needs.plan.outputs.contrast == 'true'
         run: pnpm --filter @iiiivaska/prism-tools contrast:check
+      - name: Series palette checks for every brand and scheme # P4-49
+        # The six checks of docs/research/dataviz-design.md §1, written down in tools/viz-validate/README.md, with
+        # color.chart.now held against every slot (ADR-0020 §4). The seeded slots' findings are P4-50's and are
+        # reported as owed (OWED in tools/viz-validate/config.ts); any other finding fails. P4-50 empties the list,
+        # and this step is then a gate on every finding.
+        if: needs.plan.outputs.viz_validate == 'true'
+        run: pnpm --filter @iiiivaska/prism-tools viz:validate
       - name: Classify token changes against the declared changeset # P1-7
         if: needs.plan.outputs.tokens_diff == 'true' && github.event_name == 'pull_request'
         run: pnpm --filter @iiiivaska/prism-tools tokens:diff

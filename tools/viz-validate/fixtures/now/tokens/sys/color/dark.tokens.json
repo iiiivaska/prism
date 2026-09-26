@@ -1,0 +1,56 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "sys": {
+    "color": {
+      "$type": "color",
+      "bg": {
+        "page": {
+          "$value": "{ref.color.slot.dark.bg-page}"
+        },
+        "fill": {
+          "accent": {
+            "$value": "{ref.color.slot.dark.bg-fill-accent}"
+          }
+        },
+        "surface": {
+          "$root": {
+            "$value": "{ref.color.neutral.900}"
+          },
+          "raised": {
+            "$value": "{ref.color.neutral.900}"
+          }
+        }
+      },
+      "text": {
+        "on-accent": {
+          "$value": "{ref.color.slot.dark.text-on-accent}"
+        },
+        "accent": {
+          "$value": "{ref.color.slot.dark.text-accent}"
+        }
+      },
+      "chart": {
+        "series": {
+          "1": {
+            "$value": "{ref.color.series.dark.1}"
+          },
+          "2": {
+            "$value": "{ref.color.series.dark.2}"
+          },
+          "3": {
+            "$value": "{ref.color.series.dark.3}"
+          },
+          "4": {
+            "$value": "{ref.color.series.dark.4}"
+          }
+        },
+        "now": {
+          "$value": "{ref.color.series.dark.2}"
+        },
+        "plot": {
+          "$value": "{ref.color.neutral.900}"
+        }
+      }
+    }
+  }
+}

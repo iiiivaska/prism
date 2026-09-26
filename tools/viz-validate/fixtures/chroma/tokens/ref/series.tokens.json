@@ -1,0 +1,111 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/format.json",
+  "$description": "Check 3 fails: light slot 2 has OKLCH chroma 0.080, below the floor.",
+  "ref": {
+    "color": {
+      "$type": "color",
+      "series": {
+        "light": {
+          "1": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.9216,
+                0.4078,
+                0.2039
+              ],
+              "alpha": 1,
+              "hex": "#eb6834"
+            }
+          },
+          "2": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.302,
+                0.4235,
+                0.6
+              ],
+              "alpha": 1,
+              "hex": "#4d6c99"
+            }
+          },
+          "3": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0.5137,
+                0
+              ],
+              "alpha": 1,
+              "hex": "#008300"
+            }
+          },
+          "4": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2902,
+                0.2275,
+                0.6549
+              ],
+              "alpha": 1,
+              "hex": "#4a3aa7"
+            }
+          }
+        },
+        "dark": {
+          "1": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.851,
+                0.349,
+                0.149
+              ],
+              "alpha": 1,
+              "hex": "#d95926"
+            }
+          },
+          "2": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.2235,
+                0.5294,
+                0.898
+              ],
+              "alpha": 1,
+              "hex": "#3987e5"
+            }
+          },
+          "3": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0,
+                0.5137,
+                0
+              ],
+              "alpha": 1,
+              "hex": "#008300"
+            }
+          },
+          "4": {
+            "$value": {
+              "colorSpace": "srgb",
+              "components": [
+                0.5647,
+                0.5216,
+                0.9137
+              ],
+              "alpha": 1,
+              "hex": "#9085e9"
+            }
+          }
+        }
+      }
+    }
+  }
+}

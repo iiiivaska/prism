@@ -1,0 +1,26 @@
+{
+  "$comment": "tools/viz-validate fixture: light slot 3 ships the table twin, and light slots 3 and 4 ship direct labels.",
+  "declarations": [
+    {
+      "relief": "table-twin",
+      "slots": [
+        3
+      ],
+      "schemes": [
+        "light"
+      ],
+      "note": "relieves slot 3 against the plot (check 6), and nothing under check 4"
+    },
+    {
+      "relief": "direct-labels",
+      "slots": [
+        3,
+        4
+      ],
+      "schemes": [
+        "light"
+      ],
+      "note": "the secondary encoding that lets slots 3 and 4 sit in the 6–8 CVD band (check 4)"
+    }
+  ]
+}
