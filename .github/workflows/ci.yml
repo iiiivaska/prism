@@ -25,6 +25,14 @@ on:
         description: Record the SwiftUI snapshot baselines with the pinned Xcode and simulator
         type: boolean
         default: false
+      showcase-apps:
+        # Not a re-record and not a check: the `showcase-apps` job below builds the Apple showcase app for the iOS
+        # Simulator and for the Mac, uploads both, and photographs the running app for review, so that a Mac without
+        # this Xcode can open what CI built (swift/Showcase/README.md, "The apps CI builds"). That job is its only
+        # reader. Like the two above, only a person's dispatch turns it on.
+        description: Build the Apple showcase app for the iOS Simulator and macOS, and upload it with review screenshots
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -662,3 +670,393 @@ jobs:
           name: snapshot-diffs-apple
           path: ${{ runner.temp }}/snapshot-diffs-apple
           if-no-files-found: ignore
+
+  showcase-apps:
+    # The Apple showcase app, built for a person to open on a Mac that has another Xcode or no checkout at all
+    # (swift/Showcase/README.md, "The apps CI builds"). Opt-in: only a dispatch with `showcase-apps` ticked runs it. A
+    # push and a pull request carry no inputs and a dispatch leaves the box off, so ordinary CI neither waits for this
+    # job nor pays for it (docs/showcase.md §5). It needs no job and no job needs it: it builds from the checkout, on a
+    # runner of its own, beside the rest of the run.
+    #
+    # Nothing it uploads is compared or committed. The two bundles are what `pnpm showcase:apple` builds, and the
+    # screenshots are of the running app, for the showcase review (SD-10 in
+    # docs/direction-board/reference-distance-showcase.md). The gallery and the VRT suite own pixels (ADR-0005).
+    name: Showcase apps (iOS Simulator and macOS)
+    runs-on: macos-26
+    if: github.event_name == 'workflow_dispatch' && inputs.showcase-apps == true
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - name: Select Xcode ${{ env.XCODE_VERSION }}
+        # The apple job's step, so the app is built by the Xcode the rest of the run uses.
+        run: |
+          set -euo pipefail
+          app="/Applications/Xcode_${XCODE_VERSION}.app"
+          if [ ! -d "$app" ]; then
+            echo "::error::Xcode $XCODE_VERSION is not installed on this runner image. Installed:"
+            ls -d /Applications/Xcode_*.app
+            exit 1
+          fi
+          app="$(cd "$app" && pwd -P)" # resolve alias symlinks such as Xcode_26.6.0.app
+          echo "DEVELOPER_DIR=$app/Contents/Developer" >> "$GITHUB_ENV"
+      - uses: pnpm/setup@v2.1.0 # pnpm from packageManager, Node 24 (.node-version), pnpm install --frozen-lockfile
+        # `pnpm showcase:apple` is a Node script, and it regenerates the catalogues before it writes the project.
+        with:
+          runtime: node@24
+          cache: true
+          require-lockfile: true
+      - run: xcodebuild -version && node --version
+      - name: Pick the iPhone 17 simulator on iOS 26.5
+        # The device and runtime the apple job's snapshot suite pins (`name=iPhone 17,OS=26.5`), by UDID: an image with
+        # several runtimes has an iPhone 17 on each, which is why `pnpm showcase:apple --device` takes a UDID.
+        id: simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime=$(xcrun simctl list runtimes --json |
+            jq -r 'first(.runtimes[] | select(.isAvailable and (.name == "iOS 26.5" or (.identifier | endswith(".iOS-26-5")))) | .identifier) // empty')
+          if [ -z "$runtime" ]; then
+            echo "::error::The iOS 26.5 simulator runtime is not on this runner image. Installed:"
+            xcrun simctl list runtimes
+            exit 1
+          fi
+          udid=$(xcrun simctl list devices available --json |
+            jq -r --arg runtime "$runtime" 'first(.devices[$runtime][]? | select(.name == "iPhone 17") | .udid) // empty')
+          if [ -z "$udid" ]; then udid=$(xcrun simctl create "iPhone 17" com.apple.CoreSimulator.SimDeviceType.iPhone-17 "$runtime"); fi
+          echo "iPhone 17 on $runtime: $udid"
+          echo "runtime=$runtime" >> "$GITHUB_OUTPUT"
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+      - name: Build the app for the iOS Simulator and for the Mac
+        # `pnpm showcase:apple` as a person runs it (swift/Showcase/README.md): it regenerates the catalogues, writes the
+        # gitignored Xcode project and runs xcodebuild into --work, and --no-launch stops it there. The project builds
+        # only the active architecture in Debug; XCODE_XCCONFIG_FILE, xcodebuild's own override file, turns that off
+        # for every target, the package's included, so each bundle carries arm64 and x86_64 and opens on an Apple
+        # silicon Mac and on an Intel one. The next step checks the slices.
+        shell: bash
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set -euo pipefail
+          export XCODE_XCCONFIG_FILE="$RUNNER_TEMP/showcase-universal.xcconfig"
+          echo 'ONLY_ACTIVE_ARCH = NO' > "$XCODE_XCCONFIG_FILE"
+          pnpm showcase:apple --device "$UDID" --no-launch --work "$RUNNER_TEMP/showcase"
+          pnpm showcase:apple --platform macos --no-launch --work "$RUNNER_TEMP/showcase"
+          # The catalogues regenerate to the committed bytes, the project is gitignored and Package.resolved is left
+          # alone, so the tree stays clean; anything the build did write is worth a look.
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::warning title=The build changed the checkout::pnpm showcase:apple left these changes in the working tree"
+            git status --short
+          fi
+      - name: Check both bundles and zip them with ditto
+        # An artifact's own zip keeps no symlinks, permissions or extended attributes, and a bundle's signature goes
+        # with them, so each .app goes up inside a zip that ditto made, which keeps all three, as Finder's Compress does.
+        shell: bash
+        run: |
+          set -euo pipefail
+          products="$RUNNER_TEMP/showcase/DerivedData/Build/Products"
+          out="$RUNNER_TEMP/showcase-apps"
+          {
+            echo "### Showcase apps"
+            echo
+            echo "| Artifact | Holds | Architectures | Minimum OS |"
+            echo "|---|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+          # bundle <name> <app> <directory of its executables> <Info.plist> <minimum-OS key> <artifact> <OS>
+          bundle() {
+            local name=$1 app=$2 exe=$3 plist=$4 key=$5 artifact=$6 os=$7 file zip
+            for file in "$exe/PrismShowcase" "$exe/PrismShowcase.debug.dylib"; do
+              [ -f "$file" ] || continue
+              echo "${file#"$products/"}: $(lipo -archs "$file")"
+              lipo "$file" -verify_arch arm64 x86_64 || { echo "::error::${file#"$products/"} lacks arm64 or x86_64"; return 1; }
+            done
+            codesign --display --verbose=2 "$app" 2>&1 | sed 's/^/  /'
+            codesign --verify --deep --strict --verbose=2 "$app" || echo "::warning::codesign --verify does not pass for the $name bundle"
+            mkdir -p "$out/$name"
+            zip="$out/$name/PrismShowcase-$name.zip"
+            ditto -c -k --sequesterRsrc --keepParent "$app" "$zip"
+            ls -l "$zip"
+            echo "| \`$artifact\` | \`$(basename "$zip")\`, which unzips to \`PrismShowcase.app\` | $(lipo -archs "$exe/PrismShowcase") | $os $(/usr/libexec/PlistBuddy -c "Print :$key" "$plist") |" >> "$GITHUB_STEP_SUMMARY"
+          }
+          ios="$products/Debug-iphonesimulator/PrismShowcase.app"
+          mac="$products/Debug/PrismShowcase.app"
+          bundle ios-simulator "$ios" "$ios" "$ios/Info.plist" MinimumOSVersion showcase-app-ios-simulator "iOS Simulator"
+          bundle macos "$mac" "$mac/Contents/MacOS" "$mac/Contents/Info.plist" LSMinimumSystemVersion showcase-app-macos macOS
+          echo >> "$GITHUB_STEP_SUMMARY"
+          echo "How to open them: \`swift/Showcase/README.md\`, *The apps CI builds*." >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload the iOS Simulator app
+        uses: actions/upload-artifact@v7
+        with:
+          name: showcase-app-ios-simulator
+          path: ${{ runner.temp }}/showcase-apps/ios-simulator/PrismShowcase-ios-simulator.zip
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0 # ditto's zip is compressed already
+      - name: Upload the macOS app
+        uses: actions/upload-artifact@v7
+        with:
+          name: showcase-app-macos
+          path: ${{ runner.temp }}/showcase-apps/macos/PrismShowcase-macos.zip
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0 # ditto's zip is compressed already
+      - name: Photograph the running app for the showcase review
+        # Best effort: the apps are uploaded already, and a runner that will not boot the simulator or capture the screen
+        # must not turn the job red, so this step may fail while the job passes; index.txt names every file and every
+        # capture that failed. The pages are SD-10's (docs/direction-board/reference-distance-showcase.md §13.6), opened
+        # by their launch keys (swift/Showcase/README.md, "Opening a page directly"): the Chip page and the
+        # Chip/md-with-avatar page in light and dark on the iPhone 17 simulator, the example page also at compact density
+        # and under Increase Contrast, which takes the OS setting and the app's key together; and both pages in light and
+        # dark on the Mac, captured by window id. Every launch passes `-DSShowcaseSection components`, as SD-10 asks: a
+        # section default left in the app's domain wins over the section a page key implies.
+        id: screenshots
+        continue-on-error: true
+        timeout-minutes: 20
+        shell: bash
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+          RUNTIME: ${{ steps.simulator.outputs.runtime }}
+        run: |
+          set +e
+          set -uo pipefail
+          bundle_id=com.example.prism.showcase
+          products="$RUNNER_TEMP/showcase/DerivedData/Build/Products"
+          ios_app="$products/Debug-iphonesimulator/PrismShowcase.app"
+          mac_app="$products/Debug/PrismShowcase.app"
+          out="$RUNNER_TEMP/showcase-screenshots"
+          index="$out/index.txt"
+          helper="$RUNNER_TEMP/showcase-input"
+          failed=0
+          mkdir -p "$out"
+          note() { echo "$*" | tee -a "$index"; }
+          {
+            echo "Screenshots of the Prism showcase app, for the SD-10 review (docs/direction-board/reference-distance-showcase.md §13.6)."
+            echo "Review material, not baselines: nothing compares against these files and nothing commits them."
+            echo
+            echo "commit      $GITHUB_SHA ($GITHUB_REF_NAME)"
+            echo "run         $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo "xcodebuild  $(xcodebuild -version | paste -sd ' ' -)"
+            echo "runner      macOS $(sw_vers -productVersion) ($(sw_vers -buildVersion)), $(uname -m)"
+            echo "simulator   iPhone 17, UDID $UDID, runtime $RUNTIME"
+            if [ -z "$(git status --porcelain)" ]; then
+              echo "checkout    clean after both builds, Package.resolved included"
+            else
+              echo "checkout    changed by the builds: $(git status --porcelain | paste -sd ';' -)"
+            fi
+            echo
+          } > "$index"
+
+          # A helper for the Mac: the number and frame of a process's window, and a scroll-wheel event at a point.
+          cat > "$helper.swift" <<'SWIFT'
+          import CoreGraphics
+          import Foundation
+
+          /// The largest normal-layer window on screen that `pid` owns: its number, and its frame in global coordinates.
+          func window(of pid: Int) -> (number: Int, frame: CGRect)? {
+              let windows = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+              var best: (number: Int, frame: CGRect)?
+              for info in windows {
+                  guard (info[kCGWindowOwnerPID as String] as? Int) == pid, (info[kCGWindowLayer as String] as? Int) == 0,
+                        let number = info[kCGWindowNumber as String] as? Int,
+                        let bounds = info[kCGWindowBounds as String] as? NSDictionary,
+                        let frame = CGRect(dictionaryRepresentation: bounds as CFDictionary) else { continue }
+                  if best.map({ frame.width * frame.height > $0.frame.width * $0.frame.height }) ?? true { best = (number, frame) }
+              }
+              return best
+          }
+
+          let arguments = CommandLine.arguments
+          switch (arguments.count, arguments.count > 1 ? arguments[1] : "") {
+          case (3, "window"):
+              guard let pid = Int(arguments[2]), let found = window(of: pid) else { exit(1) }
+              print(found.number, Int(found.frame.minX), Int(found.frame.minY), Int(found.frame.width), Int(found.frame.height))
+          case (5, "scroll"):
+              guard let x = Double(arguments[2]), let y = Double(arguments[3]), let delta = Int32(arguments[4]) else { exit(2) }
+              let point = CGPoint(x: x, y: y)
+              CGWarpMouseCursorPosition(point)
+              CGEvent(mouseEventSource: nil, mouseType: .mouseMoved, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+              usleep(300_000)
+              guard let scroll = CGEvent(scrollWheelEvent2Source: nil, units: .pixel, wheelCount: 1, wheel1: delta, wheel2: 0, wheel3: 0) else { exit(1) }
+              scroll.location = point
+              scroll.post(tap: .cghidEventTap)
+          default:
+              print("usage: showcase-input window <pid> | scroll <x> <y> <delta>")
+              exit(2)
+          }
+          SWIFT
+          xcrun swiftc -O -module-name ShowcaseInput -o "$helper" "$helper.swift" ||
+            note "The window helper did not compile, so the Mac shots are of the whole screen."
+
+          # ios <file> <appearance> <increase_contrast> <what> <launch arguments...>
+          ios() {
+            local file=$1 appearance=$2 contrast=$3 what=$4 settings
+            shift 4
+            xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1
+            settings="appearance $appearance, Increase Contrast $contrast"
+            if ! xcrun simctl ui "$UDID" appearance "$appearance" || ! xcrun simctl ui "$UDID" increase_contrast "$contrast"; then
+              settings="$settings (NOT all applied: simctl ui failed)"
+              failed=1
+            fi
+            if xcrun simctl launch "$UDID" "$bundle_id" "$@" >/dev/null && sleep 10 \
+              && xcrun simctl io "$UDID" screenshot "$out/$file" >/dev/null; then
+              note "$file: $what. Simulator: $settings. Launched with: $*"
+            else
+              note "FAILED $file: $what"
+              failed=1
+            fi
+          }
+          # mac <file> <what> <launch arguments...>
+          mac() {
+            local file=$1 what=$2 pid window=""
+            shift 2
+            pkill -x PrismShowcase && sleep 2
+            open -n "$mac_app" --args -ApplePersistenceIgnoreState YES "$@"
+            sleep 10
+            pid=$(pgrep -n -x PrismShowcase)
+            [ -n "$pid" ] && [ -x "$helper" ] && window=$("$helper" window "$pid")
+            if [ -n "$window" ] && screencapture -x -o -l "${window%% *}" "$out/$file"; then
+              note "$file: $what, window ${window%% *}, frame ${window#* } (x y width height). Launched with: $*"
+            elif [ -n "$pid" ] && screencapture -x "$out/$file"; then
+              note "$file: $what, the whole screen, since no window id was found. Launched with: $*"
+            else
+              note "FAILED $file: $what (the app did not start, or screencapture refused)"
+              failed=1
+            fi
+          }
+          chip=(-DSShowcaseSection components -DSShowcaseComponent Chip)
+          example=(-DSShowcaseSection components -DSShowcaseExample Chip/md-with-avatar)
+
+          note "iPhone 17 simulator:"
+          if xcrun simctl bootstatus "$UDID" -b && xcrun simctl install "$UDID" "$ios_app"; then
+            xcrun simctl status_bar "$UDID" override --time 9:41 --batteryState charged --batteryLevel 100
+            # The first launch after an install does work the later ones do not; let it do that off the record.
+            xcrun simctl launch "$UDID" "$bundle_id" >/dev/null && sleep 20
+            ios ios-chip-page-light.png light disabled "the Chip page as it opens, light" "${chip[@]}" -DSShowcaseColorScheme light
+            ios ios-chip-page-dark.png dark disabled "the Chip page as it opens, dark" "${chip[@]}" -DSShowcaseColorScheme dark
+            for scheme in light dark; do
+              for density in regular compact; do
+                ios "ios-md-with-avatar-$scheme-$density.png" "$scheme" disabled \
+                  "the Chip/md-with-avatar page, $scheme, $density density" \
+                  "${example[@]}" -DSShowcaseColorScheme "$scheme" -DSShowcaseDensity "$density"
+              done
+              ios "ios-md-with-avatar-$scheme-regular-increased-contrast.png" "$scheme" enabled \
+                "the Chip/md-with-avatar page, $scheme, regular density, Increase Contrast" \
+                "${example[@]}" -DSShowcaseColorScheme "$scheme" -DSShowcaseDensity regular -DSShowcaseIncreasedContrast 1
+            done
+            xcrun simctl ui "$UDID" increase_contrast disabled
+            xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1
+          else
+            note "FAILED: the simulator did not boot or the app did not install, so there are no iPhone shots"
+            failed=1
+          fi
+
+          echo >> "$index"
+          note "Mac:"
+          for scheme in light dark; do
+            mac "macos-chip-page-$scheme.png" "the Chip page as it opens, $scheme" "${chip[@]}" -DSShowcaseColorScheme "$scheme"
+            mac "macos-md-with-avatar-$scheme.png" "the Chip/md-with-avatar page, $scheme" "${example[@]}" -DSShowcaseColorScheme "$scheme"
+          done
+          pkill -x PrismShowcase
+          exit "$failed"
+      - name: Scroll the Chip page down to md-with-avatar's block
+        # SD-10 also reads md-with-avatar's block on the Chip page, and on both devices that block opens below the fold.
+        # The app has no key that scrolls a component page and simctl cannot scroll, so this posts scroll-wheel events
+        # with the helper the step above built: over the Mac window, and over the Simulator app's window, which passes
+        # them on to the simulated iPhone. A runner that does not let a process post events leaves the frames the same,
+        # and index.txt says so. Best effort, like the step above, and after it, so that nothing here costs its shots.
+        continue-on-error: true
+        timeout-minutes: 10
+        shell: bash
+        env:
+          UDID: ${{ steps.simulator.outputs.udid }}
+        run: |
+          set +e
+          set -uo pipefail
+          bundle_id=com.example.prism.showcase
+          mac_app="$RUNNER_TEMP/showcase/DerivedData/Build/Products/Debug/PrismShowcase.app"
+          out="$RUNNER_TEMP/showcase-screenshots"
+          index="$out/index.txt"
+          helper="$RUNNER_TEMP/showcase-input"
+          failed=0
+          mkdir -p "$out"
+          note() { echo "$*" | tee -a "$index"; }
+          # frames <name> <what> <x> <y> <capture function>: a frame, a scroll of 400 points at (x, y), the next frame,
+          # until a frame repeats the one before it (the end of the page) or eight frames are taken. A first scroll that
+          # moves nothing is tried once the other way, in case the wheel's sign reads the other way round here.
+          frames() {
+            local name=$1 what=$2 x=$3 y=$4 capture=$5 i=1 file previous="" delta=-400 flipped=0
+            while [ "$i" -le 8 ]; do
+              file="$out/$name-scrolled-$i.png"
+              if ! "$capture" "$file"; then note "FAILED $(basename "$file"): the capture"; failed=1; return; fi
+              if [ -n "$previous" ] && cmp -s "$previous" "$file"; then
+                rm -f "$file"
+                if [ "$i" = 2 ] && [ "$flipped" = 0 ]; then
+                  flipped=1 delta=400
+                  "$helper" scroll "$x" "$y" "$delta"
+                  sleep 2
+                  continue
+                fi
+                if [ "$i" = 2 ]; then note "FAILED $name: no scroll moved the page"; failed=1; fi
+                return
+              fi
+              note "$(basename "$file"): $what, after $((i - 1)) scroll(s) of 400 points"
+              previous=$file
+              "$helper" scroll "$x" "$y" "$delta"
+              sleep 2
+              i=$((i + 1))
+            done
+          }
+          mac_frame() { screencapture -x -o -l "$mac_window" "$1"; }
+          ios_frame() { xcrun simctl io "$UDID" screenshot "$1" >/dev/null; }
+
+          echo >> "$index"
+          note "The Chip page, scrolled frame by frame:"
+          if [ ! -x "$helper" ]; then
+            note "FAILED: the helper was not built, so nothing was scrolled"
+            failed=1
+          else
+            for scheme in light dark; do
+              pkill -x PrismShowcase && sleep 2
+              open -n "$mac_app" --args -ApplePersistenceIgnoreState YES \
+                -DSShowcaseSection components -DSShowcaseComponent Chip -DSShowcaseColorScheme "$scheme"
+              sleep 10
+              if read -r mac_window x y w h < <("$helper" window "$(pgrep -n -x PrismShowcase)"); then
+                # Over the detail column: right of the sidebar, halfway down.
+                frames "macos-chip-page-$scheme" "the Chip page, $scheme, Mac" $((x + w * 2 / 3)) $((y + h / 2)) mac_frame
+              else
+                note "FAILED macos-chip-page-$scheme: no window"
+                failed=1
+              fi
+            done
+            pkill -x PrismShowcase
+            open -a Simulator --args -CurrentDeviceUDID "$UDID"
+            sleep 15
+            if read -r simulator_window x y w h < <("$helper" window "$(pgrep -n -x Simulator)"); then
+              echo "Simulator window $simulator_window"
+              for scheme in light dark; do
+                xcrun simctl ui "$UDID" appearance "$scheme"
+                xcrun simctl terminate "$UDID" "$bundle_id" >/dev/null 2>&1
+                xcrun simctl launch "$UDID" "$bundle_id" \
+                  -DSShowcaseSection components -DSShowcaseComponent Chip -DSShowcaseColorScheme "$scheme" >/dev/null
+                sleep 10
+                frames "ios-chip-page-$scheme" "the Chip page, $scheme, iPhone 17" $((x + w / 2)) $((y + h / 2)) ios_frame
+              done
+            else
+              note "FAILED ios-chip-page: the Simulator app showed no window"
+              failed=1
+            fi
+          fi
+
+          echo >> "$index"
+          echo "Files (width x height in pixels):" >> "$index"
+          for file in "$out"/*.png; do
+            [ -f "$file" ] && echo "  $(basename "$file")  $(sips -g pixelWidth -g pixelHeight "$file" | awk '/pixel/ { print $2 }' | paste -sd x -)" >> "$index"
+          done
+          exit "$failed"
+      - name: Upload the screenshots
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: showcase-screenshots
+          path: ${{ runner.temp }}/showcase-screenshots
+          if-no-files-found: warn
+          retention-days: 14

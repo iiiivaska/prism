@@ -9,8 +9,9 @@
 //   --device <name>        simulator to run on (default: iPhone 17)
 //   --work <dir>           derived data and resolved packages (default: a temporary directory)
 //
-// Everything expensive stays here: CI compiles `DSShowcase` inside the package it already builds, and never
-// boots a simulator for this app (docs/showcase.md §5).
+// Everything expensive stays here: CI compiles `DSShowcase` inside the package it already builds, and boots a
+// simulator for this app only in the `showcase-apps` job, which runs this script when a person dispatches `ci`
+// with that input (docs/showcase.md §5).
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';

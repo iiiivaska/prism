@@ -35,7 +35,7 @@ it**, and where "what does Prism have today" is one screen instead of seven file
 | `swift/Showcase/Sources/DSShowcase/Generated/DSShowcaseBindings.swift` | generated: one renderer per component the Apple manifests implement — the compile-time break |
 | `swift/Showcase/Sources/DSShowcase/Generated/DSTokenCatalog.swift` | generated: every token, with a `KeyPath<DSTokenSet, …>` per value kind |
 | `swift/Showcase/App/PrismShowcase/` | the app shell (~20 lines); the `.xcodeproj` is generated and gitignored, as `fixtures/swiftui-app` already does |
-| `swift/Showcase/README.md` | how to run it, how it discovers things, and how to open a page directly |
+| `swift/Showcase/README.md` | how to run it, how it discovers things, how to open a page directly, and how to open the builds CI makes on request |
 | `tools/showcase/apple/` | the Apple catalogues, and `pnpm showcase:apple` (regenerates, writes the Xcode project, builds, installs, launches). The web catalogue needs no tool: the app's own Vite plugins build it |
 
 ## 1. Discovery
@@ -369,7 +369,9 @@ are contracts with no implementation and no snapshots, which is also what the ga
 
 ## 5. Cost
 
-CI gains **no new job and no new gated step**, and never boots a simulator or a browser for these apps.
+A push, a pull request, or a dispatch that leaves `showcase-apps` off runs **no new job and no new gated step**, and
+never boots a simulator or a browser for these apps. One job does, and only when a person asks for it:
+[the Apple app, built on request](#the-apple-app-built-on-request).
 
 | Check | Where it runs | Cost |
 |---|---|---|
@@ -377,7 +379,7 @@ CI gains **no new job and no new gated step**, and never boots a simulator or a 
 | the web catalogue is what this run renders | nothing: the web app builds its catalogue from the specs and the manifests during `pnpm -r build`, so there is no committed file to drift from them | none |
 | a landed component names a renderer that does not exist yet | the same Vitest file: it renders against a scratch copy of `DSComponentsManifest` with one more component in it and asserts the binding appears, so the compile-time break is proved without a compiler | none |
 | the web app builds and typechecks | `pnpm -r build`, `pnpm lint`, `pnpm typecheck` already walk every workspace package | a few seconds |
-| `DSShowcase` compiles on four platforms | already inside `swift build`, `swift test` and the two `xcodebuild build -scheme Prism-Package` steps; the screens are `#if os(iOS) \|\| os(macOS)`, so the watch builds an empty module | ~none; the app *bundle* is not built in CI |
+| `DSShowcase` compiles on four platforms | already inside `swift build`, `swift test` and the two `xcodebuild build -scheme Prism-Package` steps; the screens are `#if os(iOS) \|\| os(macOS)`, so the watch builds an empty module | ~none; only a run that asks for it builds the app *bundle* |
 
 Everything expensive stays local, behind three scripts:
 
@@ -397,8 +399,25 @@ packages before either script, exactly as the gallery asks.
 
 The app shell is kept deliberately thin — the App struct, the root view, the axis state — so that what
 CI does not build is a few dozen lines, and everything with logic in it lives in `DSShowcase`, which
-CI does build. No screenshot of these apps is ever recorded: the gallery and the VRT suite own pixels,
+CI does build. No screenshot of these apps is ever a baseline: the gallery and the VRT suite own pixels,
 and a second baseline set would be a second canon to keep green.
+
+### The Apple app, built on request
+
+Someone who wants the Apple app without a Mac that can build it dispatches `ci` with the `showcase-apps` input,
+which is off by default; a push and a pull request carry no inputs. The `showcase-apps` job then runs beside the rest
+of that run on a `macos-26` runner of its own, with `XCODE_VERSION`. It needs no job and gates none, and it:
+
+- runs `pnpm showcase:apple --no-launch` twice, for the iPhone 17 simulator on iOS 26.5 and for the Mac, with
+  `XCODE_XCCONFIG_FILE` turning `ONLY_ACTIVE_ARCH` off, so each bundle is arm64 and x86_64;
+- uploads each bundle, zipped by `ditto` so that its symlinks and its ad hoc signature survive, as
+  `showcase-app-ios-simulator` and `showcase-app-macos`;
+- photographs the running app, the pages SD-10 of the showcase review names, as `showcase-screenshots`. That part is
+  best effort: a capture the runner refuses is written down in the artifact's `index.txt`, and the job still passes.
+
+The artifacts are kept for 14 days, and `swift/Showcase/README.md` ("The apps CI builds") says how to open them. The
+screenshots are for a person to read. Nothing compares against them and nothing commits them, so they are not the
+second canon the paragraph above rules out. The job costs a macOS runner only on the runs that ask for it.
 
 ## What this needs that does not exist yet
 

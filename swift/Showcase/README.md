@@ -14,6 +14,9 @@ pnpm showcase:apple --print-project        # write the Xcode project and stop
 `--device <name|UDID>` picks the simulator (two simulators can share the name *iPhone 17*, one per OS version, so
 a UDID is the unambiguous form), `--work <dir>` says where the derived data goes, `--no-launch` builds only.
 
+A Mac that cannot build it — another Xcode, or no checkout — can open the builds CI makes on request instead: see
+[The apps CI builds](#the-apps-ci-builds).
+
 ## What is here
 
 | Path | What |
@@ -80,6 +83,67 @@ it reads a launch argument. They name a state of the screen, never an icon: the 
 xcrun simctl launch "iPhone 17" com.example.prism.showcase \
   -DSShowcaseIconStyle filled -DSShowcaseIconDirection rtl -DSShowcaseIconsBlock registry
 ```
+
+## The apps CI builds
+
+CI builds this app on request, with the Xcode and the simulator runtime the snapshot baselines are recorded with
+(`XCODE_VERSION` in `.github/workflows/ci.yml`), so a Mac with another Xcode, or with no checkout at all, can open
+it. Dispatch `ci` with the **`showcase-apps`** box ticked, from the Actions tab (*ci* ▸ *Run workflow*, on the
+branch to build) or with
+
+```sh
+gh workflow run ci.yml --ref <branch> -f showcase-apps=true
+```
+
+Leave the two `update-…` boxes off: they re-record baselines, which is another matter. The run is an ordinary `ci`
+run plus the `showcase-apps` job, which runs on a macOS runner of its own, needs no other job and gates none. A push
+or a pull request never runs it. Download the artifacts from the run's page, or with
+`gh run download <run id> -n showcase-app-macos`; they are kept for 14 days.
+
+| Artifact | Holds |
+|---|---|
+| `showcase-app-macos` | `PrismShowcase-macos.zip`, which unzips to `PrismShowcase.app` for macOS 26 or later, arm64 and x86_64 |
+| `showcase-app-ios-simulator` | `PrismShowcase-ios-simulator.zip`, which unzips to `PrismShowcase.app` for the iOS Simulator, iOS 26 or later, arm64 and x86_64 |
+| `showcase-screenshots` | PNGs of the running app on the iPhone 17 simulator and on the Mac, the pages SD-10 of `docs/direction-board/reference-distance-showcase.md` names, and `index.txt`, which gives the commit, the Xcode, the simulator and what each file shows |
+
+Each bundle sits in a zip that `ditto` made, inside the artifact's own zip. The artifact's zip keeps no symlinks,
+permissions or extended attributes, and a bundle loses its signature without them. Unpack the inner zip with Finder
+or `ditto -x -k`, which keep them. Both bundles are Debug builds, signed ad hoc (*Sign to Run Locally*) and not
+notarized, so a copy that came through a browser carries the quarantine flag, and Gatekeeper refuses to open it.
+Clearing the flag on the bundle is all it takes; Gatekeeper's settings stay as they are.
+
+On the Mac:
+
+```sh
+ditto -x -k PrismShowcase-macos.zip .
+xattr -dr com.apple.quarantine PrismShowcase.app
+open PrismShowcase.app
+open -n PrismShowcase.app --args -DSShowcaseSection components -DSShowcaseComponent Chip   # a page, by its keys
+```
+
+`open --args` reaches only an app it starts, so quit the app before opening another page, or pass `-n`.
+
+In the iOS Simulator, on any iOS 26 or later runtime:
+
+```sh
+ditto -x -k PrismShowcase-ios-simulator.zip .
+xattr -dr com.apple.quarantine PrismShowcase.app
+open -a Simulator                     # and boot a device: File ▸ Open Simulator, or xcrun simctl boot <UDID>
+xcrun simctl install booted PrismShowcase.app
+xcrun simctl launch booted com.example.prism.showcase -DSShowcaseSection components -DSShowcaseComponent Chip
+```
+
+Or drag `PrismShowcase.app` onto the Simulator window, which installs it, and tap its icon.
+
+**No build for a physical iPhone.** An app for a device has to be signed with a development team and a provisioning
+profile, which only the owner has, and the simulator bundle does not run on a device. For an iPhone,
+`pnpm showcase:apple --print-project` writes the project; in Xcode, turn on *Automatically manage signing* with your
+team under *Signing & Capabilities* (and give it a bundle identifier of your own if Xcode asks), then run it on the
+device.
+
+**The screenshots are for reading, not comparing.** Nothing compares against them and nothing commits them: the
+gallery and the VRT suite own pixels (`docs/showcase.md` §5). A capture the runner refuses is recorded as such in
+`index.txt`, and it does not fail the job.
 
 ## What it measures rather than claims
 
