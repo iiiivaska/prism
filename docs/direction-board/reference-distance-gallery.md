@@ -9,6 +9,7 @@
 - Companion: the same review for the three direction-board screens is [README.md § Reference-distance review](README.md#reference-distance-review), reviewed 2026-09-16
 - **Re-reviewed: 2026-09-23**, in [§9](#9-re-review-of-the-wave-1-examples--2026-09-23). The showcase review's finding SD-8 asked for a rule 3 review of `IconButton/with-badge`, which composes three components. That review found a wider gap: no review had read any of the 688 images that Divider, Icon, Badge and IconButton added after this document (RD-5). §9 lists which of the gallery's 67 examples compose more than one component. It reviews all 39 wave-1 examples, `with-badge` in full, and the 104 Button and Card images re-recorded since. It adds four findings and replaces §8's condition 3. Sections 1–8 stand as written on 2026-09-22, apart from pointers to §9.
 - **Reviewed again: 2026-09-26**, in [§10](#10-review-of-avatars-examples--2026-09-26). P4-7's baselines (`5522846`) put Avatar's twelve examples in the gallery, outside this clearance by §9.9 condition 3 until a dated section read them. §10 reads all 204 images, and none is a copy. It adds two findings. RD-9: on Apple every example staged on the synthetic map sits where the route turns, and Avatar's two map examples put a bare round mark there, which makes them among the gallery's nearest images to a reference's map. RD-10: `Sidebar.yaml`'s `rail` example specifies the rail whose avatar is `Avatar/ringed`'s nearest reference. §10.8 adds a seventh expiry condition, and §10.9 says how the next component's section follows. Sections 1–9 stand as written, apart from pointers to §10.
+- **Reviewed again: 2026-09-26**, in [§11](#11-review-of-chips-examples--2026-09-26). P4-8's baselines (`5b1663c`) put Chip's thirteen examples in the gallery, and `md-with-avatar` fills a slot with an Avatar. §11 reads all 224 images, and none is a copy. It adds two findings. RD-11: `md-with-avatar` has the traffic console's plate chip's anatomy, with a person in it. RD-12: `identifier-copy`'s "B-4417" puts the gallery's fleet unit number in a vehicle-style identifier; a cheap relabel is recommended, and not taken. §11.9 names `md-with-avatar` beside `with-badge` in condition 4, extends condition 7 and adds condition 8.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -598,7 +599,7 @@ None of them composes the others.
 
 1. **A pattern example screen lands**, as in §8 condition 1.
 2. **P5-1 rebuilds the board screens into the gallery**, as in §8 condition 2.
-3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id, so the examples this document names are §9.8's 67 and §10.7's 12. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
+3. **Any example this document does not name.** §9.8 names by id the 67 examples the gallery holds at `deb6632`, and no other example is covered. A new example of any component, and every example of a component whose first baselines land, is outside this clearance until a dated section here names it and reads it. A new variant of a reviewed example can be covered by a sentence added to its group. A new component needs a group of its own. (RD-5: §8 never said this.) — *2026-09-26: §10.7 names Avatar's twelve examples by id and §11.8 Chip's thirteen, so the examples this document names are §9.8's 67, §10.7's 12 and §11.8's 13. Each later dated section adds its own list ([§10.9](#109-how-the-next-components-section-follows-this-one)).*
 4. **An example other than `IconButton/with-badge` composes more than one component in §9.3's sense**: a second component in a slot the example fills. Examples: Card's `body` or `aside` filled (RD-2), a chart in a ChartContainer, a Badge in any host other than `with-badge`, a TabBar or Sidebar item with a count. `with-badge` itself is reviewed in §9.4; a change to what it fills is condition 5's or condition 6's.
 5. **The notification composition moves towards the reference's bell** (RD-6, RD-7). That means any of these:
    - `with-badge`, or any IconButton with a badge, put on glass or over a map;
@@ -821,3 +822,192 @@ For Chip in particular, four things are already known, three of them from its sp
 - `on-map` and `selected-on-map` stand straight on the map ground, so on Apple they will sit where the route turns (RD-9, condition 7).
 - `identifier-copy` labels a chip "B-4417", with the invented unit number of `Card/glass-vehicle`, which RD-2 item 3 places in 27220417's genre.
 - Both showcase apps have staged Chip's thirteen examples since `3fb52c9`. What that fires is read by the showcase review's §12.7, not by this document.
+
+*Pointer added 2026-09-26: Chip's section is [§11](#11-review-of-chips-examples--2026-09-26), written from this checklist. The showcase review's [§13](reference-distance-showcase.md#13-re-review-of-the-avatar-and-chip-pages--2026-09-26) reads what the apps' Avatar and Chip pages fire.*
+
+---
+
+## 11. Review of Chip's examples — 2026-09-26
+
+- **Subject.** Chip's **224 committed PNGs**, 120 Apple and 104 web, and the 120 cells that pair them in `gallery/index.html` and `gallery/index.json`. CI run 36207346174 on `3fb52c9` recorded them, and `5b1663c` committed them (P4-8 3/3). With them the gallery holds 1604 images in 872 cells, 0 missing: 92 examples of 10 components (`gallery/index.json`, `counts`).
+- **Why.** §9.9 condition 3, read with §10.8, for all thirteen examples, and condition 4 for `md-with-avatar`, which fills Chip's `avatar` slot with an Avatar. §10.9 and the baselines commit both said so before this section.
+- **Format.** §10.9's checklist, item by item. §11.4 reads the slot example in full, as §9.4 read `IconButton/with-badge`, and §11.6 gives one verdict per example.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops and page screenshots made for this section stayed in the session scratchpad, and none is committed. No reference string is quoted: the analyses quote several of the chips' labels, and those are on the `lint:reference-copy` denylist.
+
+### 11.1 What changed since §10's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| Chip's baselines | `5b1663c` | 224 | no |
+| On Apple a removable chip's remove control is read after the chip. It is an accessibility change that draws nothing. | `8205c8f` | 0 | — |
+
+Between `3fb52c9` and `5b1663c`, a diff over both baseline roots adds Chip's 224 images and modifies or removes none. Every image §9 and §10 read is unchanged.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 fired for Chip's thirteen examples, and this section answers it.
+- Condition 4 fired for `md-with-avatar`, and §11.4 answers it.
+- Condition 5 did not fire. No example touches a badge, a bell or a round button's neighbours.
+- Condition 6 did not fire. No baseline was re-recorded, and `8205c8f` draws nothing. CI run 36210049257 on `5b1663c` compared every committed image on both stacks and is green, so each draws exactly what its baseline holds.
+- Condition 7 did not fire by its letter. `on-map` and `selected-on-map` carry a map pin and a place word, not a heading arrow, a vehicle glyph or a vehicle identifier, and nothing draws a ring or a card beside them. On Apple they sit where the route turns, and §11.5.3 reads them in RD-9's terms.
+
+### 11.2 Method
+
+- **Every image, on both stacks.** All 224 were opened, one contact sheet per example, laid out as §10.2's were. The pills, the Avatar inside `md-with-avatar` and the two map grounds were then opened again at 3–5×.
+- **Decoded, not read by eye.** Each pill's box, its stroke, its fill and its label's ink; the Avatar's circle inside `md-with-avatar`; and on Apple, the route's pixels under the two map examples. Every colour below is a decoded pixel. Every size is a decoded box or a token value.
+- **Byte comparisons.** `web-touch` is byte-identical to `web-desktop` in 49 of 52 pairs. The other three are `on-map`, `selected-on-map` and `on-vivid`, each in dark at regular density. They differ by one code value in 0.75–0.80 % of their pixels, all inside the pill's box. No `increased-contrast` twin equals its standard image, because the fallback changes every stroke and ink.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, as §10.2 did. All 224 images decode there.
+- **The references.** The component inventory's Chip row: 8 of 11 shots, and a list of sightings that `Chip.yaml`'s own design note draws on. The analyses behind each sighting were read: the traffic console's plate chip and its filter pills over the map, the shipping console's number chip, the incident console's copy-id affordance, the finance monitor's period chips, and the bottle tracker's label pills.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 682 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current. This section names five registry ids and none of Apple's symbol names.
+
+### 11.3 Which Chip examples compose more than one component
+
+| Kind (§9.3) | Chip examples | Why |
+|---|---|---|
+| **A second component, in a slot the example fills** | `md-with-avatar`: an Avatar, named "Anna Petrova", in the `avatar` slot, which `Chip.yaml` types as an Avatar (ADR-0034's form). | **Yes.** It fires condition 4, and §11.4 reads it. |
+| A second component that the host draws as a part of its own anatomy | **Text**, from `label`, in all thirteen. **Icon**, from a registry id: `with-leading-icon` (`action.filter`), `md-size` and `on-map` (`object.map-pin`), `identifier-copy` (`action.copy`), `removable` (`nav.close`, the remove control), and `selected-on-map` (`status.check`, which a chip selected over media draws). | The example passes a string or an id. The host draws it in its own `label`, `leadingIcon`, `trailingIcon` or remove part, and a reader sees one pill. |
+| Staged inside a Surface, because the example declares a material | `on-vivid` (vivid) and `on-glass-over-image` (glass over the image) | The Surface carries nothing but the chip. |
+| One component over a synthetic backdrop | `on-map` and `selected-on-map` | As §10.3's third row: the pill renders the glass chip itself. |
+| One component on the page ground, and nothing else | `default-sm`, `selected`, `with-leading-icon`, `removable`, `identifier-copy`, `md-size`, `disabled`, `md-with-avatar` and `russian-label` | — |
+
+### 11.4 `Chip/md-with-avatar`
+
+- **What it is.** The props are `label: "Anna Petrova"`, `size: md` and `avatar: { name: "Anna Petrova" }`. On screen:
+  - **The pill.** An md chip in `comp.chip.bg.rest`, the raised step: `(247, 248, 250)` in light and `(35, 36, 38)` in dark, inside a hairline. It is 141 × 40 at regular density and 135 × 32 at compact, decoded on both stacks. The label is `color.text.secondary`.
+  - **The Avatar.** Chip draws it at size sm and decorative, concentric with the pill's leading end: a 32 circle 4 in from the pill's edge at regular density, and a 28 circle 2 in at compact, decoded. It shows the initials "AP". In light the circle is the Avatar's raised step on the chip's own, so only the letters show. In dark it shows as a lighter disc, `(55, 56, 58)` on the chip's `(35, 36, 38)`.
+  - **Nothing else.** The Avatar is hidden from assistive technology, and the chip's name is its label: on the web the stage holds one button, named "Anna Petrova" (showcase §13.1).
+  - **Its frame.** Alone. At regular density it is a 189 × 88 pt tight crop on Apple and a 269 × 168 px stage on the web.
+- **Nearest reference.**
+  - The **traffic console 27220417**'s plate chip, which the **incident console 27619812** re-posts. It is a pill holding a route letter in a darker circle at its leading end, and the vehicle's number after it: 26 px tall, white at about 15 % on the vehicle card, with a 22–26 px circle and 13 px digits (the traffic analysis §6, the incident analysis's component table). The inventory lists it as "identifier with a letter disc". It sits over the vehicle card's wireframe drawing, and it heads the rows of the route-offset table.
+  - The **finance monitor 27597487**'s identity lock-up: a 36 px round photo with a name and a role beside it (§10.4.1).
+- **Families mixed.** The plate chip's anatomy, a disc concentric with a pill's leading end; the round avatar of the desktop shots; and Chip's control-height pill.
+- **What differs.**
+  - *Subject.* A person: two initials and a full name, where the plate chip holds a route letter and a vehicle number. `Chip.yaml`'s description calls the example "an identifier chip", which is the plate chip's role, but what this one identifies is a person.
+  - *Size and material.* 40 or 32 tall with a 32 or 28 circle, against 26 with a 22–26 circle. It is a raised pill with a hairline on the page, where the plate chip is a translucent pill on a card. In light its disc does not show at all.
+  - *Placement.* Alone on the page. The plate chip sits on a line drawing of a bus beside a status pill and signal indicators, or heads a table row.
+- **Is the commonness a defence? Yes.** A pill with a round avatar at its leading end and a person's name after it is the recipient token of every mail client and the avatar input chip of every design system. A reasonable person recognises that genre, not the plate chip.
+- **Where the defence would stop.** When the disc holds one letter and the label is a vehicle's number or a plate, which is the plate chip's content in its own form. Avatar gives one letter for a one-word name (§10.4.2), so a one-word avatar name beside a number would get there. It also stops when the chip is placed as the plate chip is: over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header. RD-11, and §11.9 condition 8.
+- **Verdict.** **Not a copy.** It is the genre's person chip, drawn alone, with the reference's anatomy and none of its content or placement.
+
+### 11.5 The other twelve examples
+
+#### 11.5.1 The page chips — `default-sm`, `selected`, `with-leading-icon`, `removable`, `md-size`, `disabled`, `russian-label`: 7 examples, 112 images
+
+- **What it is.** One pill on the page ground, in the raised step inside a hairline: the hairline decodes `(224, 225, 227)` in light and `(53, 54, 55)` in dark, and the label is `color.text.secondary`. The pills are sm, 32 at regular density and 28 at compact; `md-size` is md, 40 and 32. The examples vary one thing each:
+  - `selected` and `russian-label` are filter chips that are on. Their ring is `border.strong`, its outer pixel `(142, 143, 145)` in light and `(112, 113, 114)` in dark, and the label is `color.text.primary`. The pill does not fill.
+  - `with-leading-icon` leads with `action.filter`, and `md-size` with `object.map-pin`.
+  - `removable` ends in `nav.close`, which is its own control, named "Remove North yard" on the web.
+  - `disabled` dims the whole chip.
+  - The labels are "Last 24 hours" (on `default-sm`, `selected` and `disabled`), "Routes", "North yard", "Depots" and "Последние 24 часа", which widens its pill rather than truncating.
+- **Nearest reference.**
+  - The **finance monitor 27597487**'s period chips, flush right in the header of its dark chart band. They are transparent pills with a 1 px stroke: the selected one at full-strength stroke and label, the rest at 28 % and 70 % white (its analysis, components). The phone shot 27696584 has a row of the same chips under its floating toolbar. The inventory's words are "period filter chips (selected = full-strength stroke and label)", and `Chip.yaml`'s design note takes `selected`'s grammar from them.
+  - The traffic console's filter pills with a leading icon (§11.5.3), for `with-leading-icon` and `md-size`.
+- **Families mixed.** The period chip's ladder of stroke and label, which is a principle with a number (ADR-0015 rule 2), and the pill grammar of all eleven shots (visual-dna §1 principle 2).
+- **What differs.** Each chip stands alone on the page, never in a row of periods beside a chart's title. The pill is raised, not transparent. None of the words is the reference's, and one is Cyrillic.
+- **Where the defence would stop.** A row of period chips flush with a chart's title in a dark band over a step chart would be the finance monitor's chart header. No spec composes that today.
+- **Verdict.** **Not a copy**, each of the seven. A filter pill alone on a stage is every date-range picker's.
+
+#### 11.5.2 `identifier-copy`: 1 example, 16 images
+
+- **What it is.** "B-4417" and a trailing `action.copy`, in a raised sm pill of 86 × 32 (86 × 28 at compact), alone on the page. Its description says a press copies the identifier, and its name is the identifier: on the web, one button named "B-4417".
+- **Nearest reference.**
+  - The **shipping console 27658472**'s number chip: a 64 × 22 stadium, white at 15 % inside a 1 px white 20 % stroke, holding a truncated number and a copy glyph, in each cell of its container grid (its analysis, components). The inventory lists it as "identifier with a copy glyph".
+  - The **incident console 27571204**'s copy-id affordance: a truncated hash at 55 % with a two-square copy icon, in the title of its bottom sheet.
+  - The traffic console's plate chip (§11.4), a letter and a vehicle number in a pill.
+- **Families mixed.** The two consoles' pairing of an identifier with a copy glyph, and the plate chip's letter-and-digits identifier.
+- **What differs.** Alone, and not truncated. There is no letter disc. The pill is raised on the page, not in a cell or a sheet.
+- **Genre: the test RD-2 item 3 applies.** The number is 4417, the invented unit number of `Card/glass-vehicle` ("Unit 4417"), which RD-2 item 3 places in shot 27220417's own subject matter. With a one-letter prefix it reads as a fleet identifier, and the reference's vehicles are identified by a word or a letter followed by four or five digits. The copy distance is clean: the string is invented, the reference's identifiers are on the denylist, and `lint:reference-copy` passes. The genre distance is the thinnest in the Chip set. RD-12.
+- **Verdict.** **Not a copy**, and the nearest of the thirteen in genre.
+
+#### 11.5.3 Over the map — `on-map`, `selected-on-map`: 2 examples, 40 images
+
+- **What it is.** The pill straight on the synthetic map, where it renders the glass chip: "Depots" after a map pin in `on-map`, and "Depots" selected in `selected-on-map`, where the check a chip selected over media draws takes the leading slot. Every tone on the pill collapses to the glass foreground. On Apple the light pill decodes `(217, 219, 223)` with an ink label and stroke, and the dark one `(42, 44, 49)` with a white label. Under Increase Contrast and Reduce Transparency the pill falls back to the raised step inside a hairline, and the selected chip drops its check.
+  - **The web.** A 183 × 128 px plate of the web map (124 high at compact), with no route, and the pill at its centre.
+  - **Apple.** The tight crop draws the whole map into 136 × 80 pt (76 at compact), and the pill covers its centre, where the route turns. In all 24 Apple images the route runs into the pill: 10–14 px of it from the leading side and 14 px from the top, decoded along each leg.
+- **Nearest reference.** The **traffic console 27220417**'s filter pills over its map: glass, 44–48 px, a 20 px leading icon and a trailing chevron, holding a vehicle identifier or the name of a map (its analysis §6). Two of them sit in the map's region, which its analysis describes as "nothing but the map, the title, two filter pills, one floating glass card and three zoom buttons" (§5). The **incident console 27571204** puts a glass chip with a leading icon and a chevron at the top of its phone map. The inventory's words are "filter chip with a leading icon over a map", which `Chip.yaml`'s design note names.
+- **Families mixed.** The consoles' glass controls over a map, and the map pin as a category mark.
+- **What differs.** A place category and a map pin, never a vehicle's identifier, and no chevron. Each pill stands alone. On Apple it sits where the route turns; the reference's pills sit at the top of the map, away from any route.
+- **RD-9, continued.** These are the third kind of mark on the Apple route's bend, after wave 1's tiles and Avatar's two discs: a labelled pill. With them the gallery holds most of 27220417's map region, one part per example: the filter pill (Chip), a marker (Avatar), a pin (Icon), a locate control (IconButton), a glass card over the map (Surface) and the route. RD-9's count of Apple map images is now 128. §11.9 extends condition 7 to the region.
+- **Verdict.** **Not a copy**, either example, on either stack.
+
+#### 11.5.4 On media — `on-vivid`, `on-glass-over-image`: 2 examples, 40 images
+
+- **What it is.**
+  - `on-vivid`: "Yield" on a vivid Surface. The pill is the glass chip over the gradient, `(122, 143, 195)` over the light slot and `(48, 32, 56)` over the dark one, inside the on-media stroke.
+  - `on-glass-over-image`: "In service" as a flat chip on a glass Surface tile over the synthetic image. It decodes `(238, 242, 244)` in light and `(18, 21, 25)` in dark, inside a grey stroke.
+  - Under the forced states both fall back to the raised step.
+- **Nearest reference.** The **bottle tracker 27619760**'s label pills on its renders: 22 pt capsules of light glass, white at 40 % inside a white ring, which refract the image beneath them (its analysis, components). For "In service", the outlined status pill in the status row of the traffic console's glass vehicle card: "In service" is the status word that visual-dna §4.3 invented for Prism's version of that card.
+- **Families mixed.** Glass where it refracts something; the ring in the on-media stroke.
+- **What differs.** One pill on one tile, anchored to nothing. It carries no status colour, and no card, title or timestamp surrounds it. "In service" belongs to RD-2 item 3's genre only as a word.
+- **Verdict.** **Not a copy**, either example.
+
+### 11.6 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 31–43 continue §10.5's numbering, one row per example.
+
+| # | Example | Copy? | Why |
+|---|---|---|---|
+| 31 | `default-sm` (§11.5.1) | **No** | A period filter at rest, alone. |
+| 32 | `selected` (§11.5.1) | **No** | The finance monitor's selected-period grammar, a principle with a number, on one chip with no row and no chart. |
+| 33 | `with-leading-icon` (§11.5.1) | **No** | A filter pill with a glyph, on the page. |
+| 34 | `removable` (§11.5.1) | **No** | An input chip with its own remove control; no shot draws one. |
+| 35 | **`identifier-copy`** (§11.5.2) | **No, and the nearest of the thirteen in genre** | An identifier with a copy glyph is a two-console grammar, and the string is invented. But it is the gallery's fleet unit number in a vehicle-style identifier. RD-12. |
+| 36 | `md-size` (§11.5.1) | **No** | As row 33, at md. |
+| 37 | `disabled` (§11.5.1) | **No** | A dimmed chip. |
+| 38 | **`md-with-avatar`** (§11.4) | **No** | The genre's person chip. It has the plate chip's anatomy, a disc at the leading end, and none of its content or placement. RD-11. |
+| 39 | `on-map` (§11.5.3) | **No** | A glass filter pill, alone. On Apple it sits where the route turns (RD-9). |
+| 40 | `selected-on-map` (§11.5.3) | **No**, as row 39 | |
+| 41 | `on-vivid` (§11.5.4) | **No** | A glass label pill on a vivid tile. |
+| 42 | `on-glass-over-image` (§11.5.4) | **No** | A flat pill on a glass tile, anchored to nothing. |
+| 43 | `russian-label` (§11.5.1) | **No** | As row 32, in Cyrillic. |
+
+**Summary.** No Chip image at `5b1663c` is close enough to one product that a reasonable person would call it a copy. The set does map closely onto the references' chips: four of the inventory's sightings each have an example (period filters, a filter over a map, an identifier with a copy glyph and an identifier with a disc), and `Chip.yaml`'s design note says where most of them come from. Each example is one pill on its own, so the distance is in the arrangement and the content, as it was for the metric cards (RD-2). The two nearest are `identifier-copy` on genre (RD-12) and `md-with-avatar` on anatomy (RD-11).
+
+### 11.7 Findings of this review
+
+#### RD-11 — `Chip/md-with-avatar` is the plate chip's anatomy with a person in it
+
+**What.** The traffic console's plate chip is a pill with a letter disc concentric with its leading end and an identifier after it. `md-with-avatar` has that anatomy, and `Chip.yaml` calls it "an identifier chip". What fills it is a person's initials and name, which makes it the recipient-token genre of every mail client rather than a vehicle's plate (§11.4).
+
+**Why it matters.** The defence rests on the content and the placement, and both are one prop away. An Avatar shows one letter for a one-word name (§10.4.2). A chip whose disc holds one letter beside a vehicle's number, or a chip placed over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header, would be the plate chip.
+
+**Action.** None now. §11.9 condition 8 makes any of those an expiry condition.
+
+#### RD-12 — `Chip/identifier-copy` puts the gallery's fleet unit number in a vehicle-style identifier with a copy glyph
+
+**What.** "B-4417" pairs a one-letter prefix with 4417, the invented unit number of `Card/glass-vehicle`, and a trailing copy glyph. The reference identifies its vehicles by a word or a letter with four or five digits (§11.5.2). Two consoles pair an identifier with a copy glyph, one of them in a chip.
+
+**Why it matters.** It is the same genre question RD-2 item 3 asks of `Card/glass-vehicle`, now in a second component. The two examples share the number, so the gallery's fleet genre is no longer one example's subject but a recurring identifier. Copy distance is clean. Genre distance is not a copy either, but it is thinner than anywhere else in the Chip set.
+
+**What would help. Cheap, and not required.** Relabel the example with an identifier outside the fleet genre, one that no other example uses, such as an order, invoice or batch number. That is one `Chip.yaml` example edit. It moves 16 baselines (8 Apple, 8 web) through the sanctioned re-record route, and condition 6 then asks for them to be compared as §9.1 compared the 104. Doing it with RD-2 item 3's re-subjecting of `glass-vehicle` would remove the gallery's only shared fleet identifier. It is not taken here: this ticket changes no spec and no component.
+
+### 11.8 Coverage
+
+| Component | Examples | Images | Reviewed in | Verdict |
+|---|---|---|---|---|
+| Chip | 13 | 224: 120 Apple, 104 web | §11.4 (`md-with-avatar`: 16 images), §11.5.1 (112), §11.5.2 (`identifier-copy`: 16), §11.5.3 (40) and §11.5.4 (40) | not a copy; RD-9, RD-11, RD-12 |
+| The nine components of §9.8 and §10.7 | 79 | 1380 | §9.8, §10.7 | unchanged since `3fb52c9` (§11.1) |
+| **Total** | **92** | **1604** | | |
+
+§7's list of sections with no image now stands for 47 components, the three patterns and the documentation chrome.
+
+**The 13 examples, by id.** Together with §9.8's 67 and §10.7's 12, this list is what §9.9 condition 3 means by an example this document names.
+
+- Chip: `default-sm`, `selected`, `with-leading-icon`, `removable`, `identifier-copy`, `md-size`, `disabled`, `md-with-avatar`, `on-map`, `selected-on-map`, `on-vivid`, `on-glass-over-image`, `russian-label`.
+
+### 11.9 What this clearance covers, and when it expires
+
+**It covers** the gallery at `5b1663c`: all 1604 images, 92 examples and 10 components. That is the 67 examples §9 read, the 12 §10 read and the 13 this section reads. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires, or stops covering part of the gallery, on any of these.** §9.9's six conditions stand, condition 3 is read with §10.8 and §11.8's lists, condition 4 now names `md-with-avatar` beside `with-badge`, condition 7 is extended, and condition 8 is new.
+
+- **Condition 4, read with this section: an example other than `IconButton/with-badge` and `Chip/md-with-avatar` composes more than one component in §9.3's sense.** `md-with-avatar` itself is reviewed in §11.4. A change to what it fills is condition 6's or condition 8's.
+- **Condition 7, extended: a mark on the map moves towards 27220417's, or the map's region is composed** (RD-9). It holds §10.8's five items, plus one: a Chip filter pill set over the map in one composition with round map controls, a glass card or a mark. That is the traffic console's map region: two filter pills, one glass card and three zoom buttons over the map.
+- **Condition 8, new: an identifier chip moves towards the reference's plate chip** (RD-11, RD-12). That means any of these:
+  - an Avatar in a chip that shows one letter beside a vehicle's number or a plate;
+  - an identifier chip set over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header;
+  - an identifier truncated with an ellipsis beside its copy glyph.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next component's section follows §10.9. Its verdict rows start at 44 and its findings at RD-13.

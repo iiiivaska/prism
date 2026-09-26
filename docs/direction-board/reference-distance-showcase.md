@@ -7,6 +7,7 @@
 - Companions: the three direction-board screens, reviewed 2026-09-16 — [README.md § Reference-distance review](README.md#reference-distance-review); the gallery, reviewed 2026-09-22 — [reference-distance-gallery.md](reference-distance-gallery.md)
 - **Re-reviewed, the Icons screens only: 2026-09-23** — [§11](#11-re-review-of-the-icons-screens--2026-09-23). P4-2 fired §10 condition 2 by implementing `Icon`, and P4-D4 then reconciled the two screens. §11 carries their verdict, a correction to this review (SD-6) and the Icons clearance's own expiry conditions. Sections 1–10 stand as written on 2026-09-22, apart from pointers to §11.
 - **Re-reviewed, the component pages: 2026-09-23** — [§12](#12-re-review-of-the-component-pages--2026-09-23). P4-4's `IconButton/with-badge` fired §10 condition 4, and SD-8 flagged it. §12 reviews the IconButton page on both apps, with that example on its own page on Apple, and the pages wave 1 added or changed. It closes SD-8, records SD-9 (the pages of the four wave-1 components staged 39 examples that no review had read), and replaces §10 condition 4. Sections 1–11 stand as written, apart from pointers to §12.
+- **Re-reviewed, the Avatar and Chip pages: 2026-09-26** — [§13](#13-re-review-of-the-avatar-and-chip-pages--2026-09-26). Both apps stage Avatar's twelve examples and Chip's thirteen, which fired §12.7 condition 5, and `Chip/md-with-avatar` fills a slot with an Avatar, which fired condition 4. The web app was built and run, and its pages are not a copy. The Apple app could not be run in that session, so its Chip page and its `md-with-avatar` page are not reviewed (**SD-10**), and a release from `5b1663c` is not cleared until a run on a Mac reads them. §13.8 adds condition 8. Sections 1–12 stand as written, apart from pointers to §13.
 
 This is the **showcase half** of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. The gallery half closed on the same day and recorded in its §7 that the showcase half stayed open; this document is what closes it. Critic **C-16** flagged the ordering.
 
@@ -619,15 +620,174 @@ The 39 wave-1 examples themselves are covered in gallery §9.4 and §9.5, where 
 - Condition 2 fired and is answered by §11. None of §11.8's Icons conditions has fired at `deb6632`.
 - Condition 4 fired and is answered here.
 
-So **the rule 3 precondition is met again for the whole of both apps**, not only for the Icons screens. It had not been met since Divider's page began staging examples (SD-9).
+So **the rule 3 precondition is met again for the whole of both apps**, not only for the Icons screens. It had not been met since Divider's page began staging examples (SD-9). *Pointer added 2026-09-26: at `5b1663c` it is met for the web app and for every Apple screen but two, which SD-10 leaves open (§13.8).*
 
 **It expires on any of these.** Items 4–7 replace §10 condition 4. Conditions 1 and 3 of §10, and §11.8 for the Icons screens, stand.
 
 4. **A staged example other than `IconButton/with-badge` composes more than one component in gallery §9.3's sense**: a second component in a slot the example fills. A part the host draws from its own anatomy (a glyph, Button's spinner, Card's hero), or the Surface or synthetic backdrop an example is staged on, does not count. `with-badge` itself is reviewed in §12.2 and gallery §9.4; a change to it is condition 6's, or gallery §9.9 condition 6's.
-5. **The apps stage an example the gallery review does not name** (gallery §9.9 condition 3; gallery §9.8 names the 67 by id). The apps stage every example of every implemented component with no edit of their own, so the gallery review's coverage of examples is this document's coverage of examples. — *Pointer added 2026-09-26: gallery §10.7 also names Avatar's twelve examples by id, so the gallery review names 79. This document has no section later than 2026-09-23 and has not read the apps since `deb6632`; since `3fb52c9` they also stage Chip's thirteen examples, which no review names.*
+5. **The apps stage an example the gallery review does not name** (gallery §9.9 condition 3; gallery §9.8 names the 67 by id). The apps stage every example of every implemented component with no edit of their own, so the gallery review's coverage of examples is this document's coverage of examples. — *Pointer added 2026-09-26: gallery §10.7 also names Avatar's twelve examples by id, and §11.8 Chip's thirteen, so the gallery review names 92. [§13](#13-re-review-of-the-avatar-and-chip-pages--2026-09-26) reads the apps at `5b1663c`, and §13.8 restates this condition.*
 6. **The notification composition moves towards the reference's bell** (gallery §9.9 condition 5). That includes the apps' own chrome: a badged bell in the showcase's header or toolbar. The IconButton page, whose twelve specimens each stand on their own stage (§12.2), is not such a composition.
 7. **Either app puts two different Prism components together outside a spec example's stage, other than as it does at `deb6632`.** Three such pairings exist there, all on Apple, and §4.2, §§5.4–5.5, §11.3 and §§12.2–12.3 read them: Text as the app's type, in the heading, label or props line beside whatever it names, a staged example included; Text inside a Surface, in the resolved-context strip that opens every screen (a nested Surface holding three lines of Text) and in the Foundations material, elevation and gradient tiles (a Surface holding its name); and Text under an Icon, in the Icons tiles. The web app has none: its Icons cells and its Foundations tiles each hold one Prism component, with the app's own markup beside it. Anything else fires this condition. For example: a Badge on a chrome button; a Button, IconButton, Card or Divider in a toolbar, header or panel the app draws; an Icon beside a heading; Text and a Surface made into a card or a tile of figures; or a strip whose staged examples share one stage.
 
 **It does not expire** when a newly implemented component's page appears, as long as a dated section of the gallery review names its examples. This replaces §10's last paragraph, which assumed that without saying so.
 
 **It is not a legal opinion**, for the reasons §10 gives.
+
+---
+
+## 13. Re-review of the Avatar and Chip pages — 2026-09-26
+
+- **Subject.**
+  - The Avatar and Chip pages of both apps, with Chip's `md-with-avatar` as each app stages it.
+  - The Apple app's own pages for those 25 examples, and its Overview strip, which now stages ten.
+  - The rest of both apps, as far as this document's conditions reach. They are read against the diff over `web/apps/showcase` and `swift/Showcase` from `deb6632` to `5b1663c`. `3d5c4b2` (P4-D9 1/2), which landed while this section was written, changes no file of either app.
+- **Why.** Two of §12.7's conditions fired after `deb6632`, and no section had read the apps since.
+  - Condition 5 fired twice. From `1652695` both apps staged Avatar's twelve examples, which gallery §10 named at `48cb2f4`. From `3fb52c9` they staged Chip's thirteen, which gallery §11 names today.
+  - Condition 4 fired at `3fb52c9`. `Chip/md-with-avatar` fills Chip's `avatar` slot with an Avatar. It is the first example since `IconButton/with-badge` to fill a slot.
+  - The release gate did not claim otherwise in either window. Since 2026-09-23, `docs/legal-checkpoint.md` §5.2 has cleared only the tree at `deb6632`, and it asks for the conditions to be re-read against any later tree, which is the lesson of gallery RD-5 and SD-9. No release was made (`docs/legal-checkpoint.md` §3.2).
+- **Format.** As §12. The 25 examples themselves are reviewed in the four terms, from their baselines, in gallery [§10](reference-distance-gallery.md#10-review-of-avatars-examples--2026-09-26) and [§11](reference-distance-gallery.md#11-review-of-chips-examples--2026-09-26). This section reviews what the apps put around them, and reads every condition in force against the diff.
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The screenshots of Prism's own screens taken for this review stayed in the session scratchpad, and none is committed (`docs/showcase.md` §5).
+- **Half of it is open.** The web app was built and run. The Apple app was not, because the session had no Mac. Its half is read from source and from the gallery's Apple baselines of the same examples. SD-10 says what that leaves open, and what closes it.
+
+### 13.1 Method
+
+- **Web.**
+  - Built with Vite into the scratchpad and served with `vite preview`. Driven in Playwright Chromium at **1440** and **375** CSS px, in light and dark, with the colour-scheme axis on `auto` and the scheme emulated.
+  - Opened `#/components/Avatar`, `#/components/Chip`, `#/overview` and `#/icons`, with a full-page screenshot of each. Seven panels were also captured on their own, scrolled clear of the sticky header: Chip's `md-with-avatar`, `identifier-copy`, `on-map` and `selected-on-map`, and Avatar's `ringed`, `ringed-over-map` and `initials-over-map`.
+  - The DOM says the same in all four width-and-scheme states:
+    - The Avatar page stages 12 panels and the Chip page 13, in spec order, one stage each. No panel holds a link, and every `props` disclosure is closed.
+    - An Avatar panel holds one image, named after the person or the site. `fallback-icon`, which has no name, and `decorative` expose nothing.
+    - A Chip panel holds one button, named by its label. `removable` holds two, "North yard" and "Remove North yard". `selected`, `selected-on-map` and `russian-label` are pressed toggles.
+    - `md-with-avatar`'s panel holds one button, 135 × 32, named "Anna Petrova". The Avatar inside it is `aria-hidden`.
+    - The density axis on `auto` resolves to compact here, at both widths, as in §12.1.
+  - **The app draws the gallery's pictures.** Each of the 28 captures, seven panels at two widths in two schemes, was compared with its `web-desktop` compact baseline. In every one the mark has the baseline's box: 135 × 32 for `md-with-avatar`, 86 × 28 for `identifier-copy`, 32 × 32 for `ringed`, and the map plates, 183 × 124 for Chip's two and 128 × 128 for Avatar's. Sixteen captures match within 8 code values, among them all four map panels at 1440 px. The other twelve differ at the edges of letters and glyphs, with a mean difference of at most 5.3: all but 34 of their 2568 pixels that differ by 30 or more sit on an edge. They are the same elements, antialiased differently.
+- **Apple: read, not run.** The session had no Mac, so the Apple app was neither built nor run, and no simulator was touched. What was read instead:
+  - The pages that stage the examples: `DSComponentScreen`, `DSExampleBlock` and `DSExampleScreen` (`Screens/DSComponentsScreen.swift`), and the Overview's strip (`Screens/DSOverviewScreen.swift`).
+  - The two renderers, `DSAvatarRenderer` and `DSChipRenderer` (`Examples/DSComponentRenderers.swift`), and the stage, which is the app's copy of the snapshot harness's (`Examples/DSExampleStage.swift`).
+  - The generated catalogue's entries for the 25 examples (`Generated/DSShowcaseCatalog.swift`), which carry each example's props as the spec writes them.
+  - The gallery's Apple baselines of the same 25 examples. The snapshot harness draws them with the same components, from the same props, on the stage this app copies (gallery §10 and §11).
+  - CI. Run 36210049257 on `5b1663c` is green, and its macOS job compiles `DSShowcase`. That is a compile only: CI builds no app bundle and records no screenshot of either app (§1).
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 682 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 13.2 What changed since `deb6632`, and which conditions fired
+
+The diff touches 14 files of the two apps, 8 Apple and 6 web.
+- **The two pages.** The Avatar and Chip renderers on both stacks (`DSComponentRenderers.swift`, `renderers.tsx`), the `portrait` fixture copied into each app (`DSExamplePortrait`, `portrait.ts`), and the regenerated catalogue and bindings.
+- **The stage.** It declares the map and the image as backdrops (`e437b6a`, P4-6), so a component staged straight on them reads the page over that kind. It draws nothing new.
+- **Comments, and one launch key.** The Icons screens' comments now point at §11, and the gallery link's comment no longer says that a review is pending. `-DSShowcaseIconStyle default` now implies the Icons section, as the other Icons keys do. It names a state of the screen, not an entry.
+
+**The conditions, read against that diff.**
+- §10 condition 1 did not fire. The chrome is still plain platform furniture: `Sidebar`, `TabBar` and `AdaptiveShell` are unimplemented, and no chrome file changed beyond its comments.
+- §10 condition 3 did not fire. The web axis bar still has its seven rows, from color scheme to brand, and no viewport control or canvas/docs tab pair, at 1440 and 375 px.
+- None of §11.8's Icons conditions fired. The web screen still has four control rows (size, weight, style and direction), no text input and no link. The Apple screen changed only in its comments and the launch key above.
+- §12.7 condition 4 fired, for `md-with-avatar`. §13.3 answers it for the web. For Apple it stays unanswered (SD-10).
+- §12.7 condition 5 fired, and the gallery review answers it. Its §10.7 and §11.8 name all 25 examples by id, so it names every example the apps stage: 92, of 10 components.
+- §12.7 condition 6 did not fire. Nothing touches a badge, a bell or the apps' chrome.
+- §12.7 condition 7 did not fire. The one new pairing is the Apple strip's growth from eight labelled examples to ten, each on its own stage (§13.4). That is a pairing §12.7 already lists: Text as the label beside what it names.
+
+### 13.3 `Chip/md-with-avatar`, on each stack
+
+- **What it is.**
+  - *Web.* The eighth of the Chip page's thirteen panels: its id as the title, the spec's description, the stage and the closed `props` disclosure. The stage spans the panel, 1088 px wide at 1440 and 295 at 375, in the page ground. The pill sits at its leading side: "AP" in a 28 px circle at the leading end, then "Anna Petrova". In light only the letters show, and in dark the circle shows as a lighter disc (gallery §11.4).
+  - *Apple, from source.* The Chip page stages the thirteen examples as blocks, in spec order, under *"Examples — 13"*. A block is the example's id, which links to its own page, then the stage in a hairline frame, the props line and the description. Under `md-with-avatar` the props line reads "label: Anna Petrova · size: md · avatar: name: Anna Petrova". The example's own page, *"Chip · md-with-avatar"*, opens with the resolved-context strip, then the block, then *"Props, as the spec writes them"*. The frame holds the app's copy of the snapshot harness's stage, so it should show the gallery's Apple image: the pill on the page ground, 189 × 88 pt at regular density. This review has not seen it do so.
+- **Nearest reference.** For the chip, the plate chip of the traffic console 27220417, which the incident console 27619812 re-posts, and the identity lock-up of the finance monitor 27597487 (gallery §11.4). For the page, none of the eleven, because no shot is a documentation page.
+- **Nearest showcase of the genre (from recollection).** A documentation site's chips page, whose input-chip specimen is a pill with an avatar at its leading end, above the component's API. Material 3's chips page is the one this reviewer recalls best. Storybook's docs page has the same shape, as §12.2 said.
+- **Families mixed.** The genre's specimen page, and the example's own families (gallery §11.4).
+- **What differs.**
+  - Neither app puts the chip where gallery §11.4's defence stops: over a vehicle drawing, in a card that identifies a vehicle, or as a table's row header. It stands alone on its stage, eighth of thirteen specimens.
+  - The specimen nearest it in content is `identifier-copy`, "B-4417" with a copy glyph, three panels up. They are on separate stages, so the page does not set a letter disc beside a vehicle number (gallery §11.9 condition 8). Specimens on separate stages of one page are not one composition (gallery §9.9 condition 5).
+  - On the web the stage exposes one control, named for the person, and nothing on it names a vehicle or a route.
+  - Compared with the genre's page: the prose is the spec's, and the props are printed as the spec writes them. §5.7 already cleared that shape.
+- **Verdict.**
+  - *Web, at 1440 and 375 px, in light and dark:* **not a copy.** The app adds a panel and a sentence to the gallery's picture, and nothing that brings it nearer the plate chip.
+  - *Apple, on the iPhone and the Mac:* **not reviewed** (SD-10). The source stages it as it stages every example, the way §12.2 found `with-badge` staged on both devices. But that is a reading of the code, and this document reviews the running app.
+
+### 13.4 The rest of the two pages, and the Overview
+
+- **The Avatar page, and Chip's other twelve examples.**
+  - On the web each is one specimen on its own stage, in spec order. On Apple, from source, each is a block like `md-with-avatar`'s, with a page of its own.
+  - The apps stage them as the gallery's harnesses do, one example per stage, so §5.7's reasoning carries over. On the web, §13.1's comparison shows it. Gallery §10.5 and §11.6 give their verdicts: none of the 24 is a copy.
+  - The map examples show the one difference between the stacks that matters here. On the web the four stand on a plate of the web map, which draws no route. On Apple the stage draws `DSExampleMap`, whose route turns at the centre, and the stage centres the example, as the snapshot harness does. So on Apple the route runs into Avatar's two map examples and Chip's two in the app, as in the gallery (gallery RD-9).
+  - The apps print each example's props, as §12.3 noted of RD-6's labels. On Apple the props line under `identifier-copy` reads "label: B-4417 · trailingIcon: action.copy", so RD-12's number appears twice on its block, in the pill and under it. On the web it sits in the closed `props` disclosure. The string is invented, and `lint:reference-copy` passes over both apps.
+- **The Overview.**
+  - *Web.* It stages no example. Its *Components* panel now counts 10 implemented and 47 specified, not built.
+  - *Apple, from source.* *"Live, not a picture"* stages each implemented component's first example, so `Avatar/image-md` and `Chip/default-sm` join §12.3's eight. The strip follows the catalogue's order, so it opens with `Avatar/image-md`, `Badge/count-neutral`, `Button/primary-md` and `Chip/default-sm`: a portrait circle, a "3" disc, a button and a chip. Each stands on its own stage in a hairline frame, under its own label. They are four labelled specimens, not a header's tools cluster, as §12.3 found of the badge and the settings circle.
+- **Verdict.** On the web, **not a copy**. On Apple these pages are covered by §12.7's last paragraph, because the gallery review names every example they stage, and this document's conditions ask for no run of them. SD-10's run should open them anyway.
+
+### 13.5 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 22–26 continue §12.4's numbering.
+
+| # | Screen | Copy? | Why | What would have to change |
+|---|---|---|---|---|
+| 22 | Chip page with `md-with-avatar`, web, 1440 and 375 px (§13.3) | **No** | Thirteen specimens, one stage each. `md-with-avatar` is the eighth: one button named for the person, alone on its stage. | Nothing, before a release. RD-12's relabel is cheap and optional. |
+| 23 | Avatar page, web, 1440 and 375 px (§13.4) | **No** | Twelve specimens, one stage each. The two map examples stand on a plate with no route. | Nothing, before a release. |
+| 24 | Chip page and `Chip/md-with-avatar` page, iPhone and Mac (§13.3) | **Not reviewed** | Read from source only. The code stages the example as every example is staged (§12.2), but the running app was not opened. | SD-10's run, before a release. |
+| 25 | Avatar page and the other 24 example pages, iPhone and Mac (§13.4) | **Not opened; covered by §12.7** | The gallery review names every example they stage, one per stage. On Apple the route's bend lies under the four map examples, as in the gallery (RD-9). | Nothing required. Open them in SD-10's run. |
+| 26 | Apple Overview strip, at ten (§13.4) | **Not opened; covered by §12.7** | From source: ten labelled specimens on ten stages. | Nothing required. Open it in SD-10's run. |
+
+### 13.6 Findings of this re-review
+
+#### SD-10 — The Apple half of this section is read from source, so two Apple screens are unreviewed, and a release waits for them
+
+**What.** The session that wrote this section had no Mac, so the Apple app was not built or run. §13.3 and §13.4 read its Avatar and Chip pages, its 25 example pages and its Overview strip from their sources, from the generated catalogue, and from the gallery's Apple baselines of the same examples. CI compiles `DSShowcase`, but it builds no app bundle and records no screenshot of either app (§1). So no picture of these Apple pages exists anywhere.
+
+**Why it matters.** This document reviews what the apps render when run (§1), and every earlier section ran both. SD-6 is what a reading without a run missed: a tile that was a button. Condition 4 is the one condition here that asks how each app stages a composition, and §12 answered it for `with-badge` on the iPhone and the Mac. A reading of the code predicts what the Apple app draws; it does not show it. So condition 4 stays fired for Apple.
+
+**What stays open.** Exactly two Apple screens, on the iPhone and on the Mac:
+- the **Chip page**, with `md-with-avatar`'s block;
+- the **`Chip/md-with-avatar` page**.
+
+They are outside this document's clearance, so a release made from `5b1663c` is not cleared. The other Apple pages that Avatar and Chip added, and the Overview strip, are covered by §12.7's last paragraph (§13.4).
+
+**What closes it.** One run on a Mac, with Xcode and the iPhone 17 simulator (iOS 26.5) as §12.1 used them, from the tree to be released:
+1. Build and install: `pnpm showcase:apple`, which builds for the iPhone 17 simulator, installs and launches, and `pnpm showcase:apple --platform macos` for the Mac. Open each page below with its launch keys, `xcrun simctl launch "iPhone 17" com.example.prism.showcase <keys>` on the iPhone and `open PrismShowcase.app --args <keys>` on the Mac (`swift/Showcase/README.md`). Check that `Package.resolved` is unchanged afterwards.
+2. On the iPhone, open `-DSShowcaseComponent Chip` and scroll to `md-with-avatar`'s block, in light and dark (`-DSShowcaseColorScheme`). Then open `-DSShowcaseExample Chip/md-with-avatar` in light and dark: at the device's own regular density, with `-DSShowcaseDensity compact`, and with `-DSShowcaseIncreasedContrast 1`.
+3. On the Mac, open the same two pages in light and dark, and capture them by window id. Pass `-DSShowcaseSection components` on every launch, because a stale section default wins over the section the keys imply (§11.1, `swift/Showcase/README.md`).
+4. Read what the two pages put around the chip against §13.3's *What differs* and gallery §11.9 condition 8. Record the verdict in a dated section, with verdict rows from 27 and findings from SD-11.
+5. In the same run, since it costs a few more launches: the Avatar page; the `Chip/on-map`, `Chip/selected-on-map` and `Chip/identifier-copy` pages; and the Overview strip. §12.7 does not require them, but they are where RD-9, RD-12 and the strip's new neighbours show on Apple.
+
+**Action.** Not taken: the session had no Mac. The P5-3 row and `docs/legal-checkpoint.md` §5.2 carry it.
+
+#### Carried from the gallery: RD-9, RD-11 and RD-12
+
+- **RD-9.** The Apple app stages the map examples on its copy of the harness's map, so the route turns under Avatar's two and Chip's two in the app, as in the gallery. The web app's map draws no route.
+- **RD-11.** `md-with-avatar` has the plate chip's anatomy, with a person in it. Neither app places it where the plate chip is placed (§13.3).
+- **RD-12.** `identifier-copy`'s "B-4417" puts the gallery's fleet unit number in a vehicle-style identifier. The gallery recommends a relabel outside the fleet genre, and does not take it. If someone takes it, both apps show the new label from the commit that edits `Chip.yaml`, before any baseline is re-recorded. That is SD-9's window again, and §13.8's condition 8 makes that commit the event.
+
+### 13.7 Coverage
+
+| Screen | Where | States opened | Section | Verdict |
+|---|---|---|---|---|
+| Chip page, with `md-with-avatar` | web, a Vite build served by `vite preview`, in Chromium | 1440 / 375 px × light / dark | §13.3 | not a copy |
+| Avatar page | web | 1440 / 375 px × light / dark | §13.4 | not a copy |
+| Overview and Icons | web | 1440 / 375 px × light / dark | §13.2, §13.4 | conditions read; the same shape as before |
+| Chip page and `Chip/md-with-avatar` page | iPhone and Mac | none: read from source (SD-10) | §13.3 | not reviewed |
+| Avatar page, and the other 24 example pages | iPhone and Mac | none: read from source | §13.4 | covered by §12.7's last paragraph |
+| Overview, "Live, not a picture", at ten | iPhone and Mac | none: read from source | §13.4 | covered by §12.7's last paragraph |
+
+The 25 examples themselves are covered in gallery §10 and §11, where they are 428 images.
+
+### 13.8 What this clearance covers, and when it expires
+
+**It covers**, at `5b1663c`:
+- **the web app, every page**, the Avatar and Chip pages with every example they stage among them;
+- **the Apple app, every page but the two SD-10 names**. Its Avatar page, the other 24 example pages and the Overview strip at ten are covered by §12.7's last paragraph. They were read from source, not run.
+
+**Every condition in force was read on 2026-09-26** (§13.2): §10 conditions 1 and 3, §11.8 for the Icons screens, and §12.7's four.
+
+**So the rule 3 precondition is met for the web app, and not for the whole Apple app.** Two Apple screens, the Chip page and the `Chip/md-with-avatar` page, wait for the run SD-10 describes. A release made from `5b1663c` is not cleared until that run reads them.
+
+**It expires on any of these.** Items 4–7 restate §12.7's, with this section's lists, and item 8 is new. §10 conditions 1 and 3, and §11.8 for the Icons screens, stand.
+
+4. **A staged example other than `IconButton/with-badge` and `Chip/md-with-avatar` composes more than one component** in gallery §9.3's sense. `md-with-avatar` is answered for the web in §13.3. For Apple it has fired and stays unanswered until SD-10 is closed. A change to what either example fills is condition 8's.
+5. **The apps stage an example the gallery review does not name.** Gallery §9.8 names 67 examples by id, §10.7 names 12 and §11.8 names 13: all 92 that the apps stage at `5b1663c`.
+6. **The notification composition moves towards the reference's bell**, as §12.7 condition 6 says, the apps' own chrome included.
+7. **Either app puts two different Prism components together outside a spec example's stage, other than as it does at `5b1663c`.** The pairings are §12.7's three, with the Apple strip at ten. Besides §12.7's examples, this fires on an Avatar or a Chip in a toolbar, header, sidebar or panel the app draws. An avatar after round toolbar buttons is the top bar of the traffic console 27220417 (gallery §10.4.1), and a filter chip over a map among round controls is its map region (gallery §11.9 condition 7).
+8. **An example the apps stage changes what it draws**: an element added or removed, or a label, a tone, a material or a glyph binding changed (gallery §9.9 condition 6). The apps show the change from the commit that makes it, before any baseline is re-recorded, so it fires on that commit. It is answered when a dated section of the gallery review reads the change, as condition 5 is, and here as well if the change fills a slot. RD-12's recommended relabel would fire it.
+
+**It does not expire** when a newly implemented component's page appears, as long as a dated section of the gallery review names its examples (§12.7).
+
+**It is not a legal opinion**, for the reasons §10 gives.
+
+The next section's verdict rows start at 27, and its findings at SD-11.
