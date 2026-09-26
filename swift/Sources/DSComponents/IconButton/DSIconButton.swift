@@ -3,16 +3,17 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 2).
+/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 3).
 ///
 ///     DSIconButton("Open settings", glyph: .actionSettings) { openSettings() }
 ///     DSIconButton("Add a site", glyph: .actionAdd, variant: .primary) { add() }
 ///     DSIconButton("Open notifications", glyph: .objectNotification, badge: DSBadge(count: 3, label: "unread")) {}
 ///
 /// It is Button's pill at its shortest: `primary` is the single solid circle of a group — the inverse solid, which turns
-/// white with an ink glyph on vivid and on the scheme's glass — `secondary` a raised puck with a hairline, `ghost` a
-/// hairline ring, `plain` the bare glyph, and `danger` a critical tint with a critical glyph and ring. Every colour is
-/// read against the material the enclosing `DSSurfaceView` publishes.
+/// white with an ink glyph on vivid, stays ink on light glass and white on smoke (ADR-0040 §1), and knocks out on an
+/// inverse or accent surface — `secondary` a raised puck with a hairline, `ghost` a hairline ring, `plain` the bare
+/// glyph, and `danger` a critical tint with a critical glyph and ring. Every colour is read against the material the
+/// enclosing `DSSurfaceView` publishes.
 ///
 /// Behaviour, from the spec:
 ///  - `action` fires once on release inside the hit region; a drag outside cancels (SwiftUI's `Button`). Space and
@@ -28,11 +29,13 @@ import DSTokens
 ///    primary's pressed fill — and adds the selected trait. The role stays a button.
 ///  - A press scales the circle to 0.97 on `motion.spring.snappy` and plays `haptic.press.button`, the one haptic a
 ///    press plays (a group that selects replaces it, as TabBar does). Every variant but danger takes its pressed fill
-///    on every press — primary's, and a selected circle's, one lightness step from the rest fill (ADR-0039) — and
-///    danger the pressed overlay over its tint; under Reduce Motion nothing scales and the fills change over
-///    `motion.duration.base` with `motion.easing.out`, measured by `DSIconButtonReduceMotionTests`.
+///    on every press — primary's, and a selected circle's, one lightness step from the rest fill, knocked out as well
+///    (ADR-0039, ADR-0040 §3.5) — and danger the pressed overlay over its tint; under Reduce Motion nothing scales and
+///    the fills change over `motion.duration.base` with `motion.easing.out`, measured by
+///    `DSIconButtonReduceMotionTests`.
 ///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the circle, never over the hit region.
-///  - On vivid and on the scheme's glass a danger circle paints an opaque `color.bg.page` disc under its tint.
+///  - On vivid, on both glasses, on inverse and on accent a danger circle paints an opaque `color.bg.page` disc under
+///    its tint.
 ///  - `isDisabled` lowers the whole control, badge included, to `opacity.disabled` and takes it out of input and the
 ///    focus order.
 ///  - The focus ring is `color.border.focus` at `border.focus` outside the circle, following `radius.control`; it

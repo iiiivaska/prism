@@ -1,6 +1,6 @@
 name: Button
 layer: primitive
-specVersion: 6
+specVersion: 7
 status: draft
 summary: >-
   A tappable action with one label and an optional leading or trailing icon. Controls in Prism are
@@ -67,24 +67,54 @@ tokens:
       primary:
         default: comp.button.primary.bg.rest
         vivid: color.bg.fill.inverse-media
-      secondary: comp.button.secondary.bg.rest
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+      secondary:
+        page: comp.button.secondary.bg.rest
+        solid: comp.button.secondary.bg.rest
+        raised: comp.button.secondary.bg.rest
+        nested: comp.button.secondary.bg.rest
+        vivid: comp.button.secondary.bg.rest
+        glass: comp.button.secondary.bg.rest
+        glassLight: comp.button.secondary.bg.rest
       danger: comp.button.danger.bg.rest
+    underlay:
+      danger:
+        vivid: color.bg.page
+        glass: color.bg.page
+        glassLight: color.bg.page
+        inverse: color.bg.page
+        accent: color.bg.page
     foreground:
       primary:
         default: comp.button.primary.text
         vivid: color.text.on-inverse-media
-      secondary: comp.button.secondary.text
+        inverse: color.bg.fill.inverse
+        accent: color.bg.fill.accent
+      secondary:
+        default: comp.button.secondary.text
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
       ghost:
         default: comp.button.ghost.text
         vivid: color.text.on-vivid
         glass: color.text.on-glass-fill
+        glassLight: color.text.on-glass-light
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
       danger: comp.button.danger.text
     border:
-      secondary: comp.button.secondary.border
+      secondary:
+        default: comp.button.secondary.border
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
       ghost:
         default: comp.button.ghost.border
         vivid: color.border.on-media
         glass: color.border.on-glass-fill
+        glassLight: color.border.on-glass-fill
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
       danger: comp.button.danger.border
     borderWidth:
       secondary: border.hairline
@@ -105,8 +135,15 @@ tokens:
         primary:
           default: comp.button.primary.bg.pressed
           vivid: color.bg.fill.inverse-media-pressed
-        secondary: comp.button.secondary.bg.pressed
-        ghost: comp.button.ghost.bg.pressed
+          inverse: color.bg.fill.on-inverse-pressed
+          accent: color.bg.fill.on-accent-pressed
+        secondary:
+          default: comp.button.secondary.bg.pressed
+          inverse: color.bg.fill.inverse-pressed
+          accent: color.bg.fill.neutral.subtle
+        ghost:
+          default: comp.button.ghost.bg.pressed
+          inverse: color.bg.fill.inverse-pressed
     hover:
       overlay: color.bg.fill.neutral.subtle
     disabled:
@@ -125,8 +162,18 @@ tokens:
     size: size.icon.md
   spinner:
     color:
-      primary: comp.button.primary.text
-      secondary: comp.button.secondary.text
+      primary:
+        default: comp.button.primary.text
+        vivid: color.text.on-inverse-media
+        inverse: color.bg.fill.inverse
+        accent: color.bg.fill.accent
+      secondary:
+        default: comp.button.secondary.text
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+
+materials:
+  glassLight: "`spinner` keeps its default cells on light glass, where the pill it turns in keeps its own: the primary pill is the default inverse solid and secondary its raised pill, as on the scheme's glass (ADR-0030 §3.1, ADR-0040 §2). A ghost or danger spinner binds no cell and takes Spinner.yaml's arc for the published material."
 
 behavior:
   - Pressing fires `onPress` once on release inside the hit area; a drag outside cancels.
@@ -137,8 +184,10 @@ behavior:
   - "Pressed state scales the pill to 0.97 with comp.button.motion.press and returns on release, and primary, secondary and ghost take their pressed fill in every motion mode; danger keeps its tint. Primary's pressed fill is one lightness step from its rest fill in every scheme (ADR-0039): comp.button.primary.bg.pressed, and on vivid color.bg.fill.inverse-media-pressed under the same ink label. Hover (pointer only) adds the hover overlay."
   - The ghost variant has no fill at rest; it is an outline in comp.button.ghost.border that takes comp.button.ghost.bg.pressed while pressed and the hover overlay on hover.
   - Every outline - secondary, ghost and danger, on every material - is border.hairline wide, as the signed-off direction board draws each of those pills (ADR-0033). The width is the `borderWidth` cell's alone; the contrast an outline owes is carried by its colour (`accessibility.contrast`).
-  - On a vivid surface the primary pill becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media), pressed color.bg.fill.inverse-media-pressed, and a ghost pill outlines in color.border.on-media.
+  - "On a vivid surface the primary pill becomes the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media), pressed color.bg.fill.inverse-media-pressed, and a ghost pill outlines in color.border.on-media. On the scheme's glass and on light glass the primary pill stays the inverse solid of its default cells, ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1), and secondary keeps its raised pill; a ghost pill outlines in color.border.on-glass-fill with color.text.on-glass-fill, or color.text.on-glass-light on light glass."
   - Only one `primary` button may appear in a group; a group of segments never gets a filled track.
+  - "On an inverse or an accent surface, which carry their own foreground, the one solid knocks out (ADR-0040 §3): the primary pill fills with the material's primary foreground, color.text.on-inverse or color.text.on-accent, and its label, icons and spinner take the material's own fill, color.bg.fill.inverse or color.bg.fill.accent. Pressed, it takes one lightness step of its own, color.bg.fill.on-inverse-pressed or color.bg.fill.on-accent-pressed. No other pill draws a ground of its own there: secondary drops its raised fill and is outlined as ghost is, in color.text.on-inverse, or color.text.on-accent-secondary on the tile, around a label in the material's foreground; pressed, both take color.bg.fill.inverse-pressed on inverse, one lightness step of the ground, and color.bg.fill.neutral.subtle on the tile, the control wash of visual-dna §4.5. So the primary pill never vanishes into an inverse ground, and on the dark lit tile it is ink, not a white solid at 2.30:1."
+  - "A danger pill paints its `underlay`, color.bg.page, under its tint on vivid, on the scheme's glass, on light glass, on inverse and on accent, so the pair it carries, color.text.critical on color.bg.tint.critical over the page, is the pair the contrast gate checks (ADR-0030 rule 6, ADR-0040 §3). On every other material there is no underlay cell and the tint composites over the surface itself."
 
 motion:
   press: comp.button.motion.press
@@ -153,9 +202,9 @@ accessibility:
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the pill
   dynamicType: label scales with type.label.*; height grows with it up to the accessibility3 size, then clamps and the label wraps to two lines
-  contrast: every variant's foreground/background pair is in tokens/contrast-pairs.json (primary = on-inverse on inverse, and on-inverse on inverse-pressed while pressed; on vivid on-inverse-media on inverse-media and on inverse-media-pressed; danger = critical text on the critical tint). The ghost outline's colour, comp.button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier belongs to that colour and holds at any stroke width, so it binds nothing about the outline's width, which is border.hairline (ADR-0033)
-  reduceTransparency: not applicable (no glass); on a vivid or glass surface the pill keeps its own tokens
-  reduceMotion: the press scale is replaced by a fill change to the variant's pressed background (comp.button.primary.bg.pressed, or color.bg.fill.inverse-media-pressed on vivid; comp.button.secondary.bg.pressed; comp.button.ghost.bg.pressed; danger takes color.bg.fill.neutral.subtle) over motion.duration.base with motion.easing.out. Every variant's press therefore shows with no scale at all, primary's as one lightness step (ADR-0039)
+  contrast: every variant's foreground/background pair is in tokens/contrast-pairs.json (primary = on-inverse on inverse, and on-inverse on inverse-pressed while pressed; on vivid on-inverse-media on inverse-media and on inverse-media-pressed; knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and on color.bg.fill.on-inverse-pressed, and color.bg.fill.accent on color.text.on-accent and on color.bg.fill.on-accent-pressed, each also a functional pair of the pill against its ground; secondary and ghost there are color.text.on-inverse on color.bg.fill.inverse and on color.bg.fill.inverse-pressed, and color.text.on-accent on color.bg.fill.accent and on color.bg.fill.neutral.subtle over it, with their outline in the same functional tones (ADR-0040 §2); danger = critical text on the critical tint, over the page wherever the underlay is drawn). The ghost outline's colour, comp.button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier belongs to that colour and holds at any stroke width, so it binds nothing about the outline's width, which is border.hairline (ADR-0033)
+  reduceTransparency: not applicable (no glass); on a vivid or glass surface the pill keeps its own tokens, and when a selected glass Surface falls back to inverse the pill takes its inverse cells and the primary pill knocks out (behavior)
+  reduceMotion: the press scale is replaced by a fill change to the variant's pressed background (comp.button.primary.bg.pressed, or color.bg.fill.inverse-media-pressed on vivid, color.bg.fill.on-inverse-pressed on inverse and color.bg.fill.on-accent-pressed on accent; comp.button.secondary.bg.pressed, or color.bg.fill.inverse-pressed on inverse and color.bg.fill.neutral.subtle on accent; comp.button.ghost.bg.pressed, or color.bg.fill.inverse-pressed on inverse; danger takes color.bg.fill.neutral.subtle) over motion.duration.base with motion.easing.out. Every variant's press therefore shows with no scale at all, primary's as one lightness step (ADR-0039)
 
 usage:
   do:
@@ -188,5 +237,5 @@ notes:
     watchos: sizes collapse to lg; no trailing icon; ghost renders as secondary. The watch density gives lg 44 pt.
     macos: default size follows compact density (32 pt); hover state required; uses the system focus ring color when Increase Contrast is on.
     web-desktop: built on React Aria Button; `onPress` not `onClick`; `data-pressed`/`data-hovered` drive the CSS states.
-  design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9; the ghost button's transparent rest is ADR-0029 §3.3; every outline's border.hairline width is the signed-off direction board's (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`), ADR-0033; the primary pill's pressed step is ADR-0039.
-  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0033-control-outlines-are-hairlines.md, docs/adr/0039-the-pressed-solid.md]
+  design: Pill grammar and the inverse-solid active rule come from docs/research/visual-dna.md §1 principles 2 and 9; the ghost button's transparent rest is ADR-0029 §3.3; every outline's border.hairline width is the signed-off direction board's (docs/direction-board, `.btn-secondary`, `.btn-ghost`, `.btn-danger`), ADR-0033; the primary pill's pressed step is ADR-0039; its cells on inverse, accent and light glass, the ink solid on glass and the danger underlay are ADR-0040.
+  references: [docs/adr/0006-spec-contract-and-parity.md, docs/adr/0023-motion-tokens.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0033-control-outlines-are-hairlines.md, docs/adr/0039-the-pressed-solid.md, docs/adr/0040-materials-a-part-keys.md]

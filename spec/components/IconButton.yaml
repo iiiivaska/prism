@@ -1,6 +1,6 @@
 name: IconButton
 layer: primitive
-specVersion: 2
+specVersion: 3
 status: draft
 summary: >-
   A circular action carrying one glyph and no label. It follows Button's pill grammar - a circle is the
@@ -67,19 +67,36 @@ tokens:
       primary:
         default: comp.icon-button.primary.bg.rest
         vivid: color.bg.fill.inverse-media
-        glass: color.bg.fill.inverse-media
-      secondary: comp.icon-button.secondary.bg.rest
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
+      secondary:
+        page: comp.icon-button.secondary.bg.rest
+        solid: comp.icon-button.secondary.bg.rest
+        raised: comp.icon-button.secondary.bg.rest
+        nested: comp.icon-button.secondary.bg.rest
+        vivid: comp.icon-button.secondary.bg.rest
+        glass: comp.icon-button.secondary.bg.rest
+        glassLight: comp.icon-button.secondary.bg.rest
       danger: comp.icon-button.danger.bg.rest
     underlay:
       danger:
         vivid: color.bg.page
         glass: color.bg.page
+        glassLight: color.bg.page
+        inverse: color.bg.page
+        accent: color.bg.page
     border:
-      secondary: comp.icon-button.secondary.border
+      secondary:
+        default: comp.icon-button.secondary.border
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
       ghost:
         default: comp.icon-button.ghost.border
         vivid: color.border.on-media
         glass: color.border.on-glass-fill
+        glassLight: color.border.on-glass-fill
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
       danger: comp.icon-button.danger.border
     borderWidth:
       secondary: border.hairline
@@ -97,17 +114,26 @@ tokens:
         primary:
           default: comp.icon-button.primary.bg.pressed
           vivid: color.bg.fill.inverse-media-pressed
-          glass: color.bg.fill.inverse-media-pressed
-        secondary: comp.icon-button.secondary.bg.pressed
-        ghost: comp.icon-button.ghost.bg.pressed
-        plain: comp.icon-button.ghost.bg.pressed
+          inverse: color.bg.fill.on-inverse-pressed
+          accent: color.bg.fill.on-accent-pressed
+        secondary:
+          default: comp.icon-button.secondary.bg.pressed
+          inverse: color.bg.fill.inverse-pressed
+          accent: color.bg.fill.neutral.subtle
+        ghost:
+          default: comp.icon-button.ghost.bg.pressed
+          inverse: color.bg.fill.inverse-pressed
+        plain:
+          default: comp.icon-button.ghost.bg.pressed
+          inverse: color.bg.fill.inverse-pressed
       overlay:
         danger: color.bg.fill.neutral.subtle
     selected:
       background:
         default: comp.icon-button.primary.bg.rest
         vivid: color.bg.fill.inverse-media
-        glass: color.bg.fill.inverse-media
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
     disabled:
       opacity: opacity.disabled
     focus-visible:
@@ -122,22 +148,33 @@ tokens:
       primary:
         default: comp.icon-button.primary.icon
         vivid: color.text.on-inverse-media
-        glass: color.text.on-inverse-media
-      secondary: comp.icon-button.secondary.icon
+        inverse: color.bg.fill.inverse
+        accent: color.bg.fill.accent
+      secondary:
+        default: comp.icon-button.secondary.icon
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
       ghost:
         default: comp.icon-button.ghost.icon
         vivid: color.text.on-vivid
         glass: color.text.on-glass-fill
+        glassLight: color.text.on-glass-light
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent
       plain:
         default: comp.icon-button.plain.icon
         vivid: color.text.on-vivid
         glass: color.text.on-glass-fill
+        glassLight: color.text.on-glass-light
+        inverse: color.text.on-inverse
+        accent: color.text.on-accent-secondary
       danger: comp.icon-button.danger.icon
     selected:
       color:
         default: comp.icon-button.primary.icon
         vivid: color.text.on-inverse-media
-        glass: color.text.on-inverse-media
+        inverse: color.bg.fill.inverse
+        accent: color.bg.fill.accent
   badge:
     offset: space.1
 
@@ -150,15 +187,16 @@ behavior:
   - "`isSelected` renders the circle as the inverse solid whatever its variant, and a group holds exactly one selected circle - the active tool, the active view, the send button (visual-dna §1 principle 9 and §4.7). A selected circle renders as `primary` renders it in every state. It takes the `selected` cells, which are primary's cell for cell, with no ring and no underlay, and when pressed it takes primary's pressed fill, `pressed.background.primary`, as a pressed primary circle does. It is announced as selected: the selected trait on Apple, `aria-current=\"true\"` on the web. Its role stays `button`, and an unselected circle carries neither."
   - The circle is radius.control on a square box whose side is comp.icon-button.size.sm, .md or .lg; those follow density, so md is 32 pt on desktop, 40 pt on touch and 48 pt under the comfortable density (ADR-0024 §7.1).
   - The glyph is an Icon at size.icon.sm, .md or .lg; a control glyph is the md box, and the sm box belongs to `plain` corner glyphs (visual-dna §1 principle 13).
-  - On a vivid surface, and on the scheme's glass, the primary and selected circles become the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media), pressed color.bg.fill.inverse-media-pressed; a ghost circle outlines in color.border.on-media or color.border.on-glass-fill and its glyph takes that material's foreground.
-  - "`danger` is a critical-tint circle with a critical glyph and a critical outline; on vivid and on the scheme's glass it paints the `underlay` cell, color.bg.page, as an opaque disc under its tint, so the pair the contrast gate checks is the pair that renders (visual-dna §4.11 note P1-9, ADR-0030 §1.8). On every other material there is no underlay cell and the tint composites over the surface itself."
-  - The ghost and plain rings on media (color.border.on-media, color.border.on-glass-fill) are decorative (ADR-0030 §3.2); the glyph is what identifies the control, which is why every IconButton carries one.
+  - "On a vivid surface the primary and selected circles become the white solid (color.bg.fill.inverse-media with color.text.on-inverse-media), pressed color.bg.fill.inverse-media-pressed. On the scheme's glass and on light glass they stay the inverse solid of their default cells, ink on light glass and white on smoke, pressed comp.icon-button.primary.bg.pressed (ADR-0030 §3.1, ADR-0040 §1), and secondary keeps its raised puck. A ghost circle outlines in color.border.on-media on vivid and in color.border.on-glass-fill on both glasses, and the ghost and plain glyphs take that material's own foreground: color.text.on-vivid, color.text.on-glass-fill or color.text.on-glass-light."
+  - "`danger` is a critical-tint circle with a critical glyph and a critical outline; on vivid, on the scheme's glass, on light glass, on inverse and on accent it paints the `underlay` cell, color.bg.page, as an opaque disc under its tint, so the pair the contrast gate checks is the pair that renders (visual-dna §4.11 note P1-9, ADR-0030 §1.8 and rule 6, ADR-0040 §3). On every other material there is no underlay cell and the tint composites over the surface itself."
+  - The ghost rings on media (color.border.on-media, color.border.on-glass-fill, on the scheme's glass and on light glass) are decorative (ADR-0030 §3.2); the glyph is what identifies the control, which is why every IconButton carries one.
   - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the circle; touch never shows a hover state (ADR-0010 rule 2). For `plain`, whose circle is otherwise invisible, the hover overlay and the pressed fill paint that circle at comp.icon-button.size.sm, .md or .lg - never the larger invisible hit region, which would make the wash jump with modality.
   - "Pressed scales the circle to 0.97 on motion.spring.snappy and returns on release (visual-dna §1 principle 9), and every variant but danger also takes its pressed fill, on every press and in every motion mode. Primary's, which a selected circle takes too, is one lightness step from its rest fill in every scheme (ADR-0039): comp.icon-button.primary.bg.pressed, and color.bg.fill.inverse-media-pressed over media, under the same glyph. Secondary takes the nested step, and ghost and plain the neutral wash. Danger, whose tint has no pressed cell, takes the pressed overlay of color.bg.fill.neutral.subtle over it instead, so no variant's press is carried by the scale alone."
   - IconButton plays one haptic per press, haptic.press.button on touch-down. A group that selects, such as TabBar, plays haptic.selection in its place, as Pagination.yaml replaces it.
   - "`isDisabled` lowers opacity to opacity.disabled and removes the control from the focus order; an unavailable action is better explained than disabled."
   - "An optional Badge, passed in the `badge` slot, is anchored space.1 outside the top-trailing corner of the circle, overlapping it - the `badge` part's `offset`, which is the host's because Badge applies no offset of its own; it never changes the hit region, never moves the glyph and is never focusable on its own - its count is read as part of the button's accessibility value, in the words Badge.yaml gives it: the `strings.Badge.count` sentence when the badge carries a `label`, and the locale-formatted count alone when it does not."
   - Buttons of one group share one size and one variant, apart from the single primary or selected circle (visual-dna §11 anti-pattern 24).
+  - "On an inverse or an accent surface, which carry their own foreground, the one solid knocks out (ADR-0040 §3): a primary or selected circle fills with the material's primary foreground, color.text.on-inverse or color.text.on-accent, and its glyph takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent; pressed, it takes one lightness step of its own, color.bg.fill.on-inverse-pressed or color.bg.fill.on-accent-pressed. No other circle draws a ground of its own there: secondary drops its raised puck and rings as ghost does, in color.text.on-inverse, or color.text.on-accent-secondary on the tile, around a glyph in the material's foreground, and plain's glyph is color.text.on-inverse, or color.text.on-accent-secondary on the tile. Pressed on inverse, secondary, ghost and plain take color.bg.fill.inverse-pressed, one lightness step of the ground, where the neutral wash would composite to nothing; on the tile secondary takes color.bg.fill.neutral.subtle, the control wash of visual-dna §4.5, as ghost and plain already do. So a primary or selected circle never vanishes into an inverse ground, and on the dark lit tile it is ink, not a white solid at 2.30:1."
 
 motion:
   press: motion.spring.snappy
@@ -174,9 +212,9 @@ accessibility:
   traits: [button]
   keyboard: Space and Enter activate; the focus ring is color.border.focus at border.focus width outside the circle, following radius.control
   dynamicType: the circle and the glyph box do not scale with Dynamic Type - density is their lever - and the name is spoken rather than drawn, so nothing of it scales; a Tooltip, when Prism ships one, will scale with type.label.md
-  contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and on color.bg.fill.inverse-pressed while pressed; over media color.text.on-inverse-media on color.bg.fill.inverse-media, and on color.bg.fill.inverse-media-pressed while pressed; the ghost ring's colour on a solid ground, comp.icon-button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier is a property of that colour and holds at any stroke width, so it says nothing about how wide the ring is, which is the `borderWidth` cell's alone - the colour color.border.strong and the width border.strong are two tokens that share a name and nothing else; danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, where the pair is checked with the page under it. Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
-  reduceTransparency: not applicable (IconButton draws no material of its own); when the enclosing Surface falls back from glass to raised, the glass cells stop applying and the button renders its default cells
-  reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.primary.bg.pressed for primary and a selected circle, or color.bg.fill.inverse-media-pressed over media, comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, and the pressed overlay of color.bg.fill.neutral.subtle for danger, which has no pressed fill. Every variant therefore shows a press with no scale at all, primary and selected as one lightness step (ADR-0039). Selection crossfades to the inverse solid instead of scaling
+  contrast: "primary and selected are color.text.on-inverse on color.bg.fill.inverse, and on color.bg.fill.inverse-pressed while pressed; over media color.text.on-inverse-media on color.bg.fill.inverse-media, and on color.bg.fill.inverse-media-pressed while pressed; the ghost ring's colour on a solid ground, comp.icon-button.ghost.border, is color.border.strong, a boundary-tier pair (3:1) on page, surface and raised; the tier is a property of that colour and holds at any stroke width, so it says nothing about how wide the ring is, which is the `borderWidth` cell's alone - the colour color.border.strong and the width border.strong are two tokens that share a name and nothing else; danger is color.text.critical on color.bg.tint.critical, which is why the tint gets the color.bg.page underlay over media, on inverse and on accent, where the pair is checked with the page under it. Knocked out on inverse and accent, primary and selected are color.bg.fill.inverse on color.text.on-inverse and on color.bg.fill.on-inverse-pressed, and color.bg.fill.accent on color.text.on-accent and on color.bg.fill.on-accent-pressed, each also a functional pair of the circle against its ground; the other variants' glyphs and rings there are color.text.on-inverse on color.bg.fill.inverse and on color.bg.fill.inverse-pressed, and color.text.on-accent or color.text.on-accent-secondary on color.bg.fill.accent and on color.bg.fill.neutral.subtle over it, all functional (ADR-0040 §2). Every one of those pairs is in tokens/contrast-pairs.json. The secondary hairline is decorative, since the raised fill carries the step, and so are color.border.on-media and color.border.on-glass-fill, which ADR-0030 §3.2 gives no pair: the glyph is what identifies the control on those materials"
+  reduceTransparency: not applicable (IconButton draws no material of its own); when the enclosing Surface falls back from glass to raised, the glass cells stop applying and the button renders its default cells, and when a selected glass Surface falls back to inverse the button takes its inverse cells, a primary or selected circle knocked out (behavior)
+  reduceMotion: the press scale is replaced by the variant's pressed cell over motion.duration.base with motion.easing.out - comp.icon-button.primary.bg.pressed for primary and a selected circle, or color.bg.fill.inverse-media-pressed on vivid, color.bg.fill.on-inverse-pressed on inverse and color.bg.fill.on-accent-pressed on accent, comp.icon-button.secondary.bg.pressed for secondary, comp.icon-button.ghost.bg.pressed for ghost and plain, color.bg.fill.inverse-pressed for all three on inverse and color.bg.fill.neutral.subtle for secondary on accent, and the pressed overlay of color.bg.fill.neutral.subtle for danger, which has no pressed fill. Every variant therefore shows a press with no scale at all, primary and selected as one lightness step (ADR-0039). Selection crossfades to the inverse solid instead of scaling
 
 usage:
   do:
@@ -234,4 +272,4 @@ notes:
     forbids a vivid example from setting `icon` - a ring drawn around a glyph on a gradient - and an
     IconButton's glyph is exactly the element that rule is not about. Example strings are invented
     (ADR-0015 rule 3).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0039-the-pressed-solid.md]
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0023-motion-tokens.md, docs/adr/0024-token-source-conventions.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0039-the-pressed-solid.md, docs/adr/0040-materials-a-part-keys.md]

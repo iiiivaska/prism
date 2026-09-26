@@ -4039,6 +4039,52 @@
       "deprecated": null
     },
     {
+      "path": "color.bg.fill.on-accent-pressed",
+      "id": "sys.color.bg.fill.on-accent-pressed",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [],
+      "css": "--ds-color-bg-fill-on-accent-pressed",
+      "cssVars": [
+        "--ds-color-bg-fill-on-accent-pressed"
+      ],
+      "tailwind": [
+        "bg-ds-fill-on-accent-pressed"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-fill-on-accent-pressed"
+      ],
+      "ts": "color.bg.fill.on-accent-pressed",
+      "swift": "DSColor.bgFillOnAccentPressed",
+      "asset": "color-bg-fill-on-accent-pressed",
+      "description": "the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5)",
+      "deprecated": null
+    },
+    {
+      "path": "color.bg.fill.on-inverse-pressed",
+      "id": "sys.color.bg.fill.on-inverse-pressed",
+      "tier": "sys",
+      "type": "color",
+      "dependsOn": [
+        "colorScheme"
+      ],
+      "css": "--ds-color-bg-fill-on-inverse-pressed",
+      "cssVars": [
+        "--ds-color-bg-fill-on-inverse-pressed"
+      ],
+      "tailwind": [
+        "bg-ds-fill-on-inverse-pressed"
+      ],
+      "tailwindTheme": [
+        "--background-color-ds-fill-on-inverse-pressed"
+      ],
+      "ts": "color.bg.fill.on-inverse-pressed",
+      "swift": "DSColor.bgFillOnInversePressed",
+      "asset": "color-bg-fill-on-inverse-pressed",
+      "description": "the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5)",
+      "deprecated": null
+    },
+    {
       "path": "color.bg.page",
       "id": "sys.color.bg.page",
       "tier": "sys",

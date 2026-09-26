@@ -69,6 +69,10 @@ export interface TokenTable {
   /** the inverse solid while pressed: bg.fill.inverse one step up the neutral ladder (neutral.950 to 850, OKLab L +0.084), under the same on-inverse text, so a primary pill or circle shows its press without the scale (ADR-0023 §8.4, ADR-0039) */
   readonly 'color.bg.fill.inverse-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-inverse-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   readonly 'color.bg.fill.neutral.subtle': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-neutral-subtle'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
+  /** the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5) */
+  readonly 'color.bg.fill.on-accent-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-accent-pressed'; readonly $value: ColorValue };
+  /** the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5) */
+  readonly 'color.bg.fill.on-inverse-pressed': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-fill-on-inverse-pressed'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35% */
   readonly 'color.bg.page': { readonly $type: 'color'; readonly $cssVar: '--ds-color-bg-page'; readonly $axis: 'colorScheme'; readonly $values: { readonly light: ColorValue; readonly dark: ColorValue } };
   /** card: no border, no shadow (optional ambient 5%) */
@@ -726,6 +730,17 @@ export const table: TokenTable = {
     $values: {
       light: { css: 'oklch(0.164 0.0065 271 / 0.06)', cssP3: null, hex: '#0d0e11', alpha: 0.06 },
       dark: { css: 'rgb(255 255 255 / 0.06)', cssP3: null, hex: '#ffffff', alpha: 0.06 },
+    },
+  },
+  'color.bg.fill.on-accent-pressed': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-on-accent-pressed',
+    $value: { css: 'oklch(0.164 0.0065 271 / 0.88)', cssP3: null, hex: '#0d0e11', alpha: 0.88 },
+  },
+  'color.bg.fill.on-inverse-pressed': {
+    $type: 'color', $cssVar: '--ds-color-bg-fill-on-inverse-pressed', $axis: 'colorScheme',
+    $values: {
+      light: { css: 'oklch(0.9157 0.0071 268.5)', cssP3: null, hex: '#e1e3e8', alpha: 1 },
+      dark: { css: 'oklch(0.2478 0.0099 268.3)', cssP3: null, hex: '#1f2126', alpha: 1 },
     },
   },
   'color.bg.page': {

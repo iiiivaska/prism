@@ -16,6 +16,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
     case bgFillInverseMediaPressed = "color-bg-fill-inverse-media-pressed"
     case bgFillInversePressed = "color-bg-fill-inverse-pressed"
     case bgFillNeutralSubtle = "color-bg-fill-neutral-subtle"
+    case bgFillOnAccentPressed = "color-bg-fill-on-accent-pressed"
+    case bgFillOnInversePressed = "color-bg-fill-on-inverse-pressed"
     case bgPage = "color-bg-page"
     case bgSurface = "color-bg-surface"
     case bgSurfaceNested = "color-bg-surface-nested"
@@ -136,6 +138,8 @@ public enum DSColorToken: String, CaseIterable, Hashable, Sendable {
         case .bgFillInverseMediaPressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), watch: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1))
         case .bgFillInversePressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), dark: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), highContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), darkHighContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), watch: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1))
         case .bgFillNeutralSubtle: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
+        case .bgFillOnAccentPressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88))
+        case .bgFillOnInversePressed: DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), watch: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1))
         case .bgPage: DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1))
         case .bgSurface: DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06))
         case .bgSurfaceNested: DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.12), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.12), watch: DSRGBA(.sRGB, 1, 1, 1, 0.12))
@@ -293,6 +297,12 @@ public struct DSColor: Hashable, Sendable {
     public var bgFillInversePressed: Color { DSColorToken.bgFillInversePressed.color(brand) }
 
     public var bgFillNeutralSubtle: Color { DSColorToken.bgFillNeutralSubtle.color(brand) }
+
+    /// the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5)
+    public var bgFillOnAccentPressed: Color { DSColorToken.bgFillOnAccentPressed.color(brand) }
+
+    /// the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5)
+    public var bgFillOnInversePressed: Color { DSColorToken.bgFillOnInversePressed.color(brand) }
 
     /// never flat pure grey; optional warm mesh toward #F3F0EB and blooms at 25-35%
     public var bgPage: Color { DSColorToken.bgPage.color(brand) }

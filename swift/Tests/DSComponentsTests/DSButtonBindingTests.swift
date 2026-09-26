@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Button.yaml` specVersion 6: the binding matrix keyed by variant and published material, the sizes
+/// `spec/components/Button.yaml` specVersion 7: the binding matrix keyed by variant and published material, the sizes
 /// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule, the watch
 /// adaptations, and the name a loading button speaks, which is the app's `strings.Button.loading` (ADR-0032).
 ///
@@ -18,9 +18,9 @@ import DSTokens
 /// integers, the gallery pairs by filename, and each snapshot suite compares a stack to itself.
 ///
 /// What stays hand-written, and why, is marked at each test: a rule the spec states as prose (the hit region, the
-/// Dynamic Type clamp, the watch adaptations), a rule an ADR states where the spec has no cell (the danger underlay),
-/// and the documented deviation from a cell (the primary spinner on vivid).
-@Suite("Button bindings (Button.yaml v6)")
+/// Dynamic Type clamp, the watch adaptations). The danger underlay and the spinner on every material are cells since
+/// Button 7 (ADR-0040), so neither is written here any more.
+@Suite("Button bindings (Button.yaml v7)")
 struct DSButtonBindingTests {
     let spec: DSSpec
     /// Ghost and danger bind no spinner cell of their own, so their spinner is Spinner.yaml's arc.
@@ -51,16 +51,24 @@ struct DSButtonBindingTests {
     /// The axis check is what keeps the loops below honest: a loop over an axis the matrix is not keyed by would
     /// read `default` at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 6)
+        #expect(try spec.specVersion == 7)
         #expect(try spec.propValues("variant") == DSButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSButtonSize.allCases.map(\.rawValue))
         let variants = Set(try spec.propValues("variant"))
-        for property in ["root.background", "root.foreground", "root.border", "root.borderWidth", "root.pressed.background", "spinner.color"] {
+        for property in [
+            "root.background", "root.underlay", "root.foreground", "root.border", "root.borderWidth", "root.pressed.background",
+            "spinner.color",
+        ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
         }
         let materials = Set(Self.materials.map(\.rawValue))
-        for property in ["root.background.primary", "root.foreground.ghost", "root.border.ghost", "root.pressed.background.primary"] {
+        for property in [
+            "root.background.primary", "root.background.secondary", "root.underlay.danger", "root.foreground.primary",
+            "root.foreground.secondary", "root.foreground.ghost", "root.border.secondary", "root.border.ghost",
+            "root.pressed.background.primary", "root.pressed.background.secondary", "root.pressed.background.ghost",
+            "spinner.color.primary", "spinner.color.secondary",
+        ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: materials), "\(property) is keyed by \(keys.sorted())")
         }
@@ -69,7 +77,8 @@ struct DSButtonBindingTests {
     // MARK: - tokens.root
 
     /// `tokens.root.background`: every variant on every published material, out of the spec's own matrix — the
-    /// primary pill's white on vivid (ADR-0030 §3.1) and the ghost's absent cell (ADR-0029 §3.3, rule 9) included.
+    /// primary pill's white on vivid (ADR-0030 §3.1) and its knockout on inverse and accent (ADR-0040 §3), secondary's
+    /// absent cell on those two and the ghost's absent cell (ADR-0029 §3.3, rule 9) included.
     @Test func backgroundCells() throws {
         for material in Self.materials {
             for variant in DSButtonVariant.allCases {
@@ -104,8 +113,9 @@ struct DSButtonBindingTests {
         }
     }
 
-    /// `tokens.root.pressed.background` — primary's material level included, the white pill's pressed step on vivid
-    /// (ADR-0039) — and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion substitute, which
+    /// `tokens.root.pressed.background` — every material level included: the white pill's pressed step on vivid
+    /// (ADR-0039), the knocked-out steps on inverse and accent and the ground's step under secondary and ghost on inverse
+    /// (ADR-0040) — and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion substitute, which
     /// `accessibility.reduceMotion` names in prose.
     @Test func pressedAndHoverCells() throws {
         for material in Self.materials {
@@ -124,35 +134,28 @@ struct DSButtonBindingTests {
         }
     }
 
-    /// A tinted danger pill paints `color.bg.page` under its tint over media (ADR-0030 §6.2), and nowhere else.
-    ///
-    /// Button.yaml v6 binds no `underlay`, so this is the one appearance function with no cell behind it: the rule
-    /// comes from the ADR and the materials are the ones IconButton.yaml keys its own `underlay` by. The missing
-    /// property is asserted, so a version that adds the cell fails here rather than leaving two rules in two places.
-    @Test func dangerPaintsThePageOverMedia() throws {
-        #expect(throws: DSSpecMismatch.self) { try spec.cell("root.underlay") }
+    /// `tokens.root.underlay`: a tinted danger pill paints `color.bg.page` under its tint on vivid, on both glasses, on
+    /// inverse and on accent (ADR-0030 §6.2 and rule 6, ADR-0040 §3), and nowhere else. Button.yaml keys the cell since
+    /// Button 7; before that this rule was written here from the ADR.
+    @Test func underlayCells() throws {
         for material in Self.materials {
-            let media = [DSSurfaceMaterial.vivid, .glass, .glassLight].contains(material)
-            #expect((DSButtonAppearance.underlay(.danger, on: material) == \.color.bgPage) == media, "\(material)")
-            for variant in [DSButtonVariant.primary, .secondary, .ghost] {
-                #expect(DSButtonAppearance.underlay(variant, on: material) == nil, "\(variant) \(material)")
+            for variant in DSButtonVariant.allCases {
+                try spec.binds(DSButtonAppearance.underlay(variant, on: material), at: "root.underlay", variant, material)
             }
         }
+        #expect(DSButtonAppearance.underlay(.danger, on: .page) == nil)
+        #expect(DSButtonAppearance.underlay(.danger, on: .inverse) == \.color.bgPage)
     }
 
-    /// `tokens.spinner.color` for primary and secondary; ghost and danger bind no cell, so their spinner is
-    /// `Spinner.yaml` `tokens.arc.color` for the published material — read out of that spec here, which is what the
-    /// hand-written table of nine materials in this file used to be.
+    /// `tokens.spinner.color` for primary and secondary on every material: the pill's foreground, the knocked-out label
+    /// on inverse and accent included; ghost and danger bind no cell, so their spinner is `Spinner.yaml`
+    /// `tokens.arc.color` for the published material — read out of that spec here.
     @Test func spinnerCells() throws {
         for material in Self.materials {
-            // On vivid the primary cell is `comp.button.primary.text`, the ink of the pill the spinner is not on;
-            // Spinner.yaml says a Button binds its own foreground, which there is `color.text.on-inverse-media`.
-            if material == .vivid {
-                #expect(DSButtonAppearance.spinner(.primary, on: .vivid) == DSButtonAppearance.foreground(.primary, on: .vivid))
-            } else {
-                try spec.binds(DSButtonAppearance.spinner(.primary, on: material), at: "spinner.color", DSButtonVariant.primary)
+            for variant in [DSButtonVariant.primary, .secondary] {
+                try spec.binds(DSButtonAppearance.spinner(variant, on: material), at: "spinner.color", variant, material)
+                #expect(DSButtonAppearance.spinner(variant, on: material) == DSButtonAppearance.foreground(variant, on: material), "\(variant) \(material)")
             }
-            try spec.binds(DSButtonAppearance.spinner(.secondary, on: material), at: "spinner.color", DSButtonVariant.secondary)
             for variant in [DSButtonVariant.ghost, .danger] {
                 #expect(try spec.cell("spinner.color", variant) == nil, "\(variant)")
                 try spinner.binds(DSButtonAppearance.spinner(variant, on: material), at: "arc.color", material)

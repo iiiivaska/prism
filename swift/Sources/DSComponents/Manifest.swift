@@ -86,16 +86,24 @@
 /// media, one lightness step from the rest fill in every scheme, so the press shows under Reduce Motion, where nothing
 /// scales. IconButton's pressed overlay leaves primary and a selected circle and stays on danger. No example is
 /// photographed pressed, so no image moved.
+///
+/// Button 7 and IconButton 3 key `inverse`, `accent` and light glass (ADR-0040). On inverse and accent the one solid
+/// knocks out, the material's own foreground under a label or glyph in the material's fill, pressed
+/// `color.bg.fill.on-inverse-pressed` or `color.bg.fill.on-accent-pressed`; secondary drops its raised ground there and
+/// rings like ghost; and a danger tint paints the page under itself on vivid, both glasses, inverse and accent, the cell
+/// Button gains. IconButton's primary and selected circles leave the white media solid on the scheme's glass for the
+/// inverse solid, ink on light glass and white on smoke (ADR-0030 §3.1), so `IconButton/on-glass-over-map` moved in
+/// the light scheme.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
-        "Button": ["ios": 6, "ipados": 6, "macos": 6, "watchos": 6],
+        "Button": ["ios": 7, "ipados": 7, "macos": 7, "watchos": 7],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
         "Chip": ["ios": 1, "ipados": 1, "macos": 1],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
-        "IconButton": ["ios": 2, "ipados": 2, "macos": 2],
+        "IconButton": ["ios": 3, "ipados": 3, "macos": 3],
         "Surface": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
     ]

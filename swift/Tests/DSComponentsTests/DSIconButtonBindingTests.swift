@@ -57,7 +57,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
     static let labelBytes = [13, 10, 14, 12, 12, 8, 13, 16, 19, 21, 46, 18]
 }
 
-/// `spec/components/IconButton.yaml` specVersion 2: the binding matrix keyed by variant and published material, the
+/// `spec/components/IconButton.yaml` specVersion 3: the binding matrix keyed by variant and published material, the
 /// selected cells, the sizes per density, the badge's offset, the press and select motion, the hit region, the rules
 /// the spec states as prose, the examples as the spec writes them, and the name and value of each one.
 ///
@@ -70,7 +70,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
 /// What the simulator publishes to VoiceOver is measured by `DSIconButtonAccessibilityTreeTests`, what a press draws
 /// under Reduce Motion by `DSIconButtonReduceMotionTests`, and what every example draws by the snapshot matrix, all in
 /// DSSnapshotTests.
-@Suite("IconButton bindings (IconButton.yaml v2)")
+@Suite("IconButton bindings (IconButton.yaml v3)")
 struct DSIconButtonBindingTests {
     let spec: DSSpec
 
@@ -88,7 +88,7 @@ struct DSIconButtonBindingTests {
     }
 
     /// Every material a Surface can publish. A cell keyed by one applies when the enclosing Surface publishes it
-    /// (ADR-0022 §3.1), so every material is asked, light glass included, where IconButton writes no cell.
+    /// (ADR-0022 §3.1), so every material is asked, including those where a matrix falls back to `default`.
     static let materials = DSSurfaceMaterial.allCases
 
     /// The densities the spec lists (`density`), never `.watch`: watchOS is `none`.
@@ -105,7 +105,7 @@ struct DSIconButtonBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default` at
     /// every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 2)
+        #expect(try spec.specVersion == 3)
         #expect(try spec.propValues("variant") == DSIconButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSIconButtonSize.allCases.map(\.rawValue))
         #expect(try propDefault("variant") == DSIconButtonVariant.secondary.rawValue)
@@ -126,9 +126,10 @@ struct DSIconButtonBindingTests {
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
         }
         for property in [
-            "root.background.primary", "root.underlay.danger", "root.border.ghost", "root.pressed.background.primary",
-            "root.selected.background", "icon.color.primary", "icon.color.ghost", "icon.color.plain",
-            "icon.selected.color",
+            "root.background.primary", "root.background.secondary", "root.underlay.danger", "root.border.secondary",
+            "root.border.ghost", "root.pressed.background.primary", "root.pressed.background.secondary",
+            "root.pressed.background.ghost", "root.pressed.background.plain", "root.selected.background",
+            "icon.color.primary", "icon.color.secondary", "icon.color.ghost", "icon.color.plain", "icon.selected.color",
         ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: materials), "\(property) is keyed by \(keys.sorted())")
@@ -184,8 +185,9 @@ struct DSIconButtonBindingTests {
 
     // MARK: - tokens.root
 
-    /// `tokens.root.background`: every variant on every published material — the primary circle's white on vivid and
-    /// glass (ADR-0030 §3.1), and the ghost's and plain's absent cell (ADR-0029 §3.3) included.
+    /// `tokens.root.background`: every variant on every published material — the primary circle's white on vivid
+    /// (ADR-0030 §3.1), its inverse solid on both glasses (ADR-0040 §1) and its knockout on inverse and accent (§3), the
+    /// secondary puck's absent cell on those two, and the ghost's and plain's absent cell (ADR-0029 §3.3) included.
     @Test func backgroundCells() throws {
         for material in Self.materials {
             for variant in DSIconButtonVariant.allCases {
@@ -194,18 +196,23 @@ struct DSIconButtonBindingTests {
         }
         #expect(DSIconButtonAppearance.background(.plain, on: .page) == nil)
         #expect(DSIconButtonAppearance.background(.ghost, on: .vivid) == nil)
+        #expect(DSIconButtonAppearance.background(.secondary, on: .inverse) == nil)
+        // On both glasses the one solid is the circle the page draws: ink on light glass, white on smoke (ADR-0040 §1).
+        for material in [DSSurfaceMaterial.glass, .glassLight] {
+            #expect(DSIconButtonAppearance.background(.primary, on: material) == DSIconButtonAppearance.background(.primary, on: .page), "\(material)")
+            #expect(DSIconButtonAppearance.foreground(.primary, on: material) == DSIconButtonAppearance.foreground(.primary, on: .page), "\(material)")
+        }
     }
 
-    /// `tokens.root.underlay`: the page disc under the danger tint on vivid and on the scheme's glass, and nothing
-    /// anywhere else — not on light glass, where Button's own function adds one and this spec writes no cell.
+    /// `tokens.root.underlay`: the page disc under the danger tint on vivid, on both glasses, on inverse and on accent,
+    /// and nothing on the solid ladder (ADR-0030 rule 6, ADR-0040 §3) — the cell Button.yaml keys the same way.
     @Test func underlayCells() throws {
         for material in Self.materials {
             for variant in DSIconButtonVariant.allCases {
                 try spec.binds(DSIconButtonAppearance.underlay(variant, on: material), at: "root.underlay", variant, material)
             }
+            #expect(DSIconButtonAppearance.underlay(.danger, on: material) == DSButtonAppearance.underlay(.danger, on: material), "\(material)")
         }
-        #expect(DSIconButtonAppearance.underlay(.danger, on: .glassLight) == nil)
-        #expect(DSButtonAppearance.underlay(.danger, on: .glassLight) != nil, "Button's rule differs here; IconButton's spec is the one read")
     }
 
     /// `tokens.root.border` and `tokens.root.borderWidth`: the ring's colour on every published material, and its width,

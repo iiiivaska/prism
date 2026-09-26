@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/IconButton.yaml` (specVersion 2) binds, as pure functions of the variant, the size and
+/// Every value `spec/components/IconButton.yaml` (specVersion 3) binds, as pure functions of the variant, the size and
 /// the material the enclosing Surface publishes, so the binding matrix runs on the host. `DSIconButton` only draws what
 /// these return.
 ///
@@ -10,7 +10,13 @@ import DSTokens
 /// for it (spec/SCHEMA.md, ADR-0022 §3.1): under the glass fallback the Surface publishes `raised`, and the circle takes
 /// its `default` cells with it (`accessibility.reduceTransparency`). A value with no cell takes `default`, and with no
 /// `default` either the property is not set — which is how `ghost` and `plain` have no fill at rest and `primary` and
-/// `plain` no ring (ADR-0029 §3.3).
+/// `plain` no ring (ADR-0029 §3.3), and `secondary` no puck on `inverse` or `accent`.
+///
+/// **The one solid follows the material** (ADR-0030 §3.1, ADR-0040 §1 and §3): white on vivid; the default inverse
+/// solid on the scheme's glass and on light glass, ink on light glass and white on smoke; and knocked out on `inverse`
+/// and `accent`, filled with the material's own foreground under a glyph in the material's fill, pressed one lightness
+/// step of its own. No other circle draws a ground on those two, and every ring and glyph there takes the material's
+/// foreground (ADR-0040 §2).
 ///
 /// **A selected circle is `primary`, cell for cell** (behavior, "`isSelected`"). At rest the fill and the glyph read
 /// the spec's own `selected` cells; pressed, the fill is primary's pressed cell, as the web's
@@ -32,48 +38,70 @@ nonisolated enum DSIconButtonAppearance {
         isSelected ? .primary : variant
     }
 
-    /// Whether a material is one the spec keys its media cells by: vivid and the scheme's glass. Light glass is not
-    /// one of them — IconButton.yaml writes no `glassLight` cell — so a circle on light glass takes its `default`
-    /// cells, and a danger circle there paints no underlay (Button's own `underlay` adds light glass; this spec does
-    /// not).
-    static func isMedia(_ material: DSSurfaceMaterial) -> Bool {
-        material == .vivid || material == .glass
-    }
-
     // MARK: - tokens.root
 
-    /// `tokens.root.background`: primary is the inverse solid, white on vivid and on the scheme's glass (ADR-0030
-    /// §3.1); secondary the raised puck; danger the critical tint; ghost and plain have no cell and no fill.
+    /// `tokens.root.background`: primary is the one solid (`solid(on:)`); secondary the raised puck wherever it draws a
+    /// ground, which is not on inverse or accent; danger the critical tint; ghost and plain have no cell and no fill.
     static func background(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: isMedia(material) ? \.color.bgFillInverseMedia : \.components.iconButton.primaryBgRest
-        case .secondary: \.components.iconButton.secondaryBgRest
-        case .ghost, .plain: nil
-        case .danger: \.components.iconButton.dangerBgRest
+        case .primary:
+            solid(on: material)
+        case .secondary:
+            switch material {
+            case .inverse, .accent: nil
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.secondaryBgRest
+            }
+        case .ghost, .plain:
+            nil
+        case .danger:
+            \.components.iconButton.dangerBgRest
+        }
+    }
+
+    /// The one solid, `tokens.root.background.primary`, which the `selected` cells repeat: white on vivid (ADR-0030
+    /// §3.1), knocked out to the material's own foreground on inverse and accent (ADR-0040 §3), and the default inverse
+    /// solid everywhere else, the scheme's glass and light glass included (ADR-0040 §1).
+    static func solid(on material: DSSurfaceMaterial) -> DSColorPath {
+        switch material {
+        case .vivid: \.color.bgFillInverseMedia
+        case .inverse: \.color.textOnInverse
+        case .accent: \.color.textOnAccent
+        case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.iconButton.primaryBgRest
         }
     }
 
     /// `tokens.root.underlay`: the opaque `color.bg.page` disc a danger circle paints under its translucent tint on
-    /// vivid and on the scheme's glass, so the pair the contrast gate checks — `color.text.critical` on
-    /// `color.bg.tint.critical` over the page — is the pair that renders (behavior, ADR-0030 §1.8). Nothing anywhere
-    /// else: on every other material the tint composites over the surface itself.
+    /// vivid, on the scheme's glass, on light glass, on inverse and on accent, so the pair the contrast gate checks —
+    /// `color.text.critical` on `color.bg.tint.critical` over the page — is the pair that renders (behavior, ADR-0030
+    /// §1.8 and rule 6, ADR-0040 §3.4). Nothing on the solid ladder: there the tint composites over the surface itself.
     static func underlay(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
-        variant == .danger && isMedia(material) ? \.color.bgPage : nil
+        guard variant == .danger else { return nil }
+        switch material {
+        case .vivid, .glass, .glassLight, .inverse, .accent: return \.color.bgPage
+        case .page, .solid, .raised, .nested: return nil
+        }
     }
 
-    /// `tokens.root.border`: the secondary hairline, the ghost ring — which outlines itself in the material's own
-    /// border on vivid and on the scheme's glass — and the critical ring; primary and plain have none.
+    /// `tokens.root.border`: the secondary hairline, the ghost ring — which outlines itself in the material's own border
+    /// on vivid and on both glasses, and in the material's own foreground on inverse and accent, as the secondary ring
+    /// does there (ADR-0040 §2) — and the critical ring; primary and plain have none.
     static func border(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
         case .primary, .plain:
             nil
         case .secondary:
-            \.components.iconButton.secondaryBorder
+            switch material {
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccentSecondary
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.secondaryBorder
+            }
         case .ghost:
             switch material {
             case .vivid: \.color.borderOnMedia
-            case .glass: \.color.borderOnGlassFill
-            default: \.components.iconButton.ghostBorder
+            case .glass, .glassLight: \.color.borderOnGlassFill
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccentSecondary
+            case .page, .solid, .raised, .nested: \.components.iconButton.ghostBorder
             }
         case .danger:
             \.components.iconButton.dangerBorder
@@ -112,16 +140,31 @@ nonisolated enum DSIconButtonAppearance {
 
     /// `tokens.root.pressed.background`: the fill a pressed circle takes in place of its rest fill. Primary's, which a
     /// selected circle takes too, is one lightness step from its rest fill in every scheme (ADR-0039): the inverse
-    /// solid's `comp.icon-button.primary.bg.pressed`, and on vivid and on the scheme's glass
-    /// `color.bg.fill.inverse-media-pressed`, the white circle a step darker under the same ink glyph. Secondary takes
-    /// the nested step; ghost and plain the neutral wash, painted on the circle only; danger has no cell and keeps its
-    /// tint.
+    /// solid's `comp.icon-button.primary.bg.pressed`, on vivid `color.bg.fill.inverse-media-pressed`, the white circle a
+    /// step darker under the same ink glyph, and knocked out `color.bg.fill.on-inverse-pressed` or
+    /// `color.bg.fill.on-accent-pressed` (ADR-0040 §3.5). Secondary takes the nested step; ghost and plain the neutral
+    /// wash, painted on the circle only. On inverse all three take `color.bg.fill.inverse-pressed`, one lightness step of
+    /// the ground, where the wash would composite to nothing, and on accent secondary takes the wash ghost and plain take
+    /// (ADR-0040 §7). Danger has no cell and keeps its tint.
     static func pressedBackground(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: isMedia(material) ? \.color.bgFillInverseMediaPressed : \.components.iconButton.primaryBgPressed
-        case .secondary: \.components.iconButton.secondaryBgPressed
-        case .ghost, .plain: \.components.iconButton.ghostBgPressed
-        case .danger: nil
+        case .primary:
+            switch material {
+            case .vivid: \.color.bgFillInverseMediaPressed
+            case .inverse: \.color.bgFillOnInversePressed
+            case .accent: \.color.bgFillOnAccentPressed
+            case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.iconButton.primaryBgPressed
+            }
+        case .secondary:
+            switch material {
+            case .inverse: \.color.bgFillInversePressed
+            case .accent: \.color.bgFillNeutralSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.secondaryBgPressed
+            }
+        case .ghost, .plain:
+            material == .inverse ? \.color.bgFillInversePressed : \.components.iconButton.ghostBgPressed
+        case .danger:
+            nil
         }
     }
 
@@ -139,10 +182,9 @@ nonisolated enum DSIconButtonAppearance {
         }
     }
 
-    /// `tokens.root.selected.background`: the inverse solid, white on vivid and on the scheme's glass — primary's rest
-    /// fill.
+    /// `tokens.root.selected.background`: the one solid — primary's rest fill.
     static func selectedBackground(on material: DSSurfaceMaterial) -> DSColorPath {
-        isMedia(material) ? \.color.bgFillInverseMedia : \.components.iconButton.primaryBgRest
+        solid(on: material)
     }
 
     /// The fill a circle draws: for a selected circle the `selected` cell at rest and primary's pressed cell while
@@ -176,28 +218,48 @@ nonisolated enum DSIconButtonAppearance {
     }
 
     /// `tokens.icon.color`: the glyph's colour, which the view sets as the circle's foreground so that `DSIcon`'s
-    /// `inherit` tone takes it. On vivid and on the scheme's glass the primary glyph is ink on the white circle, and the
-    /// ghost and plain glyphs take that material's own foreground.
+    /// `inherit` tone takes it. The primary glyph is the one on the solid (`solidGlyph(on:)`). Ghost and plain take the
+    /// material's own foreground off the solid ladder, plain's in the tile's second tone on accent, and secondary takes
+    /// it on inverse and accent, where it draws no puck (ADR-0040 §2).
     static func foreground(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath {
         switch variant {
         case .primary:
-            isMedia(material) ? \.color.textOnInverseMedia : \.components.iconButton.primaryIcon
+            solidGlyph(on: material)
         case .secondary:
-            \.components.iconButton.secondaryIcon
+            switch material {
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccent
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.secondaryIcon
+            }
         case .ghost, .plain:
             switch material {
             case .vivid: \.color.textOnVivid
             case .glass: \.color.textOnGlassFill
-            default: variant == .ghost ? \.components.iconButton.ghostIcon : \.components.iconButton.plainIcon
+            case .glassLight: \.color.textOnGlassLight
+            case .inverse: \.color.textOnInverse
+            case .accent: variant == .ghost ? \.color.textOnAccent : \.color.textOnAccentSecondary
+            case .page, .solid, .raised, .nested: variant == .ghost ? \.components.iconButton.ghostIcon : \.components.iconButton.plainIcon
             }
         case .danger:
             \.components.iconButton.dangerIcon
         }
     }
 
-    /// `tokens.icon.selected.color`: the glyph on the inverse solid — primary's glyph.
+    /// The glyph on the one solid, `tokens.icon.color.primary`, which the `selected` cells repeat: ink on the white
+    /// circle on vivid, the material's own fill on the knocked-out circle on inverse and accent, and primary's glyph
+    /// everywhere else.
+    static func solidGlyph(on material: DSSurfaceMaterial) -> DSColorPath {
+        switch material {
+        case .vivid: \.color.textOnInverseMedia
+        case .inverse: \.color.bgFillInverse
+        case .accent: \.color.bgFillAccent
+        case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.iconButton.primaryIcon
+        }
+    }
+
+    /// `tokens.icon.selected.color`: the glyph on the one solid — primary's glyph.
     static func selectedForeground(on material: DSSurfaceMaterial) -> DSColorPath {
-        isMedia(material) ? \.color.textOnInverseMedia : \.components.iconButton.primaryIcon
+        solidGlyph(on: material)
     }
 
     /// The glyph's colour for a circle, selected or not.

@@ -198,7 +198,7 @@ describe('fixtures', () => {
     expect(result.rows.filter((r) => r.state === 'pending').map((r) => r.spec.name)).toEqual(
       result.rows.filter((r) => r.kind !== null).map((r) => r.spec.name).filter((n) => n !== 'Button'),
     );
-    expect(renderReport(result)).toContain('full v5 **LAG**');
+    expect(renderReport(result)).toContain('full v6 **LAG**');
   });
 
   test('an in-parity manifest is read from both syntaxes at once', () => {
@@ -206,7 +206,7 @@ describe('fixtures', () => {
     const result = runParity({ reader: caseReader(inParity!) });
     const button = result.rows.find((r) => r.spec.name === 'Button');
     expect(button?.state).toBe('parity');
-    expect(button?.cells.map((c) => c.implemented)).toEqual([6, 6, 6, 6, 6, 6]);
+    expect(button?.cells.map((c) => c.implemented)).toEqual([7, 7, 7, 7, 7, 7]);
   });
 });
 

@@ -55,6 +55,9 @@
 //                                `materials.<material>` does not name, where another part keys that material, or on
 //                                any part of a spec whose materials P4-10 settled, MATERIALS_SETTLED (ADR-0040 §6);
 //                                the specs MATERIALS_OWED records pass until they are settled
+//   material/glass-solid         the white media solid of vivid, or what it carries (MEDIA_SOLID), bound under a
+//                                `glass` or `glassLight` key, where the solid is color.bg.fill.inverse (ADR-0030
+//                                §3.1, ADR-0040 §1)
 //
 // Token paths resolve through tools/tokens/api.ts `lookup()`, the same name grammar the rest of the
 // tooling uses; nothing here re-implements resolution.
@@ -85,8 +88,8 @@ import { statesOf, walkBindings } from './bindings.ts';
 import {
   BACKDROPS, BOOLEAN_NAMES_OWED, BOOLEAN_NEGATIONS, BOOLEAN_VERBS, COMPONENT_SCHEMA, COMPONENTS_DIR, compGroup,
   DEFAULT_KEY, GLASS_CHIP, GLASS_CHIP_FALLBACK, GLASS_CHIP_FALLBACK_EXCEPTIONS, GLASS_CHIP_FILTERS, GLASS_CHIP_SETTINGS,
-  HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS,
-  MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, NESTED_GLASS_KEYS, NON_BINDABLE,
+  GLASS_GROUNDS, HAPTICS, ICON_REGISTRY, IMAGE_FIXTURES, LIGHT_GLASS_BACKDROPS, LIGHT_GLASS_MATERIALS, LIGHT_ONLY_VARIANTS,
+  MATERIAL_PUBLISHERS, MATERIALS, MATERIALS_OWED, MATERIALS_SETTLED, MEDIA_SOLID, NESTED_GLASS_KEYS, NON_BINDABLE,
   PATTERN_SCHEMA, PATTERNS_DIR, STATED_MATERIALS, STRINGS, VIVID_SLOT_PAIRS,
 } from './config.ts';
 import { loadSpec, type JsonPath, type SpecDoc } from './load.ts';
@@ -555,6 +558,7 @@ function checkSpec(doc: SpecDoc, spec: Record<string, unknown>, ctx: SpecContext
   checkExampleProps(doc, spec, named, ctx.icons?.ids ?? null, diagnostics);
   checkExamples(doc, spec, diagnostics);
   checkGlassChip(doc, spec, named, diagnostics);
+  checkGlassSolid(doc, spec, diagnostics);
   if (ctx.kind === 'component') {
     checkMaterials(doc, spec, named, ctx.bundle, diagnostics);
   }
@@ -980,6 +984,35 @@ function checkMaterials(doc: SpecDoc, spec: Record<string, unknown>, name: strin
       line: doc.lineOf(typeof stated[material] === 'string' ? ['materials', material] : ['tokens', unnamed[0] ?? '']),
       hint: `give ${list} ${/^[aeiou]/.test(material) ? 'an' : 'a'} \`${material}\` cell, or name each in \`materials.${material}\` with what it draws there: the material's foreground, the knocked-out solid, no ground of its own, or nothing (ADR-0040)`,
     }));
+  }
+}
+
+/**
+ * `material/glass-solid` (ADR-0040 §1): on the scheme's glass, and on light glass, the solid is `color.bg.fill.inverse`
+ * under `color.text.on-inverse`, ink on light glass and white on smoke, as ADR-0030 §3.1 says; the white media solid is
+ * vivid's alone. No cell whose ground is `glass` or `glassLight`, on a part or in a state block, binds MEDIA_SOLID. A
+ * cell is read by its ground, so a backdrop keyed under `glass` is held too, and a prop value is never taken for one.
+ */
+function checkGlassSolid(doc: SpecDoc, spec: Record<string, unknown>, diagnostics: Diagnostic[]): void {
+  const tokens = spec['tokens'];
+  if (!isRecord(tokens)) return;
+  const states = statesOf(spec);
+  for (const [part, body] of Object.entries(tokens)) {
+    if (!isRecord(body)) continue;
+    const properties = Object.entries(body).flatMap(([key, value]): { at: JsonPath; value: unknown }[] =>
+      states.has(key) && isRecord(value)
+        ? Object.entries(value).map(([property, cell]) => ({ at: ['tokens', part, key, property], value: cell }))
+        : [{ at: ['tokens', part, key], value }]);
+    for (const { at, value } of properties) {
+      for (const cell of matrixCells(value)) {
+        if (cell.ground === null || !GLASS_GROUNDS.includes(cell.ground) || !MEDIA_SOLID.includes(cell.path)) continue;
+        const where = [...at, ...cell.keys];
+        diagnostics.push(error('material/glass-solid', `\`${where.join('.')}\` binds ${cell.path} on ${cell.ground === 'glass' ? "the scheme's glass" : 'light glass'}`, {
+          file: doc.path, line: doc.lineOf(where),
+          hint: "delete the cell, so the part takes its default there: on glass the solid is color.bg.fill.inverse under color.text.on-inverse, ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1), and the white media solid is vivid's",
+        }));
+      }
+    }
   }
 }
 

@@ -41,6 +41,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .standard).bgFillInverseMediaPressed, Color("prism/color-bg-fill-inverse-media-pressed", bundle: DSTokensBundle.bundle), "prism: color.bgFillInverseMediaPressed")
         check(DSColor(brand: .prism, transparency: .standard).bgFillInversePressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism: color.bgFillInversePressed")
         check(DSColor(brand: .prism, transparency: .standard).bgFillNeutralSubtle, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: color.bgFillNeutralSubtle")
+        check(DSColor(brand: .prism, transparency: .standard).bgFillOnAccentPressed, Color("prism/color-bg-fill-on-accent-pressed", bundle: DSTokensBundle.bundle), "prism: color.bgFillOnAccentPressed")
+        check(DSColor(brand: .prism, transparency: .standard).bgFillOnInversePressed, Color("prism/color-bg-fill-on-inverse-pressed", bundle: DSTokensBundle.bundle), "prism: color.bgFillOnInversePressed")
         check(DSColor(brand: .prism, transparency: .standard).bgPage, Color("prism/color-bg-page", bundle: DSTokensBundle.bundle), "prism: color.bgPage")
         check(DSColor(brand: .prism, transparency: .standard).bgSurface, Color("prism/color-bg-surface", bundle: DSTokensBundle.bundle), "prism: color.bgSurface")
         check(DSColor(brand: .prism, transparency: .standard).bgSurfaceNested, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism: color.bgSurfaceNested")
@@ -75,11 +77,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .standard).chartSeries1, Color("prism/color-chart-series-1", bundle: DSTokensBundle.bundle), "prism: color.chartSeries1")
         check(DSColor(brand: .prism, transparency: .standard).chartSeries2, Color("prism/color-chart-series-2", bundle: DSTokensBundle.bundle), "prism: color.chartSeries2")
         check(DSColor(brand: .prism, transparency: .standard).chartSeries3, Color("prism/color-chart-series-3", bundle: DSTokensBundle.bundle), "prism: color.chartSeries3")
-        check(DSColor(brand: .prism, transparency: .standard).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism: color.chartSeries4")
-        check(DSColor(brand: .prism, transparency: .standard).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism: color.chartSeries5")
     }
 
     private func prismColorsPart2() {
+        check(DSColor(brand: .prism, transparency: .standard).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism: color.chartSeries4")
+        check(DSColor(brand: .prism, transparency: .standard).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism: color.chartSeries5")
         check(DSColor(brand: .prism, transparency: .standard).chartSeries6, Color("prism/color-chart-series-6", bundle: DSTokensBundle.bundle), "prism: color.chartSeries6")
         check(DSColor(brand: .prism, transparency: .standard).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism: color.chartTarget")
         check(DSColor(brand: .prism, transparency: .standard).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism: color.edgeHighlight")
@@ -126,12 +128,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .standard).textPrimary, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism: color.textPrimary")
         check(DSColor(brand: .prism, transparency: .standard).textSecondary, Color("prism/color-text-secondary", bundle: DSTokensBundle.bundle), "prism: color.textSecondary")
         check(DSColor(brand: .prism, transparency: .standard).textSuccess, Color("prism/color-text-success", bundle: DSTokensBundle.bundle), "prism: color.textSuccess")
-        check(DSColor(brand: .prism, transparency: .standard).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism: color.textTertiary")
-        check(DSColor(brand: .prism, transparency: .standard).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism: color.textWarning")
     }
 
     private func prismColorsPart3() {
         let t = DSTokenSet(DSTokenContext(brand: .prism))
+        check(DSColor(brand: .prism, transparency: .standard).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism: color.textTertiary")
+        check(DSColor(brand: .prism, transparency: .standard).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism: color.textWarning")
         check(t.material.glassCell, Color("prism/material-glass-cell", bundle: DSTokensBundle.bundle), "prism: material.glassCell")
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism: material.glassChip")
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism: material.glassDarkChip")
@@ -178,12 +180,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerBgRest")
         check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerBorder")
         check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism: components.iconButton.dangerIcon")
-        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBgPressed")
-        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBorder")
     }
 
     private func prismColorsPart4() {
         let t = DSTokenSet(DSTokenContext(brand: .prism))
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostBorder")
         check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.ghostIcon")
         check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism: components.iconButton.plainIcon")
         check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism: components.iconButton.primaryBgPressed")
@@ -245,6 +247,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .reduced).bgFillInverseMediaPressed, Color("prism/color-bg-fill-inverse-media-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgFillInverseMediaPressed")
         check(DSColor(brand: .prism, transparency: .reduced).bgFillInversePressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgFillInversePressed")
         check(DSColor(brand: .prism, transparency: .reduced).bgFillNeutralSubtle, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgFillNeutralSubtle")
+        check(DSColor(brand: .prism, transparency: .reduced).bgFillOnAccentPressed, Color("prism/color-bg-fill-on-accent-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgFillOnAccentPressed")
+        check(DSColor(brand: .prism, transparency: .reduced).bgFillOnInversePressed, Color("prism/color-bg-fill-on-inverse-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgFillOnInversePressed")
         check(DSColor(brand: .prism, transparency: .reduced).bgPage, Color("prism/color-bg-page", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgPage")
         check(DSColor(brand: .prism, transparency: .reduced).bgSurface, Color("prism/color-bg-surface", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgSurface")
         check(DSColor(brand: .prism, transparency: .reduced).bgSurfaceNested, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.bgSurfaceNested")
@@ -279,11 +283,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .reduced).chartSeries1, Color("prism/color-chart-series-1", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries1")
         check(DSColor(brand: .prism, transparency: .reduced).chartSeries2, Color("prism/color-chart-series-2", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries2")
         check(DSColor(brand: .prism, transparency: .reduced).chartSeries3, Color("prism/color-chart-series-3", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries3")
-        check(DSColor(brand: .prism, transparency: .reduced).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries4")
-        check(DSColor(brand: .prism, transparency: .reduced).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries5")
     }
 
     private func prismColorsPart6() {
+        check(DSColor(brand: .prism, transparency: .reduced).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries4")
+        check(DSColor(brand: .prism, transparency: .reduced).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries5")
         check(DSColor(brand: .prism, transparency: .reduced).chartSeries6, Color("prism/color-chart-series-6", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartSeries6")
         check(DSColor(brand: .prism, transparency: .reduced).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.chartTarget")
         check(DSColor(brand: .prism, transparency: .reduced).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.edgeHighlight")
@@ -330,12 +334,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prism, transparency: .reduced).textPrimary, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textPrimary")
         check(DSColor(brand: .prism, transparency: .reduced).textSecondary, Color("prism/color-text-secondary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textSecondary")
         check(DSColor(brand: .prism, transparency: .reduced).textSuccess, Color("prism/color-text-success", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textSuccess")
-        check(DSColor(brand: .prism, transparency: .reduced).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textTertiary")
-        check(DSColor(brand: .prism, transparency: .reduced).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textWarning")
     }
 
     private func prismColorsPart7() {
         let t = DSTokenSet(DSTokenContext(brand: .prism, transparency: .reduced))
+        check(DSColor(brand: .prism, transparency: .reduced).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textTertiary")
+        check(DSColor(brand: .prism, transparency: .reduced).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism transparency=reduced: color.textWarning")
         check(t.material.glassCell, Color("prism/material-glass-cell", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassCell")
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassChip")
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism transparency=reduced: material.glassDarkChip")
@@ -382,12 +386,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerBgRest")
         check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerBorder")
         check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.dangerIcon")
-        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBgPressed")
-        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBorder")
     }
 
     private func prismColorsPart8() {
         let t = DSTokenSet(DSTokenContext(brand: .prism, transparency: .reduced))
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostBorder")
         check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.ghostIcon")
         check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.plainIcon")
         check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism transparency=reduced: components.iconButton.primaryBgPressed")
@@ -1530,6 +1534,10 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.bgFillInversePressed.assetName(.prism), "prism/color-bg-fill-inverse-pressed", "prism: color-bg-fill-inverse-pressed asset name")
         check(DSColorToken.bgFillNeutralSubtle.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06)), "prism: color-bg-fill-neutral-subtle")
         check(DSColorToken.bgFillNeutralSubtle.assetName(.prism), "prism/color-bg-fill-neutral-subtle", "prism: color-bg-fill-neutral-subtle asset name")
+        check(DSColorToken.bgFillOnAccentPressed.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88)), "prism: color-bg-fill-on-accent-pressed")
+        check(DSColorToken.bgFillOnAccentPressed.assetName(.prism), "prism/color-bg-fill-on-accent-pressed", "prism: color-bg-fill-on-accent-pressed asset name")
+        check(DSColorToken.bgFillOnInversePressed.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), watch: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1)), "prism: color-bg-fill-on-inverse-pressed")
+        check(DSColorToken.bgFillOnInversePressed.assetName(.prism), "prism/color-bg-fill-on-inverse-pressed", "prism: color-bg-fill-on-inverse-pressed asset name")
         check(DSColorToken.bgPage.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1)), "prism: color-bg-page")
         check(DSColorToken.bgPage.assetName(.prism), "prism/color-bg-page", "prism: color-bg-page asset name")
         check(DSColorToken.bgSurface.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06)), "prism: color-bg-surface")
@@ -1550,13 +1558,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.bgTintSuccess.assetName(.prism), "prism/color-bg-tint-success", "prism: color-bg-tint-success asset name")
         check(DSColorToken.bgTintWarning.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), highContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1)), "prism: color-bg-tint-warning")
         check(DSColorToken.bgTintWarning.assetName(.prism), "prism/color-bg-tint-warning", "prism: color-bg-tint-warning asset name")
+    }
+
+    private func prismCatalogPart2() {
         check(DSColorToken.borderBoundary.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.36), highContrast: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.36), watch: DSRGBA(.sRGB, 1, 1, 1, 0.36)), "prism: color-border-boundary")
         check(DSColorToken.borderBoundary.assetName(.prism), "prism/color-border-boundary", "prism: color-border-boundary asset name")
         check(DSColorToken.borderFocus.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1)), "prism: color-border-focus")
         check(DSColorToken.borderFocus.assetName(.prism), "prism/color-border-focus", "prism: color-border-focus asset name")
-    }
-
-    private func prismCatalogPart2() {
         check(DSColorToken.borderHairline.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.08), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.3), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), watch: DSRGBA(.sRGB, 1, 1, 1, 0.08)), "prism: color-border-hairline")
         check(DSColorToken.borderHairline.assetName(.prism), "prism/color-border-hairline", "prism: color-border-hairline asset name")
         check(DSColorToken.borderOnGlassFill.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4)), "prism: color-border-on-glass-fill")
@@ -1601,13 +1609,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.chartSeries2.assetName(.prism), "prism/color-chart-series-2", "prism: color-chart-series-2 asset name")
         check(DSColorToken.chartSeries3.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1)), "prism: color-chart-series-3")
         check(DSColorToken.chartSeries3.assetName(.prism), "prism/color-chart-series-3", "prism: color-chart-series-3 asset name")
+    }
+
+    private func prismCatalogPart3() {
         check(DSColorToken.chartSeries4.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), dark: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), highContrast: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), darkHighContrast: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), watch: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1)), "prism: color-chart-series-4")
         check(DSColorToken.chartSeries4.assetName(.prism), "prism/color-chart-series-4", "prism: color-chart-series-4 asset name")
         check(DSColorToken.chartSeries5.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), dark: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), highContrast: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), darkHighContrast: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), watch: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1)), "prism: color-chart-series-5")
         check(DSColorToken.chartSeries5.assetName(.prism), "prism/color-chart-series-5", "prism: color-chart-series-5 asset name")
-    }
-
-    private func prismCatalogPart3() {
         check(DSColorToken.chartSeries6.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), dark: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), highContrast: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), darkHighContrast: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), watch: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1)), "prism: color-chart-series-6")
         check(DSColorToken.chartSeries6.assetName(.prism), "prism/color-chart-series-6", "prism: color-chart-series-6 asset name")
         check(DSColorToken.chartTarget.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), dark: DSRGBA(.sRGB, 1, 1, 1, 0.6), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.75), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.85), watch: DSRGBA(.sRGB, 1, 1, 1, 0.6)), "prism: color-chart-target")
@@ -1652,13 +1660,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.mapRouteCasing.assetName(.prism), "prism/color-map-route-casing", "prism: color-map-route-casing asset name")
         check(DSColorToken.mapWater.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16)), "prism: color-map-water")
         check(DSColorToken.mapWater.assetName(.prism), "prism/color-map-water", "prism: color-map-water asset name")
+    }
+
+    private func prismCatalogPart4() {
         check(DSColorToken.textAccent.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.5694, 0.2904, 0.1309, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.39, 0.1976, 0.0856, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1)), "prism: color-text-accent")
         check(DSColorToken.textAccent.assetName(.prism), "prism/color-text-accent", "prism: color-text-accent asset name")
         check(DSColorToken.textCritical.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), dark: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), highContrast: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), darkHighContrast: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), watch: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1)), "prism: color-text-critical")
         check(DSColorToken.textCritical.assetName(.prism), "prism/color-text-critical", "prism: color-text-critical asset name")
-    }
-
-    private func prismCatalogPart4() {
         check(DSColorToken.textDimmed.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.42), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.42)), "prism: color-text-dimmed")
         check(DSColorToken.textDimmed.assetName(.prism), "prism/color-text-dimmed", "prism: color-text-dimmed asset name")
         check(DSColorToken.textInfo.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), dark: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), highContrast: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), darkHighContrast: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), watch: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1)), "prism: color-text-info")
@@ -1703,13 +1711,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.textSecondary.assetName(.prism), "prism/color-text-secondary", "prism: color-text-secondary asset name")
         check(DSColorToken.textSuccess.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), highContrast: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1)), "prism: color-text-success")
         check(DSColorToken.textSuccess.assetName(.prism), "prism/color-text-success", "prism: color-text-success asset name")
+    }
+
+    private func prismCatalogPart5() {
         check(DSColorToken.textTertiary.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.55), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.7), watch: DSRGBA(.sRGB, 1, 1, 1, 0.55)), "prism: color-text-tertiary")
         check(DSColorToken.textTertiary.assetName(.prism), "prism/color-text-tertiary", "prism: color-text-tertiary asset name")
         check(DSColorToken.textWarning.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), highContrast: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1)), "prism: color-text-warning")
         check(DSColorToken.textWarning.assetName(.prism), "prism/color-text-warning", "prism: color-text-warning asset name")
-    }
-
-    private func prismCatalogPart5() {
         check(DSColorToken.materialGlassCell.appearances(.prism), DSColorAppearances(any: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35)), "prism: material-glass-cell")
         check(DSColorToken.materialGlassCell.assetName(.prism), "prism/material-glass-cell", "prism: material-glass-cell asset name")
         check(DSColorToken.materialGlassChip.appearances(.prism), DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.25), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35)), "prism: material-glass-chip")
@@ -1755,6 +1763,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .standard).bgFillInverseMediaPressed, Color("prism/color-bg-fill-inverse-media-pressed", bundle: DSTokensBundle.bundle), "prism-native: color.bgFillInverseMediaPressed")
         check(DSColor(brand: .prismNative, transparency: .standard).bgFillInversePressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native: color.bgFillInversePressed")
         check(DSColor(brand: .prismNative, transparency: .standard).bgFillNeutralSubtle, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: color.bgFillNeutralSubtle")
+        check(DSColor(brand: .prismNative, transparency: .standard).bgFillOnAccentPressed, Color("prism/color-bg-fill-on-accent-pressed", bundle: DSTokensBundle.bundle), "prism-native: color.bgFillOnAccentPressed")
+        check(DSColor(brand: .prismNative, transparency: .standard).bgFillOnInversePressed, Color("prism/color-bg-fill-on-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native: color.bgFillOnInversePressed")
         check(DSColor(brand: .prismNative, transparency: .standard).bgPage, Color("prism/color-bg-page", bundle: DSTokensBundle.bundle), "prism-native: color.bgPage")
         check(DSColor(brand: .prismNative, transparency: .standard).bgSurface, Color("prism/color-bg-surface", bundle: DSTokensBundle.bundle), "prism-native: color.bgSurface")
         check(DSColor(brand: .prismNative, transparency: .standard).bgSurfaceNested, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native: color.bgSurfaceNested")
@@ -1789,11 +1799,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .standard).chartSeries1, Color("prism/color-chart-series-1", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries1")
         check(DSColor(brand: .prismNative, transparency: .standard).chartSeries2, Color("prism/color-chart-series-2", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries2")
         check(DSColor(brand: .prismNative, transparency: .standard).chartSeries3, Color("prism/color-chart-series-3", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries3")
-        check(DSColor(brand: .prismNative, transparency: .standard).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries4")
-        check(DSColor(brand: .prismNative, transparency: .standard).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries5")
     }
 
     private func prismNativeColorsPart2() {
+        check(DSColor(brand: .prismNative, transparency: .standard).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries4")
+        check(DSColor(brand: .prismNative, transparency: .standard).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries5")
         check(DSColor(brand: .prismNative, transparency: .standard).chartSeries6, Color("prism/color-chart-series-6", bundle: DSTokensBundle.bundle), "prism-native: color.chartSeries6")
         check(DSColor(brand: .prismNative, transparency: .standard).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism-native: color.chartTarget")
         check(DSColor(brand: .prismNative, transparency: .standard).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism-native: color.edgeHighlight")
@@ -1840,12 +1850,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .standard).textPrimary, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native: color.textPrimary")
         check(DSColor(brand: .prismNative, transparency: .standard).textSecondary, Color("prism/color-text-secondary", bundle: DSTokensBundle.bundle), "prism-native: color.textSecondary")
         check(DSColor(brand: .prismNative, transparency: .standard).textSuccess, Color("prism/color-text-success", bundle: DSTokensBundle.bundle), "prism-native: color.textSuccess")
-        check(DSColor(brand: .prismNative, transparency: .standard).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism-native: color.textTertiary")
-        check(DSColor(brand: .prismNative, transparency: .standard).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism-native: color.textWarning")
     }
 
     private func prismNativeColorsPart3() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative))
+        check(DSColor(brand: .prismNative, transparency: .standard).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism-native: color.textTertiary")
+        check(DSColor(brand: .prismNative, transparency: .standard).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism-native: color.textWarning")
         check(t.material.glassCell, Color("prism/material-glass-cell", bundle: DSTokensBundle.bundle), "prism-native: material.glassCell")
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism-native: material.glassChip")
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism-native: material.glassDarkChip")
@@ -1892,12 +1902,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerBgRest")
         check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerBorder")
         check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.dangerIcon")
-        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBgPressed")
-        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBorder")
     }
 
     private func prismNativeColorsPart4() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative))
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostBorder")
         check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.ghostIcon")
         check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.plainIcon")
         check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native: components.iconButton.primaryBgPressed")
@@ -1959,6 +1969,8 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .reduced).bgFillInverseMediaPressed, Color("prism/color-bg-fill-inverse-media-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgFillInverseMediaPressed")
         check(DSColor(brand: .prismNative, transparency: .reduced).bgFillInversePressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgFillInversePressed")
         check(DSColor(brand: .prismNative, transparency: .reduced).bgFillNeutralSubtle, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgFillNeutralSubtle")
+        check(DSColor(brand: .prismNative, transparency: .reduced).bgFillOnAccentPressed, Color("prism/color-bg-fill-on-accent-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgFillOnAccentPressed")
+        check(DSColor(brand: .prismNative, transparency: .reduced).bgFillOnInversePressed, Color("prism/color-bg-fill-on-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgFillOnInversePressed")
         check(DSColor(brand: .prismNative, transparency: .reduced).bgPage, Color("prism/color-bg-page", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgPage")
         check(DSColor(brand: .prismNative, transparency: .reduced).bgSurface, Color("prism/color-bg-surface", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgSurface")
         check(DSColor(brand: .prismNative, transparency: .reduced).bgSurfaceNested, Color("prism/color-bg-surface-nested", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.bgSurfaceNested")
@@ -1993,11 +2005,11 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries1, Color("prism/color-chart-series-1", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries1")
         check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries2, Color("prism/color-chart-series-2", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries2")
         check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries3, Color("prism/color-chart-series-3", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries3")
-        check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries4")
-        check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries5")
     }
 
     private func prismNativeColorsPart6() {
+        check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries4, Color("prism/color-chart-series-4", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries4")
+        check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries5, Color("prism/color-chart-series-5", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries5")
         check(DSColor(brand: .prismNative, transparency: .reduced).chartSeries6, Color("prism/color-chart-series-6", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartSeries6")
         check(DSColor(brand: .prismNative, transparency: .reduced).chartTarget, Color("prism/color-chart-target", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.chartTarget")
         check(DSColor(brand: .prismNative, transparency: .reduced).edgeHighlight, Color("prism/color-edge-highlight", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.edgeHighlight")
@@ -2044,12 +2056,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColor(brand: .prismNative, transparency: .reduced).textPrimary, Color("prism/color-text-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textPrimary")
         check(DSColor(brand: .prismNative, transparency: .reduced).textSecondary, Color("prism/color-text-secondary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textSecondary")
         check(DSColor(brand: .prismNative, transparency: .reduced).textSuccess, Color("prism/color-text-success", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textSuccess")
-        check(DSColor(brand: .prismNative, transparency: .reduced).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textTertiary")
-        check(DSColor(brand: .prismNative, transparency: .reduced).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textWarning")
     }
 
     private func prismNativeColorsPart7() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative, transparency: .reduced))
+        check(DSColor(brand: .prismNative, transparency: .reduced).textTertiary, Color("prism/color-text-tertiary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textTertiary")
+        check(DSColor(brand: .prismNative, transparency: .reduced).textWarning, Color("prism/color-text-warning", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: color.textWarning")
         check(t.material.glassCell, Color("prism/material-glass-cell", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassCell")
         check(t.material.glassChip, Color("prism/material-glass-chip", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassChip")
         check(t.material.glassDarkChip, Color("prism/material-glass-dark-chip", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: material.glassDarkChip")
@@ -2096,12 +2108,12 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(t.components.iconButton.dangerBgRest, Color("prism/color-bg-tint-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerBgRest")
         check(t.components.iconButton.dangerBorder, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerBorder")
         check(t.components.iconButton.dangerIcon, Color("prism/color-text-critical", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.dangerIcon")
-        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBgPressed")
-        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBorder")
     }
 
     private func prismNativeColorsPart8() {
         let t = DSTokenSet(DSTokenContext(brand: .prismNative, transparency: .reduced))
+        check(t.components.iconButton.ghostBgPressed, Color("prism/color-bg-fill-neutral-subtle", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBgPressed")
+        check(t.components.iconButton.ghostBorder, Color("prism/color-border-strong", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostBorder")
         check(t.components.iconButton.ghostIcon, Color("prism/color-icon-primary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.ghostIcon")
         check(t.components.iconButton.plainIcon, Color("prism/color-icon-secondary", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.plainIcon")
         check(t.components.iconButton.primaryBgPressed, Color("prism/color-bg-fill-inverse-pressed", bundle: DSTokensBundle.bundle), "prism-native transparency=reduced: components.iconButton.primaryBgPressed")
@@ -3244,6 +3256,10 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.bgFillInversePressed.assetName(.prismNative), "prism/color-bg-fill-inverse-pressed", "prism-native: color-bg-fill-inverse-pressed asset name")
         check(DSColorToken.bgFillNeutralSubtle.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.06), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06)), "prism-native: color-bg-fill-neutral-subtle")
         check(DSColorToken.bgFillNeutralSubtle.assetName(.prismNative), "prism/color-bg-fill-neutral-subtle", "prism-native: color-bg-fill-neutral-subtle asset name")
+        check(DSColorToken.bgFillOnAccentPressed.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.88)), "prism-native: color-bg-fill-on-accent-pressed")
+        check(DSColorToken.bgFillOnAccentPressed.assetName(.prismNative), "prism/color-bg-fill-on-accent-pressed", "prism-native: color-bg-fill-on-accent-pressed asset name")
+        check(DSColorToken.bgFillOnInversePressed.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), dark: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), highContrast: DSRGBA(.displayP3, 0.8837, 0.8899, 0.9079, 1), darkHighContrast: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1), watch: DSRGBA(.displayP3, 0.123, 0.1292, 0.1472, 1)), "prism-native: color-bg-fill-on-inverse-pressed")
+        check(DSColorToken.bgFillOnInversePressed.assetName(.prismNative), "prism/color-bg-fill-on-inverse-pressed", "prism-native: color-bg-fill-on-inverse-pressed asset name")
         check(DSColorToken.bgPage.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), dark: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), highContrast: DSRGBA(.displayP3, 0.9458, 0.9488, 0.9595, 1), darkHighContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), watch: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1)), "prism-native: color-bg-page")
         check(DSColorToken.bgPage.assetName(.prismNative), "prism/color-bg-page", "prism-native: color-bg-page asset name")
         check(DSColorToken.bgSurface.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 1, 1, 1, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.06), highContrast: DSRGBA(.displayP3, 1, 1, 1, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.06), watch: DSRGBA(.sRGB, 1, 1, 1, 0.06)), "prism-native: color-bg-surface")
@@ -3264,13 +3280,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.bgTintSuccess.assetName(.prismNative), "prism/color-bg-tint-success", "prism-native: color-bg-tint-success asset name")
         check(DSColorToken.bgTintWarning.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), highContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.12), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 0.1)), "prism-native: color-bg-tint-warning")
         check(DSColorToken.bgTintWarning.assetName(.prismNative), "prism/color-bg-tint-warning", "prism-native: color-bg-tint-warning asset name")
+    }
+
+    private func prismNativeCatalogPart2() {
         check(DSColorToken.borderBoundary.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.36), highContrast: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.36), watch: DSRGBA(.sRGB, 1, 1, 1, 0.36)), "prism-native: color-border-boundary")
         check(DSColorToken.borderBoundary.assetName(.prismNative), "prism/color-border-boundary", "prism-native: color-border-boundary asset name")
         check(DSColorToken.borderFocus.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), dark: DSRGBA(.displayP3, 1, 1, 1, 1), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 1), darkHighContrast: DSRGBA(.displayP3, 1, 1, 1, 1), watch: DSRGBA(.displayP3, 1, 1, 1, 1)), "prism-native: color-border-focus")
         check(DSColorToken.borderFocus.assetName(.prismNative), "prism/color-border-focus", "prism-native: color-border-focus asset name")
-    }
-
-    private func prismNativeCatalogPart2() {
         check(DSColorToken.borderHairline.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.08), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.3), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), watch: DSRGBA(.sRGB, 1, 1, 1, 0.08)), "prism-native: color-border-hairline")
         check(DSColorToken.borderHairline.assetName(.prismNative), "prism/color-border-hairline", "prism-native: color-border-hairline asset name")
         check(DSColorToken.borderOnGlassFill.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.45), dark: DSRGBA(.sRGB, 1, 1, 1, 0.4), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.4), watch: DSRGBA(.sRGB, 1, 1, 1, 0.4)), "prism-native: color-border-on-glass-fill")
@@ -3315,13 +3331,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.chartSeries2.assetName(.prismNative), "prism/color-chart-series-2", "prism-native: color-chart-series-2 asset name")
         check(DSColorToken.chartSeries3.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 1), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 1)), "prism-native: color-chart-series-3")
         check(DSColorToken.chartSeries3.assetName(.prismNative), "prism/color-chart-series-3", "prism-native: color-chart-series-3 asset name")
+    }
+
+    private func prismNativeCatalogPart3() {
         check(DSColorToken.chartSeries4.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), dark: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), highContrast: DSRGBA(.displayP3, 0.2719, 0.5526, 0.5028, 1), darkHighContrast: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1), watch: DSRGBA(.displayP3, 0.4716, 0.7748, 0.7115, 1)), "prism-native: color-chart-series-4")
         check(DSColorToken.chartSeries4.assetName(.prismNative), "prism/color-chart-series-4", "prism-native: color-chart-series-4 asset name")
         check(DSColorToken.chartSeries5.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), dark: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), highContrast: DSRGBA(.displayP3, 0.6076, 0.3287, 0.6227, 1), darkHighContrast: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1), watch: DSRGBA(.displayP3, 0.7902, 0.5578, 0.8001, 1)), "prism-native: color-chart-series-5")
         check(DSColorToken.chartSeries5.assetName(.prismNative), "prism/color-chart-series-5", "prism-native: color-chart-series-5 asset name")
-    }
-
-    private func prismNativeCatalogPart3() {
         check(DSColorToken.chartSeries6.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), dark: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), highContrast: DSRGBA(.displayP3, 0.4403, 0.477, 0.1943, 1), darkHighContrast: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1), watch: DSRGBA(.displayP3, 0.836, 0.7639, 0.5147, 1)), "prism-native: color-chart-series-6")
         check(DSColorToken.chartSeries6.assetName(.prismNative), "prism/color-chart-series-6", "prism-native: color-chart-series-6 asset name")
         check(DSColorToken.chartTarget.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.6), dark: DSRGBA(.sRGB, 1, 1, 1, 0.6), highContrast: DSRGBA(.displayP3, 0.0517, 0.0548, 0.0656, 0.75), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.85), watch: DSRGBA(.sRGB, 1, 1, 1, 0.6)), "prism-native: color-chart-target")
@@ -3366,13 +3382,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.mapRouteCasing.assetName(.prismNative), "prism/color-map-route-casing", "prism-native: color-map-route-casing asset name")
         check(DSColorToken.mapWater.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), dark: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), highContrast: DSRGBA(.displayP3, 0.3305, 0.4202, 0.7784, 0.16), darkHighContrast: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16), watch: DSRGBA(.displayP3, 0.439, 0.5148, 0.8531, 0.16)), "prism-native: color-map-water")
         check(DSColorToken.mapWater.assetName(.prismNative), "prism/color-map-water", "prism-native: color-map-water asset name")
+    }
+
+    private func prismNativeCatalogPart4() {
         check(DSColorToken.textAccent.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.5694, 0.2904, 0.1309, 1), dark: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), highContrast: DSRGBA(.displayP3, 0.39, 0.1976, 0.0856, 1), darkHighContrast: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1), watch: DSRGBA(.displayP3, 0.9011, 0.5979, 0.3306, 1)), "prism-native: color-text-accent")
         check(DSColorToken.textAccent.assetName(.prismNative), "prism/color-text-accent", "prism-native: color-text-accent asset name")
         check(DSColorToken.textCritical.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), dark: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), highContrast: DSRGBA(.displayP3, 0.6881, 0.1989, 0.1705, 1), darkHighContrast: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1), watch: DSRGBA(.displayP3, 0.9263, 0.3989, 0.3608, 1)), "prism-native: color-text-critical")
         check(DSColorToken.textCritical.assetName(.prismNative), "prism/color-text-critical", "prism-native: color-text-critical asset name")
-    }
-
-    private func prismNativeCatalogPart4() {
         check(DSColorToken.textDimmed.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.4977, 0.5131, 0.5566, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.42), highContrast: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.64), watch: DSRGBA(.sRGB, 1, 1, 1, 0.42)), "prism-native: color-text-dimmed")
         check(DSColorToken.textDimmed.assetName(.prismNative), "prism/color-text-dimmed", "prism-native: color-text-dimmed asset name")
         check(DSColorToken.textInfo.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), dark: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), highContrast: DSRGBA(.displayP3, 0.2644, 0.3538, 0.7425, 1), darkHighContrast: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1), watch: DSRGBA(.displayP3, 0.4979, 0.5735, 0.915, 1)), "prism-native: color-text-info")
@@ -3417,13 +3433,13 @@ private func checkSpring(_ token: DSSpringToken, _ samples: [(time: Double, valu
         check(DSColorToken.textSecondary.assetName(.prismNative), "prism/color-text-secondary", "prism-native: color-text-secondary asset name")
         check(DSColorToken.textSuccess.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), dark: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), highContrast: DSRGBA(.displayP3, 0.218, 0.4521, 0.2209, 1), darkHighContrast: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1), watch: DSRGBA(.displayP3, 0.478, 0.7864, 0.4567, 1)), "prism-native: color-text-success")
         check(DSColorToken.textSuccess.assetName(.prismNative), "prism/color-text-success", "prism-native: color-text-success asset name")
+    }
+
+    private func prismNativeCatalogPart5() {
         check(DSColorToken.textTertiary.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.3636, 0.3759, 0.4049, 1), dark: DSRGBA(.sRGB, 1, 1, 1, 0.55), highContrast: DSRGBA(.displayP3, 0.2539, 0.2662, 0.2953, 1), darkHighContrast: DSRGBA(.sRGB, 1, 1, 1, 0.7), watch: DSRGBA(.sRGB, 1, 1, 1, 0.55)), "prism-native: color-text-tertiary")
         check(DSColorToken.textTertiary.assetName(.prismNative), "prism/color-text-tertiary", "prism-native: color-text-tertiary asset name")
         check(DSColorToken.textWarning.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), dark: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), highContrast: DSRGBA(.displayP3, 0.5317, 0.3659, 0.1137, 1), darkHighContrast: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1), watch: DSRGBA(.displayP3, 0.9241, 0.7314, 0.337, 1)), "prism-native: color-text-warning")
         check(DSColorToken.textWarning.assetName(.prismNative), "prism/color-text-warning", "prism-native: color-text-warning asset name")
-    }
-
-    private func prismNativeCatalogPart5() {
         check(DSColorToken.materialGlassCell.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.displayP3, 0.0393, 0.0438, 0.0549, 0.35), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35)), "prism-native: material-glass-cell")
         check(DSColorToken.materialGlassCell.assetName(.prismNative), "prism/material-glass-cell", "prism-native: material-glass-cell asset name")
         check(DSColorToken.materialGlassChip.appearances(.prismNative), DSColorAppearances(any: DSRGBA(.sRGB, 1, 1, 1, 0.25), dark: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), highContrast: DSRGBA(.sRGB, 1, 1, 1, 0.25), darkHighContrast: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35), watch: DSRGBA(.displayP3, 0.0685, 0.0733, 0.0849, 0.35)), "prism-native: material-glass-chip")

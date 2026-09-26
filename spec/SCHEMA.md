@@ -161,7 +161,7 @@ materials:
   inverse: "`track` draws nothing on inverse: the material has one foreground, and a track in it would be the fill's colour. The fill and the thumb carry the value."
 ```
 
-`spec:validate` (`material/uneven`) fails a spec where one colour-bearing part keys a material and another neither keys it nor is named, and, for the specs whose materials are settled, any colour-bearing part that is neither. A part is held as a whole: a colour cell in one of its state blocks makes it colour-bearing, and a cell keyed by the material in any of its properties or states keys it. The interaction layers, the hover and pressed washes, the focus ring and a field's state edges, are keyed by no material (ADR-0040 §4), so a part that draws only those is named in `materials`.
+`spec:validate` (`material/uneven`) fails a spec where one colour-bearing part keys a material and another neither keys it nor is named, and, for the specs whose materials are settled, any colour-bearing part that is neither. A part is held as a whole: a colour cell in one of its state blocks makes it colour-bearing, and a cell keyed by the material in any of its properties or states keys it. The interaction layers, the hover and pressed washes, the focus ring and a field's state edges, are keyed by no material (ADR-0040 §4), so a part that draws only those is named in `materials`. `material/glass-solid` fails the white media solid, its pressed step or what it carries (`color.bg.fill.inverse-media`, `color.bg.fill.inverse-media-pressed`, `color.text.on-inverse-media`) under a `glass` or `glassLight` key: on either glass the solid is `color.bg.fill.inverse`, and the white solid is vivid's (ADR-0040 §1).
 
 ## Behavior
 

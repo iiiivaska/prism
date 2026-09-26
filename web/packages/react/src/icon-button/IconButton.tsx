@@ -1,13 +1,14 @@
 /**
- * `IconButton` (spec/components/IconButton.yaml, specVersion 2): a circular action carrying one glyph and
+ * `IconButton` (spec/components/IconButton.yaml, specVersion 3): a circular action carrying one glyph and
  * no label, on React Aria Components' `Button`, the element Button is built on.
  *
  * - React Aria owns the behavior (behavior 1): `onPress` fires once on release inside the element, a drag
  *   outside cancels, Space and Enter activate, and the states reach the stylesheet as `data-hovered`,
  *   `data-pressed`, `data-focus-visible` and `data-disabled` (`notes.platform.web-desktop`).
  * - The published material of the enclosing Surface is written as `data-ds-surface`, so the material cells
- *   (the white solid on vivid and glass, the ghost ring on media, the danger underlay) apply to what the
- *   Surface renders, the glass fallback included (ADR-0022 §3.1, `accessibility.reduceTransparency`).
+ *   (the white solid on vivid, the knocked-out solid on inverse and accent, the rings in each material's
+ *   own tone, the danger underlay) apply to what the Surface renders, the glass fallback included
+ *   (ADR-0022 §3.1, ADR-0040, `accessibility.reduceTransparency`).
  * - The circle is a square of `root.size` at `radius.control`, which follows density and never modality or
  *   Dynamic Type; the hit region is the larger of the circle and `size.hit`, drawn invisibly around it
  *   (behaviors 2 and 7, IconButton.css).

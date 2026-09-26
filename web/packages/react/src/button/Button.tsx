@@ -1,13 +1,14 @@
 /**
- * `Button` (spec/components/Button.yaml, specVersion 6): one action, one label, an optional leading or
+ * `Button` (spec/components/Button.yaml, specVersion 7): one action, one label, an optional leading or
  * trailing icon, on React Aria Components' `Button`.
  *
  * - React Aria owns the behavior (Button.yaml behavior 1): `onPress` fires once on release inside the
  *   element, a drag outside cancels, Space and Enter activate, and the states reach the stylesheet as
  *   `data-hovered`, `data-pressed`, `data-focus-visible`, `data-disabled` and `data-pending`.
  * - The published material of the enclosing Surface is written as `data-ds-surface`, so the material
- *   cells of Button.yaml (the inverse-media primary on vivid, the ghost outline on vivid and glass)
- *   apply to what the Surface renders, the glass fallback included (ADR-0022 §3.1).
+ *   cells of Button.yaml (the inverse-media primary on vivid, the knocked-out primary on inverse and
+ *   accent, the outlines in each material's own tone, the danger underlay) apply to what the Surface
+ *   renders, the glass fallback included (ADR-0022 §3.1, ADR-0040).
  * - `isLoading` is React Aria's pending state: the control keeps its focus and its width, presses and
  *   hover stop, the label is hidden and a Spinner takes its place, and the accessibility label becomes
  *   the app's `strings.Button.loading` template filled with `label`, "Saving, loading" under the

@@ -4,16 +4,18 @@ import DSIcons
 import DSTokens
 
 /// Button: a tappable action with one label and an optional leading or trailing icon
-/// (`spec/components/Button.yaml`, specVersion 6).
+/// (`spec/components/Button.yaml`, specVersion 7).
 ///
 ///     DSButton("Continue") { save() }
 ///     DSButton("Details", variant: .secondary, trailingIcon: .navOpen) { openDetails() }
 ///     DSButton("Saving", isLoading: true) {}
 ///
 /// Controls in Prism are pills: `primary` is the single solid pill of a group — the inverse solid, which turns white
-/// with an ink label on a vivid surface — `secondary` a raised pill, `ghost` an outline with no fill at rest, and
-/// `danger` a critical tint with critical text. Every colour is read against the material the enclosing
-/// `DSSurfaceView` publishes, so a ghost pill inside a vivid or glass card outlines itself by itself.
+/// with an ink label on a vivid surface and knocks out on an inverse or accent one — `secondary` a raised pill,
+/// `ghost` an outline with no fill at rest, and `danger` a critical tint with critical text over the page wherever it
+/// sits on media, inverse or accent. Every colour is read against the material the enclosing `DSSurfaceView`
+/// publishes, so a ghost pill inside a vivid or glass card outlines itself by itself, and a primary pill inside a
+/// selected glass card under the fallback, which publishes inverse, stays visible (ADR-0040).
 ///
 /// Behaviour, from the spec:
 ///  - `action` fires once on release inside the hit region; a drag outside cancels (SwiftUI's `Button`). Space and
@@ -21,9 +23,10 @@ import DSTokens
 ///  - The hit region is the larger of the pill and `size.hit` on each axis (28 pt under pointer, 44 pt under touch);
 ///    it reaches past the pill invisibly and the pill never grows with modality.
 ///  - A press scales the pill to 0.97 on `comp.button.motion.press` and plays `haptic.press.button`; the variant's
-///    pressed fill applies while pressed, primary's one lightness step from its rest fill (ADR-0039). Under Reduce
-///    Motion nothing scales: the press shows as the pressed fill over `motion.duration.base` with `motion.easing.out`
-///    (danger: `color.bg.fill.neutral.subtle` over its tint), measured by `DSButtonReduceMotionTests`.
+///    pressed fill applies while pressed, primary's one lightness step from its rest fill, knocked out as well
+///    (ADR-0039, ADR-0040 §3.5). Under Reduce Motion nothing scales: the press shows as the pressed fill over
+///    `motion.duration.base` with `motion.easing.out` (danger: `color.bg.fill.neutral.subtle` over its tint), measured
+///    by `DSButtonReduceMotionTests`.
 ///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill.
 ///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width and ignores presses; the
 ///    button keeps its place in the focus order and is named by the app's `strings.Button.loading` template filled

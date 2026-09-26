@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * Button (spec/components/Button.yaml, specVersion 6).
+ * Button (spec/components/Button.yaml, specVersion 7).
  *
  * - Button.css binds what Button.yaml binds: every variant on every material the matrices key, the rest,
  *   pressed and hover fills, the outline's colour and width, sizes, label typography, icons, the spinner,
@@ -22,7 +22,7 @@ import { describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
 import { Theme, type StringsTable } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
-import { Button, Surface, buttonSizes, buttonVariants, defaultStrings, type ButtonVariant } from "../src/index.ts";
+import { Button, Surface, buttonSizes, buttonVariants, defaultStrings, surfaceMaterials, type ButtonVariant } from "../src/index.ts";
 import { fillTemplate } from "../src/strings.ts";
 import { Cascade, declarationsOf } from "./cascade.ts";
 import { cell, cssVariable, loadSpec, propValues, type Binding } from "./spec.ts";
@@ -35,8 +35,8 @@ const noop = (): void => undefined;
 
 const bound = (path: string | undefined): string | undefined => (path === undefined ? undefined : `var(${cssVariable(path)})`);
 
-/** The materials Button.yaml keys its cells by, and one material with no cell of its own. */
-const materials = ["solid", "vivid", "glass", "raised"] as const;
+/** Every material a Surface publishes: Button.yaml keys each of them in some cell (ADR-0040), and falls back to `default`. */
+const materials = surfaceMaterials;
 
 function on(variant: ButtonVariant, material: string, extra: Record<string, string> = {}): Parameters<Cascade["value"]>[0] {
   return { classes: ["ds-button"], attributes: { "data-ds-variant": variant, "data-ds-size": "md", "data-ds-surface": material, ...extra } };
@@ -56,8 +56,8 @@ function nameOf(out: string): string | undefined {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Button.yaml specVersion 6", () => {
-    expect(spec.specVersion).toBe(6);
+  it("is Button.yaml specVersion 7", () => {
+    expect(spec.specVersion).toBe(7);
     expect([...buttonVariants]).toEqual(propValues(spec, "variant"));
     expect([...buttonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -92,13 +92,18 @@ describe("Button.css binds what Button.yaml binds", () => {
     const pressedCells = (root["pressed"] as Record<string, Binding> | undefined)?.["background"];
     for (const colorScheme of ["light", "dark"] as const) {
       for (const contrast of ["standard", "more"] as const) {
-        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string }>>;
+        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string; readonly alpha: number }>>;
+        // A colour is its hex and its alpha: the knocked-out pressed step on the lit tile is the tile's ink at 88 %.
+        const colour = (token: string | undefined): string | undefined => {
+          const value = resolved[token ?? ""];
+          return value === undefined ? undefined : `${value.hex}/${String(value.alpha)}`;
+        };
         for (const material of materials) {
-          const rest = cell(root["background"], "primary", material) ?? "";
-          const pressed = cell(pressedCells, "primary", material) ?? "";
-          const context = `${colorScheme}, contrast ${contrast}, on ${material}: ${pressed} against ${rest}`;
-          expect(resolved[pressed]?.hex, context).toBeDefined();
-          expect(resolved[pressed]?.hex, context).not.toBe(resolved[rest]?.hex);
+          const rest = cell(root["background"], "primary", material);
+          const pressed = cell(pressedCells, "primary", material);
+          const context = `${colorScheme}, contrast ${contrast}, on ${material}: ${pressed ?? "no cell"} against ${rest ?? "no cell"}`;
+          expect(colour(pressed), context).toBeDefined();
+          expect(colour(pressed), context).not.toBe(colour(rest));
         }
       }
     }
@@ -148,10 +153,14 @@ describe("Button.css binds what Button.yaml binds", () => {
     expect(bound(cell(spec.tokens["trailingIcon"]?.["size"]))).toBe(icons["block-size"]);
     expect(cascade.rules.some((rule) => rule.selectors.includes('.ds-button > [data-ds-slot="button-trailing-icon"]'))).toBe(true);
     for (const variant of ["primary", "secondary"] as const) {
-      const spinner = declarationsOf(cascade.rules, `.ds-button[data-ds-variant="${variant}"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"]`);
-      expect(spinner["color"], variant).toBe(bound(cell(spec.tokens["spinner"]?.["color"], variant)));
-      // The bound spinner color is the variant's foreground on the default material.
-      expect(cell(spec.tokens["spinner"]?.["color"], variant)).toBe(cell(root["foreground"], variant, "solid"));
+      const base = declarationsOf(cascade.rules, `.ds-button[data-ds-variant="${variant}"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"]`);
+      for (const material of materials) {
+        const keyed = declarationsOf(cascade.rules, `.ds-button[data-ds-variant="${variant}"][data-ds-surface="${material}"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"]`);
+        const spinner = cell(spec.tokens["spinner"]?.["color"], variant, material);
+        expect(keyed["color"] ?? base["color"], `${variant} on ${material}`).toBe(bound(spinner));
+        // The spinner turns in the colour of the label it replaces, knocked out on inverse and accent too.
+        expect(spinner, `${variant} on ${material}`).toBe(cell(root["foreground"], variant, material));
+      }
     }
   });
 
@@ -162,12 +171,13 @@ describe("Button.css binds what Button.yaml binds", () => {
     expect(declarationsOf(cascade.rules, ".ds-button[data-focus-visible]")["outline"]).toBe(`${bound(cell(focus["ringWidth"]))} solid ${bound(cell(focus["ring"]))}`);
   });
 
-  it("the danger tint paints the page under itself over media (ADR-0030 §6.2)", () => {
-    for (const material of ["vivid", "glass", "glassLight"]) {
-      expect(cascade.value(on("danger", material), "--ds--button-under"), material).toBe("var(--ds-color-bg-page)");
-    }
-    for (const material of ["solid", "raised"]) {
-      expect(cascade.value(on("danger", material), "--ds--button-under"), material).toBe("transparent");
+  it("root.underlay: the danger tint paints the page under itself off the solid ladder (ADR-0030 §6.2, ADR-0040 §3)", () => {
+    const underlay = root["underlay"] as Record<string, Binding> | undefined;
+    expect(Object.keys((underlay?.["danger"] ?? {}) as Record<string, Binding>)).toEqual(["vivid", "glass", "glassLight", "inverse", "accent"]);
+    for (const variant of variants) {
+      for (const material of materials) {
+        expect(cascade.value(on(variant, material), "--ds--button-under"), `${variant} on ${material}`).toBe(bound(cell(underlay, variant, material)) ?? "transparent");
+      }
     }
   });
 

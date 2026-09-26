@@ -1,0 +1,6 @@
+{
+  "description": "The white media solid, its pressed step and its foreground bound under `glass` and `glassLight`: on a part, in a state block, and under a backdrop keyed below `glass`. The same tokens on vivid, and the inverse solid on light glass, pass.",
+  "expect": [
+    { "code": "material/glass-solid", "file": "spec/components/Sample.yaml" }
+  ]
+}

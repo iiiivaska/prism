@@ -1,5 +1,5 @@
 /*
- * IconButton (spec/components/IconButton.yaml, specVersion 2). Compiled into styles.css by
+ * IconButton (spec/components/IconButton.yaml, specVersion 3). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React IconButton writes data-ds-variant (always the caller's variant), data-ds-size, data-ds-surface
@@ -12,7 +12,7 @@
  * read.
  *
  * The circle paints, bottom to top, Button's order: the underlay (color.bg.page under a danger tint over
- * media, the `underlay` cell), the fill, the pressed overlay, the hover overlay, then the ring drawn inside
+ * media, inverse and accent, the `underlay` cell), the fill, the pressed overlay, the hover overlay, then the ring drawn inside
  * the circle as an inset shadow; the glyph above them, and the badge above everything. The focus ring is an
  * outline outside the circle, around the circle alone.
  * Custom properties named --ds--icon-button-* are this component's own (ARCHITECTURE §8).
@@ -144,7 +144,7 @@
 
   /*
    * root.borderWidth is border.hairline for every outlined variant (ADR-0033). It has no material level, so the
-   * vivid and glass rules below change the ring's colour only.
+   * material rules below change the ring's colour only.
    */
 
   .ds-icon-button[data-ds-variant="primary"] {
@@ -152,10 +152,24 @@
     --ds--icon-button-foreground: var(--ds-icon-button-primary-icon);
   }
 
-  /* Behavior 10: on vivid and on the scheme's glass the one solid is the white inverse-media circle. */
-  .ds-icon-button[data-ds-variant="primary"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+  /*
+   * Behavior 9: on vivid the one solid is the white inverse-media circle. On the scheme's glass and on light glass it
+   * keeps the rule above, the inverse solid: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1).
+   */
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="vivid"] {
     --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
     --ds--icon-button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  /* Behavior 18: on inverse and accent the one solid knocks out, the material's foreground under a glyph in its fill. */
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="inverse"] {
+    --ds--icon-button-fill: var(--ds-color-text-on-inverse);
+    --ds--icon-button-foreground: var(--ds-color-bg-fill-inverse);
+  }
+
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="accent"] {
+    --ds--icon-button-fill: var(--ds-color-text-on-accent);
+    --ds--icon-button-foreground: var(--ds-color-bg-fill-accent);
   }
 
   .ds-icon-button[data-ds-variant="secondary"] {
@@ -163,6 +177,19 @@
     --ds--icon-button-foreground: var(--ds-icon-button-secondary-icon);
     --ds--icon-button-border: var(--ds-icon-button-secondary-border);
     --ds--icon-button-border-width: var(--ds-border-hairline);
+  }
+
+  /* Behavior 18: on inverse and accent the puck draws no ground of its own and rings as ghost does (ADR-0040 §2, §3). */
+  .ds-icon-button[data-ds-variant="secondary"][data-ds-surface="inverse"] {
+    --ds--icon-button-fill: transparent;
+    --ds--icon-button-foreground: var(--ds-color-text-on-inverse);
+    --ds--icon-button-border: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-icon-button[data-ds-variant="secondary"][data-ds-surface="accent"] {
+    --ds--icon-button-fill: transparent;
+    --ds--icon-button-foreground: var(--ds-color-text-on-accent);
+    --ds--icon-button-border: var(--ds-color-text-on-accent-secondary);
   }
 
   /* The ghost is a hairline ring with no fill at rest. */
@@ -182,6 +209,21 @@
     --ds--icon-button-border: var(--ds-color-border-on-glass-fill);
   }
 
+  .ds-icon-button[data-ds-variant="ghost"][data-ds-surface="glassLight"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-glass-light);
+    --ds--icon-button-border: var(--ds-color-border-on-glass-fill);
+  }
+
+  .ds-icon-button[data-ds-variant="ghost"][data-ds-surface="inverse"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-inverse);
+    --ds--icon-button-border: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-icon-button[data-ds-variant="ghost"][data-ds-surface="accent"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-accent);
+    --ds--icon-button-border: var(--ds-color-text-on-accent-secondary);
+  }
+
   /* Behavior 3: the bare glyph, with no fill and no ring. */
   .ds-icon-button[data-ds-variant="plain"] {
     --ds--icon-button-foreground: var(--ds-icon-button-plain-icon);
@@ -195,6 +237,19 @@
     --ds--icon-button-foreground: var(--ds-color-text-on-glass-fill);
   }
 
+  .ds-icon-button[data-ds-variant="plain"][data-ds-surface="glassLight"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-glass-light);
+  }
+
+  .ds-icon-button[data-ds-variant="plain"][data-ds-surface="inverse"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-inverse);
+  }
+
+  /* Plain's glyph is a secondary tone, so on the lit tile it is the tile's second tone (ADR-0030 §3.4). */
+  .ds-icon-button[data-ds-variant="plain"][data-ds-surface="accent"] {
+    --ds--icon-button-foreground: var(--ds-color-text-on-accent-secondary);
+  }
+
   .ds-icon-button[data-ds-variant="danger"] {
     --ds--icon-button-fill: var(--ds-icon-button-danger-bg-rest);
     --ds--icon-button-foreground: var(--ds-icon-button-danger-icon);
@@ -203,11 +258,11 @@
   }
 
   /*
-   * Behavior 11, the `underlay` cell: on vivid and on the scheme's glass a danger tint paints color.bg.page under
-   * itself, so the pair the contrast gate checks is the pair that renders. The cell names those two materials
-   * only; light glass keeps no underlay (Button's own rule adds one there, and this spec does not).
+   * Behavior 10, the `underlay` cell: on vivid, on both glasses, on inverse and on accent a danger tint paints
+   * color.bg.page under itself, so the pair the contrast gate checks is the pair that renders (ADR-0030 rule 6,
+   * ADR-0040 §3). On the solid ladder the tint composites over the surface itself.
    */
-  .ds-icon-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+  .ds-icon-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"], [data-ds-surface="glassLight"], [data-ds-surface="inverse"], [data-ds-surface="accent"]) {
     --ds--icon-button-under: var(--ds-color-bg-page);
   }
 
@@ -229,14 +284,23 @@
 
   /*
    * Primary's pressed fill is one lightness step from its rest fill in every scheme (ADR-0039), so the press shows
-   * without the scale: the inverse solid's step, and over media the white circle one step darker.
+   * without the scale: the inverse solid's step, on vivid the white circle one step darker, and knocked out on inverse
+   * and accent a step of its own (ADR-0040 §3.5).
    */
   .ds-icon-button[data-ds-variant="primary"][data-pressed] {
     --ds--icon-button-fill: var(--ds-icon-button-primary-bg-pressed);
   }
 
-  .ds-icon-button[data-ds-variant="primary"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"])[data-pressed] {
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="vivid"][data-pressed] {
     --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
+  }
+
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="inverse"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-on-inverse-pressed);
+  }
+
+  .ds-icon-button[data-ds-variant="primary"][data-ds-surface="accent"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-on-accent-pressed);
   }
 
   .ds-icon-button[data-ds-variant="secondary"][data-pressed] {
@@ -246,6 +310,18 @@
   /* For `plain` the pressed fill paints the circle, never the larger hit region (behavior 12). */
   .ds-icon-button:is([data-ds-variant="ghost"], [data-ds-variant="plain"])[data-pressed] {
     --ds--icon-button-fill: var(--ds-icon-button-ghost-bg-pressed);
+  }
+
+  /*
+   * On inverse the neutral wash composites to nothing, so secondary, ghost and plain take one lightness step of the
+   * ground; on the lit tile secondary, which draws no puck there, takes the wash ghost and plain take (ADR-0040 §7).
+   */
+  .ds-icon-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"], [data-ds-variant="plain"])[data-ds-surface="inverse"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-pressed);
+  }
+
+  .ds-icon-button[data-ds-variant="secondary"][data-ds-surface="accent"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-neutral-subtle);
   }
 
   /*
@@ -282,9 +358,19 @@
       scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
   }
 
-  .ds-icon-button[data-ds-selected][data-ds-variant]:is([data-ds-surface="vivid"], [data-ds-surface="glass"]) {
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="vivid"] {
     --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media);
     --ds--icon-button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="inverse"] {
+    --ds--icon-button-fill: var(--ds-color-text-on-inverse);
+    --ds--icon-button-foreground: var(--ds-color-bg-fill-inverse);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="accent"] {
+    --ds--icon-button-fill: var(--ds-color-text-on-accent);
+    --ds--icon-button-foreground: var(--ds-color-bg-fill-accent);
   }
 
   /*
@@ -305,8 +391,16 @@
       scale var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing);
   }
 
-  .ds-icon-button[data-ds-selected][data-ds-variant]:is([data-ds-surface="vivid"], [data-ds-surface="glass"])[data-pressed] {
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="vivid"][data-pressed] {
     --ds--icon-button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="inverse"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-on-inverse-pressed);
+  }
+
+  .ds-icon-button[data-ds-selected][data-ds-variant][data-ds-surface="accent"][data-pressed] {
+    --ds--icon-button-fill: var(--ds-color-bg-fill-on-accent-pressed);
   }
 
   /* ---- disabled, focus-visible ---- */

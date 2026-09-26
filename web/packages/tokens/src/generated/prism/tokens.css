@@ -320,6 +320,7 @@
     --ds-color-bg-fill-critical: var(--ds-ref-color-status-danger-badge);
     --ds-color-bg-fill-inverse-media: var(--ds-ref-color-neutral-0);
     --ds-color-bg-fill-inverse-media-pressed: var(--ds-ref-color-neutral-200);
+    --ds-color-bg-fill-on-accent-pressed: oklch(0.164 0.0065 271 / 0.88);
     --ds-color-border-on-media: rgb(255 255 255 / 0.4);
     --ds-color-chart-now: var(--ds-ref-color-accent-500);
     --ds-color-chart-on-glass-fill-plot: rgb(255 255 255 / 0.08);
@@ -585,6 +586,7 @@
     --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-950);
     --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-850);
     --ds-color-bg-fill-neutral-subtle: oklch(0.164 0.0065 271 / 0.06);
+    --ds-color-bg-fill-on-inverse-pressed: var(--ds-ref-color-neutral-200);
     --ds-color-bg-page: var(--ds-ref-color-slot-light-bg-page);
     --ds-color-bg-surface: var(--ds-ref-color-neutral-0);
     --ds-color-bg-surface-nested: oklch(0.164 0.0065 271 / 0.06);
@@ -731,6 +733,7 @@
     --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-0);
     --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-200);
     --ds-color-bg-fill-neutral-subtle: rgb(255 255 255 / 0.06);
+    --ds-color-bg-fill-on-inverse-pressed: var(--ds-ref-color-neutral-850);
     --ds-color-bg-page: var(--ds-ref-color-slot-dark-bg-page);
     --ds-color-bg-surface: rgb(255 255 255 / 0.06);
     --ds-color-bg-surface-nested: rgb(255 255 255 / 0.12);
@@ -878,6 +881,7 @@
       --ds-color-bg-fill-inverse: var(--ds-ref-color-neutral-0);
       --ds-color-bg-fill-inverse-pressed: var(--ds-ref-color-neutral-200);
       --ds-color-bg-fill-neutral-subtle: rgb(255 255 255 / 0.06);
+      --ds-color-bg-fill-on-inverse-pressed: var(--ds-ref-color-neutral-850);
       --ds-color-bg-page: var(--ds-ref-color-slot-dark-bg-page);
       --ds-color-bg-surface: rgb(255 255 255 / 0.06);
       --ds-color-bg-surface-nested: rgb(255 255 255 / 0.12);

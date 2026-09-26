@@ -16,7 +16,7 @@ import SwiftUI
 import DSTokens
 
 nonisolated enum DSTokenKeyPaths {
-    /// Every colour: `color.bg.page` is `\DSTokenSet.color.bgPage`. (190 tokens.)
+    /// Every colour: `color.bg.page` is `\DSTokenSet.color.bgPage`. (192 tokens.)
     nonisolated(unsafe) static let color: [String: KeyPath<DSTokenSet, Color>] = [
         "color.accent": \.color.accent,
         "color.accent.glow": \.color.accentGlow,
@@ -30,6 +30,8 @@ nonisolated enum DSTokenKeyPaths {
         "color.bg.fill.inverse-media-pressed": \.color.bgFillInverseMediaPressed,
         "color.bg.fill.inverse-pressed": \.color.bgFillInversePressed,
         "color.bg.fill.neutral.subtle": \.color.bgFillNeutralSubtle,
+        "color.bg.fill.on-accent-pressed": \.color.bgFillOnAccentPressed,
+        "color.bg.fill.on-inverse-pressed": \.color.bgFillOnInversePressed,
         "color.bg.page": \.color.bgPage,
         "color.bg.surface": \.color.bgSurface,
         "color.bg.surface.nested": \.color.bgSurfaceNested,

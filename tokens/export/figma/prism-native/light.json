@@ -476,6 +476,54 @@
               ]
             }
           }
+        },
+        "on-accent-pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.051,
+              0.0549,
+              0.0667
+            ],
+            "alpha": 0.88,
+            "hex": "#0d0e11"
+          },
+          "$description": "the solid knocked out on the lit tile, while pressed: the tile's ink, text.on-accent, at 88 %, so 12 % of the tile shows through, under bg.fill.accent as its label; relative to text.on-accent because that follows a brand's text-on-accent slot. Button primary and IconButton primary or selected on an accent surface (ADR-0039 rule 5, ADR-0040 §3.5)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-on-accent-pressed)",
+              "iOS": "tokens.color.bgFillOnAccentPressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
+        },
+        "on-inverse-pressed": {
+          "$type": "color",
+          "$value": {
+            "colorSpace": "srgb",
+            "components": [
+              0.8823,
+              0.8902,
+              0.9097
+            ],
+            "alpha": 1,
+            "hex": "#e1e3e8"
+          },
+          "$description": "the solid knocked out on an inverse ground, while pressed: text.on-inverse (neutral.0 in light) one step down the neutral ladder (neutral.0 to 200, OKLab L -0.084), under bg.fill.inverse as its label. Button primary and IconButton primary or selected on an inverse surface (ADR-0039 rule 5, ADR-0040 §3.5)",
+          "$extensions": {
+            "com.figma.codeSyntax": {
+              "WEB": "var(--ds-color-bg-fill-on-inverse-pressed)",
+              "iOS": "tokens.color.bgFillOnInversePressed"
+            },
+            "com.figma.scopes": [
+              "FRAME_FILL",
+              "SHAPE_FILL"
+            ]
+          }
         }
       },
       "page": {

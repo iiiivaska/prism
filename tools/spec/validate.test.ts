@@ -203,6 +203,7 @@ describe('fixtures', () => {
       'glass-chip/fallback',
       'glass-chip/nested-blur',
       'haptic/unknown',
+      'material/glass-solid',
       'material/uneven',
       'matrix/axis',
       'prop/boolean-name',
@@ -387,6 +388,29 @@ describe('the materials a part keys (ADR-0040 §6)', () => {
     }
     expect(problems).toEqual([]);
   }, 60_000);
+
+  test("material/glass-solid: the white media solid, its pressed step and what it carries under `glass` and `glassLight`, on a part, in a state block and under a backdrop; vivid's and the inverse solid on light glass pass", async () => {
+    const c = specCases().find((x) => x.name === 'material-glass-solid');
+    if (c === undefined) throw new Error('no fixture material-glass-solid');
+    expect(await diagnose(caseReader(c))).toEqual([
+      "38 material/glass-solid `tokens.root.background.glass` binds color.bg.fill.inverse-media on the scheme's glass",
+      // A state block's cells are read as the part's are.
+      "45 material/glass-solid `tokens.root.pressed.background.glass` binds color.bg.fill.inverse-media-pressed on the scheme's glass",
+      // A backdrop keyed below `glass` is still on glass.
+      "55 material/glass-solid `tokens.label.color.glass.map` binds color.text.on-inverse-media on the scheme's glass",
+      '56 material/glass-solid `tokens.label.color.glassLight` binds color.text.on-inverse-media on light glass',
+    ]);
+  }, 60_000);
+
+  test('Button and IconButton, the implemented specs ADR-0040 §7 settles, are settled and key the white media solid on vivid alone', () => {
+    const repo = fsReader(REPO_ROOT);
+    for (const name of ['Button', 'IconButton']) {
+      expect(MATERIALS_SETTLED, name).toContain(name);
+      const text = repo.readText(`spec/components/${name}.yaml`);
+      expect(text, `${name} binds the white media solid on glass`).not.toMatch(/^\s+glass(?:Light)?: color\.(?:bg\.fill\.inverse-media|text\.on-inverse-media)/mu);
+      expect(text, `${name} binds the white media solid on vivid`).toMatch(/^\s+vivid: color\.bg\.fill\.inverse-media$/mu);
+    }
+  });
 });
 
 describe('the example, naming and label-key rules (roadmap P4-D3 (3))', () => {

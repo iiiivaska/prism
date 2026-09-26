@@ -2,56 +2,93 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Button.yaml` (specVersion 6) binds, as pure functions of the variant, the size and the
+/// Every value `spec/components/Button.yaml` (specVersion 7) binds, as pure functions of the variant, the size and the
 /// material the enclosing Surface publishes, so the binding matrix runs on the host, and the name a loading button
 /// speaks, as a pure function of its label and the strings table. `DSButton` only draws and names what these return.
 ///
 /// A cell keyed by a material applies when the enclosing Surface publishes that material, not because the button asked
 /// for it (spec/SCHEMA.md, ADR-0022 §3.1); a value with no cell takes `default`, and with no `default` either the
-/// property is not set, which is how the ghost pill has no fill at rest (ADR-0029 §3.3).
+/// property is not set, which is how the ghost pill has no fill at rest (ADR-0029 §3.3), and secondary none on
+/// `inverse` and `accent`.
+///
+/// **On `inverse` and `accent` the one solid knocks out** (ADR-0040 §3): the primary pill fills with the material's own
+/// foreground and its label takes the material's fill, pressed one lightness step of its own. No other pill draws a
+/// ground there, and every outline and label takes the material's foreground (§2). On the scheme's glass and on light
+/// glass the primary pill is its default inverse solid, ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1).
 nonisolated enum DSButtonAppearance {
     // MARK: - tokens.root
 
-    /// `tokens.root.background`: primary is the inverse solid, white on vivid (ADR-0030 §3.1); ghost has no cell.
+    /// `tokens.root.background`: primary is the inverse solid, white on vivid (ADR-0030 §3.1) and knocked out on inverse
+    /// and accent; secondary is the raised pill wherever it draws a ground, which is not on inverse or accent; ghost has
+    /// no cell.
     static func background(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: material == .vivid ? \.color.bgFillInverseMedia : \.components.button.primaryBgRest
-        case .secondary: \.components.button.secondaryBgRest
+        case .primary:
+            switch material {
+            case .vivid: \.color.bgFillInverseMedia
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccent
+            case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.button.primaryBgRest
+            }
+        case .secondary:
+            switch material {
+            case .inverse, .accent: nil
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.secondaryBgRest
+            }
         case .ghost: nil
         case .danger: \.components.button.dangerBgRest
         }
     }
 
-    /// `tokens.root.foreground`, which is also the colour of the label, the icons and the spinner's default.
+    /// `tokens.root.foreground`, which is also the colour of the label and the icons.
     static func foreground(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath {
         switch variant {
         case .primary:
-            material == .vivid ? \.color.textOnInverseMedia : \.components.button.primaryText
+            switch material {
+            case .vivid: \.color.textOnInverseMedia
+            case .inverse: \.color.bgFillInverse
+            case .accent: \.color.bgFillAccent
+            case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.button.primaryText
+            }
         case .secondary:
-            \.components.button.secondaryText
+            switch material {
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccent
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.secondaryText
+            }
         case .ghost:
             switch material {
             case .vivid: \.color.textOnVivid
             case .glass: \.color.textOnGlassFill
-            default: \.components.button.ghostText
+            case .glassLight: \.color.textOnGlassLight
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccent
+            case .page, .solid, .raised, .nested: \.components.button.ghostText
             }
         case .danger:
             \.components.button.dangerText
         }
     }
 
-    /// `tokens.root.border`: primary has none.
+    /// `tokens.root.border`: primary has none; on inverse and accent secondary and ghost outline in the material's own
+    /// foreground, full on inverse and the tile's second tone on accent (ADR-0040 §2).
     static func border(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
         case .primary:
             nil
         case .secondary:
-            \.components.button.secondaryBorder
+            switch material {
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccentSecondary
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.secondaryBorder
+            }
         case .ghost:
             switch material {
             case .vivid: \.color.borderOnMedia
-            case .glass: \.color.borderOnGlassFill
-            default: \.components.button.ghostBorder
+            case .glass, .glassLight: \.color.borderOnGlassFill
+            case .inverse: \.color.textOnInverse
+            case .accent: \.color.textOnAccentSecondary
+            case .page, .solid, .raised, .nested: \.components.button.ghostBorder
             }
         case .danger:
             \.components.button.dangerBorder
@@ -73,14 +110,30 @@ nonisolated enum DSButtonAppearance {
     /// `tokens.root.pressed.background`; danger has no cell and keeps its tint.
     ///
     /// Primary's pressed cell is one lightness step from its rest cell in every scheme (ADR-0039):
-    /// `comp.button.primary.bg.pressed`, which aliases `color.bg.fill.inverse-pressed`, and on vivid
-    /// `color.bg.fill.inverse-media-pressed`, the white pill one step darker under the same ink label.
+    /// `comp.button.primary.bg.pressed`, which aliases `color.bg.fill.inverse-pressed`, on vivid
+    /// `color.bg.fill.inverse-media-pressed`, the white pill one step darker under the same ink label, and knocked out
+    /// `color.bg.fill.on-inverse-pressed` or `color.bg.fill.on-accent-pressed` (ADR-0040 §3.5). On inverse secondary and
+    /// ghost take `color.bg.fill.inverse-pressed`, one lightness step of the ground, where the neutral wash would show
+    /// nothing, and on accent secondary takes ghost's wash, `color.bg.fill.neutral.subtle` (ADR-0040 §7).
     static func pressedBackground(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
-        case .primary: material == .vivid ? \.color.bgFillInverseMediaPressed : \.components.button.primaryBgPressed
-        case .secondary: \.components.button.secondaryBgPressed
-        case .ghost: \.components.button.ghostBgPressed
-        case .danger: nil
+        case .primary:
+            switch material {
+            case .vivid: \.color.bgFillInverseMediaPressed
+            case .inverse: \.color.bgFillOnInversePressed
+            case .accent: \.color.bgFillOnAccentPressed
+            case .page, .solid, .raised, .nested, .glass, .glassLight: \.components.button.primaryBgPressed
+            }
+        case .secondary:
+            switch material {
+            case .inverse: \.color.bgFillInversePressed
+            case .accent: \.color.bgFillNeutralSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.secondaryBgPressed
+            }
+        case .ghost:
+            material == .inverse ? \.color.bgFillInversePressed : \.components.button.ghostBgPressed
+        case .danger:
+            nil
         }
     }
 
@@ -99,30 +152,25 @@ nonisolated enum DSButtonAppearance {
     /// `tokens.root.hover.overlay`, pointer only.
     static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
 
-    /// The page under the danger tint over media: "a tinted element that carries text or a glyph over media paints
-    /// `color.bg.page` under its tint", the danger button among them (ADR-0030 §6.2 and rule 6). Button.yaml v6 has no
-    /// underlay cell, so the published materials that mean media are the ones IconButton.yaml keys its `underlay` by,
-    /// vivid and the scheme's glass, and light glass, which only sits over imagery.
+    /// `tokens.root.underlay`: the page a danger tint paints under itself on vivid, on the scheme's glass, on light glass,
+    /// on inverse and on accent, so the pair it carries is the pair the contrast gate checks (ADR-0030 §6.2 and rule 6,
+    /// ADR-0040 §3.4). Nothing anywhere else: on the solid ladder the tint composites over the surface itself.
     static func underlay(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         guard variant == .danger else { return nil }
         switch material {
-        case .vivid, .glass, .glassLight: return \.color.bgPage
-        default: return nil
+        case .vivid, .glass, .glassLight, .inverse, .accent: return \.color.bgPage
+        case .page, .solid, .raised, .nested: return nil
         }
     }
 
-    /// `tokens.spinner.color`: primary and secondary bind their text tokens.
+    /// `tokens.spinner.color`: primary and secondary bind their pill's foreground on every material, the knocked-out
+    /// label on inverse and accent included, so the spinner turns in the colour of the label it replaces.
     ///
-    /// Ghost and danger bind no cell, so their spinner takes Spinner.yaml's own arc for the published material. The
-    /// primary cell carries no material level either, and on vivid `comp.button.primary.text` is the colour of the
-    /// white pill it would sit on; there the spinner takes the pill's foreground, which is what Spinner.yaml says a
-    /// Button binds ("Button binds its own foreground per variant").
+    /// Ghost and danger bind no cell, so their spinner takes Spinner.yaml's own arc for the published material.
     static func spinner(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath {
         switch variant {
-        case .primary:
-            material == .vivid ? foreground(.primary, on: material) : \.components.button.primaryText
-        case .secondary:
-            \.components.button.secondaryText
+        case .primary, .secondary:
+            foreground(variant, on: material)
         case .ghost, .danger:
             spinnerArc(on: material)
         }

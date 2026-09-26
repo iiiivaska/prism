@@ -60,8 +60,8 @@ export const MATERIAL_PUBLISHERS: readonly string[] = ['Surface'];
  * and an implemented spec joins with the change that states its materials.
  */
 export const MATERIALS_SETTLED: readonly string[] = [
-  'Checkbox', 'ProgressBar', 'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton', 'Slider', 'Spinner',
-  'TextArea', 'TextField', 'Toggle', 'Tooltip',
+  'Button', 'Checkbox', 'IconButton', 'ProgressBar', 'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton',
+  'Slider', 'Spinner', 'TextArea', 'TextField', 'Toggle', 'Tooltip',
 ];
 
 /**
@@ -90,6 +90,18 @@ export const MATERIALS_OWED: readonly { readonly component: string; readonly own
   { component: 'Timeline', owner: 'P4-27' },
   { component: 'TopBar', owner: 'P4-27' },
 ];
+
+/**
+ * The white solid of vivid and what it carries (ADR-0030 §3.1). On the scheme's glass, and on light glass, the solid is
+ * `color.bg.fill.inverse` under `color.text.on-inverse`, ink on light glass and white on smoke, so `material/glass-solid`
+ * reports any of these bound under a `glass` or `glassLight` key (ADR-0040 §1).
+ */
+export const MEDIA_SOLID: readonly string[] = [
+  'color.bg.fill.inverse-media', 'color.bg.fill.inverse-media-pressed', 'color.text.on-inverse-media',
+];
+
+/** The grounds `material/glass-solid` reads: the scheme's glass and light glass (ADR-0040 §1). */
+export const GLASS_GROUNDS: readonly string[] = ['glass', 'glassLight'];
 
 /** The backdrop kind a Surface publishes beside its material (ADR-0029 §1.4); the second glass axis. */
 export const BACKDROPS: readonly string[] = ['none', 'image', 'map', 'vivid'];

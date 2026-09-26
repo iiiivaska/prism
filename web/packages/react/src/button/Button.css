@@ -1,5 +1,5 @@
 /*
- * Button (spec/components/Button.yaml, specVersion 6). Compiled into styles.css by
+ * Button (spec/components/Button.yaml, specVersion 7). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Button writes data-ds-variant, data-ds-size, data-ds-full-width and data-ds-surface (the
@@ -9,8 +9,8 @@
  * modality variant (@variant ds-pointer), the hit region follows modality through size.hit, and Reduce
  * Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4).
  *
- * The pill paints, bottom to top: the underlay (color.bg.page under a danger tint over media, ADR-0030
- * §6.2), the fill, the Reduce Motion press substitute, the hover overlay, then the inset outline.
+ * The pill paints, bottom to top: the underlay (color.bg.page under a danger tint over media, inverse and
+ * accent, the `underlay` cell: ADR-0030 §6.2, ADR-0040 §3), the fill, the Reduce Motion press substitute, the hover overlay, then the inset outline.
  * Custom properties named --ds--button-* are this component's own (ARCHITECTURE §8).
  */
 
@@ -154,7 +154,7 @@
 
   /*
    * root.borderWidth is border.hairline for every outlined variant, as the signed-off direction board draws each
-   * pill (ADR-0033). It has no material level, so the vivid and glass rules below change the outline's colour only.
+   * pill (ADR-0033). It has no material level, so the material rules below change the outline's colour only.
    */
 
   .ds-button[data-ds-variant="primary"] {
@@ -162,10 +162,24 @@
     --ds--button-foreground: var(--ds-button-primary-text);
   }
 
-  /* ADR-0030 §3.1: on vivid the one solid is the white inverse-media pill. */
+  /*
+   * ADR-0030 §3.1: on vivid the one solid is the white inverse-media pill. On the scheme's glass and on light glass it
+   * keeps the rule above, the inverse solid: ink on light glass and white on smoke (ADR-0040 §1).
+   */
   .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"] {
     --ds--button-fill: var(--ds-color-bg-fill-inverse-media);
     --ds--button-foreground: var(--ds-color-text-on-inverse-media);
+  }
+
+  /* ADR-0040 §3: on inverse and accent the one solid knocks out, the material's foreground under a label in its fill. */
+  .ds-button[data-ds-variant="primary"][data-ds-surface="inverse"] {
+    --ds--button-fill: var(--ds-color-text-on-inverse);
+    --ds--button-foreground: var(--ds-color-bg-fill-inverse);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-ds-surface="accent"] {
+    --ds--button-fill: var(--ds-color-text-on-accent);
+    --ds--button-foreground: var(--ds-color-bg-fill-accent);
   }
 
   .ds-button[data-ds-variant="secondary"] {
@@ -173,6 +187,19 @@
     --ds--button-foreground: var(--ds-button-secondary-text);
     --ds--button-border: var(--ds-button-secondary-border);
     --ds--button-border-width: var(--ds-border-hairline);
+  }
+
+  /* ADR-0040 §2 and §3: on inverse and accent secondary draws no ground of its own and is outlined as ghost is. */
+  .ds-button[data-ds-variant="secondary"][data-ds-surface="inverse"] {
+    --ds--button-fill: transparent;
+    --ds--button-foreground: var(--ds-color-text-on-inverse);
+    --ds--button-border: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-button[data-ds-variant="secondary"][data-ds-surface="accent"] {
+    --ds--button-fill: transparent;
+    --ds--button-foreground: var(--ds-color-text-on-accent);
+    --ds--button-border: var(--ds-color-text-on-accent-secondary);
   }
 
   /* ADR-0029 §3.3: the ghost is an outline with no fill at rest. */
@@ -192,6 +219,21 @@
     --ds--button-border: var(--ds-color-border-on-glass-fill);
   }
 
+  .ds-button[data-ds-variant="ghost"][data-ds-surface="glassLight"] {
+    --ds--button-foreground: var(--ds-color-text-on-glass-light);
+    --ds--button-border: var(--ds-color-border-on-glass-fill);
+  }
+
+  .ds-button[data-ds-variant="ghost"][data-ds-surface="inverse"] {
+    --ds--button-foreground: var(--ds-color-text-on-inverse);
+    --ds--button-border: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-button[data-ds-variant="ghost"][data-ds-surface="accent"] {
+    --ds--button-foreground: var(--ds-color-text-on-accent);
+    --ds--button-border: var(--ds-color-text-on-accent-secondary);
+  }
+
   .ds-button[data-ds-variant="danger"] {
     --ds--button-fill: var(--ds-button-danger-bg-rest);
     --ds--button-foreground: var(--ds-button-danger-text);
@@ -199,8 +241,11 @@
     --ds--button-border-width: var(--ds-border-hairline);
   }
 
-  /* ADR-0030 §6.2: a danger tint that carries text over media paints the page under itself. */
-  .ds-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"], [data-ds-surface="glassLight"]) {
+  /*
+   * The `underlay` cell: a danger tint that carries text paints the page under itself on vivid, on both glasses, on
+   * inverse and on accent (ADR-0030 §6.2 and rule 6, ADR-0040 §3).
+   */
+  .ds-button[data-ds-variant="danger"]:is([data-ds-surface="vivid"], [data-ds-surface="glass"], [data-ds-surface="glassLight"], [data-ds-surface="inverse"], [data-ds-surface="accent"]) {
     --ds--button-under: var(--ds-color-bg-page);
   }
 
@@ -230,12 +275,33 @@
     --ds--button-fill: var(--ds-color-bg-fill-inverse-media-pressed);
   }
 
+  /* Knocked out on inverse and accent, the pill takes one lightness step of its own (ADR-0040 §3.5). */
+  .ds-button[data-ds-variant="primary"][data-ds-surface="inverse"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-on-inverse-pressed);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-ds-surface="accent"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-on-accent-pressed);
+  }
+
   .ds-button[data-ds-variant="secondary"][data-pressed] {
     --ds--button-fill: var(--ds-button-secondary-bg-pressed);
   }
 
   .ds-button[data-ds-variant="ghost"][data-pressed] {
     --ds--button-fill: var(--ds-button-ghost-bg-pressed);
+  }
+
+  /*
+   * On inverse the neutral wash composites to nothing, so secondary and ghost take one lightness step of the ground;
+   * on the lit tile secondary, which draws no ground there, takes ghost's wash (ADR-0040 §7).
+   */
+  .ds-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"])[data-ds-surface="inverse"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-inverse-pressed);
+  }
+
+  .ds-button[data-ds-variant="secondary"][data-ds-surface="accent"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-neutral-subtle);
   }
 
   /* accessibility.reduceMotion: danger takes color.bg.fill.neutral.subtle, multiplied by the crossfade flag. */
@@ -319,17 +385,36 @@
     opacity: calc(var(--ds-opacity-dimmed-row) * var(--ds-motion-presentation-crossfade));
   }
 
-  /* spinner.color: the variant's foreground token; the other variants and vivid keep the label's color. */
+  /*
+   * spinner.color: the pill's foreground for primary and secondary, cell for cell on every material the spec keys;
+   * ghost and danger bind no cell and keep the label's colour.
+   */
   .ds-button[data-ds-variant="primary"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
     color: var(--ds-button-primary-text);
   }
 
   .ds-button[data-ds-variant="primary"][data-ds-surface="vivid"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
-    color: inherit;
+    color: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-ds-surface="inverse"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-color-bg-fill-inverse);
+  }
+
+  .ds-button[data-ds-variant="primary"][data-ds-surface="accent"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-color-bg-fill-accent);
   }
 
   .ds-button[data-ds-variant="secondary"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
     color: var(--ds-button-secondary-text);
+  }
+
+  .ds-button[data-ds-variant="secondary"][data-ds-surface="inverse"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-button[data-ds-variant="secondary"][data-ds-surface="accent"] > [data-ds-slot="button-label"] > [data-ds-slot="button-spinner"] {
+    color: var(--ds-color-text-on-accent);
   }
 
   /* Forced colors paint no fills; the pill keeps a system outline. */

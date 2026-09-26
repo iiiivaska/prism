@@ -1,5 +1,5 @@
 /**
- * The enums of spec/components/IconButton.yaml (specVersion 2), spelled as the spec spells them and in its
+ * The enums of spec/components/IconButton.yaml (specVersion 3), spelled as the spec spells them and in its
  * order, the twins of `DSIconButtonVariant` and `DSIconButtonSize`. The stylesheet maps them, with the
  * material the enclosing Surface publishes, to the tokens IconButton.yaml binds; test/icon-button.test.tsx
  * reads the spec and checks every cell, so none of them can drift.

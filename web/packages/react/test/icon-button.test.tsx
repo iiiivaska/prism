@@ -1,6 +1,6 @@
 /// <reference types="node" />
 /**
- * IconButton (spec/components/IconButton.yaml, specVersion 2).
+ * IconButton (spec/components/IconButton.yaml, specVersion 3).
  *
  * - IconButton.css binds what IconButton.yaml binds: every cell of `tokens`, read off the spec and checked as
  *   it wins on the root through a small cascade, for every variant on every published material: the rest and
@@ -68,7 +68,7 @@ function specCell(path: string, ...keys: readonly string[]): { readonly token: s
   return { token: cell(bindingAt(spec, path), ...keys), name: cellName(spec, path, ...keys) };
 }
 
-/** Every material a Surface publishes: the spec keys `vivid` and `glass`, and every other one takes `default`. */
+/** Every material a Surface publishes: the spec keys each of them in some cell (ADR-0040), and falls back to `default`. */
 const materials = surfaceMaterials;
 const variants = propValues(spec, "variant") as IconButtonVariant[];
 const combinations = variants.flatMap((variant) => materials.map((material) => ({ variant, material })));
@@ -134,8 +134,8 @@ function contextIn(density: Density, modality: Modality = "pointer"): TokenConte
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is IconButton.yaml specVersion 2", () => {
-    expect(spec.specVersion).toBe(2);
+  it("is IconButton.yaml specVersion 3", () => {
+    expect(spec.specVersion).toBe(3);
     expect([...iconButtonVariants]).toEqual(propValues(spec, "variant"));
     expect([...iconButtonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -158,7 +158,7 @@ describe("the spec is the one this package implements", () => {
     expect(Object.keys(root)).toEqual(["background", "underlay", "border", "borderWidth", "radius", "size", "hover", "pressed", "selected", "disabled", "focus-visible"]);
     expect(Object.keys(icon)).toEqual(["size", "color", "selected"]);
     expect(Object.keys(spec.tokens["badge"] ?? {})).toEqual(["offset"]);
-    const materialKeys = new Set(["default", "vivid", "glass"]);
+    const materialKeys = new Set(["default", ...materials]);
     const byVariant = [root["background"], root["underlay"], root["border"], root["borderWidth"], block(root["pressed"])["background"], block(root["pressed"])["overlay"], icon["color"]];
     for (const matrix of byVariant) {
       for (const [variant, inner] of Object.entries(block(matrix))) {
@@ -167,7 +167,7 @@ describe("the spec is the one this package implements", () => {
       }
     }
     for (const matrix of [block(root["selected"])["background"], block(icon["selected"])["color"]]) {
-      expect(Object.keys(block(matrix))).toEqual(["default", "vivid", "glass"]);
+      expect(Object.keys(block(matrix))).toEqual(["default", "vivid", "inverse", "accent"]);
     }
     expect(Object.keys(block(root["size"]))).toEqual([...iconButtonSizes]);
     expect(Object.keys(block(icon["size"]))).toEqual([...iconButtonSizes]);
@@ -249,13 +249,18 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     expect(specCell("root.pressed.overlay", "primary").token, "a solid's press lays no overlay on it").toBeUndefined();
     for (const colorScheme of ["light", "dark"] as const) {
       for (const contrast of ["standard", "more"] as const) {
-        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string }>>;
+        const resolved = tokens.resolveTokens({ colorScheme, contrast }) as unknown as Readonly<Record<string, { readonly hex: string; readonly alpha: number }>>;
+        // A colour is its hex and its alpha: the knocked-out pressed step on the lit tile is the tile's ink at 88 %.
+        const colour = (token: string | undefined): string | undefined => {
+          const value = resolved[token ?? ""];
+          return value === undefined ? undefined : `${value.hex}/${String(value.alpha)}`;
+        };
         for (const material of materials) {
           const rest = specCell("root.background", "primary", material);
           const pressed = specCell("root.pressed.background", "primary", material);
           const context = `${colorScheme}, contrast ${contrast}: ${pressed.name} against ${rest.name}`;
-          expect(resolved[pressed.token ?? ""]?.hex, context).toBeDefined();
-          expect(resolved[pressed.token ?? ""]?.hex, context).not.toBe(resolved[rest.token ?? ""]?.hex);
+          expect(colour(pressed.token), context).toBeDefined();
+          expect(colour(pressed.token), context).not.toBe(colour(rest.token));
         }
       }
     }
@@ -272,11 +277,11 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     }
   });
 
-  it("paints the underlay on vivid and on the scheme's glass only: not on light glass, not on any other material", () => {
-    expect(Object.keys(block(block(root["underlay"])["danger"])), `${cellName(spec, "root.underlay", "danger")} is keyed by vivid and glass alone`).toEqual(["vivid", "glass"]);
+  it("paints the underlay on vivid, on both glasses, on inverse and on accent, and on no ground of the solid ladder (ADR-0040 §3)", () => {
+    expect(Object.keys(block(block(root["underlay"])["danger"])), `${cellName(spec, "root.underlay", "danger")} is keyed off the solid ladder`).toEqual(["vivid", "glass", "glassLight", "inverse", "accent"]);
     for (const material of materials) {
       const under = specCell("root.underlay", "danger", material);
-      const expected = material === "vivid" || material === "glass" ? "var(--ds-color-bg-page)" : "transparent";
+      const expected = ["page", "solid", "raised", "nested"].includes(material) ? "transparent" : "var(--ds-color-bg-page)";
       expect(value(on("danger", material), "--ds--icon-button-under"), under.name).toBe(expected);
     }
   });

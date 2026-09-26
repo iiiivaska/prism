@@ -42,6 +42,8 @@
   --background-color-ds-fill-inverse-media-pressed: var(--ds-color-bg-fill-inverse-media-pressed);
   --background-color-ds-fill-inverse-pressed: var(--ds-color-bg-fill-inverse-pressed);
   --background-color-ds-fill-neutral-subtle: var(--ds-color-bg-fill-neutral-subtle);
+  --background-color-ds-fill-on-accent-pressed: var(--ds-color-bg-fill-on-accent-pressed);
+  --background-color-ds-fill-on-inverse-pressed: var(--ds-color-bg-fill-on-inverse-pressed);
   --background-color-ds-page: var(--ds-color-bg-page);
   --background-color-ds-surface: var(--ds-color-bg-surface);
   --background-color-ds-surface-nested: var(--ds-color-bg-surface-nested);

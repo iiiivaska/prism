@@ -73,6 +73,11 @@ tokens:
       md: type.label.md
       lg: type.label.lg
 
+materials:
+  inverse: "`root` binds only its comp tokens: this stripped Button exists to leave comp.button.gap unbound, and draws on no inverse surface."
+  accent: "`root` binds only its comp tokens: this stripped Button exists to leave comp.button.gap unbound, and draws on no accent surface."
+  glassLight: "`root` binds only its comp tokens: this stripped Button exists to leave comp.button.gap unbound, and draws on no light glass surface."
+
 behavior:
   - Pressing fires the action once on release inside the hit area.
 
