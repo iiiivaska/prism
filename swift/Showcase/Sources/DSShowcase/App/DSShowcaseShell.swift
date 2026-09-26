@@ -66,7 +66,10 @@ struct DSShowcaseShell: View {
 
     var body: some View {
         NavigationSplitView {
-            List(DSShowcaseSection.allCases, selection: $section) { item in
+            // `id: \.self`: a list over identifiable data tags each row with the element's `id`, here the section's
+            // `String` raw value, and a row whose tag is not a `DSShowcaseSection` never equals the selection, so no
+            // click could select one (tools/showcase/apple/shell.test.ts). Tagged with the section itself, it can.
+            List(DSShowcaseSection.allCases, id: \.self, selection: $section) { item in
                 Label(item.title, systemImage: item.symbol)
             }
             .navigationTitle("Prism")
@@ -80,6 +83,10 @@ struct DSShowcaseShell: View {
                     .navigationDestination(for: DSExampleRef.self) { DSExampleScreen(ref: $0) }
             }
         }
+        // A section the sidebar chooses opens at its root. The pages on the stack, pushed by a reader or seeded by a
+        // launch argument, belong to the section they were pushed in, and left there they would cover the new one.
+        // Only a change resets it, so a launch that names a page still opens on that page.
+        .onChange(of: section) { path = NavigationPath() }
         // The button itself is on `DSScreen`, so every pushed screen carries it; only the sheet is here, where
         // there is one of it. Registering the toolbar on the stack's *content* is what left every pushed screen —
         // every token group, every component page, every example — with a back chevron and nothing else.
