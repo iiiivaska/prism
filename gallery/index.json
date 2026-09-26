@@ -23511,7 +23511,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Search batches, value: B-44, isLoading: true",
+          "props": "label: Search batches, value: 3182, isLoading: true",
           "cells": []
         },
         {

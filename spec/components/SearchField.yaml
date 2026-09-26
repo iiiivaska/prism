@@ -169,7 +169,7 @@ examples:
   - id: scoped
     props: { label: "Search", scope: "Routes", placeholder: "Route number" }
   - id: loading
-    props: { label: "Search batches", value: "B-44", isLoading: true }
+    props: { label: "Search batches", value: "3182", isLoading: true }
     description: a Spinner takes the trailing corner and the input stays live
   - id: small
     props: { label: "Filter rows", placeholder: "Any column", size: sm }
