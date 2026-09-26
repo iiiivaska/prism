@@ -9,11 +9,12 @@
 # The exception is the sanctioned re-record, one `workflow_dispatch` input per stack, each named for the artifact it
 # hands back: `update-vrt-baselines` (web-vrt, `vrt-baselines`) and `update-snapshot-baselines-apple` (apple,
 # `snapshot-baselines-apple`). It is the one way to change a committed baseline on purpose, on either stack: the run
-# records the whole folder over the committed set, skips this script, uploads the folder whole and fails, and whoever
-# dispatched it unpacks the artifact over the folder and commits what git reports as changed, so review sees changed
-# baselines and never a deletion. Push and pull_request runs cannot reach it: the inputs exist only on a dispatch, and
-# both default to off. So everything this script is given comes from a run that compares, or from one that records
-# only because its folder is empty.
+# records over the committed set (apple the whole folder, whose renders are byte-stable; web-vrt only the baselines that
+# fail comparison, and any that are missing, with --update-snapshots=changed), skips this script, uploads the folder
+# whole and fails, and whoever dispatched it unpacks the artifact over the folder and commits what git reports as
+# changed, so review sees changed baselines and never a deletion. Push and pull_request runs cannot reach it: the
+# inputs exist only on a dispatch, and both default to off. So everything this script is given comes from a run that
+# compares, or from one that records only because its folder is empty.
 #
 # The suite's exit code does not decide what may leave. Git does, together with the commit the change is measured
 # against (BASE):

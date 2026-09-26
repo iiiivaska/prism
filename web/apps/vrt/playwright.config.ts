@@ -20,6 +20,8 @@ import { runtimeProjects, viewports } from "./matrix.ts";
  * develop against, and only CI records the Linux set (`.github/workflows/ci.yml`,
  * job `web-vrt`, which uploads it as the `vrt-baselines` artifact when asked, or when the folder is empty and
  * the commit the change is measured against has no Linux baseline either — .github/scripts/baseline-handback.sh).
+ * When asked, it rewrites only the Linux baselines that fail comparison, and records missing ones
+ * (`--update-snapshots=changed`, below); one that passes keeps its committed bytes.
  *
  *   pnpm vrt          compare                        (pnpm --filter @iiiivaska/prism-vrt test)
  *   pnpm vrt:update   record, --update-snapshots=all (pnpm --filter @iiiivaska/prism-vrt run test:update)

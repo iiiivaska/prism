@@ -12,8 +12,9 @@ on:
       # recorded again. Only a person's dispatch reaches them: push and pull_request carry no inputs, a dispatch
       # leaves both off unless someone turns one on, and no workflow of this repository dispatches this one.
       update-vrt-baselines:
-        # P3-4: web-vrt records new Linux baselines instead of comparing, uploads them as the
-        # `vrt-baselines` artifact and fails, so that someone commits them.
+        # P3-4: web-vrt rewrites the Linux baselines that fail comparison, and records any that are missing, instead
+        # of failing on them (--update-snapshots=changed), uploads the folder as the `vrt-baselines` artifact and
+        # fails, so that someone commits what moved.
         description: Record the web visual regression baselines in the Playwright image
         type: boolean
         default: false
@@ -332,9 +333,9 @@ jobs:
           REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.update-vrt-baselines }}
         run: |
           set -euo pipefail
-          # `requested` tells the two recordings apart: the whole-folder re-record a person asked for, which writes
-          # over committed baselines by design, and the one this step falls back to because the folder holds none,
-          # which the hand-back below checks against BASE like any other.
+          # `requested` tells the two recordings apart: the re-record a person asked for, which writes over the
+          # committed baselines that fail comparison by design, and the one this step falls back to because the folder
+          # holds none, which the hand-back below checks against BASE like any other.
           if [ "$REQUESTED" = true ]; then
             echo "requested=true" >> "$GITHUB_OUTPUT"
           else
@@ -357,9 +358,25 @@ jobs:
         if: steps.vrt-mode.outputs.record == 'false'
         run: pnpm --filter @iiiivaska/prism-vrt test
       - name: Record the Linux baselines
+        # With no PNG under `baselines/linux`, every screenshot is missing, and test:update (--update-snapshots=all)
+        # writes the whole set. The requested re-record compares as the step above does, and rewrites only the
+        # baselines that fail the comparison, writing any that are missing too (--update-snapshots=changed). A baseline
+        # that passes keeps its committed bytes: a render can differ from it by a few pixels of anti-aliasing, below the
+        # threshold every comparing run allows, and =all rewrote those too, so each re-record brought back a handful of
+        # files (Avatar's `ringed-over-map` under Reduce Transparency, in runs 36247333811 and 36255663851) that nothing
+        # had moved. The flip side: a move below that threshold is neither a failure nor re-recorded.
         id: vrt-record
         if: steps.vrt-mode.outputs.record == 'true'
-        run: pnpm --filter @iiiivaska/prism-vrt run test:update
+        shell: bash
+        env:
+          REQUESTED: ${{ steps.vrt-mode.outputs.requested }}
+        run: |
+          set -euo pipefail
+          if [ "$REQUESTED" = true ]; then
+            pnpm --filter @iiiivaska/prism-vrt exec playwright test --update-snapshots=changed
+          else
+            pnpm --filter @iiiivaska/prism-vrt run test:update
+          fi
       - name: A missing baseline is a recording, a changed one is a regression # P3-4
         # The hand-back, in both modes, bar the one recording a person asked for. It is the script the apple job runs
         # over its SwiftUI baselines, because the two halves of a component land together and hand back the same
@@ -375,10 +392,10 @@ jobs:
         #     BASE like any other. That is what stops a change that deletes *every* Linux baseline: it flips this job
         #     into record mode, the whole set is rendered afresh, and the script refuses it as re-recorded deletions,
         #     exactly as it would refuse one. Only a folder that BASE has no baselines in either hands back whole.
-        #   - `workflow_dispatch` with `update-vrt-baselines` (`requested`), the sanctioned whole-folder re-record and
-        #     the web twin of the apple job's `update-snapshot-baselines-apple`. It writes over committed baselines on
-        #     purpose, so this step, which would refuse every one of them, is skipped, and the folder goes out whole
-        #     through the recording upload below.
+        #   - `workflow_dispatch` with `update-vrt-baselines` (`requested`), the sanctioned re-record and the web twin
+        #     of the apple job's `update-snapshot-baselines-apple`. Its =changed writes over the committed baselines
+        #     that fail comparison on purpose, so this step, which would refuse every one of them, is skipped, and the
+        #     folder goes out whole through the recording upload below.
         #
         # Like the apple job's hand-back, this step is reached only through a green `contracts`: this job needs `web`,
         # which needs `contracts`, and the apple job's step of the same name says what that asks of a landing commit.
@@ -426,13 +443,14 @@ jobs:
         if: steps.vrt-record.outcome == 'success' && steps.vrt-mode.outputs.requested == 'true'
         shell: bash
         run: |
-          echo "::error title=VRT baselines recorded, not compared::This run recorded new Linux baselines instead of comparing against committed ones. Download the 'vrt-baselines' artifact of this run, unpack it into web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>.png, the platform being web-desktop or web-touch), review the images, commit them, and push; the next run compares against them."
+          echo "::error title=VRT baselines re-recorded where they changed::This run was dispatched with update-vrt-baselines, so it compared every screenshot with its Linux baseline, rewrote the baselines that failed the comparison, recorded any that were missing, and left every other one as committed (--update-snapshots=changed). Download the 'vrt-baselines' artifact of this run and unpack it over web/apps/vrt/baselines/linux/ (so the files sit at web/apps/vrt/baselines/linux/<Component>/<example-id>.<platform>.<scheme>.<density>[.<variant>].png, the platform being web-desktop or web-touch). git status then lists the baselines this run rewrote or added: review each one against the committed image (git diff, or the previous comparing run's 'vrt-diffs' artifact), check any path in no commit with the two git log commands in .github/scripts/baseline-handback.sh, commit what the change meant to move, and push; the next run compares against them."
           exit 1
       - uses: actions/upload-artifact@v7
         # Either mode: a compare run's diffs and traces, or what a recording run left behind when it
         # stopped. After a complete recording the job fails by design — the step above for a requested
-        # re-record, the hand-back for any other — and this folder is empty, which `ignore` passes over in
-        # silence.
+        # re-record, the hand-back for any other — and this folder holds only an `-actual` copy of each
+        # baseline the run wrote: for a requested re-record, exactly those it rewrote or added, so nothing
+        # when nothing moved, which `ignore` passes over in silence.
         if: failure()
         with:
           name: vrt-diffs

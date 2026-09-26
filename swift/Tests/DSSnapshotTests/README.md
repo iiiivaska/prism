@@ -230,9 +230,13 @@ The loop is the same on both:
    anyone reviews those pixels with a reason to.
 2. Dispatch `ci` on the same ref with the stack's input, from the Actions tab or with
    `gh workflow run ci.yml --ref <branch> -f update-snapshot-baselines-apple=true` (or `-f update-vrt-baselines=true`;
-   both at once is fine). The job records its whole folder over the committed set — the apple job with `XCODE_VERSION`
-   on the pinned simulator, `web-vrt` in the pinned Playwright image — skips the hand-back, uploads the folder whole,
-   and fails by design, naming the artifact.
+   both at once is fine). The apple job records its whole folder over the committed set with `XCODE_VERSION` on the
+   pinned simulator; its renders are byte-stable, so a baseline that did not move comes back identical. `web-vrt`
+   compares in the pinned Playwright image, as a comparing run does, and rewrites only the baselines that fail the
+   comparison, plus any that are missing (`--update-snapshots=changed`): a Chromium render can differ from its baseline
+   by a few pixels of anti-aliasing below the threshold the comparison allows, and a rewrite of every file brought that
+   noise back as changes nobody made. A move below that threshold therefore passes and is not re-recorded either. Each
+   job skips the hand-back, uploads the folder whole, and fails by design, naming the artifact.
 3. Unpack the artifact over the folder; `git status` then lists the baselines whose bytes changed. Review each against
    the committed image (`git diff`, or the diffs of step 1) and commit only what the change meant to move. A `??` in
    that list is a path in no commit, which the re-record hands back unchecked: look it up with the two `git log`
