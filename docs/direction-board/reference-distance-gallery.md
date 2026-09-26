@@ -13,6 +13,7 @@
 - **Reviewed again: 2026-09-26**, in [§12](#12-review-of-the-webs-reduce-transparency-images--2026-09-26). P4-D9's baselines (`29b5490`) added 144 web Reduce Transparency images: new variants of 18 named examples, which §9.9 condition 3 covers with a sentence added to each group. §12 reads all 144 beside their Apple twins. None is a copy, and none moves an earlier verdict: the fallback removes the glass the references' map screens are built from. §12.5 reads the one image that asks a second look, `Avatar/initials-over-map` in light, whose disc becomes near-white.
 - **Reviewed again: 2026-09-26**, in [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26). RD-12 was taken: `e56272f` relabelled `Chip/identifier-copy` "INV-209316", which fired showcase §13.8 condition 8, and CI re-recorded its 16 images, which fired §9.9 condition 6. §13 reads the 16 beside the images they replace. Only the label and the pill's width changed, none is a copy, and RD-12 is closed.
 - **Reviewed again: 2026-09-26**, in [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26). P4-D14's baselines added 183 web Increase Contrast images, one per example and scheme on `web-desktop` at regular density: new variants of all 92 named examples, which §9.9 condition 3 covers with a sentence added to each group. §14 reads all 183 beside their Apple twins. None is a copy, and none moves an earlier verdict: on both stacks Increase Contrast deepens strokes and secondary text, raises thin weights to 400 and falls glass back as Reduce Transparency does.
+- **Reviewed again: 2026-09-26**, in [§15](#15-re-review-of-iconbuttons-circle-on-glass-after-p4-10--2026-09-26). P4-10 made the solid on the scheme's glass the inverse solid (ADR-0040). At `8987b2d` that turned the circle of `IconButton/on-glass-over-map` from white to ink in light, which fired showcase §13.8 condition 8, and CI re-recorded its 6 light images, which fired §9.9 condition 6. §15 reads the 6 beside the images they replace. Only the circle's box changed, to the circle the example's fallback twins already drew. None is a copy, and no earlier verdict moves. RD-13 records that `Toolbar.yaml`'s `over-map` example specifies the traffic console's zoom cluster, the stack this control is not in.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -559,6 +560,8 @@ Each of these is one component. None fired a condition (§9.3), but before this 
 
 *Pointer added 2026-09-26: the web now records this group's Increase Contrast twins too, on `web-desktop` at regular density, 22 images. [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26) reads them (row 76): four rings deepen, the circle on the map equals its Reduce Transparency twin, and the other six are byte-identical. The verdict stands.*
 
+*Pointer added 2026-09-26: P4-10 made the solid on the scheme's glass the inverse solid (ADR-0040 §1), and CI re-recorded the 6 light images of `on-glass-over-map`. [§15](#15-re-review-of-iconbuttons-circle-on-glass-after-p4-10--2026-09-26) reads them (row 86). In light the circle is now the ink solid with a white glyph, the circle its Reduce Transparency and Increase Contrast twins already drew, so the *Closest image* bullet's white circle is the dark image's alone. `Toolbar.yaml` specifies the stack that bullet says it is not in (RD-13). The verdict stands.*
+
 ### 9.6 Is any of these close enough to one product that a reasonable person would call it a copy?
 
 Rows 13–18 continue §4's numbering.
@@ -826,6 +829,8 @@ The web map draws no route, so no web image shows any of this.
 2. Avatar's two are the first bare marks on the route, and a round mark on a route is a position on a map. That is the genre of every location-sharing screen, while the reference's mark is a vehicle's. The distance rests on what is absent (§10.4.3). The gallery already holds most of the other parts, each in a different example: the route; a mark at its bend; a locate control and a pin on glass at the same point; a readout on glass over the map (`Surface/glass-over-map`, `Text/on-glass-over-map`); and a fleet-unit glass card over the image (`Card/glass-vehicle`, RD-2 item 3). A composition that put them together would be 27220417's live map part for part, apart from the satellite ground, the heading arrow and the dashed ring.
 
 **What would help, and what it costs.** The one cheap change is in the harness: turn the Apple route somewhere other than the centre. It would move all 104 Apple map images through the sanctioned re-record route, and those re-records would fall under condition 6. It would buy little: a mark on a straight route still reads as a position on a map, and the route exists to put a high-contrast line under the glass (§3.4). This review does not recommend it on distance grounds, and it is not taken here, because this ticket changes no component and no harness. The finding is recorded so that §3.4's sentence is not read as a description of what the gallery shows on it. §10.8 condition 7 makes a composition that moves the mark towards the reference's an expiry condition.
+
+*Pointer added 2026-09-26: since P4-10's re-record, `IconButton/on-glass-over-map` is a white disc with a dark glyph in dark only. In light it is the ink solid with a white glyph, the colour of Apple's light route, whose legs end at the tile's edge, 24 px of glass from the circle. [§15.5](#155-does-anything-here-move-an-earlier-verdict-or-finding) reads it. The finding stands.*
 
 #### RD-10 — Sidebar's `rail` example specifies the finance dashboard's rail, and Avatar is its last missing part
 
@@ -1139,6 +1144,8 @@ Under Reduce Transparency every glass surface and every glass chip falls back to
 
 What differs between the stacks is what already differs in their standard images: the framing (the story's stage against a tight crop), the part of the synthetic map under the example, the route that only Apple's map draws (RD-9), the copy each harness gives Surface and Text (RD-3), and Card's ↗, drawn at rest under touch and on Apple.
 
+*Pointer added 2026-09-26: since P4-10's re-record ([§15](#15-re-review-of-iconbuttons-circle-on-glass-after-p4-10--2026-09-26)), IconButton's primary circle on the scheme's glass is the ink solid in the standard images too. So in light the fallback no longer changes the circle, only the tile under it.*
+
 ### 12.4 Is any of these close enough to one product that a reasonable person would call it a copy?
 
 Rows 44–61 continue §11.6's numbering, one row per example. Each row is the sentence §9.9 condition 3 asks for, and each group's section points to it.
@@ -1436,6 +1443,116 @@ With them the gallery review covers all 1931 images: the 1748 that §§3 and 9�
 - **Condition 3's variant clause.** Each new example brings two web Increase Contrast twins, and its section reads them with the rest of its images. If the web ever photographs Increase Contrast at compact density or on `web-touch`, or Bold Text, the 685 figures now "not in this matrix" become new variants of named examples, and a dated section reads them, as this one does.
 - **Condition 6** covers these 183 as it covers every committed baseline: a re-record that changes what one of them draws expires this clearance for it. P4-10, which changes IconButton's colours on glass, is the next one known.
 
+*Pointer added 2026-09-26: P4-10 landed at `8987b2d`, and [§15](#15-re-review-of-iconbuttons-circle-on-glass-after-p4-10--2026-09-26) reads the 6 images it re-recorded, all of them `IconButton/on-glass-over-map` in light. None of these 183 moved.*
+
 **It is not a legal opinion**, for the reasons §8 gives.
 
 The next section's verdict rows start at 86, and its findings at RD-13.
+
+---
+
+## 15. Re-review of IconButton's circle on glass after P4-10 — 2026-09-26
+
+- **Subject.** The **6 re-recorded images** of `IconButton/on-glass-over-map`, its standard images in the light scheme:
+  - 2 Apple: `ios`, regular and compact;
+  - 4 web: `web-desktop` and `web-touch`, regular and compact.
+
+  P4-10 made the one solid on the scheme's glass the inverse solid (ADR-0040 §1), and `8987b2d` moved IconButton's primary and selected circles to it on both stacks (IconButton specVersion 3, ADR-0040 §7). CI run 36255663851 on `8987b2d` re-recorded the 6, and the commit that adds this section commits them. The gallery still holds 1931 images in 872 cells, 0 missing, and 92 examples of 10 components (`gallery/index.json`, `counts`).
+- **Why.** Two conditions fired, and this section answers both.
+  - §9.9 condition 6: the re-record changes a tone the example draws, its circle's fill.
+  - Showcase §13.8 condition 8, from `8987b2d` on: both apps show the ink circle from that commit. The condition *"is answered when a dated section of the gallery review reads the change"*, and this change fills no slot.
+- **Format.** §13's, for a re-record: what changed (§15.1), how the images were read (§15.2), what they draw (§15.3), the verdict (§15.4), whether anything moves an earlier verdict or finding (§15.5), and one finding (§15.6).
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops, decodes and page captures made for this section stayed in the session scratchpad, and none is committed.
+
+### 15.1 What changed since §14's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| The wave-2 specs key `inverse`, `accent` and light glass, or state what they draw there, and their solid on the scheme's glass becomes the inverse solid (ADR-0040). No wave-2 spec is implemented. | `baf5f92` (P4-10 1/2) | 0 | — |
+| Button and IconButton key the three materials on both stacks, and IconButton's primary and selected circles leave the white media solid on glass for the inverse solid (Button 7, IconButton 3) | `8987b2d` (P4-10 2/2) | 0 | — |
+| The 6 images that change, re-recorded | run 36255663851, and this section's commit | 6 | yes, as the white circle (§9.5.4) |
+
+A diff over both baseline roots, from `2fa7daa` (the commit that added §14) to this section's commit, modifies these 6 images and adds or removes none. No other example renders a changed cell (ADR-0040, Consequences), and the run bears that out:
+- **Apple.** 871 of the 873 files it wrote, `provenance.json` among them, are byte-identical with the tree. The other 2 are this example's.
+- **The web.** It rewrote every baseline, as `--update-snapshots=all` does, and 1051 of the 1059 came back byte-identical. 4 of the other 8 are this example's.
+- **Four web files are left out.** The remaining 4 are `Avatar/ringed-over-map` Reduce Transparency images: `web-desktop` in dark at both densities and in light at compact, and `web-touch` in light at compact. Each differs from the committed image in 3 to 7 pixels, by at most 4 code values, in one spot of at most 5 × 6 px just outside the ring. That is the antialiasing below the comparison's threshold that §13.1 found, and each is byte-identical to the copy run 36247333811 made of the same file. No change of P4-10 touches Avatar, so they were not committed, and the images §10 and §12 read are the ones in the tree.
+- **The example's other 24 images** are byte-identical with the tree: its dark images, and all its Increase Contrast and Reduce Transparency twins, 10 on Apple and 14 on the web.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started. `DashboardGrid.yaml` reads the new `accent` cells for its control swap, in its spec alone.
+- Condition 3 did not fire. No example is new, and no variant was added, so the 92 that §9.8, §10.7 and §11.8 name are still the whole list.
+- Condition 4 did not fire. `on-glass-over-map` fills no slot.
+- Condition 5 did not fire. The circle carries no badge, and no button joins `Badge/on-glass-over-map`.
+- Condition 6 fired for the 6, and this section answers it.
+- Condition 7 did not fire. The circle is still a control on a glass tile. Nothing on the map gains a heading arrow, a ring, a halo or a card, and the map is unchanged. §15.5 reads the circle against RD-9.
+- Condition 8 did not fire. No chip changed.
+
+### 15.2 Method
+
+- **Every image, old beside new.** All 6 were opened on two contact sheets, one per stack. Each row set the committed image beside the new one, then the new image's Reduce Transparency twin, its Increase Contrast twin where the stack records one, and the dark image of the same density: Apple's sheet at 2× nearest-neighbour, the web's at 1×. A third sheet set Apple's images beside `web-desktop`'s at 2×, in light at both densities and in dark. A fourth set the tile and its circle at 4× on each stack: old, new, fallback and dark.
+- **Decoded, not read by eye.** For each image: its size; the box in which it differs from the image it replaces, the number of pixels that differ and by how much; and the colour inside the box and just outside it, before and after. Inside the circle, the glyph: its pixels, its box and its extreme colour. Then the new circle against the example's Reduce Transparency and Increase Contrast twins, pixel by pixel inside the box, and, on Apple, the route's two legs up to the circle. Every colour below is a decoded pixel.
+- **Byte comparisons.** `web-touch` is byte-identical to `web-desktop` in both pairs, as the images they replace were. The 6 committed files are byte-identical to the run's artifacts.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, from the working tree after `pnpm gallery:build`, as §10.2 did. All 1931 images decode, and none is missing. The example's article, under "variant: primary, size: md, glyph: action.locate, label: Center on the vehicle", shows the 6 new images in its two light standard cells, beside its unchanged images in the other ten. The copies of the 6 that the page reads are byte-identical to the baselines.
+- **The references.** Those §9.5.4 and RD-9 name: the traffic console 27220417's map controls and its puck, the finance dashboard 27678963's solid ink circles, and the incident console 27571204's round tools over its map. The analyses' colour and component tables were read for every solid round control and every control over a map.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 686 files: §14's 684, and the two colour sets `8987b2d` added under `swift/Sources`. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current.
+
+### 15.3 What the new images draw
+
+- **The circle.** In light the primary circle is the inverse solid, (13, 14, 17), with a white glyph, (255, 255, 255). It was the white media solid, (255, 255, 255), with an ink glyph, (13, 14, 17). The difference is the circle's box exactly, on both stacks, and every image keeps its size:
+  - Apple, 136 × 136: a 40 × 40 box from (48, 48), 1324 pixels; at compact, 112 × 112, a 32 × 32 box from (40, 40), 856 pixels;
+  - the web, 312 × 312: a 40 × 40 box from (136, 136), 1318 pixels; at compact, 288 × 288, a 32 × 32 box from (128, 128), 852 pixels.
+
+  No pixel moves by more than 242 code values, the distance from white to ink.
+- **The glyph** is the same drawing in the same place, inverted: 140 pixels in a 19 × 19 box on Apple and 150 in an 18 × 18 box on the web, at both densities. It is each stack's registry binding of `action.locate`: the SF symbol on Apple, and Phosphor's crosshair on the web.
+- **The tile and the map do not move.** The glass just outside the circle decodes as it did: (231, 232, 235) on Apple and (237, 238, 240) on the web, at regular. On Apple the route's two legs, ink in light, (13, 14, 17), end at the tile's edge: 12 px of the leg from the leading side and 9 px of the one from the top show at regular, 14 and 12 at compact. The glass shows nothing of them, and 24 px of it lie between their ends and the circle (16 at compact). The web map draws no route.
+- **It is the fallback's circle.** Every ink and every white pixel in the new circle's box equals the same pixel in the example's Reduce Transparency twin, and in its Increase Contrast twin where the stack records one: 1036 of 1036 on Apple at regular and 592 of 592 at compact, 1022 of 1022 and 578 of 578 on the web. In those twins the tile falls back to `raised`, so they have drawn the inverse solid since they were recorded (§12.3, §14.3). The light images now differ from them only around the circle: glass over the map, where the twins have the opaque raised step.
+- **Dark does not move.** `color.bg.fill.inverse` is white in dark, so the circle is the white disc with an ink glyph it was, on smoked glass. The 6 dark images are byte-identical to those §9.5.4 read.
+
+That is the rule ADR-0030 §3.1 and ADR-0040 §1 state: on the scheme's glass the solid is `color.bg.fill.inverse`, ink on light glass and white on smoke. It is the solid of the signed-off board's glass (`.cardglass` in `index.html`), and `IconButton/primary-md`'s ink circle set on glass. The two stacks agree on the fill, the glyph's colour and the box. Their pixel counts differ by 6 at regular and 4 at compact, the antialiasing and the glyph drawings in which their standard images already differ.
+
+### 15.4 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Row 86 continues §14.4's numbering.
+
+| # | Example (group) | Copy? | Why |
+|---|---|---|---|
+| 86 | `IconButton/on-glass-over-map` (§9.5.4), its 6 re-recorded images | **No**; rows 17, 54 and 76 stand | A solid ink circle with a white locate glyph, alone on a light glass tile over the synthetic map. The white disc with a dark glyph, the material of the traffic console's puck, is gone from the light scheme. The finance dashboard's solid ink circle takes its place, and no reference sets that circle on a map. |
+
+**Summary.** None of the 6 is close enough to one product that a reasonable person would call it a copy. Each draws what the image it replaces drew, with the solid's two colours exchanged inside the circle.
+
+### 15.5 Does anything here move an earlier verdict or finding?
+
+No verdict moves, and no finding changes its conclusion.
+- **§9.5.4 and row 17.** The group's *Closest image* bullet reads "a white solid circle with a locate crosshair". That is now the dark image alone. In light the circle is the ink solid, which moves the image away from the traffic console's round map controls, white-tinted glass at about 25 % over its dark map, and from its puck, a white disc at 85 % with a dark glyph (the traffic analysis, §2.2 and §6). It moves towards the finance dashboard's solid ink circle with a white glyph, which §9.5.4 already names, and which that dashboard sets on glass too: the × on its smoked drawer, and the ↗ on a light glass pill (its analysis, §1, §6 and §8). None of those circles stands on a map, and the dashboard has none. The example is still one control, alone and not in its stack; RD-13 says where that stack is specified. §9.5.4 carries a pointer.
+- **Rows 54 and 76.** Their images did not change. §12.3, §12.5 and row 54's pointer say that in light the fallback turns the circle from white to ink. Since this re-record the standard image is ink as well, so in light the fallback changes only the tile. §12.3 carries a pointer.
+- **RD-9 and condition 7.** In dark nothing moves: a white disc with a dark glyph on a smoked tile where Apple's white route turns, which RD-9 read. In light the circle now takes the colour of Apple's light route, ink. So on Apple, in both schemes, the circle is the colour of the route that runs into its tile, as 27220417's puck is the colour of its route. But the tile stands between them: the legs end at its edge, 24 px of glass from the circle, and the glass shows nothing of them. The puck stands on its route, with a heading arrow, inside a dashed ring, read out by a card beside it, and none of that is here. The light image is also that dark map's palette inverted. RD-9's conclusion holds, and condition 7 has not fired. RD-9 carries a pointer.
+- **RD-6 and condition 5.** `on-glass-over-map` is still one of the three parts of 27571204's bell that RD-6 lists: a round control on glass over the map. That bell is a round button of chip glass with a white glyph (the incident analysis, Surfaces & Depth). In light the circle is now an opaque ink one, further from it, and in dark it is unchanged. Nothing is composed, and condition 5 has not fired.
+- **RD-2 item 3 and RD-12.** Untouched: `Card/glass-vehicle` and `Chip/identifier-copy` did not change.
+
+### 15.6 Findings of this re-review
+
+#### RD-13 — `Toolbar.yaml`'s `over-map` example specifies the traffic console's zoom cluster, the stack §9.5.4 says this control is not in
+
+**What.** §9.5.4 calls `on-glass-over-map` "one of the traffic console's map controls, alone and not in its stack". That stack is 27220417's zoom cluster, which the incident console 27619812 re-posts: three 44 px round glass buttons, + / target / −, 8 px apart at the bottom-left of the map (the traffic analysis, §6). `Toolbar.yaml`'s `over-map` example specifies it: "Map tools", three IconButtons, zoom in, zoom out and locate ("Centre on me"), on one track that renders the glass chip over the map. Its `zoom-cluster` example is the two zoom buttons, stacked, on the page.
+
+**Why it matters.** Toolbar is unimplemented (P4-42), so no screen draws it, and nothing is uncovered today. But it is where this example's defence stops, as TopBar's `desktop-navigation` is where `with-badge`'s does (RD-7) and Sidebar's `rail` is where `ringed`'s does (RD-10). Zoom and locate are every map's controls, so the set is the genre's. The three in one group over a map are that shot's cluster, with one glass track behind them where the reference has three glass rounds, and the locate button moved to the end.
+
+**Action.** None now. The example fills Toolbar's `items` slot with IconButtons, so conditions 3 and 4 already hold it outside this clearance until a dated section reads it, and that section reads it against 27220417's cluster. Recomposing it is cheap while Toolbar is unimplemented: for instance zoom alone, as `zoom-cluster` has it, or controls the cluster does not have. It is recorded so that whoever implements Toolbar reads it before recording the first baseline.
+
+### 15.7 Coverage
+
+| Component | Example | Re-recorded images | Group |
+|---|---|---|---|
+| IconButton | `on-glass-over-map` | 6: 2 Apple, 4 web | §9.5.4 |
+
+With them the gallery review covers all 1931 images: the 1925 that §§3 and 9–14 read, as they still are, and these 6.
+
+### 15.8 What this clearance covers, and when it expires
+
+**It covers** the gallery at the commit that adds this section: all 1931 images, 92 examples and 10 components. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires on §9.9's conditions, as §10.8, §11.9, §12.7 and §14.7 read them.** Condition 6 covers these 6 as it covers every committed baseline, and conditions 3 and 4 hold RD-13's example until Toolbar's section reads it.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next section's verdict rows start at 87, and its findings at RD-14.
