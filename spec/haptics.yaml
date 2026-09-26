@@ -6,8 +6,10 @@
 # which the OS 26 floor satisfies. Platform playback per Apple: success/warning/error/selection/impact
 # play on iOS and watchOS; alignment on iOS and macOS; levelChange macOS only; start/stop watchOS only;
 # increase/decrease watchOS and visionOS; pathComplete iOS only.
+# Rules 5 to 8 were written for primitives wave 2 by roadmap P4-11 (2026-09-26), which also answers P4-D7 with
+# rule 7; the version is the registry's own (ADR-0038) and moved to 0.2.0 with them.
 
-version: 0.1.0
+version: 0.2.0
 haptics:
   haptic.selection:
     intent: A discrete selection changed (segment, picker step, scrubber snap).
@@ -116,6 +118,7 @@ haptics:
     macos: none
     watchos: SensoryFeedback.press(.button)
     web: none
+  # No Prism control binds haptic.press.toggle: a toggle's press plays the haptic of the value it changes (rule 5).
   haptic.press.toggle:
     intent: Touch-down on a toggle.
     ios: SensoryFeedback.press(.toggle)
@@ -170,3 +173,7 @@ rules:
   - At most one haptic per user action; never on programmatic state changes.
   - watchOS enforces a 100 ms minimum between plays and no playback in the background; DSCore throttles.
   - No haptics while HealthKit heart-rate sampling is active on watchOS (Apple constraint).
+  - "One action plays the haptic of what it did. A control whose own contract is to change a value - a Toggle's `isOn`, a Checkbox's `value`, the selection of a Radio or a SegmentedControl, the value of a Slider, a Stepper or a Pagination - plays the haptic of that change (haptic.selection.on or haptic.selection.off, haptic.selection, haptic.increase, haptic.decrease, haptic.selection.limit) in place of any press haptic for the same press, and a press that changes nothing plays nothing. A control whose press only asks the app for something - Button, Card, IconButton, and a filter Chip, whose `isSelected` the app sets - plays its press haptic on touch-down and nothing when the app then changes its state (rule 8). A drag's grab and release are events of their own, which haptic.press.slider and haptic.release.slider mark."
+  - "One event, one haptic. Where two of a control's haptics fall on one event, the one that says more plays alone: haptic.selection.limit, not haptic.selection, on a Slider stop that is also an end. A jump that crosses several stops at once - a tap on a Slider's track, Page Up, Home - is one event and plays one haptic, for where it lands; a drag plays one at each stop it crosses."
+  - "A host plays its haptic in place of its control's. A component that selects or steps through controls it hosts - TabBar and Pagination over their IconButtons, Stepper over its two - plays its own haptic instead of the hosted control's press haptic, never beside it. Each stack silences the hosted press haptic through a switch internal to its package, which the first such host builds; an app has no way to silence a Prism control's haptic, and the web, which plays none, has nothing to switch."
+  - "A state the caller sets plays nothing. A component plays a haptic only for an action it receives - a press, a drag, a step from the keyboard, the Digital Crown or an assistive adjustment - and never because a prop changed: `isInvalid`, `isSelected`, `isOn` or `value` set by the caller is a programmatic change, whatever the user did upstream. The outcome of work only the app sees - a submission that fails validation, a request that succeeds - is the app's to play, once per outcome and never once per field, with DSCore's `dsHaptic(_:trigger:)`; no Prism component plays haptic.error, haptic.success or haptic.warning for it."

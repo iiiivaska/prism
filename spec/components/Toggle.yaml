@@ -48,6 +48,7 @@ states: [default, hover, pressed, selected, focus-visible, disabled]
 tokens:
   root:
     gap: space.3
+    radius: radius.inner
     hover:
       overlay: color.bg.fill.neutral.subtle
     pressed:
@@ -114,7 +115,9 @@ behavior:
   - "On a vivid surface the on track becomes the white solid (color.bg.fill.inverse-media) with the opposite-colored knob (color.text.on-inverse-media). On the scheme's glass and on light glass it stays the inverse solid of its default cells, comp.toggle.track.on under comp.toggle.knob.on: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1). Off the solid surface ladder the off track drops its neutral wash - `track.background` has no cell there and no `default`, so it draws no fill at all, the ghost grammar of ADR-0029 §3.3 - and shows as an outline in color.border.on-media or color.border.on-glass-fill with the knob in that material's own foreground, color.text.on-vivid, color.text.on-glass-fill or color.text.on-glass-light."
   - "On an inverse or an accent surface, which carry their own foreground, the switch is drawn in it (ADR-0040 §3). Off, the track is an outline in color.text.on-inverse, or color.text.on-accent-secondary, around a knob of the same tone, color.text.on-inverse or color.text.on-accent-secondary. On, the track knocks out: it fills with the material's primary foreground, color.text.on-inverse or color.text.on-accent, and the knob takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent. So the on track never vanishes into an inverse ground, and on the dark lit tile it is ink, not a white solid at 2.30:1."
   - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Toggle with no visible label therefore stays off vivid and off the scheme's glass, where nothing but the ring would say a control is there."
-  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities and replaces the hover overlay rather than stacking with it, so the row never tints twice.
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities and replaces the hover overlay rather than stacking with it, so the row never tints twice. Hover takes its stack's Button timing, and no hover motion cell is bound here (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6).
+  - "The row's outline is `root.radius`, radius.inner: the radius of a row inside a card, which ListRow binds too. The hover and pressed overlay fills the row's own box, label and control, clipped to that radius, and never the hit region, which grows with modality and would make the wash jump; the focus ring follows the same outline outside the box. A Toggle with no visible label is a row of the track alone, so there the overlay and the ring follow the track at radius.control."
+  - "One flip, one haptic: haptic.selection.on or haptic.selection.off when the value changes - on release for a tap or Space, on commit for a drag - and nothing for a press or a drag that changes nothing. No press haptic plays before it, because a flip is one action (spec/haptics.yaml rules 2 and 5)."
   - "`isDisabled` lowers opacity to opacity.disabled, removes the control from the focus order and ignores taps; a switch that cannot move is better replaced by a sentence saying why."
   - There is no size prop. Every control in a Prism screen shares one family and one height (visual-dna §1 principle 13), and comp.toggle.height follows density.
 
@@ -124,7 +127,6 @@ motion:
   reduceMotion: crossfade
 
 haptics:
-  press: haptic.press.toggle
   on: haptic.selection.on
   off: haptic.selection.off
 
@@ -132,7 +134,7 @@ accessibility:
   role: switch
   label: the `label` prop, or an explicit name when no label is visible; the label says what the switch controls and never contains the word on or off, which the value carries
   traits: [toggle]
-  keyboard: Space flips the switch; Enter does not activate it; the focus ring is color.border.focus at border.focus width around the row, following radius.control on the track when the row has no label
+  keyboard: Space flips the switch; Enter does not activate it; the focus ring is color.border.focus at border.focus width around the row, following `root.radius` (radius.inner), or radius.control around the track when the row has no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs, so the row grows while the track keeps comp.toggle.height
   contrast: the on track is color.text.on-inverse on color.bg.fill.inverse, on vivid color.text.on-inverse-media on color.bg.fill.inverse-media, and knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and color.bg.fill.accent on color.text.on-accent, each a functional pair against the ground too (color.text.on-inverse on color.bg.fill.inverse, color.text.on-accent on color.bg.fill.accent); the off track's outline is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json, and comp.toggle.knob.off aliases color.icon.secondary, the color.text.secondary ramp step, which passes on those three grounds. On vivid, on the scheme's glass and on light glass the knob takes color.text.on-vivid, color.text.on-glass-fill or color.text.on-glass-light, each checked against every backdrop those materials may meet; the rings there (color.border.on-media, color.border.on-glass-fill) are decorative and have no pair of their own, so the label carries the control (ADR-0030 §3.2). On inverse and accent the outline and the off knob are color.text.on-inverse or color.text.on-accent-secondary on the material's fill, functional pairs (ADR-0040 §3)
   reduceTransparency: not applicable (Toggle draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the switch renders its default cells, and a selected glass Surface falls back to inverse, where the switch knocks out (behavior)

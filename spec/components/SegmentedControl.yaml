@@ -190,7 +190,8 @@ behavior:
   - "`isFullWidth` gives every segment the width of the widest, so the row keeps one rhythm; otherwise each segment is as wide as its content plus its padding."
   - An icon-only segment keeps the same height and takes a square footprint; it carries an accessibility label from the registry id's meaning, never from the glyph alone.
   - "Moving the selection slides nothing: the outgoing segment loses its fill and the incoming one gains it, and the incoming segment scales to 0.97 and back under motion.spring.snappy."
-  - Hover (pointer only) adds the neutral overlay to an unselected segment; the selected segment does not change on hover, because it is already the solid.
+  - Hover (pointer only) adds the neutral overlay to an unselected segment; the selected segment does not change on hover, because it is already the solid. Hover takes its stack's Button timing, and no hover motion cell is bound here (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6).
+  - "One choice, one haptic: a press or an arrow key that moves the selection plays haptic.selection, with no press haptic before it, and a press on the segment already selected moves nothing and plays nothing (spec/haptics.yaml rules 2 and 5)."
 
 motion:
   select: motion.spring.snappy

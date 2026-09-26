@@ -277,22 +277,20 @@ behavior:
   - "A field that needs a label over media or on a vivid surface goes inside a glass or solid Card, where the enclosing Surface publishes its material and the quieter tones follow it. A label, helper or error row is never drawn on vivid: color.text.on-vivid is checked at 24 px and above, and these rows are caption and label sizes (ADR-0030 §8)."
   - "On an inverse surface, which carries one foreground, every tone of the field is color.text.on-inverse and its edge takes the same tone, a functional pair on color.bg.fill.inverse, so no ink value lands on an ink ground; the error row keeps its glyph and loses its hue, as on glass. On light glass the tones are color.text.on-glass-light and the edge color.border.on-glass-fill, the scheme's glass grammar with light glass's one tone (ADR-0040 §2, §3)."
   - "`isInvalid` swaps the helper row for the error row, thickens the edge to border.strong in the critical stroke, and exposes the message as the input's description; the message is announced once, politely, when it appears."
+  - "The field plays no haptic of its own. The caller sets `isInvalid`, which is a programmatic change to the field (spec/haptics.yaml rules 2 and 8), so the error row appears without one; a failed submission is felt once, as the app's haptic.error for that submission, whatever the number of fields it marks invalid."
   - The error row pairs the status.danger glyph with the message, so the state never rests on color alone; the caret takes the input's own color.
   - "`isReadOnly` keeps the value selectable and focusable and draws color.bg.fill.neutral.subtle over whatever fill the box already has, so over media the veil sits on the glass chip rather than replacing it; `isDisabled` lowers the whole field to opacity.disabled and removes it from the focus order."
-  - "`isRequired` puts the word in the label (\"Batch id (required)\"), never a lone asterisk or a color, and sets the field's required state for assistive technology; an optional field in a form of required ones is marked the same way, in words."
+  - "\"Required\" is said once, in the caller's words. A required field says so in its `label` (\"Batch id (required)\"), never with a lone asterisk or a color, and the label is also the field's accessible name, so every reader meets the word once. `isRequired` marks the field required for the form around it, which FormField forwards, and adds no second announcement: the field sets neither `aria-required` nor `required` on the web, and Apple has no required trait. The word is the caller's because the label already carries it, the third of ADR-0032's cheaper routes, so no strings key is added for it. A form of mostly required fields marks its optional ones instead, the same way, in words."
   - "`contentType: number` and `tel` render the value with tabular figures, so digits keep their column while the caret moves; every other content type keeps the role's proportional figures. The placeholder uses the input's own typography and differs from the value in color only."
   - The value never truncates while the field has focus; it scrolls horizontally inside the box, and the label, helper and error rows wrap instead of truncating.
   - "`isClearable` shows the nav.close glyph in the trailing action once the value is non-empty; pressing it empties the field, keeps focus and fires `onChange`."
   - "`contentType: password` masks the value; `isRevealable` then shows object.eye in the trailing action while the value is masked and object.eye-off while it is shown, and pressing it toggles the masking without changing the value or the focus. Only one trailing action is ever drawn: on a revealable password field the reveal wins and `isClearable` is ignored."
   - "The trailing action is a circular control of size.icon.lg at radius.control, inset inside the box at every size, with a size.icon.sm glyph; its own hit region follows the hit rule, and it is a separate focus stop from the input."
-  - Hover (pointer only) lifts the edge to color.border.strong; focus replaces it with color.border.focus and draws the ring outside the pill.
+  - Hover (pointer only) lifts the edge to color.border.strong; focus replaces it with color.border.focus and draws the ring outside the pill. Hover takes its stack's Button timing, and no hover motion cell is bound here (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6).
 
 motion:
   focus: motion.duration.fast
   reduceMotion: crossfade
-
-haptics:
-  error: haptic.error
 
 accessibility:
   role: textbox
@@ -303,7 +301,7 @@ accessibility:
   contrast: the placeholder is color.text.tertiary, which is functional text below 24 px and holds 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the rest edge is color.border.boundary, whose 3:1 boundary pairs are on the same three grounds; over media every tone is color.text.on-glass-fill on material.glass.chip; on an accent surface the field has no fill of its own, its tones are color.text.on-accent and color.text.on-accent-secondary on color.bg.fill.accent, and its edge takes color.text.on-accent-secondary, because color.border.boundary reaches only 2.4:1 there and the edge is what identifies the control; on an inverse surface every tone and the edge are color.text.on-inverse on color.bg.fill.inverse, and on light glass the tones are color.text.on-glass-light on material.glass.light.fill, checked against light glass's backdrops, with color.border.on-glass-fill decorative there as on the scheme's glass (ADR-0030 §3.2, ADR-0040)
   reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws a box that renders the glass chip as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the box publishes raised, so every part takes its default cell, the field takes its color.border.boundary edge back and every tone returns to the solid family
   reduceMotion: the focus ring and the error row do not slide; they crossfade over motion.duration.base with motion.easing.out, and the edge color changes in place
-  voiceOver: announces label, value or placeholder, then "required" and the helper text; on `isInvalid` the error message is announced once as the field's description
+  voiceOver: announces the label, which carries "required" in the caller's words when the field is required, then the value or placeholder and the helper text; no second "required" follows, because the field sets no required state of its own; on `isInvalid` the error message is announced once as the field's description
 
 usage:
   do:

@@ -22914,7 +22914,7 @@
             "light",
             "dark"
           ],
-          "props": "label: Порог оповещения по давлению, helper: От одного до шести бар, isRequired: true",
+          "props": "label: Порог оповещения по давлению (обязательно), helper: От одного до шести бар, isRequired: true",
           "cells": []
         }
       ]

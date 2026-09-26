@@ -53,6 +53,7 @@ states: [default, hover, pressed, selected, focus-visible, disabled]
 tokens:
   root:
     gap: space.3
+    radius: radius.inner
     hover:
       overlay: color.bg.fill.neutral.subtle
     pressed:
@@ -104,7 +105,9 @@ behavior:
   - "On a vivid surface the outline takes color.border.on-media and the selected circle becomes the white solid (color.bg.fill.inverse-media) with an ink dot (color.text.on-inverse-media). On the scheme's glass and on light glass the outline takes color.border.on-glass-fill and the selected circle stays the inverse solid of its default cells: ink on light glass and white on smoke (ADR-0030 §3.1, ADR-0040 §1)."
   - "On an inverse or an accent surface, which carry their own foreground, the circle is drawn in it (ADR-0040 §3): the outline is color.text.on-inverse or color.text.on-accent-secondary, and the selected circle knocks out - it fills with color.text.on-inverse or color.text.on-accent and its dot takes the material's own fill, color.bg.fill.inverse or color.bg.fill.accent - so a selected circle never vanishes into an inverse ground."
   - "Those rings are decorative on media (ADR-0030 §3.2): they outline a control the label beside them already identifies. A Radio with no visible label therefore stays off vivid and off the scheme's glass, where an unselected circle would be nothing but a decorative ring."
-  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities, and replaces the hover overlay rather than stacking with it.
+  - Hover is pointer-only and adds color.bg.fill.neutral.subtle over the row; touch never shows a hover state (ADR-0010 rule 2). Pressed lays the same token over the row on both modalities, and replaces the hover overlay rather than stacking with it. Hover takes its stack's Button timing, and no hover motion cell is bound here (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6).
+  - "The row's outline is `root.radius`, radius.inner, as Toggle's is: the radius of a row inside a card, which ListRow binds too. The hover and pressed overlay fills the row's own box, circle and label, clipped to that radius, and never the hit region, which grows with modality; the focus ring follows the same outline outside the box. A Radio with no visible label is a row of the circle alone, so there the overlay and the ring follow the circle at radius.control."
+  - "One choice, one haptic: a tap or an arrow key that selects this option plays haptic.selection, with no press haptic before it, and a tap on the option already selected changes nothing and plays nothing (spec/haptics.yaml rules 2 and 5)."
   - "Pressed never touches the circle's own fill: the selected option keeps comp.radio.bg.selected while the finger is down, so the chosen option never reads as cleared mid-press."
   - "`isDisabled` lowers opacity to opacity.disabled, removes the option from the focus order and ignores taps; disabling the whole group disables every option and keeps the selected one visible."
   - A Radio is always part of a group, and a group always has one option selected by the time it is submitted. The group's own label, help and error lines are FormField's.
@@ -115,14 +118,13 @@ motion:
   reduceMotion: crossfade
 
 haptics:
-  press: haptic.press.button
   select: haptic.selection
 
 accessibility:
   role: radio, inside a group with role radiogroup
   label: the `label` prop, or an explicit name when no label is visible; the group's own name comes from FormField and is announced before the option
   traits: [button]
-  keyboard: the group takes one tab stop; the arrow keys move the selection between options and wrap at the ends; Space selects the focused option; the focus ring is color.border.focus at border.focus width around the row
+  keyboard: the group takes one tab stop; the arrow keys move the selection between options and wrap at the ends; Space selects the focused option; the focus ring is color.border.focus at border.focus width around the row, following `root.radius` (radius.inner), and around the circle at radius.control when there is no label
   dynamicType: the label scales with type.body.md and wraps to as many lines as it needs; the circle keeps comp.radio.size and the row grows with the label
   contrast: the selected circle is color.text.on-inverse on color.bg.fill.inverse, on vivid color.text.on-inverse-media on color.bg.fill.inverse-media, and knocked out on inverse and accent color.bg.fill.inverse on color.text.on-inverse and color.bg.fill.accent on color.text.on-accent, functional pairs that also hold the circle against the ground; the outline on inverse and accent is color.text.on-inverse or color.text.on-accent-secondary on the material's fill, functional too (ADR-0040 §3); the outline of an unselected circle is color.border.strong, whose boundary-tier pairs (3:1) against color.bg.page, color.bg.surface and color.bg.surface.raised are in tokens/contrast-pairs.json. On vivid, on the scheme's glass and on light glass the outline is color.border.on-media or color.border.on-glass-fill, which ADR-0030 §3.2 makes decorative and gives no pair of its own; the label beside the circle is what identifies the control there, which is why a label-less Radio is not placed on those materials
   reduceTransparency: not applicable (Radio draws no material of its own); when the enclosing Surface falls back from glass to raised, the media cells stop applying and the circle renders its default cells, and a selected glass Surface falls back to inverse, where the circle knocks out (behavior)

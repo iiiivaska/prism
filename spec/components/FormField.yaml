@@ -141,18 +141,15 @@ behavior:
   - "`kind: group` labels a set rather than one control: the label becomes the group's own name (a `fieldset` legend on web, an accessibility container label on Apple), the options sit space.3 apart inside the group, and the error belongs to the group, not to one option."
   - "`isInvalid` swaps the helper row for the error row and exposes `errorText` as the control's description; the message is announced once, politely, when it appears, and it is not re-announced while the value changes."
   - "The error row pairs the status.danger glyph with the message, so the state never rests on colour alone (ADR-0011 rule 4). It replaces the helper rather than joining it, so a field never carries two lines of advice at once."
-  - "`isRequired` puts the word in the label (\"Batch id (required)\"), never a lone asterisk and never a colour, and sets the field's required state for assistive technology. In a form where most fields are required, the optional ones are marked the same way, in words."
+  - "\"Required\" is said once, in the caller's words. A required field says so in its `label` (\"Batch id (required)\"), never with a lone asterisk and never with a colour, and that label is the control's accessible name, so every reader meets the word once. `isRequired` marks the field required for the form, and FormField forwards it to a TextField, TextArea or Select or keeps it for a group; it adds no second announcement, so neither FormField nor its control sets `aria-required` or `required` on the web, and Apple has no required trait. The word is the caller's because the label already carries it, ADR-0032's third cheaper route, so no strings key is added. In a form where most fields are required, the optional ones are marked instead, the same way, in words."
   - "`labelVisibility: hidden` keeps the label in the accessibility tree and removes it from the layout; it exists for a control whose place already names it — a search pill in a top bar, one field in a labelled table column — and a placeholder is never a substitute for it."
   - "`layout: inline` puts the label before the control on one row, columnGap space.4 apart, and lifts it to type.body.md in color.text.primary, because there it reads as the row's own title rather than as a field name. It is the settings row: label leading, Toggle trailing. The helper and error rows stay below, aligned to the label."
   - "The label, the helper and the error rows all wrap and never truncate; the field grows in height instead (ADR-0011). Nothing in this component shrinks below its role's size to keep a height."
   - "`isDisabled` lowers the whole field to opacity.disabled and removes the control from the focus order; FormField never disables the label alone, because a label at opacity.disabled beside a live control reads as a broken field."
   - "A FormField contributes exactly the focus stops its control contributes, in the control's own order. The field itself, the label, the helper and the error row are never focus stops; on web the helper and the error reach the control through its description, not through the tab order. A `kind: group` field contributes the group's options in reading order, and a Radio group contributes one stop with arrow keys inside it, which is Radio's contract."
-  - "One error, one haptic. haptic.error plays once per failed submission, and only where the error row is drawn: a FormField that forwards to a TextField, TextArea or Select lets that control play it and plays none of its own, because spec/haptics.yaml allows at most one haptic per user action."
+  - "FormField plays no haptic, and neither does the control it wraps when `isInvalid` turns on: the caller sets `isInvalid`, which spec/haptics.yaml rule 2 makes a programmatic change. A failed submission is felt once, as the app's haptic.error for that submission, whatever the number of fields it marks invalid (rule 8), so a form of five invalid fields is one haptic, not five."
   - "A FormField paints no material of its own and takes the tones of the material the enclosing Surface publishes. It declares no cell for vivid: its rows run 12 to 15 px — type.caption for the helper and the error, type.label.md for the stacked label, type.body.md for the inline one — and ADR-0030 rule 7 allows text under 24 px on a gradient only inside a Card's header block, so a form on a vivid screen sits in a solid or glass Card over it."
   - "One field per line under touch; a two-column form is a pointer layout, and it aligns the labels, not the boxes."
-
-haptics:
-  error: haptic.error
 
 accessibility:
   role: "none of its own — FormField is a wiring element; `kind: group` exposes a group (a `fieldset` on web, an accessibility container on Apple)"
@@ -163,7 +160,7 @@ accessibility:
   contrast: "the stacked label, the helper and a group's caption are color.text.secondary, functional at 4.5:1 on color.bg.page, color.bg.surface and color.bg.surface.raised; the inline label is color.text.primary. The error message is color.text.critical and its glyph color.icon.status.critical, both paired in tokens/contrast-pairs.json; on inverse, accent and the glass materials the critical tone is not available, so the message takes that material's foreground and the glyph alone carries the state, as ChartContainer's message does"
   reduceTransparency: no material of its own — the enclosing Surface publishes raised instead of glass and every tone returns to the solid family
   reduceMotion: the helper and the error do not slide or grow; the row crossfades over motion.duration.base with motion.easing.out and the field's height changes at once
-  voiceOver: announces the label, then the control's value, then "required" and the helper; on `isInvalid` the error message replaces the helper in the description and is announced once when it appears
+  voiceOver: announces the label, which carries "required" in the caller's words when the field is required, then the control's value and the helper, with no second "required" after them; on `isInvalid` the error message replaces the helper in the description and is announced once when it appears
 
 motion:
   message: motion.duration.fast
@@ -212,8 +209,8 @@ examples:
     backdrop: map
     description: inside a glass panel over the map the label follows the published backdrop kind
   - id: russian-label
-    props: { label: "Порог оповещения по давлению", helper: "От одного до шести бар", isRequired: true }
-    description: the Russian label and helper run about a third longer, so both wrap and the field grows instead of truncating
+    props: { label: "Порог оповещения по давлению (обязательно)", helper: "От одного до шести бар", isRequired: true }
+    description: the Russian label and helper run about a third longer, so both wrap and the field grows instead of truncating; the label says "required" in the caller's Russian, as every required label says it in words
 
 notes:
   platform:
