@@ -213,6 +213,23 @@ public struct DSExampleRuleFrame<Content: View>: View {
     }
 }
 
+/// The frame a control's row is staged in: 2 × `size.card-min` wide, because the row takes the width it is given.
+///
+/// It is the snapshot harness's `DSExampleRowFrame` and the web's `.ds-sc-row-frame` / `.ds-gallery-row-frame`, so a
+/// Toggle example is 400 pt wide in every harness, which is where `label-ru` wraps. Without it the row would take the
+/// stage's fit-content width — its label's one-line ideal — and never wrap. Inside a Surface the frame is what the
+/// Surface hugs, at the default `card` padding.
+public struct DSExampleRowFrame<Content: View>: View {
+    private let content: Content
+    private var ds = DSThemeValues()
+
+    public init(@ViewBuilder content: () -> Content) { self.content = content() }
+
+    public var body: some View {
+        content.frame(width: ds.tokens.size.cardMin * 2, alignment: .leading)
+    }
+}
+
 /// An empty content slot at an example size, for a Surface example, which sets no content.
 public struct DSExampleSlot: View {
     public enum Size: Hashable { case card, tile, pill }

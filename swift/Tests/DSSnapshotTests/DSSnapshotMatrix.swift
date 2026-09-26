@@ -44,7 +44,7 @@ enum DSSnapshotMatrix {
     /// platform key).
     nonisolated static let platform = "ios"
     /// The components the manifest implements on iOS, in roadmap order: P3-3's four, then Phase 4's.
-    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar", "Chip"]
+    nonisolated static let components = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar", "Chip", "Toggle"]
     /// Both densities of the acceptance line: iOS's default and the pointer default.
     nonisolated static let densities: [DSDensity] = [.regular, .compact]
 
@@ -91,16 +91,17 @@ enum DSSnapshotMatrix {
 @MainActor
 @Suite("The P3-3 snapshot matrix and its file names")
 struct DSSnapshotMatrixTests {
-    /// 8 Surface, 6 Text, 7 Button, 7 Card, 6 Divider, 11 Icon, 10 Badge, 12 IconButton, 12 Avatar and 13 Chip examples;
-    /// one Card example is light only; 3 Surface, 1 Text, 2 Card, 1 Divider, 2 Icon, 1 Badge, 1 IconButton, 3 Avatar and
-    /// 4 Chip examples render glass — Avatar's two over the map because its circle is the glass chip there, and its one
-    /// inside the glass Surface; Chip's two over the map and its one inside the vivid Surface because its pill is the
-    /// glass chip there, and its one inside the glass Surface.
+    /// 8 Surface, 6 Text, 7 Button, 7 Card, 6 Divider, 11 Icon, 10 Badge, 12 IconButton, 12 Avatar, 13 Chip and 8 Toggle
+    /// examples; one Card example is light only; 3 Surface, 1 Text, 2 Card, 1 Divider, 2 Icon, 1 Badge, 1 IconButton,
+    /// 3 Avatar, 4 Chip and 1 Toggle examples render glass — Avatar's two over the map because its circle is the glass
+    /// chip there, and its one inside the glass Surface; Chip's two over the map and its one inside the vivid Surface
+    /// because its pill is the glass chip there, and its one inside the glass Surface; Toggle's one inside the glass
+    /// Surface over the map.
     ///
     /// Surface 8×8 + 3×4 = 76, Text 6×8 + 1×4 + 6×4 = 76, Button 7×8 = 56, Card 6×8 + 1×4 + 2×4 = 60,
     /// Divider 6×8 + 1×4 = 52, Icon 11×8 + 11×4 + 2×4 = 140, Badge 10×8 + 1×4 = 84, IconButton 12×8 + 1×4 = 100,
-    /// Avatar 12×8 + 3×4 = 108, Chip 13×8 + 4×4 = 120.
-    static let expectedCount = 872
+    /// Avatar 12×8 + 3×4 = 108, Chip 13×8 + 4×4 = 120, Toggle 8×8 + 1×4 = 68.
+    static let expectedCount = 940
 
     @Test func theMatrixHasTheExpectedSizeAndUniqueNames() {
         let paths = DSSnapshotMatrix.allPaths

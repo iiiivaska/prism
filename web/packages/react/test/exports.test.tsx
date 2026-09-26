@@ -8,7 +8,8 @@
  * - rule 13 of ADR-0020 is `lint:literals` kind `brand`; this suite only checks that the package names
  *   no brand in its bundle;
  * - ADR-0036 §8: `Surface` and `Backdrop` are the only public publishers of a surface context, so the
- *   context object, its root value, the resolvers and the chip shape are not exported;
+ *   context object, its root value, the resolvers and the chip shape are not exported; ADR-0041 decision 10:
+ *   neither is the name context a host hands a control's name through;
  * - the export map, resolved by a scratch consumer over the built package: `.`, `./styles.css`,
  *   `./spec/*` (C-14's second half) and `./package.json`.
  */
@@ -55,6 +56,13 @@ const INTERNAL = [
   "SurfaceChipScope",
   "SurfaceChipEdge",
   "SurfaceChipEnclosureContext",
+  // ADR-0041 decision 10 (proposed): the name context stays inside the package until P4-34 decides otherwise, and
+  // with it the functions that read it; `LabelVisibility` and `labelVisibilities` are public.
+  "NameContext",
+  "useControlName",
+  "controlName",
+  "checkControlName",
+  "ControlRowLabel",
 ] as const;
 
 /**
@@ -82,6 +90,9 @@ const MINIMUM_PROPS: Readonly<Record<string, Readonly<Record<string, unknown>>>>
   IconButton: { glyph: "nav.back", label: "Back", onPress: () => {} },
   // Chip.yaml `label`, required.
   Chip: { label: "Route L24" },
+  // Toggle.yaml `onChange`, required, and a `label`: a Toggle renders its row without one, but a switch with no name
+  // is a defect it reports (ADR-0041), and this suite is about the root element, not about that report.
+  Toggle: { label: "Night shading", onChange: () => {} },
 };
 
 /** Where this package reads the specs from: the repository's own `spec/components`. */

@@ -16,6 +16,7 @@ extension DSShowcaseRenderers {
         "IconButton": DSIconButtonRenderer(),
         "Surface": DSSurfaceRenderer(),
         "Text": DSTextRenderer(),
+        "Toggle": DSToggleRenderer(),
         "Card": DSCardRenderer(),
     ]
 }

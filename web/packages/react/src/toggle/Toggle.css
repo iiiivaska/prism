@@ -1,0 +1,211 @@
+/*
+ * Toggle (spec/components/Toggle.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * (ADR-0019 §4 item 6 as amended by ADR-0025), after ../control-row/ControlRow.css, which draws the row.
+ *
+ * The React Toggle's root is React Aria's `SwitchField`: it writes data-ds-surface (the material the enclosing
+ * Surface publishes) and data-ds-label (whether the label is drawn), and React Aria adds data-selected and
+ * data-disabled. This sheet maps them to the tokens Toggle.yaml binds, as custom properties on the root that the row,
+ * the track and the knob inherit:
+ *
+ *   - the row's cells, `tokens.root` and `tokens.label`, as the control row's --ds--control-row-* properties, its
+ *     hover and pressed washes by material (ADR-0042 §2);
+ *   - the track's fill, outline and outline width, and the knob's fill, by material and selection
+ *     (--ds--toggle-track, --ds--toggle-border, --ds--toggle-border-width, --ds--toggle-knob);
+ *   - where the knob rests, as a progress along the track (--ds--toggle-progress), 0 off and 1 on, which the
+ *     React Toggle overrides on the track while a drag holds the knob.
+ *
+ * It reads no axis attribute and no media query but forced colors: the track follows density through
+ * comp.toggle.height, and Reduce Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4). No
+ * selector uses :not(), which test/cascade.ts cannot read. Custom properties named --ds--toggle-* are this
+ * component's own (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  .ds-toggle {
+    /* tokens.root and tokens.label: the row's cells (../control-row/ControlRow.css). */
+    --ds--control-row-gap: var(--ds-space-3);
+    --ds--control-row-radius: var(--ds-radius-inner);
+    --ds--control-row-hover: var(--ds-color-bg-fill-neutral-subtle);
+    --ds--control-row-press: var(--ds-color-bg-fill-neutral-subtle);
+    --ds--control-row-disabled: var(--ds-opacity-disabled);
+    --ds--control-row-ring: var(--ds-color-border-focus);
+    --ds--control-row-ring-width: var(--ds-border-focus);
+    --ds--control-row-font-size: var(--ds-type-body-md-font-size);
+    --ds--control-row-line-height: var(--ds-type-body-md-line-height);
+    /* The track is the row's control: its height is centred on the first line, and its radius outlines a bare row. */
+    --ds--control-row-control-size: var(--ds-toggle-height);
+    --ds--control-row-control-radius: var(--ds-radius-control);
+    /*
+     * Off, on a material off the solid ladder: no fill of its own (`track.background` has no cell there and no
+     * `default`), the outline in color.border.strong at border.hairline, the quiet knob, at the leading end.
+     */
+    --ds--toggle-track: transparent;
+    --ds--toggle-border: var(--ds-color-border-strong);
+    --ds--toggle-border-width: var(--ds-border-hairline);
+    --ds--toggle-knob: var(--ds-toggle-knob-off);
+    --ds--toggle-progress: 0;
+    /*
+     * motion.trackFill, motion.duration.quick, for the track's fill, its outline and the knob's colour, on
+     * motion.easing.out, the easing of a state change on the non-spring path (ADR-0023 §9); under Reduce Motion the
+     * change crossfades over motion.duration.base instead (`accessibility.reduceMotion`).
+     */
+    --ds--toggle-fill-duration: calc(
+      var(--ds-motion-duration-quick) * (1 - var(--ds-motion-presentation-crossfade)) +
+        var(--ds-motion-duration-base) * var(--ds-motion-presentation-crossfade)
+    );
+  }
+
+  /*
+   * ---- root.hover.overlay and root.pressed.overlay: the row's wash, by material ----
+   * The row draws no fill of its own, so on inverse and on accent it takes the material's own wash, where the neutral
+   * wash is the inverse fill's own colour and does not show on the dark lit tile (ADR-0042 §2).
+   */
+
+  .ds-toggle[data-ds-surface="inverse"] {
+    --ds--control-row-hover: var(--ds-color-bg-fill-on-inverse-subtle);
+    --ds--control-row-press: var(--ds-color-bg-fill-on-inverse-subtle);
+  }
+
+  .ds-toggle[data-ds-surface="accent"] {
+    --ds--control-row-hover: var(--ds-color-bg-fill-on-accent-subtle);
+    --ds--control-row-press: var(--ds-color-bg-fill-on-accent-subtle);
+  }
+
+  /* ---- track.background: the neutral wash, on the solid ladder only ---- */
+
+  .ds-toggle:is([data-ds-surface="page"], [data-ds-surface="solid"], [data-ds-surface="raised"], [data-ds-surface="nested"]) {
+    --ds--toggle-track: var(--ds-toggle-track-off);
+  }
+
+  /*
+   * ---- track.border and knob.background, off, by material ----
+   * On media the outline is the material's decorative ring (ADR-0030 §3.2) around a knob in its own foreground; on
+   * inverse and accent both take the material's foreground (ADR-0040 §3).
+   */
+
+  .ds-toggle[data-ds-surface="vivid"] {
+    --ds--toggle-border: var(--ds-color-border-on-media);
+    --ds--toggle-knob: var(--ds-color-text-on-vivid);
+  }
+
+  .ds-toggle[data-ds-surface="glass"] {
+    --ds--toggle-border: var(--ds-color-border-on-glass-fill);
+    --ds--toggle-knob: var(--ds-color-text-on-glass-fill);
+  }
+
+  .ds-toggle[data-ds-surface="glassLight"] {
+    --ds--toggle-border: var(--ds-color-border-on-glass-fill);
+    --ds--toggle-knob: var(--ds-color-text-on-glass-light);
+  }
+
+  .ds-toggle[data-ds-surface="inverse"] {
+    --ds--toggle-border: var(--ds-color-text-on-inverse);
+    --ds--toggle-knob: var(--ds-color-text-on-inverse);
+  }
+
+  .ds-toggle[data-ds-surface="accent"] {
+    --ds--toggle-border: var(--ds-color-text-on-accent-secondary);
+    --ds--toggle-knob: var(--ds-color-text-on-accent-secondary);
+  }
+
+  /*
+   * ---- selected: the inverse solid, with no outline and the opposite-coloured knob, at the trailing end ----
+   * `[data-ds-surface]` is on every Toggle, so here it only lifts these rules above the material rules before them.
+   * The white solid on vivid; the default inverse solid on both glasses (ADR-0040 §1); knocked out on inverse and
+   * accent, the material's foreground under a knob in its fill (ADR-0040 §3).
+   */
+
+  .ds-toggle[data-selected][data-ds-surface] {
+    --ds--toggle-track: var(--ds-toggle-track-on);
+    --ds--toggle-border: transparent;
+    --ds--toggle-border-width: calc(var(--ds-border-hairline) * 0);
+    --ds--toggle-knob: var(--ds-toggle-knob-on);
+    --ds--toggle-progress: 1;
+  }
+
+  .ds-toggle[data-selected][data-ds-surface="vivid"] {
+    --ds--toggle-track: var(--ds-color-bg-fill-inverse-media);
+    --ds--toggle-knob: var(--ds-color-text-on-inverse-media);
+  }
+
+  .ds-toggle[data-selected][data-ds-surface="inverse"] {
+    --ds--toggle-track: var(--ds-color-text-on-inverse);
+    --ds--toggle-knob: var(--ds-color-bg-fill-inverse);
+  }
+
+  .ds-toggle[data-selected][data-ds-surface="accent"] {
+    --ds--toggle-track: var(--ds-color-text-on-accent);
+    --ds--toggle-knob: var(--ds-color-bg-fill-accent);
+  }
+
+  /* ---- the track and the knob ---- */
+
+  /*
+   * Behavior 4: a pill of comp.toggle.height, twice as wide as it is tall, at radius.control. The outline is drawn
+   * inside it, as an inset shadow, so it never adds to the layout. A horizontal drag belongs to the switch and a
+   * vertical one to the page (behavior 2), so the track lets the browser pan only vertically.
+   */
+  .ds-toggle [data-ds-slot="toggle-track"] {
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+    inline-size: calc(var(--ds-toggle-height) * 2);
+    block-size: var(--ds-toggle-height);
+    border-radius: var(--ds-radius-control);
+    background-color: var(--ds--toggle-track);
+    box-shadow: inset 0 0 0 var(--ds--toggle-border-width) var(--ds--toggle-border);
+    touch-action: pan-y pinch-zoom;
+    transition:
+      background-color var(--ds--toggle-fill-duration) var(--ds-motion-easing-out),
+      box-shadow var(--ds--toggle-fill-duration) var(--ds-motion-easing-out);
+  }
+
+  /*
+   * The knob: a circle comp.toggle.inset inside the track on every side, so its diameter is comp.toggle.height less
+   * twice the inset and it travels comp.toggle.height, from the leading end off to the trailing end on (behaviors 3
+   * and 4). The inline axis follows the writing direction, so on is the right end left to right and the left end
+   * right to left. It moves on motion.flip, motion.spring.snappy, and takes no pointer: the track does.
+   */
+  .ds-toggle [data-ds-slot="toggle-knob"] {
+    position: absolute;
+    inset-block-start: var(--ds-toggle-inset);
+    inset-inline-start: calc(var(--ds-toggle-inset) + var(--ds-toggle-height) * var(--ds--toggle-progress));
+    inline-size: calc(var(--ds-toggle-height) - var(--ds-toggle-inset) * 2);
+    block-size: calc(var(--ds-toggle-height) - var(--ds-toggle-inset) * 2);
+    border-radius: var(--ds-radius-control);
+    background-color: var(--ds--toggle-knob);
+    pointer-events: none;
+    transition:
+      inset-inline-start var(--ds-motion-spring-snappy-duration) var(--ds-motion-spring-snappy-easing),
+      background-color var(--ds--toggle-fill-duration) var(--ds-motion-easing-out);
+  }
+
+  /* Behavior 2: while a drag holds it the knob follows the pointer with no animation of its own (ADR-0023 §8.4). */
+  .ds-toggle [data-ds-slot="toggle-track"][data-ds-dragging] > [data-ds-slot="toggle-knob"] {
+    transition: background-color var(--ds--toggle-fill-duration) var(--ds-motion-easing-out);
+  }
+
+  /*
+   * Forced colors paint no fills and drop the inset shadow: the track keeps a system outline, the knob a system
+   * fill, and the on track the system's highlight, so position and fill still tell the state together.
+   */
+  @media (forced-colors: active) {
+    .ds-toggle [data-ds-slot="toggle-track"] {
+      outline: var(--ds-border-hairline) solid ButtonText;
+    }
+
+    .ds-toggle [data-ds-slot="toggle-knob"] {
+      forced-color-adjust: none;
+      background-color: ButtonText;
+    }
+
+    .ds-toggle[data-selected] [data-ds-slot="toggle-track"] {
+      forced-color-adjust: none;
+      background-color: Highlight;
+    }
+
+    .ds-toggle[data-selected] [data-ds-slot="toggle-knob"] {
+      background-color: HighlightText;
+    }
+  }
+}

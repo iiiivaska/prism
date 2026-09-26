@@ -1,0 +1,128 @@
+/*
+ * The control row (roadmap P4-12): the row Toggle, Checkbox and Radio share, internal to this package. Compiled
+ * into styles.css by scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025). The Apple twin is
+ * `DSControlRow` (swift/Sources/DSComponents/Control/DSControlRow.swift).
+ *
+ * The row is the label element React Aria wires to the control's hidden input: its label, its control, the hit
+ * region around them, the hover and pressed overlay over them and the focus ring outside them. Each component that
+ * uses it binds the row's cells from its own spec, as custom properties on its root (`--ds--control-row-*`, which
+ * the row inherits), so one stylesheet draws three specs' rows and each spec's binding test reads its own cells:
+ *
+ *   --ds--control-row-gap             root.gap, between the label and the control
+ *   --ds--control-row-radius          root.radius, the row's outline, which the overlay and the ring follow
+ *   --ds--control-row-hover           root.hover.overlay
+ *   --ds--control-row-press           root.pressed.overlay
+ *   --ds--control-row-disabled        root.disabled.opacity
+ *   --ds--control-row-ring            root.focus-visible.ring
+ *   --ds--control-row-ring-width      root.focus-visible.ringWidth
+ *   --ds--control-row-font-size       label.typography's size and line height, which the first line is measured in
+ *   --ds--control-row-line-height
+ *   --ds--control-row-control-size    the control's height, which is centred on the label's first line
+ *   --ds--control-row-control-radius  the control's radius, the row's outline when no label is drawn
+ *
+ * The React component writes `data-ds-label` (visible or hidden) onto the row, and React Aria adds data-hovered,
+ * data-pressed, data-focus-visible and data-disabled. No rule reads a runtime axis: hover is the only rule under a
+ * modality variant (@variant ds-pointer), the hit region follows modality through size.hit, and nothing here moves
+ * under Reduce Motion. No selector uses :not(), which test/cascade.ts cannot read. Custom properties named
+ * --ds--control-row-* are the row's own (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  /*
+   * The row takes the width it is given: the label leads, or trails a leading control, and takes what the control
+   * and the gap leave it; its text wraps. The row's own font size and line height are the label's, so `1lh` on
+   * either part is the label's first line.
+   */
+  .ds-control-row {
+    --ds--control-row-overlay: transparent;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ds--control-row-gap);
+    margin: 0;
+    border-radius: var(--ds--control-row-radius);
+    outline: none;
+    background-color: var(--ds--control-row-overlay);
+    color: inherit;
+    font-size: var(--ds--control-row-font-size);
+    line-height: var(--ds--control-row-line-height);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    /* Hover and press take Button's web timing (spec/SCHEMA.md, "Motion and haptics"; roadmap P4-D6). */
+    transition: background-color var(--ds-motion-duration-base) var(--ds-motion-easing-out);
+  }
+
+  /*
+   * The hit region: the larger of the row and size.hit on each axis, centred on it, Button's region verbatim. It
+   * extends invisibly and belongs to the row, so a press on it is a press on the row; the row's box, which the
+   * overlay fills and the ring follows, never grows with modality.
+   */
+  .ds-control-row::before {
+    content: "";
+    position: absolute;
+    inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+    inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
+  }
+
+  /*
+   * A row with no drawn label is its control alone: as wide as the control, and the overlay and the ring follow the
+   * control's own radius.
+   */
+  .ds-control-row[data-ds-label="hidden"] {
+    inline-size: fit-content;
+    border-radius: var(--ds--control-row-control-radius);
+  }
+
+  /* The label part: it takes the room the control and the gap leave, and wraps inside it. */
+  .ds-control-row > .ds-control-row-label {
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+
+  /* The control part: its own box, which never shrinks and never grows with the label. */
+  .ds-control-row > .ds-control-row-control {
+    flex: none;
+  }
+
+  /*
+   * The control is centred on the label's first line. The taller of the two sits at the row's top and the other is
+   * pushed down by half the difference: the label when the control is taller than a line (a switch), the control
+   * when a line is taller than it (a box under a large font), so when the label wraps the control stays level with
+   * its first line.
+   */
+  .ds-control-row[data-ds-label="visible"] > .ds-control-row-label {
+    padding-block-start: max(calc(var(--ds-size-hit) * 0), calc((var(--ds--control-row-control-size) - 1lh) / 2));
+  }
+
+  .ds-control-row[data-ds-label="visible"] > .ds-control-row-control {
+    margin-block-start: max(calc(var(--ds-size-hit) * 0), calc((1lh - var(--ds--control-row-control-size)) / 2));
+  }
+
+  /* ---- hover and pressed: one overlay over the row, pressed replacing hover rather than stacking on it ---- */
+
+  .ds-control-row {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--control-row-overlay: var(--ds--control-row-hover);
+      }
+    }
+  }
+
+  .ds-control-row[data-pressed] {
+    --ds--control-row-overlay: var(--ds--control-row-press);
+  }
+
+  /* ---- disabled, focus-visible ---- */
+
+  /* The whole row at the disabled opacity; React Aria takes the control out of input and the focus order. */
+  .ds-control-row[data-disabled] {
+    opacity: var(--ds--control-row-disabled);
+  }
+
+  /* The focus ring, outside the row's box and following its outline: radius.inner, or the control's own radius. */
+  .ds-control-row[data-focus-visible] {
+    outline: var(--ds--control-row-ring-width) solid var(--ds--control-row-ring);
+  }
+}

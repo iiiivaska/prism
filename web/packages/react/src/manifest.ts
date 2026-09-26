@@ -35,4 +35,5 @@ export const implemented: ImplementedVersions = {
   IconButton: { "web-touch": 3, "web-desktop": 3 },
   Surface: { "web-touch": 4, "web-desktop": 4 },
   Text: { "web-touch": 2, "web-desktop": 2 },
+  Toggle: { "web-touch": 1, "web-desktop": 1 },
 };

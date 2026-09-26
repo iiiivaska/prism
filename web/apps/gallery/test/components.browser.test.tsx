@@ -51,6 +51,14 @@
  *   and no scale under Reduce Motion; the glass chip over the map, flat on the scheme's glass, its own fill on the
  *   page, and the fallback under Reduce Transparency and Increase Contrast with every part its default cell and no
  *   check; the focus rings; and disabled.
+ * - Toggle.yaml behaviors 1 to 4, 7, 9, 10, 12 and 15 and `accessibility.keyboard`: the pill twice as wide as it is
+ *   tall per density, the knob inset on every side, off at the leading end and on at the trailing one, mirrored under
+ *   `dir="rtl"`; the row that takes the width it is given, the label leading and the track trailing, centred on the
+ *   label's first line when the label wraps; one flip per press anywhere in the row and on Space, none on Enter; the
+ *   drag, with a real mouse (`pointerPath`, vitest.config.ts): a release that commits the nearest half once, and a
+ *   drag that ends where it began or crosses the middle and comes back that fires nothing, in both writing
+ *   directions; hover under pointer only and the pressed overlay; the focus ring around the row or the track; the
+ *   hit region; the cells on vivid and on the scheme's glass; and disabled.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -64,7 +72,7 @@ import * as tokens from "@iiiivaska/prism-tokens/tokens";
 import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { userEvent } from "vitest/browser";
+import { commands, userEvent } from "vitest/browser";
 import {
   Avatar,
   Backdrop,
@@ -77,6 +85,7 @@ import {
   IconButton,
   Surface,
   Theme,
+  Toggle,
   cardUnitSeparator,
   chipSizes,
   glyphSizes,
@@ -91,6 +100,13 @@ import {
   type Transparency,
 } from "@iiiivaska/prism-react";
 import { portraitSource } from "../src/harness/portrait.ts";
+
+declare module "vitest/browser" {
+  interface BrowserCommands {
+    /** A real mouse gesture through `path`, each point from the top-left corner of `selector`'s box (vitest.config.ts). */
+    pointerPath: (selector: string, path: readonly { readonly x: number; readonly y: number }[]) => Promise<void>;
+  }
+}
 
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -1785,5 +1801,316 @@ describe("Chip", () => {
     });
     expect(onPress).not.toHaveBeenCalled();
     expect(onRemove).not.toHaveBeenCalled();
+  });
+});
+
+describe("Toggle", () => {
+  const noop = (): void => undefined;
+  const russian = "Показывать ночное затенение маршрута следования";
+
+  /** The parts of the Toggle whose root carries `data-probe`. */
+  function parts(element: HTMLElement, probe: string): { readonly row: HTMLElement; readonly track: HTMLElement; readonly knob: HTMLElement; readonly input: HTMLInputElement; readonly label: HTMLElement | null } {
+    const toggle = find(element, `[data-probe="${probe}"]`);
+    return {
+      row: find(toggle, '[data-ds-slot="toggle-row"]'),
+      track: find(toggle, '[data-ds-slot="toggle-track"]'),
+      knob: find(toggle, '[data-ds-slot="toggle-knob"]'),
+      input: find(toggle, "input") as HTMLInputElement,
+      label: toggle.querySelector<HTMLElement>('[data-ds-slot="toggle-label"]'),
+    };
+  }
+
+  /** What `onChange` has been called with so far, after a pause long enough for a late press to land. */
+  async function calls(onChange: ReturnType<typeof vi.fn>): Promise<unknown[]> {
+    await sleep(200);
+    return (onChange.mock.calls as readonly (readonly unknown[])[]).map((call) => call[0]);
+  }
+
+  it("draws a pill twice as wide as it is tall with the knob inset on every side, off at the leading end and on at the trailing one, mirrored right to left (behaviors 3 and 4)", async () => {
+    for (const density of ["compact", "regular", "comfortable"] as const) {
+      for (const dir of ["ltr", "rtl"] as const) {
+        const element = await mount(
+          <div dir={dir} style={{ inlineSize: "400px" }}>
+            <Toggle label="Night shading" onChange={noop} data-probe="off" />
+            <Toggle label="Night shading" isOn onChange={noop} data-probe="on" />
+          </div>,
+          { density },
+        );
+        const height = tokenPx(element, "--ds-toggle-height");
+        const inset = tokenPx(element, "--ds-toggle-inset");
+        for (const probe of ["off", "on"] as const) {
+          const { row, track, knob, label } = parts(element, probe);
+          const box = track.getBoundingClientRect();
+          const disc = knob.getBoundingClientRect();
+          const where = `${density} ${dir} ${probe}`;
+          expect([box.width, box.height], where).toEqual([height * 2, height]);
+          expect([disc.width, disc.height], where).toEqual([height - inset * 2, height - inset * 2]);
+          expect(disc.top - box.top, where).toBeCloseTo(inset, 3);
+          expect(Number.parseFloat(getComputedStyle(knob).borderTopLeftRadius), where).toBeGreaterThanOrEqual(disc.width / 2);
+          // Off rests at the leading end, on at the trailing end, the end away from the label.
+          const leadingGap = dir === "ltr" ? disc.left - box.left : box.right - disc.right;
+          const trailingGap = dir === "ltr" ? box.right - disc.right : disc.left - box.left;
+          expect(probe === "off" ? leadingGap : trailingGap, where).toBeCloseTo(inset, 3);
+          // The row takes the width it is given: the label leads, and the track trails at its trailing edge.
+          const rect = row.getBoundingClientRect();
+          expect(rect.width, where).toBe(400);
+          const text = label?.getBoundingClientRect();
+          expect(text, where).toBeDefined();
+          if (dir === "ltr") {
+            expect(box.right, where).toBeCloseTo(rect.right, 3);
+            expect(text?.left, where).toBeCloseTo(rect.left, 3);
+          } else {
+            expect(box.left, where).toBeCloseTo(rect.left, 3);
+            expect(text?.right, where).toBeCloseTo(rect.right, 3);
+          }
+        }
+        await unmount();
+      }
+    }
+  });
+
+  it("centres the track on the label's first line, and a wrapping label grows the row while the track keeps its height (behavior 9, accessibility.dynamicType)", async () => {
+    for (const density of ["compact", "regular"] as const) {
+      const element = await mount(
+        <div style={{ inlineSize: "400px" }}>
+          <Toggle label="Night shading" onChange={noop} data-probe="short" />
+          <Toggle label={russian} onChange={noop} data-probe="long" />
+        </div>,
+        { density },
+      );
+      const height = tokenPx(element, "--ds-toggle-height");
+      for (const probe of ["short", "long"] as const) {
+        const { row, track, label } = parts(element, probe);
+        const where = `${density} ${probe}`;
+        // The label part is a block, so its content box starts with the first line box; the text inside it is an
+        // inline box, whose rectangle is the font's and not the line's.
+        const part = label ?? element;
+        const style = getComputedStyle(part);
+        const line = Number.parseFloat(style.lineHeight);
+        const top = part.getBoundingClientRect().top + Number.parseFloat(style.paddingTop);
+        const first = top + line / 2;
+        const box = track.getBoundingClientRect();
+        expect(box.height, where).toBe(height);
+        expect(line, where).toBe(Number.parseFloat(getComputedStyle(find(part, ".ds-text")).lineHeight));
+        expect(box.top + box.height / 2, `${where}: the track is centred on the first line`).toBeCloseTo(first, 1);
+        const lines = Math.round((part.getBoundingClientRect().bottom - top) / line);
+        expect(lines, where).toBe(probe === "short" ? 1 : 2);
+        // The track is taller than a line, so it sits at the row's top and the row is as tall as the taller part.
+        const rect = row.getBoundingClientRect();
+        expect(box.top, where).toBeCloseTo(rect.top, 3);
+        expect(rect.height, where).toBeCloseTo(Math.max(height, (label?.getBoundingClientRect().height ?? 0)), 3);
+      }
+      await unmount();
+    }
+  });
+
+  it("flips once on a press anywhere in the row, the label and the track included, and on Space, never on Enter (behavior 1, accessibility.keyboard)", async () => {
+    const onChange = vi.fn();
+    const element = await mount(<Toggle label="Night shading" onChange={onChange} data-probe="toggle" />);
+    const { row, track, input, label } = parts(element, "toggle");
+    // The label: the row's hit region lies over it, so the click lands on the row, where the label's text is.
+    const text = (label ?? track).getBoundingClientRect();
+    const rect = row.getBoundingClientRect();
+    await act(async () => {
+      await userEvent.click(row, { position: { x: text.left - rect.left + 4, y: rect.height / 2 } });
+    });
+    expect(await calls(onChange)).toEqual([true]);
+    await act(async () => {
+      await userEvent.click(track);
+    });
+    // The app did not write the value back, so the switch is still off and asks for on again.
+    expect(await calls(onChange)).toEqual([true, true]);
+    expect(input.checked).toBe(false);
+    expect(document.activeElement).toBe(input);
+    await act(async () => {
+      await userEvent.keyboard("{Enter}");
+    });
+    expect(await calls(onChange)).toEqual([true, true]);
+    await act(async () => {
+      await userEvent.keyboard(" ");
+    });
+    expect(await calls(onChange)).toEqual([true, true, true]);
+  });
+
+  it("commits a drag to the half the knob's centre is nearest, once, and a drag that ends where it began or crosses the middle and comes back fires nothing (behavior 2)", async () => {
+    const onChange = vi.fn();
+    const element = await mount(
+      <div style={{ padding: "24px" }}>
+        <Toggle label="Night shading" onChange={onChange} data-probe="off" />
+        <Toggle label="Night shading" isOn onChange={onChange} data-probe="on" />
+        <div dir="rtl">
+          <Toggle label="Night shading" onChange={onChange} data-probe="rtl" />
+        </div>
+      </div>,
+      { density: "regular" },
+    );
+    const track = (probe: string): string => `[data-probe="${probe}"] [data-ds-slot="toggle-track"]`;
+    // At regular density the track is 64 × 32 and the knob's centre rests 16 from its end: 16 off, 48 on.
+    const { track: box } = parts(element, "off");
+    expect([box.getBoundingClientRect().width, box.getBoundingClientRect().height]).toEqual([64, 32]);
+    const drag = async (probe: string, xs: readonly number[]): Promise<unknown[]> => {
+      onChange.mockClear();
+      await act(async () => {
+        await commands.pointerPath(
+          track(probe),
+          xs.map((x) => ({ x, y: 16 })),
+        );
+        await sleep(200);
+      });
+      return calls(onChange);
+    };
+    // Across the middle and released there: on, once, and the press the drag began as flips nothing more.
+    expect(await drag("off", [16, 30, 60])).toEqual([true]);
+    // Across the middle and back to where it began: nothing.
+    expect(await drag("off", [16, 30, 60, 40, 16])).toEqual([]);
+    // Across the middle and back short of the middle: nothing.
+    expect(await drag("off", [16, 30, 60, 28])).toEqual([]);
+    // Ending exactly where it began, after a round trip on its own side: nothing.
+    expect(await drag("off", [16, 28, 16])).toEqual([]);
+    // Under 10 px it is a tap, and the row's press flips it.
+    expect(await drag("off", [16, 20])).toEqual([true]);
+    // From on, toward the leading end: off, once.
+    expect(await drag("on", [48, 30, 4])).toEqual([false]);
+    expect(await drag("on", [48, 30, 4, 48])).toEqual([]);
+    // Right to left the switch is mirrored: off rests at the right end, and a drag toward the left turns it on.
+    expect(await drag("rtl", [48, 30, 4])).toEqual([true]);
+    expect(await drag("rtl", [48, 30, 60])).toEqual([]);
+    // On release the knob rests at the end the value the app kept puts it: the leading end, since nothing wrote the value back.
+    const { knob } = parts(element, "off");
+    await vi.waitFor(
+      () => {
+        expect(knob.getBoundingClientRect().left - box.getBoundingClientRect().left).toBeCloseTo(4, 3);
+      },
+      { timeout: 2000, interval: 20 },
+    );
+  });
+
+  it("ignores taps and drags while disabled, and dims the whole row (behavior 15)", async () => {
+    const onChange = vi.fn();
+    const element = await mount(<Toggle label="Night shading" isDisabled onChange={onChange} data-probe="toggle" />);
+    const { row, track } = parts(element, "toggle");
+    await act(async () => {
+      await userEvent.click(track, { force: true });
+    });
+    await act(async () => {
+      await commands.pointerPath('[data-probe="toggle"] [data-ds-slot="toggle-track"]', [
+        { x: 16, y: 16 },
+        { x: 30, y: 16 },
+        { x: 60, y: 16 },
+      ]);
+    });
+    expect(await calls(onChange)).toEqual([]);
+    const probe = document.createElement("div");
+    probe.style.opacity = "var(--ds-opacity-disabled)";
+    element.append(probe);
+    const disabled = getComputedStyle(probe).opacity;
+    probe.remove();
+    expect(Number(disabled)).toBeLessThan(1);
+    expect(getComputedStyle(row).opacity).toBe(disabled);
+  });
+
+  it("hovers under pointer only and presses on both modalities, one overlay over the row that pressed replaces (behavior 12)", async () => {
+    for (const modality of ["pointer", "touch"] as const) {
+      const element = await mount(<Toggle label="Night shading" onChange={noop} data-probe="toggle" />, { modality });
+      const { row, input } = parts(element, "toggle");
+      const overlay = tokenColor(row, "--ds-color-bg-fill-neutral-subtle");
+      await settles(() => getComputedStyle(row).backgroundColor, TRANSPARENT);
+      await act(async () => {
+        await userEvent.hover(row);
+      });
+      if (modality === "pointer") await settles(() => getComputedStyle(row).backgroundColor, overlay);
+      else {
+        await sleep(300);
+        expect(getComputedStyle(row).backgroundColor, modality).toMatch(TRANSPARENT);
+      }
+      await act(async () => {
+        await userEvent.unhover(row);
+      });
+      const release = await pressWithKeyboard(input);
+      expect(row.hasAttribute("data-pressed"), modality).toBe(true);
+      await settles(() => getComputedStyle(row).backgroundColor, overlay);
+      await release();
+      await settles(() => getComputedStyle(row).backgroundColor, TRANSPARENT);
+      await unmount();
+    }
+  });
+
+  it("draws the focus ring outside the row at radius.inner, and around the track at radius.control when no label is drawn (accessibility.keyboard)", async () => {
+    const element = await mount(
+      <div style={{ inlineSize: "400px" }}>
+        <Toggle label="Night shading" onChange={noop} data-probe="labelled" />
+        <Toggle label="Night shading" labelVisibility="hidden" onChange={noop} data-probe="bare" />
+      </div>,
+    );
+    for (const probe of ["labelled", "bare"] as const) {
+      const { row, track, input } = parts(element, probe);
+      await act(async () => {
+        await userEvent.tab();
+      });
+      expect(document.activeElement, probe).toBe(input);
+      await vi.waitFor(() => {
+        expect(row.hasAttribute("data-focus-visible"), probe).toBe(true);
+      });
+      const style = getComputedStyle(row);
+      expect(style.outlineStyle, probe).toBe("solid");
+      expect(Number.parseFloat(style.outlineWidth), probe).toBe(tokenPx(row, "--ds-border-focus"));
+      expect(style.outlineColor, probe).toBe(tokenColor(row, "--ds-color-border-focus"));
+      if (probe === "labelled") {
+        expect(Number.parseFloat(style.borderTopLeftRadius), probe).toBe(tokenPx(row, "--ds-radius-inner"));
+        expect(row.getBoundingClientRect().width, probe).toBe(400);
+      } else {
+        // A row of the track alone: as wide as the track, and outlined at the track's radius.
+        expect(row.getBoundingClientRect().width, probe).toBe(track.getBoundingClientRect().width);
+        expect(Number.parseFloat(style.borderTopLeftRadius), probe).toBeGreaterThanOrEqual(track.getBoundingClientRect().height / 2);
+      }
+    }
+  });
+
+  it("reaches size.hit around the row under touch, and the row and the track never grow with modality (behavior 7)", async () => {
+    const measured: Partial<Record<Modality, { track: number; row: number; hitTop: number; hit: number }>> = {};
+    for (const modality of ["pointer", "touch"] as const) {
+      const element = await mount(<Toggle label="Night shading" labelVisibility="hidden" onChange={noop} data-probe="toggle" />, { modality, density: "compact" });
+      const { row, track } = parts(element, "toggle");
+      measured[modality] = {
+        track: track.getBoundingClientRect().height,
+        row: row.getBoundingClientRect().height,
+        hitTop: Number.parseFloat(getComputedStyle(row, "::before").top),
+        hit: tokenPx(row, "--ds-size-hit"),
+      };
+      await unmount();
+    }
+    const { pointer, touch } = measured;
+    expect(touch?.track).toBe(pointer?.track);
+    expect(touch?.row).toBe(pointer?.row);
+    for (const each of [pointer, touch]) expect(each?.hitTop).toBeCloseTo(Math.min(0, ((each?.row ?? 0) - (each?.hit ?? 0)) / 2), 3);
+    // Under touch at compact density the 28 pt row is shorter than the 44 pt region, which reaches past it.
+    expect(touch?.hitTop).toBeLessThan(0);
+  });
+
+  it("is off vivid and on it the white solid, and on the scheme's glass the inverse solid (behavior 10, ADR-0040 §1)", async () => {
+    const element = await mount(
+      <div>
+        <Surface material="vivid">
+          <Toggle label="Live readings" isOn onChange={noop} data-probe="vivid-on" />
+          <Toggle label="Live readings" onChange={noop} data-probe="vivid-off" />
+        </Surface>
+        <Surface material="glass" backdrop="map">
+          <Toggle label="Follow the vehicle" isOn onChange={noop} data-probe="glass-on" />
+        </Surface>
+      </div>,
+    );
+    const on = parts(element, "vivid-on");
+    await settles(() => getComputedStyle(on.track).backgroundColor, tokenColor(on.track, "--ds-color-bg-fill-inverse-media"));
+    await settles(() => getComputedStyle(on.knob).backgroundColor, tokenColor(on.knob, "--ds-color-text-on-inverse-media"));
+    const off = parts(element, "vivid-off");
+    await settles(() => getComputedStyle(off.track).backgroundColor, TRANSPARENT);
+    const hairline = tokenPx(off.track, "--ds-border-hairline");
+    await settles(() => getComputedStyle(off.track).boxShadow, `${tokenColor(off.track, "--ds-color-border-on-media")} 0px 0px 0px ${String(hairline)}px inset`);
+    await settles(() => getComputedStyle(off.knob).backgroundColor, tokenColor(off.knob, "--ds-color-text-on-vivid"));
+    const glass = parts(element, "glass-on");
+    await settles(() => getComputedStyle(glass.track).backgroundColor, tokenColor(glass.track, "--ds-toggle-track-on"));
+    await settles(() => getComputedStyle(glass.knob).backgroundColor, tokenColor(glass.knob, "--ds-toggle-knob-on"));
+    // The on track draws no outline.
+    await settles(() => getComputedStyle(glass.track).boxShadow, /^(?:none|.* 0px 0px 0px 0px inset)$/u);
   });
 });

@@ -500,7 +500,7 @@ extension DSShowcaseCatalog {
             specPath: "spec/components/Toggle.yaml",
             isPattern: false,
             platforms: [("ios", .full), ("ipados", .full), ("macos", .full), ("watchos", .none), ("web-touch", .full), ("web-desktop", .full)],
-            implemented: [],
+            implemented: [("ios", 1), ("ipados", 1), ("macos", 1)],
             platformNotes: [("ios", "The switch is drawn by Prism, not by UISwitch, whose shape, size and colours are the system's. Its accessibility element is SwiftUI's own Toggle, set as the row's accessibility representation, so VoiceOver, Voice Control and Full Keyboard Access meet the platform's switch, named by `label` and carrying its on or off value, and no word of Prism's own is spoken (ADR-0032)."), ("watchos", "none. ADR-0010's Tier 3 list has no Toggle, and a watch screen is at most three glanceable tiles; a wrist setting belongs to the phone app or to system Settings, not to a row of switches."), ("macos", "Hover is required; the default track height follows compact density (28 pt), and the switch keeps the same anatomy rather than becoming a checkbox."), ("web-desktop", "Built on React Aria Switch; the input is visually hidden, `data-selected` and `data-pressed` drive the CSS states, and the label element is the row (ADR-0019). React Aria's Switch has no drag, so the track carries its own pointer handling for behavior 2, and the press a drag began as does not flip the switch a second time.")],
             examples: [
                 DSSpecExample(id: "off", props: [("isOn", .bool(false)), ("label", .string("Night shading"))], surface: nil, backdrop: nil, grid: [], schemes: ["light", "dark"], actions: ["onChange"], summary: nil),

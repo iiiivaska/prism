@@ -74,6 +74,15 @@
 }
 
 /*
+ * The row frame a Toggle is staged in (renderToggleExample): 2 × size.card-min wide, the widest the text frame
+ * gets, because a Toggle's row takes the width it is given. The gallery and the SwiftUI snapshot harness stage the
+ * same frame.
+ */
+.ds-sc-row-frame {
+  inline-size: calc(var(--ds-size-card-min) * 2);
+}
+
+/*
  * The row an `inherit-in-row` Icon sits in (renderIconExample): the row's own foreground, color.text.primary
  * (ListRow.yaml title.color.default), which a glyph with tone: inherit takes.
  */

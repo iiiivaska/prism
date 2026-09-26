@@ -15,10 +15,11 @@
  * Icon is staged by its own renderer too (`renderIconExample`): no card-sized frame, because a 16 px glyph
  * in a `size.card-min` square is a picture of the frame; on a material, a Surface hugging the glyph. Badge,
  * IconButton, Avatar and Chip are staged the same way (`renderBadgeExample`, `renderIconButtonExample`,
- * `renderAvatarExample`, `renderChipExample`).
+ * `renderAvatarExample`, `renderChipExample`). Toggle is staged in a row frame of its own, 2 × `size.card-min` wide,
+ * because its row takes the width it is given (`renderToggleExample`).
  *
  * Surface and Text examples carry no strings, so the gallery supplies its own sample copy
- * (src/harness/content.ts); Button, Card, Icon, Badge, IconButton, Avatar and Chip examples carry their strings
+ * (src/harness/content.ts); Button, Card, Icon, Badge, IconButton, Avatar, Chip and Toggle examples carry their strings
  * in their props, and Divider draws none. An image prop names spec/SCHEMA.md's `portrait` fixture, which the
  * harness draws from tokens (src/harness/portrait.ts) and hands the component as its source.
  *
@@ -43,6 +44,7 @@ import {
   IconButton,
   Surface,
   Text,
+  Toggle,
   iconRegistry,
   type AvatarProps,
   type BackdropKind,
@@ -60,6 +62,7 @@ import {
   type SurfaceMaterial,
   type SurfaceProps,
   type TextProps,
+  type ToggleProps,
   type VividSlot,
 } from "@iiiivaska/prism-react";
 import { contentFor } from "./content.ts";
@@ -392,6 +395,33 @@ function ChipExample(props: { readonly args: ChipExampleArgs }): ReactNode {
  */
 export function renderChipExample(args: ChipExampleArgs, example: ExampleFields): ReactElement {
   return onMarkStage(<ChipExample args={args} />, example);
+}
+
+/**
+ * A Toggle on its example's `surface`, staged the same way in all four harnesses (the SwiftUI snapshots, both
+ * showcases and here): in the row frame, 2 × `size.card-min` wide, because a Toggle's row takes the width it is given
+ * (Toggle.yaml behavior 9) and the stage around it sizes to its content, so without a frame of its own the row's width,
+ * and whether `label-ru` wraps, would be the viewport's. On the page the frame sits on the stage; on a material it sits
+ * inside a Surface of that material with `radius: card` and its default card padding, which hugs it, over `backdrop`
+ * when the material is glass. Its `onChange` is the story's spy, so every example is the switch it is in the SwiftUI
+ * snapshots.
+ */
+export function renderToggleExample(args: ToggleProps, example: ExampleFields): ReactElement {
+  const row = (
+    <div className="ds-gallery-row-frame">
+      <Toggle {...args} />
+    </div>
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{row}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, row)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      {row}
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
 }
 
 /**

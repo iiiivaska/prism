@@ -11,8 +11,8 @@ import { formatJson, main, parseArgs, passed, renderReport, runParity } from './
 import { cellText, lagLine, summaryLine } from './render.ts';
 import { caseReader, emptyManifests, lagKeys, parityCases } from './test-support.ts';
 
-/** The components both stacks implement: the P3-3 and P3-4 slice, then Phase 4 (roadmap P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7, P4-8). */
-const SLICE = ['Avatar', 'Badge', 'Button', 'Chip', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Card'] as const;
+/** The components both stacks implement: the P3-3 and P3-4 slice, then Phase 4 (roadmap P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7, P4-8, P4-12). */
+const SLICE = ['Avatar', 'Badge', 'Button', 'Chip', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Toggle', 'Card'] as const;
 
 /** Console capture: the CLI prints, and a test reads what it printed. */
 function capture<T>(run: () => T): { value: T; out: string; err: string } {
@@ -69,9 +69,9 @@ describe('the repository', () => {
     }
   });
 
-  test('the slice is in parity on both stacks, and every other component row is pending (P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7, P4-8)', () => {
+  test('the slice is in parity on both stacks, and every other component row is pending (P3-3, P3-4, P4-1, P4-2, P4-3, P4-4, P4-7, P4-8, P4-12)', () => {
     const components = result.rows.filter((r) => r.kind !== null);
-    // Row order is layer then name, so the nine primitives come before the composite.
+    // Row order is layer then name, so the ten primitives come before the composite.
     expect(components.filter((r) => r.state === 'parity').map((r) => r.spec.name)).toEqual([...SLICE]);
     // Avatar, the first row, is in parity since P4-7, so `parity` is the first state met.
     expect([...new Set(components.map((r) => r.state))]).toEqual(['parity', 'pending']);
@@ -83,7 +83,7 @@ describe('the repository', () => {
         expect(cell.implemented, `${row.spec.name} on ${cell.platform}`).toBe(expected);
       }
     }
-    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 55 in parity, 231 pending, 56 satisfied by `none`, 0 diagnostic(s)');
+    expect(summaryLine(result)).toBe('57 component spec(s), 3 pattern spec(s), 342 cell(s): 0 lagging, 60 in parity, 226 pending, 56 satisfied by `none`, 0 diagnostic(s)');
   });
 
   test('a pattern is a contract-only row with its own table and no manifest cell (ADR-0012 rule 3)', () => {

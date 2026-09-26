@@ -49,6 +49,7 @@ const RENDERERS: Readonly<Record<string, Renderer>> = {
   IconButton: { render: "renderIconButtonExample" },
   Surface: { render: "renderSurfaceExample" },
   Text: { render: "renderTextExample" },
+  Toggle: { render: "renderToggleExample" },
 };
 
 export interface SpecExample {

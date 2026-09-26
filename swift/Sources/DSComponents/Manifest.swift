@@ -98,6 +98,12 @@
 /// Surface 4 renames `selected` to `isSelected`, the last of the names spec/SCHEMA.md owed its rule ("One meaning, one
 /// name, one polarity"; roadmap P4-D3): `DSSurfaceView(isSelected:)`, the name Card, Chip and IconButton already give
 /// the same meaning. DSCore's resolver keeps its own `selected:` label, and nothing it draws or publishes changed.
+///
+/// P4-12 adds Toggle (`DSToggle`) on iOS, iPadOS and macOS, the first control named by ADR-0041's routes: its `label`,
+/// drawn or hidden (`DSLabelVisibility`), or the words a host hands over through the name context (`dsControlName`). It
+/// is the first control in Prism's control row (`DSControlRow`), which Checkbox and Radio take as it is. Toggle.yaml
+/// marks watchOS `none` — a wrist setting belongs to the phone app or to system Settings — so its row has no `watchos`
+/// key either.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
@@ -110,5 +116,6 @@ public enum DSComponentsManifest {
         "IconButton": ["ios": 3, "ipados": 3, "macos": 3],
         "Surface": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
+        "Toggle": ["ios": 1, "ipados": 1, "macos": 1],
     ]
 }

@@ -15,11 +15,14 @@
 import type { ReactNode } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
-import { Avatar, Badge, Chip, Icon, IconButton, Theme, type StringsTable } from "@iiiivaska/prism-react";
+import { Avatar, Badge, Chip, Icon, IconButton, Theme, Toggle, type StringsTable } from "@iiiivaska/prism-react";
 // The host flag is internal to the package (IconButton sets it, roadmap P4-4), so it is imported from the
 // source; vitest.config.ts resolves `@iiiivaska/prism-react` to that same source, so this is the one context
 // the Badge above reads.
 import { BadgeHostContext } from "../../../packages/react/src/badge/host.ts";
+// The name context is internal to the package too (ADR-0041 decision 10); ListRow and FormField publish it once they
+// land, and until then this reads the host's route the way they will use it.
+import { NameContext } from "../../../packages/react/src/name/name.ts";
 import * as avatarStories from "../src/stories/Avatar.stories.tsx";
 import * as badgeStories from "../src/stories/Badge.stories.tsx";
 import * as buttonStories from "../src/stories/Button.stories.tsx";
@@ -28,6 +31,7 @@ import * as chipStories from "../src/stories/Chip.stories.tsx";
 import * as dividerStories from "../src/stories/Divider.stories.tsx";
 import * as iconStories from "../src/stories/Icon.stories.tsx";
 import * as iconButtonStories from "../src/stories/IconButton.stories.tsx";
+import * as toggleStories from "../src/stories/Toggle.stories.tsx";
 import {
   accessibleNodes,
   examplesInTheTree,
@@ -451,5 +455,71 @@ describe("Chip (Chip.yaml accessibility)", () => {
       button("North yard"),
       button("\u0423\u0434\u0430\u043b\u0438\u0442\u044c: North yard"),
     ]);
+  });
+});
+
+/**
+ * Toggle.yaml `accessibility` (ADR-0041): every example is one switch named by its `label`, byte for byte, drawn or
+ * hidden. The row is the label element React Aria wires to the switch, which Chromium keeps as a `LabelText` node with
+ * no name of its own: it holds the drawn label, which names the switch, and adds no second name. The track and the knob
+ * are hidden. Every name here is the one swift/Tests/DSSnapshotTests/DSToggleAccessibilityTreeTests.swift reads off the
+ * simulator for the same id, where the switch is SwiftUI's own Toggle and the value carries on or off.
+ */
+describe("Toggle (Toggle.yaml accessibility)", () => {
+  const row: AccessibleNode = { role: "LabelText", name: "" };
+  const toggle = (name: string): readonly AccessibleNode[] => [row, { role: "switch", name }];
+  const expected: Readonly<Record<string, readonly AccessibleNode[]>> = {
+    off: toggle("Night shading"),
+    on: toggle("Night shading"),
+    "on-disabled": toggle("Night shading"),
+    bare: toggle("Night shading"),
+    "on-vivid": toggle("Live readings"),
+    "off-on-vivid": toggle("Live readings"),
+    "on-glass-over-map": toggle("Follow the vehicle"),
+    // "Показывать ночное затенение маршрута следования", written as its code points so the bytes compared are
+    // unambiguous: 47 of them, 90 bytes of UTF-8.
+    "label-ru": toggle(
+      "\u041f\u043e\u043a\u0430\u0437\u044b\u0432\u0430\u0442\u044c \u043d\u043e\u0447\u043d\u043e\u0435 \u0437\u0430\u0442\u0435\u043d\u0435\u043d\u0438\u0435 \u043c\u0430\u0440\u0448\u0440\u0443\u0442\u0430 \u0441\u043b\u0435\u0434\u043e\u0432\u0430\u043d\u0438\u044f",
+    ),
+  };
+
+  it("names each example by its label, drawn or hidden, as the Apple suite does", async () => {
+    expect(await examplesInTheTree(toggleStories)).toEqual(expected);
+  });
+
+  it("holds the drawn label in the row and no other text: a hidden label draws nothing, and the track and the knob are hidden", async () => {
+    const found = await examplesTextInTheTree(toggleStories);
+    expect(Object.keys(found).sort()).toEqual(Object.keys(expected).sort());
+    for (const [id, nodes] of Object.entries(expected)) {
+      const name = nodes[1]?.name ?? "";
+      expect(found[id], id).toEqual(id === "bare" ? [] : [{ text: name, in: row }]);
+    }
+  });
+
+  // The host's route, which no example stages: a switch with no label of its own takes the pair its host publishes,
+  // drawn or hidden, and one with a label keeps its own (ADR-0041 decision 5).
+  it("takes the words a host hands over through the name context, and keeps its own label inside a host", async () => {
+    const read = (node: ReactNode): Promise<AccessibleNode[]> => nodesInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    const text = (node: ReactNode): Promise<TextRun[]> => textInTheTree(<Theme tokens={tokens}>{node}</Theme>);
+    const hidden = (
+      <NameContext.Provider value={{ label: "Night shading", labelVisibility: "hidden" }}>
+        <Toggle onChange={() => undefined} />
+      </NameContext.Provider>
+    );
+    expect(await read(hidden)).toEqual(toggle("Night shading"));
+    expect(await text(hidden)).toEqual([]);
+    const visible = (
+      <NameContext.Provider value={{ label: "Night shading", labelVisibility: "visible" }}>
+        <Toggle onChange={() => undefined} />
+      </NameContext.Provider>
+    );
+    expect(await read(visible)).toEqual(toggle("Night shading"));
+    expect(await text(visible)).toEqual([{ text: "Night shading", in: row }]);
+    const own = (
+      <NameContext.Provider value={{ label: "Route layer", labelVisibility: "hidden" }}>
+        <Toggle label="Night shading" onChange={() => undefined} />
+      </NameContext.Provider>
+    );
+    expect(await read(own)).toEqual(toggle("Night shading"));
   });
 });

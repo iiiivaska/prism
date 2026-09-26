@@ -23,7 +23,9 @@
  *
  * Icon is staged by its own entry (`renderIconExample`), as the gallery stages it: with no card-sized
  * frame, and on a material in a Surface hugging the glyph. Badge, IconButton, Avatar and Chip are staged the
- * same way (`renderBadgeExample`, `renderIconButtonExample`, `renderAvatarExample`, `renderChipExample`).
+ * same way (`renderBadgeExample`, `renderIconButtonExample`, `renderAvatarExample`, `renderChipExample`). Toggle is
+ * staged in a row frame of its own, 2 × `size.card-min` wide, because its row takes the width it is given
+ * (`renderToggleExample`).
  *
  * The props reach the component untouched, including the no-op handler the Components screen adds for
  * every `action` prop the spec declares (spec/SCHEMA.md: both galleries pass one, so an example
@@ -46,7 +48,9 @@ import {
   IconButton,
   Surface,
   Text,
+  Toggle,
   iconRegistry,
+  labelVisibilities,
   type AvatarProps,
   type BackdropKind,
   type ButtonProps,
@@ -61,6 +65,7 @@ import {
   type SurfaceProps,
   type TextProps,
   type TextRole,
+  type ToggleProps,
   type VividSlot,
 } from "@iiiivaska/prism-react";
 import type { CatalogExample } from "../../plugins/catalog.ts";
@@ -386,6 +391,46 @@ export function renderChipExample(props: Readonly<Record<string, unknown>>, exam
   const surface = (
     <Surface material={material} backdrop={backdrop} radius="card">
       <div className="ds-sc-mark">{chip}</div>
+    </Surface>
+  );
+  return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;
+}
+
+/**
+ * Toggle.yaml's `labelVisibility` is `visible` or `hidden` and nothing else, so an example that writes another value
+ * cannot be staged: null, the web's reading of `DSToggleRenderer` returning nil. `label` is optional in the spec,
+ * because a host may hand the name over, and an example has no host, so every example writes one (`example/name`,
+ * ADR-0041); a missing or blank one cannot be staged either, rather than staging a switch with no name.
+ */
+function toggleArgs(props: Readonly<Record<string, unknown>>): ToggleProps | null {
+  const { label, labelVisibility } = props;
+  if (typeof label !== "string" || label.trim() === "") return null;
+  if (labelVisibility !== undefined && !(labelVisibilities as readonly unknown[]).includes(labelVisibility)) return null;
+  return props as unknown as ToggleProps;
+}
+
+/**
+ * A Toggle on its example's `surface`, staged exactly as `renderToggleExample` in
+ * web/apps/gallery/src/harness/examples.tsx stages it: in the row frame, 2 × `size.card-min` wide (`ds-sc-row-frame`),
+ * because a Toggle's row takes the width it is given; on the page the frame sits on the stage, and on a material
+ * inside a Surface of that material with `radius: card` and its default card padding, which hugs it, over `backdrop`
+ * when the material is glass.
+ */
+export function renderToggleExample(props: Readonly<Record<string, unknown>>, example: CatalogExample): ReactElement {
+  const args = toggleArgs(props);
+  if (args === null) return <Unstageable example={example} />;
+  const row = (
+    <div className="ds-sc-row-frame">
+      <Toggle {...args} />
+    </div>
+  );
+  const material = example.surface as SurfaceMaterial | "map" | "image" | undefined;
+  if (material === undefined || material === "page") return <Stage>{row}</Stage>;
+  if (material === "map" || material === "image") return <Stage>{onBackdrop(material, row)}</Stage>;
+  const backdrop = (example.backdrop ?? "none") as BackdropKind;
+  const surface = (
+    <Surface material={material} backdrop={backdrop} radius="card">
+      {row}
     </Surface>
   );
   return <Stage>{onBackdrop(backdrop === "map" || backdrop === "image" ? backdrop : undefined, surface)}</Stage>;

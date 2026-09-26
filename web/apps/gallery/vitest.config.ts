@@ -5,6 +5,7 @@ import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
 import { playwright } from "@vitest/browser-playwright";
 import type { Plugin } from "vite";
 import { defineConfig } from "vitest/config";
+import type { BrowserCommand } from "vitest/node";
 
 /**
  * `pnpm test` in the gallery, three projects:
@@ -73,6 +74,30 @@ function decodeStoryTestGuard(): Plugin {
   };
 }
 
+/** A point in CSS pixels from the top-left corner of an element's box. */
+interface PointerPoint {
+  readonly x: number;
+  readonly y: number;
+}
+
+/**
+ * `pointerPath`: a real mouse gesture in Playwright's Chromium, for what a synthetic event cannot stand in for — a
+ * drag, with the pointer capture, the click and the press state the browser itself produces around it (Toggle.yaml
+ * behavior 2). The mouse presses at the first point, moves through the others in a few steps each and releases at
+ * the last. Each point is given from the top-left corner of the element `selector` finds in the test's own frame,
+ * whose box Playwright reports in the page's coordinates, where the mouse moves.
+ */
+const pointerPath: BrowserCommand<[selector: string, path: readonly PointerPoint[]]> = async (context, selector, path) => {
+  const box = await (await context.frame()).locator(selector).boundingBox();
+  if (box === null) throw new Error(`pointerPath: nothing in the test's frame is ${selector}`);
+  const [first, ...rest] = path;
+  if (first === undefined) throw new Error("pointerPath: the path has no point");
+  await context.page.mouse.move(box.x + first.x, box.y + first.y);
+  await context.page.mouse.down();
+  for (const point of rest) await context.page.mouse.move(box.x + point.x, box.y + point.y, { steps: 4 });
+  await context.page.mouse.up();
+};
+
 /** Chromium in Playwright, headless; a fresh object per project, because Vitest names the instances in place. */
 function chromium() {
   return {
@@ -99,7 +124,7 @@ export default defineConfig({
         // imports `fn` from storybook/test. Found only when that file loads, the dependency would be optimized
         // mid-run, and Vite's reload fails the file on a cold cache, which is every CI run.
         optimizeDeps: { include: ["storybook/test"] },
-        test: { name: "browser", include: ["test/**/*.browser.test.tsx"], browser: chromium() },
+        test: { name: "browser", include: ["test/**/*.browser.test.tsx"], browser: { ...chromium(), commands: { pointerPath } } },
       },
       {
         extends: true,

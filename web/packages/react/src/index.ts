@@ -144,6 +144,18 @@ export { Chip, type ChipAvatar, type ChipProps } from "./chip/Chip.tsx";
 export { chipKinds, chipSizes, type ChipKind, type ChipSize } from "./chip/options.ts";
 
 /**
+ * A control's name (ADR-0041): `label`, drawn or hidden as `labelVisibility` says, the one type every control that
+ * draws its label shares. The name context a host publishes through stays inside the package (decision 10).
+ */
+export { labelVisibilities, type LabelVisibility } from "./name/name.ts";
+
+/**
+ * Toggle (spec/components/Toggle.yaml, specVersion 1): a binary switch that takes effect the moment it is flipped, on
+ * React Aria Components' `SwitchField` and `SwitchButton`, its row the control row Checkbox and Radio share.
+ */
+export { Toggle, type ToggleProps } from "./toggle/Toggle.tsx";
+
+/**
  * The icon registry (ADR-0013, ADR-0019 §6, critic G-20): the map is `iconRegistry` and the component
  * that reads it is `Icon`, so both live in this package. Generated from spec/icons/registry.json by
  * `pnpm icons:build`; it carries Phosphor names only, never an SF Symbol name (ADR-0013 rule 5).

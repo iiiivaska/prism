@@ -645,3 +645,34 @@ struct DSExampleChip: View {
         )
     }
 }
+
+// MARK: - Toggle
+
+/// Toggle.yaml's `isOn`, `label`, `labelVisibility` and `isDisabled`, staged in the row frame every harness shares
+/// (`DSExampleRowFrame`): 2 × `size.card-min` wide, because the switch's row takes the width it is given, so a page
+/// example is the frame on the page and one that declares a material is the frame inside a `card`-padded Surface that
+/// hugs it (the default `surfacePadding`).
+///
+/// `label` is optional in the spec, because a host may hand the name over (ADR-0041), but an example has no host, so
+/// every example writes one (`example/name`); one that writes none, or one of nothing but white space, is not staged
+/// rather than staged with no name. `isOn` is a constant binding: its write is the no-op `onChange` every example is
+/// handed, so every example is the switch the gallery photographs.
+public struct DSToggleRenderer: DSExampleRenderer {
+    public init() {}
+
+    public func content(for example: DSSpecExample) -> AnyView? {
+        guard let label = example.string("label"), !label.allSatisfy(\.isWhitespace) else { return nil }
+        // A value the spec writes and this build does not know is nil, and the page says so rather than drawing the
+        // default in its place; an example that writes no value takes the spec's default.
+        let labelVisibility: DSLabelVisibility? = example.string("labelVisibility") == nil ? .visible : example.raw("labelVisibility")
+        guard let labelVisibility else { return nil }
+        // `isOn` and `isDisabled` default false in the spec, which is also `bool(_:)`'s default.
+        let isOn = example.bool("isOn")
+        let isDisabled = example.bool("isDisabled")
+        return AnyView(
+            DSExampleRowFrame {
+                DSToggle(verbatim: label, isOn: .constant(isOn), labelVisibility: labelVisibility, isDisabled: isDisabled)
+            }
+        )
+    }
+}

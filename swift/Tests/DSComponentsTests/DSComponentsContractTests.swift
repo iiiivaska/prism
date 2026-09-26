@@ -23,7 +23,7 @@ struct DSComponentsContractTests {
         try DSSpec.component(name).text
     }
 
-    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar", "Chip"]
+    nonisolated static let implemented = ["Surface", "Text", "Button", "Card", "Divider", "Icon", "Badge", "IconButton", "Avatar", "Chip", "Toggle"]
     nonisolated static let applePlatforms = ["ios", "ipados", "macos", "watchos"]
 
     @Test(arguments: implemented)
@@ -111,14 +111,19 @@ struct DSExampleHandlerTests {
     /// examples could lose them: `DSButton`'s and `DSIconButton`'s `action` is a required parameter, which makes a
     /// Button or IconButton example without one a compile error rather than a different picture. IconButton's
     /// `onPress` is required in the spec too, and the examples pass `{}` for it (`DSIconButtonExample.button`). A Chip
-    /// without `onPress` and `onRemove` is a static label, not the button the web story renders.
+    /// without `onPress` and `onRemove` is a static label, not the button the web story renders. Toggle's `onChange` is
+    /// the write of its `isOn` binding, a required parameter, which every example passes as a constant binding, so a
+    /// Toggle example cannot lose it either.
     @Test func cardAndChipAreTheSpecsWhoseHandlersCanBeForgotten() throws {
         var withActions: [String: [String]] = [:]
         for name in DSComponentsContractTests.implemented {
             let props = try DSSpec.component(name).actionProps
             if !props.isEmpty { withActions[name] = props }
         }
-        #expect(withActions == ["Button": ["onPress"], "Card": ["onAction"], "Chip": ["onPress", "onRemove"], "IconButton": ["onPress"]])
+        #expect(withActions == [
+            "Button": ["onPress"], "Card": ["onAction"], "Chip": ["onPress", "onRemove"], "IconButton": ["onPress"],
+            "Toggle": ["onChange"],
+        ])
     }
 
     /// What every Chip an example renders is, read out of the preference the chips publish (`DSChipKindKey`).
