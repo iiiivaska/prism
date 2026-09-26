@@ -43,10 +43,10 @@
     }
   ],
   "counts": {
-    "images": 1176,
-    "paired": 644,
+    "images": 1380,
+    "paired": 752,
     "missing": 0,
-    "cells": 644
+    "cells": 752
   },
   "components": [
     {
@@ -62,12 +62,16 @@
         "web-touch": "full",
         "web-desktop": "full"
       },
-      "recorded": [],
+      "recorded": [
+        "ios",
+        "web-desktop",
+        "web-touch"
+      ],
       "counts": {
-        "images": 0,
-        "paired": 0,
+        "images": 204,
+        "paired": 108,
         "missing": 0,
-        "cells": 0
+        "cells": 108
       },
       "examples": [
         {
@@ -77,7 +81,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "image-md.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "image-md.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "image-md.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "image-md.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "image-md.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "image-md.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "image-md.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "image-md.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "image-md.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "initials-md",
@@ -86,7 +267,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-md.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-md.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-md.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-md.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-md.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-md.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-md.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-md.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-md.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "initials-one-word",
@@ -95,7 +453,184 @@
             "dark"
           ],
           "props": "name: Northgate, size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-one-word.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-one-word.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-one-word.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-one-word.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-one-word.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-one-word.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "fallback-icon",
@@ -104,7 +639,184 @@
             "dark"
           ],
           "props": "size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "fallback-icon.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "fallback-icon.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "fallback-icon.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "fallback-icon.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "fallback-icon.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "fallback-icon.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "ringed",
@@ -113,7 +825,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, hasRing: true",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "size-sm",
@@ -122,7 +1011,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, size: sm",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.light.regular.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-sm.web-desktop.light.regular.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-sm.web-touch.light.regular.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.light.regular.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.light.compact.png",
+                  "width": 76,
+                  "height": 76
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-sm.web-desktop.light.compact.png",
+                  "width": 156,
+                  "height": 156
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-sm.web-touch.light.compact.png",
+                  "width": 156,
+                  "height": 156
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.light.compact.increased-contrast.png",
+                  "width": 76,
+                  "height": 76
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.dark.regular.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-sm.web-desktop.dark.regular.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-sm.web-touch.dark.regular.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.dark.regular.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.dark.compact.png",
+                  "width": 76,
+                  "height": 76
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-sm.web-desktop.dark.compact.png",
+                  "width": 156,
+                  "height": 156
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-sm.web-touch.dark.compact.png",
+                  "width": 156,
+                  "height": 156
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-sm.ios.dark.compact.increased-contrast.png",
+                  "width": 76,
+                  "height": 76
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "size-lg",
@@ -131,7 +1197,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, size: lg",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.light.regular.png",
+                  "width": 92,
+                  "height": 92
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-lg.web-desktop.light.regular.png",
+                  "width": 172,
+                  "height": 172
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-lg.web-touch.light.regular.png",
+                  "width": 172,
+                  "height": 172
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.light.regular.increased-contrast.png",
+                  "width": 92,
+                  "height": 92
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.light.compact.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-lg.web-desktop.light.compact.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-lg.web-touch.light.compact.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.light.compact.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.dark.regular.png",
+                  "width": 92,
+                  "height": 92
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-lg.web-desktop.dark.regular.png",
+                  "width": 172,
+                  "height": 172
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-lg.web-touch.dark.regular.png",
+                  "width": 172,
+                  "height": 172
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.dark.regular.increased-contrast.png",
+                  "width": 92,
+                  "height": 92
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.dark.compact.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "size-lg.web-desktop.dark.compact.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "size-lg.web-touch.dark.compact.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "size-lg.ios.dark.compact.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "decorative",
@@ -140,7 +1383,184 @@
             "dark"
           ],
           "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, isDecorative: true",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "decorative.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "decorative.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "decorative.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "ringed-over-map",
@@ -149,7 +1569,260 @@
             "dark"
           ],
           "props": "name: Anna Petrova, image: {\"fixture\":\"portrait\"}, hasRing: true",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.light.regular.png",
+                  "width": 264,
+                  "height": 264
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.light.regular.png",
+                  "width": 264,
+                  "height": 264
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.regular.reduce-transparency.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.light.compact.png",
+                  "width": 256,
+                  "height": 256
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.light.compact.png",
+                  "width": 256,
+                  "height": 256
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.light.compact.reduce-transparency.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.dark.regular.png",
+                  "width": 264,
+                  "height": 264
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.dark.regular.png",
+                  "width": 264,
+                  "height": 264
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.regular.reduce-transparency.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-desktop.dark.compact.png",
+                  "width": 256,
+                  "height": 256
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "ringed-over-map.web-touch.dark.compact.png",
+                  "width": 256,
+                  "height": 256
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "ringed-over-map.ios.dark.compact.reduce-transparency.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "initials-over-map",
@@ -158,7 +1831,260 @@
             "dark"
           ],
           "props": "name: Anna Petrova, size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.light.regular.png",
+                  "width": 264,
+                  "height": 264
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.light.regular.png",
+                  "width": 264,
+                  "height": 264
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.regular.reduce-transparency.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.light.compact.png",
+                  "width": 256,
+                  "height": 256
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.light.compact.png",
+                  "width": 256,
+                  "height": 256
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.light.compact.reduce-transparency.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.dark.regular.png",
+                  "width": 264,
+                  "height": 264
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.dark.regular.png",
+                  "width": 264,
+                  "height": 264
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.regular.reduce-transparency.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "initials-over-map.web-desktop.dark.compact.png",
+                  "width": 256,
+                  "height": 256
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "initials-over-map.web-touch.dark.compact.png",
+                  "width": 256,
+                  "height": 256
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "initials-over-map.ios.dark.compact.reduce-transparency.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "on-glass-over-image",
@@ -167,7 +2093,260 @@
             "dark"
           ],
           "props": "name: Anna Petrova, hasRing: true",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.regular.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.regular.png",
+                  "width": 312,
+                  "height": 312
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.regular.png",
+                  "width": 312,
+                  "height": 312
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.regular.reduce-transparency.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.compact.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.light.compact.png",
+                  "width": 288,
+                  "height": 288
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.light.compact.png",
+                  "width": 288,
+                  "height": 288
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.compact.increased-contrast.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.light.compact.reduce-transparency.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.regular.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.regular.png",
+                  "width": 312,
+                  "height": 312
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.regular.png",
+                  "width": 312,
+                  "height": 312
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.regular.increased-contrast.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.regular.reduce-transparency.png",
+                  "width": 136,
+                  "height": 136
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.compact.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-desktop.dark.compact.png",
+                  "width": 288,
+                  "height": 288
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "on-glass-over-image.web-touch.dark.compact.png",
+                  "width": 288,
+                  "height": 288
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.compact.increased-contrast.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "reduce-transparency",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "on-glass-over-image.ios.dark.compact.reduce-transparency.png",
+                  "width": 112,
+                  "height": 112
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         },
         {
           "id": "russian-initials",
@@ -176,7 +2355,184 @@
             "dark"
           ],
           "props": "name: Анна Петрова, size: md",
-          "cells": []
+          "cells": [
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.light.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "russian-initials.web-touch.light.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.light.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.light.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "russian-initials.web-touch.light.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "light",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.light.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.dark.regular.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "russian-initials.web-touch.dark.regular.png",
+                  "width": 168,
+                  "height": 168
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "regular",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.dark.regular.increased-contrast.png",
+                  "width": 88,
+                  "height": 88
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": null,
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.dark.compact.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "present",
+                  "file": "russian-initials.web-desktop.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                },
+                "web-touch": {
+                  "state": "present",
+                  "file": "russian-initials.web-touch.dark.compact.png",
+                  "width": 160,
+                  "height": 160
+                }
+              }
+            },
+            {
+              "scheme": "dark",
+              "density": "compact",
+              "variant": "increased-contrast",
+              "platforms": {
+                "ios": {
+                  "state": "present",
+                  "file": "russian-initials.ios.dark.compact.increased-contrast.png",
+                  "width": 80,
+                  "height": 80
+                },
+                "web-desktop": {
+                  "state": "out-of-matrix"
+                },
+                "web-touch": {
+                  "state": "out-of-matrix"
+                }
+              }
+            }
+          ]
         }
       ]
     },
