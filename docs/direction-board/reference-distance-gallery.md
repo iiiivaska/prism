@@ -1537,7 +1537,7 @@ No verdict moves, and no finding changes its conclusion.
 
 **Why it matters.** Toolbar is unimplemented (P4-42), so no screen draws it, and nothing is uncovered today. But it is where this example's defence stops, as TopBar's `desktop-navigation` is where `with-badge`'s does (RD-7) and Sidebar's `rail` is where `ringed`'s does (RD-10). Zoom and locate are every map's controls, so the set is the genre's. The three in one group over a map are that shot's cluster, with one glass track behind them where the reference has three glass rounds, and the locate button moved to the end.
 
-**Action.** None now. The example fills Toolbar's `items` slot with IconButtons, so conditions 3 and 4 already hold it outside this clearance until a dated section reads it, and that section reads it against 27220417's cluster. Recomposing it is cheap while Toolbar is unimplemented: for instance zoom alone, as `zoom-cluster` has it, or controls the cluster does not have. It is recorded so that whoever implements Toolbar reads it before recording the first baseline.
+**Action.** None now. The example fills Toolbar's `items` slot with IconButtons, so conditions 3 and 4 already hold it outside this clearance until a dated section reads it, and that section reads it against 27220417's cluster. Recomposing it is cheap while Toolbar is unimplemented: for instance zoom alone, as `zoom-cluster` has it, or controls the cluster does not have. It is recorded so that whoever implements Toolbar reads it before recording the first baseline. The P4-42 row carries this.
 
 ### 15.7 Coverage
 
