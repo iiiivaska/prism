@@ -48,7 +48,7 @@ export const toggleLabelRole: TextRole = "body-md";
  * - `isSelected`, `defaultSelected`, `onChange`, `isDisabled` and `isReadOnly`: the spec's `isOn`, `onChange` and
  *   `isDisabled` in their place, and no read-only state.
  * - `name`, `value`, `form`, `isRequired`, `isInvalid`, `validate` and `validationBehavior`: a Toggle applies its
- *   change at once and never sits in a form that submits later (behavior 8).
+ *   change at once and never sits in a form that submits later (behavior 10).
  * - `onPress`, `onPressStart`, `onPressEnd`, `onPressChange`, `onPressUp` and `onClick`: a flip is `onChange`, and a
  *   press that a drag took over is not a press of the switch.
  * - `children`, `render` and `inputRef`: the switch draws its own parts.

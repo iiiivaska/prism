@@ -23,7 +23,7 @@ import DSTokens
 /// at the row's radius and never the hit region, in the wash of the material the enclosing Surface publishes
 /// (`DSControlRowWash`, ADR-0042 §2); the focus ring outside the row, following the same outline (`DSFocusRing`, the
 /// one ring every Prism control draws, where ADR-0042 §1 picks the ring for the ground); the hit region, the larger of
-/// the row and `size.hit` on each axis (`DSHitRegion`); and `root.disabled.opacity` over the whole row.
+/// the row and `size.hit` on each axis (`DSHitRegion`); and `root.disabled.opacity` over the whole row, as one layer.
 nonisolated struct DSControlRowCells: Hashable {
     /// `tokens.root.gap`: between the label and the control.
     let gap: KeyPath<DSTokenSet, CGFloat>
@@ -263,13 +263,18 @@ struct DSControlRowBody<Content: View>: View {
                     .animation(DSControlAppearance.hoverAnimation(motion), value: hovered)
                     .animation(DSControlAppearance.pressAnimation(motion.tokens.springSnappy, motion: motion), value: pressed)
             }
+            // `root.disabled.opacity` over the whole row, as one layer. Without the group SwiftUI hands the opacity to
+            // every layer, so a knob dimmed over a track dimmed shows the track through it; the web's `opacity`, like
+            // the spec, dims the row as one picture (CI round 25, `on-disabled`). The ring is drawn only while enabled,
+            // so it sits outside the group.
+            .compositingGroup()
+            .opacity(isEnabled ? 1 : tokens[keyPath: cells.disabledOpacity])
             .overlay {
                 if isFocused && isEnabled {
                     DSFocusRing(cornerRadius: outline)
                 }
             }
             .modifier(DSHitRegion())
-            .opacity(isEnabled ? 1 : tokens[keyPath: cells.disabledOpacity])
             .modifier(DSHoverTracking(isHovered: $isHovered))
             .onChange(of: isPressed) { _, pressed in
                 if pressed { onPressBegan() }

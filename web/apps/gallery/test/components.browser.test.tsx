@@ -1989,7 +1989,7 @@ describe("Toggle", () => {
     );
   });
 
-  it("ignores taps and drags while disabled, and dims the whole row (behavior 15)", async () => {
+  it("ignores taps and drags while disabled, and dims the whole row (behavior 17)", async () => {
     const onChange = vi.fn();
     const element = await mount(<Toggle label="Night shading" isDisabled onChange={onChange} data-probe="toggle" />);
     const { row, track } = parts(element, "toggle");
@@ -2013,7 +2013,7 @@ describe("Toggle", () => {
     expect(getComputedStyle(row).opacity).toBe(disabled);
   });
 
-  it("hovers under pointer only and presses on both modalities, one overlay over the row that pressed replaces (behavior 12)", async () => {
+  it("hovers under pointer only and presses on both modalities, one overlay over the row that pressed replaces (behavior 14)", async () => {
     for (const modality of ["pointer", "touch"] as const) {
       const element = await mount(<Toggle label="Night shading" onChange={noop} data-probe="toggle" />, { modality });
       const { row, input } = parts(element, "toggle");
@@ -2091,7 +2091,7 @@ describe("Toggle", () => {
     expect(touch?.hitTop).toBeLessThan(0);
   });
 
-  it("is off vivid and on it the white solid, and on the scheme's glass the inverse solid (behavior 10, ADR-0040 §1)", async () => {
+  it("is off vivid and on it the white solid, and on the scheme's glass the inverse solid (behavior 11, ADR-0040 §1)", async () => {
     const element = await mount(
       <div>
         <Surface material="vivid">

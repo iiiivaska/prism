@@ -32,14 +32,19 @@ struct DSToggleRenderTests {
 
     /// One switch on the page with `space.page-margin` around it, in light at regular density, as sRGB bytes and a width:
     /// the track alone, or a row of `rowWidth` labelled "Night shading".
-    static func render(isOn: Bool, isLabelled: Bool, direction: LayoutDirection) -> (bytes: [UInt8], width: Int)? {
+    static func render(
+        isOn: Bool,
+        isLabelled: Bool,
+        isDisabled: Bool = false,
+        direction: LayoutDirection
+    ) -> (bytes: [UInt8], width: Int)? {
         let tokens = Self.tokens()
         let view = DSTheme {
             Group {
                 if isLabelled {
-                    DSToggle(verbatim: "Night shading", isOn: .constant(isOn)).frame(width: rowWidth)
+                    DSToggle(verbatim: "Night shading", isOn: .constant(isOn), isDisabled: isDisabled).frame(width: rowWidth)
                 } else {
-                    DSToggle(verbatim: "Night shading", isOn: .constant(isOn), labelVisibility: .hidden)
+                    DSToggle(verbatim: "Night shading", isOn: .constant(isOn), labelVisibility: .hidden, isDisabled: isDisabled)
                 }
             }
             .padding(tokens.space.pageMargin)
@@ -126,6 +131,37 @@ struct DSToggleRenderTests {
                 }
             }
         }
+    }
+
+    /// `isDisabled` dims the whole row as one layer, `root.disabled.opacity` over it (behavior 17), as the web's
+    /// `opacity` does: where the knob sits over the track, the disabled render is the enabled knob dimmed over the page,
+    /// never the track showing through the knob. The dimming is read off the track itself, as the share of its colour
+    /// left against the page, so no colour is written here. Dimming each layer apart, which SwiftUI does to a view with
+    /// no compositing group, put the on knob in light over the dimmed track instead: 192 where one layer gives 247
+    /// (CI round 25, `on-disabled`).
+    @Test func aDisabledRowDimsAsOneLayer() throws {
+        try DSRenderCapability.requireRasterizing()
+        let tokens = Self.tokens()
+        let geometry = DSToggleAppearance.geometry(tokens)
+        let margin = Int(tokens.space.pageMargin)
+        let middle = margin + Int(geometry.height / 2)
+        // On, the knob rests at the right end, and the left resting point is the track.
+        let trackPoint = margin + Int(geometry.knobOffset(progress: 0) + geometry.knob / 2)
+        let knobPoint = margin + Int(geometry.knobOffset(progress: 1) + geometry.knob / 2)
+        let enabled = try #require(Self.render(isOn: true, isLabelled: false, direction: .leftToRight))
+        let disabled = try #require(Self.render(isOn: true, isLabelled: false, isDisabled: true, direction: .leftToRight))
+        let page = Double(Self.luma(enabled.bytes, width: enabled.width, x: 0, y: 0))
+        let track = Double(Self.luma(enabled.bytes, width: enabled.width, x: trackPoint, y: middle))
+        let knob = Double(Self.luma(enabled.bytes, width: enabled.width, x: knobPoint, y: middle))
+        let dimTrack = Double(Self.luma(disabled.bytes, width: disabled.width, x: trackPoint, y: middle))
+        let dimKnob = Double(Self.luma(disabled.bytes, width: disabled.width, x: knobPoint, y: middle))
+        let share = (page - dimTrack) / (page - track)
+        let asOneLayer = page + share * (knob - page)
+        let layerByLayer = dimTrack + share * (knob - dimTrack)
+        print("DSToggleDisabled | page \(page) track \(track) knob \(knob) | dimmed track \(dimTrack) knob \(dimKnob) | share \(share)")
+        #expect(abs(share - tokens.opacity.disabled) < 0.05, "the track is dimmed to \(share), not opacity.disabled")
+        #expect(abs(dimKnob - asOneLayer) <= 6, "the dimmed knob is \(dimKnob), the row dimmed as one layer gives \(asOneLayer)")
+        #expect(abs(dimKnob - layerByLayer) > 20, "the dimmed knob is \(dimKnob), each layer dimmed apart gives \(layerByLayer)")
     }
 }
 #endif
