@@ -459,7 +459,9 @@ private struct DSCardLabel<Content: View, Aside: View>: View {
         ) {
             DSCardAnatomy(
                 parts: parts,
-                state: DSCardState(isPressed: pressed, isHovered: hovered, isFocused: focused, isRawHovered: isHovered),
+                state: DSCardState(
+                    isPressed: pressed, isHovered: hovered, isFocused: focused, isRawHovered: isHovered, ground: ds.surface
+                ),
                 onAction: onAction,
                 content: content,
                 aside: aside
@@ -483,6 +485,9 @@ struct DSCardState: Equatable {
     let isFocused: Bool
     /// The pointer is over the card at all: what reveals the open glyph.
     let isRawHovered: Bool
+    /// The context the card sits on, read outside its own Surface: the ground its focus ring is drawn on, outside the
+    /// card, which is not the material the card publishes to what it holds (ADR-0042 §1.1).
+    let ground: DSSurfaceContext
 }
 
 /// The corner-pinned anatomy, laid out inside the card's padding, reading the context the card's Surface publishes.
@@ -692,7 +697,9 @@ private struct DSCardLayers: View {
                     .opacity(parts.isSelected ? 1 : 0)
             }
             if state.isFocused {
-                DSFocusRing(cornerRadius: geometry.radius)
+                // Outside the card, on the ground the card sits on: this layer is inside the card's own Surface, so it
+                // hands the ring the context read outside it, and the ring picks the ring for it (ADR-0042 §1.1).
+                DSFocusRing(.roundedRectangle(cornerRadius: geometry.radius), on: state.ground)
             }
         }
         .padding(-geometry.padding)

@@ -1,6 +1,6 @@
 name: Chip
 layer: primitive
-specVersion: 1
+specVersion: 2
 status: draft
 summary: >-
   A small interactive pill carrying one short label and, optionally, a leading glyph or Avatar, a trailing
@@ -136,9 +136,15 @@ tokens:
       md: space.5
     gap: space.2
     hover:
-      overlay: color.bg.fill.neutral.subtle
+      overlay:
+        default: color.bg.fill.neutral.subtle
+        inverse: color.bg.fill.on-inverse-subtle
+        accent: color.bg.fill.on-accent-subtle
     pressed:
-      overlay: comp.chip.bg.pressed
+      overlay:
+        default: comp.chip.bg.pressed
+        inverse: color.bg.fill.inverse-pressed
+        accent: color.bg.fill.on-accent-subtle
     selected:
       border:
         default: comp.chip.border.selected
@@ -222,6 +228,9 @@ tokens:
       accent: color.text.on-accent-secondary
       inverse: color.text.on-inverse
 
+materials:
+  glassLight: "`label`, `leadingIcon` and `trailingIcon` keep their default cells on light glass, over the pill's own cell, comp.chip.bg.rest, which is where `root.background` puts the chip there: P4-8's answer, recorded by ADR-0040 §7.2. ADR-0040 §2.2 reads light glass as the scheme's glass in light glass's one tone, which would draw the glass chip there; that is a change to `root.background`, and it waits for the change that makes it."
+
 behavior:
   - "The role follows from the props alone, the same on every platform. A chip that sets `isSelected`, true or false, is a filter: a toggle whose press asks the app to turn it on or off, and whose `isSelected` is its state. A chip that leaves `isSelected` unset and has `onPress` or `isRemovable` is a button. A chip with none of the three is a static label and exposes no role; a static count or status mark is a Badge."
   - "A filter or button chip is a control: it is focusable, takes the pressed state and obeys the hit rule, and its press fires `onPress` once on release inside the hit region. A filter chip changes its look only when the app sets `isSelected`: the press asks, and the app decides."
@@ -232,15 +241,15 @@ behavior:
   - Over a map, imagery, a vivid surface or the scheme's glass the chip renders the glass chip and carries color.text.on-glass-fill for its label and glyphs, because a chip is checked with its primary foreground only.
   - "The chip is the whole material.glass.chip recipe: its fill, material.glass.chip.blur, material.glass.chip.saturate and the 1 px inner edge in color.edge.highlight from material.glass.chip.edge.start to material.glass.chip.edge.end. The recipe's grain and bloom are 0, so neither is drawn, and the edge exists only where the chip renders glass. On the scheme's glass the chip draws the fill and the edge and no blur or saturation, so no chip blurs glass a second time (ADR-0036 §5)."
   - "On an accent or an inverse surface the chip has no fill of its own: `root.background` has no cell for either material and no `default`, so it is not set there (spec/SCHEMA.md, \"The binding-matrix grammar\"). On accent it sits on color.bg.fill.accent with color.text.on-accent-secondary for its label and glyphs and color.text.on-accent when selected, which are the pairs checked on that material. On inverse it sits on color.bg.fill.inverse, and its label, its glyphs and its stroke take color.text.on-inverse, the material's one foreground, because no border role is keyed to inverse and comp.chip.border.rest would vanish there. A selected glass Surface renders inverse under the glass fallback (Surface.yaml), so a chip inside one reaches these cells without asking for them."
-  - "The hover overlay and the pressed fill are layers painted over whatever the chip renders, in every material: comp.chip.bg.pressed has no material axis, so a pressed glass chip keeps its glass under the pressed fill. Neither ever becomes the cell the chip hands the Surface module's chip shape, so no press or hover switches the pill between the recipe and its own fill (ADR-0037 §5)."
+  - "The hover overlay and the pressed fill are layers painted over whatever the chip renders, in every material. Over media and on every ground but two they are the neutral wash and comp.chip.bg.pressed, which has no media axis, so a pressed glass chip keeps its glass under the pressed fill. On an inverse or an accent surface, where the chip renders nothing, they are that material's own: color.bg.fill.on-inverse-subtle hovered and color.bg.fill.inverse-pressed pressed on inverse, where the neutral wash is the fill's own colour, and color.bg.fill.on-accent-subtle for both on the tile, where it does not show in dark (ADR-0042 §2). Neither ever becomes the cell the chip hands the Surface module's chip shape, so no press or hover switches the pill between the recipe and its own fill (ADR-0037 §5)."
   - The label never wraps and never truncates; a chip that cannot show its label is too long for a chip and belongs in a ListRow.
   - "`trailingIcon` is a glyph inside the chip's one control, hidden like every glyph of the chip: it shows what the press does, as action.copy shows that an identifier chip's press copies it, and `onPress` is that action. `isRemovable` takes the trailing position, so a `trailingIcon` given with it is not drawn."
-  - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region, the larger of the glyph's box and size.hit on each axis, and its own name, and pressing it fires `onRemove` without firing `onPress`. Its focus ring is color.border.focus at border.focus width outside the glyph's box, drawn as a circle."
+  - "`isRemovable` renders nav.close in the trailing position; that glyph is its own control with its own hit region, the larger of the glyph's box and size.hit on each axis, and its own name, and pressing it fires `onRemove` without firing `onPress`. Its focus ring is color.border.focus at border.focus width outside the glyph's box, drawn as a circle, and sits on the pill's own paint: over media it is color.border.focus on the chip's glass, never the ring of the media under it, and on inverse and accent, where the pill paints nothing, it is the ground's (ADR-0042 §1.2)."
   - "That name is the `strings.Chip.remove` template, \"Remove {label}\" in Prism's English defaults, filled with the chip's own `label`; Chip invents no word of its own and the app replaces the template once at the root (ADR-0032 rules 1 and 2). The web sets the name explicitly, so React Aria's own remove string never supplies it and the two stacks say one word (ADR-0032 rule 7)."
   - "An identifier chip may put an Avatar in the leading position through `avatar`, and only on the md chip: the sm chip and the sm avatar are both size.control.sm, so the circle would run edge to edge. The md chip leaves it half of size.control.md less size.control.sm above and below, 2 to 4 pt by density, and the same inset before it, in place of root.paddingX, so the circle is concentric with the pill's leading end; the label follows at root.gap. An `avatar` given to the sm chip is not drawn."
   - "The Avatar is drawn at size sm and decorative, because the chip's `label` names the chip and the Avatar's name would be read twice. It reads the context the chip publishes, like every part, and takes Avatar.yaml's own cells there: where the chip renders glass the Avatar asks for glass too and draws it flat, the recipe's fill and edge with no blur, because a chip inside another chip samples nothing (ADR-0037); where the chip renders its own cell the Avatar takes its own cell; and under the chip's fallback it reads raised and takes its own cell. In light that own cell is color.bg.surface.raised on the chip's own fill, the same raised step, so the disc does not show and the initials carry the Avatar, as they nearly do alone on the page, where the disc is about 1.05:1 on color.bg.page; a visible disc would be a change to Avatar, not to Chip. No press or hover of the chip changes what the Avatar renders."
   - A chip group leaves space.3 between chips, and chips wrap onto a second line rather than scrolling out of reach.
-  - Hover (pointer only) adds the neutral overlay; pressing takes comp.chip.bg.pressed and scales the pill to 0.97 under motion.spring.snappy.
+  - Hover (pointer only) adds the hover overlay; pressing takes the pressed fill and scales the pill to 0.97 under motion.spring.snappy.
   - "Selection moves the stroke's width and colour and the tones of the label and the leading glyph on motion.spring.smooth, the `select` cell of the motion block; nothing scales, and the check appears and leaves with the selection, with no fade or growth of its own."
   - Chips that select one option out of a set are a SegmentedControl instead; chips are for multi-select filters, identifiers and removable selections.
 
@@ -256,11 +265,11 @@ accessibility:
   role: "button; a filter chip, one that sets `isSelected`, is a toggle button whose `isSelected` is its pressed state (the selected trait on Apple, `aria-pressed` on the web); a chip with neither `onPress`, `isRemovable` nor `isSelected` is a static label with no role. The remove control is a button of its own"
   label: the visible label, and nothing else; the glyphs, the check and the Avatar are hidden, so a chip whose glyph carries meaning the label does not already carry names it in the label. The remove control is named by the `strings.Chip.remove` template, "Remove Last 24 hours" under the English defaults (ADR-0032 rules 1 and 2)
   traits: [button, selected]
-  keyboard: Space and Enter toggle or activate; Delete and Backspace remove a removable chip; Tab reaches the chip and then its remove control; the focus ring is color.border.focus at border.focus width outside the pill, and outside the remove control's glyph when that control has focus
+  keyboard: Space and Enter toggle or activate; Delete and Backspace remove a removable chip; Tab reaches the chip and then its remove control; the focus ring is color.border.focus at border.focus width outside the pill, or the ring the shared focus drawing picks for the ground the pill sits on, the material's foreground on inverse and on the lit tile, white on vivid, and over an image on a band of color.bg.page (ADR-0042 §1), and outside the remove control's glyph when that control has focus
   dynamicType: the label scales with type.label.*; the chip grows with it, and a row of chips wraps to more lines instead of truncating
-  contrast: the rest label is color.text.secondary and the selected label color.text.primary, both functional on color.bg.page, color.bg.surface and color.bg.surface.raised; over media both are color.text.on-glass-fill on material.glass.chip, on an accent surface they are color.text.on-accent-secondary and color.text.on-accent on color.bg.fill.accent, and on an inverse surface both are color.text.on-inverse on color.bg.fill.inverse; the rest stroke is comp.chip.border.rest and is decorative, because the fill step and the label already identify the chip; the selected stroke is comp.chip.border.selected, which holds the 3:1 boundary tier on the three solid grounds, and over media and on inverse the status.check glyph carries selection instead of the stroke
+  contrast: the rest label is color.text.secondary and the selected label color.text.primary, both functional on color.bg.page, color.bg.surface and color.bg.surface.raised; over media both are color.text.on-glass-fill on material.glass.chip, on an accent surface they are color.text.on-accent-secondary and color.text.on-accent on color.bg.fill.accent, and on color.bg.fill.on-accent-subtle over it while hovered or pressed, and on an inverse surface both are color.text.on-inverse on color.bg.fill.inverse, on color.bg.fill.on-inverse-subtle over it while hovered and on color.bg.fill.inverse-pressed while pressed (ADR-0042 §2); the rest stroke is comp.chip.border.rest and is decorative, because the fill step and the label already identify the chip; the selected stroke is comp.chip.border.selected, which holds the 3:1 boundary tier on the three solid grounds, and over media and on inverse the status.check glyph carries selection instead of the stroke
   reduceTransparency: under Reduce Transparency and Increase Contrast, Prism's Surface module draws the pill as color.bg.surface.raised over color.bg.page at the same radius; blur, saturation and the inner edge are dropped; the pill publishes raised, so every part takes its default cell, the stroke returns to its hairline in comp.chip.border.rest and every tone to the solid family; and the chip drops the status.check glyph, which it shows only on a media ground or on inverse, because the stroke and label ladder carries selection again. An Avatar in the leading position reads raised too and takes its own cell
-  reduceMotion: the press scale is replaced by the pressed fill, comp.chip.bg.pressed, over motion.duration.base with motion.easing.out, and selection crossfades the stroke and the tones of the label and the leading glyph over motion.duration.base with motion.easing.out in place of motion.spring.smooth; the check appears and leaves at once, as it does in standard motion, and nothing scales
+  reduceMotion: the press scale is replaced by the pressed fill, comp.chip.bg.pressed, or color.bg.fill.inverse-pressed on inverse and color.bg.fill.on-accent-subtle on accent, over motion.duration.base with motion.easing.out, and selection crossfades the stroke and the tones of the label and the leading glyph over motion.duration.base with motion.easing.out in place of motion.spring.smooth; the check appears and leaves at once, as it does in standard motion, and nothing scales
   voiceOver: announces the label, then "selected" when it is, then its role; a removable chip announces its remove control as a separate element
 
 usage:
@@ -338,5 +347,6 @@ notes:
     glyph shows; the motion block's `select` is the selection motion `accessibility.reduceMotion` names; the chip has
     no fill on accent and inverse, and on inverse every part takes color.text.on-inverse, as Avatar's
     parts do. The pill over media is the Surface module's glass chip (ADR-0036), and a chip inside it,
-    the Avatar, samples nothing (ADR-0037).
-  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0034-badge-slots-hold-a-badge.md, docs/adr/0036-glass-chip-and-backdrop.md, docs/adr/0037-chip-inside-a-chip.md]
+    the Avatar, samples nothing (ADR-0037). The focus ring by the ground, and the washes on inverse and on
+    the lit tile, where the chip renders nothing, are ADR-0042.
+  references: [docs/adr/0010-platform-tiers-density-modality.md, docs/adr/0011-accessibility-tiers-ci.md, docs/adr/0013-icon-registry.md, docs/adr/0022-materials-and-fallbacks.md, docs/adr/0029-direction-board-sign-off.md, docs/adr/0030-semantic-roles-from-the-direction-board.md, docs/adr/0032-component-owned-strings.md, docs/adr/0034-badge-slots-hold-a-badge.md, docs/adr/0036-glass-chip-and-backdrop.md, docs/adr/0037-chip-inside-a-chip.md, docs/adr/0040-materials-a-part-keys.md, docs/adr/0042-the-interaction-layers-follow-the-ground.md]

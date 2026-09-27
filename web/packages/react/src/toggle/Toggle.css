@@ -28,8 +28,6 @@
     --ds--control-row-hover: var(--ds-color-bg-fill-neutral-subtle);
     --ds--control-row-press: var(--ds-color-bg-fill-neutral-subtle);
     --ds--control-row-disabled: var(--ds-opacity-disabled);
-    --ds--control-row-ring: var(--ds-color-border-focus);
-    --ds--control-row-ring-width: var(--ds-border-focus);
     --ds--control-row-font-size: var(--ds-type-body-md-font-size);
     --ds--control-row-line-height: var(--ds-type-body-md-line-height);
     /* The track is the row's control: its height is centred on the first line, and its radius outlines a bare row. */

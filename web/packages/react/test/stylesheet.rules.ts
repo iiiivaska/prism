@@ -337,3 +337,35 @@ export function glassRecipeProblems(css: string, file: string): Problem[] {
   }
   return problems;
 }
+
+/** The focus module's directory on the web, relative to `src/` (ADR-0042 §1.6). */
+const FOCUS_MODULE = "focus/";
+
+/** A selector in a focus state: React Aria's `data-focus-visible` or `data-focused`, or the browser's own pseudo-class. */
+const FOCUS_STATE = /\[data-focus-visible\]|\[data-focused\]|:focus(?:-visible|-within)?(?![\w-])/;
+
+/** An outline property, the shorthand or a longhand, in any case. */
+const OUTLINE = /^outline(?:-(?:color|style|width|offset))?$/i;
+
+/**
+ * ADR-0042 §1.6 and rule 1: the focus ring is `focus/FocusRing.css`'s, the one stylesheet that draws it for the ground
+ * an element sits on, so no other stylesheet declares an outline property in a focus state. A focus-state rule that
+ * sets anything else passes (Card's open glyph shows on focus), and so does an outline outside a focus state (the
+ * forced-colors shapes). `file` is the stylesheet's path relative to `src/`.
+ */
+export function focusRingProblems(css: string, file: string): Problem[] {
+  const path = sourcePath(file);
+  if (path.startsWith(FOCUS_MODULE)) return [];
+  const problems: Problem[] = [];
+  for (const rule of flattenRules(parseCss(css))) {
+    const focused = rule.selectors.filter((selector) => FOCUS_STATE.test(selector));
+    if (focused.length === 0) continue;
+    for (const declaration of rule.declarations.filter((candidate) => OUTLINE.test(candidate.property))) {
+      problems.push({
+        check: "focus-ring",
+        detail: `${focused.map(normalizeSelector).join(", ")} { ${declaration.property} } draws a ring outside ${FOCUS_MODULE}; spread useFocusRing() and let focus/FocusRing.css draw it (ADR-0042 §1.6)`,
+      });
+    }
+  }
+  return problems;
+}

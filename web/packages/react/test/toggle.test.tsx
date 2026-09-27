@@ -259,8 +259,6 @@ describe("Toggle.css and ControlRow.css bind what Toggle.yaml binds", () => {
       ["root.gap", "--ds--control-row-gap"],
       ["root.radius", "--ds--control-row-radius"],
       ["root.disabled.opacity", "--ds--control-row-disabled"],
-      ["root.focus-visible.ring", "--ds--control-row-ring"],
-      ["root.focus-visible.ringWidth", "--ds--control-row-ring-width"],
     ];
     const washes: readonly (readonly [string, string])[] = [
       ["root.hover.overlay", "--ds--control-row-hover"],
@@ -312,11 +310,27 @@ describe("Toggle.css and ControlRow.css bind what Toggle.yaml binds", () => {
     expect(cascade.value(row({ "data-ds-label": "hidden" }), "inline-size")).toBe("fit-content");
   });
 
-  it("root.focus-visible and root.disabled: the ring outside the row, following its outline, and the whole row dimmed", () => {
-    expect(cascade.value(row({ "data-focus-visible": "true" }), "outline"), `${cellName(spec, "root.focus-visible.ring")}, ${cellName(spec, "root.focus-visible.ringWidth")}`).toBe(
-      "var(--ds--control-row-ring-width) solid var(--ds--control-row-ring)",
-    );
+  it("root.focus-visible and root.disabled: the ring the shared drawing puts outside the row, and the whole row dimmed", () => {
+    // ADR-0042 §1.4: the spec names the ring's role, and focus/FocusRing.css draws the ring the ground takes around the
+    // row, which spreads useFocusRing(); the control row draws no ring of its own.
+    const ring = specCell("root.focus-visible.ring");
+    const ringWidth = specCell("root.focus-visible.ringWidth");
+    expect(ring.token, ring.name).toBe("color.border.focus");
+    expect(ringWidth.token, ringWidth.name).toBe("border.focus");
+    expect(cascade.value(row({ "data-focus-visible": "true" }), "outline"), `${ring.name}: not ControlRow.css's`).toBe("none");
     expect(cascade.value(row(), "outline")).toBe("none");
+    const rowOf = (node: ReactNode): string | undefined => tagOf(html(node), "toggle-row");
+    const onPage = rowOf(<Toggle label="Night shading" onChange={noop} />);
+    expect(attribute(onPage, "class")).toBe("ds-control-row ds-focus-ring");
+    expect(attribute(onPage, "data-ds-focus-ring")).toBe("focus");
+    for (const [material, name] of [["inverse", "focus-on-inverse"], ["accent", "focus-on-accent"], ["vivid", "focus-on-media"], ["raised", "focus"]] as const) {
+      const tag = rowOf(
+        <Surface material={material}>
+          <Toggle label="Night shading" onChange={noop} />
+        </Surface>,
+      );
+      expect(attribute(tag, "data-ds-focus-ring"), material).toBe(name);
+    }
     expect(cascade.value(row({ "data-disabled": "true" }), "opacity"), cellName(spec, "root.disabled.opacity")).toBe("var(--ds--control-row-disabled)");
   });
 

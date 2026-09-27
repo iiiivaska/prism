@@ -58,7 +58,7 @@ nonisolated struct DSChipNameCase: Sendable {
     static let nameBytes = [13, 13, 6, 10, 10, 6, 13, 12, 6, 6, 5, 10, 30]
 }
 
-/// `spec/components/Chip.yaml` specVersion 1: the pill as the Surface module's glass chip — `root.background` on every
+/// `spec/components/Chip.yaml` specVersion 2: the pill as the Surface module's glass chip — `root.background` on every
 /// ground, and the recipe, the fallback and the context it publishes — the stroke and the parts' cells on every context
 /// the chip can publish, at rest and selected, the sizes per density, the layers, the motion, the role, the leading and
 /// trailing positions, the remove control's name, the Avatar the pill encloses (ADR-0037 rule 4), the examples as the
@@ -74,7 +74,7 @@ nonisolated struct DSChipNameCase: Sendable {
 /// fallback and the published context here are the drawing's own. What the simulator publishes to VoiceOver is
 /// measured by `DSChipAccessibilityTreeTests`, and what every example draws by the snapshot matrix, both in
 /// DSSnapshotTests.
-@Suite("Chip bindings (Chip.yaml v1)")
+@Suite("Chip bindings (Chip.yaml v2)")
 struct DSChipBindingTests {
     let spec: DSSpec
 
@@ -110,11 +110,12 @@ struct DSChipBindingTests {
     /// The locale the snapshots render in and the name table is read in (`DSSnapshotRendering.locale`).
     static let english = Locale(identifier: "en_US")
 
-    /// The paths keyed by the published material and then its backdrop.
+    /// The paths keyed by the published material and, where a material has one, then its backdrop: the two layers
+    /// over the pill key the material alone (ADR-0042 §2).
     static let contextPaths = [
         "root.background", "root.blur", "root.saturate", "root.edgeStartAlpha", "root.edgeEndAlpha", "root.border",
-        "root.selected.border", "label.color", "label.selected.color", "leadingIcon.color", "leadingIcon.selected.color",
-        "trailingIcon.color",
+        "root.hover.overlay", "root.pressed.overlay", "root.selected.border", "label.color", "label.selected.color",
+        "leadingIcon.color", "leadingIcon.selected.color", "trailingIcon.color",
     ]
 
     /// The paths keyed by size.
@@ -123,9 +124,8 @@ struct DSChipBindingTests {
     /// The paths that are one token, with no axis.
     static let scalarPaths = [
         "root.fallbackBackground", "root.fallbackUnderlay", "root.edgeColor", "root.borderWidth", "root.radius",
-        "root.gap", "root.hover.overlay", "root.pressed.overlay", "root.selected.borderWidth",
-        "root.focus-visible.ring", "root.focus-visible.ringWidth", "root.disabled.opacity", "leadingIcon.size",
-        "trailingIcon.size",
+        "root.gap", "root.selected.borderWidth", "root.focus-visible.ring", "root.focus-visible.ringWidth",
+        "root.disabled.opacity", "leadingIcon.size", "trailingIcon.size",
     ]
 
     // MARK: - The document
@@ -136,7 +136,7 @@ struct DSChipBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default` at
     /// every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 1)
+        #expect(try spec.specVersion == 2)
         #expect(try spec.propValues("size") == DSChipSize.allCases.map(\.rawValue))
         let props = try #require(spec.document["props"]?.listValue)
         #expect(props.compactMap { $0["name"]?.stringValue } == [
@@ -395,13 +395,29 @@ struct DSChipBindingTests {
         }
     }
 
-    /// `tokens.root.hover.overlay` and `tokens.root.pressed.overlay`: layers over whatever the chip renders, with no
-    /// material axis, so a pressed glass chip keeps its glass under the pressed fill (behavior).
+    /// `tokens.root.hover.overlay` and `tokens.root.pressed.overlay` on every context the chip can publish: layers over
+    /// whatever the chip renders, with no media axis, so a pressed glass chip keeps its glass under the pressed fill
+    /// (behavior), and on inverse and on the lit tile, where the chip renders nothing, that material's own (ADR-0042 §2).
     @Test func hoverAndPressedCells() throws {
-        try spec.binds(DSChipAppearance.hoverOverlay, at: "root.hover.overlay")
-        try spec.binds(DSChipAppearance.pressedOverlay, at: "root.pressed.overlay")
-        #expect(try spec.binding("root.hover.overlay").mapValue == nil)
-        #expect(try spec.binding("root.pressed.overlay").mapValue == nil)
+        for ground in Self.grounds {
+            try spec.binds(DSChipAppearance.hoverOverlay(on: ground), at: "root.hover.overlay", ground.material, ground.backdrop)
+            try spec.binds(DSChipAppearance.pressedOverlay(on: ground), at: "root.pressed.overlay", ground.material, ground.backdrop)
+        }
+        // No backdrop level: over media the layers are the ones the pill takes on the page.
+        for path in ["root.hover.overlay", "root.pressed.overlay"] {
+            for pair in try #require(try spec.binding(path).mapValue, "\(path) is not a matrix").pairs {
+                #expect(pair.value.stringValue != nil, "\(path).\(pair.key) is keyed by a backdrop")
+            }
+        }
+        // The pill renders nothing on inverse and accent, so it publishes the ground, and the layers read it there.
+        for backdrop in DSBackdropKind.allCases {
+            let inverse = DSSurfaceContext(material: .inverse, backdrop: backdrop)
+            let accent = DSSurfaceContext(material: .accent, backdrop: backdrop)
+            #expect(DSChipAppearance.hoverOverlay(on: inverse) == \.color.bgFillOnInverseSubtle, "\(backdrop)")
+            #expect(DSChipAppearance.pressedOverlay(on: inverse) == \.color.bgFillInversePressed, "\(backdrop)")
+            #expect(DSChipAppearance.hoverOverlay(on: accent) == \.color.bgFillOnAccentSubtle, "\(backdrop)")
+            #expect(DSChipAppearance.pressedOverlay(on: accent) == \.color.bgFillOnAccentSubtle, "\(backdrop)")
+        }
     }
 
     /// `tokens.root.focus-visible` and `tokens.root.disabled`.

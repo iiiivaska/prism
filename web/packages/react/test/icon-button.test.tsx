@@ -1,13 +1,14 @@
 /// <reference types="node" />
 /**
- * IconButton (spec/components/IconButton.yaml, specVersion 3).
+ * IconButton (spec/components/IconButton.yaml, specVersion 4).
  *
  * - IconButton.css binds what IconButton.yaml binds: every cell of `tokens`, read off the spec and checked as
  *   it wins on the root through a small cascade, for every variant on every published material: the rest and
  *   pressed fills, the pressed overlay, the underlay, the ring's colour and width, the glyph's colour, the
- *   selected circle (primary's cells, whatever the variant), hover, sizes, the glyph box, disabled,
- *   focus-visible and the badge's offset. The matrices are keyed by the axes the loops walk, so a cell the
- *   sheet does not map fails here.
+ *   selected circle (primary's cells, whatever the variant), hover, sizes, the glyph box, disabled and the
+ *   badge's offset. The matrices are keyed by the axes the loops walk, so a cell the sheet does not map fails
+ *   here. The focus ring's cells are focus/FocusRing.css's, which draws them for the ground the circle sits on
+ *   (ADR-0042 §1, test/focus.test.tsx).
  * - Motion: the press rides motion.spring.snappy, selection motion.spring.smooth, and ADR-0023 §8.4 arrives
  *   through --ds-motion-presentation-crossfade; the pressed fill and danger's overlay show on every press, in
  *   every motion mode, and primary's pressed fill is one lightness step from its rest in every scheme (ADR-0039).
@@ -134,8 +135,8 @@ function contextIn(density: Density, modality: Modality = "pointer"): TokenConte
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is IconButton.yaml specVersion 3", () => {
-    expect(spec.specVersion).toBe(3);
+  it("is IconButton.yaml specVersion 4", () => {
+    expect(spec.specVersion).toBe(4);
     expect([...iconButtonVariants]).toEqual(propValues(spec, "variant"));
     expect([...iconButtonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -159,10 +160,10 @@ describe("the spec is the one this package implements", () => {
     expect(Object.keys(icon)).toEqual(["size", "color", "selected"]);
     expect(Object.keys(spec.tokens["badge"] ?? {})).toEqual(["offset"]);
     const materialKeys = new Set(["default", ...materials]);
-    const byVariant = [root["background"], root["underlay"], root["border"], root["borderWidth"], block(root["pressed"])["background"], block(root["pressed"])["overlay"], icon["color"]];
+    const byVariant = [root["background"], root["underlay"], root["border"], root["borderWidth"], block(root["hover"])["overlay"], block(root["pressed"])["background"], block(root["pressed"])["overlay"], icon["color"]];
     for (const matrix of byVariant) {
       for (const [variant, inner] of Object.entries(block(matrix))) {
-        expect(variants, variant).toContain(variant);
+        expect([...variants, "default"], variant).toContain(variant);
         if (typeof inner !== "string") for (const key of Object.keys(inner)) expect(materialKeys.has(key), `${variant}.${key}`).toBe(true);
       }
     }
@@ -286,12 +287,27 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     }
   });
 
-  it("root.hover.overlay under ds-pointer only", () => {
-    const overlay = specCell("root.hover.overlay");
-    for (const variant of variants) {
-      const hovered = on(variant, "solid", { "data-hovered": "" });
-      expect(value({ ...hovered, variants: ["ds-pointer"] }, "--ds--icon-button-hover"), `${overlay.name}, ${variant} under ds-pointer`).toBe(bound(overlay.token));
-      expect(value({ ...hovered, variants: ["ds-touch"] }, "--ds--icon-button-hover"), `${overlay.name}, ${variant} under ds-touch`).toBe("transparent");
+  it.each(combinations)("root.hover.overlay of $variant on $material, under ds-pointer only, and primary's for a selected circle", ({ variant, material }) => {
+    const overlay = specCell("root.hover.overlay", variant, material);
+    const hovered = on(variant, material, { "data-hovered": "" });
+    expect(value({ ...hovered, variants: ["ds-pointer"] }, "--ds--icon-button-hover"), `${overlay.name} under ds-pointer`).toBe(bound(overlay.token));
+    expect(value({ ...hovered, variants: ["ds-touch"] }, "--ds--icon-button-hover"), `${overlay.name} under ds-touch`).toBe("transparent");
+    // Behavior 6: a selected circle is primary's in every state, its wash included.
+    const primary = specCell("root.hover.overlay", "primary", material);
+    const selected = on(variant, material, { "data-hovered": "", "data-ds-selected": "" });
+    expect(value({ ...selected, variants: ["ds-pointer"] }, "--ds--icon-button-hover"), `${primary.name}, a selected ${variant}`).toBe(bound(primary.token));
+  });
+
+  // ADR-0042 §2: where secondary, ghost and plain draw no fill of their own the wash is the material's, and so is the
+  // press on the tile; the neutral wash is the inverse fill's own colour and does not show on the dark tile.
+  it("keys the washes of secondary, ghost and plain on inverse and on the lit tile (ADR-0042 §2)", () => {
+    for (const variant of ["secondary", "ghost", "plain"] as const) {
+      expect(specCell("root.hover.overlay", variant, "inverse").token).toBe("color.bg.fill.on-inverse-subtle");
+      expect(specCell("root.hover.overlay", variant, "accent").token).toBe("color.bg.fill.on-accent-subtle");
+      expect(specCell("root.pressed.background", variant, "accent").token).toBe("color.bg.fill.on-accent-subtle");
+    }
+    for (const variant of ["primary", "danger"] as const) {
+      for (const material of materials) expect(specCell("root.hover.overlay", variant, material).token, `${variant} on ${material}`).toBe("color.bg.fill.neutral.subtle");
     }
   });
 
@@ -334,12 +350,17 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     expect(base["position"], `${named("badge.offset")}: the badge's containing block`).toBe("relative");
   });
 
-  it("root.disabled.opacity and root.focus-visible.ring at ringWidth, outside the circle", () => {
+  it("root.disabled.opacity, and root.focus-visible.ring at ringWidth, which the shared ring draws and IconButton.css does not", () => {
     const opacity = specCell("root.disabled.opacity");
     const ring = specCell("root.focus-visible.ring");
     const ringWidth = specCell("root.focus-visible.ringWidth");
     expect(declarationsOf(cascade.rules, ".ds-icon-button[data-disabled]"), opacity.name).toEqual({ opacity: bound(opacity.token) });
-    expect(declarationsOf(cascade.rules, ".ds-icon-button[data-focus-visible]"), `${ring.name} at ${ringWidth.name}`).toEqual({ outline: `${bound(ringWidth.token)} solid ${bound(ring.token)}` });
+    // ADR-0042 §1.4: the spec names the ring's role, and focus/FocusRing.css resolves it for the ground.
+    expect(ring.token, ring.name).toBe("color.border.focus");
+    expect(ringWidth.token, ringWidth.name).toBe("border.focus");
+    expect(declarationsOf(cascade.rules, ".ds-icon-button[data-focus-visible]"), `${ring.name}: not IconButton.css's`).toEqual({});
+    // The circle's parts stack among themselves, so the badge stays above the ring's band over an image.
+    expect(declarationsOf(cascade.rules, ".ds-icon-button")["isolation"]).toBe("isolate");
   });
 
   it("the hit region is the larger of the circle and size.hit, never a modality variant (behavior 2)", () => {
@@ -356,6 +377,7 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
     const part = declarationsOf(cascade.rules, '.ds-icon-button > [data-ds-slot="icon-button-badge"]');
     expect(part, offset.name).toEqual({
       position: "absolute",
+      "z-index": "1",
       "inset-block-start": `calc(${bound(offset.token) ?? ""} * -1)`,
       "inset-inline-end": `calc(${bound(offset.token) ?? ""} * -1)`,
       display: "flex",
@@ -364,7 +386,7 @@ describe("IconButton.css binds what IconButton.yaml binds", () => {
   });
 
   it("reads no runtime axis: its only at-rules are the colour properties, the layer, the pointer variant and forced colors", () => {
-    expect(allAtRules(parseCss(css)).map((at) => `${at.name} ${at.params}`)).toEqual([
+    expect([...new Set(allAtRules(parseCss(css)).map((at) => `${at.name} ${at.params}`))]).toEqual([
       "property --ds--icon-button-fill",
       "property --ds--icon-button-hover",
       "property --ds--icon-button-press",
@@ -454,7 +476,9 @@ describe("IconButton renders", () => {
     const out = html(<IconButton variant="ghost" size="lg" glyph="action.filter" label="Filter results" onPress={noop} />);
     expect(out).toMatch(/^<button [^>]*type="button"/);
     const tag = buttonTag(out);
-    expect(attribute(tag, "class")).toBe("ds-icon-button");
+    expect(attribute(tag, "class")).toBe("ds-icon-button ds-focus-ring");
+    expect(attribute(tag, "data-ds-focus-ring")).toBe("focus");
+    expect(tag).not.toContain("data-ds-focus-ring-underlay");
     expect(attribute(tag, "data-ds-variant")).toBe("ghost");
     expect(attribute(tag, "data-ds-size")).toBe("lg");
     expect(attribute(tag, "data-ds-surface")).toBe("page");
@@ -467,6 +491,15 @@ describe("IconButton renders", () => {
     // The label is spoken, never drawn.
     expect(out).not.toContain(">Filter results<");
     expect(html(<Surface material="vivid"><IconButton variant="ghost" glyph="nav.open" label="Open" onPress={noop} /></Surface>)).toContain('data-ds-surface="vivid"');
+  });
+
+  it("the ring of the ground the circle sits on (ADR-0042 §1)", () => {
+    const ring = (material: SurfaceMaterial): string | undefined =>
+      attribute(buttonTag(html(<Surface material={material}><IconButton variant="ghost" glyph="nav.open" label="Open" onPress={noop} /></Surface>)), "data-ds-focus-ring");
+    expect(ring("inverse")).toBe("focus-on-inverse");
+    expect(ring("accent")).toBe("focus-on-accent");
+    expect(ring("vivid")).toBe("focus-on-media");
+    expect(ring("solid")).toBe("focus");
   });
 
   it("the material a glass Surface actually renders", () => {
@@ -564,7 +597,7 @@ describe("IconButton renders", () => {
     expect(tag).not.toContain("aria-pressed");
     expect(tag).not.toContain("aria-current");
     expect(attribute(tag, "data-ds-variant")).toBe("secondary");
-    expect(attribute(tag, "class")).toBe("ds-icon-button app-action");
+    expect(attribute(tag, "class")).toBe("ds-icon-button ds-focus-ring app-action");
     expect(attribute(tag, "id")).toBe("settings");
   });
 

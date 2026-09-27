@@ -1,3 +1,3 @@
 export const implemented: Readonly<Record<string, Readonly<Record<string, number>>>> = {
-  Button: { "web-touch": 7, "web-desktop": 7 },
+  Button: { "web-touch": 8, "web-desktop": 8 },
 };

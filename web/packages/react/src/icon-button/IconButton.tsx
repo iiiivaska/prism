@@ -1,5 +1,5 @@
 /**
- * `IconButton` (spec/components/IconButton.yaml, specVersion 3): a circular action carrying one glyph and
+ * `IconButton` (spec/components/IconButton.yaml, specVersion 4): a circular action carrying one glyph and
  * no label, on React Aria Components' `Button`, the element Button is built on.
  *
  * - React Aria owns the behavior (behavior 1): `onPress` fires once on release inside the element, a drag
@@ -12,6 +12,9 @@
  * - The circle is a square of `root.size` at `radius.control`, which follows density and never modality or
  *   Dynamic Type; the hit region is the larger of the circle and `size.hit`, drawn invisibly around it
  *   (behaviors 2 and 7, IconButton.css).
+ * - Hover lays the neutral wash over the circle, and where secondary, ghost and plain draw no fill of their own, on
+ *   inverse and on the lit tile, that material's wash (ADR-0042 §2); the focus ring is the shared one
+ *   (`useFocusRing`, `focus/FocusRing.css`), the ring the ground the circle sits on takes (ADR-0042 §1).
  * - The glyph is Icon's box (`IconPart`) at `icon.size` with `tone: inherit`, so it takes the circle's
  *   foreground and, with no `label`, is hidden from assistive technology (behavior 8, Icon.yaml).
  * - `isSelected` renders the circle as `primary` renders it, in every state, and is announced with
@@ -38,6 +41,7 @@ import { Badge, type BadgeProps } from "../badge/Badge.tsx";
 import { BadgeHostContext } from "../badge/host.ts";
 import { badgeContribution, isBadgeVisible } from "../badge/text.ts";
 import { isDevelopment } from "../env.ts";
+import { useFocusRing } from "../focus/useFocusRing.ts";
 import { iconRegistry, type IconName } from "../generated/icons.ts";
 import { IconPart } from "../icon/Icon.tsx";
 import { useSurfaceContext } from "../surface/context.ts";
@@ -104,6 +108,7 @@ export function IconButton(props: IconButtonProps): ReactNode {
   const { variant = "secondary", size = "md", glyph, label, badge, isSelected = false, isDisabled = false, onPress, className, style, ref, ...rest } = props;
 
   const surface = useSurfaceContext();
+  const { className: ringClassName, ...ring } = useFocusRing();
   const { locale } = useLocale();
   const strings = useStrings();
   checkProps(glyph, label);
@@ -119,7 +124,7 @@ export function IconButton(props: IconButtonProps): ReactNode {
     <AriaButton
       {...rest}
       ref={ref}
-      className={joinClassNames("ds-icon-button", className)}
+      className={joinClassNames("ds-icon-button", ringClassName, className)}
       style={style}
       onPress={onPress}
       isDisabled={isDisabled}
@@ -134,6 +139,7 @@ export function IconButton(props: IconButtonProps): ReactNode {
       data-ds-size={size}
       data-ds-surface={surface.material}
       data-ds-selected={isSelected ? "" : undefined}
+      {...ring}
     >
       <IconPart slot="icon-button-glyph" name={glyph} size={size} tone="inherit" />
       {hasBadge ? (

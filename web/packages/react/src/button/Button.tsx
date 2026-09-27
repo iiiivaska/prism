@@ -1,5 +1,5 @@
 /**
- * `Button` (spec/components/Button.yaml, specVersion 7): one action, one label, an optional leading or
+ * `Button` (spec/components/Button.yaml, specVersion 8): one action, one label, an optional leading or
  * trailing icon, on React Aria Components' `Button`.
  *
  * - React Aria owns the behavior (Button.yaml behavior 1): `onPress` fires once on release inside the
@@ -19,13 +19,18 @@
  * - The icons are Icon's box (`IconPart`) at `size.icon.md` with `tone: inherit`, so they take the
  *   label's foreground and are hidden from assistive technology: the button's name is its label alone.
  * - The press scale, the hit region, the hover overlay and the Reduce Motion substitute are CSS
- *   (Button.css), driven by the tokens and `--ds-motion-presentation-crossfade` (ADR-0023 §8.4).
+ *   (Button.css), driven by the tokens and `--ds-motion-presentation-crossfade` (ADR-0023 §8.4). Secondary and
+ *   ghost, which draw no fill of their own on inverse and on the lit tile, lay that material's wash there
+ *   (ADR-0042 §2).
+ * - The focus ring is the shared one (`useFocusRing`, `focus/FocusRing.css`): the ring the ground the pill sits
+ *   on takes, and over an image a band of the page under it (ADR-0042 §1).
  * - It accepts `ScopeAttributes` and forwards them, with every other DOM prop React Aria passes through,
  *   to its root element (ADR-0019 rule 8).
  */
 import type { CSSProperties, ReactNode, Ref } from "react";
 import { Button as AriaButton, type ButtonProps as AriaButtonProps, type PressEvent } from "react-aria-components";
 import { useStrings, type ScopeAttributes } from "@iiiivaska/prism-tokens/react";
+import { useFocusRing } from "../focus/useFocusRing.ts";
 import type { IconName } from "../generated/icons.ts";
 import { IconPart } from "../icon/Icon.tsx";
 import { fillTemplate } from "../strings.ts";
@@ -80,6 +85,7 @@ export function Button(props: ButtonProps): ReactNode {
   } = props;
 
   const surface = useSurfaceContext();
+  const { className: ringClassName, ...ring } = useFocusRing();
   const strings = useStrings();
   // Behavior 3: while loading the name is the app's `strings.Button.loading` filled with `label` as the
   // caller wrote it, never a word of Button's own (ADR-0032).
@@ -89,7 +95,7 @@ export function Button(props: ButtonProps): ReactNode {
     <AriaButton
       {...rest}
       ref={ref}
-      className={joinClassNames("ds-button", className)}
+      className={joinClassNames("ds-button", ringClassName, className)}
       style={style}
       onPress={onPress}
       isDisabled={isDisabled}
@@ -100,6 +106,7 @@ export function Button(props: ButtonProps): ReactNode {
       data-ds-size={size}
       data-ds-surface={surface.material}
       data-ds-full-width={isFullWidth ? "" : undefined}
+      {...ring}
     >
       {leadingIcon === undefined ? null : <IconPart slot="button-leading-icon" name={leadingIcon} size="md" tone="inherit" />}
       <span data-ds-slot="button-label">

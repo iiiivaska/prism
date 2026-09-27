@@ -1,6 +1,6 @@
 /**
  * What a Chip draws and says, as pure functions of its props and the context its pill reads or publishes
- * (spec/components/Chip.yaml, specVersion 1), so every rule runs in a unit test and the component only renders
+ * (spec/components/Chip.yaml, specVersion 2), so every rule runs in a unit test and the component only renders
  * what these return. The Apple twins are `DSChipAppearance` (swift/Sources/DSComponents/Chip/), and both stacks
  * read the same cells out of the same spec (`DSChipBindingTests`, test/chip.test.tsx).
  */

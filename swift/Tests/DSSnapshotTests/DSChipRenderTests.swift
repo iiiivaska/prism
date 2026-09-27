@@ -23,7 +23,7 @@ import DSTokens
 ///
 /// A simulator suite, like `DSSurfaceChipRenderTests`: the chip's colours are catalog colours (`DSRenderCapability`).
 @MainActor
-@Suite("Chip renders over media (Chip.yaml v1, ADR-0036 rule 13, ADR-0037 §5)", .serialized)
+@Suite("Chip renders over media (Chip.yaml v2, ADR-0036 rule 13, ADR-0037 §5)", .serialized)
 struct DSChipRenderTests {
     /// The stage, with the pill at its centre.
     static let stage = CGSize(width: 240, height: 80)

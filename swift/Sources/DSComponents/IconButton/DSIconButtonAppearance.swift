@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/IconButton.yaml` (specVersion 3) binds, as pure functions of the variant, the size and
+/// Every value `spec/components/IconButton.yaml` (specVersion 4) binds, as pure functions of the variant, the size and
 /// the material the enclosing Surface publishes, so the binding matrix runs on the host. `DSIconButton` only draws what
 /// these return.
 ///
@@ -135,8 +135,23 @@ nonisolated enum DSIconButtonAppearance {
         }
     }
 
-    /// `tokens.root.hover.overlay`, pointer only, over the circle and never over the larger hit region.
-    static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
+    /// `tokens.root.hover.overlay`, pointer only, over the circle and never over the larger hit region: the neutral
+    /// wash, and where secondary, ghost and plain draw no fill of their own, on inverse and on the lit tile, that
+    /// material's own wash (ADR-0042 §2), since the neutral wash is the inverse fill's own colour and does not show on
+    /// the dark tile. Primary, a selected circle (read for `rendered(_:isSelected:)`) and danger keep the neutral wash
+    /// over the fill they draw.
+    static func hoverOverlay(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath {
+        switch variant {
+        case .secondary, .ghost, .plain:
+            switch material {
+            case .inverse: \.color.bgFillOnInverseSubtle
+            case .accent: \.color.bgFillOnAccentSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.color.bgFillNeutralSubtle
+            }
+        case .primary, .danger:
+            \.color.bgFillNeutralSubtle
+        }
+    }
 
     /// `tokens.root.pressed.background`: the fill a pressed circle takes in place of its rest fill. Primary's, which a
     /// selected circle takes too, is one lightness step from its rest fill in every scheme (ADR-0039): the inverse
@@ -144,8 +159,9 @@ nonisolated enum DSIconButtonAppearance {
     /// step darker under the same ink glyph, and knocked out `color.bg.fill.on-inverse-pressed` or
     /// `color.bg.fill.on-accent-pressed` (ADR-0040 §3.5). Secondary takes the nested step; ghost and plain the neutral
     /// wash, painted on the circle only. On inverse all three take `color.bg.fill.inverse-pressed`, one lightness step of
-    /// the ground, where the wash would composite to nothing, and on accent secondary takes the wash ghost and plain take
-    /// (ADR-0040 §7). Danger has no cell and keeps its tint.
+    /// the ground, where the wash would composite to nothing, and on accent the tile's own wash,
+    /// `color.bg.fill.on-accent-subtle`, where the neutral wash does not show in dark (ADR-0040 §7 as ADR-0042 §2 amends
+    /// it). Danger has no cell and keeps its tint.
     static func pressedBackground(_ variant: DSIconButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
         case .primary:
@@ -158,11 +174,15 @@ nonisolated enum DSIconButtonAppearance {
         case .secondary:
             switch material {
             case .inverse: \.color.bgFillInversePressed
-            case .accent: \.color.bgFillNeutralSubtle
+            case .accent: \.color.bgFillOnAccentSubtle
             case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.secondaryBgPressed
             }
         case .ghost, .plain:
-            material == .inverse ? \.color.bgFillInversePressed : \.components.iconButton.ghostBgPressed
+            switch material {
+            case .inverse: \.color.bgFillInversePressed
+            case .accent: \.color.bgFillOnAccentSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.iconButton.ghostBgPressed
+            }
         case .danger:
             nil
         }

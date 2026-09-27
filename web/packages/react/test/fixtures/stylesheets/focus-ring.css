@@ -1,0 +1,20 @@
+/* Fails ADR-0042 §1.6: two rings drawn outside focus/, in React Aria's focus state and in the browser's own. */
+@layer ds.components {
+  .ds-fixture[data-focus-visible] {
+    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+  }
+
+  .ds-fixture:focus-visible {
+    outline-color: var(--ds-color-border-focus);
+    opacity: 1;
+  }
+
+  /* Passes: a focus state that shows a part without drawing a ring, and an outline outside a focus state. */
+  .ds-fixture:is([data-pressed], :focus-visible) > [data-ds-slot="fixture-part"] {
+    opacity: 1;
+  }
+
+  .ds-fixture {
+    outline: none;
+  }
+}

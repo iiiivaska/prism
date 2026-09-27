@@ -1,0 +1,7 @@
+---
+"@iiiivaska/prism-react": patch
+---
+
+The focus ring follows the ground it is drawn on, and the hover and pressed washes show on inverse and on the lit tile (ADR-0042). One stylesheet now draws every ring, `focus/FocusRing.css`, in the ring the ground under it takes: `color.border.focus` on the page, the solid ladder, both glasses and Prism's map; `color.border.focus-on-inverse` on an inverse surface, where the ring used to be the fill's own colour; `color.border.focus-on-accent` on the lit tile, where it was white at 2.30:1 in dark; `color.border.focus-on-media` on vivid; and over an image `color.border.focus` on a band of `color.bg.page` one ring width wider. A focusable element carries the class `ds-focus-ring` and the attributes `data-ds-focus-ring` and `data-ds-focus-ring-underlay`; Button, IconButton, Chip and Card no longer draw an outline of their own, and a pressable Card carries `data-ds-focus-ring-native`.
+
+Button 8 (`spec/components/Button.yaml`), IconButton 4 (`spec/components/IconButton.yaml`) and Chip 2 (`spec/components/Chip.yaml`): where secondary, ghost and plain, and a chip, draw no fill of their own, on inverse and on the lit tile, hover lays `color.bg.fill.on-inverse-subtle` or `color.bg.fill.on-accent-subtle` in place of `color.bg.fill.neutral.subtle`, which showed nothing there; pressed on the tile they take `color.bg.fill.on-accent-subtle`, and a chip pressed on inverse takes `color.bg.fill.inverse-pressed`. No resting pixel changes.

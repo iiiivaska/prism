@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 3).
+/// IconButton: a circular action carrying one glyph and no word (`spec/components/IconButton.yaml`, specVersion 4).
 ///
 ///     DSIconButton("Open settings", glyph: .actionSettings) { openSettings() }
 ///     DSIconButton("Add a site", glyph: .actionAdd, variant: .primary) { add() }
@@ -33,13 +33,16 @@ import DSTokens
 ///    (ADR-0039, ADR-0040 §3.5) — and danger the pressed overlay over its tint; under Reduce Motion nothing scales and
 ///    the fills change over `motion.duration.base` with `motion.easing.out`, measured by
 ///    `DSIconButtonReduceMotionTests`.
-///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the circle, never over the hit region.
+///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the circle, never over the hit region;
+///    secondary, ghost and plain, which draw no fill of their own on inverse or on the lit tile, lay that material's
+///    wash there instead (`color.bg.fill.on-inverse-subtle`, `color.bg.fill.on-accent-subtle`, ADR-0042 §2).
 ///  - On vivid, on both glasses, on inverse and on accent a danger circle paints an opaque `color.bg.page` disc under
 ///    its tint.
 ///  - `isDisabled` lowers the whole control, badge included, to `opacity.disabled` and takes it out of input and the
 ///    focus order.
-///  - The focus ring is `color.border.focus` at `border.focus` outside the circle, following `radius.control`; it
-///    surrounds the circle and never the badge, and is drawn as a circle, as the body is (`DSFocusRing.Outline`).
+///  - The focus ring is `color.border.focus` at `border.focus` outside the circle, following `radius.control`, in the
+///    ring the ground under it takes (ADR-0042 §1); it surrounds the circle and never the badge, and is drawn as a
+///    circle, as the body is (`DSFocusRing.Outline`).
 ///  - A `badge` is anchored `space.1` outside the circle's top-trailing corner, overlapping it. It scales with the press
 ///    and dims with the control, never changes the layout or the hit region, is never focusable and is hidden — the
 ///    button reads it instead, as its accessibility **value**: `strings.Badge.count` filled with the true count and
@@ -256,7 +259,7 @@ struct DSIconButtonCircle<Label: View>: View {
                             .opacity(pressed ? 1 : 0)
                     }
                     Circle()
-                        .fill(tokens[keyPath: DSIconButtonAppearance.hoverOverlay])
+                        .fill(tokens[keyPath: DSIconButtonAppearance.hoverOverlay(rendered, on: material)])
                         .opacity(hovered ? 1 : 0)
                         .animation(DSControlAppearance.hoverAnimation(motion), value: hovered)
                     if let border = DSIconButtonAppearance.border(rendered, on: material),

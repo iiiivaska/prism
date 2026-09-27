@@ -94,7 +94,7 @@ export {
   type TextTruncation,
 } from "./text/tones.ts";
 
-/** Button (spec/components/Button.yaml, specVersion 7), on React Aria Components' `Button`. */
+/** Button (spec/components/Button.yaml, specVersion 8), on React Aria Components' `Button`. */
 export { Button, type ButtonProps } from "./button/Button.tsx";
 export { buttonSizes, buttonVariants, type ButtonSize, type ButtonVariant } from "./button/variants.ts";
 
@@ -128,7 +128,7 @@ export { glyphSizes, glyphTones, glyphWeights, type GlyphSize, type GlyphTone, t
 export { Badge, type BadgeProps } from "./badge/Badge.tsx";
 export { badgeEmphases, badgeTones, badgeVariants, type BadgeEmphasis, type BadgeTone, type BadgeVariant } from "./badge/options.ts";
 
-/** IconButton (spec/components/IconButton.yaml, specVersion 3): one glyph in a circle, named by its label, on React Aria Components' `Button`. */
+/** IconButton (spec/components/IconButton.yaml, specVersion 4): one glyph in a circle, named by its label, on React Aria Components' `Button`. */
 export { IconButton, type IconButtonBadge, type IconButtonProps } from "./icon-button/IconButton.tsx";
 export { iconButtonSizes, iconButtonVariants, type IconButtonSize, type IconButtonVariant } from "./icon-button/options.ts";
 
@@ -137,7 +137,7 @@ export { Avatar, type AvatarProps } from "./avatar/Avatar.tsx";
 export { avatarSizes, type AvatarSize } from "./avatar/options.ts";
 
 /**
- * Chip (spec/components/Chip.yaml, specVersion 1): a small pill that filters, names a selection or identifies an
+ * Chip (spec/components/Chip.yaml, specVersion 2): a small pill that filters, names a selection or identifies an
  * entity, its pill the Surface module's glass chip, on React Aria Components' `ToggleButton` and `Button`.
  */
 export { Chip, type ChipAvatar, type ChipProps } from "./chip/Chip.tsx";

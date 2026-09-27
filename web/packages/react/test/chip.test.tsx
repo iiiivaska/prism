@@ -1,11 +1,13 @@
 /// <reference types="node" />
 /**
- * Chip (spec/components/Chip.yaml, specVersion 1).
+ * Chip (spec/components/Chip.yaml, specVersion 2).
  *
  * - Chip.css binds what Chip.yaml binds, read off the spec cell by cell and checked as it wins on the pill through a
  *   small cascade: the label's, the glyphs' and the stroke's colour at rest and selected on every context the chip
  *   can publish, the stroke's widths, the height and padding per size, the gap, the radius, the label's role, the
- *   glyphs' box, the hover and pressed layers, the focus ring and the disabled opacity.
+ *   glyphs' box, the hover and pressed layers on every context, the disabled opacity, and the focus ring's cells,
+ *   which focus/FocusRing.css draws for the ground outside the chip and for the pill's own paint (ADR-0042 §1,
+ *   test/focus.test.tsx).
  * - The pill is the Surface module's glass chip (ADR-0036). `root.background` is read on every ground and held to
  *   what Chip hands the chip shape (`chipBackground`), and `fallbackBackground`, `fallbackUnderlay`, `blur`,
  *   `saturate`, `edgeColor`, `edgeStartAlpha` and `edgeEndAlpha` to what the shape paints (surface/Surface.css) and
@@ -161,8 +163,8 @@ const PARTS = [
 ] as const;
 
 describe("the spec is the one this package implements", () => {
-  it("is Chip.yaml specVersion 1", () => {
-    expect(spec.specVersion).toBe(1);
+  it("is Chip.yaml specVersion 2", () => {
+    expect(spec.specVersion).toBe(2);
     expect([...chipSizes]).toEqual(propValues(spec, "size"));
   });
 
@@ -239,9 +241,12 @@ describe("the spec is the one this package implements", () => {
     for (const path of ["root.height", "root.paddingX", "label.typography"]) {
       expect(Object.keys(block(bindingAt(spec, path))), cellName(spec, path)).toEqual([...chipSizes]);
     }
-    // The press and the hover are layers with no material axis (behavior, "The hover overlay and the pressed fill").
-    expect(typeof bindingAt(spec, "root.pressed.overlay")).toBe("string");
-    expect(typeof bindingAt(spec, "root.hover.overlay")).toBe("string");
+    // The press and the hover are layers with no media axis: keyed by the material alone, where the chip renders
+    // nothing (behavior, "The hover overlay and the pressed fill", ADR-0042 §2).
+    for (const path of ["root.hover.overlay", "root.pressed.overlay"]) {
+      expect(Object.keys(block(bindingAt(spec, path))), cellName(spec, path)).toEqual(["default", "inverse", "accent"]);
+      for (const inner of Object.values(block(bindingAt(spec, path)))) expect(typeof inner, cellName(spec, path)).toBe("string");
+    }
   });
 
   it("states the input states, the selection and the disabled state, and the one press haptic", () => {
@@ -469,27 +474,59 @@ describe("Chip.css binds what Chip.yaml binds", () => {
     }
   });
 
+  it.each(grounds)("root.hover.overlay and root.pressed.overlay on $material over $backdrop: the cells the pill hands its body", ({ material, backdrop }) => {
+    const overlay = specCell("root.hover.overlay", material, backdrop);
+    expect(value(pill(material, backdrop), "--ds--chip-hover-overlay"), overlay.name).toBe(bound(overlay.token));
+    const pressed = specCell("root.pressed.overlay", material, backdrop);
+    expect(value(pill(material, backdrop), "--ds--chip-pressed-overlay"), pressed.name).toBe(bound(pressed.token));
+  });
+
   it("root.hover.overlay under ds-pointer only, and root.pressed.overlay on every press: layers over the chip's rendering", () => {
     const overlay = specCell("root.hover.overlay");
     const hovered = { classes: ["ds-chip-body"], attributes: { "data-hovered": "" } };
-    expect(cascade.value({ ...hovered, variants: ["ds-pointer"] }, "--ds--chip-hover"), `${overlay.name} under ds-pointer`).toBe(bound(overlay.token));
+    expect(cascade.value({ ...hovered, variants: ["ds-pointer"] }, "--ds--chip-hover"), `${overlay.name} under ds-pointer`).toBe("var(--ds--chip-hover-overlay)");
     expect(cascade.value({ ...hovered, variants: ["ds-touch"] }, "--ds--chip-hover"), `${overlay.name} under ds-touch`).toBe("transparent");
     const pressed = specCell("root.pressed.overlay");
-    expect(cascade.value({ classes: ["ds-chip-body"], attributes: { "data-pressed": "" } }, "--ds--chip-press"), pressed.name).toBe(bound(pressed.token));
+    expect(cascade.value({ classes: ["ds-chip-body"], attributes: { "data-pressed": "" } }, "--ds--chip-press"), pressed.name).toBe("var(--ds--chip-pressed-overlay)");
     expect(cascade.value({ classes: ["ds-chip-body"], attributes: {} }, "--ds--chip-press")).toBe("transparent");
+    // ADR-0042 §2: on inverse and on the lit tile, where the chip renders nothing, each layer is the material's own.
+    expect(specCell("root.hover.overlay", "inverse").token).toBe("color.bg.fill.on-inverse-subtle");
+    expect(specCell("root.pressed.overlay", "inverse").token).toBe("color.bg.fill.inverse-pressed");
+    expect(specCell("root.hover.overlay", "accent").token).toBe("color.bg.fill.on-accent-subtle");
+    expect(specCell("root.pressed.overlay", "accent").token).toBe("color.bg.fill.on-accent-subtle");
     // Both are registered colours, so they crossfade over motion.duration.base.
     const registered = allAtRules(parseCss(css)).filter((at) => at.name === "property").map((at) => at.params);
     expect(registered).toEqual(["--ds--chip-press", "--ds--chip-hover"]);
   });
 
-  it("root.focus-visible: the ring outside the pill, and outside the remove control's glyph when that control has focus", () => {
+  it("root.focus-visible: the ring's cells, which the shared ring draws outside the pill and the remove control's glyph", () => {
     const ring = specCell("root.focus-visible.ring");
     const width = specCell("root.focus-visible.ringWidth");
-    const expected = { outline: `${bound(width.token) ?? ""} solid ${bound(ring.token) ?? ""}` };
-    expect(declarationsOf(rules, ".ds-chip-body[data-focus-visible]"), `${ring.name}, ${width.name}`).toEqual(expected);
-    expect(declarationsOf(rules, ".ds-chip-remove[data-focus-visible]"), `${ring.name}, ${width.name}`).toEqual(expected);
+    // ADR-0042 §1.4: the spec names the ring's role, and focus/FocusRing.css resolves it for the ground.
+    expect(ring.token, ring.name).toBe("color.border.focus");
+    expect(width.token, width.name).toBe("border.focus");
+    expect(declarationsOf(rules, ".ds-chip-body[data-focus-visible]"), `${ring.name}: not Chip.css's`).toEqual({});
+    expect(declarationsOf(rules, ".ds-chip-remove[data-focus-visible]"), `${ring.name}: not Chip.css's`).toEqual({});
     // The remove control's box is round, so its ring is a circle.
     expect(declarationsOf(rules, ".ds-chip-remove")["border-radius"]).toBe("var(--ds-radius-control)");
+  });
+
+  it("the rings of the ground outside the chip for the pill, and of the pill's own paint for the remove control (ADR-0042 §1.2)", () => {
+    const rings = (material: SurfaceMaterial, backdrop: BackdropKind): readonly (string | undefined)[] => {
+      const out = html(onGround(material, backdrop, <Chip label="North yard" isRemovable onPress={noop} onRemove={noop} />));
+      const body = tagOf(out, "chip-body");
+      const remove = tagOf(out, "chip-remove");
+      return [attribute(body, "data-ds-focus-ring"), body?.includes("data-ds-focus-ring-underlay") === true ? "band" : "", attribute(remove, "data-ds-focus-ring"), remove?.includes("data-ds-focus-ring-underlay") === true ? "band" : ""];
+    };
+    expect(rings("page", "none")).toEqual(["focus", "", "focus", ""]);
+    expect(rings("page", "image")).toEqual(["focus", "band", "focus", ""]);
+    expect(rings("page", "vivid")).toEqual(["focus-on-media", "", "focus", ""]);
+    expect(rings("vivid", "none")).toEqual(["focus-on-media", "", "focus", ""]);
+    expect(rings("inverse", "none")).toEqual(["focus-on-inverse", "", "focus-on-inverse", ""]);
+    expect(rings("accent", "none")).toEqual(["focus-on-accent", "", "focus-on-accent", ""]);
+    expect(rings("glass", "image")).toEqual(["focus", "", "focus", ""]);
+    // A static label takes no focus, so it carries no ring.
+    expect(tagOf(html(<Chip label="North yard" />), "chip-body")).not.toContain("ds-focus-ring");
   });
 
   it("the hit regions: the pill's reaches size.hit for a control and not for a label, the remove control's its own, above the body's", () => {
@@ -592,7 +629,7 @@ describe("behaviour", () => {
     const remove = tagOf(out, "chip-remove");
     expect(remove).toBeDefined();
     expect(attribute(remove, "aria-label")).toBe("Remove North yard");
-    expect(attribute(remove, "class")).toBe("ds-chip-remove");
+    expect(attribute(remove, "class")).toBe("ds-chip-remove ds-focus-ring");
     // Beside the body, never inside it: the body closes before the remove control opens.
     expect(out.indexOf("</button>")).toBeLessThan(out.indexOf('data-ds-slot="chip-remove"'));
     expect(out).toContain('data-ds-slot="chip-remove-space"');

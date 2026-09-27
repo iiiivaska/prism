@@ -1,5 +1,5 @@
 /**
- * `Chip` (spec/components/Chip.yaml, specVersion 1): a small pill with one short label, a leading glyph or
+ * `Chip` (spec/components/Chip.yaml, specVersion 2): a small pill with one short label, a leading glyph or
  * Avatar, and a trailing glyph or a remove control.
  *
  * - The root is the pill, and the Surface module's glass chip (ADR-0036 §2 to §7): `useSurfaceChip` resolves
@@ -18,7 +18,12 @@
  *   static label, a `span`. That control, the body, covers the pill and holds its content, and it paints the
  *   layers over whatever the chip renders: the hover overlay, the pressed fill and the stroke. So no press or hover
  *   ever changes what the chip shape is handed (ADR-0037 §5), and the body's own `data-pressed` is lifted onto the
- *   root only to scale it.
+ *   root only to scale it. On inverse and on the lit tile, where the chip renders nothing, the two layers are that
+ *   material's own (Chip.css, ADR-0042 §2).
+ * - The focus rings are the shared one (`useFocusRing`, `focus/FocusRing.css`, ADR-0042 §1), both read here, outside
+ *   the chip's scope: the body's is the ring of the ground the pill sits on, with the band over an image, and the
+ *   remove control's sits on the pill's own paint (`onChipPaint`), so over media it is `color.border.focus` on the
+ *   chip's glass, and on inverse and accent, where the pill paints nothing, the ground's.
  * - The other parts read what the chip publishes, never the ground: the label, the glyphs, the check and the stroke
  *   take Chip's own cells from the root's `data-ds-surface`, `data-ds-backdrop` and `data-ds-selected` (Chip.css),
  *   and sit inside `SurfaceChipScope`, so a glyph and the Avatar read the published context and the enclosure too.
@@ -42,6 +47,7 @@ import { useState, type HTMLAttributes, type ReactNode, type Ref } from "react";
 import { Button as AriaButton, ToggleButton, type ButtonProps as AriaButtonProps, type PressEvent } from "react-aria-components";
 import { useStrings, type ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import { Avatar, type AvatarProps } from "../avatar/Avatar.tsx";
+import { useFocusRing } from "../focus/useFocusRing.ts";
 import type { IconName } from "../generated/icons.ts";
 import { IconPart } from "../icon/Icon.tsx";
 import { SurfaceChipEdge, SurfaceChipScope, useSurfaceChip } from "../surface/SurfaceChip.tsx";
@@ -133,6 +139,9 @@ export function Chip(props: ChipProps): ReactNode {
   const rest = withoutWithheld(loose);
   const strings = useStrings();
   const chip = useSurfaceChip(chipBackground);
+  // Read here, outside `SurfaceChipScope`: the ground the pill sits on, and the pill's own paint for the remove control.
+  const { className: ringClassName, ...ring } = useFocusRing();
+  const { className: removeRingClassName, ...removeRing } = useFocusRing({ onChipPaint: true });
   const [isPressed, setPressed] = useState(false);
 
   const kind = chipKind(isSelected, onPress !== undefined, isRemovable);
@@ -190,11 +199,28 @@ export function Chip(props: ChipProps): ReactNode {
         {content}
       </span>
     ) : kind === "filter" ? (
-      <ToggleButton className="ds-chip-body" data-ds-slot="chip-body" isSelected={selected} isDisabled={isDisabled} onPress={onPress} onPressChange={setPressed} onKeyDown={onKeyDown}>
+      <ToggleButton
+        className={`ds-chip-body ${ringClassName}`}
+        data-ds-slot="chip-body"
+        {...ring}
+        isSelected={selected}
+        isDisabled={isDisabled}
+        onPress={onPress}
+        onPressChange={setPressed}
+        onKeyDown={onKeyDown}
+      >
         {content}
       </ToggleButton>
     ) : (
-      <AriaButton className="ds-chip-body" data-ds-slot="chip-body" isDisabled={isDisabled} onPress={onPress} onPressChange={setPressed} onKeyDown={onKeyDown}>
+      <AriaButton
+        className={`ds-chip-body ${ringClassName}`}
+        data-ds-slot="chip-body"
+        {...ring}
+        isDisabled={isDisabled}
+        onPress={onPress}
+        onPressChange={setPressed}
+        onKeyDown={onKeyDown}
+      >
         {content}
       </AriaButton>
     );
@@ -206,8 +232,9 @@ export function Chip(props: ChipProps): ReactNode {
         {body}
         {isRemovable ? (
           <AriaButton
-            className="ds-chip-remove"
+            className={`ds-chip-remove ${removeRingClassName}`}
             data-ds-slot="chip-remove"
+            {...removeRing}
             aria-label={chipRemoveName(label, strings)}
             isDisabled={isDisabled}
             onPress={() => {

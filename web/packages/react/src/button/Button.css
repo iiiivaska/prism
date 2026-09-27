@@ -1,5 +1,5 @@
 /*
- * Button (spec/components/Button.yaml, specVersion 7). Compiled into styles.css by
+ * Button (spec/components/Button.yaml, specVersion 8). Compiled into styles.css by
  * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Button writes data-ds-variant, data-ds-size, data-ds-full-width and data-ds-surface (the
@@ -7,7 +7,8 @@
  * data-pressed, data-focus-visible, data-disabled and data-pending. This sheet maps them to the tokens
  * Button.yaml binds. It reads no axis attribute and no media query: hover is the only rule under a
  * modality variant (@variant ds-pointer), the hit region follows modality through size.hit, and Reduce
- * Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4).
+ * Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4). The focus ring is not drawn here:
+ * focus/FocusRing.css draws it on every focusable element, in the ring the ground takes (ADR-0042 §1).
  *
  * The pill paints, bottom to top: the underlay (color.bg.page under a danger tint over media, inverse and
  * accent, the `underlay` cell: ADR-0030 §6.2, ADR-0040 §3), the fill, the Reduce Motion press substitute, the hover overlay, then the inset outline.
@@ -249,12 +250,32 @@
     --ds--button-under: var(--ds-color-bg-page);
   }
 
-  /* ---- hover: the neutral overlay, pointer only (Button.yaml behavior 6, ADR-0019 rule 9) ---- */
+  /* ---- hover: root.hover.overlay, pointer only (Button.yaml behavior 6, ADR-0019 rule 9) ---- */
 
   .ds-button {
     @variant ds-pointer {
       &[data-hovered] {
         --ds--button-hover: var(--ds-color-bg-fill-neutral-subtle);
+      }
+    }
+  }
+
+  /*
+   * Where secondary and ghost draw no fill of their own, on inverse and on the lit tile, the wash is the material's
+   * own: the neutral wash is the inverse fill's own colour and does not show on the dark tile (ADR-0042 §2).
+   */
+  .ds-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"])[data-ds-surface="inverse"] {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--button-hover: var(--ds-color-bg-fill-on-inverse-subtle);
+      }
+    }
+  }
+
+  .ds-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"])[data-ds-surface="accent"] {
+    @variant ds-pointer {
+      &[data-hovered] {
+        --ds--button-hover: var(--ds-color-bg-fill-on-accent-subtle);
       }
     }
   }
@@ -293,15 +314,15 @@
   }
 
   /*
-   * On inverse the neutral wash composites to nothing, so secondary and ghost take one lightness step of the ground;
-   * on the lit tile secondary, which draws no ground there, takes ghost's wash (ADR-0040 §7).
+   * On inverse the neutral wash composites to nothing, so secondary and ghost take one lightness step of the ground
+   * (ADR-0040 §7); on the lit tile, where neither draws a ground, they take the tile's own wash (ADR-0042 §2).
    */
   .ds-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"])[data-ds-surface="inverse"][data-pressed] {
     --ds--button-fill: var(--ds-color-bg-fill-inverse-pressed);
   }
 
-  .ds-button[data-ds-variant="secondary"][data-ds-surface="accent"][data-pressed] {
-    --ds--button-fill: var(--ds-color-bg-fill-neutral-subtle);
+  .ds-button:is([data-ds-variant="secondary"], [data-ds-variant="ghost"])[data-ds-surface="accent"][data-pressed] {
+    --ds--button-fill: var(--ds-color-bg-fill-on-accent-subtle);
   }
 
   /* accessibility.reduceMotion: danger takes color.bg.fill.neutral.subtle, multiplied by the crossfade flag. */
@@ -309,15 +330,10 @@
     --ds--button-press: color-mix(in oklab, var(--ds-color-bg-fill-neutral-subtle) calc(var(--ds-motion-presentation-crossfade) * 100%), transparent);
   }
 
-  /* ---- disabled, focus-visible ---- */
+  /* ---- disabled; the focus ring is focus/FocusRing.css's ---- */
 
   .ds-button[data-disabled] {
     opacity: var(--ds-opacity-disabled);
-  }
-
-  /* color.border.focus at border.focus outside the pill, following its radius. */
-  .ds-button[data-focus-visible] {
-    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
   }
 
   /* ---- label, icons, spinner ---- */

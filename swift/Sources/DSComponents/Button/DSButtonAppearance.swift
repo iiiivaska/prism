@@ -2,7 +2,7 @@ import SwiftUI
 import DSCore
 import DSTokens
 
-/// Every value `spec/components/Button.yaml` (specVersion 7) binds, as pure functions of the variant, the size and the
+/// Every value `spec/components/Button.yaml` (specVersion 8) binds, as pure functions of the variant, the size and the
 /// material the enclosing Surface publishes, so the binding matrix runs on the host, and the name a loading button
 /// speaks, as a pure function of its label and the strings table. `DSButton` only draws and names what these return.
 ///
@@ -114,7 +114,8 @@ nonisolated enum DSButtonAppearance {
     /// `color.bg.fill.inverse-media-pressed`, the white pill one step darker under the same ink label, and knocked out
     /// `color.bg.fill.on-inverse-pressed` or `color.bg.fill.on-accent-pressed` (ADR-0040 §3.5). On inverse secondary and
     /// ghost take `color.bg.fill.inverse-pressed`, one lightness step of the ground, where the neutral wash would show
-    /// nothing, and on accent secondary takes ghost's wash, `color.bg.fill.neutral.subtle` (ADR-0040 §7).
+    /// nothing, and on accent the tile's own wash, `color.bg.fill.on-accent-subtle`, where the neutral wash does not
+    /// show in dark (ADR-0040 §7 as ADR-0042 §2 amends it).
     static func pressedBackground(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath? {
         switch variant {
         case .primary:
@@ -127,11 +128,15 @@ nonisolated enum DSButtonAppearance {
         case .secondary:
             switch material {
             case .inverse: \.color.bgFillInversePressed
-            case .accent: \.color.bgFillNeutralSubtle
+            case .accent: \.color.bgFillOnAccentSubtle
             case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.secondaryBgPressed
             }
         case .ghost:
-            material == .inverse ? \.color.bgFillInversePressed : \.components.button.ghostBgPressed
+            switch material {
+            case .inverse: \.color.bgFillInversePressed
+            case .accent: \.color.bgFillOnAccentSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.button.ghostBgPressed
+            }
         case .danger:
             nil
         }
@@ -149,8 +154,22 @@ nonisolated enum DSButtonAppearance {
         variant == .danger ? \.color.bgFillNeutralSubtle : nil
     }
 
-    /// `tokens.root.hover.overlay`, pointer only.
-    static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
+    /// `tokens.root.hover.overlay`, pointer only: the neutral wash over the pill, and where secondary and ghost draw no
+    /// fill of their own, on inverse and on the lit tile, that material's own wash (ADR-0042 §2), since the neutral
+    /// wash is the inverse fill's own colour and does not show on the dark tile. Primary and danger keep the neutral
+    /// wash over the fill they draw.
+    static func hoverOverlay(_ variant: DSButtonVariant, on material: DSSurfaceMaterial) -> DSColorPath {
+        switch variant {
+        case .secondary, .ghost:
+            switch material {
+            case .inverse: \.color.bgFillOnInverseSubtle
+            case .accent: \.color.bgFillOnAccentSubtle
+            case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.color.bgFillNeutralSubtle
+            }
+        case .primary, .danger:
+            \.color.bgFillNeutralSubtle
+        }
+    }
 
     /// `tokens.root.underlay`: the page a danger tint paints under itself on vivid, on the scheme's glass, on light glass,
     /// on inverse and on accent, so the pair it carries is the pair the contrast gate checks (ADR-0030 §6.2 and rule 6,

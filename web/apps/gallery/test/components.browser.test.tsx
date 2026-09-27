@@ -59,6 +59,10 @@
  *   drag that ends where it began or crosses the middle and comes back that fires nothing, in both writing
  *   directions; hover under pointer only and the pressed overlay; the focus ring around the row or the track; the
  *   hit region; the cells on vivid and on the scheme's glass; and disabled.
+ * - ADR-0042: the focus ring each ground takes, the material's foreground on inverse and on the lit tile and white on
+ *   vivid, around Button, IconButton, Chip and Card, the card's on the browser's own `:focus-visible`; over an image
+ *   the band of the page one ring width wider, and on a chip's own paint the page family's ring with no band; and
+ *   the material's own wash under pointer where secondary, ghost, plain and a chip draw no fill.
  *
  * Modality and motion are `<Theme>` props, so the root attributes switch the stylesheets exactly as an
  * app's choice would (ADR-0019 §4).
@@ -2112,5 +2116,144 @@ describe("Toggle", () => {
     await settles(() => getComputedStyle(glass.knob).backgroundColor, tokenColor(glass.knob, "--ds-toggle-knob-on"));
     // The on track draws no outline.
     await settles(() => getComputedStyle(glass.track).boxShadow, /^(?:none|.* 0px 0px 0px 0px inset)$/u);
+  });
+});
+
+describe("The focus ring and the washes follow the ground (ADR-0042)", () => {
+  const noop = (): void => undefined;
+
+  /** Tabs to the next focus stop and waits until it draws its ring. */
+  async function tabTo(target: HTMLElement, name: string): Promise<CSSStyleDeclaration> {
+    await act(async () => {
+      await userEvent.tab();
+    });
+    expect(document.activeElement, name).toBe(target);
+    await vi.waitFor(() => {
+      expect(target.hasAttribute("data-focus-visible") || target.matches(":focus-visible"), name).toBe(true);
+    });
+    return getComputedStyle(target);
+  }
+
+  it("draws the material's foreground on inverse and on the lit tile, and white on vivid (§1.1)", async () => {
+    const element = await mount(
+      <>
+        <Surface material="inverse" data-probe="inverse">
+          <Button variant="ghost" label="Open" onPress={noop} />
+        </Surface>
+        <Surface material="accent" data-probe="accent">
+          <Button variant="ghost" label="Open" onPress={noop} />
+        </Surface>
+        <Surface material="vivid" data-probe="vivid">
+          <IconButton variant="ghost" glyph="nav.open" label="Open" onPress={noop} />
+        </Surface>
+        <Surface material="raised" data-probe="raised">
+          <Button variant="ghost" label="Open" onPress={noop} />
+        </Surface>
+      </>,
+    );
+    const rings = { inverse: "--ds-color-border-focus-on-inverse", accent: "--ds-color-border-focus-on-accent", vivid: "--ds-color-border-focus-on-media", raised: "--ds-color-border-focus" } as const;
+    for (const [ground, ring] of Object.entries(rings)) {
+      const target = find(find(element, `[data-probe="${ground}"]`), "button");
+      const style = await tabTo(target, ground);
+      expect(style.outlineStyle, ground).toBe("solid");
+      expect(Number.parseFloat(style.outlineWidth), ground).toBe(tokenPx(target, "--ds-border-focus"));
+      expect(style.outlineColor, ground).toBe(tokenColor(target, ring));
+      expect(getComputedStyle(target, "::after").outlineStyle, `${ground}: no band`).toBe("none");
+    }
+  });
+
+  it("paints a band of the page one ring width wider under the ring over an image, and none on a chip's paint (§1.2, §1.3)", async () => {
+    const element = await mount(
+      <Backdrop kind="image">
+        <Button variant="ghost" label="Open" onPress={noop} />
+        <Chip label="North yard" isRemovable onPress={noop} onRemove={noop} />
+      </Backdrop>,
+    );
+    const width = tokenPx(element, "--ds-border-focus");
+    for (const [target, name] of [
+      [find(element, ".ds-button"), "the button"],
+      [find(element, '[data-ds-slot="chip-body"]'), "the chip"],
+    ] as const) {
+      const style = await tabTo(target, name);
+      expect(style.outlineColor, name).toBe(tokenColor(target, "--ds-color-border-focus"));
+      const band = getComputedStyle(target, "::after");
+      expect(band.outlineStyle, name).toBe("solid");
+      expect(Number.parseFloat(band.outlineWidth), name).toBe(width);
+      expect(Number.parseFloat(band.outlineOffset), name).toBe(width);
+      expect(band.outlineColor, name).toBe(tokenColor(target, "--ds-color-bg-page"));
+      const box = target.getBoundingClientRect();
+      const after = { width: Number.parseFloat(band.width), height: Number.parseFloat(band.height) };
+      expect(after.width, `${name}: the band follows the element's box`).toBeCloseTo(box.width, 0);
+      expect(after.height, `${name}: the band follows the element's box`).toBeCloseTo(box.height, 0);
+    }
+    // The remove control's ring lies on the pill's glass: the page family's ring, and no band.
+    const remove = find(element, '[data-ds-slot="chip-remove"]');
+    const style = await tabTo(remove, "the remove control");
+    expect(style.outlineColor).toBe(tokenColor(remove, "--ds-color-border-focus"));
+    expect(getComputedStyle(remove, "::after").outlineStyle).toBe("none");
+  });
+
+  it("rings a chip on vivid in white outside the pill, and its remove control on the pill's glass (§1.2)", async () => {
+    const element = await mount(
+      <Backdrop kind="vivid">
+        <Chip label="North yard" isRemovable onPress={noop} onRemove={noop} />
+      </Backdrop>,
+    );
+    const body = find(element, '[data-ds-slot="chip-body"]');
+    expect((await tabTo(body, "the chip")).outlineColor).toBe(tokenColor(body, "--ds-color-border-focus-on-media"));
+    const remove = find(element, '[data-ds-slot="chip-remove"]');
+    expect((await tabTo(remove, "the remove control")).outlineColor).toBe(tokenColor(remove, "--ds-color-border-focus"));
+  });
+
+  it("rings a pressable card on the browser's own :focus-visible, on the ground it sits on, and its disc on the card (§1.1)", async () => {
+    const element = await mount(
+      <Surface material="inverse">
+        <Card title="Line output" caption="Last 24 hours" variant="vivid" onAction={noop} />
+        <Card title="Queued" variant="vivid" action={{ kind: "custom", icon: "action.pause", label: "Pause line 4" }} onAction={noop} />
+      </Surface>,
+    );
+    const card = find(element, '.ds-card[data-ds-action="open"]');
+    const style = await tabTo(card, "the card");
+    expect(card.hasAttribute("data-ds-focus-ring-native")).toBe(true);
+    expect(style.outlineStyle).toBe("solid");
+    expect(style.outlineColor, "a vivid card on inverse: the inverse ring outside it").toBe(tokenColor(card, "--ds-color-border-focus-on-inverse"));
+    const disc = find(element, ".ds-card-action-button");
+    const discStyle = await tabTo(disc, "the disc");
+    expect(discStyle.outlineColor, "the disc on the vivid card: the media ring").toBe(tokenColor(disc, "--ds-color-border-focus-on-media"));
+  });
+
+  it("lays the material's own wash under pointer where secondary, ghost and a chip draw no fill (§2)", async () => {
+    const element = await mount(
+      <>
+        <Surface material="inverse" data-probe="inverse">
+          <Button variant="ghost" label="Open" onPress={noop} />
+          <IconButton variant="plain" glyph="nav.open" label="Open" onPress={noop} />
+          <Chip label="North yard" onPress={noop} />
+        </Surface>
+        <Surface material="accent" data-probe="accent">
+          <Button variant="secondary" label="Open" onPress={noop} />
+          <IconButton variant="ghost" glyph="nav.open" label="Open" onPress={noop} />
+          <Chip label="North yard" onPress={noop} />
+        </Surface>
+      </>,
+    );
+    const washes = { inverse: "--ds-color-bg-fill-on-inverse-subtle", accent: "--ds-color-bg-fill-on-accent-subtle" } as const;
+    for (const [ground, wash] of Object.entries(washes)) {
+      const surface = find(element, `[data-probe="${ground}"]`);
+      for (const [selector, property] of [
+        [".ds-button", "--ds--button-hover"],
+        [".ds-icon-button", "--ds--icon-button-hover"],
+        ['[data-ds-slot="chip-body"]', "--ds--chip-hover"],
+      ] as const) {
+        const target = find(surface, selector);
+        await act(async () => {
+          await userEvent.hover(target);
+        });
+        await settles(() => getComputedStyle(target).getPropertyValue(property).trim(), tokenColor(target, wash));
+        await act(async () => {
+          await userEvent.unhover(target);
+        });
+      }
+    }
   });
 });

@@ -12,7 +12,10 @@
  *
  * No rule reads an axis attribute or a media query. Hover and the pointer-only action glyph sit under
  * @variant ds-pointer; Reduce Motion arrives through --ds-motion-presentation-crossfade (ADR-0023 §8.4).
- * Custom properties named --ds--card-* are this component's own (ARCHITECTURE §8).
+ * The focus rings of a pressable card and of its custom disc are not drawn here: focus/FocusRing.css draws them,
+ * the card's in the ring of the ground the card sits on and the disc's in the ring of the card's own paint, and
+ * over an image it draws the band as the outline of the card's ::after, the element whose shadow is the selection
+ * outline here (ADR-0042 §1). Custom properties named --ds--card-* are this component's own (ARCHITECTURE §8).
  */
 
 @layer ds.components {
@@ -167,11 +170,6 @@
 
   .ds-card[data-pressed] {
     scale: var(--ds--card-press-scale);
-  }
-
-  /* focus-visible: color.border.focus at border.focus, following the card radius. */
-  .ds-card[data-ds-action="open"]:focus-visible {
-    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
   }
 
   /*
@@ -447,10 +445,6 @@
   .ds-card-action-button[data-pressed] {
     --ds--card-disc-overlay: var(--ds-color-bg-fill-neutral-subtle);
     scale: var(--ds--card-disc-scale);
-  }
-
-  .ds-card-action-button[data-focus-visible] {
-    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
   }
 
   @media (forced-colors: active) {

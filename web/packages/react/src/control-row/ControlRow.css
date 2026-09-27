@@ -4,17 +4,16 @@
  * `DSControlRow` (swift/Sources/DSComponents/Control/DSControlRow.swift).
  *
  * The row is the label element React Aria wires to the control's hidden input: its label, its control, the hit
- * region around them, the hover and pressed overlay over them and the focus ring outside them. Each component that
- * uses it binds the row's cells from its own spec, as custom properties on its root (`--ds--control-row-*`, which
+ * region around them and the hover and pressed overlay over them. The focus ring outside them is not drawn here: the
+ * row spreads `useFocusRing()`, and focus/FocusRing.css draws the ring the ground takes (ADR-0042 §1). Each component
+ * that uses it binds the row's cells from its own spec, as custom properties on its root (`--ds--control-row-*`, which
  * the row inherits), so one stylesheet draws three specs' rows and each spec's binding test reads its own cells:
  *
  *   --ds--control-row-gap             root.gap, between the label and the control
- *   --ds--control-row-radius          root.radius, the row's outline, which the overlay and the ring follow
+ *   --ds--control-row-radius          root.radius, the row's outline, which the overlay and the focus ring follow
  *   --ds--control-row-hover           root.hover.overlay
  *   --ds--control-row-press           root.pressed.overlay
  *   --ds--control-row-disabled        root.disabled.opacity
- *   --ds--control-row-ring            root.focus-visible.ring
- *   --ds--control-row-ring-width      root.focus-visible.ringWidth
  *   --ds--control-row-font-size       label.typography's size and line height, which the first line is measured in
  *   --ds--control-row-line-height
  *   --ds--control-row-control-size    the control's height, which is centred on the label's first line
@@ -114,15 +113,10 @@
     --ds--control-row-overlay: var(--ds--control-row-press);
   }
 
-  /* ---- disabled, focus-visible ---- */
+  /* ---- disabled; the focus ring is focus/FocusRing.css's, outside the row's box and following its outline ---- */
 
   /* The whole row at the disabled opacity; React Aria takes the control out of input and the focus order. */
   .ds-control-row[data-disabled] {
     opacity: var(--ds--control-row-disabled);
-  }
-
-  /* The focus ring, outside the row's box and following its outline: radius.inner, or the control's own radius. */
-  .ds-control-row[data-focus-visible] {
-    outline: var(--ds--control-row-ring-width) solid var(--ds--control-row-ring);
   }
 }

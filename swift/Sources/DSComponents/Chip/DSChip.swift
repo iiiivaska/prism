@@ -4,7 +4,7 @@ import DSIcons
 import DSTokens
 
 /// Chip: a small pill that filters, names a selection or identifies an entity (`spec/components/Chip.yaml`,
-/// specVersion 1).
+/// specVersion 2).
 ///
 ///     DSChip("Last 24 hours", isSelected: isOn) { isOn.toggle() }           // a filter chip
 ///     DSChip(verbatim: "INV-209316", trailingIcon: .actionCopy) { copy() }  // an identifier chip whose press copies
@@ -30,8 +30,10 @@ import DSTokens
 ///    chip shape is handed, so no press or hover switches the pill between the recipe and its own cell (ADR-0037 §5).
 ///    A press scales the pill to 0.97 on `motion.spring.snappy` and plays `haptic.impact.light`; under Reduce Motion
 ///    nothing scales and the pressed fill changes over `motion.duration.base` with `motion.easing.out`. Hover, under
-///    pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill. `isSelected` thickens the stroke and
-///    lifts the label on `motion.spring.smooth`.
+///    pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill. On inverse and on the lit tile, where
+///    the pill renders nothing, both layers are that material's own (`DSChipAppearance.hoverOverlay(on:)`,
+///    `pressedOverlay(on:)`, ADR-0042 §2). `isSelected` thickens the stroke and lifts the label on
+///    `motion.spring.smooth`.
 ///  - The pill is one row at the control height of its size, `root.paddingX` either side and `root.gap` between its
 ///    parts; the label never wraps and never truncates, and the pill grows with it along its Dynamic Type style. The hit
 ///    region of a control is the larger of the pill and `size.hit` on each axis.
@@ -45,7 +47,8 @@ import DSTokens
 ///    fires `onRemove` without firing `onPress`, and Delete and Backspace on the chip fire it too. A `trailingIcon` given
 ///    with it is not drawn.
 ///  - `isDisabled` lowers the pill to `opacity.disabled` and takes it and its remove control out of input and the focus
-///    order. The focus ring is `color.border.focus` at `border.focus` outside the pill.
+///    order. The focus ring is `color.border.focus` at `border.focus` outside the pill, in the ring the ground outside
+///    the chip takes, and the remove control's in the ring of the pill's own paint (`DSFocusRing`, ADR-0042 §1).
 ///
 /// watchOS is `none` in the spec — a watch filter is a list screen — and `DSComponentsManifest` declares no watch entry;
 /// the type still builds there, as Avatar and IconButton do.
@@ -411,7 +414,8 @@ struct DSChipPill<Content: View>: View {
 
 /// What the pill paints over the chip's rendering and under its content, all in the pill's shape: the pressed fill,
 /// the hover overlay and the stroke. It sits inside the chip shape, so it reads the context the chip publishes: the
-/// stroke keys on the media under the glass, and under the fallback takes its default cell.
+/// stroke keys on the media under the glass, and under the fallback takes its default cell, and on inverse and on the
+/// lit tile, where the chip renders nothing and publishes the ground, the two washes take that material's own.
 private struct DSChipLayers<ChipShape: InsettableShape>: View {
     let shape: ChipShape
     let isSelected: Bool
@@ -430,14 +434,15 @@ private struct DSChipLayers<ChipShape: InsettableShape>: View {
     var body: some View {
         let tokens = ds.tokens
         let motion = ds.motion
-        let border = tokens[keyPath: DSChipAppearance.border(on: ds.surface, isSelected: isSelected)]
+        let published = ds.surface
+        let border = tokens[keyPath: DSChipAppearance.border(on: published, isSelected: isSelected)]
         let width = tokens[keyPath: DSChipAppearance.borderWidth(isSelected: isSelected)]
         return ZStack {
             shape
-                .fill(tokens[keyPath: DSChipAppearance.pressedOverlay])
+                .fill(tokens[keyPath: DSChipAppearance.pressedOverlay(on: published)])
                 .opacity(isPressed ? 1 : 0)
             shape
-                .fill(tokens[keyPath: DSChipAppearance.hoverOverlay])
+                .fill(tokens[keyPath: DSChipAppearance.hoverOverlay(on: published)])
                 .opacity(isHovered ? 1 : 0)
                 .animation(DSControlAppearance.hoverAnimation(motion), value: isHovered)
             shape.strokeBorder(border, lineWidth: width)
@@ -550,7 +555,10 @@ private struct DSChipRemoveControl: View {
 }
 
 /// The remove control's target: the glyph's box, hit-testable, widened to `size.hit`, with a round focus ring outside
-/// it while it has focus.
+/// it while it has focus. The control is laid over the pill, outside the chip shape, so it reads the ground outside the
+/// chip; its ring sits on the pill's own paint, so it says so (`onChipPaint: true`): over media the chip's glass, not
+/// the media, is under it, and on inverse and on the lit tile, where the pill paints nothing, the ground's ring holds
+/// (ADR-0042 §1.2).
 private struct DSChipRemoveStyle: ButtonStyle {
     init() {}
 
@@ -577,7 +585,7 @@ private struct DSChipRemoveTarget<Label: View>: View {
             .contentShape(Rectangle())
             .overlay {
                 if isFocused && isEnabled {
-                    DSFocusRing(.circle)
+                    DSFocusRing(.circle, onChipPaint: true)
                 }
             }
             .modifier(DSHitRegion())

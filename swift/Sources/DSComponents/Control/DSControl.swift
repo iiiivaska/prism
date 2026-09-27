@@ -94,16 +94,27 @@ struct DSHoverTracking: ViewModifier {
 
 // MARK: - Focus ring
 
-/// The focus ring: `color.border.focus` at `border.focus` width outside the shape, following its outline
-/// (Button.yaml, Card.yaml and IconButton.yaml accessibility, docs/research/visual-dna.md §7.5).
+/// The focus ring, the one drawing of it on Apple (ADR-0042 §1): `border.focus` wide outside the shape, following its
+/// outline, in the ring DSCore's table picks for the ground the ring sits on (`DSInteraction.focusRing(on:onChipPaint:)`)
+/// — `color.border.focus` on the page, the solid ladder, both glasses and Prism's map, the material's foreground on
+/// inverse and on the lit tile, white on vivid — and over an image on a band of `color.bg.page` one ring width wider
+/// (`DSInteraction.focusRingUnderlay(on:onChipPaint:)`), so one of the two holds 3:1 against any picture. Every spec
+/// binds its ring as `color.border.focus` at `border.focus`; no component picks a ring or paints one of its own.
 ///
 /// The ring traces the shape it surrounds, grown by its own width, so it touches that shape evenly all the way round.
-/// A caller says which shape that is (`Outline`): a continuous rounded rectangle for Button's pill and Card's corners,
-/// a circle for a body drawn as `Circle()` — IconButton and Card's action disc.
+/// A caller says which shape that is (`Outline`): a continuous rounded rectangle for Button's pill, Chip's pill and
+/// Card's corners, a circle for a body drawn as `Circle()` — IconButton, Card's action disc, Chip's remove control.
 ///
-/// On macOS under Increase Contrast the ring takes the system's focus colour instead (Button.yaml
-/// `notes.platform.macos`), which SwiftUI exposes as the accent colour the focus indicator is drawn from. The
-/// contrast state is Prism's token context, never the OS setting (ADR-0022 §1.3).
+/// **Which ground.** A ring placed as an overlay of the element it surrounds reads the context that element reads, and
+/// the chip enclosure there (`dsSurfaceChipEnclosure`, ADR-0037 §1): that is Button's, IconButton's and Chip's pill.
+/// A component that draws its ring inside a Surface of its own hands the ring the ground outside it (`on:`), as Card
+/// does, and a ring around a control laid on a chip's own paint says so (`onChipPaint: true`), as Chip's remove
+/// control does.
+///
+/// On macOS under Increase Contrast the ring takes the system's focus colour instead, on the page family only
+/// (`DSInteraction.takesSystemFocusColor(on:)`; Button.yaml `notes.platform.macos`), which SwiftUI exposes as the
+/// accent colour the focus indicator is drawn from. The contrast state is Prism's token context, never the OS setting
+/// (ADR-0022 §1.3).
 struct DSFocusRing: View {
     /// The outline of the shape the ring surrounds.
     enum Outline: Hashable, Sendable {
@@ -117,40 +128,61 @@ struct DSFocusRing: View {
     }
 
     let outline: Outline
+    /// The ground the ring sits on; nil reads the context published where the ring is placed.
+    let ground: DSSurfaceContext?
+    /// Whether the ring sits on a chip's own paint; nil reads it from the enclosure where the ring is placed.
+    let onChipPaint: Bool?
     private var ds = DSThemeValues()
+    @Environment(\.dsSurfaceChipEnclosure) private var enclosure
 
-    /// A ring around a continuous rounded rectangle: Button's pill, a card.
+    /// A ring around a continuous rounded rectangle: Button's pill, Chip's pill, a card.
     init(cornerRadius: CGFloat) {
         self.init(.roundedRectangle(cornerRadius: cornerRadius))
     }
 
-    init(_ outline: Outline) {
+    /// A ring around `outline`, on the ground and the paint published where it is placed unless the caller names them.
+    init(_ outline: Outline, on ground: DSSurfaceContext? = nil, onChipPaint: Bool? = nil) {
         self.outline = outline
+        self.ground = ground
+        self.onChipPaint = onChipPaint
     }
 
     var body: some View {
-        let width = ds.tokens.border.focus
-        ring(width: width)
-            .padding(-width)
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
+        let tokens = ds.tokens
+        let width = tokens.border.focus
+        let ground = self.ground ?? ds.surface
+        let onChipPaint = self.onChipPaint ?? (enclosure != DSSurfaceChipEnclosure.none)
+        ZStack {
+            if let underlay = DSInteraction.focusRingUnderlay(on: ground, onChipPaint: onChipPaint) {
+                // The band under the ring: `color.bg.page` from the shape out to two ring widths, drawn first, so the
+                // ring covers its inner half and its outer half is the page's edge between the ring and the picture.
+                stroke(underlay.color(tokens.context.brand), grownBy: 2 * width, lineWidth: 2 * width)
+                    .padding(-2 * width)
+            }
+            stroke(color(on: ground, onChipPaint: onChipPaint, tokens: tokens), grownBy: width, lineWidth: width)
+                .padding(-width)
+        }
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 
-    @ViewBuilder private func ring(width: CGFloat) -> some View {
+    /// The outline grown by `distance` on every side, stroked inside by `lineWidth`: a continuous rounded rectangle
+    /// whose radius grows by the same distance, so it stays concentric with the shape, or the circle.
+    @ViewBuilder private func stroke(_ color: Color, grownBy distance: CGFloat, lineWidth: CGFloat) -> some View {
         switch outline {
         case .roundedRectangle(let cornerRadius):
-            RoundedRectangle(cornerRadius: cornerRadius + width, style: .continuous)
-                .strokeBorder(color, lineWidth: width)
+            RoundedRectangle(cornerRadius: cornerRadius + distance, style: .continuous)
+                .strokeBorder(color, lineWidth: lineWidth)
         case .circle:
-            Circle().strokeBorder(color, lineWidth: width)
+            Circle().strokeBorder(color, lineWidth: lineWidth)
         }
     }
 
-    private var color: Color {
+    private func color(on ground: DSSurfaceContext, onChipPaint: Bool, tokens: DSTokenSet) -> Color {
         #if os(macOS)
-        if ds.tokens.context.contrast == .increased { return .accentColor }
+        if tokens.context.contrast == .increased && DSInteraction.takesSystemFocusColor(on: ground) { return .accentColor }
         #endif
-        return ds.tokens.color.borderFocus
+        return DSInteraction.focusRing(on: ground, onChipPaint: onChipPaint).color(tokens.context.brand)
     }
 }
 

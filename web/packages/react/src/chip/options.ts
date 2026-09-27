@@ -1,5 +1,5 @@
 /**
- * The enum of spec/components/Chip.yaml (specVersion 1), spelled as the spec spells it and in its order, the
+ * The enum of spec/components/Chip.yaml (specVersion 2), spelled as the spec spells it and in its order, the
  * twin of `DSChipSize`. The stylesheet maps it to the tokens Chip.yaml binds; test/chip.test.tsx reads the spec
  * and checks every cell, so it cannot drift.
  */

@@ -1,5 +1,5 @@
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
-        "Button": ["ios": 7, "web-touch": 7],
+        "Button": ["ios": 8, "web-touch": 8],
     ]
 }

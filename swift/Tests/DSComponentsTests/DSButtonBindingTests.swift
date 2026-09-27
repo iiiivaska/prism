@@ -6,7 +6,7 @@ import DSIcons
 import DSTokens
 @testable import DSComponents
 
-/// `spec/components/Button.yaml` specVersion 7: the binding matrix keyed by variant and published material, the sizes
+/// `spec/components/Button.yaml` specVersion 8: the binding matrix keyed by variant and published material, the sizes
 /// per density, the press and its Reduce Motion substitute, the hit region, the Dynamic Type rule, the watch
 /// adaptations, and the name a loading button speaks, which is the app's `strings.Button.loading` (ADR-0032).
 ///
@@ -20,7 +20,7 @@ import DSTokens
 /// What stays hand-written, and why, is marked at each test: a rule the spec states as prose (the hit region, the
 /// Dynamic Type clamp, the watch adaptations). The danger underlay and the spinner on every material are cells since
 /// Button 7 (ADR-0040), so neither is written here any more.
-@Suite("Button bindings (Button.yaml v7)")
+@Suite("Button bindings (Button.yaml v8)")
 struct DSButtonBindingTests {
     let spec: DSSpec
     /// Ghost and danger bind no spinner cell of their own, so their spinner is Spinner.yaml's arc.
@@ -51,13 +51,13 @@ struct DSButtonBindingTests {
     /// The axis check is what keeps the loops below honest: a loop over an axis the matrix is not keyed by would
     /// read `default` at every step and pass while checking one cell nine times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 7)
+        #expect(try spec.specVersion == 8)
         #expect(try spec.propValues("variant") == DSButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSButtonSize.allCases.map(\.rawValue))
         let variants = Set(try spec.propValues("variant"))
         for property in [
             "root.background", "root.underlay", "root.foreground", "root.border", "root.borderWidth", "root.pressed.background",
-            "spinner.color",
+            "root.hover.overlay", "spinner.color",
         ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
@@ -67,7 +67,7 @@ struct DSButtonBindingTests {
             "root.background.primary", "root.background.secondary", "root.underlay.danger", "root.foreground.primary",
             "root.foreground.secondary", "root.foreground.ghost", "root.border.secondary", "root.border.ghost",
             "root.pressed.background.primary", "root.pressed.background.secondary", "root.pressed.background.ghost",
-            "spinner.color.primary", "spinner.color.secondary",
+            "root.hover.overlay.secondary", "root.hover.overlay.ghost", "spinner.color.primary", "spinner.color.secondary",
         ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: materials), "\(property) is keyed by \(keys.sorted())")
@@ -114,18 +114,26 @@ struct DSButtonBindingTests {
     }
 
     /// `tokens.root.pressed.background` — every material level included: the white pill's pressed step on vivid
-    /// (ADR-0039), the knocked-out steps on inverse and accent and the ground's step under secondary and ghost on inverse
-    /// (ADR-0040) — and `tokens.root.hover.overlay`, and the danger pill's Reduce Motion substitute, which
+    /// (ADR-0039), the knocked-out steps on inverse and accent, the ground's step under secondary and ghost on inverse
+    /// (ADR-0040) and the tile's own wash under them on accent (ADR-0042 §2) — and `tokens.root.hover.overlay`, keyed by
+    /// variant and material since Button 8, and the danger pill's Reduce Motion substitute, which
     /// `accessibility.reduceMotion` names in prose.
     @Test func pressedAndHoverCells() throws {
         for material in Self.materials {
             for variant in DSButtonVariant.allCases {
                 try spec.binds(DSButtonAppearance.pressedBackground(variant, on: material), at: "root.pressed.background", variant, material)
+                try spec.binds(DSButtonAppearance.hoverOverlay(variant, on: material), at: "root.hover.overlay", variant, material)
             }
             // ADR-0039: primary's pressed fill is a role of its own on every material, never its rest fill.
             #expect(DSButtonAppearance.pressedBackground(.primary, on: material) != DSButtonAppearance.background(.primary, on: material), "\(material)")
         }
-        try spec.binds(DSButtonAppearance.hoverOverlay, at: "root.hover.overlay")
+        // ADR-0042 §2: a pill with no fill of its own takes the material's wash on inverse and on the lit tile, never the
+        // neutral wash, which is the inverse fill's own colour and does not show on the dark tile.
+        for variant in [DSButtonVariant.secondary, .ghost] {
+            #expect(DSButtonAppearance.hoverOverlay(variant, on: .inverse) == \.color.bgFillOnInverseSubtle, "\(variant)")
+            #expect(DSButtonAppearance.hoverOverlay(variant, on: .accent) == \.color.bgFillOnAccentSubtle, "\(variant)")
+            #expect(DSButtonAppearance.pressedBackground(variant, on: .accent) == \.color.bgFillOnAccentSubtle, "\(variant)")
+        }
         // `accessibility.reduceMotion`: danger takes `color.bg.fill.neutral.subtle`, the rest take their pressed
         // fill, which they already show while pressed.
         #expect(DSButtonAppearance.reducedMotionPressOverlay(.danger) == \.color.bgFillNeutralSubtle)
@@ -228,7 +236,8 @@ struct DSButtonBindingTests {
 
     /// `tokens.root.disabled.opacity` and `tokens.root.focus-visible.*`: the cells no appearance function returns,
     /// because `DSButton` applies them to the view itself (`.opacity(…)` and `DSFocusRing`). They are pinned as key
-    /// paths so a spec that moves them fails on this side too; what the ring actually draws is the simulator's job.
+    /// paths so a spec that moves them fails on this side too; which ring the ground takes is DSCore's table, held by
+    /// `DSInteractionTests` (ADR-0042 §1), and what the ring actually draws is the simulator's job.
     @Test func theCellsTheViewAppliesItself() throws {
         #expect(try spec.number("root.disabled.opacity") == \DSTokenSet.opacity.disabled)
         #expect(try spec.color("root.focus-visible.ring") == \DSTokenSet.color.borderFocus)

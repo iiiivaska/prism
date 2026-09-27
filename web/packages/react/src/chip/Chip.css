@@ -1,5 +1,5 @@
 /*
- * Chip (spec/components/Chip.yaml, specVersion 1). Compiled into styles.css by scripts/build-styles.ts
+ * Chip (spec/components/Chip.yaml, specVersion 2). Compiled into styles.css by scripts/build-styles.ts
  * (ADR-0019 §4 item 6 as amended by ADR-0025).
  *
  * The React Chip's root is the pill and also the Surface module's glass chip (ADR-0036 §7): useSurfaceChip writes
@@ -21,7 +21,9 @@
  * covers the pill: it holds the content in one row and paints, over whatever the chip renders and under the
  * content, the hover overlay, the pressed fill and the stroke as an inset shadow. Those are layers, never the cell
  * the chip shape is handed (ADR-0037 §5). The remove control is a second button over the space the body keeps in
- * the trailing position. Custom properties named --ds--chip-* are this component's own (ARCHITECTURE §8).
+ * the trailing position. The focus rings of the body and the remove control are not drawn here: focus/FocusRing.css
+ * draws them, in the ring the ground outside the chip takes and the ring of the pill's own paint (ADR-0042 §1).
+ * Custom properties named --ds--chip-* are this component's own (ARCHITECTURE §8).
  */
 
 /* The pressed fill and the hover overlay animate as colors: a fill change over motion.duration.base. */
@@ -47,6 +49,9 @@
     --ds--chip-trailing: var(--ds-color-icon-secondary);
     --ds--chip-border: var(--ds-chip-border-rest);
     --ds--chip-border-width: var(--ds-border-hairline);
+    /* root.hover.overlay and root.pressed.overlay: their default cells, which the body lays while hovered or pressed. */
+    --ds--chip-hover-overlay: var(--ds-color-bg-fill-neutral-subtle);
+    --ds--chip-pressed-overlay: var(--ds-chip-bg-pressed);
     /* root.height and root.paddingX, which the size rules below set; the leading side is paddingX unless an Avatar leads. */
     --ds--chip-height: var(--ds-size-control-sm);
     --ds--chip-padding-x: var(--ds-space-4);
@@ -124,11 +129,16 @@
     --ds--chip-border: var(--ds-color-border-on-media);
   }
 
-  /* Accent: no fill of its own, and the lit tile's two tones for the label and the glyphs; the stroke keeps its cell. */
+  /*
+   * Accent: no fill of its own, and the lit tile's two tones for the label and the glyphs; the stroke keeps its cell.
+   * The two layers are the tile's own wash, where the neutral wash does not show in dark (ADR-0042 §2).
+   */
   .ds-chip[data-ds-surface="accent"] {
     --ds--chip-label: var(--ds-color-text-on-accent-secondary);
     --ds--chip-leading: var(--ds-color-text-on-accent-secondary);
     --ds--chip-trailing: var(--ds-color-text-on-accent-secondary);
+    --ds--chip-hover-overlay: var(--ds-color-bg-fill-on-accent-subtle);
+    --ds--chip-pressed-overlay: var(--ds-color-bg-fill-on-accent-subtle);
   }
 
   .ds-chip[data-ds-surface="accent"][data-ds-selected] {
@@ -138,13 +148,17 @@
 
   /*
    * Inverse: no fill of its own either, and every part in the material's one foreground, the stroke included, at
-   * rest and selected: this rule comes after the selected one, at the same weight, so it wins.
+   * rest and selected: this rule comes after the selected one, at the same weight, so it wins. Hovered, the wash is
+   * the material's own, since the neutral wash is the fill's own colour; pressed, one lightness step of the ground,
+   * as Button's and IconButton's ground-less variants take (ADR-0042 §2).
    */
   .ds-chip[data-ds-surface="inverse"] {
     --ds--chip-label: var(--ds-color-text-on-inverse);
     --ds--chip-leading: var(--ds-color-text-on-inverse);
     --ds--chip-trailing: var(--ds-color-text-on-inverse);
     --ds--chip-border: var(--ds-color-text-on-inverse);
+    --ds--chip-hover-overlay: var(--ds-color-bg-fill-on-inverse-subtle);
+    --ds--chip-pressed-overlay: var(--ds-color-bg-fill-inverse-pressed);
   }
 
   /* ---- pressed and disabled, on the pill itself (ADR-0036 rule 13) ---- */
@@ -210,23 +224,21 @@
     inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
   }
 
-  /* Hover: the neutral overlay over the pill, pointer only (behavior, ADR-0019 rule 9). */
+  /* Hover: root.hover.overlay over the pill, pointer only (behavior, ADR-0019 rule 9), keyed on the root above. */
   .ds-chip-body {
     @variant ds-pointer {
       &[data-hovered] {
-        --ds--chip-hover: var(--ds-color-bg-fill-neutral-subtle);
+        --ds--chip-hover: var(--ds--chip-hover-overlay);
       }
     }
   }
 
-  /* Pressed: comp.chip.bg.pressed over whatever the chip renders, in every material and every motion mode. */
+  /*
+   * Pressed: root.pressed.overlay over whatever the chip renders, in every motion mode: comp.chip.bg.pressed, with no
+   * media axis, and the material's own on inverse and accent, keyed on the root above.
+   */
   .ds-chip-body[data-pressed] {
-    --ds--chip-press: var(--ds-chip-bg-pressed);
-  }
-
-  /* The focus ring: color.border.focus at border.focus outside the pill, following radius.chip. */
-  .ds-chip-body[data-focus-visible] {
-    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
+    --ds--chip-press: var(--ds--chip-pressed-overlay);
   }
 
   /* ---- the parts ---- */
@@ -293,11 +305,6 @@
     position: absolute;
     inset-block: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
     inset-inline: min(calc(var(--ds-size-hit) * 0), calc((100% - var(--ds-size-hit)) / 2));
-  }
-
-  /* Its focus ring: color.border.focus at border.focus outside the glyph's box, drawn as a circle. */
-  .ds-chip-remove[data-focus-visible] {
-    outline: var(--ds-border-focus) solid var(--ds-color-border-focus);
   }
 
   /*

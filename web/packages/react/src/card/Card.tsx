@@ -51,6 +51,11 @@
  *   an ellipsis, so a long title truncates rather than growing the header and overflowing the card.
  * - The radius cell follows `size` and density (behavior 13): density is read from Prism's token context,
  *   at the root and, after mount, at the card's own element, so a nested density scope counts.
+ * - The focus rings are the shared one (`useFocusRing`, `focus/FocusRing.css`, ADR-0042 §1). A pressable card's
+ *   ring is read here, outside the card's own Surface: it sits on the ground the card sits on, with the band over
+ *   an image. The root is no React Aria element, so it carries `data-ds-focus-ring-native` and the stylesheet draws
+ *   the ring while the browser matches `:focus-visible` on it. The custom disc's ring sits on the card's own paint,
+ *   so `CardActionButton` reads it inside the Surface, as `DSFocusRing(.circle)` does inside `DSCardLayers`.
  * - It accepts `ScopeAttributes` and forwards them, with every other DOM prop, to its root element
  *   (ADR-0019 rule 8).
  */
@@ -67,6 +72,7 @@ import {
 import { Button as AriaButton, Pressable, type PressEvent } from "react-aria-components";
 import { readContext, useTokenContext, type Density, type ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import { isDevelopment } from "../env.ts";
+import { useFocusRing } from "../focus/useFocusRing.ts";
 import { iconRegistry, type IconName } from "../generated/icons.ts";
 import { IconPart } from "../icon/Icon.tsx";
 import { Surface } from "../surface/Surface.tsx";
@@ -154,6 +160,19 @@ function checkCustomAction(action: CardCustomAction): void {
   }
 }
 
+/**
+ * The custom disc's button, rendered inside the card's Surface so its ring reads the card's own paint (ADR-0042
+ * §1.1): the disc sits on the card, and its ring outside the disc sits on the card too.
+ */
+function CardActionButton(props: { readonly icon: IconName; readonly label: string; readonly onAction: (event: PressEvent) => void }): ReactNode {
+  const { className: ringClassName, ...ring } = useFocusRing();
+  return (
+    <AriaButton className={`ds-card-action-button ${ringClassName}`} data-ds-slot="card-action-button" {...ring} aria-label={props.label} onPress={props.onAction}>
+      <IconPart slot="card-action-glyph" name={props.icon} size="sm" tone="inherit" />
+    </AriaButton>
+  );
+}
+
 export function Card(props: CardProps): ReactNode {
   const {
     variant = "solid",
@@ -192,6 +211,8 @@ export function Card(props: CardProps): ReactNode {
 
   const [isPressed, setPressed] = useState(false);
   const [isHovered, setHovered] = useState(false);
+  // The ground the card sits on, read outside its own Surface, which publishes to what the card holds.
+  const { className: ringClassName, ...ring } = useFocusRing();
 
   const onVivid = variant === "vivid";
   const kind = cardActionKind(action);
@@ -233,7 +254,7 @@ export function Card(props: CardProps): ReactNode {
     <Surface
       {...rest}
       ref={setRefs}
-      className={joinClassNames("ds-card", className)}
+      className={joinClassNames("ds-card", pressable ? ringClassName : undefined, className)}
       material={surfaceMaterialOf(variant)}
       vivid={vivid}
       radius={surfaceRadiusOf[radiusCell]}
@@ -247,6 +268,7 @@ export function Card(props: CardProps): ReactNode {
       data-ds-action={kind}
       data-pressed={pressable && isPressed ? "" : undefined}
       data-hovered={pressable && isHovered ? "" : undefined}
+      {...(pressable ? { ...ring, "data-ds-focus-ring-native": "" } : {})}
       onPointerEnter={(event: PointerEvent<HTMLDivElement>) => {
         onPointerEnter?.(event);
         if (event.pointerType !== "touch") setHovered(true);
@@ -286,10 +308,8 @@ export function Card(props: CardProps): ReactNode {
         ) : null}
         {custom === null ? null : (
           <span data-ds-slot="card-action" data-ds-action="custom">
-            {hasHandler ? (
-              <AriaButton className="ds-card-action-button" data-ds-slot="card-action-button" aria-label={custom.label} onPress={onAction}>
-                <IconPart slot="card-action-glyph" name={custom.icon} size="sm" tone="inherit" />
-              </AriaButton>
+            {onAction !== undefined ? (
+              <CardActionButton icon={custom.icon} label={custom.label} onAction={onAction} />
             ) : (
               // Nothing to press: the disc keeps its look and its name and is not a control, the way
               // `DSCardActionCircle` draws a `DSCardActionDisc` when its action is nil.

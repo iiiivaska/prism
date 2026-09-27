@@ -24,7 +24,7 @@ import DSTokens
 /// suite with the reason instead of failing it. Every content renders in `en_US`, the locale the snapshots render in.
 @MainActor
 @Suite(
-    "Chip in the accessibility tree on the simulator (Chip.yaml v1)",
+    "Chip in the accessibility tree on the simulator (Chip.yaml v2)",
     .serialized,
     .enabled(if: DSAccessibilityAutomation.isAvailable, DSAccessibilityAutomation.unavailableComment)
 )

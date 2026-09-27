@@ -104,16 +104,23 @@
 /// is the first control in Prism's control row (`DSControlRow`), which Checkbox and Radio take as it is. Toggle.yaml
 /// marks watchOS `none` — a wrist setting belongs to the phone app or to system Settings — so its row has no `watchos`
 /// key either.
+///
+/// Button 8, IconButton 4 and Chip 2 take the interaction layers of ADR-0042. The focus ring every component draws
+/// through `DSFocusRing`, Toggle's row among them, follows the ground it sits on — the material's foreground on inverse
+/// and on the lit tile, white on vivid, and over an image `color.border.focus` on a band of `color.bg.page` — and
+/// Card's, drawn inside its own Surface, reads the ground outside it. Where secondary, ghost and plain, and Chip's pill, draw no fill of their own,
+/// on inverse and on the lit tile, hover lays that material's wash and the press on the tile takes it too. No example
+/// is photographed focused, hovered or pressed, so no image moved.
 public enum DSComponentsManifest {
     public static let implemented: [String: [String: Int]] = [
         "Avatar": ["ios": 1, "ipados": 1, "macos": 1],
         "Badge": ["ios": 1, "ipados": 1, "macos": 1],
-        "Button": ["ios": 7, "ipados": 7, "macos": 7, "watchos": 7],
+        "Button": ["ios": 8, "ipados": 8, "macos": 8, "watchos": 8],
         "Card": ["ios": 5, "ipados": 5, "macos": 5, "watchos": 5],
-        "Chip": ["ios": 1, "ipados": 1, "macos": 1],
+        "Chip": ["ios": 2, "ipados": 2, "macos": 2],
         "Divider": ["ios": 2, "ipados": 2, "macos": 2],
         "Icon": ["ios": 3, "ipados": 3, "macos": 3, "watchos": 3],
-        "IconButton": ["ios": 3, "ipados": 3, "macos": 3],
+        "IconButton": ["ios": 4, "ipados": 4, "macos": 4],
         "Surface": ["ios": 4, "ipados": 4, "macos": 4, "watchos": 4],
         "Text": ["ios": 2, "ipados": 2, "macos": 2, "watchos": 2],
         "Toggle": ["ios": 1, "ipados": 1, "macos": 1],

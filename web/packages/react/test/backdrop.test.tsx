@@ -194,6 +194,14 @@ describe("the page over media reads as the page (ADR-0036: P4-6 moves no baselin
       expect(tag, tag).toContain(`data-ds-backdrop="${kind}"`);
     }
     expect(backdropTags(declared).length).toBe(backdropTags(plain).length);
-    expect(declared.replaceAll(`data-ds-backdrop="${kind}"`, 'data-ds-backdrop="none"')).toBe(plain);
+    // The focus ring follows the media under it, and draws only in the focus state, which no baseline photographs
+    // (ADR-0042 §1): the media ring over vivid, the band of the page over an image, the page's ring over a map.
+    const unringed = (html: string): string =>
+      html.replaceAll('data-ds-focus-ring="focus-on-media"', 'data-ds-focus-ring="focus"').replaceAll(' data-ds-focus-ring-underlay=""', "");
+    if (plain.includes("data-ds-focus-ring=")) {
+      expect(declared).toContain(kind === "vivid" ? 'data-ds-focus-ring="focus-on-media"' : 'data-ds-focus-ring="focus"');
+      expect(declared.includes('data-ds-focus-ring-underlay=""')).toBe(kind === "image");
+    }
+    expect(unringed(declared).replaceAll(`data-ds-backdrop="${kind}"`, 'data-ds-backdrop="none"')).toBe(plain);
   });
 });

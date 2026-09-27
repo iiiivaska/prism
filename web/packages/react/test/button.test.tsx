@@ -1,11 +1,12 @@
 /// <reference types="node" />
 /**
- * Button (spec/components/Button.yaml, specVersion 7).
+ * Button (spec/components/Button.yaml, specVersion 8).
  *
  * - Button.css binds what Button.yaml binds: every variant on every material the matrices key, the rest,
  *   pressed and hover fills, the outline's colour and width, sizes, label typography, icons, the spinner,
- *   disabled and focus-visible, read through a small cascade so the material cells are checked as they
- *   win on the element.
+ *   disabled, read through a small cascade so the material cells are checked as they win on the element; the
+ *   focus ring's cells, which focus/FocusRing.css draws for the ground the pill sits on (ADR-0042 §1,
+ *   test/focus.test.tsx).
  * - Motion: the press rides comp.button.motion.press, and ADR-0023 §8.4 arrives through
  *   --ds-motion-presentation-crossfade (the press scale and the danger substitute).
  * - Server renders: React Aria's button with the published material, the loading and disabled states,
@@ -22,7 +23,7 @@ import { describe, expect, it } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
 import { Theme, type StringsTable } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
-import { Button, Surface, buttonSizes, buttonVariants, defaultStrings, surfaceMaterials, type ButtonVariant } from "../src/index.ts";
+import { Backdrop, Button, Surface, buttonSizes, buttonVariants, defaultStrings, surfaceMaterials, type ButtonVariant } from "../src/index.ts";
 import { fillTemplate } from "../src/strings.ts";
 import { Cascade, declarationsOf } from "./cascade.ts";
 import { cell, cssVariable, loadSpec, propValues, type Binding } from "./spec.ts";
@@ -56,8 +57,8 @@ function nameOf(out: string): string | undefined {
 }
 
 describe("the spec is the one this package implements", () => {
-  it("is Button.yaml specVersion 7", () => {
-    expect(spec.specVersion).toBe(7);
+  it("is Button.yaml specVersion 8", () => {
+    expect(spec.specVersion).toBe(8);
     expect([...buttonVariants]).toEqual(propValues(spec, "variant"));
     expect([...buttonSizes]).toEqual(propValues(spec, "size"));
   });
@@ -115,11 +116,26 @@ describe("Button.css binds what Button.yaml binds", () => {
     expect(cascade.value(on("ghost", "solid", { "data-pressed": "" }), "--ds--button-fill")).toBe("var(--ds-button-ghost-bg-pressed)");
   });
 
-  it("root.hover.overlay under ds-pointer only", () => {
-    const overlay = bound(cell((root["hover"] as Record<string, Binding> | undefined)?.["overlay"]));
-    const hovered = { ...on("primary", "solid", { "data-hovered": "" }) };
+  it.each(combinations)("root.hover.overlay of $variant on $material, under ds-pointer only", ({ variant, material }) => {
+    const overlay = bound(cell((root["hover"] as Record<string, Binding> | undefined)?.["overlay"], variant, material));
+    const hovered = on(variant, material, { "data-hovered": "" });
     expect(cascade.value({ ...hovered, variants: ["ds-pointer"] }, "--ds--button-hover")).toBe(overlay);
     expect(cascade.value({ ...hovered, variants: ["ds-touch"] }, "--ds--button-hover")).toBe("transparent");
+  });
+
+  // ADR-0042 §2: where secondary and ghost draw no fill of their own the wash is the material's, and so is the press on
+  // the tile; the neutral wash is the inverse fill's own colour and does not show on the dark tile.
+  it("keys the washes of secondary and ghost on inverse and on the lit tile (ADR-0042 §2)", () => {
+    const hover = (root["hover"] as Record<string, Binding> | undefined)?.["overlay"];
+    const pressed = (root["pressed"] as Record<string, Binding> | undefined)?.["background"];
+    for (const variant of ["secondary", "ghost"] as const) {
+      expect(cell(hover, variant, "inverse")).toBe("color.bg.fill.on-inverse-subtle");
+      expect(cell(hover, variant, "accent")).toBe("color.bg.fill.on-accent-subtle");
+      expect(cell(pressed, variant, "accent")).toBe("color.bg.fill.on-accent-subtle");
+    }
+    for (const variant of ["primary", "danger"] as const) {
+      for (const material of materials) expect(cell(hover, variant, material), `${variant} on ${material}`).toBe("color.bg.fill.neutral.subtle");
+    }
   });
 
   it("root.radius, root.gap, root.height and root.paddingX", () => {
@@ -164,11 +180,14 @@ describe("Button.css binds what Button.yaml binds", () => {
     }
   });
 
-  it("disabled.opacity and focus-visible.ring at ringWidth", () => {
+  it("disabled.opacity, and focus-visible.ring at ringWidth, which the shared ring draws and Button.css does not", () => {
     const disabled = (root["disabled"] as Record<string, Binding> | undefined) ?? {};
     const focus = (root["focus-visible"] as Record<string, Binding> | undefined) ?? {};
     expect(declarationsOf(cascade.rules, ".ds-button[data-disabled]")["opacity"]).toBe(bound(cell(disabled["opacity"])));
-    expect(declarationsOf(cascade.rules, ".ds-button[data-focus-visible]")["outline"]).toBe(`${bound(cell(focus["ringWidth"]))} solid ${bound(cell(focus["ring"]))}`);
+    // ADR-0042 §1.4: the spec names the ring's role, and focus/FocusRing.css resolves it for the ground.
+    expect(cell(focus["ring"])).toBe("color.border.focus");
+    expect(cell(focus["ringWidth"])).toBe("border.focus");
+    expect(declarationsOf(cascade.rules, ".ds-button[data-focus-visible]")).toEqual({});
   });
 
   it("root.underlay: the danger tint paints the page under itself off the solid ladder (ADR-0030 §6.2, ADR-0040 §3)", () => {
@@ -226,13 +245,25 @@ describe("Button renders", () => {
   it("React Aria's button with its variant, size and the material it sits on", () => {
     const out = html(<Button label="Continue" onPress={noop} />);
     expect(out).toMatch(/^<button [^>]*type="button"/);
-    expect(out).toContain('class="ds-button"');
+    expect(out).toContain('class="ds-button ds-focus-ring"');
+    expect(out).toContain('data-ds-focus-ring="focus"');
+    expect(out).not.toContain("data-ds-focus-ring-underlay");
     expect(out).toContain('data-ds-slot="button"');
     expect(out).toContain('data-ds-variant="primary"');
     expect(out).toContain('data-ds-size="md"');
     expect(out).toContain('data-ds-surface="page"');
     expect(out).toContain('<span data-ds-slot="button-label-text">Continue</span>');
     expect(html(<Surface material="vivid"><Button variant="ghost" label="Open" onPress={noop} /></Surface>)).toContain('data-ds-surface="vivid"');
+  });
+
+  it("the ring of the ground the pill sits on, and over an image its band (ADR-0042 §1)", () => {
+    const ring = (node: ReactNode): string | undefined => /<button [^>]*data-ds-focus-ring="([^"]*)"/.exec(html(node))?.[1];
+    expect(ring(<Surface material="inverse"><Button variant="ghost" label="Open" onPress={noop} /></Surface>)).toBe("focus-on-inverse");
+    expect(ring(<Surface material="accent"><Button variant="ghost" label="Open" onPress={noop} /></Surface>)).toBe("focus-on-accent");
+    expect(ring(<Surface material="vivid"><Button variant="ghost" label="Open" onPress={noop} /></Surface>)).toBe("focus-on-media");
+    expect(ring(<Surface material="raised"><Button variant="ghost" label="Open" onPress={noop} /></Surface>)).toBe("focus");
+    const overImage = html(<Backdrop kind="image"><Button variant="ghost" label="Open" onPress={noop} /></Backdrop>);
+    expect(overImage).toMatch(/^<button [^>]*data-ds-focus-ring="focus"[^>]*data-ds-focus-ring-underlay=""/);
   });
 
   it("the material a glass Surface actually renders", () => {

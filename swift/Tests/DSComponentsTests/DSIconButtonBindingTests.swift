@@ -57,7 +57,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
     static let labelBytes = [13, 10, 14, 12, 12, 8, 13, 16, 19, 21, 46, 18]
 }
 
-/// `spec/components/IconButton.yaml` specVersion 3: the binding matrix keyed by variant and published material, the
+/// `spec/components/IconButton.yaml` specVersion 4: the binding matrix keyed by variant and published material, the
 /// selected cells, the sizes per density, the badge's offset, the press and select motion, the hit region, the rules
 /// the spec states as prose, the examples as the spec writes them, and the name and value of each one.
 ///
@@ -70,7 +70,7 @@ nonisolated struct DSIconButtonNameCase: Sendable {
 /// What the simulator publishes to VoiceOver is measured by `DSIconButtonAccessibilityTreeTests`, what a press draws
 /// under Reduce Motion by `DSIconButtonReduceMotionTests`, and what every example draws by the snapshot matrix, all in
 /// DSSnapshotTests.
-@Suite("IconButton bindings (IconButton.yaml v3)")
+@Suite("IconButton bindings (IconButton.yaml v4)")
 struct DSIconButtonBindingTests {
     let spec: DSSpec
 
@@ -105,7 +105,7 @@ struct DSIconButtonBindingTests {
     /// The axis checks keep the loops below honest: a loop over an axis a matrix is not keyed by would read `default` at
     /// every step and pass while checking one cell many times.
     @Test func theSpecIsTheOneThisTargetImplements() throws {
-        #expect(try spec.specVersion == 3)
+        #expect(try spec.specVersion == 4)
         #expect(try spec.propValues("variant") == DSIconButtonVariant.allCases.map(\.rawValue))
         #expect(try spec.propValues("size") == DSIconButtonSize.allCases.map(\.rawValue))
         #expect(try propDefault("variant") == DSIconButtonVariant.secondary.rawValue)
@@ -120,7 +120,7 @@ struct DSIconButtonBindingTests {
         let materials = Set(Self.materials.map(\.rawValue))
         for property in [
             "root.background", "root.underlay", "root.border", "root.borderWidth", "root.pressed.background",
-            "root.pressed.overlay", "icon.color",
+            "root.pressed.overlay", "root.hover.overlay", "icon.color",
         ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: variants), "\(property) is keyed by \(keys.sorted())")
@@ -128,8 +128,8 @@ struct DSIconButtonBindingTests {
         for property in [
             "root.background.primary", "root.background.secondary", "root.underlay.danger", "root.border.secondary",
             "root.border.ghost", "root.pressed.background.primary", "root.pressed.background.secondary",
-            "root.pressed.background.ghost", "root.pressed.background.plain", "root.selected.background",
-            "icon.color.primary", "icon.color.secondary", "icon.color.ghost", "icon.color.plain", "icon.selected.color",
+            "root.pressed.background.ghost", "root.pressed.background.plain", "root.hover.overlay.secondary",
+            "root.hover.overlay.ghost", "root.hover.overlay.plain", "root.selected.background", "icon.color.primary", "icon.color.secondary", "icon.color.ghost", "icon.color.plain", "icon.selected.color",
         ] {
             let keys = Set(try spec.keys(at: property)).subtracting(["default"])
             #expect(!keys.isEmpty && keys.isSubset(of: materials), "\(property) is keyed by \(keys.sorted())")
@@ -157,7 +157,8 @@ struct DSIconButtonBindingTests {
         for material in Self.materials {
             for variant in DSIconButtonVariant.allCases {
                 for path in [
-                    "root.background", "root.underlay", "root.border", "root.pressed.background", "icon.color",
+                    "root.background", "root.underlay", "root.border", "root.pressed.background", "root.hover.overlay",
+                    "icon.color",
                 ] {
                     try reach(path, [variant, material])
                 }
@@ -173,8 +174,8 @@ struct DSIconButtonBindingTests {
             try reach("icon.size", [size])
         }
         for path in [
-            "root.radius", "root.hover.overlay", "root.disabled.opacity", "root.focus-visible.ring",
-            "root.focus-visible.ringWidth", "badge.offset",
+            "root.radius", "root.disabled.opacity", "root.focus-visible.ring", "root.focus-visible.ringWidth",
+            "badge.offset",
         ] {
             try reach(path, [])
         }
@@ -279,12 +280,13 @@ struct DSIconButtonBindingTests {
         }
     }
 
-    /// `tokens.root.hover.overlay`, `tokens.root.pressed.background` — primary's material level included — and
+    /// `tokens.root.hover.overlay`, keyed by variant and material since IconButton 4 (ADR-0042 §2),
+    /// `tokens.root.pressed.background` — primary's material level and the tile's own wash included — and
     /// `tokens.root.pressed.overlay`, which danger takes and the others do not.
     @Test func hoverAndPressedCells() throws {
-        try spec.binds(DSIconButtonAppearance.hoverOverlay, at: "root.hover.overlay")
         for material in Self.materials {
             for variant in DSIconButtonVariant.allCases {
+                try spec.binds(DSIconButtonAppearance.hoverOverlay(variant, on: material), at: "root.hover.overlay", variant, material)
                 try spec.binds(
                     DSIconButtonAppearance.pressedBackground(variant, on: material), at: "root.pressed.background", variant, material
                 )
@@ -295,6 +297,15 @@ struct DSIconButtonBindingTests {
             #expect(DSIconButtonAppearance.pressedBackground(.primary, on: material) != DSIconButtonAppearance.background(.primary, on: material), "\(material)")
         }
         #expect(DSIconButtonAppearance.pressedOverlay(.primary) == nil)
+        // ADR-0042 §2: a circle with no fill of its own takes the material's wash on inverse and on the lit tile, and a
+        // selected circle, read for `rendered`, keeps primary's neutral wash over its solid.
+        for variant in [DSIconButtonVariant.secondary, .ghost, .plain] {
+            #expect(DSIconButtonAppearance.hoverOverlay(variant, on: .inverse) == \.color.bgFillOnInverseSubtle, "\(variant)")
+            #expect(DSIconButtonAppearance.hoverOverlay(variant, on: .accent) == \.color.bgFillOnAccentSubtle, "\(variant)")
+            #expect(DSIconButtonAppearance.pressedBackground(variant, on: .accent) == \.color.bgFillOnAccentSubtle, "\(variant)")
+            let rendered = DSIconButtonAppearance.rendered(variant, isSelected: true)
+            #expect(DSIconButtonAppearance.hoverOverlay(rendered, on: .inverse) == \.color.bgFillNeutralSubtle, "\(variant)")
+        }
     }
 
     /// The fill the view draws: the pressed cell while pressed, the rest cell otherwise, and the rest cell for a pressed

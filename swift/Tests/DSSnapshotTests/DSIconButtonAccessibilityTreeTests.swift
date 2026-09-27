@@ -24,7 +24,7 @@ import DSTokens
 /// so the badge's count is formatted the way the name table writes it whatever the simulator's own language is.
 @MainActor
 @Suite(
-    "IconButton in the accessibility tree on the simulator (IconButton.yaml v3)",
+    "IconButton in the accessibility tree on the simulator (IconButton.yaml v4)",
     .serialized,
     .enabled(if: DSAccessibilityAutomation.isAvailable, DSAccessibilityAutomation.unavailableComment)
 )

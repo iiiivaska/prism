@@ -4731,7 +4731,7 @@
       "name": "Button",
       "spec": "spec/components/Button.yaml",
       "layer": "primitive",
-      "specVersion": 7,
+      "specVersion": 8,
       "support": {
         "ios": "full",
         "ipados": "full",
@@ -6197,7 +6197,7 @@
       "name": "Chip",
       "spec": "spec/components/Chip.yaml",
       "layer": "primitive",
-      "specVersion": 1,
+      "specVersion": 2,
       "support": {
         "ios": "full",
         "ipados": "full",
@@ -13574,7 +13574,7 @@
       "name": "IconButton",
       "spec": "spec/components/IconButton.yaml",
       "layer": "primitive",
-      "specVersion": 3,
+      "specVersion": 4,
       "support": {
         "ios": "full",
         "ipados": "full",

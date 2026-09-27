@@ -7,7 +7,8 @@
  *   as `data-selected`, `data-pressed`, `data-hovered`, `data-focus-visible` and `data-disabled`
  *   (`notes.platform.web-desktop`). The root is the field, and the row is the label element, which the control row
  *   draws (../control-row/ControlRow.css): the label leading and wrapping, the track trailing and centred on the
- *   label's first line, the hit region, the overlay and the focus ring.
+ *   label's first line, the hit region and the overlay. The focus ring around the row is the shared one
+ *   (`useFocusRing`, `focus/FocusRing.css`): the ring the ground the Toggle sits on takes (ADR-0042 §1).
  * - The name (ADR-0041): `label`, drawn as the row's label unless `labelVisibility` is `hidden`, when it is the
  *   input's `aria-label` and nothing is drawn; with no `label`, the pair the host publishes through `NameContext`.
  *   `aria-label`, `aria-labelledby` and every other name attribute stay out of the props, and the component's own
@@ -30,6 +31,7 @@ import { useRef, useState, type CSSProperties, type PointerEvent as ReactPointer
 import { SwitchButton, SwitchField, type SwitchFieldProps } from "react-aria-components";
 import type { ScopeAttributes } from "@iiiivaska/prism-tokens/react";
 import { ControlRowLabel } from "../control-row/ControlRow.tsx";
+import { useFocusRing } from "../focus/useFocusRing.ts";
 import { checkControlName, useControlName, type LabelVisibility } from "../name/name.ts";
 import { useSurfaceContext } from "../surface/context.ts";
 import type { TextRole } from "../text/tones.ts";
@@ -192,6 +194,8 @@ export function Toggle(props: ToggleProps): ReactNode {
   const { isOn = false, label, labelVisibility, isDisabled = false, onChange, className, style, ref, ...loose } = props;
   const rest = withoutWithheld(loose);
   const surface = useSurfaceContext();
+  // The row sits on the ground the Toggle sits on: the ring that ground takes, and over an image its band (ADR-0042 §1).
+  const { className: ringClassName, ...ring } = useFocusRing();
   const name = useControlName(label, labelVisibility);
   checkControlName("Toggle", name);
   const isDrawn = name !== null && name.labelVisibility === "visible";
@@ -216,7 +220,7 @@ export function Toggle(props: ToggleProps): ReactNode {
       data-ds-surface={surface.material}
       data-ds-label={drawn}
     >
-      <SwitchButton className="ds-control-row" data-ds-slot="toggle-row" data-ds-label={drawn}>
+      <SwitchButton className={`ds-control-row ${ringClassName}`} data-ds-slot="toggle-row" data-ds-label={drawn} {...ring}>
         {isDrawn ? (
           <ControlRowLabel slot="toggle-label" role={toggleLabelRole}>
             {name.label}

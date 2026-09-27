@@ -22,7 +22,7 @@ import { describe, expect, it, vi } from "vitest";
 import * as tokens from "@iiiivaska/prism-tokens/tokens";
 import { Theme, type Density } from "@iiiivaska/prism-tokens/react";
 import { packageRoot } from "../scripts/build-styles.ts";
-import { Card, cardActions, cardSizes, cardVariants, type CardProps, type IconName } from "../src/index.ts";
+import { Backdrop, Card, Surface, cardActions, cardSizes, cardVariants, type CardProps, type IconName } from "../src/index.ts";
 import {
   cardAccessibleName,
   cardActionKind,
@@ -204,9 +204,12 @@ describe("Card.css binds what Card.yaml binds", () => {
     expect(declared(selector, "mask-composite")).toBe("exclude");
   });
 
-  it("focus-visible.ring at ringWidth, following the card radius", () => {
+  it("focus-visible.ring at ringWidth: the shared ring's cells, which Card.css does not draw (ADR-0042 §1)", () => {
     const focus = block(root["focus-visible"]);
-    expect(declared('.ds-card[data-ds-action="open"]:focus-visible', "outline")).toBe(`${bound(cell(focus["ringWidth"]))} solid ${bound(cell(focus["ring"]))}`);
+    expect(cell(focus["ring"])).toBe("color.border.focus");
+    expect(cell(focus["ringWidth"])).toBe("border.focus");
+    expect(declared('.ds-card[data-ds-action="open"]:focus-visible', "outline")).toBeUndefined();
+    expect(declared(".ds-card-action-button[data-focus-visible]", "outline")).toBeUndefined();
   });
 
   it.each(["solid", "vivid", "glass", "glassLight", "inverse"])("title.color and caption.color on %s", (material) => {
@@ -370,8 +373,12 @@ describe("Card renders", () => {
     const tag = rootTag(out);
     expect(tag).toContain('role="button"');
     expect(tag).toContain('tabindex="0"');
-    expect(tag).toContain('class="ds-surface ds-card"');
+    expect(tag).toContain('class="ds-surface ds-card ds-focus-ring"');
     expect(tag).toContain('data-ds-material="solid"');
+    // ADR-0042 §1: the ring of the ground the card sits on, drawn on the browser's own :focus-visible, since the
+    // root is no React Aria element.
+    expect(tag).toContain('data-ds-focus-ring="focus"');
+    expect(tag).toContain('data-ds-focus-ring-native=""');
     // The name is the composed string, not a list of ids: `aria-labelledby` concatenates what it
     // references with a space, and the rule joins with a comma (Card.yaml `accessibility.label`).
     expect(tag).toContain('aria-label="Line output, Last 24 hours, 86.4 %"');
@@ -384,6 +391,29 @@ describe("Card renders", () => {
     expect(out).not.toContain("<button");
   });
 
+  it("the rings: a pressable card's of the ground it sits on, and the custom disc's of the card's own paint (ADR-0042 §1.1)", () => {
+    const ringOf = (tag: string): string | undefined => /data-ds-focus-ring="([^"]*)"/.exec(tag)?.[1];
+    const onInverse = html(
+      <Surface material="inverse">
+        <Card {...metric} variant="vivid" onAction={noop} />
+      </Surface>,
+    );
+    expect(ringOf(/<div ([^>]*class="ds-surface ds-card[^"]*"[^>]*)>/.exec(onInverse)?.[1] ?? ""), "a vivid card on inverse").toBe("focus-on-inverse");
+    const overImage = html(
+      <Backdrop kind="image">
+        <Card {...metric} onAction={noop} />
+      </Backdrop>,
+    );
+    expect(rootTag(overImage)).toContain('data-ds-focus-ring-underlay=""');
+    // The disc sits on the card: on a vivid card it takes the media ring, whatever the card sits on.
+    const disc = html(<Card title="Queued" variant="vivid" action={pause} onAction={noop} />);
+    const button = /<button ([^>]*)>/.exec(disc)?.[1] ?? "";
+    expect(ringOf(button)).toBe("focus-on-media");
+    expect(button).not.toContain("data-ds-focus-ring-underlay");
+    // A group is not a control and carries no ring.
+    expect(rootTag(html(<Card {...metric} />))).not.toContain("ds-focus-ring");
+  });
+
   it("action custom: a group whose one button carries the action's own glyph and name; action none: a group", () => {
     const custom = html(<Card title="Queued" action={pause} onAction={noop} />);
     expect(rootTag(custom)).toContain('role="group"');
@@ -392,7 +422,7 @@ describe("Card renders", () => {
     const button = /<button ([^>]*)>/.exec(custom)?.[1] ?? "";
     expect(button).toContain('aria-label="Pause line 4"');
     expect(button).not.toContain("aria-labelledby");
-    expect(button).toContain('class="ds-card-action-button"');
+    expect(button).toContain('class="ds-card-action-button ds-focus-ring"');
     // The glyph is the operation's, not nav.open: Card.yaml's `actionIcon` and `actionLabel` are both
     // required with `action: custom` and never inferred, from the card or from each other.
     expect(custom).toContain('data-ds-icon="action.pause"');

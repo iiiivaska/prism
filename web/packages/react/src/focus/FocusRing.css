@@ -1,0 +1,51 @@
+/*
+ * The focus ring (ADR-0042 §1): the one stylesheet that draws a ring. Compiled into styles.css by
+ * scripts/build-styles.ts (ADR-0019 §4 item 6 as amended by ADR-0025), before every component sheet.
+ *
+ * A focusable element spreads `useFocusRing()` (./useFocusRing.ts): the class ds-focus-ring, the ring's role for
+ * the ground the element sits on as data-ds-focus-ring, and data-ds-focus-ring-underlay over an image. The ring is
+ * the element's outline, border.focus wide outside it and following its radius, while React Aria writes
+ * data-focus-visible, or while the browser matches :focus-visible on an element that carries
+ * data-ds-focus-ring-native (Card's root, which is no React Aria element). Over an image the band is the outline of
+ * the element's ::after, as wide as the ring and offset by it, in color.bg.page: the ring's two neighbours are then
+ * the page and the control, so one of the ring and the band holds 3:1 against any picture (§1.3). No component sheet
+ * draws a ring of its own (the stylesheet test finds no outline in a focus state outside focus/).
+ *
+ * It reads no axis attribute and no media query. Custom properties named --ds--focus-* are this module's own
+ * (ARCHITECTURE §8).
+ */
+
+@layer ds.components {
+  /* The ring's role, from the table (./ring.ts): the page family's by default, each material's own on it. */
+  .ds-focus-ring {
+    --ds--focus-ring: var(--ds-color-border-focus);
+  }
+
+  .ds-focus-ring[data-ds-focus-ring="focus-on-inverse"] {
+    --ds--focus-ring: var(--ds-color-border-focus-on-inverse);
+  }
+
+  .ds-focus-ring[data-ds-focus-ring="focus-on-accent"] {
+    --ds--focus-ring: var(--ds-color-border-focus-on-accent);
+  }
+
+  .ds-focus-ring[data-ds-focus-ring="focus-on-media"] {
+    --ds--focus-ring: var(--ds-color-border-focus-on-media);
+  }
+
+  /* focus-visible.ring at focus-visible.ringWidth: color.border.focus's role for the ground, outside the element. */
+  .ds-focus-ring:is([data-focus-visible], [data-ds-focus-ring-native]:focus-visible) {
+    outline: var(--ds-border-focus) solid var(--ds--focus-ring);
+  }
+
+  /* Over an image, the band: color.bg.page from one ring width outside the element to two, under nothing else. */
+  .ds-focus-ring[data-ds-focus-ring-underlay]:is([data-focus-visible], [data-ds-focus-ring-native]:focus-visible)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    outline: var(--ds-border-focus) solid var(--ds-color-bg-page);
+    outline-offset: var(--ds-border-focus);
+  }
+}

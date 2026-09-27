@@ -2,16 +2,26 @@
 /**
  * The stylesheet test of roadmap P3-4: ADR-0019 rule 9 as ADR-0025 §3 amends it, over the package's
  * source stylesheets and over the compiled styles.css, plus the stylesheet half of rule 10, the web
- * half of ADR-0022 rule 2 as ADR-0036 §10 amends it, and the one way a stylesheet reads the direction
- * (P5-3 finding SD-7). Every check also fails on a fixture, so a check that silently stopped matching
- * would show here.
+ * half of ADR-0022 rule 2 as ADR-0036 §10 amends it, the one way a stylesheet reads the direction
+ * (P5-3 finding SD-7), and the one stylesheet that draws a focus ring (ADR-0042 §1.6, rule 1). Every
+ * check also fails on a fixture, so a check that silently stopped matching would show here.
  */
 import { readdirSync, readFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { buildStyles, compileStyles, packageRoot } from "../scripts/build-styles.ts";
 import { flattenRules, parseCss } from "./css.ts";
-import { backdropFilterProblems, compiledProblems, compoundIsScoped, directionProblems, directionReaders, glassRecipeProblems, nearestRtlSelector, sourceProblems } from "./stylesheet.rules.ts";
+import {
+  backdropFilterProblems,
+  compiledProblems,
+  compoundIsScoped,
+  directionProblems,
+  directionReaders,
+  focusRingProblems,
+  glassRecipeProblems,
+  nearestRtlSelector,
+  sourceProblems,
+} from "./stylesheet.rules.ts";
 
 const srcRoot = join(packageRoot, "src");
 const fixtures = join(packageRoot, "test", "fixtures", "stylesheets");
@@ -40,6 +50,7 @@ describe("the source stylesheets (ADR-0019 rule 9, ADR-0025 rule 2)", () => {
       "chip/Chip.css",
       "control-row/ControlRow.css",
       "divider/Divider.css",
+      "focus/FocusRing.css",
       "icon-button/IconButton.css",
       "icon/Glyph.css",
       "icon/Icon.css",
@@ -66,6 +77,10 @@ describe("the source stylesheets (ADR-0019 rule 9, ADR-0025 rule 2)", () => {
     expect(glassRecipeProblems(readFileSync(file, "utf8"), name)).toEqual([]);
   });
 
+  it.each(sources.map((file) => [relative(srcRoot, file), file] as const))("%s draws no focus ring: that is focus/FocusRing.css's (ADR-0042 §1.6)", (name, file) => {
+    expect(focusRingProblems(readFileSync(file, "utf8"), name)).toEqual([]);
+  });
+
   it("sets font-synthesis: none on Text, Surface (and so Card) and Button (ADR-0021 §10)", () => {
     for (const [file, selector] of [
       ["text/Text.css", ".ds-text"],
@@ -83,9 +98,10 @@ describe("the compiled styles.css (ADR-0019 rules 9 and 10)", () => {
     expect(compiledProblems(compiled)).toEqual([]);
   });
 
-  it("imports every component stylesheet, Card after the Surface it refines and Toggle after the control row it draws in", () => {
+  it("imports every component stylesheet, the focus ring first, Card after the Surface it refines and Toggle after the control row it draws in", () => {
     const imports = [...readFileSync(join(srcRoot, "styles.css"), "utf8").matchAll(/^@import "\.\/([^"]+)";$/gm)].map((match) => match[1]);
     expect(imports).toEqual([
+      "focus/FocusRing.css",
       "surface/Surface.css",
       "text/Text.css",
       "icon/Glyph.css",
@@ -174,6 +190,20 @@ describe("each check fails on its fixture", () => {
     }
     for (const file of ["surface/Surface.css", "surface\\Surface.css"]) {
       expect(glassRecipeProblems(css, file), file).toEqual([]);
+    }
+  });
+
+  it("a focus ring drawn outside focus/, in React Aria's focus state or the browser's own (ADR-0042 §1.6)", () => {
+    const css = source("focus-ring.css");
+    for (const file of ["button/Button.css", "focusring/FocusRing.css", "chip/focus/Chip.css", "focus.css"]) {
+      expect(focusRingProblems(css, file).map((problem) => problem.check), file).toEqual(["focus-ring", "focus-ring"]);
+    }
+    expect(focusRingProblems(css, "button/Button.css").map((problem) => /^(.*) \{ (outline[\w-]*) \}/.exec(problem.detail)?.slice(1))).toEqual([
+      [".ds-fixture[data-focus-visible]", "outline"],
+      [".ds-fixture:focus-visible", "outline-color"],
+    ]);
+    for (const file of ["focus/FocusRing.css", "focus\\FocusRing.css"]) {
+      expect(focusRingProblems(css, file), file).toEqual([]);
     }
   });
 

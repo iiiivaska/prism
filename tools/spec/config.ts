@@ -58,11 +58,11 @@ export const MATERIAL_PUBLISHERS: readonly string[] = ['Surface'];
  * The specs whose materials P4-10 settled (ADR-0040): each colour-bearing part keys `inverse`, `accent` and
  * `glassLight`, or `materials` names it. `material/uneven` holds these to every part; every other spec only to parts
  * that key a material unevenly. The list only grows: roadmap P4-27 adds the composites and data-viz parts it settles,
- * and an implemented spec joins with the change that states its materials.
+ * and an implemented spec joins with the change that states its materials, as Chip did with Chip 2 (ADR-0042 §2.3).
  */
 export const MATERIALS_SETTLED: readonly string[] = [
-  'Button', 'Checkbox', 'IconButton', 'ProgressBar', 'ProgressRing', 'Radio', 'SegmentedControl', 'Select', 'Skeleton',
-  'Slider', 'Spinner', 'TextArea', 'TextField', 'Toggle', 'Tooltip',
+  'Button', 'Checkbox', 'Chip', 'IconButton', 'ProgressBar', 'ProgressRing', 'Radio', 'SegmentedControl', 'Select',
+  'Skeleton', 'Slider', 'Spinner', 'TextArea', 'TextField', 'Toggle', 'Tooltip',
 ];
 
 /**
@@ -75,7 +75,6 @@ export const MATERIALS_OWED: readonly { readonly component: string; readonly own
   // Implemented; decided in their ticket and stated in behavior, not yet in a `materials` block.
   { component: 'Avatar', owner: 'the next change to Avatar.yaml (P4-7 decided it: no fill on inverse or accent)' },
   { component: 'Card', owner: 'the next change to Card.yaml (P4-D5: the custom disc is the inverse solid on an inverse ground)' },
-  { component: 'Chip', owner: 'the next change to Chip.yaml (P4-8 decided it: no fill on inverse or accent)' },
   // The composite and data-viz layer (roadmap P4-27).
   { component: 'Alert', owner: 'P4-27' },
   { component: 'Banner', owner: 'P4-27' },

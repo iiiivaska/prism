@@ -3,7 +3,7 @@ import DSCore
 import DSIcons
 import DSTokens
 
-/// Every value `spec/components/Chip.yaml` (specVersion 1) binds, as pure functions of the size, the selection and the
+/// Every value `spec/components/Chip.yaml` (specVersion 2) binds, as pure functions of the size, the selection and the
 /// context the pill reads, and the rules of behavior 1 and the leading and trailing positions as pure functions of the
 /// props, so the binding matrix and the role run on the host. `DSChip` only draws and exposes what these return.
 ///
@@ -17,8 +17,8 @@ import DSTokens
 /// own.
 ///
 /// **No input state reaches the chip shape.** `background(on:)` takes the ground and nothing else: the hover overlay
-/// and the pressed fill are layers painted over whatever the chip renders (`hoverOverlay`, `pressedOverlay`), so no
-/// press or hover switches the pill between the recipe and its own cell (ADR-0037 §5, rule 4).
+/// and the pressed fill are layers painted over whatever the chip renders (`hoverOverlay(on:)`, `pressedOverlay(on:)`),
+/// so no press or hover switches the pill between the recipe and its own cell (ADR-0037 §5, rule 4).
 ///
 /// The web's twins are `web/packages/react/src/chip/parts.ts` for the rules and the `--ds--chip-*` properties of
 /// `Chip.css` for the bindings. Both stacks read the same cells out of the same spec (`DSChipBindingTests`,
@@ -129,16 +129,35 @@ nonisolated enum DSChipAppearance {
         leading == .avatar ? avatarInset(tokens) : tokens[keyPath: paddingX(size)]
     }
 
-    /// `tokens.root.hover.overlay`: `color.bg.fill.neutral.subtle` over the pill under pointer modality, a layer over
-    /// whatever the chip renders.
-    static var hoverOverlay: DSColorPath { \.color.bgFillNeutralSubtle }
+    /// `tokens.root.hover.overlay`, on the published context: a layer over whatever the chip renders under pointer
+    /// modality — `color.bg.fill.neutral.subtle`, and on inverse and on the lit tile, where the chip renders nothing,
+    /// that material's own wash, `color.bg.fill.on-inverse-subtle` or `color.bg.fill.on-accent-subtle` (ADR-0042 §2),
+    /// since the neutral wash is the inverse fill's own colour and does not show on the dark tile.
+    static func hoverOverlay(on context: DSSurfaceContext) -> DSColorPath {
+        switch context.material {
+        case .inverse: \.color.bgFillOnInverseSubtle
+        case .accent: \.color.bgFillOnAccentSubtle
+        case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.color.bgFillNeutralSubtle
+        }
+    }
 
-    /// `tokens.root.pressed.overlay`: `comp.chip.bg.pressed`, a layer over whatever the chip renders on every press and
-    /// in every motion mode, with no material axis: a pressed glass chip keeps its glass under it (behavior).
-    static var pressedOverlay: DSColorPath { \.components.chip.bgPressed }
+    /// `tokens.root.pressed.overlay`, on the published context: a layer over whatever the chip renders, on every press
+    /// and in every motion mode — `comp.chip.bg.pressed`, with no media axis, so a pressed glass chip keeps its glass
+    /// under it (behavior); on inverse `color.bg.fill.inverse-pressed`, one lightness step of the ground, and on the lit
+    /// tile its own wash, `color.bg.fill.on-accent-subtle` (ADR-0042 §2), as Button's and IconButton's unfilled pills
+    /// take there.
+    static func pressedOverlay(on context: DSSurfaceContext) -> DSColorPath {
+        switch context.material {
+        case .inverse: \.color.bgFillInversePressed
+        case .accent: \.color.bgFillOnAccentSubtle
+        case .page, .solid, .raised, .nested, .vivid, .glass, .glassLight: \.components.chip.bgPressed
+        }
+    }
 
     /// `tokens.root.focus-visible.ring` and `.ringWidth`: `color.border.focus` at `border.focus` outside the pill, and
-    /// outside the remove control's glyph when that control has focus. `DSFocusRing` draws both.
+    /// outside the remove control's glyph when that control has focus. `DSFocusRing` draws both, in the ring the ground
+    /// under each takes (ADR-0042 §1): the pill's ring reads the ground outside the chip, and the remove control's sits
+    /// on the pill's own paint.
     static var focusRing: DSColorPath { \.color.borderFocus }
     static var focusRingWidth: KeyPath<DSTokenSet, CGFloat> { \.border.focus }
 

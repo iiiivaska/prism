@@ -4,7 +4,7 @@ import DSIcons
 import DSTokens
 
 /// Button: a tappable action with one label and an optional leading or trailing icon
-/// (`spec/components/Button.yaml`, specVersion 7).
+/// (`spec/components/Button.yaml`, specVersion 8).
 ///
 ///     DSButton("Continue") { save() }
 ///     DSButton("Details", variant: .secondary, trailingIcon: .navOpen) { openDetails() }
@@ -27,7 +27,9 @@ import DSTokens
 ///    (ADR-0039, ADR-0040 §3.5). Under Reduce Motion nothing scales: the press shows as the pressed fill over
 ///    `motion.duration.base` with `motion.easing.out` (danger: `color.bg.fill.neutral.subtle` over its tint), measured
 ///    by `DSButtonReduceMotionTests`.
-///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill.
+///  - Hover, under pointer modality only, lays `color.bg.fill.neutral.subtle` over the pill; secondary and ghost,
+///    which draw no fill of their own on inverse or on the lit tile, lay that material's wash there instead
+///    (`color.bg.fill.on-inverse-subtle`, `color.bg.fill.on-accent-subtle`, ADR-0042 §2).
 ///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width and ignores presses; the
 ///    button keeps its place in the focus order and is named by the app's `strings.Button.loading` template filled
 ///    with its label, "Saving, loading" under the English defaults (`loadingName(locale:strings:)`, ADR-0032).
@@ -37,7 +39,8 @@ import DSTokens
 ///    accessibility3, and past it the label wraps to two lines. `isFullWidth` stretches the pill and centres the
 ///    content.
 ///  - Secondary, ghost and danger outline the pill at `border.hairline` on every material (ADR-0033).
-///  - The focus ring is `color.border.focus` at `border.focus` outside the pill.
+///  - The focus ring is `color.border.focus` at `border.focus` outside the pill, in the ring the ground under it
+///    takes (`DSFocusRing`, ADR-0042 §1).
 ///  - On watchOS every size renders `lg`, ghost renders as secondary and there is no trailing icon.
 ///
 /// Only one `primary` belongs in a group. A Button never navigates; use a ListRow or a link.
@@ -330,7 +333,7 @@ struct DSButtonPill<Label: View>: View {
                         .opacity(DSControlAppearance.substituteOpacity(isPressed: pressed, motion: motion))
                 }
                 shape
-                    .fill(tokens[keyPath: DSButtonAppearance.hoverOverlay])
+                    .fill(tokens[keyPath: DSButtonAppearance.hoverOverlay(variant, on: material)])
                     .opacity(hovered ? 1 : 0)
                     .animation(DSControlAppearance.hoverAnimation(motion), value: hovered)
                 if let border = DSButtonAppearance.border(variant, on: material),
