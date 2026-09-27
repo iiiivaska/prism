@@ -306,12 +306,12 @@ describe('the repository', () => {
     // P4-2's Icon (140, 88), P4-3's Badge (84, 80) and P4-4's IconButton (100, 96); then P4-7's Avatar (108, 96)
     // and P4-8's Chip (120, 104); then P4-D9's web Reduce Transparency twins of the 18 examples that render glass
     // (0, 144), and P4-D14's web-desktop Increase Contrast twins at regular density, one per example and scheme
-    // (0, 183): 872 and 1059, paired. Each component moves this number in the commit that lands its baselines, and so
-    // does a forced state either matrix starts to record.
-    expect(gallery.counts.images).toBe(1931);
+    // (0, 183); then P4-12's Toggle (68, 88): 940 and 1147, paired. Each component moves this number in the commit
+    // that lands its baselines, and so does a forced state either matrix starts to record.
+    expect(gallery.counts.images).toBe(2087);
     expect(gallery.counts.paired).toBe(gallery.counts.cells);
     expect(gallery.platforms).toEqual(['ios', 'web-desktop', 'web-touch']);
-    expect(gallery.components.filter((c) => c.recorded.length > 0).map((c) => c.name)).toEqual(['Avatar', 'Badge', 'Button', 'Chip', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Card']);
+    expect(gallery.components.filter((c) => c.recorded.length > 0).map((c) => c.name)).toEqual(['Avatar', 'Badge', 'Button', 'Chip', 'Divider', 'Icon', 'IconButton', 'Surface', 'Text', 'Toggle', 'Card']);
     expect(gallery.components).toHaveLength(57);
     expect(gallery.patterns).toEqual(['AdaptiveShell', 'DashboardGrid', 'DetailScreen']);
   });

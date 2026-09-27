@@ -14,6 +14,7 @@
 - **Reviewed again: 2026-09-26**, in [§13](#13-re-review-of-the-identifier-chip-after-rd-12s-relabel--2026-09-26). RD-12 was taken: `e56272f` relabelled `Chip/identifier-copy` "INV-209316", which fired showcase §13.8 condition 8, and CI re-recorded its 16 images, which fired §9.9 condition 6. §13 reads the 16 beside the images they replace. Only the label and the pill's width changed, none is a copy, and RD-12 is closed.
 - **Reviewed again: 2026-09-26**, in [§14](#14-review-of-the-webs-increase-contrast-images--2026-09-26). P4-D14's baselines added 183 web Increase Contrast images, one per example and scheme on `web-desktop` at regular density: new variants of all 92 named examples, which §9.9 condition 3 covers with a sentence added to each group. §14 reads all 183 beside their Apple twins. None is a copy, and none moves an earlier verdict: on both stacks Increase Contrast deepens strokes and secondary text, raises thin weights to 400 and falls glass back as Reduce Transparency does.
 - **Reviewed again: 2026-09-26**, in [§15](#15-re-review-of-iconbuttons-circle-on-glass-after-p4-10--2026-09-26). P4-10 made the solid on the scheme's glass the inverse solid (ADR-0040). At `8987b2d` that turned the circle of `IconButton/on-glass-over-map` from white to ink in light, which fired showcase §13.8 condition 8, and CI re-recorded its 6 light images, which fired §9.9 condition 6. §15 reads the 6 beside the images they replace. Only the circle's box changed, to the circle the example's fallback twins already drew. None is a copy, and no earlier verdict moves. RD-13 records that `Toolbar.yaml`'s `over-map` example specifies the traffic console's zoom cluster, the stack this control is not in.
+- **Reviewed again: 2026-09-27**, in [§16](#16-review-of-toggles-examples--2026-09-27). P4-12's baselines put Toggle's eight examples in the gallery, outside this clearance by §9.9 condition 3 until a dated section read them. §16 reads all 156 images, and none is a copy: no reference draws a switch. CI's first recording of them drew `on-disabled`'s 8 Apple images wrongly, and they were fixed and recorded again before this section's commit. One finding, RD-14: `on-glass-over-map` draws "Follow the vehicle" on a glass card over the map, shot 27220417's subject in words. A cheap relabel is recorded, not taken. §16.8 extends condition 7. The two stacks break `label-ru`'s line in different places, which is the platforms' line breaking and moves no distance.
 
 This is the gallery half of the precondition that [`docs/legal-checkpoint.md`](../legal-checkpoint.md) §5.2, outstanding item 1 (finding **F-7**) names as the one thing still blocking the `LEGAL_CHECKPOINT` repository variable, and therefore the first release. Critic finding **C-16** flagged the ordering: P5-2 sits after P3-6 in the roadmap, so a release run before this review would breach rule 3.
 
@@ -309,6 +310,8 @@ Four, in the order they matter. None blocks the review; **RD-1** shapes what the
 3. Optionally, move `solid-metric`'s sample data out of the ops-KPI genre (a percentage over a rolling time window is the reference's own genre; the strings are already invented, so only the genre would change). **And apply that same test to `Card/glass-vehicle`, which fails it harder than `solid-metric` does** (§3.7): a smoked-glass card over a ground, titled with a fleet-unit identifier and a GPS-style timestamp — drawn, at regular density, as the truncated "21.11.2026,…" on the web and "21.11.2026, 14:0…" on Apple, and in full only in the compact rows — is 27220417's vehicle card's own subject matter, and the spec names the example after it. Copy distance is not genre distance. Two answers are defensible and this review does not choose between them — **keep it**, because the genre is what `backdrop` exists to demonstrate and six of the reference card's eight parts are absent, so a reader sees an almost empty glass card; or **re-subject it** to something the references never draw (a parcel, a batch, a room), which costs one `Card.yaml` example edit and the same rebuild as item 1 and removes the last place in the gallery where Prism draws the reference's own thing. The choice belongs with whoever takes the `Card.yaml` edit.
 
 None of these is required for this review to pass. They are what a reader asking "could this be closer than it needs to be?" should be handed. The owner of that change is a `Card.yaml` example edit plus `pnpm gallery:build`; it is **not** taken here, because this ticket owns this document and the P5-2 roadmap row, and editing a spec's examples would change 48 baselines on two stacks.
+
+*Pointer added 2026-09-27: [RD-14](#rd-14--toggleon-glass-over-map-draws-the-fleet-genres-words-over-the-map) asks item 3's question of a third component. `Toggle/on-glass-over-map` draws "Follow the vehicle" on a glass card over the map, and a relabel outside the fleet genre is recorded there, not taken.*
 
 ### RD-3 — The two stacks do not carry the same copy: Text differs word for word, and every Apple Surface image carries none at all
 
@@ -831,6 +834,8 @@ The web map draws no route, so no web image shows any of this.
 **What would help, and what it costs.** The one cheap change is in the harness: turn the Apple route somewhere other than the centre. It would move all 104 Apple map images through the sanctioned re-record route, and those re-records would fall under condition 6. It would buy little: a mark on a straight route still reads as a position on a map, and the route exists to put a high-contrast line under the glass (§3.4). This review does not recommend it on distance grounds, and it is not taken here, because this ticket changes no component and no harness. The finding is recorded so that §3.4's sentence is not read as a description of what the gallery shows on it. §10.8 condition 7 makes a composition that moves the mark towards the reference's an expiry condition.
 
 *Pointer added 2026-09-26: since P4-10's re-record, `IconButton/on-glass-over-map` is a white disc with a dark glyph in dark only. In light it is the ink solid with a white glyph, the colour of Apple's light route, whose legs end at the tile's edge, 24 px of glass from the circle. [§15.5](#155-does-anything-here-move-an-earlier-verdict-or-finding) reads it. The finding stands.*
+
+*Pointer added 2026-09-27: `Toggle/on-glass-over-map` sets a glass card holding a switch on the bend, the third glass surface there. The route's vertical leg ends at the card's edge, and the horizontal one runs under the glass and does not show. [§16.4.3](#1643-over-the-map--on-glass-over-map-1-example-30-images) reads it: RD-9's count of Apple map images is now 140, and the card's label, which names a vehicle, is RD-14's. The finding stands.*
 
 #### RD-10 — Sidebar's `rail` example specifies the finance dashboard's rail, and Avatar is its last missing part
 
@@ -1556,3 +1561,203 @@ With them the gallery review covers all 1931 images: the 1925 that §§3 and 9�
 **It is not a legal opinion**, for the reasons §8 gives.
 
 The next section's verdict rows start at 87, and its findings at RD-14.
+
+---
+
+## 16. Review of Toggle's examples — 2026-09-27
+
+- **Subject.** Toggle's **156 committed PNGs**, 68 Apple and 88 web, and the 68 cells that pair them in `gallery/index.html` and `gallery/index.json`. CI run 36284352541 on `3e5070b` recorded them, and the commit that adds this section commits them (P4-12 3/3). With them the gallery holds 2087 images in 940 cells, 0 missing: 100 examples of 11 components (`gallery/index.json`, `counts`).
+- **Why.** §9.9 condition 3, read with §10.8, for all eight examples: every example of a component whose first baselines land is outside the clearance until a dated section names it and reads it. No other condition fired (§16.1).
+- **Format.** §10.9's checklist, item by item, read the way §§13–15 read their images: what changed (§16.1), how the images were read (§16.2), which examples compose more than one component (§16.3), the groups (§16.4), one verdict per example (§16.5), one finding (§16.6), coverage (§16.7) and the clearance (§16.8).
+- **Rule 1.** No reference image was fetched, screenshotted or stored. The contact sheets, crops, decodes and page captures made for this section stayed in the session scratchpad, and none is committed. No reference string is quoted: two of the consoles' card titles begin with the word "Live", and those titles are on the `lint:reference-copy` denylist.
+
+### 16.1 What changed since §15's tree
+
+| Change | Commits | Images | Reviewed before today? |
+|---|---|---|---|
+| Specs no stack implements, edited in place: a control is named by its `label`, drawn or hidden (ADR-0041); one haptic per action, the row's radius, hover timing, `isLive`; SearchField's batch number | `12587a5`, `a8f85c3`, `19e9548`, `ac44da9`, `09ed1d5` | 0 | — |
+| Surface's `selected` becomes `isSelected` on both stacks (Surface v4) | `7dc5d89` | 0 | — |
+| The focus ring and the washes follow the ground (ADR-0042). Both stacks draw the ring the ground takes, and Button, IconButton and Chip key their washes (Button v8, IconButton v4, Chip v2) | `47d9b25`, `ae978fc` | 0 | — |
+| Toggle: its contract, both stacks without baselines, and its disabled row dimmed as one layer on Apple | `9072f19`, `2e80fee`, `3e5070b` | 0 | — |
+| Toggle's baselines | run 36284352541, and this section's commit | 156 | no |
+
+The other commits since §15 change CI, the viz checks, the critic and documentation, and draw nothing: `032cbb5`, `ddae64d`, `a9e67da`, `66d2b3c`, `631cd2d`, `0e280f0`, `cc5b239` and `b23a3c7`.
+
+A diff over both baseline roots, from `9d02af0` (the commit that added §15) to this section's commit, adds Toggle's 156 images and modifies or removes none. Run 36284352541 compared every committed image on both stacks with `ae978fc` in the tree: all 872 Apple and all 1059 web images are equal. `ae978fc`'s rings draw only on focus and its washes only on hover or press, and no example is photographed in either state.
+
+**Two recordings.** Run 36282505786, on `2e80fee`, recorded Toggle's 156 images first. This review found 8 of them wrong: `on-disabled`'s Apple images. SwiftUI hands an opacity to each layer of a view that has no compositing group, so the dimmed knob showed the dimmed track through it. In light it read (192, 193, 195), where the web's knob, dimmed with its row as one layer, reads (246, 246, 248) over the page's (241, 242, 245). The spec dims the whole row (`Toggle.yaml` behavior 17), so the web's picture was the spec's. `3e5070b` composites the Apple row before its opacity, and run 36284352541 recorded all 156 again. The 8 changed, and the other 148 are byte-identical to the first run's. The tree holds the second run's images, and none of the first run's 8.
+
+**The conditions, read against that diff.**
+- Conditions 1 and 2 did not fire. No pattern has an implementation, and P5-1 has not started.
+- Condition 3 fired for Toggle's eight examples, and this section answers it.
+- Condition 4 did not fire. Toggle has no slot: `label` is a string the switch draws as its own label part, and the track and the knob are its anatomy (§16.3).
+- Condition 5 did not fire. No example touches a badge, a bell or a round button.
+- Condition 6 did not fire. No committed baseline was re-recorded, and the run compared every one equal. The spec versions and keyed washes of `ae978fc` change no pixel of an example at rest.
+- Condition 7 did not fire by its letter. `on-glass-over-map` is a switch on a glass card over the map, and nothing on the map ground is a mark: no heading arrow, vehicle glyph or identifier, and no ring or halo. The synthetic map is unchanged. But the card sits where Apple's route turns, and its label names a vehicle, so §16.4.3 reads it in RD-9's terms and RD-2 item 3's, and RD-14 records it.
+- Condition 8 did not fire. No chip changed.
+
+### 16.2 Method
+
+- **Every image, on both stacks.** All 156 were opened on contact sheets, one per example and state family, with Apple, `web-desktop` and `web-touch` side by side and one row per scheme and density:
+  - one sheet of standard images per example;
+  - one of Increase Contrast twins per example, Apple's two densities beside the web's regular one;
+  - one of `on-glass-over-map`'s Reduce Transparency twins.
+
+  The off track was opened again at 6× on both stacks, and `on-disabled` was opened in both runs' images beside the web's.
+- **Decoded, not read by eye.**
+  - Each page example: the switch's box, meaning every pixel more than 2 code values from the stage's corner right of the label. Also the knob's centre, the track at its other resting point, the outline at the middle of the track's top edge, and the label's strongest ink.
+  - The Surface examples: the same points inside the Surface's card padding, and the Surface's fill beside the row.
+  - `label-ru`: the ink extents of each line.
+  - On Apple, `on-glass-over-map`'s route, above the glass and under it.
+
+  Every colour below is a decoded pixel, and every size a decoded box.
+- **Byte comparisons.**
+  - `web-touch` is byte-identical to `web-desktop` in all 36 pairs.
+  - An Increase Contrast twin equals its standard image in 24 of 48, on both stacks alike: all of `on`'s, `on-disabled`'s, `on-vivid`'s and `off-on-vivid`'s.
+  - `on-glass-over-map`'s Increase Contrast twins equal its Reduce Transparency twins, 6 of 6.
+  - Against run 36282505786's images, 148 of the 156 are identical, and the 8 `on-disabled` Apple images differ.
+- **The page.** The gallery page was opened in Chromium at 1440 px, in light and dark, from the working tree after `pnpm gallery:build`, as §10.2 did.
+  - All 2087 images decode, and none is missing.
+  - Toggle's section reads "156 image(s), 68 of 68 cell(s) complete", and each article carries its example's props, "isOn: true, label: Follow the vehicle" among them.
+  - Toggle's figures are wide, 448 to 496 px on Apple and 528 to 672 on the web. At 1440 px its `web-touch` column runs past the window's right edge, as the widest figures of Surface and Card already do.
+- **The references.**
+  - The component inventory's Toggle row: none of the eleven shots draws a switch. Its reconciliation dropped an off-family poster's theme toggle, which does not count.
+  - visual-dna §1 principle 9 and §4.7, "One solid among hairlines", and the analyses §4.7 cites: the bottle tracker's solid active chip and its active tab disc, the shipping console's active tab, and the incident console's inverse-solid toolbar.
+  - For `on-glass-over-map`, the traffic console 27220417's map region (its analysis, §5 and §6).
+  - For "Live readings", the consoles' card titles.
+- **Gates, run with this section in the tree.** `pnpm lint:reference-copy`: exit 0, no reference UI copy, 143 denylist entries, 711 files. `pnpm icons:validate`: exit 0, registry valid, 30 generated files current. This section names no registry id and none of Apple's symbol names: Toggle draws no glyph.
+
+### 16.3 Which Toggle examples compose more than one component
+
+| Kind (§9.3) | Toggle examples | Why |
+|---|---|---|
+| A second component, in a slot the example fills | none | `Toggle.yaml` declares no slot. |
+| A second component that the host draws as a part of its own anatomy | **Text**, from `label`, in the seven examples that draw it (every one but `bare`) | The example passes a string, and the switch draws it as its own `label` part, a body-md Text in the primary tone. A reader sees one settings row. |
+| Staged inside a Surface, because the example declares a material | `on-vivid` and `off-on-vivid` (vivid), and `on-glass-over-map` (glass over the map) | The Surface carries nothing but the row. |
+| One component on the page ground, and nothing else | `off`, `on`, `on-disabled`, `bare` and `label-ru` | — |
+
+Every example stands in the same row frame, 2 × `size.card-min`, 400 wide, in all four harnesses, because the row takes the width it is given (`Toggle.yaml` behavior 9). The frame is the harness's, not a component.
+
+### 16.4 The groups
+
+#### 16.4.1 The page switches — `off`, `on`, `on-disabled`, `bare`, `label-ru`: 5 examples, 90 images
+
+- **What it is.** One settings row on the page. The label leads, body-md in the primary tone, `(13, 14, 17)` in light and white in dark. The switch trails at the edge of the 400-wide row. `bare` is the switch alone, at the frame's leading edge. The switch is a pill of 64 × 32 at regular density and 56 × 28 at compact, decoded on both stacks, with its knob 4 in from every side, 24 and 20 across.
+  - **Off** (`off`, `bare`, `label-ru`). The track is the neutral wash, `(227, 228, 231)` in light and `(28, 28, 31)` in dark. Its hairline outline decodes `(131, 132, 135)` and `(107, 107, 109)` at the middle of the top edge. The quiet knob, `(92, 96, 104)` and `(173, 173, 174)`, rests at the leading end.
+  - **On** (`on`). The inverse solid with no outline: ink, `(13, 14, 17)`, under a white knob in light, and the reverse in dark. The knob rests at the trailing end.
+  - **Disabled** (`on-disabled`). The on row at `opacity.disabled`, dimmed as one layer.
+    - In light the track and the label read `(155, 156, 158)`. The knob, `(246, 247, 249)`, is the white knob dimmed over the page, not over the track.
+    - In dark the track and the label read `(105, 106, 107)`, and the knob is the page's own `(13, 14, 17)`.
+  - **Increase Contrast** deepens the outline, to `(99, 100, 103)` in light and `(164, 164, 165)` in dark. Nothing else moves, and `on`'s and `on-disabled`'s twins are byte-identical to their standard images.
+  - **The two stacks agree** within 2 code values at every point decoded, and exactly on every box.
+  - **`label-ru` breaks its line in a different place on each stack.** The label, "Показывать ночное затенение маршрута следования", wraps on both. The row grows to 50 (48 at compact), and the switch stays level with the first line.
+    - Apple breaks after the third word. Its first line is 218 px of ink, with "маршрута следования", 159 px, under it.
+    - The web breaks after the fourth word: 297 px, then "следования" alone, 85 px.
+
+    Apple's text system keeps a single word off the last line of a paragraph, and Chromium does not. The difference is in the platforms' line breaking, not in the component or its tokens, and it moves no distance.
+- **Nearest reference.**
+  - None of the eleven shots draws a switch (the inventory's Toggle row).
+  - What `Toggle.yaml`'s design note takes from the references is visual-dna §4.7's inverse-solid active rule:
+    - the bottle tracker 27699907's solid white active chip in a row of glass chips;
+    - the shipping console 27658472's active tab, a solid black stadium with white text among white stadiums with a hairline;
+    - the incident console's inverse-solid toolbar tool.
+  - The off track is ADR-0029 §3.3's ghost pill, the hairline capsule every reference draws.
+- **Families mixed.** The references' one solid among hairlines, used here as a state rather than for the active member of a group, and the ghost pill's hairline, on the anatomy every platform gives a switch: a pill whose round knob travels between two ends. None of the references draws that anatomy.
+- **What differs.** No reference has a switch, or a settings row. The inverse solid marks one binary state, not the chosen member of a group. The words are Prism's, and one label is Cyrillic.
+- **Where the defence would stop.** Not at anything in the references. A settings switch is every platform's control, and no shot draws one. A row of these switches set into one of the references' screens would have to be read, and no spec composes that.
+- **Verdict.** **Not a copy**, each of the five.
+
+#### 16.4.2 On vivid — `on-vivid`, `off-on-vivid`: 2 examples, 36 images
+
+- **What it is.** "Live readings" in a row on a vivid Surface, which hugs it at its card padding. Beside the row the gradient decodes `(78, 91, 148)` in light and `(41, 23, 48)` in dark.
+  - `on-vivid`: the white solid, `(255, 255, 255)`, with an ink knob, `(13, 14, 17)`, at the trailing end, in both schemes.
+  - `off-on-vivid`: no fill. The gradient shows through the track, `(71, 132, 194)` in light, inside the decorative on-media ring, `(146, 173, 214)` at the top edge, and a white knob rests at the leading end.
+  - Increase Contrast changes neither. Vivid keeps its gradient and its bloom, and every twin is byte-identical to its standard image.
+- **Nearest reference.**
+  - visual-dna §4.7 for vivid: "the solid flips to white with an ink glyph, and rings go to white 40 %".
+  - The bottle tracker 27619760's tab bar over its gradient: a 72 pt glass capsule with a 1 px light edge, whose active item is a 56 pt solid white disc with an ink glyph.
+  - The day markers of 27699907's chart card: white rings, the active one a solid white disc with a dark letter.
+  - For the words: two of the consoles' card titles begin with "Live", followed by what the card shows.
+- **Families mixed.** The bottle tracker's white solid and white rings on a gradient, and the board's vivid tile.
+- **What differs.**
+  - `off-on-vivid`'s white knob in a ring capsule is the nearest image here to that tab bar, a white disc inside a capsule. The tab bar is a navigation strip of three glyphs on glass, 72 pt tall at the foot of a phone. This is a 64 × 32 ring with no fill and one blank knob, which moves.
+  - One row on a tile, with no chart, no dot-matrix numeral and no chips.
+  - "Live readings" names no reference's feature. It shares one word with two titles and nothing else.
+- **Verdict.** **Not a copy**, either example.
+
+#### 16.4.3 Over the map — `on-glass-over-map`: 1 example, 30 images
+
+- **What it is.** "Follow the vehicle", on, in a row on a glass Surface over the synthetic map. The switch is the inverse solid with its knob at the trailing end: ink on light glass, `(13, 14, 17)` under a white knob, and white on smoke.
+  - The glass decodes `(237, 238, 243)` on Apple and `(239, 239, 242)` on the web in light, and `(21, 23, 28)` and `(17, 19, 22)` in dark.
+  - Under Reduce Transparency and Increase Contrast the Surface falls back to opaque `raised`, `(247, 248, 250)` and `(35, 36, 38)`, and the switch keeps the inverse solid. On each stack those two twins are byte-identical.
+  - **The web.** The web's map plate, which draws no route, with the Surface at its centre: 672 × 304 at regular density.
+  - **Apple.** The tight crop draws the whole map into 496 × 128 (480 × 108 at compact), and the Surface covers its middle, where the route turns.
+    - The route's vertical leg shows above the Surface for 11 px (13 at compact), and ends at its top edge.
+    - The horizontal leg runs under the glass, which shows nothing of it: a column of glass across the leg varies by 2 code values at most.
+- **Nearest reference.** The **traffic console 27220417**'s map region, which the incident console 27619812 re-posts (the traffic analysis, §5 and §6).
+  - It holds nothing but the map, the title, two glass filter pills, one floating glass card and a cluster of three round zoom buttons.
+  - The card is a readout, anchored to a 44 px vehicle puck with a heading arrow inside a dashed ring, over a satellite map with a white route.
+  - It draws no switch and no follow control of any kind. Following the vehicle is what that map does, not a setting.
+- **Families mixed.** Glass over a map, which is the consoles' own move, and a settings switch.
+- **What differs.**
+  - One settings row on one glass card, anchored to nothing: no puck, ring, identifier, timestamp, chart, pills or zoom buttons.
+  - The card holds a control, where the reference's glass card is a readout about one vehicle.
+- **Genre: the test RD-2 item 3 applies.** The words are the reference's subject.
+  - "Follow the vehicle" is the follow mode of a vehicle-tracking map, 27220417's own subject matter. It is drawn on a glass card over the map, the region that shot is built from.
+  - It is the first image in the gallery that draws such a phrase over the map. `IconButton/on-glass-over-map`'s "Center on the vehicle" is spoken, not drawn (§9.5.4), and `Card/glass-vehicle`'s "Unit 4417" sits over the image, not the map.
+  - The copy distance is clean: the phrase is invented, and `lint:reference-copy` passes. The genre distance is the thinnest in the Toggle set. RD-14.
+- **RD-9, continued.** The card is the gallery's third glass surface on the route's bend, after `Surface/glass-over-map`'s slab and wave 1's tiles. Like them it covers the bend rather than marking it: the route's legs end at its edge, or vanish under it. RD-9's count of Apple map images is now 140, its 128 and these 12.
+- **Verdict.** **Not a copy**, on either stack. No reference's map holds a settings switch on glass. What brings the example near is its words.
+
+### 16.5 Is any of these close enough to one product that a reasonable person would call it a copy?
+
+Rows 87–94 continue §15.4's numbering, one row per example.
+
+| # | Example | Copy? | Why |
+|---|---|---|---|
+| 87 | `off` (§16.4.1) | **No** | A settings switch at rest, alone. No reference draws a switch. |
+| 88 | `on` (§16.4.1) | **No** | The references' one solid, as a state, in a control they do not have. |
+| 89 | `on-disabled` (§16.4.1) | **No** | As row 88, dimmed as one layer. |
+| 90 | `bare` (§16.4.1) | **No** | The switch alone. |
+| 91 | `on-vivid` (§16.4.2) | **No** | The white solid on a vivid tile. |
+| 92 | `off-on-vivid` (§16.4.2) | **No** | The ghost pill in the on-media ring, with a white knob. The nearest reference is a tab bar, which it is not. |
+| 93 | **`on-glass-over-map`** (§16.4.3) | **No, and the nearest of the eight in genre** | A settings row on a glass card over the map, anchored to nothing. Its words name the reference's subject. RD-9, RD-14. |
+| 94 | `label-ru` (§16.4.1) | **No** | As row 87, in Cyrillic, wrapped. |
+
+**Summary.** No Toggle image at the commit that adds this section is close enough to one product that a reasonable person would call it a copy. No reference draws a switch, so every example is a control the references do not have. The one rule it takes from them, the inverse solid, is a visual-dna principle with a number (ADR-0015 rule 2). The nearest is `on-glass-over-map`, and it is near on genre: its words, not its anatomy (RD-14).
+
+### 16.6 Findings of this review
+
+#### RD-14 — `Toggle/on-glass-over-map` draws the fleet genre's words over the map
+
+**What.** The example labels its switch "Follow the vehicle" and stages it on a glass card over the map (§16.4.3). That is shot 27220417's subject, in words, in that shot's region. The anatomy is not the reference's: no shot draws a switch, and the reference's glass card is a readout. But the gallery now draws the subject where IconButton's example only speaks it, and on Apple the card sits where the route turns (RD-9).
+
+**Why it matters.** It is RD-2 item 3's question again, in a third component. `Card/glass-vehicle` has the fleet unit number, IconButton's name speaks of the vehicle, and now a drawn phrase follows a vehicle over the map. The defence rests on what is absent: the mark, the ring and the readout. A composition that set this card beside a mark on the map would be condition 7's third item.
+
+**What would help. Cheap, and not required.** Relabel the example with a map setting that is not the fleet's, such as "Keep north up". That is one `Toggle.yaml` example edit. It moves the example's 30 baselines, 12 Apple and 18 web, through the sanctioned re-record route, and condition 6 then asks for them to be compared as §13 compared the 16. Relabelling IconButton's spoken "Center on the vehicle" at the same time would leave no map control named for a vehicle. It is not taken here: this commit lands the baselines CI recorded.
+
+### 16.7 Coverage
+
+| Component | Examples | Images | Reviewed in | Verdict |
+|---|---|---|---|---|
+| Toggle | 8 | 156: 68 Apple, 88 web | §16.4.1 (`off`, `on`, `on-disabled`, `bare`, `label-ru`: 90 images), §16.4.2 (`on-vivid`, `off-on-vivid`: 36) and §16.4.3 (`on-glass-over-map`: 30) | not a copy; RD-9, RD-14 |
+| The ten components of §9.8, §10.7 and §11.8 | 92 | 1931 | §§9–15 | unchanged since §15 (§16.1) |
+| **Total** | **100** | **2087** | | |
+
+§7's list of sections with no image now stands for 46 components, the three patterns and the documentation chrome.
+
+**The 8 examples, by id.** Together with §9.8's 67, §10.7's 12 and §11.8's 13, this list is what §9.9 condition 3 means by an example this document names.
+
+- Toggle: `off`, `on`, `on-disabled`, `bare`, `on-vivid`, `off-on-vivid`, `on-glass-over-map`, `label-ru`.
+
+### 16.8 What this clearance covers, and when it expires
+
+**It covers** the gallery at the commit that adds this section: all 2087 images, 100 examples and 11 components. That is the 92 examples §§9–15 read and the eight this section reads. It finds none of them a copy of any of the eleven reference shots.
+
+**It expires on §9.9's conditions, as §10.8, §11.9, §12.7 and §14.7 read them.** Condition 3 is read with §16.7's list, and condition 7 gains one item:
+
+- **Condition 7, extended: a control over the map whose label names a vehicle, set in one composition with a mark, a readout card or round map controls** (RD-14). `on-glass-over-map` alone on its stage is reviewed here.
+
+**It is not a legal opinion**, for the reasons §8 gives.
+
+The next section's verdict rows start at 95, and its findings at RD-15.
