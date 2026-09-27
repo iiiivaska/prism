@@ -808,6 +808,10 @@ private struct DSCardActionDisc<Label: View>: View {
                     }
                 }
             }
+            // `opacity.disabled` over the whole disc while the environment disables it, as one layer: the glyph dims
+            // with the fill under it, never over the fill dimmed apart (`dsDisabledOpacity`). The ring, drawn only
+            // while enabled, sits outside the group.
+            .dsDisabledOpacity(tokens.opacity.disabled, isEnabled: isEnabled)
             .overlay {
                 if isFocused && interactive {
                     // A circle around the circle, as IconButton's: a rounded rectangle at half the side is a squircle.
@@ -815,7 +819,6 @@ private struct DSCardActionDisc<Label: View>: View {
                 }
             }
             .modifier(DSHitRegion())
-            .opacity(isEnabled ? 1 : tokens.opacity.disabled)
             .scaleEffect(DSControlAppearance.scale(isPressed: pressed, motion: motion))
             .animation(DSControlAppearance.pressAnimation(motion.tokens.springSnappy, motion: motion), value: pressed)
             .modifier(DSHoverTracking(isHovered: $isHovered))

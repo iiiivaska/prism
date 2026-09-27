@@ -46,9 +46,10 @@ import DSTokens
 ///    `strings.Chip.remove` template filled with the label (ADR-0032) and read after the chip (`DSChipRemoveOrder`). It
 ///    fires `onRemove` without firing `onPress`, and Delete and Backspace on the chip fire it too. A `trailingIcon` given
 ///    with it is not drawn.
-///  - `isDisabled` lowers the pill to `opacity.disabled` and takes it and its remove control out of input and the focus
-///    order. The focus ring is `color.border.focus` at `border.focus` outside the pill, in the ring the ground outside
-///    the chip takes, and the remove control's in the ring of the pill's own paint (`DSFocusRing`, ADR-0042 §1).
+///  - `isDisabled` lowers the pill to `opacity.disabled` as one layer and takes it and its remove control out of input
+///    and the focus order. The focus ring is `color.border.focus` at `border.focus` outside the pill, in the ring the
+///    ground outside the chip takes, and the remove control's in the ring of the pill's own paint (`DSFocusRing`,
+///    ADR-0042 §1).
 ///
 /// watchOS is `none` in the spec — a watch filter is a list screen — and `DSComponentsManifest` declares no watch entry;
 /// the type still builds there, as Avatar and IconButton do.
@@ -365,7 +366,8 @@ private struct DSChipStyle: ButtonStyle {
 /// `DSButtonPill` precedent).
 ///
 /// Back to front: the chip's rendering (`dsSurfaceChip`), then `DSChipLayers` — the pressed fill, the hover overlay and
-/// the stroke — then the content; the focus ring outside the pill.
+/// the stroke — then the content; the focus ring outside the pill. A disabled pill dims all of it but the ring, which
+/// it never draws, as one layer (`dsDisabledOpacity`).
 struct DSChipPill<Content: View>: View {
     let content: Content
     let isPressed: Bool
@@ -398,13 +400,16 @@ struct DSChipPill<Content: View>: View {
             }
             // The cell is the ground's alone: no input state reaches the chip shape (ADR-0037 §5).
             .dsSurfaceChip(DSChipAppearance.background(on:), in: shape)
+            // `root.disabled.opacity` over the whole pill, as one layer: the label, the glyphs and the stroke dim with
+            // what the chip renders under them, as the web's `opacity` on the pill dims them (`dsDisabledOpacity`).
+            // The ring, drawn only while enabled, sits outside the group.
+            .dsDisabledOpacity(tokens[keyPath: DSChipAppearance.disabledOpacity], isEnabled: isEnabled)
             .overlay {
                 if isInteractive && isFocused && isEnabled {
                     DSFocusRing(cornerRadius: tokens[keyPath: DSChipAppearance.radius])
                 }
             }
             .modifier(DSChipHitRegion(isActive: isInteractive))
-            .opacity(isEnabled ? 1 : tokens[keyPath: DSChipAppearance.disabledOpacity])
             .scaleEffect(DSControlAppearance.scale(isPressed: pressed, motion: motion))
             .animation(DSChipAppearance.pressAnimation(motion), value: pressed)
             .modifier(DSHoverTracking(isHovered: $isHovered))

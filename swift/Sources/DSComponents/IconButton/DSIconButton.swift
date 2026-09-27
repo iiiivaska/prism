@@ -38,8 +38,8 @@ import DSTokens
 ///    wash there instead (`color.bg.fill.on-inverse-subtle`, `color.bg.fill.on-accent-subtle`, ADR-0042 §2).
 ///  - On vivid, on both glasses, on inverse and on accent a danger circle paints an opaque `color.bg.page` disc under
 ///    its tint.
-///  - `isDisabled` lowers the whole control, badge included, to `opacity.disabled` and takes it out of input and the
-///    focus order.
+///  - `isDisabled` lowers the whole control, badge included, to `opacity.disabled` as one layer and takes it out of
+///    input and the focus order.
 ///  - The focus ring is `color.border.focus` at `border.focus` outside the circle, following `radius.control`, in the
 ///    ring the ground under it takes (ADR-0042 §1); it surrounds the circle and never the badge, and is drawn as a
 ///    circle, as the body is (`DSFocusRing.Outline`).
@@ -202,7 +202,8 @@ struct DSIconButtonStyle: ButtonStyle {
 /// `ButtonStyle.Configuration`, which nothing outside SwiftUI can make (the `DSButtonPill` precedent).
 ///
 /// Layers, bottom to top: the underlay, the fill, the pressed overlay, the hover overlay, the ring (inside the circle),
-/// the glyph; then the focus ring outside the circle, and the badge on top of everything.
+/// the glyph; then the focus ring outside the circle, and the badge on top of everything. A disabled control dims all
+/// of it as one layer (`dsDisabledOpacity`).
 struct DSIconButtonCircle<Label: View>: View {
     let label: Label
     let isPressed: Bool
@@ -285,8 +286,11 @@ struct DSIconButtonCircle<Label: View>: View {
                     .alignmentGuide(.trailing) { $0[.trailing] - offset }
             }
             .animation(DSIconButtonAppearance.selectAnimation(motion), value: isSelected)
+            // `root.disabled.opacity` over the whole control, badge included, as one layer: the glyph and the ring
+            // dim with the fill under them and the badge with the circle under it, as the web's `opacity` dims them
+            // (`dsDisabledOpacity`). The focus ring, drawn only while enabled, stays inside, under the badge.
+            .dsDisabledOpacity(tokens.opacity.disabled, isEnabled: isEnabled)
             .modifier(DSHitRegion())
-            .opacity(isEnabled ? 1 : tokens.opacity.disabled)
             .scaleEffect(DSControlAppearance.scale(isPressed: pressed, motion: motion))
             .animation(DSIconButtonAppearance.pressAnimation(motion), value: pressed)
             .modifier(DSHoverTracking(isHovered: $isHovered))

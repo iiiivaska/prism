@@ -7,7 +7,8 @@ import DSTokens
 @testable import DSComponents
 
 /// What a Button draws, read back from renders: the ghost pill has no fill at rest, the secondary pill does, and a
-/// disabled pill is dimmed. Each comparison renders through the same pipeline, so no colour value is restated.
+/// disabled pill is dimmed, as one layer. Each comparison renders through the same pipeline, so no colour value is
+/// restated.
 ///
 /// **Why this is a simulator suite.** A pill's fill is a `Colors.xcassets` entry, and `swift test` copies that
 /// catalog uncompiled, so on the macOS host both the pill and the page behind it come back transparent — and
@@ -77,6 +78,51 @@ struct DSButtonRenderTests {
         let disabled = try #require(Self.pixels(DSButton("Continue", isDisabled: true) {}, scheme: scheme))
         #expect(!Self.close(enabled.inside, disabled.inside, within: 8), "\(scheme): \(enabled.inside) vs \(disabled.inside)")
         #expect(Self.close(enabled.page, disabled.page))
+    }
+
+    /// The pill alone on the page with `space.8` around it, in light at regular density, as `pixels(_:scheme:)` stages
+    /// it, rendered whole.
+    static func bitmap(_ button: DSButton) -> DSDimmingReading.Bitmap? {
+        let tokens = Self.tokens()
+        return DSDimmingReading.Bitmap(
+            DSTheme {
+                button
+                    .padding(tokens.space.step8)
+                    .background(tokens.color.bgPage)
+            }
+            .dsDensity(.regular)
+            .environment(\.colorScheme, .light)
+        )
+    }
+
+    /// `isDisabled` dims the whole pill as one layer, `root.disabled.opacity` over it, as the web's `opacity` does
+    /// (`dsDisabledOpacity`): where the label lies over the fill, the disabled render is the label dimmed over the page,
+    /// never the label dimmed over the fill dimmed apart. The share is read off the fill, in the pill's leading
+    /// padding, and the label at its core (`DSDimmingReading`), so no colour is written here. Dimmed layer by layer, the
+    /// primary pill's white label read 192 in light where one layer gives 246, over a page of 241: the `disabled`
+    /// baselines before `dsDisabledOpacity`, beside the web's.
+    @Test func aDisabledPillDimsAsOneLayer() throws {
+        try DSRenderCapability.requireRasterizing()
+        let tokens = Self.tokens()
+        let inset = Int(tokens.space.step8)
+        let height = Int(tokens.components.button.heightMd)
+        let padding = Int(tokens.components.button.paddingXMd)
+        let enabled = try #require(Self.bitmap(DSButton("Continue") {}))
+        let disabled = try #require(Self.bitmap(DSButton("Continue", isDisabled: true) {}))
+        let reading = try #require(
+            DSDimmingReading(
+                enabled: enabled, disabled: disabled,
+                ground: .init(x: inset / 2, y: inset / 2),
+                fill: .init(x: inset + padding / 2, y: inset + height / 2),
+                columns: (inset + padding)..<(enabled.width - inset - padding),
+                rows: (inset + 2)..<(inset + height - 2)
+            ),
+            "the renders are \(enabled.width) and \(disabled.width) wide, or a point lies outside them"
+        )
+        print("DSButtonDisabled | \(reading)")
+        #expect(abs(reading.share - tokens.opacity.disabled) < 0.05, "the fill is dimmed to \(reading.share), not opacity.disabled")
+        #expect(abs(reading.dimmedTop - reading.asOneLayer) <= 6, "the dimmed label is \(reading.dimmedTop), the pill dimmed as one layer gives \(reading.asOneLayer)")
+        #expect(abs(reading.dimmedTop - reading.layerByLayer) > 20, "the dimmed label is \(reading.dimmedTop), each layer dimmed apart gives \(reading.layerByLayer)")
     }
 }
 #endif

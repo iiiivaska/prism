@@ -186,6 +186,30 @@ struct DSFocusRing: View {
     }
 }
 
+// MARK: - Disabled
+
+extension View {
+    /// `root.disabled.opacity` over a whole control, as one layer: everything the control draws is composited into one
+    /// picture first, and the opacity dims that picture, as the web's `opacity` dims an element with everything inside
+    /// it. Without the group SwiftUI hands the opacity to each layer on its own, and a layer dimmed over a layer dimmed
+    /// shows the one under it through it: the white label of a disabled primary Button, over its dimmed ink fill, read
+    /// 192 in light where the web's reads 246 over a page of 241, and Toggle's knob showed its track (CI round 25). At
+    /// full opacity the group draws what the layers drew: Toggle's 60 enabled images came out byte for byte the same
+    /// with it and without it (CI round 27). It clips nothing: what reaches past the control's frame, IconButton's badge,
+    /// draws whole, as Surface's shadow draws whole around the surface from a group of its own (`DSSurfaceLayers`).
+    ///
+    /// Button's pill, IconButton's circle, Chip's pill, Card's action disc and Toggle's control row each apply it once,
+    /// over all they dim. The focus ring shows only while a control is enabled and is drawn outside the group, except on
+    /// IconButton, where the badge lies over the ring and dims with the circle, so the ring stays under it, inside.
+    ///
+    /// - Parameters:
+    ///   - opacity: the control's `root.disabled.opacity`, `opacity.disabled` in every spec that binds one.
+    ///   - isEnabled: the environment's `isEnabled` where the control draws; false dims the control.
+    func dsDisabledOpacity(_ opacity: Double, isEnabled: Bool) -> some View {
+        compositingGroup().opacity(isEnabled ? 1 : opacity)
+    }
+}
+
 // MARK: - Foreground
 
 /// Sets a part's bound foreground, or none, so the part takes its tone from Text.

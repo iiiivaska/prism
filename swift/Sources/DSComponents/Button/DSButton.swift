@@ -33,8 +33,8 @@ import DSTokens
 ///  - `isLoading` replaces the label with a spinner of the label's height, keeps the width and ignores presses; the
 ///    button keeps its place in the focus order and is named by the app's `strings.Button.loading` template filled
 ///    with its label, "Saving, loading" under the English defaults (`loadingName(locale:strings:)`, ADR-0032).
-///  - `isDisabled` lowers the button to `opacity.disabled` and removes it from the focus order. Prefer explaining why
-///    an action is unavailable.
+///  - `isDisabled` lowers the button to `opacity.disabled`, the pill and its label as one layer, and removes it from
+///    the focus order. Prefer explaining why an action is unavailable.
 ///  - The label never wraps and truncates with an ellipsis; the label and the height scale with Dynamic Type up to
 ///    accessibility3, and past it the label wraps to two lines. `isFullWidth` stretches the pill and centres the
 ///    content.
@@ -342,13 +342,16 @@ struct DSButtonPill<Label: View>: View {
                 }
             }
         }
+        // `root.disabled.opacity` over the whole pill, as one layer: the label dims with the fill under it, as the
+        // web's `opacity` dims them, never over the fill dimmed apart (`dsDisabledOpacity`). The ring, drawn only while
+        // enabled, sits outside the group.
+        .dsDisabledOpacity(tokens.opacity.disabled, isEnabled: isEnabled)
         .overlay {
             if isFocused && isEnabled {
                 DSFocusRing(cornerRadius: button.radius)
             }
         }
         .modifier(DSHitRegion())
-        .opacity(isEnabled ? 1 : tokens.opacity.disabled)
         .scaleEffect(DSControlAppearance.scale(isPressed: pressed, motion: motion))
         .animation(DSControlAppearance.pressAnimation(button.motionPress, motion: motion), value: pressed)
         .modifier(DSHoverTracking(isHovered: $isHovered))

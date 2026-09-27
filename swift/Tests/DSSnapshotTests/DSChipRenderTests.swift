@@ -21,9 +21,12 @@ import DSTokens
 /// row, 8 pt in from each end, clear of the stroke and the edge: a uniform layer — the pressed fill — moves every value
 /// of the row the same way, and the centroid not at all.
 ///
+/// It also reads a disabled chip dimmed as one layer, the label with the pill under it, as the web's `opacity` on the
+/// pill dims it (`dsDisabledOpacity`), over black, where the pill's own fill stands far from what lies under it.
+///
 /// A simulator suite, like `DSSurfaceChipRenderTests`: the chip's colours are catalog colours (`DSRenderCapability`).
 @MainActor
-@Suite("Chip renders over media (Chip.yaml v2, ADR-0036 rule 13, ADR-0037 §5)", .serialized)
+@Suite("Chip renders (Chip.yaml v2, ADR-0036 rule 13, ADR-0037 §5)", .serialized)
 struct DSChipRenderTests {
     /// The stage, with the pill at its centre.
     static let stage = CGSize(width: 240, height: 80)
@@ -127,6 +130,60 @@ struct DSChipRenderTests {
         let shifted = try #require(Self.row(pressed: false, offset: Self.band + 8))
         let followed = Self.centroid(shifted) - Self.centroid(rest)
         #expect(followed > 6, "the band moved 8 pt and the reading \(followed) pt")
+    }
+
+    // MARK: - Disabled
+
+    /// Around the chip in the disabled test: black, clear of the pill on every side.
+    static let inset: CGFloat = 16
+
+    static func tokens() -> DSTokenSet {
+        DSTokenSet(DSTokenContext(brand: .default, colorScheme: .light, density: .regular, modality: .touch, motion: .standard))
+    }
+
+    /// The `disabled` example's chip — "Last 24 hours", `sm`, a button — or its enabled twin, on black with `inset`
+    /// around it, in light at regular density. Nothing declares the black: the pill reads the page and draws its own
+    /// cell, `comp.chip.bg.rest`, as it does on the page.
+    static func bitmap(isDisabled: Bool) -> DSDimmingReading.Bitmap? {
+        DSDimmingReading.Bitmap(
+            DSTheme {
+                DSChip(verbatim: "Last 24 hours", isDisabled: isDisabled, onPress: {})
+                    .padding(inset)
+                    .background(Color(.sRGB, white: 0))
+            }
+            .dsDensity(.regular)
+            .environment(\.colorScheme, .light)
+        )
+    }
+
+    /// `isDisabled` dims the whole pill as one layer, `root.disabled.opacity` over it, as the web's `opacity` does
+    /// (`dsDisabledOpacity`): where the label lies over the pill's fill, the disabled render is the label dimmed over
+    /// what lies under the chip, never the label dimmed over the fill dimmed apart. On the page the fill is one step
+    /// from the ground, and the two differ by one or two code values in light and four in dark, which is what the
+    /// `disabled` baselines before `dsDisabledOpacity` show; on black they lie tens apart. The share is read off the
+    /// fill, in the pill's leading padding, and the label at its core (`DSDimmingReading`).
+    @Test func aDisabledChipDimsAsOneLayer() throws {
+        try DSRenderCapability.requireRasterizing()
+        let tokens = Self.tokens()
+        let inset = Int(Self.inset)
+        let height = Int(tokens[keyPath: DSChipAppearance.height(.sm)])
+        let padding = Int(tokens[keyPath: DSChipAppearance.paddingX(.sm)])
+        let enabled = try #require(Self.bitmap(isDisabled: false))
+        let disabled = try #require(Self.bitmap(isDisabled: true))
+        let reading = try #require(
+            DSDimmingReading(
+                enabled: enabled, disabled: disabled,
+                ground: .init(x: inset / 2, y: inset / 2),
+                fill: .init(x: inset + padding / 2, y: inset + height / 2),
+                columns: (inset + padding)..<(enabled.width - inset - padding),
+                rows: (inset + 2)..<(inset + height - 2)
+            ),
+            "the renders are \(enabled.width) and \(disabled.width) wide, or a point lies outside them"
+        )
+        print("DSChipDisabled | \(reading)")
+        #expect(abs(reading.share - tokens.opacity.disabled) < 0.05, "the fill is dimmed to \(reading.share), not opacity.disabled")
+        #expect(abs(reading.dimmedTop - reading.asOneLayer) <= 6, "the dimmed label is \(reading.dimmedTop), the pill dimmed as one layer gives \(reading.asOneLayer)")
+        #expect(abs(reading.dimmedTop - reading.layerByLayer) > 20, "the dimmed label is \(reading.dimmedTop), each layer dimmed apart gives \(reading.layerByLayer)")
     }
 }
 #endif

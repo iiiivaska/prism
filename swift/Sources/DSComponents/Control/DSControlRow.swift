@@ -265,10 +265,10 @@ struct DSControlRowBody<Content: View>: View {
             }
             // `root.disabled.opacity` over the whole row, as one layer. Without the group SwiftUI hands the opacity to
             // every layer, so a knob dimmed over a track dimmed shows the track through it; the web's `opacity`, like
-            // the spec, dims the row as one picture (CI round 25, `on-disabled`). The ring is drawn only while enabled,
-            // so it sits outside the group.
-            .compositingGroup()
-            .opacity(isEnabled ? 1 : tokens[keyPath: cells.disabledOpacity])
+            // the spec, dims the row as one picture (CI round 25, `on-disabled`; `dsDisabledOpacity`, which Button,
+            // IconButton, Chip and Card's disc dim through too). The ring is drawn only while enabled, so it sits
+            // outside the group.
+            .dsDisabledOpacity(tokens[keyPath: cells.disabledOpacity], isEnabled: isEnabled)
             .overlay {
                 if isFocused && isEnabled {
                     DSFocusRing(cornerRadius: outline)

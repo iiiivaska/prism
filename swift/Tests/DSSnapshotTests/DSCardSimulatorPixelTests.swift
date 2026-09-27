@@ -15,7 +15,9 @@ import DSTokens
 ///  - behavior 7: a `tinted` card is `color.bg.tint.accent` over the `color.bg.page` its solid surface paints under
 ///    itself, not over `color.bg.surface`;
 ///  - behavior 6: the custom disc takes `color.bg.fill.inverse` on every published material but vivid, which takes
-///    the white `color.bg.fill.inverse-media`.
+///    the white `color.bg.fill.inverse-media`;
+///  - and a custom disc the environment disables dims as one layer, the glyph with the fill under it, as every Prism
+///    control dims (`dsDisabledOpacity`). Card.yaml gives a card no disabled state of its own.
 ///
 /// Each comparison renders both sides through the same pipeline, so no colour value is restated here: the tokens
 /// decide both sides.
@@ -243,6 +245,44 @@ struct DSCardSimulatorPixelTests {
         let media = Self.pixel(Self.render(Self.swatch([tokens.color.bgFillInverseMedia]), scheme: .light), at: centre)
         #expect(inverse != nil)
         #expect(!Self.close(inverse, media, within: 8))
+    }
+
+    // MARK: - The custom disc, disabled
+
+    /// A custom disc the environment disables dims as one layer, `opacity.disabled` over the whole disc
+    /// (`dsDisabledOpacity`): where the glyph lies over the fill, the disabled render is the glyph dimmed over the card,
+    /// never the glyph dimmed over the fill dimmed apart. No example photographs it. The ground is the solid card a
+    /// few points before the disc on its middle row, inside the `header.gap` the header stops short of it; the share is
+    /// read off the fill at `discSample`, and the glyph at its core, inside the `size.icon.sm` box centred in the disc
+    /// (`DSDimmingReading`). Nothing else in the card reads `isEnabled`, so the two renders differ in the disc alone.
+    @Test func aDisabledCustomDiscDimsAsOneLayer() throws {
+        try DSRenderCapability.requireRasterizing()
+        let tokens = Self.tokens(.light)
+        let width = Int(Self.side)
+        let enabled = try #require(Self.bytes(Self.render(Self.discCard(.solid), scheme: .light)))
+        let disabled = try #require(Self.bytes(Self.render(Self.discCard(.solid).disabled(true), scheme: .light)))
+        let disc = Int(tokens.size.controlMd)
+        let glyph = Int(DSIconAppearance.box(DSCardAppearance.actionIconSize, tokens.size))
+        // The disc fills the `action.size` box at the padding corner.
+        let discEnd = width - Int(tokens.space.cardPadding)
+        let discTop = Int(tokens.space.cardPadding)
+        let sample = Self.discSample(tokens)
+        let glyphLeft = discEnd - (disc + glyph) / 2
+        let glyphTop = discTop + (disc - glyph) / 2
+        let reading = try #require(
+            DSDimmingReading(
+                enabled: .init(bytes: enabled, width: width), disabled: .init(bytes: disabled, width: width),
+                ground: .init(x: discEnd - disc - 3, y: discTop + disc / 2),
+                fill: .init(x: Int(sample.x), y: Int(sample.y)),
+                columns: glyphLeft..<(glyphLeft + glyph),
+                rows: glyphTop..<(glyphTop + glyph)
+            ),
+            "the renders hold \(enabled.count) and \(disabled.count) bytes, or a point lies outside them"
+        )
+        print("DSCardDiscDisabled | \(reading)")
+        #expect(abs(reading.share - tokens.opacity.disabled) < 0.05, "the fill is dimmed to \(reading.share), not opacity.disabled")
+        #expect(abs(reading.dimmedTop - reading.asOneLayer) <= 6, "the dimmed glyph is \(reading.dimmedTop), the disc dimmed as one layer gives \(reading.asOneLayer)")
+        #expect(abs(reading.dimmedTop - reading.layerByLayer) > 20, "the dimmed glyph is \(reading.dimmedTop), each layer dimmed apart gives \(reading.layerByLayer)")
     }
 }
 #endif

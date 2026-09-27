@@ -16,6 +16,9 @@ import DSTokens
 /// regular, measured off that render, where this suite asks for 48…67 and 20…39. The web's
 /// twin measures the same rectangle in Chromium (`web/apps/gallery/test/components.browser.test.tsx`).
 ///
+/// It also reads a disabled circle dimmed as one layer, the glyph with the fill under it, as the web's `opacity` dims
+/// the whole control (`dsDisabledOpacity`).
+///
 /// **Why this is a simulator suite.** The circle and the badge are `Colors.xcassets` fills, which `swift test` leaves
 /// transparent on the macOS host (`DSRenderCapability`).
 @MainActor
@@ -105,6 +108,54 @@ struct DSIconButtonRenderTests {
                 #expect(badge.minX == circle.minX - offset, "\(density): badge \(badge), circle \(circle)")
             }
         }
+    }
+
+    /// One circle on the page with `space.page-margin` around it, in light at regular density, rendered whole.
+    static func bitmap(_ button: DSIconButton) -> DSDimmingReading.Bitmap? {
+        let tokens = Self.tokens(density: .regular)
+        return DSDimmingReading.Bitmap(
+            DSTheme {
+                button
+                    .padding(tokens.space.pageMargin)
+                    .background(tokens.color.bgPage)
+            }
+            .dsDensity(.regular)
+            .environment(\.colorScheme, .light)
+        )
+    }
+
+    /// `isDisabled` dims the whole control as one layer, `root.disabled.opacity` over it, as the web's `opacity` does
+    /// (`dsDisabledOpacity`): where the glyph lies over the fill, the disabled render is the glyph dimmed over the page,
+    /// never the glyph dimmed over the fill dimmed apart. The primary circle, the inverse solid under the opposite
+    /// glyph, stands far enough from the page for the two to lie tens of code values apart; the `disabled` example's
+    /// secondary puck is one step from the page, where they differ by one or two in light and five in dark. The share
+    /// is read off the fill, an eighth of the side in from the circle's leading edge, clear of the glyph's box, and the
+    /// glyph at its core (`DSDimmingReading`).
+    @Test func aDisabledCircleDimsAsOneLayer() throws {
+        try DSRenderCapability.requireRasterizing()
+        let tokens = Self.tokens(density: .regular)
+        let margin = Int(tokens.space.pageMargin)
+        let side = Int(DSIconButtonAppearance.side(.md, tokens.components.iconButton))
+        let glyph = Int(DSIconAppearance.box(DSIconButtonAppearance.iconSize(.md), tokens.size))
+        let enabled = try #require(Self.bitmap(DSIconButton("Add a site", glyph: .actionAdd, variant: .primary) {}))
+        let disabled = try #require(
+            Self.bitmap(DSIconButton("Add a site", glyph: .actionAdd, variant: .primary, isDisabled: true) {})
+        )
+        let glyphStart = margin + (side - glyph) / 2
+        let reading = try #require(
+            DSDimmingReading(
+                enabled: enabled, disabled: disabled,
+                ground: .init(x: margin / 2, y: margin / 2),
+                fill: .init(x: margin + side / 8, y: margin + side / 2),
+                columns: glyphStart..<(glyphStart + glyph),
+                rows: glyphStart..<(glyphStart + glyph)
+            ),
+            "the renders are \(enabled.width) and \(disabled.width) wide, or a point lies outside them"
+        )
+        print("DSIconButtonDisabled | \(reading)")
+        #expect(abs(reading.share - tokens.opacity.disabled) < 0.05, "the fill is dimmed to \(reading.share), not opacity.disabled")
+        #expect(abs(reading.dimmedTop - reading.asOneLayer) <= 6, "the dimmed glyph is \(reading.dimmedTop), the circle dimmed as one layer gives \(reading.asOneLayer)")
+        #expect(abs(reading.dimmedTop - reading.layerByLayer) > 20, "the dimmed glyph is \(reading.dimmedTop), each layer dimmed apart gives \(reading.layerByLayer)")
     }
 }
 #endif
